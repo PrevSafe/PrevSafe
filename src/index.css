@@ -1,0 +1,93 @@
+@import "tailwindcss";
+
+/* Design tokens do PrevSafe Core (DESIGN.md do protótipo).
+   Tailwind v4 é CSS-first: não existe tailwind.config.js.
+   Cada --color-x vira automaticamente bg-x / text-x / border-x. */
+@theme {
+  --color-primary: #00242d;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #0e3a46;
+  --color-on-primary-container: #7ca4b2;
+  --color-inverse-primary: #a5cddc;
+  --color-primary-fixed: #c0e9f8;
+  --color-on-primary-fixed-variant: #244c58;
+
+  --color-secondary: #006e24;
+  --color-on-secondary: #ffffff;
+  --color-secondary-container: #7ffd8a;
+  --color-on-secondary-container: #007527;
+  --color-secondary-fixed: #7ffd8a;
+  --color-secondary-fixed-dim: #62df71;
+  --color-success: #2fb24a;
+
+  --color-tertiary: #002526;
+  --color-tertiary-container: #003c3f;
+  --color-on-tertiary: #ffffff;
+
+  --color-error: #ba1a1a;
+  --color-on-error: #ffffff;
+  --color-error-container: #ffdad6;
+  --color-on-error-container: #93000a;
+
+  --color-surface: #f8fafb;
+  --color-surface-dim: #d8dadb;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f2f4f5;
+  --color-surface-container: #eceeef;
+  --color-surface-container-high: #e6e8e9;
+  --color-surface-container-highest: #e1e3e4;
+  --color-surface-variant: #e1e3e4;
+  --color-surface-tint: #3d6471;
+  --color-on-surface: #191c1d;
+  --color-on-surface-variant: #41484b;
+  --color-inverse-surface: #2e3132;
+  --color-inverse-on-surface: #eff1f2;
+  --color-outline: #71787b;
+  --color-outline-variant: #c1c8cb;
+
+  --spacing-base: 4px;
+  --spacing-xs: 8px;
+  --spacing-sm: 16px;
+  --spacing-gutter: 20px;
+  --spacing-md: 24px;
+  --spacing-lg: 32px;
+  --spacing-xl: 48px;
+  --spacing-margin-mobile: 16px;
+  --spacing-margin-desktop: 40px;
+
+  --text-label-sm: 12px;
+  --text-label-sm--line-height: 16px;
+  --text-label-sm--letter-spacing: 0.02em;
+  --text-label-sm--font-weight: 500;
+  --text-label-md: 14px;
+  --text-label-md--line-height: 20px;
+  --text-label-md--letter-spacing: 0.01em;
+  --text-label-md--font-weight: 600;
+  --text-body-md: 16px;
+  --text-body-md--line-height: 24px;
+  --text-body-lg: 18px;
+  --text-body-lg--line-height: 28px;
+  --text-title-lg: 20px;
+  --text-title-lg--line-height: 28px;
+  --text-title-lg--font-weight: 600;
+  --text-headline-md: 24px;
+  --text-headline-md--line-height: 32px;
+  --text-headline-md--font-weight: 600;
+  --text-headline-lg: 32px;
+  --text-headline-lg--line-height: 40px;
+  --text-headline-lg--font-weight: 700;
+  --text-display-lg: 48px;
+  --text-display-lg--line-height: 56px;
+  --text-display-lg--font-weight: 700;
+
+  --font-sans: "Public Sans", ui-sans-serif, system-ui, sans-serif;
+}
+
+body {
+  font-family: var(--font-sans);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.material-symbols-outlined {
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+}
