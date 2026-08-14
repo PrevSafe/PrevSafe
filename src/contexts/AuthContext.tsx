@@ -22,7 +22,7 @@ type AuthContextValue = {
   session: Session | null;
   perfil: Perfil | null;
   carregando: boolean;
-  entrar: (identificador: string, senha: string) => Promise<void>;
+  entrar: (email: string, senha: string) => Promise<void>;
   sair: () => Promise<void>;
   recuperarSenha: (email: string) => Promise<void>;
 };
@@ -32,7 +32,7 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 /** Traduz os erros do Supabase (em inglês) para mensagens úteis ao usuário. */
 function traduzirErro(mensagem: string): string {
   const m = mensagem.toLowerCase();
-  if (m.includes('invalid login credentials')) return 'E-mail/CPF ou senha incorretos.';
+  if (m.includes('invalid login credentials')) return 'E-mail ou senha incorretos.';
   if (m.includes('email not confirmed')) return 'E-mail ainda não confirmado. Fale com o administrador.';
   if (m.includes('too many requests') || m.includes('rate limit'))
     return 'Muitas tentativas. Aguarde alguns minutos e tente novamente.';
@@ -90,19 +90,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       perfil,
       carregando,
 
-      async entrar(identificador, senha) {
-        let email = identificador.trim().toLowerCase();
+      async entrar(email, senha) {
+        const emailNormalizado = email.trim().toLowerCase();
 
-        // Se veio só dígitos com 11 posições, é CPF: resolve o e-mail no banco.
-        const digitos = identificador.replace(/\D/g, '');
-        if (!email.includes('@') && digitos.length === 11) {
-          const { data, error } = await supabase.rpc('email_por_cpf', { p_cpf: digitos });
-          if (error) throw new Error('Não foi possível validar o CPF.');
-          if (!data) throw new Error('CPF não encontrado ou usuário inativo.');
-          email = data as string;
-        }
-
-        const { error } = await supabase.auth.signInWithPassword({ email, password: senha });
+        const { error } = await supabase.auth.signInWithPassword({ email: emailNormalizado, password: senha });
         if (error) throw new Error(traduzirErro(error.message));
       },
 

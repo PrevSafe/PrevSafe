@@ -2,24 +2,11 @@ import { useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 
-/** Formata CPF durante a digitação; deixa e-mail intacto. */
-function mascarar(valor: string): string {
-  const digitos = valor.replace(/\D/g, '');
-  const pareceCpf = /^[\d.\-\s]*$/.test(valor) && digitos.length > 0;
-  if (!pareceCpf) return valor;
-
-  return digitos
-    .slice(0, 11)
-    .replace(/(\d{3})(\d)/, '$1.$2')
-    .replace(/(\d{3})(\d)/, '$1.$2')
-    .replace(/(\d{3})(\d{1,2})$/, '$1-$2');
-}
-
 export default function Login() {
   const { entrar, recuperarSenha } = useAuth();
   const navigate = useNavigate();
 
-  const [identificador, setIdentificador] = useState('');
+  const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [mostrarSenha, setMostrarSenha] = useState(false);
   const [enviando, setEnviando] = useState(false);
@@ -32,7 +19,7 @@ export default function Login() {
     setAviso(null);
     setEnviando(true);
     try {
-      await entrar(identificador, senha);
+      await entrar(email, senha);
       navigate('/dashboard', { replace: true });
     } catch (err) {
       setErro(err instanceof Error ? err.message : 'Erro inesperado.');
@@ -44,12 +31,12 @@ export default function Login() {
   async function handleRecuperar() {
     setErro(null);
     setAviso(null);
-    if (!identificador.includes('@')) {
+    if (!email) {
       setErro('Informe seu e-mail no campo acima para receber o link de redefinição.');
       return;
     }
     try {
-      await recuperarSenha(identificador);
+      await recuperarSenha(email);
       setAviso('Se este e-mail estiver cadastrado, você receberá um link em instantes.');
     } catch (err) {
       setErro(err instanceof Error ? err.message : 'Erro inesperado.');
@@ -72,23 +59,23 @@ export default function Login() {
 
         <form className="flex flex-col gap-lg w-full" onSubmit={handleSubmit} noValidate>
           <div className="flex flex-col gap-base">
-            <label className="text-label-md text-on-surface" htmlFor="identificador">
-              E-MAIL OU CPF
+            <label className="text-label-md text-on-surface" htmlFor="email">
+              E-MAIL
             </label>
             <div className="relative flex items-center">
               <span className="material-symbols-outlined absolute left-3 text-on-surface-variant pointer-events-none">
                 account_circle
               </span>
               <input
-                id="identificador"
-                name="identificador"
-                type="text"
+                id="email"
+                name="email"
+                type="email"
                 autoComplete="username"
                 required
                 autoFocus
-                placeholder="Seu e-mail ou CPF"
-                value={identificador}
-                onChange={(e) => setIdentificador(mascarar(e.target.value))}
+                placeholder="seu@email.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="w-full bg-surface border border-outline-variant rounded-lg py-3 pl-10 pr-3 text-body-md text-on-surface placeholder:text-outline transition-colors duration-200 focus:outline-none focus:border-2 focus:border-primary-container"
               />
             </div>
