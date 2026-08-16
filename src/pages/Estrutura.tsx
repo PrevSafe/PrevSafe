@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
@@ -471,6 +472,14 @@ function ModalSelecaoMultipla({
 }) {
   const [selecionados, setSelecionados] = useState<Set<string>>(new Set());
 
+  useEffect(() => {
+    function aoTeclar(e: KeyboardEvent) {
+      if (e.key === 'Escape') onFechar();
+    }
+    document.addEventListener('keydown', aoTeclar);
+    return () => document.removeEventListener('keydown', aoTeclar);
+  }, [onFechar]);
+
   function alternar(id: string) {
     setSelecionados((s) => {
       const novo = new Set(s);
@@ -480,17 +489,17 @@ function ModalSelecaoMultipla({
     });
   }
 
-  return (
+  return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-inverse-surface/40"
+      className="fixed inset-0 z-50 bg-inverse-surface/40 flex items-center justify-center p-4"
       onClick={onFechar}
     >
       <div
-        className="bg-surface-container-lowest rounded-xl shadow-lg w-full max-w-md max-h-[80vh] flex flex-col"
+        className="bg-surface-container-lowest rounded-xl shadow-lg w-full max-w-md max-h-[80vh] flex flex-col overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between px-5 py-4 border-b border-outline-variant">
-          <h3 className="text-title-lg text-primary-container">{titulo}</h3>
+        <div className="shrink-0 flex items-center justify-between px-5 py-4 border-b border-outline-variant">
+          <h3 className="text-title-lg text-primary">{titulo}</h3>
           <button
             type="button"
             onClick={onFechar}
@@ -502,7 +511,7 @@ function ModalSelecaoMultipla({
         </div>
 
         {erro && (
-          <div className="mx-5 mt-4 bg-error-container text-on-error-container rounded-lg px-4 py-3 text-label-md">
+          <div className="shrink-0 mx-5 mt-4 bg-error-container text-on-error-container rounded-lg px-4 py-3 text-label-md">
             {erro}
           </div>
         )}
@@ -520,17 +529,19 @@ function ModalSelecaoMultipla({
               {itens.map((item) => (
                 <label
                   key={item.id}
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-surface-container cursor-pointer"
+                  className="flex items-center gap-3 px-2 py-2.5 rounded hover:bg-surface-container cursor-pointer"
                 >
                   <input
                     type="checkbox"
                     checked={selecionados.has(item.id)}
                     onChange={() => alternar(item.id)}
-                    className="size-4 accent-primary-container"
+                    className="size-5 rounded accent-[#0e3a46] shrink-0"
                   />
-                  <span className="flex-1 text-body-md text-on-surface">{item.rotulo}</span>
+                  <span className="text-body-md text-on-surface">{item.rotulo}</span>
                   {item.sub && (
-                    <span className="text-label-sm text-on-surface-variant shrink-0">{item.sub}</span>
+                    <span className="text-label-sm text-on-surface-variant ml-auto shrink-0">
+                      {item.sub}
+                    </span>
                   )}
                 </label>
               ))}
@@ -538,23 +549,22 @@ function ModalSelecaoMultipla({
           )}
         </div>
 
-        {itens.length > 0 && (
-          <div className="px-5 py-4 border-t border-outline-variant flex gap-3">
-            <Botao type="button" variante="secundario" className="flex-1" onClick={onFechar}>
-              Cancelar
-            </Botao>
-            <Botao
-              type="button"
-              icone="add"
-              className="flex-1"
-              disabled={selecionados.size === 0}
-              onClick={() => onConfirmar(Array.from(selecionados))}
-            >
-              Adicionar
-            </Botao>
-          </div>
-        )}
+        <div className="shrink-0 px-5 py-4 border-t border-outline-variant flex gap-3">
+          <Botao type="button" variante="secundario" className="flex-1" onClick={onFechar}>
+            Cancelar
+          </Botao>
+          <Botao
+            type="button"
+            icone="add"
+            className="flex-1"
+            disabled={itens.length === 0 || selecionados.size === 0}
+            onClick={() => onConfirmar(Array.from(selecionados))}
+          >
+            Adicionar
+          </Botao>
+        </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

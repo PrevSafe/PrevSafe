@@ -11,6 +11,8 @@ import SetorForm from '@/pages/SetorForm';
 import Cargos from '@/pages/Cargos';
 import CargoForm from '@/pages/CargoForm';
 import Estrutura from '@/pages/Estrutura';
+import Funcionarios from '@/pages/Funcionarios';
+import FuncionarioForm from '@/pages/FuncionarioForm';
 
 /** Envolve a tela no layout autenticado. Evita repetir o aninhamento em cada rota. */
 function Protegida({ children }: { children: React.ReactNode }) {
@@ -38,6 +40,9 @@ export default function App() {
           <Route path="/cargos/novo" element={<Protegida><CargoForm /></Protegida>} />
           <Route path="/cargos/:id" element={<Protegida><CargoForm /></Protegida>} />
           <Route path="/estrutura" element={<Protegida><Estrutura /></Protegida>} />
+          <Route path="/funcionarios" element={<Protegida><Funcionarios /></Protegida>} />
+          <Route path="/funcionarios/novo" element={<Protegida><FuncionarioForm /></Protegida>} />
+          <Route path="/funcionarios/:id" element={<Protegida><FuncionarioForm /></Protegida>} />
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
       </AuthProvider>
