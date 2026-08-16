@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
-import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 import { Botao } from '@/components/ui/Form';
+import Modal from '@/components/ui/Modal';
 import { GFIP, corGfip, formatarCbo } from '@/lib/gfip';
 
 type Unidade = { id: string; razao_social: string; nome_fantasia: string | null; matriz: boolean };
@@ -27,9 +27,38 @@ export default function Estrutura() {
   const [busca, setBusca] = useState('');
   const [expandido, setExpandido] = useState<Set<string>>(new Set());
 
-  const [modalSetor, setModalSetor] = useState<{ unidadeId: string } | null>(null);
-  const [modalCargo, setModalCargo] = useState<{ unidadeId: string; setorId: string } | null>(null);
+  const [modal, setModal] = useState<
+    | { tipo: 'setor'; unidadeId: string }
+    | { tipo: 'cargo'; unidadeId: string; setorId: string }
+    | null
+  >(null);
+  const [selecionados, setSelecionados] = useState<Set<string>>(new Set());
   const [erroModal, setErroModal] = useState<string | null>(null);
+
+  function abrirModalSetor(unidadeId: string) {
+    setErroModal(null);
+    setSelecionados(new Set());
+    setModal({ tipo: 'setor', unidadeId });
+  }
+
+  function abrirModalCargo(unidadeId: string, setorId: string) {
+    setErroModal(null);
+    setSelecionados(new Set());
+    setModal({ tipo: 'cargo', unidadeId, setorId });
+  }
+
+  function fecharModal() {
+    setModal(null);
+  }
+
+  function alternarSelecionado(id: string) {
+    setSelecionados((s) => {
+      const novo = new Set(s);
+      if (novo.has(id)) novo.delete(id);
+      else novo.add(id);
+      return novo;
+    });
+  }
 
   useEffect(() => {
     let ativo = true;
@@ -132,7 +161,7 @@ export default function Estrutura() {
       return;
     }
     setLotacoes((ls) => [...ls, ...((data ?? []) as Lotacao[])]);
-    setModalSetor(null);
+    fecharModal();
   }
 
   async function adicionarCargos(unidadeId: string, setorId: string, cargoIds: string[]) {
@@ -152,7 +181,14 @@ export default function Estrutura() {
       return;
     }
     setLotacoes((ls) => [...ls, ...((data ?? []) as Lotacao[])]);
-    setModalCargo(null);
+    fecharModal();
+  }
+
+  function confirmarModal() {
+    if (!modal) return;
+    const ids = Array.from(selecionados);
+    if (modal.tipo === 'setor') adicionarSetores(modal.unidadeId, ids);
+    else adicionarCargos(modal.unidadeId, modal.setorId, ids);
   }
 
   async function removerSetor(unidadeId: string, setorId: string) {
@@ -184,23 +220,28 @@ export default function Estrutura() {
     setLotacoes((ls) => ls.filter((l) => l.id !== lotacaoId));
   }
 
-  const modalSetorInfo = useMemo(() => {
-    if (!modalSetor) return null;
-    const usados = new Set(
-      lotacoes.filter((l) => l.unidade_id === modalSetor.unidadeId).map((l) => l.setor_id)
-    );
-    return setores.filter((s) => s.ativo && !usados.has(s.id));
-  }, [modalSetor, lotacoes, setores]);
-
-  const modalCargoInfo = useMemo(() => {
-    if (!modalCargo) return null;
+  const itensModal = useMemo<{ id: string; nome: string }[]>(() => {
+    if (!modal) return [];
+    if (modal.tipo === 'setor') {
+      const usados = new Set(
+        lotacoes.filter((l) => l.unidade_id === modal.unidadeId).map((l) => l.setor_id)
+      );
+      return setores.filter((s) => s.ativo && !usados.has(s.id)).map((s) => ({ id: s.id, nome: s.nome }));
+    }
     const usados = new Set(
       lotacoes
-        .filter((l) => l.unidade_id === modalCargo.unidadeId && l.setor_id === modalCargo.setorId && l.cargo_id)
+        .filter((l) => l.unidade_id === modal.unidadeId && l.setor_id === modal.setorId && l.cargo_id)
         .map((l) => l.cargo_id as string)
     );
-    return cargos.filter((c) => c.ativo && !usados.has(c.id));
-  }, [modalCargo, lotacoes, cargos]);
+    return cargos.filter((c) => c.ativo && !usados.has(c.id)).map((c) => ({ id: c.id, nome: c.nome }));
+  }, [modal, lotacoes, setores, cargos]);
+
+  const modalTitulo = modal?.tipo === 'setor' ? 'Adicionar setor à unidade' : 'Adicionar cargo ao setor';
+  const modalVazioLink = modal?.tipo === 'setor' ? '/setores' : '/cargos';
+  const modalVazioTexto =
+    modal?.tipo === 'setor'
+      ? 'Nenhum setor disponível para adicionar. Cadastre setores no catálogo.'
+      : 'Nenhum cargo disponível para adicionar. Cadastre cargos no catálogo.';
 
   return (
     <>
@@ -302,10 +343,7 @@ export default function Estrutura() {
                     </span>
                     <button
                       type="button"
-                      onClick={() => {
-                        setErroModal(null);
-                        setModalSetor({ unidadeId: nu.unidade.id });
-                      }}
+                      onClick={() => abrirModalSetor(nu.unidade.id)}
                       className="text-primary-container p-1.5 rounded-full hover:bg-surface-container-high shrink-0"
                       aria-label="Adicionar setor à unidade"
                       title="Adicionar setor"
@@ -351,10 +389,7 @@ export default function Estrutura() {
                               </span>
                               <button
                                 type="button"
-                                onClick={() => {
-                                  setErroModal(null);
-                                  setModalCargo({ unidadeId: nu.unidade.id, setorId: ns.setor.id });
-                                }}
+                                onClick={() => abrirModalCargo(nu.unidade.id, ns.setor.id)}
                                 className="text-primary-container p-1.5 rounded-full hover:bg-surface-container-high shrink-0"
                                 aria-label="Adicionar cargo ao setor"
                                 title="Adicionar cargo"
@@ -422,149 +457,70 @@ export default function Estrutura() {
         )}
       </div>
 
-      {modalSetor && modalSetorInfo && (
-        <ModalSelecaoMultipla
-          titulo="Adicionar setor à unidade"
-          itens={modalSetorInfo.map((s) => ({ id: s.id, rotulo: s.nome }))}
-          vazioTexto="Nenhum setor disponível para adicionar. Cadastre setores no catálogo."
-          vazioLink={{ to: '/setores', texto: 'Ir para Setores' }}
-          erro={erroModal}
-          onConfirmar={(ids) => adicionarSetores(modalSetor.unidadeId, ids)}
-          onFechar={() => setModalSetor(null)}
-        />
-      )}
-
-      {modalCargo && modalCargoInfo && (
-        <ModalSelecaoMultipla
-          titulo="Adicionar cargo ao setor"
-          itens={modalCargoInfo.map((c) => ({
-            id: c.id,
-            rotulo: c.nome,
-            sub: `CBO ${formatarCbo(c.cbo)} · ${GFIP[c.codigo_gfip]}`,
-          }))}
-          vazioTexto="Nenhum cargo disponível para adicionar. Cadastre cargos no catálogo."
-          vazioLink={{ to: '/cargos', texto: 'Ir para Cargos' }}
-          erro={erroModal}
-          onConfirmar={(ids) => adicionarCargos(modalCargo.unidadeId, modalCargo.setorId, ids)}
-          onFechar={() => setModalCargo(null)}
-        />
-      )}
-    </>
-  );
-}
-
-function ModalSelecaoMultipla({
-  titulo,
-  itens,
-  vazioTexto,
-  vazioLink,
-  erro,
-  onConfirmar,
-  onFechar,
-}: {
-  titulo: string;
-  itens: { id: string; rotulo: string; sub?: string }[];
-  vazioTexto: string;
-  vazioLink: { to: string; texto: string };
-  erro: string | null;
-  onConfirmar: (ids: string[]) => void;
-  onFechar: () => void;
-}) {
-  const [selecionados, setSelecionados] = useState<Set<string>>(new Set());
-
-  useEffect(() => {
-    function aoTeclar(e: KeyboardEvent) {
-      if (e.key === 'Escape') onFechar();
-    }
-    document.addEventListener('keydown', aoTeclar);
-    return () => document.removeEventListener('keydown', aoTeclar);
-  }, [onFechar]);
-
-  function alternar(id: string) {
-    setSelecionados((s) => {
-      const novo = new Set(s);
-      if (novo.has(id)) novo.delete(id);
-      else novo.add(id);
-      return novo;
-    });
-  }
-
-  return createPortal(
-    <div
-      className="fixed inset-0 z-50 bg-inverse-surface/40 flex items-center justify-center p-4"
-      onClick={onFechar}
-    >
-      <div
-        className="bg-surface-container-lowest rounded-xl shadow-lg w-full max-w-md max-h-[80vh] flex flex-col overflow-hidden"
-        onClick={(e) => e.stopPropagation()}
+      <Modal
+        aberto={modal !== null}
+        titulo={modalTitulo}
+        onFechar={fecharModal}
+        rodape={
+          <>
+            <Botao type="button" variante="secundario" style={{ flex: 1 }} onClick={fecharModal}>
+              Cancelar
+            </Botao>
+            <Botao
+              type="button"
+              icone="add"
+              style={{ flex: 1 }}
+              disabled={itensModal.length === 0 || selecionados.size === 0}
+              onClick={confirmarModal}
+            >
+              Adicionar
+            </Botao>
+          </>
+        }
       >
-        <div className="shrink-0 flex items-center justify-between px-5 py-4 border-b border-outline-variant">
-          <h3 className="text-title-lg text-primary">{titulo}</h3>
-          <button
-            type="button"
-            onClick={onFechar}
-            className="text-on-surface-variant hover:bg-surface-container p-1.5 rounded-full"
-            aria-label="Fechar"
-          >
-            <span className="material-symbols-outlined">close</span>
-          </button>
-        </div>
-
-        {erro && (
-          <div className="shrink-0 mx-5 mt-4 bg-error-container text-on-error-container rounded-lg px-4 py-3 text-label-md">
-            {erro}
+        {erroModal && (
+          <div className="mx-2 mb-3 bg-error-container text-on-error-container rounded-lg px-4 py-3 text-label-md">
+            {erroModal}
           </div>
         )}
 
-        <div className="flex-1 overflow-y-auto px-5 py-4">
-          {itens.length === 0 ? (
-            <div className="flex flex-col items-center text-center py-8">
-              <p className="text-body-md text-on-surface-variant mb-3">{vazioTexto}</p>
-              <Link to={vazioLink.to} className="text-label-md text-primary-container hover:underline">
-                {vazioLink.texto}
-              </Link>
-            </div>
-          ) : (
-            <div className="flex flex-col gap-1">
-              {itens.map((item) => (
-                <label
-                  key={item.id}
-                  className="flex items-center gap-3 px-2 py-2.5 rounded hover:bg-surface-container cursor-pointer"
-                >
-                  <input
-                    type="checkbox"
-                    checked={selecionados.has(item.id)}
-                    onChange={() => alternar(item.id)}
-                    className="size-5 rounded accent-[#0e3a46] shrink-0"
-                  />
-                  <span className="text-body-md text-on-surface">{item.rotulo}</span>
-                  {item.sub && (
-                    <span className="text-label-sm text-on-surface-variant ml-auto shrink-0">
-                      {item.sub}
-                    </span>
-                  )}
-                </label>
-              ))}
-            </div>
-          )}
-        </div>
-
-        <div className="shrink-0 px-5 py-4 border-t border-outline-variant flex gap-3">
-          <Botao type="button" variante="secundario" className="flex-1" onClick={onFechar}>
-            Cancelar
-          </Botao>
-          <Botao
-            type="button"
-            icone="add"
-            className="flex-1"
-            disabled={itens.length === 0 || selecionados.size === 0}
-            onClick={() => onConfirmar(Array.from(selecionados))}
-          >
-            Adicionar
-          </Botao>
-        </div>
-      </div>
-    </div>,
-    document.body
+        {itensModal.length === 0 ? (
+          <div className="flex flex-col items-center text-center py-8">
+            <p className="text-body-md text-on-surface-variant mb-3">{modalVazioTexto}</p>
+            <Link to={modalVazioLink} className="text-label-md text-primary-container hover:underline">
+              {modal?.tipo === 'setor' ? 'Ir para Setores' : 'Ir para Cargos'}
+            </Link>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-1">
+            {itensModal.map((item) => (
+              <label
+                key={item.id}
+                style={{
+                  boxSizing: 'border-box',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  width: '100%',
+                  padding: '10px 8px',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                }}
+              >
+                <input
+                  type="checkbox"
+                  checked={selecionados.has(item.id)}
+                  onChange={() => alternarSelecionado(item.id)}
+                  style={{ flex: '0 0 auto', width: '20px', height: '20px', accentColor: '#0e3a46' }}
+                />
+                <span style={{ flex: '1 1 auto', minWidth: 0, fontSize: '16px', color: '#191c1d' }}>
+                  {item.nome}
+                </span>
+              </label>
+            ))}
+          </div>
+        )}
+      </Modal>
+    </>
   );
 }
