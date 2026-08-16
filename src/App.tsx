@@ -6,6 +6,11 @@ import Login from '@/pages/Login';
 import Dashboard from '@/pages/Dashboard';
 import Unidades from '@/pages/Unidades';
 import UnidadeForm from '@/pages/UnidadeForm';
+import Setores from '@/pages/Setores';
+import SetorForm from '@/pages/SetorForm';
+import Cargos from '@/pages/Cargos';
+import CargoForm from '@/pages/CargoForm';
+import Estrutura from '@/pages/Estrutura';
 
 /** Envolve a tela no layout autenticado. Evita repetir o aninhamento em cada rota. */
 function Protegida({ children }: { children: React.ReactNode }) {
@@ -26,6 +31,13 @@ export default function App() {
           <Route path="/unidades" element={<Protegida><Unidades /></Protegida>} />
           <Route path="/unidades/nova" element={<Protegida><UnidadeForm /></Protegida>} />
           <Route path="/unidades/:id" element={<Protegida><UnidadeForm /></Protegida>} />
+          <Route path="/setores" element={<Protegida><Setores /></Protegida>} />
+          <Route path="/setores/novo" element={<Protegida><SetorForm /></Protegida>} />
+          <Route path="/setores/:id" element={<Protegida><SetorForm /></Protegida>} />
+          <Route path="/cargos" element={<Protegida><Cargos /></Protegida>} />
+          <Route path="/cargos/novo" element={<Protegida><CargoForm /></Protegida>} />
+          <Route path="/cargos/:id" element={<Protegida><CargoForm /></Protegida>} />
+          <Route path="/estrutura" element={<Protegida><Estrutura /></Protegida>} />
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
       </AuthProvider>

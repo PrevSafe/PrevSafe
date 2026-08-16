@@ -37,7 +37,9 @@ const GRUPOS: Grupo[] = [
     titulo: 'Cadastros Base',
     itens: [
       { rotulo: 'Unidades', icone: 'apartment', para: '/unidades' },
-      { rotulo: 'Setores e Cargos', icone: 'account_tree', para: '#' },
+      { rotulo: 'Setores', icone: 'account_tree', para: '/setores' },
+      { rotulo: 'Cargos', icone: 'badge', para: '/cargos' },
+      { rotulo: 'Estrutura Organizacional', icone: 'lan', para: '/estrutura' },
       { rotulo: 'Frota e Maquinário', icone: 'agriculture', para: '#' },
     ],
   },
