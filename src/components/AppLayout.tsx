@@ -1,6 +1,8 @@
-import { useState, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/lib/supabase';
+import Modal from '@/components/ui/Modal';
 
 type Item = { rotulo: string; icone: string; para: string };
 type Grupo = { titulo: string; itens: Item[] };
@@ -88,9 +90,26 @@ function LinkNav({ item, onNavigate }: { item: Item; onNavigate?: () => void }) 
 }
 
 export default function AppLayout({ children }: { children: ReactNode }) {
-  const { perfil, sair } = useAuth();
+  const { perfil, vinculos, empresaAtiva, trocarEmpresa, sair } = useAuth();
   const navigate = useNavigate();
   const [menuAberto, setMenuAberto] = useState(false);
+  const [seletorEmpresaAberto, setSeletorEmpresaAberto] = useState(false);
+  const [temCipa, setTemCipa] = useState(false);
+
+  useEffect(() => {
+    if (!empresaAtiva) { setTemCipa(false); return; }
+    let ativo = true;
+    supabase
+      .rpc('modulos_da_empresa', { p_empresa_id: empresaAtiva.empresa_id })
+      .then(({ data }: { data: { codigo: string }[] | null }) => {
+        if (ativo) setTemCipa(!!data?.some((m) => m.codigo === 'CIPA'));
+      });
+    return () => { ativo = false; };
+  }, [empresaAtiva]);
+
+  const grupos = temCipa
+    ? [...GRUPOS, { titulo: 'Módulos', itens: [{ rotulo: 'CIPA', icone: 'how_to_vote', para: '/cipa' }] }]
+    : GRUPOS;
 
   const iniciais = (perfil?.nome ?? '?')
     .split(' ')
@@ -104,9 +123,47 @@ export default function AppLayout({ children }: { children: ReactNode }) {
     navigate('/login', { replace: true });
   }
 
+  function handleTrocarEmpresa(empresaId: string) {
+    trocarEmpresa(empresaId);
+    setSeletorEmpresaAberto(false);
+    setMenuAberto(false);
+    navigate('/dashboard');
+  }
+
+  const nomeEmpresaAtiva = empresaAtiva
+    ? empresaAtiva.empresa.nome_fantasia || empresaAtiva.empresa.razao_social
+    : null;
+
+  const blocoEmpresa = empresaAtiva && (
+    <div className="mb-6">
+      {vinculos.length > 1 ? (
+        <button
+          type="button"
+          onClick={() => setSeletorEmpresaAberto(true)}
+          className="flex items-center justify-between gap-2 px-3 py-2 w-full rounded-lg border border-outline-variant/40 hover:bg-surface-container-highest transition-colors text-left"
+        >
+          <span className="flex items-center gap-2 min-w-0">
+            <span className="material-symbols-outlined text-primary-container text-[18px] shrink-0">
+              apartment
+            </span>
+            <span className="text-label-md text-on-surface truncate">{nomeEmpresaAtiva}</span>
+          </span>
+          <span className="material-symbols-outlined text-outline text-[18px] shrink-0">
+            unfold_more
+          </span>
+        </button>
+      ) : (
+        <div className="flex items-center gap-2 px-3 py-2 text-label-md text-on-surface-variant">
+          <span className="material-symbols-outlined text-[18px] shrink-0">apartment</span>
+          <span className="truncate">{nomeEmpresaAtiva}</span>
+        </div>
+      )}
+    </div>
+  );
+
   const conteudoMenu = (
     <>
-      <div className="flex items-center gap-3 mb-8">
+      <div className="flex items-center gap-3 mb-4">
         <div className="h-12 w-12 rounded-full bg-primary-container text-on-primary flex items-center justify-center shrink-0">
           {perfil?.avatar_url ? (
             <img src={perfil.avatar_url} alt="" className="h-full w-full object-cover rounded-full" />
@@ -116,9 +173,11 @@ export default function AppLayout({ children }: { children: ReactNode }) {
         </div>
         <div className="flex flex-col min-w-0">
           <span className="text-title-lg text-primary truncate">{perfil?.nome}</span>
-          <span className="text-label-sm text-on-surface-variant capitalize">{perfil?.papel}</span>
+          <span className="text-label-sm text-on-surface-variant capitalize">{empresaAtiva?.papel}</span>
         </div>
       </div>
+
+      {blocoEmpresa}
 
       <nav className="flex-1 overflow-y-auto space-y-6 pb-4">
         <div className="space-y-1">
@@ -128,7 +187,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
           />
         </div>
 
-        {GRUPOS.map((grupo) => (
+        {grupos.map((grupo) => (
           <div key={grupo.titulo} className="space-y-1">
             <h3 className="px-4 text-label-sm text-outline uppercase tracking-wider mb-2">
               {grupo.titulo}
@@ -207,6 +266,34 @@ export default function AppLayout({ children }: { children: ReactNode }) {
           <ItemBottom key={i.rotulo} item={i} />
         ))}
       </nav>
+
+      <Modal
+        aberto={seletorEmpresaAberto}
+        titulo="Trocar de empresa"
+        onFechar={() => setSeletorEmpresaAberto(false)}
+      >
+        <div className="flex flex-col gap-1">
+          {vinculos.map((v) => (
+            <button
+              key={v.empresa_id}
+              type="button"
+              onClick={() => handleTrocarEmpresa(v.empresa_id)}
+              className={`text-left px-3 py-2.5 rounded-lg hover:bg-surface-container-high transition-colors flex items-center justify-between gap-2 ${
+                v.empresa_id === empresaAtiva?.empresa_id ? 'bg-primary-container/10' : ''
+              }`}
+            >
+              <span className="text-body-md text-on-surface truncate">
+                {v.empresa.nome_fantasia || v.empresa.razao_social}
+              </span>
+              {v.empresa_id === empresaAtiva?.empresa_id && (
+                <span className="material-symbols-outlined text-primary-container text-[18px] shrink-0">
+                  check
+                </span>
+              )}
+            </button>
+          ))}
+        </div>
+      </Modal>
     </div>
   );
 }

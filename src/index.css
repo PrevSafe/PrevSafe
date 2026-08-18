@@ -29,6 +29,13 @@
   --color-error-container: #ffdad6;
   --color-on-error-container: #93000a;
 
+  /* Usado pelo módulo CIPA para pendência/atenção (ex.: aguardando conferência,
+     licença perto do vencimento). Mesma dupla de cor já usada ad hoc em
+     CargoForm.tsx para o aviso de GFIP — promovida a token porque o CIPA repete
+     esse tom em vários lugares (badges, bordas, banners). */
+  --color-warning: #9a3412;
+  --color-warning-container: #ffedd5;
+
   --color-surface: #f8fafb;
   --color-surface-dim: #d8dadb;
   --color-surface-container-lowest: #ffffff;
@@ -90,4 +97,33 @@ body {
 
 .material-symbols-outlined {
   font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+}
+
+@media print {
+  .nao-imprimir { display: none !important; }
+  body { background: #fff; }
+}
+
+/* Módulo CIPA — marcação de piso industrial usada no cartaz e na confirmação
+   de voto, onde a ação é irreversível. Prefixado para não ser confundido com
+   um padrão geral do design system. */
+.cipa-faixa-seguranca {
+  background-image: repeating-linear-gradient(45deg, #e8a317 0 10px, #14201a 10px 20px);
+}
+
+@keyframes cipa-subir {
+  from { transform: translateY(24px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes cipa-entrar {
+  from { opacity: 0; transform: scale(0.98); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.animate-cipa-subir { animation: cipa-subir 0.25s ease-out; }
+.animate-cipa-entrar { animation: cipa-entrar 0.3s ease-out; }
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-cipa-subir, .animate-cipa-entrar { animation: none; }
 }
