@@ -36,7 +36,7 @@ export function PainelAcoes({
         <Botao
           type="button"
           variante="primario"
-          disabled={pendente || aptos === 0}
+          disabled={pendente}
           onClick={() => executar(() => abrirEleicao(eleicaoId))}
         >
           Abrir votação
@@ -46,8 +46,16 @@ export function PainelAcoes({
       <p className="mt-3 max-w-2xl text-label-md text-on-surface-variant">
         Montar a lista congela quem está ativo na unidade neste momento — admissões e
         desligamentos posteriores não entram, para que o quórum e a ata reflitam a folha do dia
-        da abertura. Abrir exige ao menos um candidato deferido.
+        da abertura. Abrir exige ao menos um candidato deferido; montar a lista é opcional.
       </p>
+
+      {aptos === 0 && (
+        <p className="mt-3 rounded-xl bg-warning-container px-4 py-3 text-label-md font-medium text-warning">
+          Sem lista de eleitores, a votação funciona apenas pelo QR Code do mural e todos os votos
+          passam por conferência na quarentena. O quórum da NR-05 não poderá ser calculado
+          enquanto a relação de empregados não for importada.
+        </p>
+      )}
 
       {aviso && <Aviso tom={aviso.tom} texto={aviso.texto} />}
     </div>
