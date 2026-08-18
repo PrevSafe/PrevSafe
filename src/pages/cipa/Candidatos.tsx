@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { supabaseServidor } from '@/lib/cipa/supabase';
 import { FormCandidato, type EleitorOpcao } from '@/components/cipa/FormCandidato';
+import { CabecalhoEleicao } from '@/components/cipa/CabecalhoEleicao';
 
 type Candidato = {
   id: string;
@@ -55,7 +56,8 @@ export default function Candidatos() {
 
   return (
     <div className="px-margin-mobile md:px-md py-6">
-      <p className="text-label-sm uppercase tracking-wider text-outline">Inscrições</p>
+      <CabecalhoEleicao eleicaoId={id!} titulo="Candidatos" />
+      <p className="mt-6 text-label-sm uppercase tracking-wider text-outline">Inscrições</p>
       <h1 className="mt-2 text-headline-lg font-extrabold text-on-surface">Candidatos</h1>
       <p className="mt-2 max-w-2xl text-on-surface-variant">
         Só candidatos com inscrição deferida aparecem na cédula. A contagem de votos não é

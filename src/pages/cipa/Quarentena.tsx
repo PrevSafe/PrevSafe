@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { supabaseServidor } from '@/lib/cipa/supabase';
 import { FilaQuarentena } from '@/components/cipa/FilaQuarentena';
+import { CabecalhoEleicao } from '@/components/cipa/CabecalhoEleicao';
 import type { EnvelopeQuarentena } from '@/lib/cipa/types';
 
 export default function Quarentena() {
@@ -36,7 +37,8 @@ export default function Quarentena() {
 
   return (
     <div className="px-margin-mobile md:px-md py-6">
-      <p className="text-label-sm uppercase tracking-wider text-outline">Conferência</p>
+      <CabecalhoEleicao eleicaoId={id!} titulo="Quarentena" />
+      <p className="mt-6 text-label-sm uppercase tracking-wider text-outline">Conferência</p>
       <h1 className="mt-2 text-headline-lg font-extrabold text-on-surface">Votos do mural em quarentena</h1>
       <p className="mt-2 max-w-2xl text-on-surface-variant">
         Cada envelope traz a identidade declarada no QR Code cruzada com a lista de aptos.

@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import QRCode from 'qrcode';
 import { supabaseServidor } from '@/lib/cipa/supabase';
 import { BotaoImprimir } from '@/components/cipa/BotaoImprimir';
+import { CabecalhoEleicao } from '@/components/cipa/CabecalhoEleicao';
 
 type Eleicao = {
   titulo: string;
@@ -59,7 +60,10 @@ export default function Cartaz() {
 
   return (
     <div className="px-margin-mobile md:px-md py-6">
-      <p className="nao-imprimir text-label-sm uppercase tracking-wider text-outline">Mural</p>
+      <div className="nao-imprimir">
+        <CabecalhoEleicao eleicaoId={id!} titulo="Cartaz do mural" />
+      </div>
+      <p className="nao-imprimir mt-6 text-label-sm uppercase tracking-wider text-outline">Mural</p>
       <div className="nao-imprimir mt-2 flex flex-wrap items-center gap-4">
         <h1 className="text-headline-lg font-extrabold text-on-surface">Cartaz para impressão</h1>
         <BotaoImprimir />

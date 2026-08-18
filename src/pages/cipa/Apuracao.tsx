@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { supabaseServidor } from '@/lib/cipa/supabase';
 import { GeradorAta } from '@/components/cipa/GeradorAta';
+import { CabecalhoEleicao } from '@/components/cipa/CabecalhoEleicao';
 
 type Eleicao = { titulo: string; status: string; ata_eleicao_md: string | null };
 
@@ -36,7 +37,10 @@ export default function Apuracao() {
 
   return (
     <div className="px-margin-mobile md:px-md py-6">
-      <p className="nao-imprimir text-label-sm uppercase tracking-wider text-outline">Apuração</p>
+      <div className="nao-imprimir">
+        <CabecalhoEleicao eleicaoId={id!} titulo="Apuração e atas" />
+      </div>
+      <p className="nao-imprimir mt-6 text-label-sm uppercase tracking-wider text-outline">Apuração</p>
       <h1 className="nao-imprimir mt-2 text-headline-lg font-extrabold text-on-surface">Encerramento e atas</h1>
       <p className="nao-imprimir mt-2 max-w-2xl text-on-surface-variant">
         Encerrar exige quarentena zerada. A partir daí o sistema consolida quórum, votos por

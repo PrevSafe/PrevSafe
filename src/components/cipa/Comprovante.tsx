@@ -8,7 +8,7 @@ export function Comprovante({
   const agora = new Date().toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
 
   return (
-    <div className="mx-auto flex min-h-dvh max-w-xl flex-col justify-center px-6 py-12">
+    <div className="mx-auto flex min-h-dvh max-w-[36rem] flex-col justify-center px-6 py-12">
       <div className="animate-cipa-entrar rounded-2xl border border-outline-variant bg-surface-container-lowest p-8 shadow-sm">
         <span
           aria-hidden

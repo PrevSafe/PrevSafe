@@ -60,7 +60,7 @@ export default function NovaEleicao() {
       {!liberadas.length ? (
         <div className="mt-8 rounded-xl border border-outline-variant/40 bg-surface-container-lowest p-8 shadow-sm">
           <p className="text-title-lg font-bold text-on-surface">Nenhuma unidade disponível</p>
-          <p className="mt-2 max-w-xl text-on-surface-variant">
+          <p className="mt-2 max-w-[36rem] text-on-surface-variant">
             {totalUnidades
               ? 'As unidades cadastradas pertencem a empresas sem o módulo CIPA contratado.'
               : 'Cadastre ao menos uma unidade ativa antes de criar uma eleição.'}

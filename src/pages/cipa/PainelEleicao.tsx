@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { supabaseServidor } from '@/lib/cipa/supabase';
 import { PainelAcoes } from '@/components/cipa/PainelAcoes';
+import { CabecalhoEleicao } from '@/components/cipa/CabecalhoEleicao';
 import type { Painel } from '@/lib/cipa/types';
 
 type Eleicao = {
@@ -70,13 +71,6 @@ export default function PainelEleicao() {
   }
 
   const u = eleicao.unidades;
-  const abas = [
-    { href: `/cipa/${id}/eleitores`, texto: 'Eleitores' },
-    { href: `/cipa/${id}/candidatos`, texto: 'Candidatos' },
-    { href: `/cipa/${id}/quarentena`, texto: `Quarentena${painel?.quarentena_pendente ? ` (${painel.quarentena_pendente})` : ''}` },
-    { href: `/cipa/${id}/cartaz`, texto: 'Cartaz do mural' },
-    { href: `/cipa/${id}/apuracao`, texto: 'Apuração e atas' },
-  ];
 
   return (
     <div className="px-margin-mobile md:px-md py-6">
@@ -94,14 +88,9 @@ export default function PainelEleicao() {
         e {eleicao.vagas_suplentes} suplente(s)
       </p>
 
-      <nav className="mt-6 flex flex-wrap gap-2">
-        {abas.map((a) => (
-          <Link key={a.href} to={a.href}
-            className="h-11 rounded-lg border border-outline text-on-surface-variant flex items-center px-4 text-label-sm hover:bg-surface-container transition-colors">
-            {a.texto}
-          </Link>
-        ))}
-      </nav>
+      <div className="mt-6">
+        <CabecalhoEleicao eleicaoId={id!} />
+      </div>
 
       <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Indicador rotulo="Quórum" valor={`${painel?.quorum_percent ?? 0}%`}

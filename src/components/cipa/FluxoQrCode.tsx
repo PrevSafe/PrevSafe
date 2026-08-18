@@ -41,7 +41,7 @@ export function FluxoQrCode({ cedula }: { cedula: Cedula }) {
   const unidade = cedula.unidade.nome_fantasia || cedula.unidade.razao_social;
 
   return (
-    <div className="mx-auto max-w-xl px-5 py-10">
+    <div className="mx-auto max-w-[36rem] px-5 py-10">
       <p className="text-label-sm uppercase tracking-wider text-outline">{unidade} · {cedula.eleicao.norma}</p>
       <h1 className="mt-2 text-headline-lg font-extrabold leading-tight text-on-surface">
         Identifique-se para votar

@@ -7,7 +7,7 @@ export function TelaAviso({
 }) {
   const cor = tom === 'erro' ? 'bg-error' : tom === 'atencao' ? 'bg-warning' : 'bg-outline';
   return (
-    <div className="mx-auto flex min-h-dvh max-w-xl flex-col justify-center px-6 py-12">
+    <div className="mx-auto flex min-h-dvh max-w-[36rem] flex-col justify-center px-6 py-12">
       <span aria-hidden className={`h-2 w-16 rounded-full ${cor}`} />
       <h1 className="mt-6 text-headline-lg font-extrabold leading-tight text-on-surface">{titulo}</h1>
       <p className="mt-3 text-body-lg text-on-surface-variant">{descricao}</p>

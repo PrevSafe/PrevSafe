@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { supabaseServidor } from '@/lib/cipa/supabase';
 import { ImportadorCsv } from '@/components/cipa/ImportadorCsv';
 import { GeradorLinks } from '@/components/cipa/GeradorLinks';
+import { CabecalhoEleicao } from '@/components/cipa/CabecalhoEleicao';
 
 type Eleitor = {
   id: string;
@@ -56,7 +57,8 @@ export default function Eleitores() {
 
   return (
     <div className="px-margin-mobile md:px-md py-6">
-      <p className="text-label-sm uppercase tracking-wider text-outline">Lista de aptos</p>
+      <CabecalhoEleicao eleicaoId={id!} titulo="Eleitores" />
+      <p className="mt-6 text-label-sm uppercase tracking-wider text-outline">Lista de aptos</p>
       <h1 className="mt-2 text-headline-lg font-extrabold text-on-surface">Eleitores</h1>
       <p className="mt-2 text-on-surface-variant">
         {count} na lista · {comLink} com link gerado · {votaram} já votaram

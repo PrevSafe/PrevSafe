@@ -27,7 +27,7 @@ export function BottomSheetConfirmacao({
         role="dialog"
         aria-modal="true"
         aria-label="Confirmação do voto"
-        className="relative w-full max-w-xl animate-cipa-subir overflow-hidden rounded-t-3xl bg-surface-container-lowest shadow-lg"
+        className="relative w-full max-w-[36rem] animate-cipa-subir overflow-hidden rounded-t-3xl bg-surface-container-lowest shadow-lg"
       >
         <div className="cipa-faixa-seguranca h-2" aria-hidden />
         <div className="px-6 pb-8 pt-6">

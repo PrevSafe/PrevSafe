@@ -70,7 +70,7 @@ export default function ListaEleicoes() {
       {!eleicoes.length && (
         <div className="mt-8 rounded-xl border border-outline-variant/40 bg-surface-container-lowest p-8 shadow-sm">
           <p className="text-title-lg font-bold text-on-surface">Nenhuma eleição ainda</p>
-          <p className="mt-2 max-w-xl text-on-surface-variant">
+          <p className="mt-2 max-w-[36rem] text-on-surface-variant">
             Uma eleição pertence a uma unidade — a NR-05 constitui uma CIPA por estabelecimento.
             Cadastre a unidade e os funcionários antes de começar.
           </p>

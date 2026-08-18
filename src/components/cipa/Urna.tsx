@@ -68,7 +68,7 @@ export function Urna({
   }
 
   return (
-    <div className="mx-auto max-w-xl px-5 pb-40 pt-8">
+    <div className="mx-auto max-w-[36rem] px-5 pb-40 pt-8">
       <header>
         <p className="text-label-sm uppercase tracking-wider text-outline">{unidade} · {cedula.eleicao.norma}</p>
         <h1 className="mt-2 text-headline-lg font-extrabold leading-tight text-on-surface">
@@ -121,7 +121,7 @@ export function Urna({
 
       {escolha && !confirmando && (
         <div className="fixed inset-x-0 bottom-0 z-40 border-t border-outline-variant bg-surface-container-lowest/95 backdrop-blur">
-          <div className="mx-auto flex max-w-xl items-center gap-4 px-5 py-4">
+          <div className="mx-auto flex max-w-[36rem] items-center gap-4 px-5 py-4">
             <div className="min-w-0 flex-1">
               <p className="text-label-sm uppercase tracking-wider text-outline">Sua escolha</p>
               <p className="truncate text-title-lg font-bold text-on-surface">{escolha.rotulo}</p>
