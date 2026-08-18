@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
+import { useAuth } from '@/contexts/AuthContext';
+import { daEmpresa } from '@/lib/consulta';
 
 type Setor = {
   id: string;
@@ -11,6 +13,7 @@ type Setor = {
 };
 
 export default function Setores() {
+  const { empresaAtiva } = useAuth();
   const [setores, setSetores] = useState<Setor[]>([]);
   const [busca, setBusca] = useState('');
   const [carregando, setCarregando] = useState(true);
@@ -18,16 +21,19 @@ export default function Setores() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    supabase
-      .from('setores')
-      .select('id, codigo, nome, descricao, ativo')
+    if (!empresaAtiva) {
+      setCarregando(false);
+      return;
+    }
+    setCarregando(true);
+    daEmpresa(supabase.from('setores').select('id, codigo, nome, descricao, ativo'), empresaAtiva.empresa_id)
       .order('nome')
       .then(({ data, error }) => {
         if (error) setErro(error.message);
         else setSetores(data as Setor[]);
         setCarregando(false);
       });
-  }, []);
+  }, [empresaAtiva]);
 
   const termo = busca.trim().toLowerCase();
   const filtrados = termo

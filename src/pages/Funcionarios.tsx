@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
+import { useAuth } from '@/contexts/AuthContext';
+import { daEmpresa } from '@/lib/consulta';
 import { STATUS_LABEL, corStatus, formatarCpf, iniciais } from '@/lib/funcionarios';
 
 type StatusFuncionario = 'ativo' | 'afastado' | 'ferias' | 'desligado';
@@ -21,6 +23,7 @@ type Setor = { id: string; nome: string };
 type Cargo = { id: string; nome: string };
 
 export default function Funcionarios() {
+  const { empresaAtiva } = useAuth();
   const navigate = useNavigate();
 
   const [funcionarios, setFuncionarios] = useState<Funcionario[]>([]);
@@ -36,14 +39,26 @@ export default function Funcionarios() {
   const [statusFiltro, setStatusFiltro] = useState<'todos' | StatusFuncionario>('ativo');
 
   useEffect(() => {
+    if (!empresaAtiva) {
+      setCarregando(false);
+      return;
+    }
     let ativo = true;
+    setCarregando(true);
+    const empresaId = empresaAtiva.empresa_id;
     Promise.all([
-      supabase.from('funcionarios').select('id, codigo, nome, cpf, matricula_esocial, status').order('nome'),
-      supabase.from('funcionarios_lotacoes').select('funcionario_id, lotacao_id').is('data_fim', null),
-      supabase.from('lotacoes').select('id, unidade_id, setor_id, cargo_id'),
-      supabase.from('unidades').select('id, razao_social, nome_fantasia'),
-      supabase.from('setores').select('id, nome'),
-      supabase.from('cargos').select('id, nome'),
+      daEmpresa(
+        supabase.from('funcionarios').select('id, codigo, nome, cpf, matricula_esocial, status'),
+        empresaId
+      ).order('nome'),
+      daEmpresa(
+        supabase.from('funcionarios_lotacoes').select('funcionario_id, lotacao_id'),
+        empresaId
+      ).is('data_fim', null),
+      daEmpresa(supabase.from('lotacoes').select('id, unidade_id, setor_id, cargo_id'), empresaId),
+      daEmpresa(supabase.from('unidades').select('id, razao_social, nome_fantasia'), empresaId),
+      daEmpresa(supabase.from('setores').select('id, nome'), empresaId),
+      daEmpresa(supabase.from('cargos').select('id, nome'), empresaId),
     ]).then(([rf, rla, rl, ru, rs, rc]) => {
       if (!ativo) return;
       const erroCombinado = rf.error ?? rla.error ?? rl.error ?? ru.error ?? rs.error ?? rc.error;
@@ -62,7 +77,7 @@ export default function Funcionarios() {
     return () => {
       ativo = false;
     };
-  }, []);
+  }, [empresaAtiva]);
 
   const lotacoesPorId = useMemo(() => new Map(lotacoesCatalogo.map((l) => [l.id, l])), [lotacoesCatalogo]);
   const unidadesPorId = useMemo(() => new Map(unidades.map((u) => [u.id, u])), [unidades]);

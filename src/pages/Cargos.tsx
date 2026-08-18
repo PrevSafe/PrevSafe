@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
+import { useAuth } from '@/contexts/AuthContext';
+import { daEmpresa } from '@/lib/consulta';
 import { GFIP, corGfip, formatarCbo } from '@/lib/gfip';
 
 type Cargo = {
@@ -13,6 +15,7 @@ type Cargo = {
 };
 
 export default function Cargos() {
+  const { empresaAtiva } = useAuth();
   const [cargos, setCargos] = useState<Cargo[]>([]);
   const [busca, setBusca] = useState('');
   const [carregando, setCarregando] = useState(true);
@@ -20,16 +23,22 @@ export default function Cargos() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    supabase
-      .from('cargos')
-      .select('id, codigo, nome, cbo, codigo_gfip, ativo')
+    if (!empresaAtiva) {
+      setCarregando(false);
+      return;
+    }
+    setCarregando(true);
+    daEmpresa(
+      supabase.from('cargos').select('id, codigo, nome, cbo, codigo_gfip, ativo'),
+      empresaAtiva.empresa_id
+    )
       .order('nome')
       .then(({ data, error }) => {
         if (error) setErro(error.message);
         else setCargos(data as Cargo[]);
         setCarregando(false);
       });
-  }, []);
+  }, [empresaAtiva]);
 
   const termo = busca.trim().toLowerCase();
   const filtrados = termo

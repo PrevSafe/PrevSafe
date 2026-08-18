@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
+import { daEmpresa } from '@/lib/consulta';
 import { Botao } from '@/components/ui/Form';
 import Modal from '@/components/ui/Modal';
 import { GFIP, corGfip, formatarCbo } from '@/lib/gfip';
@@ -16,7 +17,7 @@ type NoSetor = { setor: Setor; cargos: NoCargo[] };
 type NoUnidade = { unidade: Unidade; setores: NoSetor[]; totalCargos: number };
 
 export default function Estrutura() {
-  const { perfil } = useAuth();
+  const { empresaAtiva } = useAuth();
 
   const [unidades, setUnidades] = useState<Unidade[]>([]);
   const [setores, setSetores] = useState<Setor[]>([]);
@@ -61,12 +62,20 @@ export default function Estrutura() {
   }
 
   useEffect(() => {
+    if (!empresaAtiva) {
+      setCarregando(false);
+      return;
+    }
     let ativo = true;
+    setCarregando(true);
+    const empresaId = empresaAtiva.empresa_id;
     Promise.all([
-      supabase.from('unidades').select('id, razao_social, nome_fantasia, matriz').order('razao_social'),
-      supabase.from('setores').select('id, nome, ativo').order('nome'),
-      supabase.from('cargos').select('id, nome, cbo, codigo_gfip, ativo').order('nome'),
-      supabase.from('lotacoes').select('id, unidade_id, setor_id, cargo_id'),
+      daEmpresa(supabase.from('unidades').select('id, razao_social, nome_fantasia, matriz'), empresaId).order(
+        'razao_social'
+      ),
+      daEmpresa(supabase.from('setores').select('id, nome, ativo'), empresaId).order('nome'),
+      daEmpresa(supabase.from('cargos').select('id, nome, cbo, codigo_gfip, ativo'), empresaId).order('nome'),
+      daEmpresa(supabase.from('lotacoes').select('id, unidade_id, setor_id, cargo_id'), empresaId),
     ]).then(([ru, rs, rc, rl]) => {
       if (!ativo) return;
       const erroCombinado = ru.error ?? rs.error ?? rc.error ?? rl.error;
@@ -85,7 +94,7 @@ export default function Estrutura() {
     return () => {
       ativo = false;
     };
-  }, []);
+  }, [empresaAtiva]);
 
   const setoresPorId = useMemo(() => new Map(setores.map((s) => [s.id, s])), [setores]);
   const cargosPorId = useMemo(() => new Map(cargos.map((c) => [c.id, c])), [cargos]);
@@ -145,9 +154,9 @@ export default function Estrutura() {
   }
 
   async function adicionarSetores(unidadeId: string, setorIds: string[]) {
-    if (!perfil || setorIds.length === 0) return;
+    if (!empresaAtiva || setorIds.length === 0) return;
     const payload = setorIds.map((setor_id) => ({
-      empresa_id: perfil.empresa_id,
+      empresa_id: empresaAtiva.empresa_id,
       unidade_id: unidadeId,
       setor_id,
       cargo_id: null,
@@ -165,9 +174,9 @@ export default function Estrutura() {
   }
 
   async function adicionarCargos(unidadeId: string, setorId: string, cargoIds: string[]) {
-    if (!perfil || cargoIds.length === 0) return;
+    if (!empresaAtiva || cargoIds.length === 0) return;
     const payload = cargoIds.map((cargo_id) => ({
-      empresa_id: perfil.empresa_id,
+      empresa_id: empresaAtiva.empresa_id,
       unidade_id: unidadeId,
       setor_id: setorId,
       cargo_id,

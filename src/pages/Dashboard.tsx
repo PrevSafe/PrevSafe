@@ -52,15 +52,20 @@ function corDaBarra(pct: number) {
 }
 
 export default function Dashboard() {
-  const { perfil } = useAuth();
+  const { perfil, empresaAtiva } = useAuth();
   const [dados, setDados] = useState<Resumo | null>(null);
   const [erro, setErro] = useState<string | null>(null);
   const [carregando, setCarregando] = useState(true);
 
   useEffect(() => {
+    if (!empresaAtiva) {
+      setCarregando(false);
+      return;
+    }
     let ativo = true;
+    setCarregando(true);
     supabase
-      .rpc('dashboard_resumo')
+      .rpc('dashboard_resumo', { p_empresa_id: empresaAtiva.empresa_id })
       .then(({ data, error }) => {
         if (!ativo) return;
         if (error) setErro(error.message);
@@ -70,7 +75,7 @@ export default function Dashboard() {
     return () => {
       ativo = false;
     };
-  }, []);
+  }, [empresaAtiva]);
 
   const hoje = new Date().toLocaleDateString('pt-BR', {
     weekday: 'long',

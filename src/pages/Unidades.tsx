@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
+import { useAuth } from '@/contexts/AuthContext';
+import { daEmpresa } from '@/lib/consulta';
 
 type Unidade = {
   id: string;
@@ -29,6 +31,7 @@ function corGrau(g: number | null) {
 }
 
 export default function Unidades() {
+  const { empresaAtiva } = useAuth();
   const [unidades, setUnidades] = useState<Unidade[]>([]);
   const [busca, setBusca] = useState('');
   const [carregando, setCarregando] = useState(true);
@@ -36,16 +39,24 @@ export default function Unidades() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    supabase
-      .from('unidades')
-      .select('id, razao_social, nome_fantasia, numero_inscricao, tipo_inscricao, municipio, uf, grau_risco, ativo')
+    if (!empresaAtiva) {
+      setCarregando(false);
+      return;
+    }
+    setCarregando(true);
+    daEmpresa(
+      supabase
+        .from('unidades')
+        .select('id, razao_social, nome_fantasia, numero_inscricao, tipo_inscricao, municipio, uf, grau_risco, ativo'),
+      empresaAtiva.empresa_id
+    )
       .order('razao_social')
       .then(({ data, error }) => {
         if (error) setErro(error.message);
         else setUnidades(data as Unidade[]);
         setCarregando(false);
       });
-  }, []);
+  }, [empresaAtiva]);
 
   const termo = busca.trim().toLowerCase();
   const filtradas = termo

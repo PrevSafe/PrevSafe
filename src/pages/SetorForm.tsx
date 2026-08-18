@@ -2,6 +2,7 @@ import { useEffect, useState, type FormEvent } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
+import { daEmpresa } from '@/lib/consulta';
 import { Secao, Campo, AreaTexto, Botao } from '@/components/ui/Form';
 
 type Form = {
@@ -20,7 +21,7 @@ export default function SetorForm() {
   const { id } = useParams();
   const editando = Boolean(id);
   const navigate = useNavigate();
-  const { perfil } = useAuth();
+  const { empresaAtiva } = useAuth();
 
   const [form, setForm] = useState<Form>(VAZIO);
   const [erros, setErros] = useState<Partial<Record<keyof Form, string>>>({});
@@ -29,10 +30,8 @@ export default function SetorForm() {
   const [erroGeral, setErroGeral] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!id) return;
-    supabase
-      .from('setores')
-      .select('*')
+    if (!id || !empresaAtiva) return;
+    daEmpresa(supabase.from('setores').select('*'), empresaAtiva.empresa_id)
       .eq('id', id)
       .single()
       .then(({ data, error }) => {
@@ -45,7 +44,7 @@ export default function SetorForm() {
           });
         setCarregando(false);
       });
-  }, [id]);
+  }, [id, empresaAtiva]);
 
   function set<K extends keyof Form>(campo: K, valor: string) {
     setForm((f) => ({ ...f, [campo]: valor }));
@@ -62,11 +61,11 @@ export default function SetorForm() {
   async function salvar(ev: FormEvent) {
     ev.preventDefault();
     setErroGeral(null);
-    if (!validar()) return;
+    if (!validar() || !empresaAtiva) return;
     setSalvando(true);
 
     const payload = {
-      empresa_id: perfil!.empresa_id,
+      empresa_id: empresaAtiva.empresa_id,
       codigo: form.codigo.trim() || null,
       nome: form.nome.trim(),
       descricao: form.descricao.trim() || null,

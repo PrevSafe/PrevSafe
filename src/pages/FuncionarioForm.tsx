@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
+import { daEmpresa } from '@/lib/consulta';
 import { Secao, Campo, Seletor, Botao } from '@/components/ui/Form';
 import { cpfValido, mascaraCpf, mascaraPis, mascaraTelefone } from '@/lib/funcionarios';
 
@@ -109,7 +110,7 @@ export default function FuncionarioForm() {
   const { id } = useParams();
   const editando = Boolean(id);
   const navigate = useNavigate();
-  const { perfil } = useAuth();
+  const { empresaAtiva } = useAuth();
 
   const [form, setForm] = useState<FormState>(() => ({ ...VAZIO, data_mudanca: hoje() }));
   const [erros, setErros] = useState<Partial<Record<keyof FormState, string>>>({});
@@ -127,15 +128,23 @@ export default function FuncionarioForm() {
   const [lotacaoOriginalId, setLotacaoOriginalId] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!empresaAtiva) {
+      setCarregando(false);
+      return;
+    }
     let ativo = true;
+    const empresaId = empresaAtiva.empresa_id;
 
     async function carregar() {
       const [rc, rl, ru, rs, rcg] = await Promise.all([
         supabase.from('categorias_trabalhador_esocial').select('codigo, grupo, descricao').order('codigo'),
-        supabase.from('lotacoes').select('id, unidade_id, setor_id, cargo_id'),
-        supabase.from('unidades').select('id, razao_social, nome_fantasia').order('razao_social'),
-        supabase.from('setores').select('id, nome').order('nome'),
-        supabase.from('cargos').select('id, nome').order('nome'),
+        daEmpresa(supabase.from('lotacoes').select('id, unidade_id, setor_id, cargo_id'), empresaId),
+        daEmpresa(
+          supabase.from('unidades').select('id, razao_social, nome_fantasia'),
+          empresaId
+        ).order('razao_social'),
+        daEmpresa(supabase.from('setores').select('id, nome'), empresaId).order('nome'),
+        daEmpresa(supabase.from('cargos').select('id, nome'), empresaId).order('nome'),
       ]);
       if (!ativo) return;
 
@@ -155,10 +164,11 @@ export default function FuncionarioForm() {
 
       if (id) {
         const [rf, rh] = await Promise.all([
-          supabase.from('funcionarios').select('*').eq('id', id).single(),
-          supabase
-            .from('funcionarios_lotacoes')
-            .select('id, lotacao_id, data_inicio, data_fim, motivo')
+          daEmpresa(supabase.from('funcionarios').select('*'), empresaId).eq('id', id).single(),
+          daEmpresa(
+            supabase.from('funcionarios_lotacoes').select('id, lotacao_id, data_inicio, data_fim, motivo'),
+            empresaId
+          )
             .eq('funcionario_id', id)
             .order('data_inicio', { ascending: false }),
         ]);
@@ -216,7 +226,7 @@ export default function FuncionarioForm() {
     return () => {
       ativo = false;
     };
-  }, [id]);
+  }, [id, empresaAtiva]);
 
   function set<K extends keyof FormState>(campo: K, valor: FormState[K]) {
     setForm((f) => ({ ...f, [campo]: valor }));
@@ -329,11 +339,11 @@ export default function FuncionarioForm() {
   async function salvar(ev: FormEvent) {
     ev.preventDefault();
     setErroGeral(null);
-    if (!validar()) return;
+    if (!validar() || !empresaAtiva) return;
     setSalvando(true);
 
     const payload = {
-      empresa_id: perfil!.empresa_id,
+      empresa_id: empresaAtiva.empresa_id,
       codigo: form.codigo.trim() || null,
       nome: form.nome.trim(),
       cpf: so(form.cpf),
@@ -375,7 +385,7 @@ export default function FuncionarioForm() {
       }
 
       const { error: erroLotacao } = await supabase.from('funcionarios_lotacoes').insert({
-        empresa_id: perfil!.empresa_id,
+        empresa_id: empresaAtiva.empresa_id,
         funcionario_id: novo.id,
         lotacao_id: lotacaoIdSelecionada,
         data_inicio: form.data_admissao || hoje(),
@@ -430,7 +440,7 @@ export default function FuncionarioForm() {
         }
       }
       const { error } = await supabase.from('funcionarios_lotacoes').insert({
-        empresa_id: perfil!.empresa_id,
+        empresa_id: empresaAtiva.empresa_id,
         funcionario_id: id,
         lotacao_id: lotacaoIdSelecionada,
         data_inicio: form.data_mudanca || hoje(),
