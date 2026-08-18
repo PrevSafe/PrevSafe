@@ -1,5 +1,6 @@
 import { useState, useTransition } from 'react';
 import { gerarTokens } from '@/lib/cipa/acoes';
+import { baixarCsv } from '@/lib/cipa/csv';
 import { Botao } from '@/components/ui/Form';
 import { Aviso } from './Aviso';
 
@@ -10,12 +11,7 @@ export function GeradorLinks({ eleicaoId }: { eleicaoId: string }) {
 
   function baixar(linhas: string[]) {
     const conteudo = 'nome;contato;link\n' + linhas.join('\n');
-    const url = URL.createObjectURL(new Blob([conteudo], { type: 'text/csv;charset=utf-8' }));
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `links-magicos-${eleicaoId.slice(0, 8)}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
+    baixarCsv(`links-magicos-${eleicaoId.slice(0, 8)}.csv`, conteudo);
   }
 
   return (
