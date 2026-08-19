@@ -87,15 +87,12 @@ function assinaturas(): string {
     '',
     'Nada mais havendo a tratar, lavrou-se a presente ata, que segue assinada pelos membros da comissão eleitoral.',
     '',
-    '&nbsp;',
-    '',
-    '| | |',
-    '|---|---|',
-    '| \\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_ | \\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_ |',
-    '| Presidente da comissão eleitoral | Secretário(a) |',
-    '| | |',
-    '| \\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_ | \\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_ |',
-    '| Representante do empregador | Responsável técnico — SESMT |',
+    '::assinaturas',
+    'Presidente da comissão eleitoral',
+    'Secretário(a)',
+    'Representante do empregador',
+    'Responsável técnico — SESMT',
+    '::',
   ].join('\n');
 }
 
@@ -163,7 +160,7 @@ export function montarAtaEleicao(p: PayloadApuracao): string {
   linhas.push('## 3. Da apuração');
   linhas.push('');
   linhas.push('| Nº | Candidato | Função | Votos | Situação |');
-  linhas.push('|---|---|---|---|---|');
+  linhas.push('|---:|---|---|---:|---|');
   for (const c of p.apuracao.classificacao) {
     const numero = c.numero_urna !== null ? String(c.numero_urna).padStart(2, '0') : '—';
     const situacao = c.situacao === 'NAO_ELEITO' ? 'Não eleito' : c.situacao === 'EFETIVO' ? 'Eleito — efetivo' : 'Eleito — suplente';
@@ -225,7 +222,7 @@ export function montarAtaEleicao(p: PayloadApuracao): string {
   linhas.push('');
   linhas.push(assinaturas());
   linhas.push('');
-  linhas.push(`_Documento gerado pelo sistema em ${dataHora(new Date().toISOString())}._`);
+  linhas.push(`::rodape::Documento gerado pelo sistema em ${dataHora(new Date().toISOString())}.`);
 
   return linhas.join('\n');
 }
@@ -291,7 +288,7 @@ export function montarAtaPosse(p: PayloadApuracao): string {
   linhas.push('');
   linhas.push(assinaturas());
   linhas.push('');
-  linhas.push(`_Documento gerado pelo sistema em ${dataHora(new Date().toISOString())}._`);
+  linhas.push(`::rodape::Documento gerado pelo sistema em ${dataHora(new Date().toISOString())}.`);
 
   return linhas.join('\n');
 }

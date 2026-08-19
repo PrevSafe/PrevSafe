@@ -212,7 +212,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
   return (
     <div className="bg-surface-container-low text-on-surface antialiased min-h-screen flex flex-col md:flex-row pb-24 md:pb-0">
       {/* Sidebar desktop */}
-      <aside className="hidden md:flex flex-col w-80 h-screen sticky top-0 bg-surface-container-lowest border-r border-surface-container-high p-md">
+      <aside className="layout-sidebar hidden md:flex flex-col w-80 h-screen sticky top-0 bg-surface-container-lowest border-r border-surface-container-high p-md">
         {conteudoMenu}
       </aside>
 
@@ -231,7 +231,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
 
       <div className="flex-1 flex flex-col w-full max-w-7xl mx-auto min-w-0">
         {/* Top bar mobile */}
-        <header className="md:hidden sticky top-0 z-30 bg-surface flex items-center justify-between px-margin-mobile h-14 border-b border-surface-container-high">
+        <header className="layout-header-mobile md:hidden sticky top-0 z-30 bg-surface flex items-center justify-between px-margin-mobile h-14 border-b border-surface-container-high">
           <button
             onClick={() => setMenuAberto(true)}
             aria-label="Abrir menu"
@@ -247,7 +247,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
       </div>
 
       {/* Bottom nav mobile */}
-      <nav className="md:hidden fixed bottom-0 left-0 w-full z-40 flex justify-around items-center px-xs py-xs bg-surface border-t border-surface-container-high">
+      <nav className="layout-bottom-nav md:hidden fixed bottom-0 left-0 w-full z-40 flex justify-around items-center px-xs py-xs bg-surface border-t border-surface-container-high">
         {NAV_MOBILE.slice(0, 2).map((i) => (
           <ItemBottom key={i.rotulo} item={i} />
         ))}

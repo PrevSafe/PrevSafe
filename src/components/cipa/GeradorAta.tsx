@@ -47,15 +47,20 @@ export function GeradorAta({ eleicaoId, ataSalva }: { eleicaoId: string; ataSalv
 
       {markdown && (
         <article
-          className="mt-6 rounded-xl border border-outline-variant/40 bg-surface-container-lowest p-10 leading-relaxed shadow-sm
-            [&_h1]:text-2xl [&_h1]:font-extrabold [&_h1]:mb-4
-            [&_h2]:text-lg [&_h2]:font-bold [&_h2]:mt-8 [&_h2]:mb-2
-            [&_h3]:font-bold [&_h3]:mt-6 [&_h3]:mb-1
+          className="documento-ata mt-6 rounded-xl border border-outline-variant/40 bg-surface-container-lowest p-10
+            font-serif leading-loose text-[#000] print:text-[11pt] print:leading-relaxed
+            [&_h1]:text-2xl [&_h1]:font-bold [&_h1]:mb-4 [&_h1]:text-left [&_h1]:text-[#000]
+            [&_h2]:text-lg [&_h2]:font-bold [&_h2]:mt-8 [&_h2]:mb-2 [&_h2]:text-left [&_h2]:text-[#000]
+            [&_h3]:font-bold [&_h3]:mt-6 [&_h3]:mb-1 [&_h3]:text-left [&_h3]:text-[#000]
             [&_p]:mb-3 [&_ul]:mb-4 [&_ul]:list-disc [&_ul]:pl-6 [&_li]:mb-1
             [&_hr]:my-8 [&_hr]:border-outline-variant
-            [&_table]:w-full [&_table]:my-5 [&_table]:text-label-md
-            [&_th]:border-b-2 [&_th]:border-on-surface-variant [&_th]:py-2 [&_th]:text-left [&_th]:text-label-sm [&_th]:uppercase [&_th]:tracking-wider
-            [&_td]:border-b [&_td]:border-outline-variant [&_td]:py-2"
+            [&_table]:w-full [&_table]:my-5 [&_table]:text-[11pt] [&_table]:border-collapse
+            [&_th]:border-b [&_th]:border-[#000]/50 [&_th]:py-2 [&_th]:text-left [&_th]:font-sans [&_th]:text-label-sm [&_th]:uppercase [&_th]:tracking-wider
+            [&_td]:border-b [&_td]:border-[#000]/15 [&_td]:py-2
+            [&_.bloco-assinaturas]:grid [&_.bloco-assinaturas]:grid-cols-2 [&_.bloco-assinaturas]:gap-x-12 [&_.bloco-assinaturas]:gap-y-12 [&_.bloco-assinaturas]:mt-10
+            [&_.linha-assinatura]:mt-[3cm] [&_.linha-assinatura]:mb-0 [&_.linha-assinatura]:h-0 [&_.linha-assinatura]:border-b [&_.linha-assinatura]:border-[#000]
+            [&_.rotulo-assinatura]:mt-2 [&_.rotulo-assinatura]:mb-0 [&_.rotulo-assinatura]:text-center [&_.rotulo-assinatura]:font-sans [&_.rotulo-assinatura]:text-label-sm
+            [&_.documento-rodape]:mt-10 [&_.documento-rodape]:text-left [&_.documento-rodape]:text-label-sm [&_.documento-rodape]:italic [&_.documento-rodape]:text-outline [&_.documento-rodape]:font-sans"
           dangerouslySetInnerHTML={{ __html: markdownParaHtml(markdown) }}
         />
       )}

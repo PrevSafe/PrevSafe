@@ -100,8 +100,56 @@ body {
 }
 
 @media print {
-  .nao-imprimir { display: none !important; }
-  body { background: #fff; }
+  .nao-imprimir,
+  .layout-sidebar,
+  .layout-header-mobile,
+  .layout-bottom-nav {
+    display: none !important;
+  }
+
+  @page {
+    size: A4;
+    margin: 2.5cm 2cm;
+  }
+
+  body {
+    background: #fff;
+    color: #000;
+  }
+
+  /* O documento escapa do card e dos paddings do layout (sidebar, header
+     mobile e wrappers de página) para ocupar a página inteira: por não ter
+     ancestral posicionado, o position:absolute usa a própria página como
+     referência. Sem "bottom"/"right" para não travar a altura em 1 página. */
+  .documento-ata {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    background: #fff;
+    color: #000;
+    border: none;
+    box-shadow: none;
+    border-radius: 0;
+  }
+
+  .documento-ata tr,
+  .documento-ata .assinatura-item {
+    break-inside: avoid;
+  }
+
+  .documento-ata h1,
+  .documento-ata h2,
+  .documento-ata h3,
+  .documento-ata h4 {
+    break-after: avoid;
+  }
+
+  .documento-ata thead {
+    display: table-header-group;
+  }
 }
 
 /* Módulo CIPA — marcação de piso industrial usada no cartaz e na confirmação
