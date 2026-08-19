@@ -7,6 +7,7 @@ const ABAS = [
   { rota: 'candidatos', texto: 'Candidatos' },
   { rota: 'quarentena', texto: 'Quarentena' },
   { rota: 'cartaz', texto: 'Cartaz do mural' },
+  { rota: 'comissao', texto: 'Comissão eleitoral' },
   { rota: 'apuracao', texto: 'Apuração e atas' },
 ] as const;
 

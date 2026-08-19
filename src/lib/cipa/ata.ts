@@ -1,4 +1,4 @@
-import type { PayloadApuracao } from './types';
+import type { CondicaoIndicado, PapelComissao, PayloadApuracao } from './types';
 
 /**
  * Geração das atas a partir de modelo fixo.
@@ -96,131 +96,167 @@ function assinaturas(): string {
   ].join('\n');
 }
 
+const PAPEL_LABEL: Record<PapelComissao, string> = {
+  presidente: 'Presidente',
+  vice_presidente: 'Vice-presidente',
+  secretario: 'Secretário(a)',
+  membro: 'Membro',
+};
+
+const CONDICAO_LABEL: Record<CondicaoIndicado, string> = {
+  titular: 'Titular',
+  suplente: 'Suplente',
+};
+
+/**
+ * Linha em branco para preenchimento manual: markdown.ts protege runs de
+ * 3+ underscores contra a interpretação de ênfase, então isso chega ao
+ * documento como um traço literal — nunca "null" nem frase cortada.
+ */
+function lacuna(): string {
+  return '_'.repeat(24);
+}
+
+function horaCurta(iso: string | null): string {
+  if (!iso) return lacuna();
+  return new Date(iso).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+}
+
+/** "Presidente João Silva, Secretário(a) Maria Souza e Membro Pedro Alves". */
+function listaMembros(comissao: PayloadApuracao['comissao']): string {
+  if (!comissao.length) return lacuna();
+  const partes = comissao.map((m) => `${PAPEL_LABEL[m.papel]} ${m.nome}`);
+  if (partes.length === 1) return partes[0]!;
+  return `${partes.slice(0, -1).join(', ')} e ${partes[partes.length - 1]}`;
+}
+
+function assinaturasComissao(comissao: PayloadApuracao['comissao']): string {
+  const linhas = ['::assinaturas'];
+  if (!comissao.length) {
+    linhas.push(`${lacuna()} — Membro da Comissão Eleitoral`);
+  } else {
+    comissao.forEach((m) => linhas.push(`${m.nome} — ${PAPEL_LABEL[m.papel]} da Comissão Eleitoral`));
+  }
+  linhas.push('::');
+  return linhas.join('\n');
+}
+
 export function montarAtaEleicao(p: PayloadApuracao): string {
-  const sigla = siglaComissao(p.eleicao.norma);
-  const referencia = p.eleicao.encerrada_em ?? p.eleicao.data_fim;
-  const eleitos = p.apuracao.classificacao.filter((c) => c.situacao === 'EFETIVO');
-  const suplentes = p.apuracao.classificacao.filter((c) => c.situacao === 'SUPLENTE');
-  const empatados = p.apuracao.classificacao.filter((c) => c.empate);
-  const rejeitados = p.quarentena.REJEITADO ?? 0;
-  const totalVotos = p.apuracao.votos_nominais + p.apuracao.votos_brancos + p.apuracao.votos_nulos;
+  const referencia = p.eleicao.apuracao_iniciada_em ?? p.eleicao.encerrada_em ?? p.eleicao.data_fim;
+  const gestao = p.eleicao.gestao ?? lacuna();
+  const municipio = p.empresa.municipio ?? lacuna();
+  const uf = p.empresa.uf ?? lacuna();
 
   const linhas: string[] = [];
 
-  linhas.push(`# Ata de Eleição e Apuração — ${sigla}`);
+  linhas.push('# COMISSÃO INTERNA DE PREVENÇÃO DE ACIDENTES E DE ASSÉDIO — CIPA');
   linhas.push('');
-  linhas.push(`**Empresa:** ${p.empresa.razao_social}`);
-  linhas.push(`**CNPJ:** ${formatarCnpj(p.empresa.cnpj)}`);
-  if (p.empresa.cnae) linhas.push(`**CNAE:** ${p.empresa.cnae}`);
-  if (p.empresa.grau_risco) linhas.push(`**Grau de risco:** ${p.empresa.grau_risco}`);
-  linhas.push(`**Gestão:** ${p.eleicao.gestao ?? '—'}`);
-  linhas.push(`**Norma aplicável:** ${p.eleicao.norma}`);
-  linhas.push('');
-  linhas.push('---');
+  linhas.push(`## Ata de Apuração dos Votos da Eleição — Gestão ${gestao}`);
   linhas.push('');
 
-  linhas.push('## 1. Do processo eleitoral');
-  linhas.push('');
   linhas.push(
-    `${dataPorExtenso(referencia).replace(/^a/, 'A')}, a comissão eleitoral reuniu-se para proceder ` +
-    `à apuração dos votos da eleição dos representantes dos empregados na ${nomeComissao(p.eleicao.norma)}, ` +
-    `referente à gestão ${p.eleicao.gestao ?? '—'}.`,
+    `${dataPorExtenso(referencia).replace(/^a/, 'A')}, às ${horaCurta(p.eleicao.apuracao_iniciada_em)}, ` +
+    `nas dependências da empresa ${p.empresa.razao_social}, inscrita no CNPJ nº ${formatarCnpj(p.empresa.cnpj)}, ` +
+    `sediada em ${municipio} — ${uf}, reuniram-se os membros da Comissão Eleitoral da CIPA, ` +
+    `${listaMembros(p.comissao)}, para proceder à apuração dos votos referentes à eleição da Comissão ` +
+    `Interna de Prevenção de Acidentes e de Assédio — CIPA, gestão ${gestao}.`,
   );
   linhas.push('');
+
   linhas.push(
     `A votação ocorreu de forma eletrônica, secreta e nominal, no período de ${dataHora(p.eleicao.data_inicio)} ` +
     `a ${dataHora(p.eleicao.data_fim)}, por meio de sistema que registra a participação do eleitor em lista ` +
-    'de presença própria, sem qualquer vínculo com o voto depositado, assegurando o sigilo previsto na norma.',
-  );
-  linhas.push('');
-  linhas.push(
-    'O sistema admitiu duas formas de acesso à urna: credencial individual enviada a cada trabalhador ' +
-    'constante da relação fornecida pelo empregador, e autodeclaração mediante leitura de código QR afixado ' +
-    'em quadro de avisos, esta última submetida a conferência prévia da comissão eleitoral antes da ' +
-    'computação do voto. Em ambos os casos o sistema impediu a duplicidade de voto por CPF.',
+    'de presença própria, sem qualquer vínculo com o voto depositado. A Comissão Eleitoral verificou o ' +
+    'encerramento do período de votação e a inexistência de votos pendentes de conferência, procedendo à ' +
+    `consolidação da apuração pelo sistema às ${horaCurta(p.eleicao.apuracao_encerrada_em)}.`,
   );
   linhas.push('');
 
-  linhas.push('## 2. Do quórum');
-  linhas.push('');
-  linhas.push(
-    `Constaram da relação de eleitores aptos ${p.quorum.aptos} (${porExtenso(p.quorum.aptos)}) trabalhadores, ` +
-    `dos quais compareceram à votação ${p.quorum.votantes} (${porExtenso(p.quorum.votantes)}), ` +
-    `correspondendo a ${pct(p.quorum.percentual)}% do total de aptos.`,
-  );
-  linhas.push('');
-  linhas.push(
-    p.quorum.atingido
-      ? '**O quórum mínimo de mais de 50% dos empregados foi atingido**, restando válida a eleição.'
-      : '**O quórum mínimo de mais de 50% dos empregados NÃO foi atingido.** A comissão eleitoral deverá ' +
-        'deliberar quanto à convocação de nova votação, nos termos da norma aplicável e do edital.',
-  );
+  if (p.quorum.aptos > 0) {
+    linhas.push(
+      `Constaram da relação de eleitores aptos ${p.quorum.aptos} (${porExtenso(p.quorum.aptos)}) trabalhadores, ` +
+      `dos quais compareceram à votação ${p.quorum.votantes} (${porExtenso(p.quorum.votantes)}), ` +
+      `correspondendo a ${pct(p.quorum.percentual)}% do total de aptos.`,
+    );
+    linhas.push('');
+    linhas.push(
+      p.quorum.atingido
+        ? '**O quórum mínimo de mais de 50% dos empregados foi atingido**, restando válida a eleição.'
+        : '**O quórum mínimo de mais de 50% dos empregados NÃO foi atingido.** A Comissão Eleitoral deverá ' +
+          'deliberar quanto à convocação de nova votação, nos termos da norma aplicável e do edital.',
+    );
+  } else {
+    linhas.push(
+      '**A eleição correu sem relação prévia de eleitores cadastrada, razão pela qual o quórum não pôde ser ' +
+      'apurado. Cabe à Comissão Eleitoral deliberar sobre a validade do quórum, nos termos da norma aplicável ' +
+      'e do edital.**',
+    );
+  }
   linhas.push('');
 
-  linhas.push('## 3. Da apuração');
+  linhas.push('**Resultado geral da eleição**');
   linhas.push('');
-  linhas.push('| Nº | Candidato | Função | Votos | Situação |');
-  linhas.push('|---:|---|---|---:|---|');
+  linhas.push('| Nome | Quantidade de votos |');
+  linhas.push('|---|---:|');
   for (const c of p.apuracao.classificacao) {
-    const numero = c.numero_urna !== null ? String(c.numero_urna).padStart(2, '0') : '—';
-    const situacao = c.situacao === 'NAO_ELEITO' ? 'Não eleito' : c.situacao === 'EFETIVO' ? 'Eleito — efetivo' : 'Eleito — suplente';
-    linhas.push(`| ${numero} | ${c.nome_completo} | ${c.cargo_funcao ?? '—'} | ${c.total_votos} | ${situacao} |`);
+    linhas.push(`| ${c.nome_completo} | ${c.total_votos} |`);
   }
-  linhas.push('');
-  linhas.push(`- Votos nominais: **${p.apuracao.votos_nominais}**`);
-  linhas.push(`- Votos em branco: **${p.apuracao.votos_brancos}**`);
-  linhas.push(`- Votos nulos: **${p.apuracao.votos_nulos}**`);
-  linhas.push(`- Total de votos depositados: **${totalVotos}**`);
+  linhas.push(`| Votos em branco | ${p.apuracao.votos_brancos} |`);
+  linhas.push(`| Votos nulos | ${p.apuracao.votos_nulos} |`);
   linhas.push('');
 
-  linhas.push('## 4. Do resultado');
+  linhas.push('Encerrada a apuração, foram considerados eleitos os seguintes membros:');
   linhas.push('');
-  if (eleitos.length) {
-    linhas.push(`**Eleitos como representantes titulares (efetivos):**`);
-    linhas.push('');
-    eleitos.forEach((c, i) => linhas.push(`${i + 1}. ${c.nome_completo} — ${c.cargo_funcao ?? 'função não informada'} — ${c.total_votos} voto(s)`));
-    linhas.push('');
-  }
-  if (suplentes.length) {
-    linhas.push(`**Eleitos como suplentes:**`);
-    linhas.push('');
-    suplentes.forEach((c, i) => linhas.push(`${i + 1}. ${c.nome_completo} — ${c.cargo_funcao ?? 'função não informada'} — ${c.total_votos} voto(s)`));
-    linhas.push('');
-  }
-  if (!eleitos.length && !suplentes.length) {
+
+  const titulares = p.apuracao.classificacao.filter((c) => c.situacao === 'EFETIVO');
+  const suplentes = p.apuracao.classificacao.filter((c) => c.situacao === 'SUPLENTE');
+
+  linhas.push('**Resultado final — eleitos**');
+  linhas.push('');
+  if (!titulares.length && !suplentes.length) {
     linhas.push('Não houve candidatos eleitos nesta apuração.');
     linhas.push('');
+  } else {
+    if (titulares.length) {
+      linhas.push('*Titulares*');
+      linhas.push('');
+      linhas.push('| Nome | Setor | Votos |');
+      linhas.push('|---|---|---:|');
+      titulares.forEach((c) => linhas.push(`| ${c.nome_completo} | ${c.setor ?? '—'} | ${c.total_votos} |`));
+      linhas.push('');
+    }
+    if (suplentes.length) {
+      linhas.push('*Suplentes*');
+      linhas.push('');
+      linhas.push('| Nome | Setor | Votos |');
+      linhas.push('|---|---|---:|');
+      suplentes.forEach((c) => linhas.push(`| ${c.nome_completo} | ${c.setor ?? '—'} | ${c.total_votos} |`));
+      linhas.push('');
+    }
   }
 
-  const observacoes: string[] = [];
-  if (empatados.length) {
-    observacoes.push(
-      `**Registro de empate.** Verificou-se empate na votação entre os candidatos: ` +
-      `${empatados.map((c) => `${c.nome_completo} (${c.total_votos} voto(s))`).join('; ')}. ` +
-      'O desempate compete à comissão eleitoral, conforme critério previsto em edital, ' +
-      'devendo ser lavrado termo próprio com a decisão adotada.',
-    );
-  }
-  if (rejeitados > 0) {
-    observacoes.push(
-      rejeitados === 1
-        ? '**Votos não computados.** 1 (uma) manifestação recebida por autodeclaração foi rejeitada ' +
-          'pela comissão eleitoral por não conferência dos dados com a relação de empregados, ' +
-          'com registro de motivo em log de auditoria do sistema.'
-        : `**Votos não computados.** ${rejeitados} (${porExtenso(rejeitados)}) manifestações recebidas ` +
-          'por autodeclaração foram rejeitadas pela comissão eleitoral por não conferência dos dados ' +
-          'com a relação de empregados, com registro individual de motivo em log de auditoria do sistema.',
-    );
-  }
-  if (observacoes.length) {
-    linhas.push('## 5. Das ocorrências');
-    linhas.push('');
-    observacoes.forEach((o) => { linhas.push(o); linhas.push(''); });
-  }
-
-  linhas.push('---');
+  linhas.push('**Representantes indicados pelo empregador**');
   linhas.push('');
-  linhas.push(assinaturas());
+  if (!p.indicados.length) {
+    linhas.push('_A indicação dos representantes do empregador será registrada em ata de posse._');
+  } else {
+    linhas.push('| Nome | Setor | Condição |');
+    linhas.push('|---|---|---|');
+    p.indicados.forEach((i) =>
+      linhas.push(`| ${i.nome} | ${i.setor ?? '—'} | ${CONDICAO_LABEL[i.condicao]} |`));
+  }
+  linhas.push('');
+
+  linhas.push(
+    `Nada mais havendo a registrar, a apuração foi encerrada às ${horaCurta(p.eleicao.apuracao_encerrada_em)}. ` +
+    `A presente ata foi lavrada por ${p.eleicao.ata_lavrada_por ?? lacuna()} e vai assinada pelos membros ` +
+    'da Comissão Eleitoral.',
+  );
+  linhas.push('');
+  linhas.push(`${municipio} — ${uf}, ${dataPorExtenso(referencia)}.`);
+  linhas.push('');
+
+  linhas.push(assinaturasComissao(p.comissao));
   linhas.push('');
   linhas.push(`::rodape::Documento gerado pelo sistema em ${dataHora(new Date().toISOString())}.`);
 

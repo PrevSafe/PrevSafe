@@ -20,6 +20,7 @@ import Eleitores from '@/pages/cipa/Eleitores';
 import Candidatos from '@/pages/cipa/Candidatos';
 import Quarentena from '@/pages/cipa/Quarentena';
 import Cartaz from '@/pages/cipa/Cartaz';
+import Comissao from '@/pages/cipa/Comissao';
 import Apuracao from '@/pages/cipa/Apuracao';
 import VotoLink from '@/pages/cipa/VotoLink';
 import VotoQr from '@/pages/cipa/VotoQr';
@@ -60,6 +61,7 @@ export default function App() {
           <Route path="/cipa/:id/candidatos" element={<Protegida><Candidatos /></Protegida>} />
           <Route path="/cipa/:id/quarentena" element={<Protegida><Quarentena /></Protegida>} />
           <Route path="/cipa/:id/cartaz" element={<Protegida><Cartaz /></Protegida>} />
+          <Route path="/cipa/:id/comissao" element={<Protegida><Comissao /></Protegida>} />
           <Route path="/cipa/:id/apuracao" element={<Protegida><Apuracao /></Protegida>} />
           {/* Rotas públicas e anônimas do eleitor — NUNCA envolver em <Protegida>. */}
           <Route path="/v/:token" element={<VotoLink />} />

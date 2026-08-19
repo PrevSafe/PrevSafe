@@ -1,7 +1,8 @@
 import { supabaseServidor } from '@/lib/cipa/supabase';
 import { mensagemDoErro } from '@/lib/cipa/erros';
 import { montarAtaEleicao, montarAtaPosse } from '@/lib/cipa/ata';
-import type { EleitorComToken, PayloadApuracao } from '@/lib/cipa/types';
+import { somenteDigitos } from '@/lib/cipa/cpf';
+import type { EleitorComToken, Indicado, MembroComissao, PayloadApuracao } from '@/lib/cipa/types';
 
 export type Resultado = { ok: boolean; mensagem: string };
 
@@ -154,6 +155,103 @@ export async function criarCandidato(eleicaoId: string, dados: FormData): Promis
   return error
     ? { ok: false, mensagem: 'Não foi possível cadastrar. Confira se o número da urna já existe.' }
     : { ok: true, mensagem: 'Candidato cadastrado.' };
+}
+
+export async function criarMembroComissao(
+  eleicaoId: string, dados: FormData,
+): Promise<Resultado & { membro?: MembroComissao }> {
+  const supabase = await supabaseServidor();
+  const cpf = dados.get('cpf')?.toString();
+
+  const { data, error } = await supabase
+    .from('cipa_comissao')
+    .insert({
+      eleicao_id: eleicaoId,
+      nome: dados.get('nome')?.toString(),
+      cpf: cpf ? somenteDigitos(cpf) : null,
+      cargo: dados.get('cargo')?.toString() || null,
+      papel: dados.get('papel')?.toString(),
+    })
+    .select('id, nome, cpf, cargo, papel')
+    .single();
+
+  if (error) {
+    const mensagem = error.message.includes('cipa_comissao_presidente_uk')
+      ? 'Já existe um presidente cadastrado nesta comissão.'
+      : error.message.includes('cipa_comissao_vice_uk')
+        ? 'Já existe um vice-presidente cadastrado nesta comissão.'
+        : mensagemDoErro(error);
+    return { ok: false, mensagem };
+  }
+
+  return { ok: true, mensagem: 'Membro adicionado.', membro: data as MembroComissao };
+}
+
+export async function removerMembroComissao(id: string): Promise<Resultado> {
+  const supabase = await supabaseServidor();
+  const { error } = await supabase.from('cipa_comissao').delete().eq('id', id);
+  return error
+    ? { ok: false, mensagem: mensagemDoErro(error) }
+    : { ok: true, mensagem: 'Membro removido.' };
+}
+
+export async function criarIndicado(
+  eleicaoId: string, dados: FormData,
+): Promise<Resultado & { indicado?: Indicado }> {
+  const supabase = await supabaseServidor();
+  const condicao = dados.get('condicao')?.toString() || 'titular';
+
+  const { count } = await supabase
+    .from('cipa_indicados')
+    .select('id', { count: 'exact', head: true })
+    .eq('eleicao_id', eleicaoId)
+    .eq('condicao', condicao);
+
+  const { data, error } = await supabase
+    .from('cipa_indicados')
+    .insert({
+      eleicao_id: eleicaoId,
+      nome: dados.get('nome')?.toString(),
+      cargo: dados.get('cargo')?.toString() || null,
+      setor: dados.get('setor')?.toString() || null,
+      condicao,
+      ordem: (count ?? 0) + 1,
+    })
+    .select('id, nome, cargo, setor, condicao, ordem')
+    .single();
+
+  if (error) return { ok: false, mensagem: mensagemDoErro(error) };
+  return { ok: true, mensagem: 'Representante indicado.', indicado: data as Indicado };
+}
+
+export async function removerIndicado(id: string): Promise<Resultado> {
+  const supabase = await supabaseServidor();
+  const { error } = await supabase.from('cipa_indicados').delete().eq('id', id);
+  return error
+    ? { ok: false, mensagem: mensagemDoErro(error) }
+    : { ok: true, mensagem: 'Representante removido.' };
+}
+
+/** Horários chegam soltos (input type="time"); combinados com a data de referência da apuração. */
+export async function salvarApuracao(eleicaoId: string, dados: FormData): Promise<Resultado> {
+  const supabase = await supabaseServidor();
+  const dataRef = dados.get('data_referencia')?.toString();
+  const horaInicio = dados.get('hora_inicio')?.toString();
+  const horaFim = dados.get('hora_fim')?.toString();
+
+  const { error } = await supabase
+    .from('eleicoes')
+    .update({
+      local_apuracao: dados.get('local_apuracao')?.toString() || null,
+      apuracao_iniciada_em: horaInicio && dataRef ? `${dataRef}T${horaInicio}` : null,
+      apuracao_encerrada_em: horaFim && dataRef ? `${dataRef}T${horaFim}` : null,
+      ata_lavrada_por: dados.get('ata_lavrada_por')?.toString() || null,
+    })
+    .eq('id', eleicaoId);
+
+  return error
+    ? { ok: false, mensagem: mensagemDoErro(error) }
+    : { ok: true, mensagem: 'Dados da sessão de apuração salvos.' };
 }
 
 /**

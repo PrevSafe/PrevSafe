@@ -75,9 +75,40 @@ export type EnvelopeQuarentena = {
   votos_mesmo_ip: number;
 };
 
+export type PapelComissao = 'presidente' | 'vice_presidente' | 'secretario' | 'membro';
+
+export type MembroComissao = {
+  id: string;
+  nome: string;
+  cpf: string | null;
+  cargo: string | null;
+  papel: PapelComissao;
+};
+
+export type CondicaoIndicado = 'titular' | 'suplente';
+
+export type Indicado = {
+  id: string;
+  nome: string;
+  cargo: string | null;
+  setor: string | null;
+  condicao: CondicaoIndicado;
+  ordem: number;
+};
+
 export type PayloadApuracao = {
-  empresa: { razao_social: string; cnpj: string; total_funcionarios: number; grau_risco: number | null; cnae: string | null };
-  eleicao: { titulo: string; norma: string; gestao: string | null; data_inicio: string; data_fim: string; encerrada_em: string | null; vagas_efetivos: number; vagas_suplentes: number };
+  empresa: {
+    razao_social: string; cnpj: string; total_funcionarios: number;
+    grau_risco: number | null; cnae: string | null;
+    municipio: string | null; uf: string | null;
+  };
+  eleicao: {
+    titulo: string; norma: string; gestao: string | null;
+    data_inicio: string; data_fim: string; encerrada_em: string | null;
+    vagas_efetivos: number; vagas_suplentes: number;
+    apuracao_iniciada_em: string | null; apuracao_encerrada_em: string | null;
+    ata_lavrada_por: string | null; local_apuracao: string | null;
+  };
   quorum: { aptos: number; votantes: number; percentual: number; atingido: boolean };
   apuracao: {
     votos_brancos: number;
@@ -85,13 +116,15 @@ export type PayloadApuracao = {
     votos_nominais: number;
     classificacao: Array<{
       posicao: number; nome_completo: string; nome_urna: string;
-      cargo_funcao: string | null; numero_urna: number | null;
+      cargo_funcao: string | null; setor: string | null; numero_urna: number | null;
       total_votos: number; data_admissao: string | null;
       situacao: 'EFETIVO' | 'SUPLENTE' | 'NAO_ELEITO';
       empate: boolean; desempate_por_admissao: boolean;
     }>;
   };
   quarentena: Partial<Record<StatusAnalise, number>>;
+  comissao: Array<{ nome: string; cpf: string | null; cargo: string | null; papel: PapelComissao }>;
+  indicados: Array<{ nome: string; cargo: string | null; setor: string | null; condicao: CondicaoIndicado; ordem: number }>;
 };
 
 export type EleitorComToken = {
