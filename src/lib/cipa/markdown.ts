@@ -3,9 +3,16 @@
  * (titulos, listas, tabelas, negrito, italico e regras). Escapa o texto antes
  * de tudo: o conteudo vem de um LLM e nao e confiavel por definicao.
  *
- * Duas extensoes proprias, sem equivalente no Markdown padrao:
+ * Extensoes proprias, sem equivalente no Markdown padrao:
  * - "::assinaturas" ... "::" -> bloco de linhas de assinatura (ver ata.ts).
+ *   Cada linha e um assinante; "nome||papel" gera duas linhas empilhadas
+ *   dentro do mesmo quadro (nome e depois o papel por extenso).
  * - "::rodape::texto" -> paragrafo de rodape do documento, em italico.
+ * - "::logotipo::texto" -> paragrafo reservado para o logotipo do cliente.
+ * - "::titulo::texto" / "::subtitulo::texto" -> cabecalho centralizado do documento.
+ * - "::tituloTabela::texto" -> titulo centralizado acima de uma tabela.
+ * - "| ::grupo:: texto |" dentro de uma tabela -> linha de agrupamento em
+ *   negrito ocupando todas as colunas (ex.: "Titular" / "Suplente").
  */
 function escapar(texto: string): string {
   return texto
@@ -48,7 +55,7 @@ function inline(texto: string): string {
   return restaurar(html);
 }
 
-type Alinhamento = 'right' | null;
+type Alinhamento = 'right' | 'center' | null;
 
 export function markdownParaHtml(markdown: string): string {
   const saida: string[] = [];
@@ -76,9 +83,13 @@ export function markdownParaHtml(markdown: string): string {
         saida.push('</div>');
         emAssinaturas = false;
       } else if (l.trim()) {
+        const partes = l.trim().split('||');
+        const conteudo = partes.length > 1
+          ? partes.map((parte) => `<span class="rotulo-assinatura-linha">${inline(parte.trim())}</span>`).join('')
+          : inline(partes[0]!);
         saida.push(
           `<div class="assinatura-item"><p class="linha-assinatura"></p>` +
-          `<p class="rotulo-assinatura">${inline(l.trim())}</p></div>`,
+          `<p class="rotulo-assinatura">${conteudo}</p></div>`,
         );
       }
       continue;
@@ -88,6 +99,34 @@ export function markdownParaHtml(markdown: string): string {
     if (rodape) {
       fechar();
       saida.push(`<p class="documento-rodape">${inline(rodape[1]!.trim())}</p>`);
+      continue;
+    }
+
+    const logotipo = l.match(/^::logotipo::(.*)$/);
+    if (logotipo) {
+      fechar();
+      saida.push(`<p class="documento-logotipo">${inline(logotipo[1]!.trim())}</p>`);
+      continue;
+    }
+
+    const titulo2 = l.match(/^::titulo::(.*)$/);
+    if (titulo2) {
+      fechar();
+      saida.push(`<p class="documento-titulo">${inline(titulo2[1]!.trim())}</p>`);
+      continue;
+    }
+
+    const subtitulo = l.match(/^::subtitulo::(.*)$/);
+    if (subtitulo) {
+      fechar();
+      saida.push(`<p class="documento-subtitulo">${inline(subtitulo[1]!.trim())}</p>`);
+      continue;
+    }
+
+    const tituloTabela = l.match(/^::tituloTabela::(.*)$/);
+    if (tituloTabela) {
+      fechar();
+      saida.push(`<p class="documento-titulo-tabela">${inline(tituloTabela[1]!.trim())}</p>`);
       continue;
     }
 
@@ -112,8 +151,21 @@ export function markdownParaHtml(markdown: string): string {
 
     if (l.trim().startsWith('|')) {
       const celulas = l.trim().replace(/^\||\|$/g, '').split('|').map((c) => c.trim());
+
+      if (emTabela && celulas.length === 1 && celulas[0]!.startsWith('::grupo::')) {
+        const texto = celulas[0]!.replace(/^::grupo::\s*/, '');
+        const colunas = alinhamentos.length || 1;
+        saida.push(`<tr class="linha-grupo"><td colspan="${colunas}">${inline(texto)}</td></tr>`);
+        continue;
+      }
+
       if (celulas.every((c) => /^:?-{2,}:?$/.test(c))) {
-        alinhamentos = celulas.map((c) => (c.endsWith(':') ? 'right' : null));
+        alinhamentos = celulas.map((c) => {
+          const direita = c.endsWith(':');
+          const esquerda = c.startsWith(':');
+          if (direita && esquerda) return 'center';
+          return direita ? 'right' : null;
+        });
         continue;
       }
       if (!emTabela) {
@@ -123,7 +175,7 @@ export function markdownParaHtml(markdown: string): string {
       }
       saida.push(
         '<tr>' +
-        celulas.map((c, i) => `<td${alinhamentos[i] === 'right' ? ' style="text-align:right"' : ''}>${inline(c)}</td>`).join('') +
+        celulas.map((c, i) => `<td${alinhamentos[i] ? ` style="text-align:${alinhamentos[i]}"` : ''}>${inline(c)}</td>`).join('') +
         '</tr>',
       );
       continue;

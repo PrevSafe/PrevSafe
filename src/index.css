@@ -150,6 +150,54 @@ body {
   .documento-ata thead {
     display: table-header-group;
   }
+
+  .documento-ata table,
+  .documento-ata th {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Cartaz do mural (Cartaz.tsx): card único de A4, sem ancestral posicionado
+     — mesmo raciocínio do .documento-ata acima, mas sem "position:absolute"
+     porque aqui o card já é o único conteúdo visível na página impressa. */
+  .cartaz-mural {
+    break-inside: avoid;
+    height: auto;
+    border: none;
+    box-shadow: none;
+    border-radius: 0;
+  }
+
+  .cartaz-mural.mt-8 {
+    margin-top: 4mm;
+  }
+
+  .cartaz-mural .mt-8 {
+    margin-top: 4mm;
+  }
+
+  .cartaz-mural .mt-10 {
+    margin-top: 5mm;
+  }
+
+  .cartaz-mural h2 {
+    font-size: 32pt;
+  }
+
+  /* Subtítulo: parágrafo logo após o título. */
+  .cartaz-mural h2 + p {
+    font-size: 14pt;
+  }
+
+  .cartaz-mural img {
+    width: 60mm;
+    height: 60mm;
+  }
+
+  /* Linhas de instrução: tudo que vem depois do QR Code. */
+  .cartaz-mural img ~ p {
+    font-size: 12pt;
+  }
 }
 
 /* Módulo CIPA — marcação de piso industrial usada no cartaz e na confirmação

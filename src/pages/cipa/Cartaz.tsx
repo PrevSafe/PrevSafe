@@ -73,7 +73,7 @@ export default function Cartaz() {
         de conferência.
       </p>
 
-      <div className="mx-auto mt-8 max-w-[210mm] rounded-xl border border-outline-variant/40 bg-surface-container-lowest p-12 text-center shadow-sm">
+      <div className="cartaz-mural mx-auto mt-8 max-w-[210mm] rounded-xl border border-outline-variant/40 bg-surface-container-lowest p-12 text-center shadow-sm">
         <p className="text-label-sm uppercase tracking-wider text-outline">{u?.nome_fantasia || u?.razao_social || ''}</p>
         <h2 className="mt-4 text-5xl font-extrabold leading-[0.95] text-on-surface">
           Vote na sua<br />{eleicao?.norma === 'NR-31' ? 'CIPATR' : 'CIPA'}
