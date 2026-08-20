@@ -107,9 +107,19 @@ export default function AppLayout({ children }: { children: ReactNode }) {
     return () => { ativo = false; };
   }, [empresaAtiva]);
 
-  const grupos = temCipa
+  let grupos = temCipa
     ? [...GRUPOS, { titulo: 'Módulos', itens: [{ rotulo: 'CIPA', icone: 'how_to_vote', para: '/cipa' }] }]
     : GRUPOS;
+
+  if (empresaAtiva?.papel === 'admin') {
+    grupos = [
+      ...grupos,
+      {
+        titulo: 'Administração',
+        itens: [{ rotulo: 'Controle de Acessos', icone: 'admin_panel_settings', para: '/acessos' }],
+      },
+    ];
+  }
 
   const iniciais = (perfil?.nome ?? '?')
     .split(' ')

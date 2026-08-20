@@ -24,6 +24,7 @@ import Comissao from '@/pages/cipa/Comissao';
 import Apuracao from '@/pages/cipa/Apuracao';
 import VotoLink from '@/pages/cipa/VotoLink';
 import VotoQr from '@/pages/cipa/VotoQr';
+import Acessos from '@/pages/Acessos';
 
 /** Envolve a tela no layout autenticado. Evita repetir o aninhamento em cada rota. */
 function Protegida({ children }: { children: React.ReactNode }) {
@@ -63,6 +64,7 @@ export default function App() {
           <Route path="/cipa/:id/cartaz" element={<Protegida><Cartaz /></Protegida>} />
           <Route path="/cipa/:id/comissao" element={<Protegida><Comissao /></Protegida>} />
           <Route path="/cipa/:id/apuracao" element={<Protegida><Apuracao /></Protegida>} />
+          <Route path="/acessos" element={<Protegida><Acessos /></Protegida>} />
           {/* Rotas públicas e anônimas do eleitor — NUNCA envolver em <Protegida>. */}
           <Route path="/v/:token" element={<VotoLink />} />
           <Route path="/q/:eleicaoId" element={<VotoQr />} />
