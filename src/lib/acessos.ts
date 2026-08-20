@@ -164,3 +164,43 @@ export function liberarUnidade(usuarioId: string, empresaId: string, unidadeId: 
 export function revogarUnidade(usuarioId: string, unidadeId: string) {
   return supabase.from('usuario_unidades').delete().eq('usuario_id', usuarioId).eq('unidade_id', unidadeId);
 }
+
+type RespostaAdmin = { ok: boolean; mensagem?: string; usuario_id?: string };
+
+async function chamarAdminUsuarios(corpo: Record<string, unknown>): Promise<{ data: RespostaAdmin | null; error: { message: string } | null }> {
+  const { data: sessao } = await supabase.auth.getSession();
+  const token = sessao.session?.access_token;
+  if (!token) return { data: null, error: { message: 'Sessão expirada. Faça login novamente.' } };
+
+  let resposta: Response;
+  try {
+    resposta = await fetch('/api/admin/usuarios', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(corpo),
+    });
+  } catch {
+    return { data: null, error: { message: 'Sem conexão com o servidor. Verifique sua internet.' } };
+  }
+
+  const json = (await resposta.json().catch(() => null)) as RespostaAdmin | null;
+  if (!resposta.ok || !json?.ok) {
+    return { data: null, error: { message: json?.mensagem ?? 'Não foi possível concluir. Tente novamente.' } };
+  }
+  return { data: json, error: null };
+}
+
+export function criarUsuario(
+  empresaId: string,
+  dados: { nome: string; email: string; senha: string; papel: string }
+) {
+  return chamarAdminUsuarios({ acao: 'criar', empresa_id: empresaId, ...dados });
+}
+
+export function resetarSenha(empresaId: string, usuarioId: string, senhaNova: string) {
+  return chamarAdminUsuarios({ acao: 'resetar_senha', empresa_id: empresaId, usuario_id: usuarioId, senha_nova: senhaNova });
+}
+
+export function atualizarNomeDoUsuario(usuarioId: string, nome: string) {
+  return supabase.from('profiles').update({ nome: nome.trim() }).eq('id', usuarioId);
+}

@@ -19,6 +19,9 @@ import {
   listarUnidadesLiberadas,
   liberarUnidade,
   revogarUnidade,
+  criarUsuario,
+  resetarSenha,
+  atualizarNomeDoUsuario,
   type Recurso,
   type Acao,
   type RecursoAcao,
@@ -29,6 +32,12 @@ import {
 
 const ORDEM_ACOES = ['visualizar', 'criar', 'editar', 'excluir', 'aprovar'];
 const MODULO_LABEL: Record<string, string> = { nucleo: 'Núcleo', cipa: 'CIPA' };
+const PAPEL_LABEL: Record<string, string> = {
+  admin: 'Administrador',
+  tecnico: 'Técnico',
+  inspetor: 'Inspetor',
+  leitura: 'Leitura',
+};
 
 function Spinner() {
   return (
@@ -531,6 +540,54 @@ function SecaoModulo({
 }
 
 // =======================================================================
+// Campo de senha com botão de mostrar/ocultar (mesmo padrão do Login)
+// =======================================================================
+
+function CampoSenha({
+  rotulo,
+  value,
+  onChange,
+  dica,
+  autoComplete,
+  autoFocus,
+}: {
+  rotulo: string;
+  value: string;
+  onChange: (valor: string) => void;
+  dica?: string;
+  autoComplete?: string;
+  autoFocus?: boolean;
+}) {
+  const [mostrar, setMostrar] = useState(false);
+  return (
+    <div className="flex flex-col gap-1">
+      <label className="text-label-md text-on-surface">{rotulo}</label>
+      <div className="relative">
+        <input
+          type={mostrar ? 'text' : 'password'}
+          autoComplete={autoComplete}
+          autoFocus={autoFocus}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="w-full rounded-lg border bg-surface-container-lowest h-12 pl-4 pr-10 text-body-md text-on-surface placeholder:text-outline transition-colors border-outline-variant focus:outline-none focus:border-2 focus:border-primary-container"
+        />
+        <button
+          type="button"
+          aria-label={mostrar ? 'Ocultar senha' : 'Mostrar senha'}
+          onClick={() => setMostrar((v) => !v)}
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant flex items-center justify-center p-1 rounded-full hover:bg-surface-container-high transition-colors"
+        >
+          <span className="material-symbols-outlined text-[20px]">
+            {mostrar ? 'visibility_off' : 'visibility'}
+          </span>
+        </button>
+      </div>
+      {dica && <p className="text-label-sm text-outline italic">{dica}</p>}
+    </div>
+  );
+}
+
+// =======================================================================
 // Aba Usuários
 // =======================================================================
 
@@ -542,6 +599,7 @@ function AbaUsuarios({ empresaId }: { empresaId: string }) {
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState<string | null>(null);
   const [selecionado, setSelecionado] = useState<VinculoUsuario | null>(null);
+  const [modalNovoAberto, setModalNovoAberto] = useState(false);
 
   async function carregarTudo() {
     setCarregando(true);
@@ -577,6 +635,12 @@ function AbaUsuarios({ empresaId }: { empresaId: string }) {
           {erro}
         </div>
       )}
+
+      <div className="flex justify-end mb-4">
+        <Botao icone="person_add" onClick={() => setModalNovoAberto(true)}>
+          Novo usuário
+        </Botao>
+      </div>
 
       {vinculos.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16 text-center bg-surface-container-lowest rounded-xl border border-outline-variant/40">
@@ -630,7 +694,114 @@ function AbaUsuarios({ empresaId }: { empresaId: string }) {
           onAtualizado={carregarTudo}
         />
       )}
+
+      <ModalNovoUsuario
+        aberto={modalNovoAberto}
+        onFechar={() => setModalNovoAberto(false)}
+        onCriado={() => {
+          setModalNovoAberto(false);
+          carregarTudo();
+        }}
+        empresaId={empresaId}
+      />
     </>
+  );
+}
+
+function ModalNovoUsuario({
+  aberto,
+  onFechar,
+  onCriado,
+  empresaId,
+}: {
+  aberto: boolean;
+  onFechar: () => void;
+  onCriado: () => void;
+  empresaId: string;
+}) {
+  const [nome, setNome] = useState('');
+  const [email, setEmail] = useState('');
+  const [senha, setSenha] = useState('');
+  const [papel, setPapel] = useState('tecnico');
+  const [erro, setErro] = useState<string | null>(null);
+  const [salvando, setSalvando] = useState(false);
+
+  useEffect(() => {
+    if (aberto) {
+      setNome('');
+      setEmail('');
+      setSenha('');
+      setPapel('tecnico');
+      setErro(null);
+    }
+  }, [aberto]);
+
+  async function salvar() {
+    if (!nome.trim() || !email.trim()) {
+      setErro('Informe nome e e-mail.');
+      return;
+    }
+    if (senha.length < 8) {
+      setErro('A senha temporária precisa ter ao menos 8 caracteres.');
+      return;
+    }
+    setSalvando(true);
+    const { error } = await criarUsuario(empresaId, { nome, email, senha, papel });
+    setSalvando(false);
+    if (error) {
+      setErro(error.message);
+      return;
+    }
+    onCriado();
+  }
+
+  return (
+    <Modal aberto={aberto} titulo="Novo usuário" onFechar={onFechar}>
+      <div className="flex flex-col gap-4 p-2">
+        {erro && (
+          <div className="bg-error-container text-on-error-container rounded-lg px-4 py-3 text-label-md">
+            {erro}
+          </div>
+        )}
+        <Campo
+          rotulo="Nome"
+          name="nome"
+          placeholder="Nome completo"
+          value={nome}
+          onChange={(e) => setNome(e.target.value)}
+          autoFocus
+        />
+        <Campo
+          rotulo="E-mail"
+          name="email"
+          type="email"
+          placeholder="pessoa@empresa.com"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <CampoSenha
+          rotulo="Senha temporária"
+          value={senha}
+          onChange={setSenha}
+          dica="Pelo menos 8 caracteres. Informe à pessoa por um canal seguro."
+          autoComplete="new-password"
+        />
+        <Seletor rotulo="Papel" value={papel} onChange={(e) => setPapel(e.target.value)}>
+          {Object.entries(PAPEL_LABEL).map(([codigo, rotulo]) => (
+            <option key={codigo} value={codigo}>
+              {rotulo}
+            </option>
+          ))}
+        </Seletor>
+        <p className="text-label-sm text-outline italic -mt-2">
+          Este é o papel que efetivamente protege os dados hoje. O perfil de acesso granular,
+          atribuído depois na lista abaixo, ainda não tem efeito de segurança.
+        </p>
+        <Botao icone="save" carregando={salvando} onClick={salvar}>
+          {salvando ? 'Criando...' : 'Criar usuário'}
+        </Botao>
+      </div>
+    </Modal>
   );
 }
 
@@ -654,6 +825,11 @@ function PainelUsuario({
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState<string | null>(null);
   const [salvandoPerfil, setSalvandoPerfil] = useState(false);
+  const [nome, setNome] = useState(vinculo.nome);
+  const [salvandoNome, setSalvandoNome] = useState(false);
+  const [nomeSalvo, setNomeSalvo] = useState(false);
+  const [modalSenhaAberto, setModalSenhaAberto] = useState(false);
+  const [avisoSenha, setAvisoSenha] = useState(false);
 
   useEffect(() => {
     let ativo = true;
@@ -668,6 +844,23 @@ function PainelUsuario({
       ativo = false;
     };
   }, [vinculo.usuario_id, empresaId]);
+
+  async function salvarNome() {
+    if (!nome.trim()) {
+      setErro('Informe o nome.');
+      return;
+    }
+    setSalvandoNome(true);
+    const { error } = await atualizarNomeDoUsuario(vinculo.usuario_id, nome);
+    setSalvandoNome(false);
+    if (error) {
+      setErro(error.message);
+      return;
+    }
+    setNomeSalvo(true);
+    setTimeout(() => setNomeSalvo(false), 1500);
+    onAtualizado();
+  }
 
   async function trocarPerfil(novoPerfilId: string) {
     setPerfilId(novoPerfilId);
@@ -717,6 +910,32 @@ function PainelUsuario({
         <p className="text-label-sm text-on-surface-variant">
           {vinculo.email} · papel atual: <span className="capitalize">{vinculo.papel}</span>
         </p>
+
+        {avisoSenha && (
+          <div className="flex items-start gap-2 bg-secondary-container text-on-secondary-container rounded-lg px-3 py-2 text-label-md">
+            <span className="material-symbols-outlined text-[18px] mt-px">check_circle</span>
+            <span>Senha alterada. Informe a nova senha à pessoa por um canal seguro.</span>
+          </div>
+        )}
+
+        <div className="flex items-end gap-2">
+          <div className="flex-1">
+            <Campo rotulo="Nome" name="nome" value={nome} onChange={(e) => setNome(e.target.value)} />
+          </div>
+          <Botao
+            variante="secundario"
+            icone={nomeSalvo ? 'check' : 'save'}
+            carregando={salvandoNome}
+            onClick={salvarNome}
+            className="shrink-0"
+          >
+            {nomeSalvo ? 'Salvo' : 'Salvar nome'}
+          </Botao>
+        </div>
+
+        <Botao variante="secundario" icone="password" onClick={() => setModalSenhaAberto(true)}>
+          Redefinir senha
+        </Botao>
 
         <Seletor
           rotulo="Perfil de acesso"
@@ -768,6 +987,82 @@ function PainelUsuario({
             </div>
           )}
         </div>
+      </div>
+
+      <ModalRedefinirSenha
+        aberto={modalSenhaAberto}
+        onFechar={() => setModalSenhaAberto(false)}
+        onRedefinida={() => {
+          setModalSenhaAberto(false);
+          setAvisoSenha(true);
+          setTimeout(() => setAvisoSenha(false), 6000);
+        }}
+        empresaId={empresaId}
+        usuarioId={vinculo.usuario_id}
+      />
+    </Modal>
+  );
+}
+
+function ModalRedefinirSenha({
+  aberto,
+  onFechar,
+  onRedefinida,
+  empresaId,
+  usuarioId,
+}: {
+  aberto: boolean;
+  onFechar: () => void;
+  onRedefinida: () => void;
+  empresaId: string;
+  usuarioId: string;
+}) {
+  const [senha, setSenha] = useState('');
+  const [confirmacao, setConfirmacao] = useState('');
+  const [erro, setErro] = useState<string | null>(null);
+  const [salvando, setSalvando] = useState(false);
+
+  useEffect(() => {
+    if (aberto) {
+      setSenha('');
+      setConfirmacao('');
+      setErro(null);
+    }
+  }, [aberto]);
+
+  const senhasValidas = senha.length >= 8 && senha === confirmacao;
+
+  async function confirmar() {
+    if (!senhasValidas) return;
+    setSalvando(true);
+    const { error } = await resetarSenha(empresaId, usuarioId, senha);
+    setSalvando(false);
+    if (error) {
+      setErro(error.message);
+      return;
+    }
+    onRedefinida();
+  }
+
+  return (
+    <Modal aberto={aberto} titulo="Redefinir senha" onFechar={onFechar}>
+      <div className="flex flex-col gap-4 p-2">
+        {erro && (
+          <div className="bg-error-container text-on-error-container rounded-lg px-4 py-3 text-label-md">
+            {erro}
+          </div>
+        )}
+        <CampoSenha rotulo="Nova senha" value={senha} onChange={setSenha} autoComplete="new-password" autoFocus />
+        <CampoSenha
+          rotulo="Confirmar nova senha"
+          value={confirmacao}
+          onChange={setConfirmacao}
+          autoComplete="new-password"
+          dica={confirmacao && senha !== confirmacao ? 'As senhas não coincidem.' : 'Pelo menos 8 caracteres.'}
+        />
+        <Botao icone="save" carregando={salvando} disabled={!senhasValidas} onClick={confirmar}>
+          {salvando ? 'Salvando...' : 'Confirmar nova senha'}
+        </Botao>
       </div>
     </Modal>
   );
