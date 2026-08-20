@@ -75,6 +75,27 @@ export type EnvelopeQuarentena = {
   votos_mesmo_ip: number;
 };
 
+export type VotoCorrigivel = {
+  id: string;
+  eleitor_nome: string;
+  eleitor_cpf: string;
+  origem: OrigemVoto;
+  tipo_voto: TipoVoto;
+  candidato_nome: string | null;
+  criado_em: string;
+};
+
+export type MotivoTentativaNegada = 'CPF_FORA_DA_LISTA' | 'CPF_JA_VOTOU';
+
+export type TentativaNegada = {
+  id: string;
+  cpf: string;
+  nome_declarado: string | null;
+  motivo: MotivoTentativaNegada;
+  ip_dispositivo: string | null;
+  criado_em: string;
+};
+
 export type PapelComissao = 'presidente' | 'vice_presidente' | 'secretario' | 'membro';
 
 export type MembroComissao = {

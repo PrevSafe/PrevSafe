@@ -27,6 +27,10 @@ export function FluxoQrCode({ cedula }: { cedula: Cedula }) {
           nome: nome.trim(),
           cargo: cargo.trim() || null,
         }}
+        aoErroIdentidade={(mensagem) => {
+          setIdentificado(false);
+          setErro(mensagem);
+        }}
       />
     );
   }
@@ -34,6 +38,7 @@ export function FluxoQrCode({ cedula }: { cedula: Cedula }) {
   function avancar() {
     if (!cpfValido(cpf)) return setErro('CPF inválido. Confira os números.');
     if (nome.trim().split(/\s+/).length < 2) return setErro('Escreva seu nome completo.');
+    if (!cargo.trim()) return setErro('Informe sua função.');
     setErro(null);
     setIdentificado(true);
   }
@@ -68,7 +73,7 @@ export function FluxoQrCode({ cedula }: { cedula: Cedula }) {
           onChange={(e) => setNome(e.target.value)}
         />
         <Campo
-          rotulo="Função (opcional)"
+          rotulo="Função"
           placeholder="Ex.: Soldador"
           value={cargo}
           onChange={(e) => setCargo(e.target.value)}

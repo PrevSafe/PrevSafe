@@ -19,6 +19,7 @@ import PainelEleicao from '@/pages/cipa/PainelEleicao';
 import Eleitores from '@/pages/cipa/Eleitores';
 import Candidatos from '@/pages/cipa/Candidatos';
 import Quarentena from '@/pages/cipa/Quarentena';
+import AuditoriaVotos from '@/pages/cipa/AuditoriaVotos';
 import Cartaz from '@/pages/cipa/Cartaz';
 import Comissao from '@/pages/cipa/Comissao';
 import Apuracao from '@/pages/cipa/Apuracao';
@@ -61,6 +62,7 @@ export default function App() {
           <Route path="/cipa/:id/eleitores" element={<Protegida><Eleitores /></Protegida>} />
           <Route path="/cipa/:id/candidatos" element={<Protegida><Candidatos /></Protegida>} />
           <Route path="/cipa/:id/quarentena" element={<Protegida><Quarentena /></Protegida>} />
+          <Route path="/cipa/:id/auditoria" element={<Protegida><AuditoriaVotos /></Protegida>} />
           <Route path="/cipa/:id/cartaz" element={<Protegida><Cartaz /></Protegida>} />
           <Route path="/cipa/:id/comissao" element={<Protegida><Comissao /></Protegida>} />
           <Route path="/cipa/:id/apuracao" element={<Protegida><Apuracao /></Protegida>} />

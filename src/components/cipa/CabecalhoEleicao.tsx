@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { supabaseServidor } from '@/lib/cipa/supabase';
+import { useAuth } from '@/contexts/AuthContext';
 
 const ABAS = [
   { rota: 'eleitores', texto: 'Eleitores' },
   { rota: 'candidatos', texto: 'Candidatos' },
   { rota: 'quarentena', texto: 'Quarentena' },
+  { rota: 'auditoria', texto: 'Auditoria', apenasAdmin: true },
   { rota: 'cartaz', texto: 'Cartaz do mural' },
   { rota: 'comissao', texto: 'Comissão eleitoral' },
   { rota: 'apuracao', texto: 'Apuração e atas' },
@@ -18,6 +20,8 @@ const ABAS = [
  */
 export function CabecalhoEleicao({ eleicaoId, titulo }: { eleicaoId: string; titulo?: string }) {
   const location = useLocation();
+  const { empresaAtiva } = useAuth();
+  const admin = empresaAtiva?.papel === 'admin';
   const [tituloEleicao, setTituloEleicao] = useState<string | null>(null);
 
   useEffect(() => {
@@ -54,7 +58,7 @@ export function CabecalhoEleicao({ eleicaoId, titulo }: { eleicaoId: string; tit
       )}
 
       <nav className={`flex flex-wrap gap-2 ${titulo ? 'mt-4' : ''}`}>
-        {ABAS.map((a) => {
+        {ABAS.filter((a) => !('apenasAdmin' in a && a.apenasAdmin) || admin).map((a) => {
           const href = `/cipa/${eleicaoId}/${a.rota}`;
           const ativa = location.pathname === href;
           return (

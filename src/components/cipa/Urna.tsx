@@ -13,11 +13,14 @@ type Escolha =
   | { tipo: 'BRANCO' | 'NULO'; rotulo: string; numero: null; detalhe: string | null };
 
 export function Urna({
-  cedula, identificacao, saudacao,
+  cedula, identificacao, saudacao, aoErroIdentidade,
 }: {
   cedula: Cedula;
   identificacao: Identificacao;
   saudacao?: string;
+  /** Erros sobre QUEM a pessoa é (CPF fora da lista, já votou) voltam para a
+   * tela de identificação em vez de aparecer na revisão da cédula. */
+  aoErroIdentidade?: (mensagem: string) => void;
 }) {
   const [escolha, setEscolha] = useState<Escolha | null>(null);
   const [confirmando, setConfirmando] = useState(false);
@@ -46,7 +49,12 @@ export function Urna({
       });
       const dados = await resposta.json();
       if (!dados.ok) {
-        setErro(dados.mensagem ?? 'Não foi possível registrar o voto.');
+        const mensagem = dados.mensagem ?? 'Não foi possível registrar o voto.';
+        if (aoErroIdentidade && (dados.codigo === 'CPF_FORA_DA_LISTA' || dados.codigo === 'JA_VOTOU')) {
+          aoErroIdentidade(mensagem);
+          return;
+        }
+        setErro(mensagem);
         return;
       }
       setConcluido(dados.resultado?.status === 'quarentena' ? 'quarentena' : 'sucesso');

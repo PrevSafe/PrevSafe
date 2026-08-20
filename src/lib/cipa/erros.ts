@@ -30,6 +30,9 @@ const MENSAGENS: Record<string, string> = {
   MOTIVO_OBRIGATORIO: 'Descreva o motivo da rejeição.',
   STATUS_INVALIDO: 'A eleição não está no estado necessário para esta ação.',
   ELEICAO_NAO_EDITAVEL: 'Esta eleição não aceita mais alterações.',
+  CPF_FORA_DA_LISTA: 'Seu CPF não consta na lista de eleitores aptos desta eleição. Procure a comissão eleitoral.',
+  ELEICAO_JA_ENCERRADA: 'Esta eleição já foi encerrada. Reversão de voto não é mais possível.',
+  VOTO_NAO_ENCONTRADO: 'Este voto não foi encontrado ou já foi revertido.',
 };
 
 export function codigoDoErro(erro: unknown): string {

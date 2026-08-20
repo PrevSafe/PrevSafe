@@ -30,6 +30,7 @@ const MENSAGENS: Record<string, string> = {
   BRANCO_NAO_PERMITIDO: 'Voto em branco não é aceito nesta eleição.',
   NULO_NAO_PERMITIDO: 'Voto nulo não é aceito nesta eleição.',
   QR_CODE_DESABILITADO: 'A votação por QR Code está desativada nesta eleição.',
+  CPF_FORA_DA_LISTA: 'Seu CPF não consta na lista de eleitores aptos desta eleição. Procure a comissão eleitoral.',
 };
 
 function codigoDoErro(erro: unknown): string {
@@ -119,6 +120,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   if (error) {
     res.status(422).json({ ok: false, codigo: codigoDoErro(error), mensagem: mensagemDoErro(error) });
+    return;
+  }
+
+  // CPF_FORA_DA_LISTA e JA_VOTOU (via QR) chegam como json normal, não como
+  // exceção: a RPC precisa persistir a tentativa negada, e uma exceção não
+  // tratada desfaria essa gravação junto com o resto da transação.
+  const resultado = data as { status?: string; codigo?: string } | null;
+  if (resultado?.status === 'negado' && resultado.codigo) {
+    res.status(422).json({ ok: false, codigo: resultado.codigo, mensagem: mensagemDoErro(resultado.codigo) });
     return;
   }
 
