@@ -1,16 +1,13 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { createClient } from '@supabase/supabase-js';
 
-type Papel = 'admin' | 'tecnico' | 'inspetor' | 'leitura';
-const PAPEIS: Papel[] = ['admin', 'tecnico', 'inspetor', 'leitura'];
-
 type Corpo = {
   acao: 'criar' | 'resetar_senha';
   empresa_id?: string;
   nome?: string;
   email?: string;
   senha?: string;
-  papel?: Papel;
+  perfil_id?: string;
   usuario_id?: string;
   senha_nova?: string;
 };
@@ -61,15 +58,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     auth: { persistSession: false, autoRefreshToken: false },
   });
 
-  const { data: vinculoChamador } = await supabaseAdmin
-    .from('usuarios_empresas')
-    .select('papel')
-    .eq('usuario_id', userData.user.id)
-    .eq('empresa_id', corpo.empresa_id)
-    .maybeSingle();
+  const acaoNecessaria = corpo.acao === 'criar' ? 'criar' : 'editar';
+  const { data: autorizado } = await supabaseAdmin.rpc('tem_permissao', {
+    p_usuario: userData.user.id,
+    p_empresa: corpo.empresa_id,
+    p_recurso: 'acessos',
+    p_acao: acaoNecessaria,
+  });
 
-  if (vinculoChamador?.papel !== 'admin') {
-    res.status(403).json({ ok: false, mensagem: 'Apenas administradores podem gerenciar usuários.' });
+  if (!autorizado) {
+    res.status(403).json({ ok: false, mensagem: 'Você não tem permissão para gerenciar usuários.' });
     return;
   }
 
@@ -78,8 +76,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       res.status(400).json({ ok: false, mensagem: 'Informe nome e e-mail.' });
       return;
     }
-    if (!corpo.papel || !PAPEIS.includes(corpo.papel)) {
-      res.status(400).json({ ok: false, mensagem: 'Papel inválido.' });
+    if (!textoValido(corpo.perfil_id)) {
+      res.status(400).json({ ok: false, mensagem: 'Selecione um perfil de acesso.' });
       return;
     }
     if (!senhaValida(corpo.senha)) {
@@ -87,11 +85,23 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return;
     }
 
+    const { data: perfilAlvo } = await supabaseAdmin
+      .from('perfis_acesso')
+      .select('id')
+      .eq('id', corpo.perfil_id)
+      .eq('empresa_id', corpo.empresa_id)
+      .maybeSingle();
+
+    if (!perfilAlvo) {
+      res.status(400).json({ ok: false, mensagem: 'Este perfil de acesso não pertence à sua empresa.' });
+      return;
+    }
+
     const { data, error } = await supabaseAdmin.auth.admin.createUser({
       email: corpo.email.trim().toLowerCase(),
       password: corpo.senha,
       email_confirm: true,
-      user_metadata: { nome: corpo.nome.trim(), empresa_id: corpo.empresa_id, papel: corpo.papel },
+      user_metadata: { nome: corpo.nome.trim(), empresa_id: corpo.empresa_id, perfil_id: corpo.perfil_id },
     });
 
     if (error) {

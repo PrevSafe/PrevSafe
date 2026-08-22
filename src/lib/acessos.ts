@@ -14,7 +14,6 @@ export type PerfilAcesso = {
 export type VinculoUsuario = {
   id: string;
   usuario_id: string;
-  papel: string;
   ativo: boolean;
   perfil_id: string | null;
   nome: string;
@@ -105,7 +104,7 @@ export async function listarVinculos(
 ): Promise<{ data: VinculoUsuario[]; error: { message: string } | null }> {
   const { data: vinculos, error } = await supabase
     .from('usuarios_empresas')
-    .select('id, usuario_id, papel, ativo, perfil_id')
+    .select('id, usuario_id, ativo, perfil_id')
     .eq('empresa_id', empresaId)
     .order('criado_em');
 
@@ -121,7 +120,6 @@ export async function listarVinculos(
   const data: VinculoUsuario[] = vinculos.map((v) => ({
     id: v.id,
     usuario_id: v.usuario_id,
-    papel: v.papel,
     ativo: v.ativo,
     perfil_id: v.perfil_id,
     nome: porId.get(v.usuario_id)?.nome ?? '(usuário removido)',
@@ -192,7 +190,7 @@ async function chamarAdminUsuarios(corpo: Record<string, unknown>): Promise<{ da
 
 export function criarUsuario(
   empresaId: string,
-  dados: { nome: string; email: string; senha: string; papel: string }
+  dados: { nome: string; email: string; senha: string; perfil_id: string }
 ) {
   return chamarAdminUsuarios({ acao: 'criar', empresa_id: empresaId, ...dados });
 }
