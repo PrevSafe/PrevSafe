@@ -37,7 +37,7 @@ function Spinner() {
 
 export default function AuditoriaVotos() {
   const { id } = useParams<{ id: string }>();
-  const { empresaAtiva } = useAuth();
+  const { empresaAtiva, can } = useAuth();
   const [status, setStatus] = useState<StatusEleicao | null>(null);
   const [votos, setVotos] = useState<VotoCorrigivel[]>([]);
   const [tentativas, setTentativas] = useState<TentativaNegada[]>([]);
@@ -46,13 +46,14 @@ export default function AuditoriaVotos() {
   const [pendente, iniciar] = useTransition();
   const [aviso, setAviso] = useState<{ tom: 'ok' | 'erro'; texto: string } | null>(null);
 
-  const admin = empresaAtiva?.papel === 'admin';
+  const podeVisualizar = can('cipa.auditoria', 'visualizar');
+  const podeReverter = can('cipa.auditoria', 'reverter');
 
   useEffect(() => {
-    if (!id || !admin) return;
+    if (!id || !podeVisualizar) return;
     carregar();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id, admin]);
+  }, [id, podeVisualizar]);
 
   async function carregar() {
     if (!id) return;
@@ -96,7 +97,7 @@ export default function AuditoriaVotos() {
   }
 
   if (!empresaAtiva) return <Spinner />;
-  if (!admin) return <Navigate to={`/cipa/${id}`} replace />;
+  if (!podeVisualizar) return <Navigate to={`/cipa/${id}`} replace />;
   if (carregando) return <Spinner />;
 
   const eleicaoEncerrada = status ? ['ENCERRADA', 'APURADA'].includes(status) : false;
@@ -152,15 +153,17 @@ export default function AuditoriaVotos() {
                         {new Date(v.criado_em).toLocaleString('pt-BR')}
                       </td>
                       <td className="px-4 py-3">
-                        <Botao
-                          type="button"
-                          variante="perigo"
-                          className="h-9 text-label-sm"
-                          disabled={pendente}
-                          onClick={() => reverter(v)}
-                        >
-                          Reverter
-                        </Botao>
+                        {podeReverter && (
+                          <Botao
+                            type="button"
+                            variante="perigo"
+                            className="h-9 text-label-sm"
+                            disabled={pendente}
+                            onClick={() => reverter(v)}
+                          >
+                            Reverter
+                          </Botao>
+                        )}
                       </td>
                     </tr>
                   ))}

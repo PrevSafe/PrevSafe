@@ -20,8 +20,8 @@ const ABAS = [
  */
 export function CabecalhoEleicao({ eleicaoId, titulo }: { eleicaoId: string; titulo?: string }) {
   const location = useLocation();
-  const { empresaAtiva } = useAuth();
-  const admin = empresaAtiva?.papel === 'admin';
+  const { can } = useAuth();
+  const admin = can('cipa.auditoria', 'visualizar');
   const [tituloEleicao, setTituloEleicao] = useState<string | null>(null);
 
   useEffect(() => {

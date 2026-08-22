@@ -90,7 +90,7 @@ function LinkNav({ item, onNavigate }: { item: Item; onNavigate?: () => void }) 
 }
 
 export default function AppLayout({ children }: { children: ReactNode }) {
-  const { perfil, vinculos, empresaAtiva, trocarEmpresa, sair } = useAuth();
+  const { perfil, vinculos, empresaAtiva, trocarEmpresa, sair, can } = useAuth();
   const navigate = useNavigate();
   const [menuAberto, setMenuAberto] = useState(false);
   const [seletorEmpresaAberto, setSeletorEmpresaAberto] = useState(false);
@@ -111,7 +111,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
     ? [...GRUPOS, { titulo: 'Módulos', itens: [{ rotulo: 'CIPA', icone: 'how_to_vote', para: '/cipa' }] }]
     : GRUPOS;
 
-  if (empresaAtiva?.papel === 'admin') {
+  if (can('acessos', 'visualizar')) {
     grupos = [
       ...grupos,
       {
@@ -183,7 +183,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
         </div>
         <div className="flex flex-col min-w-0">
           <span className="text-title-lg text-primary truncate">{perfil?.nome}</span>
-          <span className="text-label-sm text-on-surface-variant capitalize">{empresaAtiva?.papel}</span>
+          <span className="text-label-sm text-on-surface-variant">{empresaAtiva?.perfil_nome}</span>
         </div>
       </div>
 

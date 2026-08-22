@@ -30,14 +30,8 @@ import {
   type UnidadeResumo,
 } from '@/lib/acessos';
 
-const ORDEM_ACOES = ['visualizar', 'criar', 'editar', 'excluir', 'aprovar'];
+const ORDEM_ACOES = ['visualizar', 'criar', 'editar', 'excluir', 'aprovar', 'reverter'];
 const MODULO_LABEL: Record<string, string> = { nucleo: 'Núcleo', cipa: 'CIPA' };
-const PAPEL_LABEL: Record<string, string> = {
-  admin: 'Administrador',
-  tecnico: 'Técnico',
-  inspetor: 'Inspetor',
-  leitura: 'Leitura',
-};
 
 function Spinner() {
   return (
@@ -50,11 +44,11 @@ function Spinner() {
 }
 
 export default function Acessos() {
-  const { empresaAtiva } = useAuth();
+  const { empresaAtiva, can } = useAuth();
   const [aba, setAba] = useState<'perfis' | 'usuarios'>('perfis');
 
   if (!empresaAtiva) return <Spinner />;
-  if (empresaAtiva.papel !== 'admin') return <Navigate to="/dashboard" replace />;
+  if (!can('acessos', 'visualizar')) return <Navigate to="/dashboard" replace />;
 
   return (
     <div className="px-margin-mobile md:px-md py-6">
@@ -103,6 +97,7 @@ export default function Acessos() {
 // =======================================================================
 
 function AbaPerfis({ empresaId }: { empresaId: string }) {
+  const { can } = useAuth();
   const [perfis, setPerfis] = useState<PerfilAcesso[]>([]);
   const [recursos, setRecursos] = useState<Recurso[]>([]);
   const [acoes, setAcoes] = useState<Acao[]>([]);
@@ -171,11 +166,13 @@ function AbaPerfis({ empresaId }: { empresaId: string }) {
         </div>
       )}
 
-      <div className="flex justify-end mb-4">
-        <Botao icone="add" onClick={() => setModalNovoAberto(true)}>
-          Novo perfil
-        </Botao>
-      </div>
+      {can('acessos', 'criar') && (
+        <div className="flex justify-end mb-4">
+          <Botao icone="add" onClick={() => setModalNovoAberto(true)}>
+            Novo perfil
+          </Botao>
+        </div>
+      )}
 
       {perfis.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16 text-center bg-surface-container-lowest rounded-xl border border-outline-variant/40">
@@ -183,13 +180,15 @@ function AbaPerfis({ empresaId }: { empresaId: string }) {
             shield_person
           </span>
           <p className="text-body-md text-on-surface-variant mb-4">Nenhum perfil de acesso cadastrado ainda.</p>
-          <button
-            type="button"
-            onClick={() => setModalNovoAberto(true)}
-            className="text-label-md text-primary-container hover:underline"
-          >
-            Criar o primeiro perfil
-          </button>
+          {can('acessos', 'criar') && (
+            <button
+              type="button"
+              onClick={() => setModalNovoAberto(true)}
+              className="text-label-md text-primary-container hover:underline"
+            >
+              Criar o primeiro perfil
+            </button>
+          )}
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -319,6 +318,9 @@ function MatrizPermissoes({
   onFechar: () => void;
   onExcluido: () => void;
 }) {
+  const { can } = useAuth();
+  const podeEditar = can('acessos', 'editar');
+  const podeExcluir = can('acessos', 'excluir');
   const [permissoes, setPermissoes] = useState<Set<string>>(new Set());
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState<string | null>(null);
@@ -363,6 +365,7 @@ function MatrizPermissoes({
   }, [recursos]);
 
   async function alternar(recursoCodigo: string, acaoCodigo: string, concedida: boolean) {
+    if (!podeEditar) return;
     const chave = `${recursoCodigo}:${acaoCodigo}`;
     setPermissoes((p) => {
       const novo = new Set(p);
@@ -391,7 +394,7 @@ function MatrizPermissoes({
   }
 
   async function handleExcluir() {
-    if (qtdUsuarios > 0) return;
+    if (qtdUsuarios > 0 || !podeExcluir) return;
     if (!window.confirm(`Excluir o perfil "${perfil.nome}"? Essa ação não pode ser desfeita.`)) return;
     setExcluindo(true);
     const { error } = await excluirPerfil(perfil.id);
@@ -436,16 +439,18 @@ function MatrizPermissoes({
               salvo
             </span>
           )}
-          <Botao
-            variante="perigo"
-            icone="delete"
-            carregando={excluindo}
-            disabled={qtdUsuarios > 0}
-            title={qtdUsuarios > 0 ? `${qtdUsuarios} usuário(s) usam este perfil` : undefined}
-            onClick={handleExcluir}
-          >
-            {qtdUsuarios > 0 ? `Excluir perfil (${qtdUsuarios} em uso)` : 'Excluir perfil'}
-          </Botao>
+          {podeExcluir && (
+            <Botao
+              variante="perigo"
+              icone="delete"
+              carregando={excluindo}
+              disabled={qtdUsuarios > 0}
+              title={qtdUsuarios > 0 ? `${qtdUsuarios} usuário(s) usam este perfil` : undefined}
+              onClick={handleExcluir}
+            >
+              {qtdUsuarios > 0 ? `Excluir perfil (${qtdUsuarios} em uso)` : 'Excluir perfil'}
+            </Botao>
+          )}
         </div>
       </div>
 
@@ -480,6 +485,7 @@ function MatrizPermissoes({
                   acoesPorRecurso={acoesPorRecurso}
                   permissoes={permissoes}
                   onAlternar={alternar}
+                  podeEditar={podeEditar}
                 />
               ))}
             </tbody>
@@ -497,6 +503,7 @@ function SecaoModulo({
   acoesPorRecurso,
   permissoes,
   onAlternar,
+  podeEditar,
 }: {
   titulo: string;
   recursos: Recurso[];
@@ -504,6 +511,7 @@ function SecaoModulo({
   acoesPorRecurso: Map<string, Set<string>>;
   permissoes: Set<string>;
   onAlternar: (recursoCodigo: string, acaoCodigo: string, concedida: boolean) => void;
+  podeEditar: boolean;
 }) {
   return (
     <>
@@ -526,8 +534,9 @@ function SecaoModulo({
                   <input
                     type="checkbox"
                     checked={marcado}
+                    disabled={!podeEditar}
                     onChange={(e) => onAlternar(r.codigo, a.codigo, e.target.checked)}
-                    className="h-5 w-5 rounded border-outline-variant text-primary-container accent-[#2e7d32] cursor-pointer"
+                    className="h-5 w-5 rounded border-outline-variant text-primary-container accent-[#2e7d32] cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
                   />
                 </td>
               );
@@ -592,6 +601,7 @@ function CampoSenha({
 // =======================================================================
 
 function AbaUsuarios({ empresaId }: { empresaId: string }) {
+  const { can } = useAuth();
   const [vinculos, setVinculos] = useState<VinculoUsuario[]>([]);
   const [perfis, setPerfis] = useState<PerfilAcesso[]>([]);
   const [unidades, setUnidades] = useState<UnidadeResumo[]>([]);
@@ -636,11 +646,13 @@ function AbaUsuarios({ empresaId }: { empresaId: string }) {
         </div>
       )}
 
-      <div className="flex justify-end mb-4">
-        <Botao icone="person_add" onClick={() => setModalNovoAberto(true)}>
-          Novo usuário
-        </Botao>
-      </div>
+      {can('acessos', 'criar') && (
+        <div className="flex justify-end mb-4">
+          <Botao icone="person_add" onClick={() => setModalNovoAberto(true)}>
+            Novo usuário
+          </Botao>
+        </div>
+      )}
 
       {vinculos.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16 text-center bg-surface-container-lowest rounded-xl border border-outline-variant/40">
@@ -703,6 +715,7 @@ function AbaUsuarios({ empresaId }: { empresaId: string }) {
           carregarTudo();
         }}
         empresaId={empresaId}
+        perfis={perfis}
       />
     </>
   );
@@ -713,16 +726,18 @@ function ModalNovoUsuario({
   onFechar,
   onCriado,
   empresaId,
+  perfis,
 }: {
   aberto: boolean;
   onFechar: () => void;
   onCriado: () => void;
   empresaId: string;
+  perfis: PerfilAcesso[];
 }) {
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
-  const [papel, setPapel] = useState('tecnico');
+  const [perfilId, setPerfilId] = useState('');
   const [erro, setErro] = useState<string | null>(null);
   const [salvando, setSalvando] = useState(false);
 
@@ -731,10 +746,10 @@ function ModalNovoUsuario({
       setNome('');
       setEmail('');
       setSenha('');
-      setPapel('tecnico');
+      setPerfilId(perfis[0]?.id ?? '');
       setErro(null);
     }
-  }, [aberto]);
+  }, [aberto, perfis]);
 
   async function salvar() {
     if (!nome.trim() || !email.trim()) {
@@ -745,8 +760,12 @@ function ModalNovoUsuario({
       setErro('A senha temporária precisa ter ao menos 8 caracteres.');
       return;
     }
+    if (!perfilId) {
+      setErro('Selecione um perfil de acesso.');
+      return;
+    }
     setSalvando(true);
-    const { error } = await criarUsuario(empresaId, { nome, email, senha, papel });
+    const { error } = await criarUsuario(empresaId, { nome, email, senha, perfil_id: perfilId });
     setSalvando(false);
     if (error) {
       setErro(error.message);
@@ -786,17 +805,14 @@ function ModalNovoUsuario({
           dica="Pelo menos 8 caracteres. Informe à pessoa por um canal seguro."
           autoComplete="new-password"
         />
-        <Seletor rotulo="Papel" value={papel} onChange={(e) => setPapel(e.target.value)}>
-          {Object.entries(PAPEL_LABEL).map(([codigo, rotulo]) => (
-            <option key={codigo} value={codigo}>
-              {rotulo}
+        <Seletor rotulo="Perfil de acesso" value={perfilId} onChange={(e) => setPerfilId(e.target.value)}>
+          <option value="">— Selecione —</option>
+          {perfis.map((p) => (
+            <option key={p.id} value={p.id}>
+              {p.nome}
             </option>
           ))}
         </Seletor>
-        <p className="text-label-sm text-outline italic -mt-2">
-          Este é o papel que efetivamente protege os dados hoje. O perfil de acesso granular,
-          atribuído depois na lista abaixo, ainda não tem efeito de segurança.
-        </p>
         <Botao icone="save" carregando={salvando} onClick={salvar}>
           {salvando ? 'Criando...' : 'Criar usuário'}
         </Botao>
@@ -820,6 +836,8 @@ function PainelUsuario({
   onFechar: () => void;
   onAtualizado: () => void;
 }) {
+  const { can } = useAuth();
+  const podeEditar = can('acessos', 'editar');
   const [perfilId, setPerfilId] = useState<string>(vinculo.perfil_id ?? '');
   const [liberadas, setLiberadas] = useState<Set<string>>(new Set());
   const [carregando, setCarregando] = useState(true);
@@ -846,6 +864,7 @@ function PainelUsuario({
   }, [vinculo.usuario_id, empresaId]);
 
   async function salvarNome() {
+    if (!podeEditar) return;
     if (!nome.trim()) {
       setErro('Informe o nome.');
       return;
@@ -863,6 +882,7 @@ function PainelUsuario({
   }
 
   async function trocarPerfil(novoPerfilId: string) {
+    if (!podeEditar) return;
     setPerfilId(novoPerfilId);
     setSalvandoPerfil(true);
     const { error } = await atualizarPerfilDoVinculo(vinculo.id, novoPerfilId || null);
@@ -875,6 +895,7 @@ function PainelUsuario({
   }
 
   async function alternarUnidade(unidadeId: string, liberar: boolean) {
+    if (!podeEditar) return;
     setLiberadas((s) => {
       const novo = new Set(s);
       if (liberar) novo.add(unidadeId);
@@ -907,9 +928,7 @@ function PainelUsuario({
           </div>
         )}
 
-        <p className="text-label-sm text-on-surface-variant">
-          {vinculo.email} · papel atual: <span className="capitalize">{vinculo.papel}</span>
-        </p>
+        <p className="text-label-sm text-on-surface-variant">{vinculo.email}</p>
 
         {avisoSenha && (
           <div className="flex items-start gap-2 bg-secondary-container text-on-secondary-container rounded-lg px-3 py-2 text-label-md">
@@ -920,28 +939,38 @@ function PainelUsuario({
 
         <div className="flex items-end gap-2">
           <div className="flex-1">
-            <Campo rotulo="Nome" name="nome" value={nome} onChange={(e) => setNome(e.target.value)} />
+            <Campo
+              rotulo="Nome"
+              name="nome"
+              value={nome}
+              onChange={(e) => setNome(e.target.value)}
+              disabled={!podeEditar}
+            />
           </div>
-          <Botao
-            variante="secundario"
-            icone={nomeSalvo ? 'check' : 'save'}
-            carregando={salvandoNome}
-            onClick={salvarNome}
-            className="shrink-0"
-          >
-            {nomeSalvo ? 'Salvo' : 'Salvar nome'}
-          </Botao>
+          {podeEditar && (
+            <Botao
+              variante="secundario"
+              icone={nomeSalvo ? 'check' : 'save'}
+              carregando={salvandoNome}
+              onClick={salvarNome}
+              className="shrink-0"
+            >
+              {nomeSalvo ? 'Salvo' : 'Salvar nome'}
+            </Botao>
+          )}
         </div>
 
-        <Botao variante="secundario" icone="password" onClick={() => setModalSenhaAberto(true)}>
-          Redefinir senha
-        </Botao>
+        {podeEditar && (
+          <Botao variante="secundario" icone="password" onClick={() => setModalSenhaAberto(true)}>
+            Redefinir senha
+          </Botao>
+        )}
 
         <Seletor
           rotulo="Perfil de acesso"
           value={perfilId}
           onChange={(e) => trocarPerfil(e.target.value)}
-          disabled={salvandoPerfil}
+          disabled={salvandoPerfil || !podeEditar}
         >
           <option value="">— Sem perfil —</option>
           {perfis.map((p) => (
@@ -967,8 +996,9 @@ function PainelUsuario({
                   <input
                     type="checkbox"
                     checked={liberadas.has(u.id)}
+                    disabled={!podeEditar}
                     onChange={(e) => alternarUnidade(u.id, e.target.checked)}
-                    className="h-5 w-5 rounded border-outline-variant text-primary-container accent-[#2e7d32] cursor-pointer"
+                    className="h-5 w-5 rounded border-outline-variant text-primary-container accent-[#2e7d32] cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
                   />
                   <span className="text-body-md text-on-surface truncate">
                     {u.nome_fantasia || u.razao_social}
