@@ -1,6 +1,7 @@
 import { useState, useTransition } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { criarEleicao } from '@/lib/cipa/acoes';
+import { paraCampoDataHoraBrasil } from '@/lib/cipa/fuso';
 import { Botao, Campo, Seletor } from '@/components/ui/Form';
 import { Aviso } from './Aviso';
 import type { UnidadeOpcao } from '@/lib/cipa/types';
@@ -24,7 +25,7 @@ export function FormNovaEleicao({ unidades }: { unidades: UnidadeOpcao[] }) {
 
   const hoje = new Date();
   const daquiUmaSemana = new Date(hoje.getTime() + 7 * 864e5);
-  const paraInput = (d: Date) => d.toISOString().slice(0, 16);
+  const paraInput = (d: Date) => paraCampoDataHoraBrasil(d.toISOString());
 
   return (
     <form

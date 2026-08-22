@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { supabaseServidor } from '@/lib/cipa/supabase';
+import { paraCampoHoraBrasil } from '@/lib/cipa/fuso';
 import { CabecalhoEleicao } from '@/components/cipa/CabecalhoEleicao';
 import { ComissaoMembros } from '@/components/cipa/ComissaoMembros';
 import { ComissaoIndicados } from '@/components/cipa/ComissaoIndicados';
@@ -16,12 +17,6 @@ type Eleicao = {
   local_apuracao: string | null;
   unidades: { municipio: string | null; uf: string | null } | null;
 };
-
-/** Extrai "HH:MM" no fuso local a partir de um timestamptz vindo do banco. */
-function paraHora(iso: string | null): string {
-  if (!iso) return '';
-  return new Date(iso).toTimeString().slice(0, 5);
-}
 
 export default function Comissao() {
   const { id } = useParams<{ id: string }>();
@@ -96,8 +91,8 @@ export default function Comissao() {
           localSugerido={localSugerido}
           valores={{
             local_apuracao: eleicao.local_apuracao,
-            hora_inicio: paraHora(eleicao.apuracao_iniciada_em),
-            hora_fim: paraHora(eleicao.apuracao_encerrada_em),
+            hora_inicio: paraCampoHoraBrasil(eleicao.apuracao_iniciada_em),
+            hora_fim: paraCampoHoraBrasil(eleicao.apuracao_encerrada_em),
             ata_lavrada_por: eleicao.ata_lavrada_por,
           }}
         />

@@ -43,31 +43,40 @@ export function porExtenso(numero: number): string {
   return `${prefixo}${conector}${porExtenso(resto)}`;
 }
 
-function fusoBrasilia(iso: string): Date {
-  return new Date(iso);
+const FUSO_BRASIL = 'America/Sao_Paulo';
+
+/**
+ * Extrai {dia, mes, ano} no horário oficial de Brasília, não no fuso da máquina que
+ * roda o código — a ata é documento legal e precisa do mesmo resultado não importa
+ * onde seja gerada ou visualizada.
+ */
+function partesDataBrasil(iso: string): { dia: number; mes: number; ano: number } {
+  const [ano, mes, dia] = new Intl.DateTimeFormat('en-CA', { timeZone: FUSO_BRASIL })
+    .format(new Date(iso))
+    .split('-')
+    .map(Number);
+  return { dia: dia!, mes: mes! - 1, ano: ano! };
 }
 
 export function dataPorExtenso(iso: string): string {
-  const d = fusoBrasilia(iso);
-  const dia = d.getDate();
-  const ano = d.getFullYear();
-  return `aos ${dia} (${porExtenso(dia)}) dias do mês de ${MESES[d.getMonth()]} de ${ano} (${porExtenso(ano)})`;
+  const { dia, mes, ano } = partesDataBrasil(iso);
+  return `aos ${dia} (${porExtenso(dia)}) dias do mês de ${MESES[mes]} de ${ano} (${porExtenso(ano)})`;
 }
 
 function dataHora(iso: string | null): string {
   if (!iso) return '—';
-  return new Date(iso).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
+  return new Date(iso).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short', timeZone: FUSO_BRASIL });
 }
 
 function dataCurta(iso: string | null): string {
   if (!iso) return lacuna();
-  return new Date(iso).toLocaleDateString('pt-BR');
+  return new Date(iso).toLocaleDateString('pt-BR', { timeZone: FUSO_BRASIL });
 }
 
 /** Dia, nome do mês e ano separados, para a redação "Aos {dia} dias do mês de {mês} de {ano}". */
 function diaMesAno(iso: string): { dia: number; mes: string; ano: number } {
-  const d = fusoBrasilia(iso);
-  return { dia: d.getDate(), mes: MESES[d.getMonth()]!, ano: d.getFullYear() };
+  const { dia, mes, ano } = partesDataBrasil(iso);
+  return { dia, mes: MESES[mes]!, ano };
 }
 
 /** Percentual no padrão brasileiro: vírgula decimal. */
@@ -130,7 +139,7 @@ function lacuna(): string {
 
 function horaCurta(iso: string | null): string {
   if (!iso) return lacuna();
-  return new Date(iso).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+  return new Date(iso).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', timeZone: FUSO_BRASIL });
 }
 
 /** Membro da comissão eleitoral pelo papel exercido, ou lacuna se não cadastrado. */

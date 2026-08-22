@@ -5,7 +5,9 @@ export function Comprovante({
   nomeUnidade: string;
   titulo: string;
 }) {
-  const agora = new Date().toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
+  const agora = new Date().toLocaleString('pt-BR', {
+    dateStyle: 'short', timeStyle: 'short', timeZone: 'America/Sao_Paulo',
+  });
 
   return (
     <div className="mx-auto flex min-h-dvh max-w-[36rem] flex-col justify-center px-6 py-12">

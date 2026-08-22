@@ -1,5 +1,6 @@
 import { supabaseServidor } from '@/lib/cipa/supabase';
 import { mensagemDoErro } from '@/lib/cipa/erros';
+import { paraInstanteBrasil } from '@/lib/cipa/fuso';
 import { montarAtaEleicao, montarAtaPosse } from '@/lib/cipa/ata';
 import { somenteDigitos } from '@/lib/cipa/cpf';
 import type {
@@ -19,6 +20,9 @@ export async function criarEleicao(dados: FormData): Promise<Resultado & { id?: 
 
   if (!unidade) return { ok: false, mensagem: 'Unidade não encontrada.' };
 
+  const dataInicio = dados.get('data_inicio')?.toString();
+  const dataFim = dados.get('data_fim')?.toString();
+
   const { data, error } = await supabase
     .from('eleicoes')
     .insert({
@@ -27,8 +31,8 @@ export async function criarEleicao(dados: FormData): Promise<Resultado & { id?: 
       titulo: dados.get('titulo')?.toString(),
       norma: dados.get('norma')?.toString() || 'NR-05',
       gestao: dados.get('gestao')?.toString() || null,
-      data_inicio: dados.get('data_inicio')?.toString(),
-      data_fim: dados.get('data_fim')?.toString(),
+      data_inicio: dataInicio && paraInstanteBrasil(dataInicio),
+      data_fim: dataFim && paraInstanteBrasil(dataFim),
       vagas_efetivos: Number(dados.get('vagas_efetivos') || 1),
       vagas_suplentes: Number(dados.get('vagas_suplentes') || 1),
       permite_qr_code: dados.get('permite_qr_code') === 'on',
@@ -245,8 +249,8 @@ export async function salvarApuracao(eleicaoId: string, dados: FormData): Promis
     .from('eleicoes')
     .update({
       local_apuracao: dados.get('local_apuracao')?.toString() || null,
-      apuracao_iniciada_em: horaInicio && dataRef ? `${dataRef}T${horaInicio}` : null,
-      apuracao_encerrada_em: horaFim && dataRef ? `${dataRef}T${horaFim}` : null,
+      apuracao_iniciada_em: horaInicio && dataRef ? paraInstanteBrasil(`${dataRef}T${horaInicio}`) : null,
+      apuracao_encerrada_em: horaFim && dataRef ? paraInstanteBrasil(`${dataRef}T${horaFim}`) : null,
       ata_lavrada_por: dados.get('ata_lavrada_por')?.toString() || null,
     })
     .eq('id', eleicaoId);
