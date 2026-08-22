@@ -26,3 +26,11 @@ dist-ssr
 supabase/.temp/
 
 _prototipos/
+
+# Materiais de trabalho pessoais — backups, dumps e scripts soltos que
+# não fazem parte do código nem das migrations oficiais (essas ficam em
+# supabase/migrations/).
+ARQUIVOS/
+scripts/
+tests/
+funcoes.json
