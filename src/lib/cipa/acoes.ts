@@ -3,7 +3,7 @@ import { mensagemDoErro } from '@/lib/cipa/erros';
 import { montarAtaEleicao, montarAtaPosse } from '@/lib/cipa/ata';
 import { somenteDigitos } from '@/lib/cipa/cpf';
 import type {
-  EleitorComToken, Indicado, MembroComissao, PayloadApuracao, VotoCorrigivel,
+  EleitorComToken, Indicado, MembroComissao, PayloadApuracao,
 } from '@/lib/cipa/types';
 
 export type Resultado = { ok: boolean; mensagem: string };
@@ -81,21 +81,6 @@ export async function rejeitarEnvelope(envelopeId: string, motivo: string): Prom
   return error
     ? { ok: false, mensagem: mensagemDoErro(error) }
     : { ok: true, mensagem: 'Voto rejeitado e registrado na auditoria.' };
-}
-
-export async function listarVotosCorrigiveis(eleicaoId: string): Promise<VotoCorrigivel[]> {
-  const supabase = await supabaseServidor();
-  const { data } = await supabase.rpc('cipa_listar_votos_corrigiveis', { p_eleicao_id: eleicaoId });
-  return (data ?? []) as VotoCorrigivel[];
-}
-
-/** Só funciona com a eleição ainda aberta — depois do encerramento o vínculo já foi apagado. */
-export async function reverterVoto(votoId: string, motivo: string): Promise<Resultado> {
-  const supabase = await supabaseServidor();
-  const { error } = await supabase.rpc('cipa_reverter_voto', { p_voto_id: votoId, p_motivo: motivo });
-  return error
-    ? { ok: false, mensagem: mensagemDoErro(error) }
-    : { ok: true, mensagem: 'Voto revertido. A pessoa já pode votar novamente.' };
 }
 
 export async function aprovarLote(ids: string[]): Promise<Resultado> {
