@@ -10,6 +10,7 @@ import type { TentativaNegada } from '@/lib/cipa/types';
 const MOTIVO_LABEL: Record<TentativaNegada['motivo'], string> = {
   CPF_FORA_DA_LISTA: 'CPF fora da lista de aptos',
   CPF_JA_VOTOU: 'CPF já havia votado',
+  MUITAS_TENTATIVAS: 'Muitas tentativas seguidas deste dispositivo',
 };
 
 function Spinner() {
