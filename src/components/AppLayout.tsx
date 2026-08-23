@@ -13,26 +13,26 @@ const GRUPOS: Grupo[] = [
   {
     titulo: 'Inspeções & Ações',
     itens: [
-      { rotulo: 'Nova Inspeção', icone: 'add_task', para: '#' },
-      { rotulo: 'Histórico de Relatórios', icone: 'history', para: '#' },
-      { rotulo: 'Planos de Ação (5W2H)', icone: 'checklist', para: '#' },
+      { rotulo: 'Nova Inspeção', icone: 'add_task', para: '/inspecoes/nova' },
+      { rotulo: 'Histórico de Relatórios', icone: 'history', para: '/inspecoes' },
+      { rotulo: 'Planos de Ação (5W2H)', icone: 'checklist', para: '/planos-acao' },
     ],
   },
   {
     titulo: 'Trabalhadores',
     itens: [
       { rotulo: 'Lista de Funcionários', icone: 'group', para: '/funcionarios' },
-      { rotulo: 'Controle de ASO', icone: 'medical_information', para: '#' },
+      { rotulo: 'Controle de ASO', icone: 'medical_information', para: '/aso' },
       { rotulo: 'Entrega de EPI', icone: 'engineering', para: '/epi' },
-      { rotulo: 'DDS e Treinamentos', icone: 'school', para: '#' },
+      { rotulo: 'DDS e Treinamentos', icone: 'school', para: '/treinamentos' },
     ],
   },
   {
     titulo: 'Gestão PGR / PCMSO',
     itens: [
-      { rotulo: 'Matriz de Riscos', icone: 'grid_view', para: '#' },
-      { rotulo: 'Grupos de Exposição (GHE)', icone: 'workspaces', para: '#' },
-      { rotulo: 'Inventário de Riscos', icone: 'inventory_2', para: '#' },
+      { rotulo: 'Matriz de Riscos', icone: 'grid_view', para: '/matriz-riscos' },
+      { rotulo: 'Grupos de Exposição (GHE)', icone: 'workspaces', para: '/ghe' },
+      { rotulo: 'Inventário de Riscos', icone: 'inventory_2', para: '/riscos' },
     ],
   },
   {
@@ -42,7 +42,7 @@ const GRUPOS: Grupo[] = [
       { rotulo: 'Setores', icone: 'account_tree', para: '/setores' },
       { rotulo: 'Cargos', icone: 'badge', para: '/cargos' },
       { rotulo: 'Estrutura Organizacional', icone: 'lan', para: '/estrutura' },
-      { rotulo: 'Frota e Maquinário', icone: 'agriculture', para: '#' },
+      { rotulo: 'Frota e Maquinário', icone: 'agriculture', para: '/frota' },
     ],
   },
 ];

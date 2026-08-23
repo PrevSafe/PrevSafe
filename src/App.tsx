@@ -30,6 +30,21 @@ import Apuracao from '@/pages/cipa/Apuracao';
 import VotoLink from '@/pages/cipa/VotoLink';
 import VotoQr from '@/pages/cipa/VotoQr';
 import Acessos from '@/pages/Acessos';
+import AsoLista from '@/pages/AsoLista';
+import AsoForm from '@/pages/AsoForm';
+import Treinamentos from '@/pages/Treinamentos';
+import TreinamentoForm from '@/pages/TreinamentoForm';
+import Inspecoes from '@/pages/Inspecoes';
+import InspecaoForm from '@/pages/InspecaoForm';
+import PlanosAcao from '@/pages/PlanosAcao';
+import PlanoAcaoForm from '@/pages/PlanoAcaoForm';
+import Ghes from '@/pages/Ghes';
+import GheForm from '@/pages/GheForm';
+import RiscosInventario from '@/pages/RiscosInventario';
+import RiscoForm from '@/pages/RiscoForm';
+import MatrizRiscos from '@/pages/MatrizRiscos';
+import Frota from '@/pages/Frota';
+import FrotaForm from '@/pages/FrotaForm';
 
 /** Envolve a tela no layout autenticado. Evita repetir o aninhamento em cada rota. */
 function Protegida({ children }: { children: React.ReactNode }) {
@@ -77,6 +92,28 @@ export default function App() {
           <Route path="/cipa/:id/comissao" element={<Protegida><Comissao /></Protegida>} />
           <Route path="/cipa/:id/apuracao" element={<Protegida><Apuracao /></Protegida>} />
           <Route path="/acessos" element={<Protegida><Acessos /></Protegida>} />
+          <Route path="/aso" element={<Protegida><AsoLista /></Protegida>} />
+          <Route path="/aso/novo" element={<Protegida><AsoForm /></Protegida>} />
+          <Route path="/aso/:id" element={<Protegida><AsoForm /></Protegida>} />
+          <Route path="/treinamentos" element={<Protegida><Treinamentos /></Protegida>} />
+          <Route path="/treinamentos/novo" element={<Protegida><TreinamentoForm /></Protegida>} />
+          <Route path="/treinamentos/:id" element={<Protegida><TreinamentoForm /></Protegida>} />
+          <Route path="/inspecoes" element={<Protegida><Inspecoes /></Protegida>} />
+          <Route path="/inspecoes/nova" element={<Protegida><InspecaoForm /></Protegida>} />
+          <Route path="/inspecoes/:id" element={<Protegida><InspecaoForm /></Protegida>} />
+          <Route path="/planos-acao" element={<Protegida><PlanosAcao /></Protegida>} />
+          <Route path="/planos-acao/novo" element={<Protegida><PlanoAcaoForm /></Protegida>} />
+          <Route path="/planos-acao/:id" element={<Protegida><PlanoAcaoForm /></Protegida>} />
+          <Route path="/ghe" element={<Protegida><Ghes /></Protegida>} />
+          <Route path="/ghe/novo" element={<Protegida><GheForm /></Protegida>} />
+          <Route path="/ghe/:id" element={<Protegida><GheForm /></Protegida>} />
+          <Route path="/riscos" element={<Protegida><RiscosInventario /></Protegida>} />
+          <Route path="/riscos/novo" element={<Protegida><RiscoForm /></Protegida>} />
+          <Route path="/riscos/:id" element={<Protegida><RiscoForm /></Protegida>} />
+          <Route path="/matriz-riscos" element={<Protegida><MatrizRiscos /></Protegida>} />
+          <Route path="/frota" element={<Protegida><Frota /></Protegida>} />
+          <Route path="/frota/novo" element={<Protegida><FrotaForm /></Protegida>} />
+          <Route path="/frota/:id" element={<Protegida><FrotaForm /></Protegida>} />
           {/* Rotas públicas e anônimas do eleitor — NUNCA envolver em <Protegida>. */}
           <Route path="/v/:token" element={<VotoLink />} />
           <Route path="/q/:eleicaoId" element={<VotoQr />} />
