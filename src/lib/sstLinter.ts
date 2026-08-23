@@ -29,12 +29,17 @@ export type RiscoAuditoria = {
 export type ProcedimentoRealizado = { codigo: string; dataExame: string };
 export type EntregaEpi = { epiId: string; dataValidade: string | null };
 
+export type AfastamentoMotivo = 'acidente_trabalho' | 'doenca_ocupacional' | 'doenca_nao_ocupacional' | 'outros';
+export type AfastamentoAtivo = { id: string; motivo: AfastamentoMotivo; dataInicio: string; temCat: boolean };
+
 export type AuditoriaPayload = {
   funcionario: { id: string; nome: string };
+  /** Código GFIP efetivo: da competência corrente em folha_agente_nocivo, com fallback para cargos.codigo_gfip. */
   codigoGfip: number | null;
   riscos: RiscoAuditoria[];
   procedimentosRealizados: ProcedimentoRealizado[];
   entregasEpi: EntregaEpi[];
+  afastamentoAtivo: AfastamentoAtivo | null;
 };
 
 const CODIGO_AUSENCIA_RISCO = '09.01.001';
@@ -120,6 +125,19 @@ export function avaliarAlertas(payload: AuditoriaPayload): Alerta[] {
     });
   }
 
+  const afastamento = payload.afastamentoAtivo;
+  if (afastamento && (afastamento.motivo === 'acidente_trabalho' || afastamento.motivo === 'doenca_ocupacional') && !afastamento.temCat) {
+    alertas.push({
+      id: 'LNT-S2210-001',
+      severidade: 'WARNING_ADVISORY',
+      titulo: 'Afastamento Acidentário sem CAT Transmitida',
+      diagnostico: `${nome} foi afastado em ${afastamento.dataInicio} por motivo acidentário/ocupacional, mas nenhuma Comunicação de Acidente de Trabalho (S-2210) foi registrada para esse afastamento.`,
+      impacto: 'Risco de multa de até R$ 98.484,45 por deixar de comunicar o acidente de trabalho no prazo legal (1 dia útil).',
+      resolucao: 'Emita a CAT vinculada a este afastamento com os dados do acidente.',
+      acao: { rotulo: 'Emitir CAT', para: `/afastamentos/${afastamento.id}/cat` },
+    });
+  }
+
   return alertas;
 }
 
@@ -144,8 +162,17 @@ export async function carregarAuditoriaFuncionario(empresaId: string, funcionari
 
   type CargoEmbutido = { codigo_gfip: number | null; ghe_id: string | null } | null;
   const cargo = (lotacaoAtiva?.lotacoes as { cargos?: CargoEmbutido } | null)?.cargos ?? null;
-  const codigoGfip = cargo?.codigo_gfip ?? null;
   const gheId = cargo?.ghe_id ?? null;
+
+  const competenciaAtual = `${new Date().toISOString().slice(0, 7)}-01`;
+  const { data: folhaCompetencia } = await daEmpresa(
+    supabase.from('folha_agente_nocivo').select('codigo_gfip'),
+    empresaId
+  )
+    .eq('funcionario_id', funcionarioId)
+    .eq('competencia', competenciaAtual)
+    .maybeSingle();
+  const codigoGfip = folhaCompetencia?.codigo_gfip ?? cargo?.codigo_gfip ?? null;
 
   let riscos: RiscoAuditoria[] = [];
   if (gheId) {
@@ -234,12 +261,37 @@ export async function carregarAuditoriaFuncionario(empresaId: string, funcionari
   );
   const entregasEpi: EntregaEpi[] = (entregas ?? []).map((e) => ({ epiId: e.epi_id, dataValidade: e.data_validade }));
 
+  const { data: afastamento } = await daEmpresa(
+    supabase.from('funcionarios_afastamentos').select('id, motivo, data_inicio'),
+    empresaId
+  )
+    .eq('funcionario_id', funcionarioId)
+    .is('data_fim', null)
+    .maybeSingle();
+
+  let afastamentoAtivo: AfastamentoAtivo | null = null;
+  if (afastamento) {
+    const { data: cat } = await supabase
+      .from('cat_comunicacoes')
+      .select('id')
+      .eq('afastamento_id', afastamento.id)
+      .limit(1)
+      .maybeSingle();
+    afastamentoAtivo = {
+      id: afastamento.id,
+      motivo: afastamento.motivo as AfastamentoMotivo,
+      dataInicio: afastamento.data_inicio,
+      temCat: Boolean(cat),
+    };
+  }
+
   return {
     funcionario: { id: funcionario.id, nome: funcionario.nome },
     codigoGfip,
     riscos,
     procedimentosRealizados,
     entregasEpi,
+    afastamentoAtivo,
   };
 }
 

@@ -12,6 +12,7 @@ function payloadBase(overrides: Partial<AuditoriaPayload> = {}): AuditoriaPayloa
     riscos: [],
     procedimentosRealizados: [],
     entregasEpi: [],
+    afastamentoAtivo: null,
     ...overrides,
   };
 }
@@ -161,6 +162,37 @@ describe('LNT-S1200-001 — divergência tributária de aposentadoria especial',
   it('não emite aviso quando o código GFIP já reflete a exposição', () => {
     const alertas = avaliarAlertas(payloadBase({ riscos: [riscoComAposentadoriaEspecial], codigoGfip: 3 }));
     expect(alertas.some((a) => a.id === 'LNT-S1200-001')).toBe(false);
+  });
+});
+
+describe('LNT-S2210-001 — afastamento acidentário sem CAT', () => {
+  it('emite aviso quando o afastamento é acidentário e não há CAT', () => {
+    const alertas = avaliarAlertas(
+      payloadBase({
+        afastamentoAtivo: { id: 'afast-1', motivo: 'acidente_trabalho', dataInicio: '2026-08-01', temCat: false },
+      })
+    );
+    const alerta = alertas.find((a) => a.id === 'LNT-S2210-001');
+    expect(alerta).toBeDefined();
+    expect(alerta?.severidade).toBe('WARNING_ADVISORY');
+  });
+
+  it('não emite aviso quando a CAT já foi emitida', () => {
+    const alertas = avaliarAlertas(
+      payloadBase({
+        afastamentoAtivo: { id: 'afast-1', motivo: 'acidente_trabalho', dataInicio: '2026-08-01', temCat: true },
+      })
+    );
+    expect(alertas.some((a) => a.id === 'LNT-S2210-001')).toBe(false);
+  });
+
+  it('não emite aviso quando o afastamento não é acidentário/ocupacional', () => {
+    const alertas = avaliarAlertas(
+      payloadBase({
+        afastamentoAtivo: { id: 'afast-1', motivo: 'doenca_nao_ocupacional', dataInicio: '2026-08-01', temCat: false },
+      })
+    );
+    expect(alertas.some((a) => a.id === 'LNT-S2210-001')).toBe(false);
   });
 });
 

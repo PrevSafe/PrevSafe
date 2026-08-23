@@ -5,6 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { daEmpresa } from '@/lib/consulta';
 import { Secao, Campo, Seletor, Botao } from '@/components/ui/Form';
 import { cpfValido, mascaraCpf, mascaraPis, mascaraTelefone } from '@/lib/funcionarios';
+import { GFIP, corGfip } from '@/lib/gfip';
 import SstLinterPainel from '@/components/SstLinterPainel';
 
 type StatusFuncionario = 'ativo' | 'afastado' | 'ferias' | 'desligado';
@@ -805,6 +806,8 @@ export default function FuncionarioForm() {
             )}
           </Secao>
         )}
+
+        {editando && <FolhaAgenteNocivoSecao funcionarioId={id!} />}
       </div>
 
       {editando && <SstLinterPainel funcionarioId={id!} />}
@@ -829,5 +832,115 @@ export default function FuncionarioForm() {
         </Botao>
       </footer>
     </form>
+  );
+}
+
+type FolhaLinha = { id: string; competencia: string; codigo_gfip: number };
+
+function FolhaAgenteNocivoSecao({ funcionarioId }: { funcionarioId: string }) {
+  const { empresaAtiva } = useAuth();
+  const [linhas, setLinhas] = useState<FolhaLinha[]>([]);
+  const [competencia, setCompetencia] = useState('');
+  const [codigoGfip, setCodigoGfip] = useState('0');
+  const [carregando, setCarregando] = useState(true);
+  const [salvando, setSalvando] = useState(false);
+  const [erro, setErro] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!empresaAtiva) {
+      setCarregando(false);
+      return;
+    }
+    let ativo = true;
+    daEmpresa(supabase.from('folha_agente_nocivo').select('id, competencia, codigo_gfip'), empresaAtiva.empresa_id)
+      .eq('funcionario_id', funcionarioId)
+      .order('competencia', { ascending: false })
+      .then(({ data, error }) => {
+        if (!ativo) return;
+        if (error) setErro(error.message);
+        else setLinhas((data ?? []) as FolhaLinha[]);
+        setCarregando(false);
+      });
+    return () => {
+      ativo = false;
+    };
+  }, [empresaAtiva, funcionarioId]);
+
+  async function adicionar() {
+    if (!competencia || !empresaAtiva) return;
+    setSalvando(true);
+    setErro(null);
+    const { data, error } = await supabase
+      .from('folha_agente_nocivo')
+      .upsert(
+        {
+          empresa_id: empresaAtiva.empresa_id,
+          funcionario_id: funcionarioId,
+          competencia: `${competencia}-01`,
+          codigo_gfip: Number(codigoGfip),
+        },
+        { onConflict: 'funcionario_id,competencia' }
+      )
+      .select('id, competencia, codigo_gfip')
+      .single();
+    setSalvando(false);
+    if (error) {
+      setErro(error.message);
+      return;
+    }
+    setLinhas((ls) => [data as FolhaLinha, ...ls.filter((l) => l.competencia !== data.competencia)]);
+    setCompetencia('');
+  }
+
+  if (carregando) return null;
+
+  return (
+    <Secao icone="request_quote" titulo="Folha — Código do agente nocivo (GFIP) por competência">
+      <p className="text-label-sm text-on-surface-variant -mt-2">
+        Usado pelo SST Linter para checar a regra de aposentadoria especial mês a mês. Sem lançamento, ele usa o
+        código GFIP atual do cargo.
+      </p>
+      {erro && <div className="bg-error-container text-on-error-container rounded-lg px-4 py-3 text-label-md">{erro}</div>}
+      <div className="flex flex-col sm:flex-row gap-3 items-end">
+        <div className="flex-1 w-full">
+          <label className="text-label-md text-on-surface-variant block mb-1">Competência</label>
+          <input
+            type="month"
+            value={competencia}
+            onChange={(e) => setCompetencia(e.target.value)}
+            className="w-full h-12 rounded-lg border border-outline-variant bg-surface-container-lowest px-4 text-body-md focus:outline-none focus:border-2 focus:border-primary-container"
+          />
+        </div>
+        <div className="flex-1 w-full">
+          <label className="text-label-md text-on-surface-variant block mb-1">Código GFIP</label>
+          <select
+            value={codigoGfip}
+            onChange={(e) => setCodigoGfip(e.target.value)}
+            className="w-full h-12 rounded-lg border border-outline-variant bg-surface-container-lowest px-4 text-body-md focus:outline-none focus:border-2 focus:border-primary-container"
+          >
+            {Object.entries(GFIP).map(([codigo, rotulo]) => (
+              <option key={codigo} value={codigo}>
+                {codigo} — {rotulo}
+              </option>
+            ))}
+          </select>
+        </div>
+        <Botao type="button" icone="add" carregando={salvando} disabled={!competencia} onClick={adicionar}>
+          Lançar
+        </Botao>
+      </div>
+      {linhas.length > 0 && (
+        <div className="flex flex-col gap-2 mt-2">
+          {linhas.map((l) => (
+            <div key={l.id} className="flex items-center justify-between bg-surface-container rounded-lg px-4 py-2">
+              <span className="text-label-md text-on-surface">{l.competencia.slice(0, 7)}</span>
+              <span className={`px-2.5 py-1 rounded-full text-label-sm ${corGfip(l.codigo_gfip)}`}>
+                {l.codigo_gfip} — {GFIP[l.codigo_gfip]}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
+    </Secao>
   );
 }
