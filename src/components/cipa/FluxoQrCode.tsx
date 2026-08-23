@@ -1,21 +1,26 @@
 import { useState } from 'react';
 import { Urna } from './Urna';
+import { VerificacaoCodigo } from './VerificacaoCodigo';
 import { Botao, Campo } from '@/components/ui/Form';
 import { cpfValido, formatarCpf, somenteDigitos } from '@/lib/cipa/cpf';
 import type { Cedula } from '@/lib/cipa/types';
 
+type Etapa = 'formulario' | 'verificacao' | 'urna';
+
 /**
  * Porta B: quem não recebeu link se identifica na hora. A conferência com o
- * cadastro de funcionários acontece depois, no painel.
+ * cadastro de funcionários acontece depois, no painel — a não ser que a
+ * pessoa confirme um código enviado ao e-mail cadastrado, aí o voto é
+ * creditado direto (quem decide isso é sempre o servidor, nunca esta tela).
  */
 export function FluxoQrCode({ cedula }: { cedula: Cedula }) {
   const [cpf, setCpf] = useState('');
   const [nome, setNome] = useState('');
   const [cargo, setCargo] = useState('');
   const [erro, setErro] = useState<string | null>(null);
-  const [identificado, setIdentificado] = useState(false);
+  const [etapa, setEtapa] = useState<Etapa>('formulario');
 
-  if (identificado) {
+  if (etapa === 'urna') {
     return (
       <Urna
         cedula={cedula}
@@ -28,9 +33,20 @@ export function FluxoQrCode({ cedula }: { cedula: Cedula }) {
           cargo: cargo.trim() || null,
         }}
         aoErroIdentidade={(mensagem) => {
-          setIdentificado(false);
+          setEtapa('formulario');
           setErro(mensagem);
         }}
+      />
+    );
+  }
+
+  if (etapa === 'verificacao') {
+    return (
+      <VerificacaoCodigo
+        eleicaoId={cedula.eleicao.id}
+        cpf={somenteDigitos(cpf)}
+        onVerificado={() => setEtapa('urna')}
+        onPular={() => setEtapa('urna')}
       />
     );
   }
@@ -40,7 +56,7 @@ export function FluxoQrCode({ cedula }: { cedula: Cedula }) {
     if (nome.trim().split(/\s+/).length < 2) return setErro('Escreva seu nome completo.');
     if (!cargo.trim()) return setErro('Informe sua função.');
     setErro(null);
-    setIdentificado(true);
+    setEtapa('verificacao');
   }
 
   const unidade = cedula.unidade.nome_fantasia || cedula.unidade.razao_social;

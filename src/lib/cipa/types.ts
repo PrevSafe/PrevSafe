@@ -75,7 +75,7 @@ export type EnvelopeQuarentena = {
   votos_mesmo_ip: number;
 };
 
-export type MotivoTentativaNegada = 'CPF_FORA_DA_LISTA' | 'CPF_JA_VOTOU';
+export type MotivoTentativaNegada = 'CPF_FORA_DA_LISTA' | 'CPF_JA_VOTOU' | 'MUITAS_TENTATIVAS';
 
 export type TentativaNegada = {
   id: string;

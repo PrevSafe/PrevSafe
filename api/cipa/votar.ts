@@ -17,7 +17,6 @@ type Corpo = {
 const MENSAGENS: Record<string, string> = {
   TOKEN_INVALIDO: 'Este link não é válido. Peça um novo link ao SESMT.',
   TOKEN_EXPIRADO: 'Este link expirou. Peça um novo link ao SESMT.',
-  JA_VOTOU: 'Este CPF já votou nesta eleição.',
   VOTO_EM_ANALISE: 'Seu voto já foi enviado e está aguardando conferência da comissão.',
   ELEICAO_NAO_ABERTA: 'A votação ainda não foi liberada.',
   ELEICAO_NAO_INICIADA: 'A votação ainda não começou.',
@@ -30,8 +29,19 @@ const MENSAGENS: Record<string, string> = {
   BRANCO_NAO_PERMITIDO: 'Voto em branco não é aceito nesta eleição.',
   NULO_NAO_PERMITIDO: 'Voto nulo não é aceito nesta eleição.',
   QR_CODE_DESABILITADO: 'A votação por QR Code está desativada nesta eleição.',
-  CPF_FORA_DA_LISTA: 'Seu CPF não consta na lista de eleitores aptos desta eleição. Procure a comissão eleitoral.',
+  MUITAS_TENTATIVAS: 'Muitas tentativas seguidas deste dispositivo. Aguarde alguns minutos e tente novamente.',
+  VOTO_NAO_CONFIRMADO:
+    'Não foi possível confirmar seu voto agora. Procure a comissão eleitoral com um documento com foto.',
 };
+
+/**
+ * CPF_FORA_DA_LISTA e JA_VOTOU nunca chegam ao eleitor com o código real:
+ * isso permitiria a um script descobrir quem está na lista de eleitores e
+ * quem já votou (oráculo de enumeração), o que vaza dados de terceiros e
+ * pode ser usado para coagir quem ainda não votou. O motivo verdadeiro
+ * continua registrado em cipa_tentativas_negadas para a comissão auditar.
+ */
+const CODIGOS_SENSIVEIS = new Set(['CPF_FORA_DA_LISTA', 'JA_VOTOU']);
 
 function codigoDoErro(erro: unknown): string {
   const bruto = typeof erro === 'string' ? erro : (erro as { message?: string })?.message ?? '';
@@ -39,9 +49,9 @@ function codigoDoErro(erro: unknown): string {
   return achado ? achado[0] : 'ERRO_DESCONHECIDO';
 }
 
-function mensagemDoErro(erro: unknown): string {
-  const codigo = codigoDoErro(erro);
-  return MENSAGENS[codigo] ?? 'Não foi possível concluir. Tente novamente em instantes.';
+function respostaDeErro(codigoBruto: string): { codigo: string; mensagem: string } {
+  const codigo = CODIGOS_SENSIVEIS.has(codigoBruto) ? 'VOTO_NAO_CONFIRMADO' : codigoBruto;
+  return { codigo, mensagem: MENSAGENS[codigo] ?? 'Não foi possível concluir. Tente novamente em instantes.' };
 }
 
 function somenteDigitos(valor: string): string {
@@ -80,7 +90,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   if (corpo.origem === 'QR_CODE' && !cpfValido(corpo.cpf ?? '')) {
-    res.status(422).json({ ok: false, codigo: 'CPF_INVALIDO', mensagem: mensagemDoErro('CPF_INVALIDO') });
+    res.status(422).json(Object.assign({ ok: false }, respostaDeErro('CPF_INVALIDO')));
     return;
   }
 
@@ -119,16 +129,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         });
 
   if (error) {
-    res.status(422).json({ ok: false, codigo: codigoDoErro(error), mensagem: mensagemDoErro(error) });
+    res.status(422).json(Object.assign({ ok: false }, respostaDeErro(codigoDoErro(error))));
     return;
   }
 
-  // CPF_FORA_DA_LISTA e JA_VOTOU (via QR) chegam como json normal, não como
-  // exceção: a RPC precisa persistir a tentativa negada, e uma exceção não
-  // tratada desfaria essa gravação junto com o resto da transação.
+  // CPF_FORA_DA_LISTA, JA_VOTOU e MUITAS_TENTATIVAS (via QR) chegam como json
+  // normal, não como exceção: a RPC precisa persistir a tentativa negada, e
+  // uma exceção não tratada desfaria essa gravação junto com o resto da
+  // transação.
   const resultado = data as { status?: string; codigo?: string } | null;
   if (resultado?.status === 'negado' && resultado.codigo) {
-    res.status(422).json({ ok: false, codigo: resultado.codigo, mensagem: mensagemDoErro(resultado.codigo) });
+    res.status(422).json(Object.assign({ ok: false }, respostaDeErro(resultado.codigo)));
     return;
   }
 

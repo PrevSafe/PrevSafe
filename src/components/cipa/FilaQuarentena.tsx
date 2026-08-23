@@ -9,7 +9,10 @@ const ALERTAS: Record<EnvelopeQuarentena['alerta'], { texto: string; classe: str
   CPF_NAO_ENCONTRADO_RH: { texto: 'CPF fora da lista de aptos', classe: 'bg-warning-container text-warning' },
   DIVERGENCIA_NOME: { texto: 'Nome diverge do cadastro', classe: 'bg-warning-container text-warning' },
   TENTATIVA_DUPLICADA: { texto: 'CPF já assinou a lista', classe: 'bg-error-container text-on-error-container' },
-  MULTIPLOS_VOTOS_MESMO_IP: { texto: 'Muitos votos do mesmo aparelho', classe: 'bg-warning-container text-warning' },
+  MULTIPLOS_VOTOS_MESMO_IP: {
+    texto: 'Possível fraude: vários CPFs pelo mesmo aparelho',
+    classe: 'bg-error-container text-on-error-container',
+  },
 };
 
 export function FilaQuarentena({ envelopes }: { envelopes: EnvelopeQuarentena[] }) {
@@ -67,9 +70,18 @@ export function FilaQuarentena({ envelopes }: { envelopes: EnvelopeQuarentena[] 
                       {e.cargo_rh ? ` · ${e.cargo_rh}` : ''}
                     </p>
                   )}
+                  <p className="mt-2 font-mono text-label-sm text-outline">
+                    IP: {e.ip_dispositivo ?? 'não registrado'}
+                    {e.votos_mesmo_ip > 1 && (
+                      <span className="ml-1 font-sans text-warning">
+                        · {e.votos_mesmo_ip} votos pendentes deste IP
+                      </span>
+                    )}
+                  </p>
                 </div>
                 <span className={`rounded-full px-3 py-1 text-label-sm font-semibold ${alerta.classe}`}>
                   {alerta.texto}
+                  {e.alerta === 'MULTIPLOS_VOTOS_MESMO_IP' && ` (${e.votos_mesmo_ip}x)`}
                 </span>
               </div>
 
