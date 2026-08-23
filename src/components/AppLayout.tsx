@@ -23,7 +23,7 @@ const GRUPOS: Grupo[] = [
     itens: [
       { rotulo: 'Lista de Funcionários', icone: 'group', para: '/funcionarios' },
       { rotulo: 'Controle de ASO', icone: 'medical_information', para: '#' },
-      { rotulo: 'Entrega de EPI', icone: 'engineering', para: '#' },
+      { rotulo: 'Entrega de EPI', icone: 'engineering', para: '/epi' },
       { rotulo: 'DDS e Treinamentos', icone: 'school', para: '#' },
     ],
   },

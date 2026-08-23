@@ -13,6 +13,10 @@ import CargoForm from '@/pages/CargoForm';
 import Estrutura from '@/pages/Estrutura';
 import Funcionarios from '@/pages/Funcionarios';
 import FuncionarioForm from '@/pages/FuncionarioForm';
+import EpiEntregas from '@/pages/EpiEntregas';
+import EpiEntregaForm from '@/pages/EpiEntregaForm';
+import EpiCatalogo from '@/pages/EpiCatalogo';
+import EpiCatalogoForm from '@/pages/EpiCatalogoForm';
 import ListaEleicoes from '@/pages/cipa/ListaEleicoes';
 import NovaEleicao from '@/pages/cipa/NovaEleicao';
 import PainelEleicao from '@/pages/cipa/PainelEleicao';
@@ -56,6 +60,12 @@ export default function App() {
           <Route path="/funcionarios" element={<Protegida><Funcionarios /></Protegida>} />
           <Route path="/funcionarios/novo" element={<Protegida><FuncionarioForm /></Protegida>} />
           <Route path="/funcionarios/:id" element={<Protegida><FuncionarioForm /></Protegida>} />
+          <Route path="/epi" element={<Protegida><EpiEntregas /></Protegida>} />
+          <Route path="/epi/nova" element={<Protegida><EpiEntregaForm /></Protegida>} />
+          <Route path="/epi/catalogo" element={<Protegida><EpiCatalogo /></Protegida>} />
+          <Route path="/epi/catalogo/novo" element={<Protegida><EpiCatalogoForm /></Protegida>} />
+          <Route path="/epi/catalogo/:id" element={<Protegida><EpiCatalogoForm /></Protegida>} />
+          <Route path="/epi/:id" element={<Protegida><EpiEntregaForm /></Protegida>} />
           <Route path="/cipa" element={<Protegida><ListaEleicoes /></Protegida>} />
           <Route path="/cipa/nova" element={<Protegida><NovaEleicao /></Protegida>} />
           <Route path="/cipa/:id" element={<Protegida><PainelEleicao /></Protegida>} />
