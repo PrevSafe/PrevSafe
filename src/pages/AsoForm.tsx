@@ -4,7 +4,13 @@ import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 import { daEmpresa } from '@/lib/consulta';
 import { Secao, Campo, Seletor, AreaTexto, Botao } from '@/components/ui/Form';
-import { TIPO_EXAME_LABEL, RESULTADO_LABEL, type TipoExame, type Resultado } from '@/lib/aso';
+import {
+  RESULTADO_LABEL,
+  TIPO_EXAME_LABEL,
+  calcularVencimento,
+  type ResultadoExame,
+  type TipoExame,
+} from '@/lib/aso';
 
 type Funcionario = { id: string; nome: string };
 
@@ -13,7 +19,7 @@ type FormState = {
   tipo_exame: TipoExame;
   data_exame: string;
   data_vencimento: string;
-  resultado: Resultado;
+  resultado: ResultadoExame;
   medico_nome: string;
   medico_crm: string;
   observacao: string;
@@ -25,7 +31,7 @@ function hoje() {
 
 const VAZIO: FormState = {
   funcionario_id: '',
-  tipo_exame: 'periodico',
+  tipo_exame: 'admissional',
   data_exame: '',
   data_vencimento: '',
   resultado: 'apto',
@@ -57,21 +63,23 @@ export default function AsoForm() {
     const empresaId = empresaAtiva.empresa_id;
 
     async function carregar() {
-      const rf = await daEmpresa(supabase.from('funcionarios').select('id, nome'), empresaId)
+      const { data: rf, error: erroFunc } = await daEmpresa(
+        supabase.from('funcionarios').select('id, nome'),
+        empresaId
+      )
         .eq('status', 'ativo')
         .order('nome');
       if (!ativo) return;
 
-      if (rf.error) {
-        setErroGeral(rf.error.message);
+      if (erroFunc) {
+        setErroGeral(erroFunc.message);
         setCarregando(false);
         return;
       }
-
-      setFuncionarios((rf.data ?? []) as Funcionario[]);
+      setFuncionarios((rf ?? []) as Funcionario[]);
 
       if (id) {
-        const { data, error } = await daEmpresa(supabase.from('asos').select('*'), empresaId)
+        const { data, error } = await daEmpresa(supabase.from('aso_exames').select('*'), empresaId)
           .eq('id', id)
           .single();
         if (!ativo) return;
@@ -82,10 +90,10 @@ export default function AsoForm() {
         }
         setForm({
           funcionario_id: data.funcionario_id,
-          tipo_exame: (data.tipo_exame as TipoExame) ?? 'periodico',
+          tipo_exame: (data.tipo_exame as TipoExame) ?? 'admissional',
           data_exame: data.data_exame ?? hoje(),
           data_vencimento: data.data_vencimento ?? '',
-          resultado: (data.resultado as Resultado) ?? 'apto',
+          resultado: (data.resultado as ResultadoExame) ?? 'apto',
           medico_nome: data.medico_nome ?? '',
           medico_crm: data.medico_crm ?? '',
           observacao: data.observacao ?? '',
@@ -106,12 +114,28 @@ export default function AsoForm() {
     setErros((e) => ({ ...e, [campo]: undefined }));
   }
 
+  function mudarTipo(tipo: TipoExame) {
+    setForm((f) => ({
+      ...f,
+      tipo_exame: tipo,
+      data_vencimento: calcularVencimento(f.data_exame, tipo) ?? '',
+    }));
+    setErros((e) => ({ ...e, tipo_exame: undefined }));
+  }
+
+  function mudarDataExame(data: string) {
+    setForm((f) => ({
+      ...f,
+      data_exame: data,
+      data_vencimento: calcularVencimento(data, f.tipo_exame) ?? '',
+    }));
+    setErros((e) => ({ ...e, data_exame: undefined }));
+  }
+
   function validar() {
     const e: Partial<Record<keyof FormState, string>> = {};
     if (!form.funcionario_id) e.funcionario_id = 'Selecione o funcionário.';
-    if (!form.tipo_exame) e.tipo_exame = 'Selecione o tipo de exame.';
     if (!form.data_exame) e.data_exame = 'Informe a data do exame.';
-    if (!form.resultado) e.resultado = 'Selecione o resultado.';
     setErros(e);
     return Object.keys(e).length === 0;
   }
@@ -135,8 +159,8 @@ export default function AsoForm() {
     };
 
     const { error } = editando
-      ? await supabase.from('asos').update(payload).eq('id', id!)
-      : await supabase.from('asos').insert(payload);
+      ? await supabase.from('aso_exames').update(payload).eq('id', id!)
+      : await supabase.from('aso_exames').insert(payload);
 
     setSalvando(false);
 
@@ -169,7 +193,7 @@ export default function AsoForm() {
           <span className="material-symbols-outlined">arrow_back</span>
         </button>
         <h2 className="text-title-lg text-primary-container flex-1">
-          {editando ? 'Editar ASO' : 'Novo ASO'}
+          {editando ? 'Editar exame' : 'Novo exame de ASO'}
         </h2>
       </header>
 
@@ -183,7 +207,7 @@ export default function AsoForm() {
         {funcionarios.length === 0 ? (
           <div className="flex items-start gap-2 bg-[#F97316]/10 text-[#9a3412] px-3 py-2 rounded-lg text-label-sm">
             <span className="material-symbols-outlined text-[16px] mt-px">warning</span>
-            <span>Nenhum funcionário ativo cadastrado ainda. Cadastre um funcionário antes de registrar um ASO.</span>
+            <span>Nenhum funcionário ativo cadastrado ainda. Cadastre um funcionário antes de registrar um exame.</span>
           </div>
         ) : (
           <>
@@ -208,8 +232,7 @@ export default function AsoForm() {
                 rotulo="Tipo de exame"
                 name="tipo_exame"
                 value={form.tipo_exame}
-                onChange={(e) => set('tipo_exame', e.target.value as TipoExame)}
-                erro={erros.tipo_exame}
+                onChange={(e) => mudarTipo(e.target.value as TipoExame)}
               >
                 {(Object.keys(TIPO_EXAME_LABEL) as TipoExame[]).map((t) => (
                   <option key={t} value={t}>
@@ -224,16 +247,16 @@ export default function AsoForm() {
                   name="data_exame"
                   type="date"
                   value={form.data_exame}
-                  onChange={(e) => set('data_exame', e.target.value)}
+                  onChange={(e) => mudarDataExame(e.target.value)}
                   erro={erros.data_exame}
                 />
                 <Campo
-                  rotulo="Data de vencimento (próximo exame)"
+                  rotulo="Data de vencimento"
                   name="data_vencimento"
                   type="date"
                   value={form.data_vencimento}
                   onChange={(e) => set('data_vencimento', e.target.value)}
-                  dica="Data limite para o próximo exame periódico, se aplicável."
+                  dica="Sugerida a partir do tipo de exame — pode ser ajustada."
                 />
               </div>
 
@@ -241,10 +264,9 @@ export default function AsoForm() {
                 rotulo="Resultado"
                 name="resultado"
                 value={form.resultado}
-                onChange={(e) => set('resultado', e.target.value as Resultado)}
-                erro={erros.resultado}
+                onChange={(e) => set('resultado', e.target.value as ResultadoExame)}
               >
-                {(Object.keys(RESULTADO_LABEL) as Resultado[]).map((r) => (
+                {(Object.keys(RESULTADO_LABEL) as ResultadoExame[]).map((r) => (
                   <option key={r} value={r}>
                     {RESULTADO_LABEL[r]}
                   </option>
@@ -252,28 +274,30 @@ export default function AsoForm() {
               </Seletor>
             </Secao>
 
-            <Secao icone="medical_services" titulo="Médico responsável">
+            <Secao icone="medical_services" titulo="Médico responsável (opcional)">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <Campo
-                  rotulo="Nome do médico (opcional)"
+                  rotulo="Nome do médico"
                   name="medico_nome"
                   placeholder="Ex.: Dr. João Silva"
                   value={form.medico_nome}
                   onChange={(e) => set('medico_nome', e.target.value)}
                 />
                 <Campo
-                  rotulo="CRM (opcional)"
+                  rotulo="CRM"
                   name="medico_crm"
                   placeholder="Ex.: CRM/SP 123456"
                   value={form.medico_crm}
                   onChange={(e) => set('medico_crm', e.target.value)}
                 />
               </div>
+            </Secao>
 
+            <Secao icone="notes" titulo="Observações">
               <AreaTexto
                 rotulo="Observações (opcional)"
                 name="observacao"
-                placeholder="Ex.: restrições indicadas, exames complementares solicitados, etc."
+                placeholder="Ex.: restrições, exames complementares solicitados, etc."
                 value={form.observacao}
                 onChange={(e) => set('observacao', e.target.value)}
               />
@@ -294,7 +318,7 @@ export default function AsoForm() {
             disabled={funcionarios.length === 0}
             className="flex-1"
           >
-            {salvando ? 'Salvando...' : 'Salvar ASO'}
+            {salvando ? 'Salvando...' : 'Salvar exame'}
           </Botao>
         </div>
       </footer>

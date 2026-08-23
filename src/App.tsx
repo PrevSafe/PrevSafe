@@ -17,6 +17,12 @@ import EpiEntregas from '@/pages/EpiEntregas';
 import EpiEntregaForm from '@/pages/EpiEntregaForm';
 import EpiCatalogo from '@/pages/EpiCatalogo';
 import EpiCatalogoForm from '@/pages/EpiCatalogoForm';
+import AsoControle from '@/pages/AsoControle';
+import AsoForm from '@/pages/AsoForm';
+import Dds from '@/pages/Dds';
+import DdsForm from '@/pages/DdsForm';
+import Treinamentos from '@/pages/Treinamentos';
+import TreinamentoForm from '@/pages/TreinamentoForm';
 import ListaEleicoes from '@/pages/cipa/ListaEleicoes';
 import NovaEleicao from '@/pages/cipa/NovaEleicao';
 import PainelEleicao from '@/pages/cipa/PainelEleicao';
@@ -30,10 +36,6 @@ import Apuracao from '@/pages/cipa/Apuracao';
 import VotoLink from '@/pages/cipa/VotoLink';
 import VotoQr from '@/pages/cipa/VotoQr';
 import Acessos from '@/pages/Acessos';
-import AsoLista from '@/pages/AsoLista';
-import AsoForm from '@/pages/AsoForm';
-import Treinamentos from '@/pages/Treinamentos';
-import TreinamentoForm from '@/pages/TreinamentoForm';
 import Inspecoes from '@/pages/Inspecoes';
 import InspecaoForm from '@/pages/InspecaoForm';
 import PlanosAcao from '@/pages/PlanosAcao';
@@ -81,6 +83,15 @@ export default function App() {
           <Route path="/epi/catalogo/novo" element={<Protegida><EpiCatalogoForm /></Protegida>} />
           <Route path="/epi/catalogo/:id" element={<Protegida><EpiCatalogoForm /></Protegida>} />
           <Route path="/epi/:id" element={<Protegida><EpiEntregaForm /></Protegida>} />
+          <Route path="/aso" element={<Protegida><AsoControle /></Protegida>} />
+          <Route path="/aso/novo" element={<Protegida><AsoForm /></Protegida>} />
+          <Route path="/aso/:id" element={<Protegida><AsoForm /></Protegida>} />
+          <Route path="/dds" element={<Protegida><Dds /></Protegida>} />
+          <Route path="/dds/novo" element={<Protegida><DdsForm /></Protegida>} />
+          <Route path="/dds/treinamentos" element={<Protegida><Treinamentos /></Protegida>} />
+          <Route path="/dds/treinamentos/novo" element={<Protegida><TreinamentoForm /></Protegida>} />
+          <Route path="/dds/treinamentos/:id" element={<Protegida><TreinamentoForm /></Protegida>} />
+          <Route path="/dds/:id" element={<Protegida><DdsForm /></Protegida>} />
           <Route path="/cipa" element={<Protegida><ListaEleicoes /></Protegida>} />
           <Route path="/cipa/nova" element={<Protegida><NovaEleicao /></Protegida>} />
           <Route path="/cipa/:id" element={<Protegida><PainelEleicao /></Protegida>} />
@@ -92,12 +103,6 @@ export default function App() {
           <Route path="/cipa/:id/comissao" element={<Protegida><Comissao /></Protegida>} />
           <Route path="/cipa/:id/apuracao" element={<Protegida><Apuracao /></Protegida>} />
           <Route path="/acessos" element={<Protegida><Acessos /></Protegida>} />
-          <Route path="/aso" element={<Protegida><AsoLista /></Protegida>} />
-          <Route path="/aso/novo" element={<Protegida><AsoForm /></Protegida>} />
-          <Route path="/aso/:id" element={<Protegida><AsoForm /></Protegida>} />
-          <Route path="/treinamentos" element={<Protegida><Treinamentos /></Protegida>} />
-          <Route path="/treinamentos/novo" element={<Protegida><TreinamentoForm /></Protegida>} />
-          <Route path="/treinamentos/:id" element={<Protegida><TreinamentoForm /></Protegida>} />
           <Route path="/inspecoes" element={<Protegida><Inspecoes /></Protegida>} />
           <Route path="/inspecoes/nova" element={<Protegida><InspecaoForm /></Protegida>} />
           <Route path="/inspecoes/:id" element={<Protegida><InspecaoForm /></Protegida>} />

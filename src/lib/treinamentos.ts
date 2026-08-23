@@ -1,29 +1,31 @@
-export type TipoTreinamento = 'dds' | 'treinamento';
+export type StatusValidade = 'sem_validade' | 'valido' | 'vencendo' | 'vencido';
 
-export const TIPO_LABEL: Record<TipoTreinamento, string> = {
-  dds: 'DDS',
-  treinamento: 'Treinamento',
-};
+const DIAS_ALERTA_VENCIMENTO = 30;
 
-export const TIPO_DESCRICAO: Record<TipoTreinamento, string> = {
-  dds: 'Diálogo Diário/Semanal de Segurança',
-  treinamento: 'Treinamento formal',
-};
-
-export function corTipo(tipo: TipoTreinamento) {
-  return tipo === 'dds'
-    ? 'bg-secondary-container/40 text-on-secondary-container'
-    : 'bg-primary-container/15 text-primary-container';
+/** Situação do prazo de reciclagem a partir da data de validade (formato ISO yyyy-mm-dd). */
+export function statusValidade(dataValidade: string | null): StatusValidade {
+  if (!dataValidade) return 'sem_validade';
+  const validade = new Date(`${dataValidade}T00:00:00`);
+  const hoje = new Date();
+  const hojeSemHora = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
+  const diffDias = Math.floor((validade.getTime() - hojeSemHora.getTime()) / 86400000);
+  if (diffDias < 0) return 'vencido';
+  if (diffDias <= DIAS_ALERTA_VENCIMENTO) return 'vencendo';
+  return 'valido';
 }
 
-/** Formata a carga horária em minutos como texto legível (ex.: "1h 30min"). */
-export function formatarCargaHoraria(minutos: number | null): string {
-  if (!minutos) return '—';
-  const horas = Math.floor(minutos / 60);
-  const min = minutos % 60;
-  if (horas === 0) return `${min}min`;
-  if (min === 0) return `${horas}h`;
-  return `${horas}h ${min}min`;
+export const STATUS_VALIDADE_LABEL: Record<StatusValidade, string> = {
+  sem_validade: 'Sem prazo definido',
+  valido: 'Válido',
+  vencendo: 'Vencendo em breve',
+  vencido: 'Vencido',
+};
+
+export function corStatusValidade(status: StatusValidade) {
+  if (status === 'vencido') return 'bg-error-container text-on-error-container';
+  if (status === 'vencendo') return 'bg-[#F97316]/15 text-[#9a3412]';
+  if (status === 'valido') return 'bg-secondary-container/40 text-on-secondary-container';
+  return 'bg-surface-container-high text-on-surface-variant';
 }
 
 export function formatarData(iso: string | null) {
