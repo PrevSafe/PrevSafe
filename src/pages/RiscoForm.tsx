@@ -14,6 +14,8 @@ import {
 } from '@/lib/riscos';
 
 type Ghe = { id: string; nome: string };
+type FatorRiscoT24 = { codigo_esocial: string; descricao: string; tipo_risco: TipoRisco };
+type Epi = { id: string; nome: string };
 
 type FormState = {
   ghe_id: string;
@@ -23,6 +25,8 @@ type FormState = {
   medidas_controle: string;
   probabilidade: string;
   severidade: string;
+  fator_risco_t24_codigo: string;
+  epi_id: string;
 };
 
 const VAZIO: FormState = {
@@ -33,6 +37,8 @@ const VAZIO: FormState = {
   medidas_controle: '',
   probabilidade: '1',
   severidade: '1',
+  fator_risco_t24_codigo: '',
+  epi_id: '',
 };
 
 export default function RiscoForm() {
@@ -43,6 +49,8 @@ export default function RiscoForm() {
 
   const [form, setForm] = useState<FormState>(VAZIO);
   const [ghes, setGhes] = useState<Ghe[]>([]);
+  const [fatoresRisco, setFatoresRisco] = useState<FatorRiscoT24[]>([]);
+  const [epis, setEpis] = useState<Epi[]>([]);
   const [erros, setErros] = useState<Partial<Record<keyof FormState, string>>>({});
   const [salvando, setSalvando] = useState(false);
   const [carregando, setCarregando] = useState(true);
@@ -57,15 +65,22 @@ export default function RiscoForm() {
     const empresaId = empresaAtiva.empresa_id;
 
     async function carregar() {
-      const rg = await daEmpresa(supabase.from('ghes').select('id, nome'), empresaId).order('nome');
+      const [rg, rf, re] = await Promise.all([
+        daEmpresa(supabase.from('ghes').select('id, nome'), empresaId).order('nome'),
+        supabase.from('fatores_risco_t24').select('codigo_esocial, descricao, tipo_risco').order('descricao'),
+        daEmpresa(supabase.from('epis').select('id, nome'), empresaId).eq('ativo', true).order('nome'),
+      ]);
       if (!ativo) return;
 
-      if (rg.error) {
-        setErroGeral(rg.error.message);
+      const erroBase = rg.error ?? rf.error ?? re.error;
+      if (erroBase) {
+        setErroGeral(erroBase.message);
         setCarregando(false);
         return;
       }
       setGhes((rg.data ?? []) as Ghe[]);
+      setFatoresRisco((rf.data ?? []) as FatorRiscoT24[]);
+      setEpis((re.data ?? []) as Epi[]);
 
       if (id) {
         const { data, error } = await daEmpresa(supabase.from('riscos_inventario').select('*'), empresaId)
@@ -85,6 +100,8 @@ export default function RiscoForm() {
           medidas_controle: data.medidas_controle ?? '',
           probabilidade: String(data.probabilidade ?? 1),
           severidade: String(data.severidade ?? 1),
+          fator_risco_t24_codigo: data.fator_risco_t24_codigo ?? '',
+          epi_id: data.epi_id ?? '',
         });
       }
 
@@ -125,6 +142,8 @@ export default function RiscoForm() {
       medidas_controle: form.medidas_controle.trim() || null,
       probabilidade: Number(form.probabilidade),
       severidade: Number(form.severidade),
+      fator_risco_t24_codigo: form.fator_risco_t24_codigo || null,
+      epi_id: form.epi_id || null,
     };
 
     const { error } = editando
@@ -209,6 +228,38 @@ export default function RiscoForm() {
                 {(Object.keys(TIPO_RISCO_LABEL) as TipoRisco[]).map((t) => (
                   <option key={t} value={t}>
                     {TIPO_RISCO_LABEL[t]}
+                  </option>
+                ))}
+              </Seletor>
+
+              <Seletor
+                rotulo="Fator de risco oficial — Tabela 24 (opcional)"
+                name="fator_risco_t24_codigo"
+                value={form.fator_risco_t24_codigo}
+                onChange={(e) => set('fator_risco_t24_codigo', e.target.value)}
+                dica="Vincula este risco ao catálogo oficial do eSocial, habilitando a checagem automática de exames pelo SST Linter."
+              >
+                <option value="">Nenhum</option>
+                {fatoresRisco
+                  .filter((f) => f.tipo_risco === form.tipo_risco)
+                  .map((f) => (
+                    <option key={f.codigo_esocial} value={f.codigo_esocial}>
+                      {f.codigo_esocial} — {f.descricao}
+                    </option>
+                  ))}
+              </Seletor>
+
+              <Seletor
+                rotulo="EPI exigido (opcional)"
+                name="epi_id"
+                value={form.epi_id}
+                onChange={(e) => set('epi_id', e.target.value)}
+                dica="O SST Linter bloqueia o risco se o trabalhador não tiver entrega vigente deste EPI."
+              >
+                <option value="">Nenhum</option>
+                {epis.map((e) => (
+                  <option key={e.id} value={e.id}>
+                    {e.nome}
                   </option>
                 ))}
               </Seletor>

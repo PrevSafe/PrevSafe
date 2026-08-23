@@ -1,5 +1,5 @@
 import { useEffect, useState, type FormEvent } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 import { daEmpresa } from '@/lib/consulta';
@@ -13,6 +13,7 @@ import {
 } from '@/lib/aso';
 
 type Funcionario = { id: string; nome: string };
+type Procedimento = { codigo_esocial: string; nome_exame: string };
 
 type FormState = {
   funcionario_id: string;
@@ -45,14 +46,22 @@ export default function AsoForm() {
   const editando = Boolean(id);
   const navigate = useNavigate();
   const { empresaAtiva } = useAuth();
+  const [searchParams] = useSearchParams();
+  const funcionarioPreselecionado = searchParams.get('funcionario_id') ?? '';
 
-  const [form, setForm] = useState<FormState>(() => ({ ...VAZIO, data_exame: hoje() }));
+  const [form, setForm] = useState<FormState>(() => ({
+    ...VAZIO,
+    funcionario_id: funcionarioPreselecionado,
+    data_exame: hoje(),
+  }));
   const [erros, setErros] = useState<Partial<Record<keyof FormState, string>>>({});
   const [salvando, setSalvando] = useState(false);
   const [carregando, setCarregando] = useState(true);
   const [erroGeral, setErroGeral] = useState<string | null>(null);
 
   const [funcionarios, setFuncionarios] = useState<Funcionario[]>([]);
+  const [procedimentos, setProcedimentos] = useState<Procedimento[]>([]);
+  const [procedimentosMarcados, setProcedimentosMarcados] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     if (!empresaAtiva) {
@@ -63,25 +72,28 @@ export default function AsoForm() {
     const empresaId = empresaAtiva.empresa_id;
 
     async function carregar() {
-      const { data: rf, error: erroFunc } = await daEmpresa(
-        supabase.from('funcionarios').select('id, nome'),
-        empresaId
-      )
-        .eq('status', 'ativo')
-        .order('nome');
+      const [rf, rp] = await Promise.all([
+        daEmpresa(supabase.from('funcionarios').select('id, nome'), empresaId)
+          .eq('status', 'ativo')
+          .order('nome'),
+        supabase.from('procedimentos_t27').select('codigo_esocial, nome_exame').order('nome_exame'),
+      ]);
       if (!ativo) return;
 
-      if (erroFunc) {
-        setErroGeral(erroFunc.message);
+      const erroBase = rf.error ?? rp.error;
+      if (erroBase) {
+        setErroGeral(erroBase.message);
         setCarregando(false);
         return;
       }
-      setFuncionarios((rf ?? []) as Funcionario[]);
+      setFuncionarios((rf.data ?? []) as Funcionario[]);
+      setProcedimentos((rp.data ?? []) as Procedimento[]);
 
       if (id) {
-        const { data, error } = await daEmpresa(supabase.from('aso_exames').select('*'), empresaId)
-          .eq('id', id)
-          .single();
+        const [{ data, error }, { data: marcados }] = await Promise.all([
+          daEmpresa(supabase.from('aso_exames').select('*'), empresaId).eq('id', id).single(),
+          supabase.from('aso_exames_procedimentos').select('procedimento_codigo').eq('aso_exame_id', id),
+        ]);
         if (!ativo) return;
         if (error) {
           setErroGeral(error.message);
@@ -98,6 +110,7 @@ export default function AsoForm() {
           medico_crm: data.medico_crm ?? '',
           observacao: data.observacao ?? '',
         });
+        setProcedimentosMarcados(new Set((marcados ?? []).map((m) => m.procedimento_codigo)));
       }
 
       setCarregando(false);
@@ -132,6 +145,15 @@ export default function AsoForm() {
     setErros((e) => ({ ...e, data_exame: undefined }));
   }
 
+  function alternarProcedimento(codigo: string) {
+    setProcedimentosMarcados((atual) => {
+      const proximo = new Set(atual);
+      if (proximo.has(codigo)) proximo.delete(codigo);
+      else proximo.add(codigo);
+      return proximo;
+    });
+  }
+
   function validar() {
     const e: Partial<Record<keyof FormState, string>> = {};
     if (!form.funcionario_id) e.funcionario_id = 'Selecione o funcionário.';
@@ -158,16 +180,34 @@ export default function AsoForm() {
       observacao: form.observacao.trim() || null,
     };
 
-    const { error } = editando
-      ? await supabase.from('aso_exames').update(payload).eq('id', id!)
-      : await supabase.from('aso_exames').insert(payload);
-
-    setSalvando(false);
+    const { data: salvo, error } = editando
+      ? await supabase.from('aso_exames').update(payload).eq('id', id!).select('id').single()
+      : await supabase.from('aso_exames').insert(payload).select('id').single();
 
     if (error) {
+      setSalvando(false);
       setErroGeral(error.message);
       return;
     }
+
+    const asoExameId = salvo!.id;
+    await supabase.from('aso_exames_procedimentos').delete().eq('aso_exame_id', asoExameId);
+    if (procedimentosMarcados.size > 0) {
+      const { error: erroProc } = await supabase.from('aso_exames_procedimentos').insert(
+        [...procedimentosMarcados].map((procedimento_codigo) => ({
+          empresa_id: empresaAtiva.empresa_id,
+          aso_exame_id: asoExameId,
+          procedimento_codigo,
+        }))
+      );
+      if (erroProc) {
+        setSalvando(false);
+        setErroGeral(erroProc.message);
+        return;
+      }
+    }
+
+    setSalvando(false);
     navigate('/aso', { replace: true });
   }
 
@@ -292,6 +332,27 @@ export default function AsoForm() {
                 />
               </div>
             </Secao>
+
+            {procedimentos.length > 0 && (
+              <Secao icone="checklist" titulo="Procedimentos realizados (opcional)">
+                <div className="flex flex-col gap-2">
+                  {procedimentos.map((p) => (
+                    <label
+                      key={p.codigo_esocial}
+                      className="flex items-center gap-2 text-label-md text-on-surface cursor-pointer"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={procedimentosMarcados.has(p.codigo_esocial)}
+                        onChange={() => alternarProcedimento(p.codigo_esocial)}
+                        className="size-4 accent-primary"
+                      />
+                      {p.nome_exame}
+                    </label>
+                  ))}
+                </div>
+              </Secao>
+            )}
 
             <Secao icone="notes" titulo="Observações">
               <AreaTexto

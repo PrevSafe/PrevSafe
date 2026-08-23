@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 import { daEmpresa } from '@/lib/consulta';
@@ -41,8 +41,14 @@ export default function EpiEntregaForm() {
   const editando = Boolean(id);
   const navigate = useNavigate();
   const { empresaAtiva } = useAuth();
+  const [searchParams] = useSearchParams();
+  const funcionarioPreselecionado = searchParams.get('funcionario_id') ?? '';
 
-  const [form, setForm] = useState<FormState>(() => ({ ...VAZIO, data_entrega: hoje() }));
+  const [form, setForm] = useState<FormState>(() => ({
+    ...VAZIO,
+    funcionario_id: funcionarioPreselecionado,
+    data_entrega: hoje(),
+  }));
   const [erros, setErros] = useState<Partial<Record<keyof FormState, string>>>({});
   const [salvando, setSalvando] = useState(false);
   const [carregando, setCarregando] = useState(true);

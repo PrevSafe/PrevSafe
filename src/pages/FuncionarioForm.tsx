@@ -5,6 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { daEmpresa } from '@/lib/consulta';
 import { Secao, Campo, Seletor, Botao } from '@/components/ui/Form';
 import { cpfValido, mascaraCpf, mascaraPis, mascaraTelefone } from '@/lib/funcionarios';
+import SstLinterPainel from '@/components/SstLinterPainel';
 
 type StatusFuncionario = 'ativo' | 'afastado' | 'ferias' | 'desligado';
 type MotivoMudanca = 'transferencia' | 'promocao' | 'retorno';
@@ -805,6 +806,8 @@ export default function FuncionarioForm() {
           </Secao>
         )}
       </div>
+
+      {editando && <SstLinterPainel funcionarioId={id!} />}
 
       <footer className="flex gap-3 px-margin-mobile md:px-md py-4 mt-2 max-w-3xl w-full border-t border-outline-variant">
         <Botao

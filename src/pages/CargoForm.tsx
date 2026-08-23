@@ -5,11 +5,14 @@ import { useAuth } from '@/contexts/AuthContext';
 import { daEmpresa } from '@/lib/consulta';
 import { Secao, Campo, Seletor, AreaTexto, Botao } from '@/components/ui/Form';
 
+type Ghe = { id: string; nome: string };
+
 type Form = {
   codigo: string;
   nome: string;
   cbo: string;
   codigo_gfip: string;
+  ghe_id: string;
   descricao_atividades: string;
 };
 
@@ -18,6 +21,7 @@ const VAZIO: Form = {
   nome: '',
   cbo: '',
   codigo_gfip: '0',
+  ghe_id: '',
   descricao_atividades: '',
 };
 
@@ -36,14 +40,22 @@ export default function CargoForm() {
   const { empresaAtiva } = useAuth();
 
   const [form, setForm] = useState<Form>(VAZIO);
+  const [ghes, setGhes] = useState<Ghe[]>([]);
   const [erros, setErros] = useState<Partial<Record<keyof Form, string>>>({});
   const [salvando, setSalvando] = useState(false);
   const [carregando, setCarregando] = useState(editando);
   const [erroGeral, setErroGeral] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!id || !empresaAtiva) return;
-    daEmpresa(supabase.from('cargos').select('*'), empresaAtiva.empresa_id)
+    if (!empresaAtiva) return;
+    const empresaId = empresaAtiva.empresa_id;
+
+    daEmpresa(supabase.from('ghes').select('id, nome'), empresaId)
+      .order('nome')
+      .then(({ data }) => setGhes((data ?? []) as Ghe[]));
+
+    if (!id) return;
+    daEmpresa(supabase.from('cargos').select('*'), empresaId)
       .eq('id', id)
       .single()
       .then(({ data, error }) => {
@@ -54,6 +66,7 @@ export default function CargoForm() {
             nome: data.nome ?? '',
             cbo: mascaraCbo(data.cbo ?? ''),
             codigo_gfip: String(data.codigo_gfip ?? 0),
+            ghe_id: data.ghe_id ?? '',
             descricao_atividades: data.descricao_atividades ?? '',
           });
         setCarregando(false);
@@ -85,6 +98,7 @@ export default function CargoForm() {
       nome: form.nome.trim(),
       cbo: so(form.cbo) || null,
       codigo_gfip: Number(form.codigo_gfip),
+      ghe_id: form.ghe_id || null,
       descricao_atividades: form.descricao_atividades.trim() || null,
     };
 
@@ -192,6 +206,20 @@ export default function CargoForm() {
               </span>
             </div>
           )}
+          <Seletor
+            rotulo="GHE associado (opcional)"
+            name="ghe_id"
+            value={form.ghe_id}
+            onChange={(e) => set('ghe_id', e.target.value)}
+            dica="Define os riscos que o SST Linter cruza com os exames e EPIs dos trabalhadores deste cargo."
+          >
+            <option value="">Nenhum</option>
+            {ghes.map((g) => (
+              <option key={g.id} value={g.id}>
+                {g.nome}
+              </option>
+            ))}
+          </Seletor>
         </Secao>
 
         <Secao icone="description" titulo="Atividades">
