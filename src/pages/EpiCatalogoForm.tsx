@@ -122,7 +122,7 @@ export default function EpiCatalogoForm() {
         </h2>
       </header>
 
-      <div className="flex flex-col gap-6 p-margin-mobile md:p-md max-w-3xl w-full pb-32">
+      <div className="flex flex-col gap-6 p-margin-mobile md:p-md max-w-3xl w-full">
         {erroGeral && (
           <div className="bg-error-container text-on-error-container rounded-lg px-4 py-3 text-label-md">
             {erroGeral}
@@ -179,20 +179,18 @@ export default function EpiCatalogoForm() {
         )}
       </div>
 
-      <footer className="fixed bottom-0 left-0 md:left-80 right-0 bg-surface-container-lowest p-4 border-t border-outline-variant flex gap-3 z-30 pb-24 md:pb-4">
-        <div className="flex gap-3 w-full max-w-3xl mx-auto md:mx-0 md:ml-md">
-          <Botao
-            type="button"
-            variante="secundario"
-            className="flex-1"
-            onClick={() => navigate('/epi/catalogo')}
-          >
-            Cancelar
-          </Botao>
-          <Botao type="submit" icone="save" carregando={salvando} className="flex-1">
-            {salvando ? 'Salvando...' : 'Salvar equipamento'}
-          </Botao>
-        </div>
+      <footer className="flex gap-3 px-margin-mobile md:px-md py-4 mt-2 max-w-3xl w-full border-t border-outline-variant">
+        <Botao
+          type="button"
+          variante="secundario"
+          className="flex-1"
+          onClick={() => navigate('/epi/catalogo')}
+        >
+          Cancelar
+        </Botao>
+        <Botao type="submit" icone="save" carregando={salvando} className="flex-1">
+          {salvando ? 'Salvando...' : 'Salvar equipamento'}
+        </Botao>
       </footer>
     </form>
   );

@@ -169,7 +169,7 @@ export default function RiscoForm() {
         </h2>
       </header>
 
-      <div className="flex flex-col gap-6 p-margin-mobile md:p-md max-w-3xl w-full pb-32">
+      <div className="flex flex-col gap-6 p-margin-mobile md:p-md max-w-3xl w-full">
         {erroGeral && (
           <div className="bg-error-container text-on-error-container rounded-lg px-4 py-3 text-label-md">
             {erroGeral}
@@ -280,21 +280,19 @@ export default function RiscoForm() {
         )}
       </div>
 
-      <footer className="fixed bottom-0 left-0 md:left-80 right-0 bg-surface-container-lowest p-4 border-t border-outline-variant flex gap-3 z-30 pb-24 md:pb-4">
-        <div className="flex gap-3 w-full max-w-3xl mx-auto md:mx-0 md:ml-md">
-          <Botao type="button" variante="secundario" className="flex-1" onClick={() => navigate('/riscos')}>
-            Cancelar
-          </Botao>
-          <Botao
-            type="submit"
-            icone="save"
-            carregando={salvando}
-            disabled={ghes.length === 0}
-            className="flex-1"
-          >
-            {salvando ? 'Salvando...' : 'Salvar risco'}
-          </Botao>
-        </div>
+      <footer className="flex gap-3 px-margin-mobile md:px-md py-4 mt-2 max-w-3xl w-full border-t border-outline-variant">
+        <Botao type="button" variante="secundario" className="flex-1" onClick={() => navigate('/riscos')}>
+          Cancelar
+        </Botao>
+        <Botao
+          type="submit"
+          icone="save"
+          carregando={salvando}
+          disabled={ghes.length === 0}
+          className="flex-1"
+        >
+          {salvando ? 'Salvando...' : 'Salvar risco'}
+        </Botao>
       </footer>
     </form>
   );
