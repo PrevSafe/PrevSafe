@@ -95,6 +95,9 @@ export default function AppLayout({ children }: { children: ReactNode }) {
   const { perfil, vinculos, empresaAtiva, trocarEmpresa, sair, can } = useAuth();
   const navigate = useNavigate();
   const [menuAberto, setMenuAberto] = useState(false);
+  // No desktop o menu fica visível por padrão; oculta ao selecionar um item
+  // (fecharMenus) e volta com o botão flutuante que aparece no lugar dele.
+  const [sidebarDesktopAberta, setSidebarDesktopAberta] = useState(true);
   const [seletorEmpresaAberto, setSeletorEmpresaAberto] = useState(false);
   const [temCipa, setTemCipa] = useState(false);
 
@@ -135,10 +138,16 @@ export default function AppLayout({ children }: { children: ReactNode }) {
     navigate('/login', { replace: true });
   }
 
+  /** Fecha o drawer mobile e oculta a coluna fixa do desktop — chamado sempre que o usuário escolhe um destino. */
+  function fecharMenus() {
+    setMenuAberto(false);
+    setSidebarDesktopAberta(false);
+  }
+
   function handleTrocarEmpresa(empresaId: string) {
     trocarEmpresa(empresaId);
     setSeletorEmpresaAberto(false);
-    setMenuAberto(false);
+    fecharMenus();
     navigate('/dashboard');
   }
 
@@ -195,7 +204,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
         <div className="space-y-1">
           <LinkNav
             item={{ rotulo: 'Dashboard', icone: 'dashboard', para: '/dashboard' }}
-            onNavigate={() => setMenuAberto(false)}
+            onNavigate={fecharMenus}
           />
         </div>
 
@@ -205,7 +214,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
               {grupo.titulo}
             </h3>
             {grupo.itens.map((item) => (
-              <LinkNav key={item.rotulo} item={item} onNavigate={() => setMenuAberto(false)} />
+              <LinkNav key={item.rotulo} item={item} onNavigate={fecharMenus} />
             ))}
           </div>
         ))}
@@ -223,10 +232,23 @@ export default function AppLayout({ children }: { children: ReactNode }) {
 
   return (
     <div className="bg-surface-container-low text-on-surface antialiased min-h-screen flex flex-col md:flex-row pb-24 md:pb-0">
-      {/* Sidebar desktop */}
-      <aside className="layout-sidebar hidden md:flex flex-col w-80 h-screen sticky top-0 bg-surface-container-lowest border-r border-surface-container-high p-md">
-        {conteudoMenu}
-      </aside>
+      {/* Sidebar desktop — some após o usuário escolher um item; o botão flutuante abaixo a traz de volta. */}
+      {sidebarDesktopAberta && (
+        <aside className="layout-sidebar hidden md:flex flex-col w-80 h-screen sticky top-0 bg-surface-container-lowest border-r border-surface-container-high p-md">
+          {conteudoMenu}
+        </aside>
+      )}
+
+      {!sidebarDesktopAberta && (
+        <button
+          type="button"
+          onClick={() => setSidebarDesktopAberta(true)}
+          aria-label="Abrir menu"
+          className="hidden md:flex fixed top-4 left-4 z-30 h-11 w-11 items-center justify-center rounded-full bg-surface-container-lowest border border-surface-container-high shadow-md text-on-surface-variant hover:bg-surface-container-low transition-colors"
+        >
+          <span className="material-symbols-outlined">menu</span>
+        </button>
+      )}
 
       {/* Drawer mobile */}
       {menuAberto && (
