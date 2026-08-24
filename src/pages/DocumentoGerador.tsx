@@ -4,11 +4,17 @@ import { agruparAlertas, auditarEmpresa, type AlertaAgrupado } from '@/lib/sstLi
 import {
   capitulosPadrao,
   carregarDadosDocumento,
+  carregarPersonalizacao,
   montarFolhas,
+  PERSONALIZACAO_VAZIA,
+  salvarNotaAcao,
+  salvarNotaRisco,
+  salvarPersonalizacao,
   type Capitulo,
   type CapituloId,
   type ConfiguracaoLayout,
   type DadosDocumento,
+  type Personalizacao,
   type TipoDocumento,
 } from '@/lib/documentos';
 import EstruturaOutline from '@/components/documentos/EstruturaOutline';
@@ -38,11 +44,12 @@ const CERTIFICADO_MOCK = {
 type ModalValidacao = { tipo: 'bloqueio' | 'aviso'; alertas: AlertaAgrupado[] } | null;
 
 export default function DocumentoGerador() {
-  const { empresaAtiva } = useAuth();
+  const { empresaAtiva, usuarioId } = useAuth();
 
   const [tipoDocumento, setTipoDocumento] = useState<TipoDocumento>('PGR');
   const [capitulos, setCapitulos] = useState<Capitulo[]>(capitulosPadrao());
   const [config, setConfig] = useState<ConfiguracaoLayout>(CONFIG_INICIAL);
+  const [personalizacao, setPersonalizacao] = useState<Personalizacao>(PERSONALIZACAO_VAZIA);
 
   const [dados, setDados] = useState<DadosDocumento | null>(null);
   const [carregando, setCarregando] = useState(true);
@@ -75,13 +82,31 @@ export default function DocumentoGerador() {
     };
   }, [empresaAtiva]);
 
+  useEffect(() => {
+    if (!empresaAtiva) {
+      setPersonalizacao(PERSONALIZACAO_VAZIA);
+      return;
+    }
+    let ativo = true;
+    carregarPersonalizacao(empresaAtiva.empresa_id, tipoDocumento)
+      .then((p) => {
+        if (ativo) setPersonalizacao(p);
+      })
+      .catch(() => {
+        if (ativo) setPersonalizacao(PERSONALIZACAO_VAZIA);
+      });
+    return () => {
+      ativo = false;
+    };
+  }, [empresaAtiva, tipoDocumento]);
+
   const paginasPorCapitulo = useMemo(() => {
     if (!dados) return new Map<CapituloId, number>();
-    const folhas = montarFolhas(capitulos, dados, tipoDocumento);
+    const folhas = montarFolhas(capitulos, dados, tipoDocumento, personalizacao);
     const mapa = new Map<CapituloId, number>();
     for (const f of folhas) mapa.set(f.capituloId, (mapa.get(f.capituloId) ?? 0) + 1);
     return mapa;
-  }, [capitulos, dados, tipoDocumento]);
+  }, [capitulos, dados, tipoDocumento, personalizacao]);
 
   const itensDinamicos = useMemo(() => {
     if (!dados) return {};
@@ -93,6 +118,26 @@ export default function DocumentoGerador() {
 
   function imprimir() {
     window.print();
+  }
+
+  async function handleSalvarPersonalizacao(patch: Partial<Personalizacao>) {
+    if (!empresaAtiva) return;
+    await salvarPersonalizacao(empresaAtiva.empresa_id, tipoDocumento, usuarioId, patch);
+    setPersonalizacao((p) => ({ ...p, ...patch }));
+  }
+
+  async function handleSalvarNotaRisco(riscoId: string, nota: string) {
+    await salvarNotaRisco(riscoId, nota);
+    const notaFinal = nota.trim() ? nota : null;
+    setDados((d) => (d ? { ...d, riscos: d.riscos.map((r) => (r.id === riscoId ? { ...r, notaDocumento: notaFinal } : r)) } : d));
+  }
+
+  async function handleSalvarNotaAcao(acaoId: string, nota: string) {
+    await salvarNotaAcao(acaoId, nota);
+    const notaFinal = nota.trim() ? nota : null;
+    setDados((d) =>
+      d ? { ...d, cronograma: d.cronograma.map((a) => (a.id === acaoId ? { ...a, notaDocumento: notaFinal } : a)) } : d
+    );
   }
 
   async function handleGerar() {
@@ -174,11 +219,24 @@ export default function DocumentoGerador() {
             onChange={setCapitulos}
             paginasPorCapitulo={paginasPorCapitulo}
             itensDinamicos={itensDinamicos}
+            personalizacao={personalizacao}
+            onSalvarPersonalizacao={handleSalvarPersonalizacao}
+            riscos={dados.riscos}
+            exames={dados.exames}
+            cronograma={dados.cronograma}
+            onSalvarNotaRisco={handleSalvarNotaRisco}
+            onSalvarNotaAcao={handleSalvarNotaAcao}
           />
         </aside>
 
         <section className="w-full lg:w-1/2 lg:h-[calc(100vh-4.5rem)]">
-          <PreviewDocumento tipoDocumento={tipoDocumento} capitulos={capitulos} dados={dados} config={config} />
+          <PreviewDocumento
+            tipoDocumento={tipoDocumento}
+            capitulos={capitulos}
+            dados={dados}
+            config={config}
+            personalizacao={personalizacao}
+          />
         </section>
 
         <aside className={`nao-imprimir w-full lg:w-1/4 lg:h-[calc(100vh-4.5rem)] lg:overflow-y-auto border-t lg:border-t-0 lg:border-l ${TEMA.bordaSutil} bg-white`}>

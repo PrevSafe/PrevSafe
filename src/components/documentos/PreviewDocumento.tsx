@@ -14,6 +14,7 @@ import {
   type ConfiguracaoLayout,
   type DadosDocumento,
   type Folha,
+  type Personalizacao,
   type TipoDocumento,
 } from '@/lib/documentos';
 import { TEMA } from './tema';
@@ -95,14 +96,16 @@ function ConteudoBloco({ bloco, tipoDocumento, dados }: { bloco: BlocoFolha | Bl
           <div>
             <p className="text-xs uppercase tracking-[0.2em] text-[#64748B] mb-2">{tipoDocumento}</p>
             <h1 className="text-2xl font-bold text-[#0F172A] max-w-md mx-auto leading-snug">
-              {DOCUMENTO_LABEL[tipoDocumento]}
+              {bloco.tituloCustom || DOCUMENTO_LABEL[tipoDocumento]}
             </h1>
+            {bloco.subtitulo && <p className="text-sm text-[#64748B] mt-2">{bloco.subtitulo}</p>}
           </div>
           <div className="text-sm text-[#1E293B]">
             <p className="font-semibold">{dados.empresa.nome}</p>
             <p className="text-[#64748B]">{formatarInscricao(dados.empresa.numeroInscricao, dados.empresa.tipoInscricao)}</p>
           </div>
           <p className="text-xs text-[#64748B] max-w-sm">Elaborado conforme {DOCUMENTO_NORMA[tipoDocumento]}</p>
+          {bloco.responsavel && <p className="text-xs text-[#64748B]">Elaborado por {bloco.responsavel}</p>}
           <p className="text-xs text-[#94A3B8]">
             {new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}
           </p>
@@ -135,7 +138,10 @@ function ConteudoBloco({ bloco, tipoDocumento, dados }: { bloco: BlocoFolha | Bl
           <tbody>
             {bloco.itens.map((r) => (
               <tr key={r.id} className="border-b border-[#E2E8F0]">
-                <td className="py-1.5 pr-2">{r.descricao}</td>
+                <td className="py-1.5 pr-2">
+                  {r.descricao}
+                  {r.notaDocumento && <div className="text-[10px] text-[#64748B] italic mt-0.5">{r.notaDocumento}</div>}
+                </td>
                 <td className="py-1.5 pr-2 text-[#64748B]">{r.gheNome ?? '—'}</td>
                 <td className="py-1.5 pr-2 text-[#64748B]">{TIPO_RISCO_LABEL[r.tipoRisco]}</td>
                 <td className="py-1.5 pr-2 text-center">
@@ -188,7 +194,10 @@ function ConteudoBloco({ bloco, tipoDocumento, dados }: { bloco: BlocoFolha | Bl
           <tbody>
             {bloco.itens.map((a) => (
               <tr key={a.id} className="border-b border-[#E2E8F0]">
-                <td className="py-1.5 pr-2">{a.oQue}</td>
+                <td className="py-1.5 pr-2">
+                  {a.oQue}
+                  {a.notaDocumento && <div className="text-[10px] text-[#64748B] italic mt-0.5">{a.notaDocumento}</div>}
+                </td>
                 <td className="py-1.5 pr-2 text-[#64748B]">{new Date(`${a.quando}T00:00:00`).toLocaleDateString('pt-BR')}</td>
                 <td className="py-1.5 pr-2 text-[#64748B]">{a.quem}</td>
                 <td className="py-1.5 text-[#64748B] capitalize">{a.status.replace('_', ' ')}</td>
@@ -199,6 +208,17 @@ function ConteudoBloco({ bloco, tipoDocumento, dados }: { bloco: BlocoFolha | Bl
       );
 
     case 'anexos':
+      if (bloco.paragrafosCustom) {
+        return (
+          <div className="flex flex-col gap-3">
+            {bloco.paragrafosCustom.map((p, i) => (
+              <p key={i} className="leading-relaxed text-justify">
+                {p}
+              </p>
+            ))}
+          </div>
+        );
+      }
       return (
         <ul className="flex flex-col gap-2 list-disc pl-5">
           <li>Anexo I — Anotação de Responsabilidade Técnica (ART/RRT) do responsável pela elaboração.</li>
@@ -212,8 +232,8 @@ function ConteudoBloco({ bloco, tipoDocumento, dados }: { bloco: BlocoFolha | Bl
       return (
         <div className="flex flex-col gap-10">
           <p className="leading-relaxed text-justify">
-            Este documento encerra a avaliação técnica realizada, ficando disponível para consulta dos trabalhadores,
-            da fiscalização e demais interessados, nos termos da legislação de Segurança e Saúde no Trabalho vigente.
+            {bloco.paragrafoCustom ||
+              'Este documento encerra a avaliação técnica realizada, ficando disponível para consulta dos trabalhadores, da fiscalização e demais interessados, nos termos da legislação de Segurança e Saúde no Trabalho vigente.'}
           </p>
           <div className="grid grid-cols-2 gap-8 mt-auto">
             <div className="text-center">
@@ -252,13 +272,14 @@ type Props = {
   capitulos: Capitulo[];
   dados: DadosDocumento;
   config: ConfiguracaoLayout;
+  personalizacao: Personalizacao;
 };
 
-export default function PreviewDocumento({ tipoDocumento, capitulos, dados, config }: Props) {
+export default function PreviewDocumento({ tipoDocumento, capitulos, dados, config, personalizacao }: Props) {
   const folhasFinais = useMemo(() => {
-    const base = montarFolhas(capitulos, dados, tipoDocumento);
+    const base = montarFolhas(capitulos, dados, tipoDocumento, personalizacao);
     return montarFolhasFinais(base, config.exibirIndice);
-  }, [capitulos, dados, tipoDocumento, config.exibirIndice]);
+  }, [capitulos, dados, tipoDocumento, config.exibirIndice, personalizacao]);
 
   const totalPaginas = folhasFinais.length;
   const margemCm = MARGEM_CM[config.margem];
@@ -266,9 +287,13 @@ export default function PreviewDocumento({ tipoDocumento, capitulos, dados, conf
   return (
     <div id="documento-sst-preview" className={`h-full overflow-y-auto ${TEMA.previewBg} p-8 flex flex-col items-center gap-8`}>
       {totalPaginas === 0 ? (
-        <div className={`${TEMA.cardArredondado} p-10 text-center max-w-sm`}>
-          <span className="material-symbols-outlined text-[32px] text-[#94A3B8] mb-2">description</span>
-          <p className={`text-sm ${TEMA.muted}`}>Nenhum capítulo ativo. Marque ao menos um capítulo na Coluna 1.</p>
+        <div className={`${TEMA.cardArredondado} p-10 text-center max-w-sm flex flex-col items-center gap-2`}>
+          <span className="material-symbols-outlined text-[32px] text-[#94A3B8]">description</span>
+          <p className={`text-sm font-medium ${TEMA.titulo}`}>O documento está vazio</p>
+          <p className={`text-xs ${TEMA.muted}`}>
+            Marque a caixinha de ao menos um capítulo em <strong>Estrutura do Laudo</strong>, à esquerda, para ver o
+            preview aqui.
+          </p>
         </div>
       ) : (
         folhasFinais.map((folha) => (

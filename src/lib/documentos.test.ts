@@ -3,7 +3,9 @@ import {
   capitulosPadrao,
   formatarInscricao,
   montarFolhas,
+  PERSONALIZACAO_VAZIA,
   type DadosDocumento,
+  type Personalizacao,
   type RiscoDocumento,
 } from './documentos';
 
@@ -27,6 +29,7 @@ function risco(id: string): RiscoDocumento {
     gheNome: 'Produção',
     fatorRiscoCodigo: null,
     fatorRiscoDescricao: null,
+    notaDocumento: null,
   };
 }
 
@@ -92,5 +95,49 @@ describe('montarFolhas', () => {
     const paginasDeRiscos = folhas.filter((f) => f.capituloId === 'inventario_riscos');
     expect(paginasDeRiscos).toHaveLength(1);
     expect(paginasDeRiscos[0].bloco).toMatchObject({ tipo: 'tabela_riscos', itens: [] });
+  });
+});
+
+describe('montarFolhas com personalização', () => {
+  function comPersonalizacao(overrides: Partial<Personalizacao>): Personalizacao {
+    return { ...PERSONALIZACAO_VAZIA, ...overrides };
+  }
+
+  it('sem personalização salva, usa o texto padrão gerado', () => {
+    const folhas = montarFolhas(capitulosPadrao(), dadosBase(), 'PGR');
+    const introducao = folhas.find((f) => f.capituloId === 'introducao');
+    expect(introducao?.bloco).toMatchObject({ tipo: 'texto' });
+    if (introducao?.bloco.tipo === 'texto') {
+      expect(introducao.bloco.paragrafos[0]).toContain('Fazenda Boa Vista');
+    }
+  });
+
+  it('com personalização salva, substitui o texto padrão e separa parágrafos por linha em branco', () => {
+    const personalizacao = comPersonalizacao({ textoIntroducao: 'Parágrafo um.\n\nParágrafo dois.' });
+    const folhas = montarFolhas(capitulosPadrao(), dadosBase(), 'PGR', personalizacao);
+    const introducao = folhas.find((f) => f.capituloId === 'introducao');
+    expect(introducao?.bloco).toMatchObject({ tipo: 'texto', paragrafos: ['Parágrafo um.', 'Parágrafo dois.'] });
+  });
+
+  it('capa aplica título, subtítulo e responsável customizados', () => {
+    const personalizacao = comPersonalizacao({
+      capaTitulo: 'PGR — Unidade Sede',
+      capaSubtitulo: 'Revisão 2026',
+      capaResponsavel: 'Eng. Ana Souza',
+    });
+    const folhas = montarFolhas(capitulosPadrao(), dadosBase(), 'PGR', personalizacao);
+    const capa = folhas.find((f) => f.capituloId === 'capa');
+    expect(capa?.bloco).toMatchObject({
+      tipo: 'capa',
+      tituloCustom: 'PGR — Unidade Sede',
+      subtitulo: 'Revisão 2026',
+      responsavel: 'Eng. Ana Souza',
+    });
+  });
+
+  it('anexos sem personalização mantém a lista padrão (paragrafosCustom nulo)', () => {
+    const folhas = montarFolhas(capitulosPadrao(), dadosBase(), 'PGR');
+    const anexos = folhas.find((f) => f.capituloId === 'anexos');
+    expect(anexos?.bloco).toMatchObject({ tipo: 'anexos', paragrafosCustom: null });
   });
 });

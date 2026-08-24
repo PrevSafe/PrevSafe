@@ -69,6 +69,7 @@ export type RiscoDocumento = {
   gheNome: string | null;
   fatorRiscoCodigo: string | null;
   fatorRiscoDescricao: string | null;
+  notaDocumento: string | null;
 };
 
 export type ExameDocumento = {
@@ -85,6 +86,7 @@ export type AcaoCronograma = {
   quando: string;
   quem: string;
   status: string;
+  notaDocumento: string | null;
 };
 
 export type DadosDocumento = {
@@ -93,6 +95,99 @@ export type DadosDocumento = {
   exames: ExameDocumento[];
   cronograma: AcaoCronograma[];
 };
+
+/** Texto livre por capítulo/capa, salvo por empresa + tipo de documento. Campos nulos caem no texto padrão gerado. */
+export type Personalizacao = {
+  capaTitulo: string | null;
+  capaSubtitulo: string | null;
+  capaResponsavel: string | null;
+  textoIntroducao: string | null;
+  textoMetodologia: string | null;
+  textoAnexos: string | null;
+  textoEncerramento: string | null;
+};
+
+export const PERSONALIZACAO_VAZIA: Personalizacao = {
+  capaTitulo: null,
+  capaSubtitulo: null,
+  capaResponsavel: null,
+  textoIntroducao: null,
+  textoMetodologia: null,
+  textoAnexos: null,
+  textoEncerramento: null,
+};
+
+const COLUNA_PERSONALIZACAO: Record<keyof Personalizacao, string> = {
+  capaTitulo: 'capa_titulo',
+  capaSubtitulo: 'capa_subtitulo',
+  capaResponsavel: 'capa_responsavel',
+  textoIntroducao: 'texto_introducao',
+  textoMetodologia: 'texto_metodologia',
+  textoAnexos: 'texto_anexos',
+  textoEncerramento: 'texto_encerramento',
+};
+
+export async function carregarPersonalizacao(empresaId: string, tipo: TipoDocumento): Promise<Personalizacao> {
+  const { data, error } = await supabase
+    .from('documentos_personalizacoes')
+    .select('capa_titulo, capa_subtitulo, capa_responsavel, texto_introducao, texto_metodologia, texto_anexos, texto_encerramento')
+    .eq('empresa_id', empresaId)
+    .eq('tipo_documento', tipo)
+    .maybeSingle();
+  if (error) throw error;
+  if (!data) return { ...PERSONALIZACAO_VAZIA };
+  return {
+    capaTitulo: data.capa_titulo,
+    capaSubtitulo: data.capa_subtitulo,
+    capaResponsavel: data.capa_responsavel,
+    textoIntroducao: data.texto_introducao,
+    textoMetodologia: data.texto_metodologia,
+    textoAnexos: data.texto_anexos,
+    textoEncerramento: data.texto_encerramento,
+  };
+}
+
+/** Grava só os campos informados em `patch` (upsert por empresa + tipo). Passe string vazia/null para restaurar o texto padrão. */
+export async function salvarPersonalizacao(
+  empresaId: string,
+  tipo: TipoDocumento,
+  usuarioId: string | null,
+  patch: Partial<Personalizacao>
+): Promise<void> {
+  const payload: Record<string, string | null> = { empresa_id: empresaId, tipo_documento: tipo, atualizado_por: usuarioId };
+  for (const chave of Object.keys(patch) as (keyof Personalizacao)[]) {
+    const valor = patch[chave];
+    payload[COLUNA_PERSONALIZACAO[chave]] = valor && valor.trim() ? valor : null;
+  }
+  const { error } = await supabase
+    .from('documentos_personalizacoes')
+    .upsert(payload, { onConflict: 'empresa_id,tipo_documento' });
+  if (error) throw error;
+}
+
+export async function salvarNotaRisco(riscoId: string, nota: string): Promise<void> {
+  const { error } = await supabase
+    .from('riscos_inventario')
+    .update({ nota_documento: nota.trim() ? nota : null })
+    .eq('id', riscoId);
+  if (error) throw error;
+}
+
+export async function salvarNotaAcao(acaoId: string, nota: string): Promise<void> {
+  const { error } = await supabase
+    .from('planos_acao_5w2h')
+    .update({ nota_documento: nota.trim() ? nota : null })
+    .eq('id', acaoId);
+  if (error) throw error;
+}
+
+/** Quebra o texto digitado pelo usuário em parágrafos (linha em branco separa parágrafos). */
+function paragrafosDe(texto: string): string[] {
+  return texto
+    .split(/\n{2,}/)
+    .map((p) => p.trim())
+    .filter(Boolean);
+}
 
 /** Aceita CNPJ (14 dígitos) ou CPF de produtor rural (11 dígitos, tipo_inscricao = 2). */
 export function formatarInscricao(numero: string, tipo: number): string {
@@ -119,13 +214,13 @@ export async function carregarDadosDocumento(empresaId: string): Promise<DadosDo
       supabase
         .from('riscos_inventario')
         .select(
-          'id, ghe_id, tipo_risco, descricao, probabilidade, severidade, fator_risco_t24_codigo, fatores_risco_t24(descricao)'
+          'id, ghe_id, tipo_risco, descricao, probabilidade, severidade, fator_risco_t24_codigo, nota_documento, fatores_risco_t24(descricao)'
         ),
       empresaId
     ),
     daEmpresa(supabase.from('ghes').select('id, nome'), empresaId),
     daEmpresa(
-      supabase.from('planos_acao_5w2h').select('id, o_que, quando, quem, status'),
+      supabase.from('planos_acao_5w2h').select('id, o_que, quando, quem, status, nota_documento'),
       empresaId
     ).order('quando', { ascending: true }),
   ]);
@@ -143,6 +238,7 @@ export async function carregarDadosDocumento(empresaId: string): Promise<DadosDo
     probabilidade: number;
     severidade: number;
     fator_risco_t24_codigo: string | null;
+    nota_documento: string | null;
     fatores_risco_t24: { descricao: string } | { descricao: string }[] | null;
   };
 
@@ -159,6 +255,7 @@ export async function carregarDadosDocumento(empresaId: string): Promise<DadosDo
       gheNome: ghesPorId.get(r.ghe_id) ?? null,
       fatorRiscoCodigo: r.fator_risco_t24_codigo,
       fatorRiscoDescricao: fator?.descricao ?? null,
+      notaDocumento: r.nota_documento,
     };
   });
 
@@ -209,6 +306,7 @@ export async function carregarDadosDocumento(empresaId: string): Promise<DadosDo
     quando: p.quando,
     quem: p.quem,
     status: p.status,
+    notaDocumento: p.nota_documento,
   }));
 
   const empresa: EmpresaDocumento = {
@@ -245,13 +343,13 @@ export const MARGEM_CM: Record<Margem, number> = {
 };
 
 export type BlocoFolha =
-  | { tipo: 'capa' }
+  | { tipo: 'capa'; tituloCustom: string | null; subtitulo: string | null; responsavel: string | null }
   | { tipo: 'texto'; paragrafos: string[] }
   | { tipo: 'tabela_riscos'; itens: RiscoDocumento[]; continuacao: boolean }
   | { tipo: 'tabela_exames'; itens: ExameDocumento[]; continuacao: boolean }
   | { tipo: 'tabela_cronograma'; itens: AcaoCronograma[]; continuacao: boolean }
-  | { tipo: 'anexos' }
-  | { tipo: 'encerramento' };
+  | { tipo: 'anexos'; paragrafosCustom: string[] | null }
+  | { tipo: 'encerramento'; paragrafoCustom: string | null };
 
 export type Folha = { capituloId: CapituloId; titulo: string; bloco: BlocoFolha };
 
@@ -291,8 +389,13 @@ function textoMetodologia(tipo: TipoDocumento): string[] {
   return base;
 }
 
-/** Monta a sequência de folhas a partir dos capítulos ativos, na ordem em que estiverem (o usuário pode reordenar via drag-and-drop). */
-export function montarFolhas(capitulos: Capitulo[], dados: DadosDocumento, tipo: TipoDocumento): Folha[] {
+/** Monta a sequência de folhas a partir dos capítulos ativos, na ordem em que estiverem (o usuário pode reordenar via drag-and-drop). Textos com personalização salva substituem o texto padrão gerado. */
+export function montarFolhas(
+  capitulos: Capitulo[],
+  dados: DadosDocumento,
+  tipo: TipoDocumento,
+  personalizacao: Personalizacao = PERSONALIZACAO_VAZIA
+): Folha[] {
   const folhas: Folha[] = [];
 
   for (const capitulo of capitulos) {
@@ -300,14 +403,28 @@ export function montarFolhas(capitulos: Capitulo[], dados: DadosDocumento, tipo:
 
     switch (capitulo.id) {
       case 'capa':
-        folhas.push({ capituloId: capitulo.id, titulo: capitulo.titulo, bloco: { tipo: 'capa' } });
+        folhas.push({
+          capituloId: capitulo.id,
+          titulo: capitulo.titulo,
+          bloco: {
+            tipo: 'capa',
+            tituloCustom: personalizacao.capaTitulo,
+            subtitulo: personalizacao.capaSubtitulo,
+            responsavel: personalizacao.capaResponsavel,
+          },
+        });
         break;
 
       case 'introducao':
         folhas.push({
           capituloId: capitulo.id,
           titulo: capitulo.titulo,
-          bloco: { tipo: 'texto', paragrafos: textoIntroducao(tipo, dados.empresa.nome) },
+          bloco: {
+            tipo: 'texto',
+            paragrafos: personalizacao.textoIntroducao
+              ? paragrafosDe(personalizacao.textoIntroducao)
+              : textoIntroducao(tipo, dados.empresa.nome),
+          },
         });
         break;
 
@@ -315,7 +432,12 @@ export function montarFolhas(capitulos: Capitulo[], dados: DadosDocumento, tipo:
         folhas.push({
           capituloId: capitulo.id,
           titulo: capitulo.titulo,
-          bloco: { tipo: 'texto', paragrafos: textoMetodologia(tipo) },
+          bloco: {
+            tipo: 'texto',
+            paragrafos: personalizacao.textoMetodologia
+              ? paragrafosDe(personalizacao.textoMetodologia)
+              : textoMetodologia(tipo),
+          },
         });
         break;
 
@@ -350,11 +472,22 @@ export function montarFolhas(capitulos: Capitulo[], dados: DadosDocumento, tipo:
         break;
 
       case 'anexos':
-        folhas.push({ capituloId: capitulo.id, titulo: capitulo.titulo, bloco: { tipo: 'anexos' } });
+        folhas.push({
+          capituloId: capitulo.id,
+          titulo: capitulo.titulo,
+          bloco: {
+            tipo: 'anexos',
+            paragrafosCustom: personalizacao.textoAnexos ? paragrafosDe(personalizacao.textoAnexos) : null,
+          },
+        });
         break;
 
       case 'encerramento':
-        folhas.push({ capituloId: capitulo.id, titulo: capitulo.titulo, bloco: { tipo: 'encerramento' } });
+        folhas.push({
+          capituloId: capitulo.id,
+          titulo: capitulo.titulo,
+          bloco: { tipo: 'encerramento', paragrafoCustom: personalizacao.textoEncerramento },
+        });
         break;
     }
   }
