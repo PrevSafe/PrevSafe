@@ -34,6 +34,7 @@ const GRUPOS: Grupo[] = [
       { rotulo: 'Matriz de Riscos', icone: 'grid_view', para: '/matriz-riscos' },
       { rotulo: 'Grupos de Exposição (GHE)', icone: 'workspaces', para: '/ghe' },
       { rotulo: 'Inventário de Riscos', icone: 'inventory_2', para: '/riscos' },
+      { rotulo: 'Emitir Documentos (PGR/LTCAT/PCMSO)', icone: 'description', para: '/documentos' },
     ],
   },
   {

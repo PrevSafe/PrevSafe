@@ -50,6 +50,7 @@ import FrotaForm from '@/pages/FrotaForm';
 import Afastamentos from '@/pages/Afastamentos';
 import AfastamentoForm from '@/pages/AfastamentoForm';
 import CatForm from '@/pages/CatForm';
+import DocumentoGerador from '@/pages/DocumentoGerador';
 
 /** Envolve a tela no layout autenticado. Evita repetir o aninhamento em cada rota. */
 function Protegida({ children }: { children: React.ReactNode }) {
@@ -123,6 +124,7 @@ export default function App() {
           <Route path="/riscos/novo" element={<Protegida><RiscoForm /></Protegida>} />
           <Route path="/riscos/:id" element={<Protegida><RiscoForm /></Protegida>} />
           <Route path="/matriz-riscos" element={<Protegida><MatrizRiscos /></Protegida>} />
+          <Route path="/documentos" element={<Protegida><DocumentoGerador /></Protegida>} />
           <Route path="/frota" element={<Protegida><Frota /></Protegida>} />
           <Route path="/frota/novo" element={<Protegida><FrotaForm /></Protegida>} />
           <Route path="/frota/:id" element={<Protegida><FrotaForm /></Protegida>} />

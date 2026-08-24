@@ -198,6 +198,38 @@ body {
   .cartaz-mural img ~ p {
     font-size: 12pt;
   }
+
+  /* Módulo de Elaboração e Impressão de Documentos SST (DocumentoGerador.tsx):
+     as três colunas da ferramenta (.nao-imprimir) já somem pela regra genérica
+     acima. A coluna central escapa do card/padding do layout e do scroll
+     interno para imprimir como um fluxo normal de páginas A4 — a margem real
+     vem do @page global (2,5cm/2cm) já usado pelo restante do app, então o
+     padding de cada folha (que no preview representa a margem configurada
+     pelo usuário) é zerado aqui para não duplicar. */
+  #documento-sst-preview {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+    padding: 0;
+    background: #fff;
+    display: block;
+  }
+
+  #documento-sst-preview .folha-a4 {
+    width: auto;
+    min-height: auto;
+    padding: 0 !important;
+    margin: 0;
+    box-shadow: none;
+    break-after: page;
+  }
+
+  #documento-sst-preview .folha-a4:last-child {
+    break-after: auto;
+  }
 }
 
 /* Módulo CIPA — marcação de piso industrial usada no cartaz e na confirmação

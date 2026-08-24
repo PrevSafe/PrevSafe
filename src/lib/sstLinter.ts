@@ -299,3 +299,34 @@ export async function auditarFuncionario(empresaId: string, funcionarioId: strin
   const payload = await carregarAuditoriaFuncionario(empresaId, funcionarioId);
   return avaliarAlertas(payload);
 }
+
+/**
+ * Roda o Linter sobre todos os funcionários ativos da empresa — usado como
+ * gatilho de auditoria antes da geração de laudos/programas (PGR/LTCAT/PCMSO),
+ * que são documentos de escopo da empresa e não de um único trabalhador.
+ */
+export async function auditarEmpresa(empresaId: string): Promise<Alerta[]> {
+  const { data: funcionarios, error } = await daEmpresa(
+    supabase.from('funcionarios').select('id'),
+    empresaId
+  ).eq('status', 'ativo');
+  if (error) throw error;
+
+  const listas = await Promise.all(
+    (funcionarios ?? []).map((f) => auditarFuncionario(empresaId, f.id))
+  );
+  return listas.flat();
+}
+
+export type AlertaAgrupado = Alerta & { ocorrencias: number };
+
+/** Agrupa alertas repetidos (mesma regra disparada por vários trabalhadores) numa única entrada por id de regra. */
+export function agruparAlertas(alertas: Alerta[]): AlertaAgrupado[] {
+  const porId = new Map<string, AlertaAgrupado>();
+  for (const alerta of alertas) {
+    const existente = porId.get(alerta.id);
+    if (existente) existente.ocorrencias += 1;
+    else porId.set(alerta.id, { ...alerta, ocorrencias: 1 });
+  }
+  return [...porId.values()];
+}
