@@ -1,6 +1,28 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
+import { agruparAlertas, auditarEmpresa } from '@/lib/sstLinter';
+
+/**
+ * Tabelas de entrada de dados operacionais do dia a dia que alimentam o SST
+ * Linter (`auditarEmpresa`/`carregarAuditoriaFuncionario`). Ficam de fora
+ * tabelas de catálogo estático (procedimentos_t27, riscos_exames_compatibilidade,
+ * cargos) e folha_agente_nocivo, que é lançamento mensal de competência e não
+ * muda em rajada durante o uso do sistema.
+ */
+const TABELAS_LINTER = [
+  'riscos_inventario',
+  'aso_exames_procedimentos',
+  'epi_entregas',
+  'funcionarios_afastamentos',
+  'cat_comunicacoes',
+  'funcionarios',
+  'funcionarios_lotacoes',
+  'aso_exames',
+] as const;
+
+const DEBOUNCE_MS = 900;
 
 type PorNorma = { norma: string; percentual: number };
 type PorStatus = { status: string; total: number };
@@ -57,6 +79,12 @@ export default function Dashboard() {
   const [erro, setErro] = useState<string | null>(null);
   const [carregando, setCarregando] = useState(true);
 
+  const [linterBloqueios, setLinterBloqueios] = useState(0);
+  const [linterAvisos, setLinterAvisos] = useState(0);
+  const [linterCarregando, setLinterCarregando] = useState(true);
+  const [linterAtualizando, setLinterAtualizando] = useState(false);
+  const [linterErro, setLinterErro] = useState<string | null>(null);
+
   useEffect(() => {
     if (!empresaAtiva) {
       setCarregando(false);
@@ -77,6 +105,65 @@ export default function Dashboard() {
     };
   }, [empresaAtiva]);
 
+  // Linter SST em tempo real: roda auditarEmpresa ao montar e recalcula,
+  // com debounce, sempre que os dados que ele consulta mudam no banco.
+  useEffect(() => {
+    if (!empresaAtiva) {
+      setLinterCarregando(false);
+      return;
+    }
+    let ativo = true;
+    const empresaId = empresaAtiva.empresa_id;
+    let debounceTimer: ReturnType<typeof setTimeout> | null = null;
+
+    async function recalcular(primeiraCarga: boolean) {
+      if (primeiraCarga) setLinterCarregando(true);
+      else setLinterAtualizando(true);
+      try {
+        const brutos = await auditarEmpresa(empresaId);
+        const agrupados = agruparAlertas(brutos);
+        if (!ativo) return;
+        setLinterBloqueios(agrupados.filter((a) => a.severidade === 'HARD_BLOCK').length);
+        setLinterAvisos(agrupados.filter((a) => a.severidade === 'WARNING_ADVISORY').length);
+        setLinterErro(null);
+      } catch (e) {
+        if (ativo) setLinterErro(e instanceof Error ? e.message : String(e));
+      } finally {
+        if (ativo) {
+          setLinterCarregando(false);
+          setLinterAtualizando(false);
+        }
+      }
+    }
+
+    function agendarRecalculo() {
+      if (debounceTimer) clearTimeout(debounceTimer);
+      setLinterAtualizando(true);
+      debounceTimer = setTimeout(() => {
+        debounceTimer = null;
+        void recalcular(false);
+      }, DEBOUNCE_MS);
+    }
+
+    void recalcular(true);
+
+    const channel = supabase.channel(`sst-linter-${empresaId}`);
+    for (const tabela of TABELAS_LINTER) {
+      channel.on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: tabela, filter: `empresa_id=eq.${empresaId}` },
+        agendarRecalculo
+      );
+    }
+    channel.subscribe();
+
+    return () => {
+      ativo = false;
+      if (debounceTimer) clearTimeout(debounceTimer);
+      supabase.removeChannel(channel);
+    };
+  }, [empresaAtiva]);
+
   const hoje = new Date().toLocaleDateString('pt-BR', {
     weekday: 'long',
     year: 'numeric',
@@ -92,13 +179,15 @@ export default function Dashboard() {
 
   // Donut via conic-gradient: monta as fatias acumulando os percentuais.
   const totalPlanos = (dados?.planos_por_status ?? []).reduce((s, p) => s + Number(p.total), 0);
-  let acumulado = 0;
-  const fatias = (dados?.planos_por_status ?? []).map((p) => {
-    const inicio = (acumulado / totalPlanos) * 100;
-    acumulado += Number(p.total);
-    const fim = (acumulado / totalPlanos) * 100;
-    return `${COR_STATUS[p.status] ?? '#71787b'} ${inicio}% ${fim}%`;
-  });
+  const fatias = (dados?.planos_por_status ?? []).reduce<{ acumulado: number; itens: string[] }>(
+    (estado, p) => {
+      const inicio = (estado.acumulado / totalPlanos) * 100;
+      const acumulado = estado.acumulado + Number(p.total);
+      const fim = (acumulado / totalPlanos) * 100;
+      return { acumulado, itens: [...estado.itens, `${COR_STATUS[p.status] ?? '#71787b'} ${inicio}% ${fim}%`] };
+    },
+    { acumulado: 0, itens: [] }
+  ).itens;
   const concluidos = Number(
     dados?.planos_por_status.find((p) => p.status === 'concluido')?.total ?? 0
   );
@@ -181,6 +270,72 @@ export default function Dashboard() {
                   />
                 </div>
               </div>
+            </section>
+
+            {/* Linter SST em tempo real */}
+            <section className="bg-surface-container-lowest p-md rounded-xl border border-surface-container-high shadow-sm">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-title-lg text-primary flex items-center">
+                  <span className="material-symbols-outlined mr-2">rule</span>
+                  Linter SST — Tempo real
+                </h3>
+                {linterAtualizando && (
+                  <span className="flex items-center text-label-sm text-on-surface-variant">
+                    <span className="material-symbols-outlined text-[16px] mr-1 animate-spin">
+                      progress_activity
+                    </span>
+                    Atualizando…
+                  </span>
+                )}
+              </div>
+
+              {linterCarregando ? (
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="h-24 rounded-lg bg-surface-container animate-pulse" />
+                  <div className="h-24 rounded-lg bg-surface-container animate-pulse" />
+                </div>
+              ) : linterErro ? (
+                <div className="bg-error-container text-on-error-container rounded-lg px-4 py-3 text-label-md">
+                  Não foi possível calcular o Linter SST: {linterErro}
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="rounded-lg border border-surface-container-high p-4">
+                    <p className="text-label-md text-on-surface-variant uppercase tracking-wider">
+                      Bloqueios (HARD_BLOCK)
+                    </p>
+                    <span
+                      className={`text-display-lg mt-2 block ${
+                        linterBloqueios > 0 ? 'text-error' : 'text-success'
+                      }`}
+                    >
+                      {linterBloqueios}
+                    </span>
+                  </div>
+                  <div className="rounded-lg border border-surface-container-high p-4">
+                    <p className="text-label-md text-on-surface-variant uppercase tracking-wider">
+                      Avisos (WARNING_ADVISORY)
+                    </p>
+                    <span
+                      className={`text-display-lg mt-2 block ${
+                        linterAvisos > 0 ? 'text-[#F97316]' : 'text-success'
+                      }`}
+                    >
+                      {linterAvisos}
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {linterBloqueios > 0 && (
+                <Link
+                  to="/documentos"
+                  className="mt-4 inline-flex items-center text-label-md text-primary hover:underline"
+                >
+                  Ver detalhes
+                  <span className="material-symbols-outlined text-[16px] ml-1">arrow_forward</span>
+                </Link>
+              )}
             </section>
 
             {/* Gráficos */}

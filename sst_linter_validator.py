@@ -16,13 +16,31 @@ class SSTLinterValidator:
     def __init__(self, mapping_db: Optional[Dict[str, List[str]]] = None):
         # Default relational mapping: Tabela 24 (Risk Codes) -> Tabela 27 (Exam Codes)
         # Grounded in NR-7 (PCMSO) guidelines
+        # Códigos oficiais da Tabela 24/27 (não os ilustrativos do PDF de
+        # referência) — os mesmos usados em riscos_exames_compatibilidade
+        # após a correção aplicada em 20260901010000/20260901020000 e
+        # 20260903070000.
         self.t24_to_t27_map = mapping_db or {
-            "01.01.002": ["0281"],  # Ruído Contínuo/Intermitente -> Audiometria Tonal
-            "01.05.001": ["0001"],  # Calor -> Exame Clínico (Ficha Clínica / ASO)
-            "02.01.005": ["1096", "1102"],  # Chumbo -> Chumbo Sangue (Pb-S) & ALA-U
-            "01.18.001": ["1128", "0476"],  # Sílica Cristalina -> RX Tórax OIT & Espirometria
-            "03.01.004": ["0512"],  # Benzeno -> Hemograma Completo
-            "01.03.001": ["0512"],  # Radiações Ionizantes -> Hemograma Completo
+            "02.01.001": ["0281"],  # Ruído -> Audiometria Tonal Ocupacional
+            "02.01.014": ["0295"],  # Calor -> Avaliação Clínica Ocupacional
+            "01.08.001": ["0385", "0095"],  # Chumbo -> Chumbo Sanguíneo & ALA-U
+            "01.18.001": ["1078", "1057"],  # Sílica Livre Cristalina -> RX Tórax OIT & Espirometria
+            "01.03.001": ["0693"],  # Benzeno -> Hemograma c/ Contagem de Plaquetas
+            "02.01.006": ["0693"],  # Radiações Ionizantes -> Hemograma c/ Contagem de Plaquetas
+            "01.06.001": ["0352"],  # Cádmio -> Cádmio Urinário
+        }
+
+        # Fundamentação legal por risco T24, conforme a Matriz de Compatibilidade
+        # eSocial (S-1.3 / NR-7) — mesma fonte usada para semear
+        # riscos_exames_compatibilidade.referencia_legal no banco.
+        self.t24_legal_reference = {
+            "02.01.001": "NR-7 Anexo II",
+            "02.01.014": "Corpo da NR-7",
+            "01.08.001": "NR-7 Anexo I Q2",
+            "01.18.001": "NR-7 Anexo III",
+            "01.03.001": "NR-7 Anexo V",
+            "02.01.006": "NR-7 Anexo V",
+            "01.06.001": "NR-7 Anexo I Q2",
         }
 
     def validate_all(self, worker_payload: Dict[str, Any]) -> Dict[str, Any]:
@@ -103,6 +121,7 @@ class SSTLinterValidator:
                             "severity": "HARD_BLOCK",
                             "title": "Exposição a Risco sem Monitoramento de Saúde no PCMSO",
                             "affected_worker": worker,
+                            "legal_reference": self.t24_legal_reference.get(risk_code),
                             "message": (
                                 f"O trabalhador {worker.get('name')} está exposto ao risco {risk_name} (Código {risk_code}), "
                                 f"mas não realizou o exame periódico obrigatório correspondente (Código {req_exam}) previsto no PCMSO."
@@ -216,7 +235,7 @@ if __name__ == "__main__":
             "epc_active": False,
             "risks": [
                 {
-                    "code": "01.01.002",  # Ruído Ocupacional. Requires Audiometria (Cód. 0281)
+                    "code": "02.01.001",  # Ruído Ocupacional. Requires Audiometria (Cód. 0281)
                     "name": "Ruído Contínuo ou Intermitente",
                     "uses_epi": True,
                     "ca_number": "",  # EPI CA number is missing! (Trigger LNT-S2240-EPI-MISSING)
@@ -227,7 +246,7 @@ if __name__ == "__main__":
         "s2220": {
             "exams": [
                 {
-                    "code": "0001",  # Clinic Exam (ASO) but lacks Audiometria! (Trigger LNT-S2240-001)
+                    "code": "0295",  # Clinic Exam (ASO) but lacks Audiometria! (Trigger LNT-S2240-001)
                     "date": "2026-08-05"
                 }
             ]

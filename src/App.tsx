@@ -23,6 +23,8 @@ import Dds from '@/pages/Dds';
 import DdsForm from '@/pages/DdsForm';
 import Treinamentos from '@/pages/Treinamentos';
 import TreinamentoForm from '@/pages/TreinamentoForm';
+import TreinamentosObrigatorios from '@/pages/TreinamentosObrigatorios';
+import TreinamentoObrigatorioForm from '@/pages/TreinamentoObrigatorioForm';
 import ListaEleicoes from '@/pages/cipa/ListaEleicoes';
 import NovaEleicao from '@/pages/cipa/NovaEleicao';
 import PainelEleicao from '@/pages/cipa/PainelEleicao';
@@ -51,6 +53,18 @@ import Afastamentos from '@/pages/Afastamentos';
 import AfastamentoForm from '@/pages/AfastamentoForm';
 import CatForm from '@/pages/CatForm';
 import DocumentoGerador from '@/pages/DocumentoGerador';
+import Credenciados from '@/pages/Credenciados';
+import CredenciadosForm from '@/pages/CredenciadosForm';
+import EquipamentosMedicao from '@/pages/EquipamentosMedicao';
+import EquipamentoMedicaoForm from '@/pages/EquipamentoMedicaoForm';
+import AgendaMedica from '@/pages/AgendaMedica';
+import AgendaMedicaForm from '@/pages/AgendaMedicaForm';
+import PlanosFaturamento from '@/pages/PlanosFaturamento';
+import PlanoFaturamentoForm from '@/pages/PlanoFaturamentoForm';
+import Faturas from '@/pages/Faturas';
+import FaturaForm from '@/pages/FaturaForm';
+import RepassesClinicas from '@/pages/RepassesClinicas';
+import RelatorioAnual from '@/pages/RelatorioAnual';
 
 /** Envolve a tela no layout autenticado. Evita repetir o aninhamento em cada rota. */
 function Protegida({ children }: { children: React.ReactNode }) {
@@ -90,6 +104,9 @@ export default function App() {
           <Route path="/aso" element={<Protegida><AsoControle /></Protegida>} />
           <Route path="/aso/novo" element={<Protegida><AsoForm /></Protegida>} />
           <Route path="/aso/:id" element={<Protegida><AsoForm /></Protegida>} />
+          <Route path="/agenda-medica" element={<Protegida><AgendaMedica /></Protegida>} />
+          <Route path="/agenda-medica/novo" element={<Protegida><AgendaMedicaForm /></Protegida>} />
+          <Route path="/agenda-medica/:id" element={<Protegida><AgendaMedicaForm /></Protegida>} />
           <Route path="/afastamentos" element={<Protegida><Afastamentos /></Protegida>} />
           <Route path="/afastamentos/novo" element={<Protegida><AfastamentoForm /></Protegida>} />
           <Route path="/afastamentos/:id" element={<Protegida><AfastamentoForm /></Protegida>} />
@@ -100,6 +117,9 @@ export default function App() {
           <Route path="/dds/treinamentos/novo" element={<Protegida><TreinamentoForm /></Protegida>} />
           <Route path="/dds/treinamentos/:id" element={<Protegida><TreinamentoForm /></Protegida>} />
           <Route path="/dds/:id" element={<Protegida><DdsForm /></Protegida>} />
+          <Route path="/treinamentos-obrigatorios" element={<Protegida><TreinamentosObrigatorios /></Protegida>} />
+          <Route path="/treinamentos-obrigatorios/novo" element={<Protegida><TreinamentoObrigatorioForm /></Protegida>} />
+          <Route path="/treinamentos-obrigatorios/:id" element={<Protegida><TreinamentoObrigatorioForm /></Protegida>} />
           <Route path="/cipa" element={<Protegida><ListaEleicoes /></Protegida>} />
           <Route path="/cipa/nova" element={<Protegida><NovaEleicao /></Protegida>} />
           <Route path="/cipa/:id" element={<Protegida><PainelEleicao /></Protegida>} />
@@ -124,10 +144,24 @@ export default function App() {
           <Route path="/riscos/novo" element={<Protegida><RiscoForm /></Protegida>} />
           <Route path="/riscos/:id" element={<Protegida><RiscoForm /></Protegida>} />
           <Route path="/matriz-riscos" element={<Protegida><MatrizRiscos /></Protegida>} />
+          <Route path="/equipamentos-medicao" element={<Protegida><EquipamentosMedicao /></Protegida>} />
+          <Route path="/equipamentos-medicao/novo" element={<Protegida><EquipamentoMedicaoForm /></Protegida>} />
+          <Route path="/equipamentos-medicao/:id" element={<Protegida><EquipamentoMedicaoForm /></Protegida>} />
           <Route path="/documentos" element={<Protegida><DocumentoGerador /></Protegida>} />
+          <Route path="/relatorio-anual" element={<Protegida><RelatorioAnual /></Protegida>} />
           <Route path="/frota" element={<Protegida><Frota /></Protegida>} />
           <Route path="/frota/novo" element={<Protegida><FrotaForm /></Protegida>} />
           <Route path="/frota/:id" element={<Protegida><FrotaForm /></Protegida>} />
+          <Route path="/credenciados" element={<Protegida><Credenciados /></Protegida>} />
+          <Route path="/credenciados/novo" element={<Protegida><CredenciadosForm /></Protegida>} />
+          <Route path="/credenciados/:id" element={<Protegida><CredenciadosForm /></Protegida>} />
+          <Route path="/financeiro/planos" element={<Protegida><PlanosFaturamento /></Protegida>} />
+          <Route path="/financeiro/planos/novo" element={<Protegida><PlanoFaturamentoForm /></Protegida>} />
+          <Route path="/financeiro/planos/:id" element={<Protegida><PlanoFaturamentoForm /></Protegida>} />
+          <Route path="/financeiro/faturas" element={<Protegida><Faturas /></Protegida>} />
+          <Route path="/financeiro/faturas/novo" element={<Protegida><FaturaForm /></Protegida>} />
+          <Route path="/financeiro/faturas/:id" element={<Protegida><FaturaForm /></Protegida>} />
+          <Route path="/financeiro/repasses" element={<Protegida><RepassesClinicas /></Protegida>} />
           {/* Rotas públicas e anônimas do eleitor — NUNCA envolver em <Protegida>. */}
           <Route path="/v/:token" element={<VotoLink />} />
           <Route path="/q/:eleicaoId" element={<VotoQr />} />

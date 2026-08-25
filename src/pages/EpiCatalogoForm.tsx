@@ -3,11 +3,14 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 import { daEmpresa } from '@/lib/consulta';
+import { situacaoCaAtual, SITUACAO_CA_LABEL, corSituacaoCa } from '@/lib/epi';
 import { Secao, Campo, Seletor, Botao } from '@/components/ui/Form';
 
 type Form = {
   nome: string;
   ca: string;
+  fabricante: string;
+  data_validade_ca: string;
   vida_util_dias: string;
   ativo: 'true' | 'false';
 };
@@ -15,6 +18,8 @@ type Form = {
 const VAZIO: Form = {
   nome: '',
   ca: '',
+  fabricante: '',
+  data_validade_ca: '',
   vida_util_dias: '',
   ativo: 'true',
 };
@@ -32,21 +37,28 @@ export default function EpiCatalogoForm() {
   const [salvando, setSalvando] = useState(false);
   const [carregando, setCarregando] = useState(editando);
   const [erroGeral, setErroGeral] = useState<string | null>(null);
+  const situacaoCa = situacaoCaAtual(form.data_validade_ca || null);
 
   useEffect(() => {
-    if (!id || !empresaAtiva) return;
+    if (!id || !empresaAtiva) {
+      setCarregando(false);
+      return;
+    }
     daEmpresa(supabase.from('epis').select('*'), empresaAtiva.empresa_id)
       .eq('id', id)
       .single()
       .then(({ data, error }) => {
-        if (error) setErroGeral(error.message);
-        else if (data)
+        if (error) setErroGeral(error.code === 'PGRST116' ? 'Tipo de EPI não encontrado.' : error.message);
+        else if (data) {
           setForm({
             nome: data.nome ?? '',
             ca: data.ca ?? '',
+            fabricante: data.fabricante ?? '',
+            data_validade_ca: data.data_validade_ca ?? '',
             vida_util_dias: data.vida_util_dias != null ? String(data.vida_util_dias) : '',
             ativo: data.ativo ? 'true' : 'false',
           });
+        }
         setCarregando(false);
       });
   }, [id, empresaAtiva]);
@@ -77,6 +89,8 @@ export default function EpiCatalogoForm() {
       empresa_id: empresaAtiva.empresa_id,
       nome: form.nome.trim(),
       ca: so(form.ca),
+      fabricante: form.fabricante.trim() || null,
+      data_validade_ca: form.data_validade_ca || null,
       vida_util_dias: form.vida_util_dias ? Number(form.vida_util_dias) : null,
       ativo: form.ativo === 'true',
     };
@@ -159,6 +173,31 @@ export default function EpiCatalogoForm() {
               onChange={(e) => set('vida_util_dias', e.target.value)}
               erro={erros.vida_util_dias}
               dica="Usada para sugerir a data de validade nas entregas."
+            />
+          </div>
+        </Secao>
+
+        <Secao icone="verified" titulo="Validador de CA (fabricante)">
+          <span className={`self-start px-2.5 py-1 rounded-full text-label-sm ${corSituacaoCa(situacaoCa)}`}>
+            {SITUACAO_CA_LABEL[situacaoCa]}
+          </span>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <Campo
+              rotulo="Fabricante (opcional)"
+              name="fabricante"
+              placeholder="Ex.: 3M, Steelflex"
+              value={form.fabricante}
+              onChange={(e) => set('fabricante', e.target.value)}
+              erro={erros.fabricante}
+            />
+            <Campo
+              rotulo="Validade do CA (opcional)"
+              name="data_validade_ca"
+              type="date"
+              value={form.data_validade_ca}
+              onChange={(e) => set('data_validade_ca', e.target.value)}
+              erro={erros.data_validade_ca}
+              dica="A situação (vigente/vencido) é calculada a partir desta data, comparada com a data de hoje."
             />
           </div>
         </Secao>

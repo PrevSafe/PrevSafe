@@ -9,6 +9,7 @@ type Funcionario = { id: string; nome: string };
 
 type FormState = {
   funcionario_id: string;
+  norma_regulamentadora: string;
   nome: string;
   carga_horaria: string;
   data_realizacao: string;
@@ -23,6 +24,7 @@ function hoje() {
 
 const VAZIO: FormState = {
   funcionario_id: '',
+  norma_regulamentadora: '',
   nome: '',
   carga_horaria: '',
   data_realizacao: '',
@@ -81,6 +83,7 @@ export default function TreinamentoForm() {
         }
         setForm({
           funcionario_id: data.funcionario_id,
+          norma_regulamentadora: data.norma_regulamentadora ?? '',
           nome: data.nome ?? '',
           carga_horaria: data.carga_horaria != null ? String(data.carga_horaria) : '',
           data_realizacao: data.data_realizacao ?? hoje(),
@@ -127,6 +130,7 @@ export default function TreinamentoForm() {
     const payload = {
       empresa_id: empresaAtiva.empresa_id,
       funcionario_id: form.funcionario_id,
+      norma_regulamentadora: form.norma_regulamentadora.trim().toUpperCase() || null,
       nome: form.nome.trim(),
       carga_horaria: form.carga_horaria ? Number(form.carga_horaria) : null,
       data_realizacao: form.data_realizacao,
@@ -203,6 +207,15 @@ export default function TreinamentoForm() {
                 </option>
               ))}
             </Seletor>
+
+            <Campo
+              rotulo="Norma regulamentadora (opcional)"
+              name="norma_regulamentadora"
+              placeholder="Ex.: NR-35, NR-10"
+              value={form.norma_regulamentadora}
+              onChange={(e) => set('norma_regulamentadora', e.target.value)}
+              erro={erros.norma_regulamentadora}
+            />
 
             <Campo
               rotulo="Nome do treinamento"

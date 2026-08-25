@@ -1,4 +1,5 @@
 import type { CondicaoIndicado, PapelComissao, PayloadApuracao } from './types';
+import { formatarCnpj } from './cpf';
 
 /**
  * Geração das atas a partir de modelo fixo.
@@ -82,12 +83,6 @@ function diaMesAno(iso: string): { dia: number; mes: string; ano: number } {
 /** Percentual no padrão brasileiro: vírgula decimal. */
 function pct(valor: number): string {
   return valor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-}
-
-function formatarCnpj(cnpj: string): string {
-  const d = (cnpj || '').replace(/\D/g, '');
-  if (d.length !== 14) return cnpj;
-  return `${d.slice(0, 2)}.${d.slice(2, 5)}.${d.slice(5, 8)}/${d.slice(8, 12)}-${d.slice(12)}`;
 }
 
 function nomeComissao(norma: string): string {

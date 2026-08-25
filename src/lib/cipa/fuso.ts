@@ -37,3 +37,10 @@ export function paraCampoHoraBrasil(iso: string | null): string {
   if (!iso) return '';
   return paraCampoDataHoraBrasil(iso).slice(11);
 }
+
+/** Data de "hoje" ("YYYY-MM-DD") no horário de Brasília, independente do fuso do
+ *  navegador do usuário — usada para comparar vencimentos (calibração, validade de CA
+ *  etc.) sem que o resultado mude conforme o fuso local de quem está com a tela aberta. */
+export function hojeBrasil(): string {
+  return new Intl.DateTimeFormat('en-CA', { timeZone: FUSO_BRASIL }).format(new Date());
+}

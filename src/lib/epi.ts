@@ -1,3 +1,5 @@
+import { hojeBrasil } from '@/lib/cipa/fuso';
+
 export type MotivoEntrega =
   | 'entrega_inicial'
   | 'troca_periodica'
@@ -53,4 +55,31 @@ export function formatarData(iso: string | null) {
   if (!iso) return '—';
   const [ano, mes, dia] = iso.split('-');
   return `${dia}/${mes}/${ano}`;
+}
+
+export type SituacaoCa = 'nao_verificado' | 'vigente' | 'vencido';
+
+/**
+ * Situação do CA calculada ao vivo a partir de data_validade_ca, em vez de
+ * confiar na coluna epis.situacao_ca — essa coluna só é recalculada pelo
+ * trigger quando o registro é salvo (insert/update de data_validade_ca), então
+ * fica desatualizada indefinidamente se o CA vencer sem que ninguém edite o
+ * cadastro. Usa hojeBrasil() para não depender do fuso do navegador de quem
+ * está com a tela aberta.
+ */
+export function situacaoCaAtual(dataValidadeCa: string | null): SituacaoCa {
+  if (!dataValidadeCa) return 'nao_verificado';
+  return dataValidadeCa >= hojeBrasil() ? 'vigente' : 'vencido';
+}
+
+export const SITUACAO_CA_LABEL: Record<SituacaoCa, string> = {
+  vigente: 'CA vigente',
+  vencido: 'CA vencido',
+  nao_verificado: 'CA não verificado',
+};
+
+export function corSituacaoCa(situacao: SituacaoCa) {
+  if (situacao === 'vencido') return 'bg-error-container text-on-error-container';
+  if (situacao === 'vigente') return 'bg-secondary-container/40 text-on-secondary-container';
+  return 'bg-surface-container-high text-on-surface-variant';
 }
