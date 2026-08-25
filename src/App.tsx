@@ -65,6 +65,9 @@ import Faturas from '@/pages/Faturas';
 import FaturaForm from '@/pages/FaturaForm';
 import RepassesClinicas from '@/pages/RepassesClinicas';
 import RelatorioAnual from '@/pages/RelatorioAnual';
+import OrdensServico from '@/pages/OrdensServico';
+import OrdemServicoForm from '@/pages/OrdemServicoForm';
+import OrdemServicoDetalhe from '@/pages/OrdemServicoDetalhe';
 
 /** Envolve a tela no layout autenticado. Evita repetir o aninhamento em cada rota. */
 function Protegida({ children }: { children: React.ReactNode }) {
@@ -162,6 +165,10 @@ export default function App() {
           <Route path="/financeiro/faturas/novo" element={<Protegida><FaturaForm /></Protegida>} />
           <Route path="/financeiro/faturas/:id" element={<Protegida><FaturaForm /></Protegida>} />
           <Route path="/financeiro/repasses" element={<Protegida><RepassesClinicas /></Protegida>} />
+          <Route path="/ordens-servico" element={<Protegida><OrdensServico /></Protegida>} />
+          <Route path="/ordens-servico/nova" element={<Protegida><OrdemServicoForm /></Protegida>} />
+          <Route path="/ordens-servico/:id" element={<Protegida><OrdemServicoDetalhe /></Protegida>} />
+          <Route path="/ordens-servico/:id/editar" element={<Protegida><OrdemServicoForm /></Protegida>} />
           {/* Rotas públicas e anônimas do eleitor — NUNCA envolver em <Protegida>. */}
           <Route path="/v/:token" element={<VotoLink />} />
           <Route path="/q/:eleicaoId" element={<VotoQr />} />

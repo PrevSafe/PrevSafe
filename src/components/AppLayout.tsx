@@ -48,6 +48,12 @@ const GRUPOS: Grupo[] = [
     ],
   },
   {
+    titulo: 'Workflow',
+    itens: [
+      { rotulo: 'Ordens de Serviço', icone: 'assignment', para: '/ordens-servico' },
+    ],
+  },
+  {
     titulo: 'Cadastros Base',
     itens: [
       { rotulo: 'Unidades', icone: 'apartment', para: '/unidades' },
