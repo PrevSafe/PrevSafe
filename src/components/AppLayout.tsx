@@ -11,46 +11,9 @@ type Grupo = { titulo: string; itens: Item[] };
 // Rotas ainda não construídas apontam para '#'.
 const GRUPOS: Grupo[] = [
   {
-    titulo: 'Inspeções & Ações',
-    itens: [
-      { rotulo: 'Nova Inspeção', icone: 'add_task', para: '/inspecoes/nova' },
-      { rotulo: 'Histórico de Relatórios', icone: 'history', para: '/inspecoes' },
-      { rotulo: 'Planos de Ação (5W2H)', icone: 'checklist', para: '/planos-acao' },
-    ],
-  },
-  {
-    titulo: 'Trabalhadores',
-    itens: [
-      { rotulo: 'Lista de Funcionários', icone: 'group', para: '/funcionarios' },
-      { rotulo: 'Controle de ASO', icone: 'medical_information', para: '/aso' },
-      { rotulo: 'Agenda Médica', icone: 'event_available', para: '/agenda-medica' },
-      { rotulo: 'Afastamentos e CAT', icone: 'event_busy', para: '/afastamentos' },
-      { rotulo: 'Entrega de EPI', icone: 'engineering', para: '/epi' },
-      { rotulo: 'DDS e Treinamentos', icone: 'school', para: '/dds' },
-      { rotulo: 'Matriz de Treinamentos Obrigatórios', icone: 'assignment_turned_in', para: '/treinamentos-obrigatorios' },
-    ],
-  },
-  {
     titulo: 'Gestão PGR / PCMSO',
     itens: [
-      { rotulo: 'Matriz de Riscos', icone: 'grid_view', para: '/matriz-riscos' },
-      { rotulo: 'Grupos de Exposição (GHE)', icone: 'workspaces', para: '/ghe' },
-      { rotulo: 'Inventário de Riscos', icone: 'inventory_2', para: '/riscos' },
-      { rotulo: 'Equipamentos de Medição', icone: 'sensors', para: '/equipamentos-medicao' },
       { rotulo: 'Emitir Documentos (PGR/LTCAT/PCMSO)', icone: 'description', para: '/documentos' },
-      { rotulo: 'Relatório Analítico Anual', icone: 'monitoring', para: '/relatorio-anual' },
-    ],
-  },
-  {
-    titulo: 'Rede Credenciada',
-    itens: [
-      { rotulo: 'Clínicas Credenciadas', icone: 'local_hospital', para: '/credenciados' },
-    ],
-  },
-  {
-    titulo: 'Workflow',
-    itens: [
-      { rotulo: 'Ordens de Serviço', icone: 'assignment', para: '/ordens-servico' },
     ],
   },
   {
@@ -60,15 +23,6 @@ const GRUPOS: Grupo[] = [
       { rotulo: 'Setores', icone: 'account_tree', para: '/setores' },
       { rotulo: 'Cargos', icone: 'badge', para: '/cargos' },
       { rotulo: 'Estrutura Organizacional', icone: 'lan', para: '/estrutura' },
-      { rotulo: 'Frota e Maquinário', icone: 'agriculture', para: '/frota' },
-    ],
-  },
-  {
-    titulo: 'Financeiro',
-    itens: [
-      { rotulo: 'Planos de Faturamento', icone: 'payments', para: '/financeiro/planos' },
-      { rotulo: 'Faturas', icone: 'receipt_long', para: '/financeiro/faturas' },
-      { rotulo: 'Repasses de Clínicas', icone: 'sync_alt', para: '/financeiro/repasses' },
     ],
   },
 ];

@@ -24,8 +24,6 @@ const TABELAS_LINTER = [
 
 const DEBOUNCE_MS = 900;
 
-type PorNorma = { norma: string; percentual: number };
-type PorStatus = { status: string; total: number };
 type Tarefa = {
   id: string;
   titulo: string;
@@ -36,12 +34,8 @@ type Tarefa = {
 };
 
 type Resumo = {
-  inspecoes_mes: number;
-  planos_pendentes: number;
   conformidade_geral: number | null;
   conformidade_mes_anterior: number | null;
-  por_norma: PorNorma[];
-  planos_por_status: PorStatus[];
   proximas_tarefas: Tarefa[];
 };
 
@@ -52,26 +46,6 @@ const ICONE_TIPO: Record<string, string> = {
   manutencao: 'build',
   outro: 'task',
 };
-
-const ROTULO_STATUS: Record<string, string> = {
-  pendente: 'Pendentes',
-  em_andamento: 'Em andamento',
-  concluido: 'Concluídos',
-  cancelado: 'Cancelados',
-};
-
-const COR_STATUS: Record<string, string> = {
-  pendente: '#F97316',
-  em_andamento: '#0e3a46',
-  concluido: '#2fb24a',
-  cancelado: '#71787b',
-};
-
-function corDaBarra(pct: number) {
-  if (pct >= 90) return 'bg-success';
-  if (pct >= 80) return 'bg-primary-container';
-  return 'bg-[#F97316]';
-}
 
 export default function Dashboard() {
   const { perfil, empresaAtiva } = useAuth();
@@ -177,22 +151,6 @@ export default function Dashboard() {
   const anterior = dados?.conformidade_mes_anterior ?? null;
   const variacao = conformidade !== null && anterior !== null ? conformidade - anterior : null;
 
-  // Donut via conic-gradient: monta as fatias acumulando os percentuais.
-  const totalPlanos = (dados?.planos_por_status ?? []).reduce((s, p) => s + Number(p.total), 0);
-  const fatias = (dados?.planos_por_status ?? []).reduce<{ acumulado: number; itens: string[] }>(
-    (estado, p) => {
-      const inicio = (estado.acumulado / totalPlanos) * 100;
-      const acumulado = estado.acumulado + Number(p.total);
-      const fim = (acumulado / totalPlanos) * 100;
-      return { acumulado, itens: [...estado.itens, `${COR_STATUS[p.status] ?? '#71787b'} ${inicio}% ${fim}%`] };
-    },
-    { acumulado: 0, itens: [] }
-  ).itens;
-  const concluidos = Number(
-    dados?.planos_por_status.find((p) => p.status === 'concluido')?.total ?? 0
-  );
-  const pctConcluidos = totalPlanos ? Math.round((concluidos / totalPlanos) * 100) : 0;
-
   return (
     <>
       <header className="hidden md:flex items-center justify-between px-md py-6">
@@ -228,21 +186,8 @@ export default function Dashboard() {
         ) : (
           <>
             {/* Cards de resumo */}
-            <section className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-              <Card
-                rotulo="Inspeções no mês"
-                icone="fact_check"
-                valor={String(dados?.inspecoes_mes ?? 0)}
-                cor="text-primary"
-              />
-              <Card
-                rotulo="Planos pendentes"
-                icone="warning"
-                valor={String(dados?.planos_pendentes ?? 0)}
-                cor="text-[#F97316]"
-              />
-
-              <div className="bg-surface-container-lowest p-md rounded-xl border border-surface-container-high shadow-sm col-span-2 relative overflow-hidden group">
+            <section className="grid grid-cols-1 gap-4 md:gap-6">
+              <div className="bg-surface-container-lowest p-md rounded-xl border border-surface-container-high shadow-sm relative overflow-hidden group">
                 <span className="material-symbols-outlined absolute top-4 right-4 text-5xl text-success opacity-10">
                   verified
                 </span>
@@ -338,68 +283,6 @@ export default function Dashboard() {
               )}
             </section>
 
-            {/* Gráficos */}
-            <section className="grid grid-cols-1 md:grid-cols-12 gap-6">
-              <div className="bg-surface-container-lowest p-md rounded-xl border border-surface-container-high shadow-sm md:col-span-8 flex flex-col">
-                <h3 className="text-title-lg text-primary mb-6">Conformidade por norma</h3>
-                {dados?.por_norma.length ? (
-                  <div className="flex-1 flex items-end gap-4 h-48 md:h-64">
-                    {dados.por_norma.map((n) => (
-                      <div key={n.norma} className="flex-1 flex flex-col justify-end items-center group">
-                        <span className="text-label-sm text-on-surface-variant mb-2">
-                          {n.percentual}%
-                        </span>
-                        <div
-                          className={`w-full max-w-[60px] rounded-t-lg transition-all ${corDaBarra(
-                            Number(n.percentual)
-                          )}`}
-                          style={{ height: `${n.percentual}%` }}
-                        />
-                        <span className="text-label-md text-primary mt-3">{n.norma}</span>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <Vazio texto="Nenhuma inspeção concluída nos últimos 180 dias." />
-                )}
-              </div>
-
-              <div className="bg-surface-container-lowest p-md rounded-xl border border-surface-container-high shadow-sm md:col-span-4 flex flex-col">
-                <h3 className="text-title-lg text-primary mb-4">Status dos planos de ação</h3>
-                {totalPlanos ? (
-                  <div className="flex-1 flex flex-col items-center justify-center">
-                    <div
-                      className="relative w-32 h-32 md:w-40 md:h-40 rounded-full flex items-center justify-center"
-                      style={{ background: `conic-gradient(${fatias.join(', ')})` }}
-                    >
-                      <div className="w-24 h-24 md:w-32 md:h-32 bg-surface-container-lowest rounded-full flex flex-col items-center justify-center">
-                        <span className="text-headline-md text-primary">{pctConcluidos}%</span>
-                        <span className="text-label-sm text-on-surface-variant">Concluídos</span>
-                      </div>
-                    </div>
-                    <div className="mt-6 w-full space-y-3">
-                      {dados!.planos_por_status.map((p) => (
-                        <div key={p.status} className="flex items-center justify-between">
-                          <div className="flex items-center">
-                            <span
-                              className="w-3 h-3 rounded-full mr-2"
-                              style={{ backgroundColor: COR_STATUS[p.status] }}
-                            />
-                            <span className="text-label-md text-on-surface">
-                              {ROTULO_STATUS[p.status] ?? p.status}
-                            </span>
-                          </div>
-                          <span className="text-body-md text-primary font-bold">{p.total}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ) : (
-                  <Vazio texto="Nenhum plano de ação cadastrado." />
-                )}
-              </div>
-            </section>
-
             {/* Agenda */}
             <section className="bg-surface-container-lowest rounded-xl border border-surface-container-high shadow-sm overflow-hidden">
               <div className="p-md border-b border-surface-container-high flex justify-between items-center">
@@ -464,30 +347,6 @@ export default function Dashboard() {
         )}
       </div>
     </>
-  );
-}
-
-function Card({
-  rotulo,
-  icone,
-  valor,
-  cor,
-}: {
-  rotulo: string;
-  icone: string;
-  valor: string;
-  cor: string;
-}) {
-  return (
-    <div className="bg-surface-container-lowest p-md rounded-xl border border-surface-container-high shadow-sm flex flex-col justify-between relative overflow-hidden">
-      <span
-        className={`material-symbols-outlined absolute top-4 right-4 text-4xl opacity-10 ${cor}`}
-      >
-        {icone}
-      </span>
-      <p className="text-label-md text-on-surface-variant uppercase tracking-wider">{rotulo}</p>
-      <span className={`text-display-lg mt-4 ${cor}`}>{valor}</span>
-    </div>
   );
 }
 
