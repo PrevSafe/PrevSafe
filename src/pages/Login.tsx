@@ -20,7 +20,7 @@ export default function Login() {
     setEnviando(true);
     try {
       await entrar(email, senha);
-      navigate('/dashboard', { replace: true });
+      navigate('/documentos', { replace: true });
     } catch (err) {
       setErro(err instanceof Error ? err.message : 'Erro inesperado.');
     } finally {

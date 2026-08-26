@@ -3,7 +3,6 @@ import { AuthProvider } from '@/contexts/AuthContext';
 import RotaProtegida from '@/components/RotaProtegida';
 import AppLayout from '@/components/AppLayout';
 import Login from '@/pages/Login';
-import Dashboard from '@/pages/Dashboard';
 import Unidades from '@/pages/Unidades';
 import UnidadeForm from '@/pages/UnidadeForm';
 import Setores from '@/pages/Setores';
@@ -41,7 +40,6 @@ export default function App() {
       <AuthProvider>
         <Routes>
           <Route path="/login" element={<Login />} />
-          <Route path="/dashboard" element={<Protegida><Dashboard /></Protegida>} />
           <Route path="/unidades" element={<Protegida><Unidades /></Protegida>} />
           <Route path="/unidades/nova" element={<Protegida><UnidadeForm /></Protegida>} />
           <Route path="/unidades/:id" element={<Protegida><UnidadeForm /></Protegida>} />
@@ -67,7 +65,7 @@ export default function App() {
           {/* Rotas públicas e anônimas do eleitor — NUNCA envolver em <Protegida>. */}
           <Route path="/v/:token" element={<VotoLink />} />
           <Route path="/q/:eleicaoId" element={<VotoQr />} />
-          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+          <Route path="*" element={<Navigate to="/documentos" replace />} />
         </Routes>
       </AuthProvider>
     </BrowserRouter>

@@ -48,7 +48,7 @@ export default function Acessos() {
   const [aba, setAba] = useState<'perfis' | 'usuarios'>('perfis');
 
   if (!empresaAtiva) return <Spinner />;
-  if (!can('acessos', 'visualizar')) return <Navigate to="/dashboard" replace />;
+  if (!can('acessos', 'visualizar')) return <Navigate to="/documentos" replace />;
 
   return (
     <div className="px-margin-mobile md:px-md py-6">

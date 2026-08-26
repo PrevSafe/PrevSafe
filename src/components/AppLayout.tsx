@@ -28,7 +28,7 @@ const GRUPOS: Grupo[] = [
 ];
 
 const NAV_MOBILE: Item[] = [
-  { rotulo: 'Início', icone: 'fact_check', para: '/dashboard' },
+  { rotulo: 'Início', icone: 'fact_check', para: '/documentos' },
   { rotulo: 'Relatórios', icone: 'analytics', para: '#' },
   { rotulo: 'Agenda', icone: 'calendar_today', para: '#' },
   { rotulo: 'Perfil', icone: 'settings', para: '#' },
@@ -126,7 +126,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
     trocarEmpresa(empresaId);
     setSeletorEmpresaAberto(false);
     fecharMenus();
-    navigate('/dashboard');
+    navigate('/documentos');
   }
 
   const nomeEmpresaAtiva = empresaAtiva
@@ -179,13 +179,6 @@ export default function AppLayout({ children }: { children: ReactNode }) {
       {blocoEmpresa}
 
       <nav className="flex-1 overflow-y-auto space-y-6 pb-4">
-        <div className="space-y-1">
-          <LinkNav
-            item={{ rotulo: 'Dashboard', icone: 'dashboard', para: '/dashboard' }}
-            onNavigate={fecharMenus}
-          />
-        </div>
-
         {grupos.map((grupo) => (
           <div key={grupo.titulo} className="space-y-1">
             <h3 className="px-4 text-label-sm text-outline uppercase tracking-wider mb-2">
