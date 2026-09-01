@@ -1,0 +1,6 @@
+{
+  "name": "PrevSafe SST - Gestão em SST & CIPA",
+  "description": "Sistema Integrado de Engenharia de Segurança do Trabalho, Medicina Ocupacional, Gestão Integral de CIPA e eSocial SST.",
+  "requestFramePermissions": ["camera", "microphone", "geolocation"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,38 +1,7 @@
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
-
-node_modules
-dist
-dist-ssr
-*.local
-.env
-!.env.example
-
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
+node_modules/
+.next/
+coverage/
 .DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-
-supabase/.temp/
-
-_prototipos/
-
-# Materiais de trabalho pessoais — backups, dumps e scripts soltos que
-# não fazem parte do código nem das migrations oficiais (essas ficam em
-# supabase/migrations/).
-ARQUIVOS/
-scripts/
-tests/
-funcoes.json
+*.log
+.env*
+!.env.example
