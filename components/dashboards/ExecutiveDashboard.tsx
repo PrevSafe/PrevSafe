@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { usePrevSafe } from '@/context/PrevSafeContext';
 import { formatDate } from '@/lib/utils';
 import { 
@@ -19,7 +19,9 @@ import {
   Building2,
   Activity,
   Layers,
-  ArrowRight
+  ArrowRight,
+  Download,
+  Printer
 } from 'lucide-react';
 import { 
   BarChart, 
@@ -35,39 +37,65 @@ import {
   Line,
   CartesianGrid
 } from 'recharts';
+import { SSTDeadlineAlertBanner } from '@/components/esocial/SSTDeadlineAlertBanner';
+import { ServiceSummaryPdfModal } from '@/components/services/ServiceSummaryPdfModal';
+import { exportESocialEventLogsPdf } from '@/lib/pdfExportService';
 
 export const ExecutiveDashboard: React.FC<{ onNavigate: (view: string) => void }> = ({ onNavigate }) => {
-  const { clients, proposals, contracts, serviceOrders, requests, evaluations } = usePrevSafe();
+  const { 
+    clients = [], 
+    proposals = [], 
+    contracts = [], 
+    serviceOrders = [], 
+    requests = [], 
+    evaluations = [], 
+    esocialEvents = [], 
+    esocialConfig, 
+    organization, 
+    profiles = [] 
+  } = usePrevSafe();
+  const [showPdfModal, setShowPdfModal] = useState(false);
 
-  const activeClientsCount = clients.filter(c => c.status === 'ACTIVE').length;
-  const openProposalsCount = proposals.filter(p => p.status === 'DRAFT' || p.status === 'SENT' || p.status === 'NEGOTIATION').length;
-  const approvedProposalsCount = proposals.filter(p => p.status === 'APPROVED').length;
-  const activeContractsCount = contracts.filter(c => c.status === 'ACTIVE' || c.status === 'SIGNED').length;
-  const inProgressOSCount = serviceOrders.filter(o => o.status === 'IN_PROGRESS' || o.status === 'READY' || o.status === 'SCHEDULED').length;
+  const activeClientsCount = (clients || []).filter(c => c?.status === 'ACTIVE').length;
+  const openProposalsCount = (proposals || []).filter(p => p?.status === 'DRAFT' || p?.status === 'SENT' || p?.status === 'NEGOTIATION').length;
+  const approvedProposalsCount = (proposals || []).filter(p => p?.status === 'APPROVED').length;
+  const activeContractsCount = (contracts || []).filter(c => c?.status === 'ACTIVE' || c?.status === 'SIGNED').length;
+  const inProgressOSCount = (serviceOrders || []).filter(o => o?.status === 'IN_PROGRESS' || o?.status === 'READY' || o?.status === 'SCHEDULED').length;
   
-  const delayedOSCount = serviceOrders.filter(o => {
-    if (o.status === 'COMPLETED' || o.status === 'CANCELLED') return false;
+  // eSocial Status Calculations
+  const esocialPendingCount = (esocialEvents || []).filter(e => e?.status === 'READY_TO_SEND' || e?.status === 'DRAFT' || e?.status === 'VALIDATED').length;
+  const esocialProcessingCount = (esocialEvents || []).filter(e => e?.status === 'PROCESSING').length;
+  const esocialAcceptedCount = (esocialEvents || []).filter(e => e?.status === 'SUCCESS').length;
+  const esocialErrorCount = (esocialEvents || []).filter(e => e?.status === 'REJECTED').length;
+
+  const s2210Count = (esocialEvents || []).filter(e => e?.event_type === 'S-2210').length;
+  const s2220Count = (esocialEvents || []).filter(e => e?.event_type === 'S-2220').length;
+  const s2230Count = (esocialEvents || []).filter(e => e?.event_type === 'S-2230').length;
+  const s2240Count = (esocialEvents || []).filter(e => e?.event_type === 'S-2240').length;
+
+  const delayedOSCount = (serviceOrders || []).filter(o => {
+    if (!o || o.status === 'COMPLETED' || o.status === 'CANCELLED') return false;
     return new Date(o.due_date) < new Date();
   }).length;
 
-  const openRequestsCount = requests.filter(r => r.status === 'OPEN').length;
-  const totalContractedValue = contracts.reduce((acc, c) => acc + (c.total_value || 0), 0);
+  const openRequestsCount = (requests || []).filter(r => r?.status === 'OPEN').length;
+  const totalContractedValue = (contracts || []).reduce((acc, c) => acc + (c?.total_value || 0), 0);
   const totalReceivedValue = totalContractedValue * 0.75;
 
-  const averageNps = evaluations.length > 0
-    ? (evaluations.reduce((acc, e) => acc + e.nps_score, 0) / evaluations.length).toFixed(1)
+  const averageNps = (evaluations || []).length > 0
+    ? ((evaluations || []).reduce((acc, e) => acc + (e?.nps_score || 0), 0) / evaluations.length).toFixed(1)
     : '9.8';
 
-  const averageSatisfaction = evaluations.length > 0
-    ? (evaluations.reduce((acc, e) => acc + e.overall_score, 0) / evaluations.length).toFixed(1)
+  const averageSatisfaction = (evaluations || []).length > 0
+    ? ((evaluations || []).reduce((acc, e) => acc + (e?.overall_score || 0), 0) / evaluations.length).toFixed(1)
     : '4.9';
 
   const osStatusData = [
     { name: 'Em Execução', value: inProgressOSCount, fill: '#6366f1' },
-    { name: 'Aguard. Aceite', value: serviceOrders.filter(o => o.status === 'WAITING_ACCEPTANCE').length, fill: '#a855f7' },
-    { name: 'Concluídas', value: serviceOrders.filter(o => o.status === 'ACCEPTED' || o.status === 'COMPLETED').length, fill: '#10b981' },
+    { name: 'Aguard. Aceite', value: (serviceOrders || []).filter(o => o?.status === 'WAITING_ACCEPTANCE').length, fill: '#a855f7' },
+    { name: 'Concluídas', value: (serviceOrders || []).filter(o => o?.status === 'ACCEPTED' || o?.status === 'COMPLETED').length, fill: '#10b981' },
     { name: 'Atrasadas', value: delayedOSCount, fill: '#f43f5e' },
-    { name: 'Retrabalho', value: serviceOrders.filter(o => o.status === 'REWORK').length, fill: '#f59e0b' },
+    { name: 'Retrabalho', value: (serviceOrders || []).filter(o => o?.status === 'REWORK').length, fill: '#f59e0b' },
   ];
 
   const serviceTypeData = [
@@ -87,6 +115,9 @@ export const ExecutiveDashboard: React.FC<{ onNavigate: (view: string) => void }
 
   return (
     <div className="space-y-6 pb-12">
+      {/* Alertas Automáticos de Prazos SST (Exames S-2220 e Laudos PGR/PCMSO conforme SLA) */}
+      <SSTDeadlineAlertBanner onNavigate={onNavigate} />
+
       {/* Header Bento Banner */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl">
         <div>
@@ -97,7 +128,17 @@ export const ExecutiveDashboard: React.FC<{ onNavigate: (view: string) => void }
           <h1 className="text-2xl font-bold tracking-tight text-white mt-1">Visão Integrada SST</h1>
           <p className="text-xs text-slate-400 mt-0.5">Gestão de ponta a ponta dos serviços contratados, SLA e entregas técnicas.</p>
         </div>
-        <div className="flex items-center space-x-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <button 
+            id="btn-exec-export-os-summary-pdf"
+            onClick={() => setShowPdfModal(true)}
+            className="px-3.5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-2xl text-xs font-bold transition flex items-center space-x-1.5 shadow-sm"
+            title="Exportar Resumo Consolidado de Serviços em PDF"
+          >
+            <Download className="w-4 h-4 text-emerald-400" />
+            <span>Exportar Resumo de Serviços (PDF)</span>
+          </button>
+
           <button 
             onClick={() => onNavigate('service-orders')}
             className="px-4 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-2xl text-xs font-bold shadow-lg shadow-emerald-950/40 transition flex items-center space-x-2"
@@ -235,6 +276,170 @@ export const ExecutiveDashboard: React.FC<{ onNavigate: (view: string) => void }
         </div>
       )}
 
+      {/* Card de Visualização Rápida: Status de Transmissão do eSocial */}
+      <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl relative overflow-hidden">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-5 border-b border-slate-800/80">
+          <div className="flex items-center space-x-3.5">
+            <div className="p-3 rounded-2xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 flex-shrink-0">
+              <ShieldCheck className="w-6 h-6" />
+            </div>
+            <div>
+              <div className="flex items-center space-x-2">
+                <h2 className="text-base font-bold text-white tracking-tight">Status de Envio eSocial (SST Oficial)</h2>
+                <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border uppercase tracking-wider ${
+                  esocialConfig.environment === 'PRODUCAO' 
+                    ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' 
+                    : 'bg-amber-500/10 text-amber-400 border-amber-500/30'
+                }`}>
+                  Ambiente {esocialConfig.environment === 'PRODUCAO' ? 'Produção' : 'Homologação'}
+                </span>
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono text-slate-300 bg-slate-800 border border-slate-700">
+                  Certificado A1 {esocialConfig.certificate.status === 'VALID' ? '✅ Válido' : '⚠️ Pendente'}
+                </span>
+              </div>
+              <p className="text-xs text-slate-400 mt-1">
+                Monitoramento dos eventos de SST: S-2210 (CAT), S-2220 (ASO), S-2230 (Afastamento) e S-2240 (Riscos Ambientais).
+              </p>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              id="btn-exec-export-esocial-logs-pdf"
+              onClick={() => {
+                exportESocialEventLogsPdf({
+                  organization,
+                  clients,
+                  events: esocialEvents
+                });
+              }}
+              className="px-3.5 py-2 bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 rounded-2xl text-xs font-bold transition flex items-center space-x-1.5 shadow-sm"
+              title="Exportar Relatório e Log Completo de Transmissões eSocial em PDF"
+            >
+              <Download className="w-4 h-4 text-indigo-400" />
+              <span>Exportar Logs eSocial (PDF)</span>
+            </button>
+
+            <button
+              onClick={() => onNavigate('esocial_config')}
+              className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-2xl text-xs font-semibold border border-slate-700 transition flex items-center space-x-1.5"
+            >
+              <span>Configurações & Certificado</span>
+            </button>
+            <button
+              onClick={() => onNavigate('esocial_events')}
+              className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-2xl text-xs font-bold transition shadow-lg shadow-indigo-950/40 flex items-center space-x-2"
+            >
+              <span>Painel de Eventos</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+
+        {/* 4 Status Cards com Links Diretos */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-5">
+          {/* Pendentes */}
+          <div 
+            onClick={() => onNavigate('esocial_events')}
+            className="bg-slate-950/60 p-4 rounded-2xl border border-slate-800/80 hover:border-amber-500/40 hover:bg-slate-950 cursor-pointer transition flex flex-col justify-between group"
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Pendentes de Envio</span>
+              <span className="w-2.5 h-2.5 rounded-full bg-amber-400 group-hover:animate-ping" />
+            </div>
+            <div className="mt-3 flex items-baseline justify-between">
+              <span className="text-2xl font-bold text-amber-400 font-mono">{esocialPendingCount}</span>
+              <span className="text-[11px] text-amber-300/80 group-hover:text-amber-300 font-medium flex items-center">
+                Transmitir lote <ArrowRight className="w-3 h-3 ml-1" />
+              </span>
+            </div>
+          </div>
+
+          {/* Em Processamento */}
+          <div 
+            onClick={() => onNavigate('esocial_events')}
+            className="bg-slate-950/60 p-4 rounded-2xl border border-slate-800/80 hover:border-blue-500/40 hover:bg-slate-950 cursor-pointer transition flex flex-col justify-between group"
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Em Processamento</span>
+              <span className="w-2.5 h-2.5 rounded-full bg-blue-400 animate-pulse" />
+            </div>
+            <div className="mt-3 flex items-baseline justify-between">
+              <span className="text-2xl font-bold text-blue-400 font-mono">{esocialProcessingCount}</span>
+              <span className="text-[11px] text-blue-300/80 group-hover:text-blue-300 font-medium flex items-center">
+                Consultar Serpro <ArrowRight className="w-3 h-3 ml-1" />
+              </span>
+            </div>
+          </div>
+
+          {/* Aceitos */}
+          <div 
+            onClick={() => onNavigate('esocial_events')}
+            className="bg-slate-950/60 p-4 rounded-2xl border border-slate-800/80 hover:border-emerald-500/40 hover:bg-slate-950 cursor-pointer transition flex flex-col justify-between group"
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Aceitos pelo Governo</span>
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
+            </div>
+            <div className="mt-3 flex items-baseline justify-between">
+              <span className="text-2xl font-bold text-emerald-400 font-mono">{esocialAcceptedCount}</span>
+              <span className="text-[11px] text-emerald-300/80 group-hover:text-emerald-300 font-medium flex items-center">
+                Ver recibos <ArrowRight className="w-3 h-3 ml-1" />
+              </span>
+            </div>
+          </div>
+
+          {/* Erro / Rejeitados */}
+          <div 
+            onClick={() => onNavigate('esocial_events')}
+            className={`p-4 rounded-2xl border cursor-pointer transition flex flex-col justify-between group ${
+              esocialErrorCount > 0 
+                ? 'bg-rose-950/30 border-rose-500/50 hover:bg-rose-950/50 shadow-lg shadow-rose-950/40' 
+                : 'bg-slate-950/60 border-slate-800/80 hover:border-slate-700'
+            }`}
+          >
+            <div className="flex items-center justify-between">
+              <span className={`text-xs font-semibold uppercase tracking-wider ${esocialErrorCount > 0 ? 'text-rose-300' : 'text-slate-400'}`}>
+                Com Erro / Rejeitados
+              </span>
+              <span className={`w-2.5 h-2.5 rounded-full ${esocialErrorCount > 0 ? 'bg-rose-500 animate-pulse' : 'bg-slate-600'}`} />
+            </div>
+            <div className="mt-3 flex items-baseline justify-between">
+              <span className={`text-2xl font-bold font-mono ${esocialErrorCount > 0 ? 'text-rose-400 font-extrabold' : 'text-slate-500'}`}>
+                {esocialErrorCount}
+              </span>
+              {esocialErrorCount > 0 ? (
+                <span className="text-[11px] text-rose-300 font-bold flex items-center bg-rose-500/20 px-2 py-0.5 rounded-lg border border-rose-500/30">
+                  Corrigir Imediatamente <ArrowRight className="w-3 h-3 ml-1" />
+                </span>
+              ) : (
+                <span className="text-[11px] text-slate-500">Sem erros ativos</span>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Mini Breakdown por Tipo de Evento de SST */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4 pt-4 border-t border-slate-800/60 text-xs">
+          <div className="flex items-center justify-between bg-slate-950/40 px-3 py-2 rounded-xl border border-slate-800/40">
+            <span className="text-slate-400 font-medium">S-2210 (CAT):</span>
+            <span className="font-mono font-bold text-white">{s2210Count} eventos</span>
+          </div>
+          <div className="flex items-center justify-between bg-slate-950/40 px-3 py-2 rounded-xl border border-slate-800/40">
+            <span className="text-slate-400 font-medium">S-2220 (ASO):</span>
+            <span className="font-mono font-bold text-white">{s2220Count} eventos</span>
+          </div>
+          <div className="flex items-center justify-between bg-slate-950/40 px-3 py-2 rounded-xl border border-slate-800/40">
+            <span className="text-slate-400 font-medium">S-2230 (Afastam.):</span>
+            <span className="font-mono font-bold text-white">{s2230Count} eventos</span>
+          </div>
+          <div className="flex items-center justify-between bg-slate-950/40 px-3 py-2 rounded-xl border border-slate-800/40">
+            <span className="text-slate-400 font-medium">S-2240 (Riscos):</span>
+            <span className="font-mono font-bold text-white">{s2240Count} eventos</span>
+          </div>
+        </div>
+      </div>
+
       {/* Bento Grid - Main Section (Revenue + OS Distribution) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
         {/* Revenue Progress Chart - Span 7 */}
@@ -244,9 +449,13 @@ export const ExecutiveDashboard: React.FC<{ onNavigate: (view: string) => void }
               <h2 className="text-sm font-bold text-white">Evolução de Receita Contratada x Faturada (R$)</h2>
               <p className="text-xs text-slate-400">Acompanhamento financeiro dos contratos de SST</p>
             </div>
-            <span className="text-xs font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-full">
-              +28% no Trimestre
-            </span>
+            <button
+              onClick={() => onNavigate('financial')}
+              className="text-xs font-semibold text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 px-3 py-1 rounded-full flex items-center space-x-1 transition"
+            >
+              <span>Ver Fluxo de Caixa</span>
+              <ArrowRight className="w-3 h-3" />
+            </button>
           </div>
           <div className="h-64 mt-2">
             <ResponsiveContainer width="100%" height="100%">
@@ -394,6 +603,12 @@ export const ExecutiveDashboard: React.FC<{ onNavigate: (view: string) => void }
           </div>
         </div>
       </div>
+
+      {/* Modal de Exportação de Resumo de Serviços em PDF */}
+      <ServiceSummaryPdfModal
+        isOpen={showPdfModal}
+        onClose={() => setShowPdfModal(false)}
+      />
     </div>
   );
 };

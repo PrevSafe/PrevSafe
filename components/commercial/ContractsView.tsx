@@ -25,18 +25,18 @@ import confetti from 'canvas-confetti';
 
 export const ContractsView: React.FC<{ onNavigate: (view: string) => void }> = ({ onNavigate }) => {
   const { 
-    contracts, 
-    clients, 
-    proposals, 
+    contracts = [], 
+    clients = [], 
+    proposals = [], 
     createManualContract,
     updateContract,
     deleteContract,
     signContract, 
-    serviceOrders, 
+    serviceOrders = [], 
     currentProfile 
   } = usePrevSafe();
 
-  const [selectedContract, setSelectedContract] = useState<Contract | null>(contracts[0] || null);
+  const [selectedContract, setSelectedContract] = useState<Contract | null>(contracts?.[0] || null);
   const [showSignModal, setShowSignModal] = useState(false);
   const [showNewContractModal, setShowNewContractModal] = useState(false);
   const [editingContract, setEditingContract] = useState<Contract | null>(null);
@@ -49,7 +49,7 @@ export const ContractsView: React.FC<{ onNavigate: (view: string) => void }> = (
 
   // Contract form state
   const [contractForm, setContractForm] = useState(() => ({
-    client_id: clients[0]?.id || '',
+    client_id: clients?.[0]?.id || '',
     title: 'Contrato de Prestação de Serviços SST',
     total_value: 11000,
     start_date: new Date().toISOString().split('T')[0],
@@ -59,7 +59,7 @@ export const ContractsView: React.FC<{ onNavigate: (view: string) => void }> = (
 
   const handleOpenNewContract = () => {
     setContractForm({
-      client_id: clients[0]?.id || '',
+      client_id: clients?.[0]?.id || '',
       title: 'Contrato de Prestação de Serviços SST 2026',
       total_value: 12000,
       start_date: new Date().toISOString().split('T')[0],

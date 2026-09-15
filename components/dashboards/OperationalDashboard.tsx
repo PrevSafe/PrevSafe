@@ -15,13 +15,23 @@ import {
   ArrowRight, 
   ShieldAlert, 
   HardHat,
-  ShieldCheck
+  ShieldCheck,
+  Download
 } from 'lucide-react';
+import { ServiceSummaryPdfModal } from '@/components/services/ServiceSummaryPdfModal';
 
 export const OperationalDashboard: React.FC<{ onNavigate: (view: string) => void }> = ({ onNavigate }) => {
-  const { serviceOrders, requests, profiles, esocialEvents, updateTaskStatus, toggleSlaPause } = usePrevSafe();
+  const { 
+    serviceOrders = [], 
+    requests = [], 
+    profiles = [], 
+    esocialEvents = [], 
+    updateTaskStatus, 
+    toggleSlaPause 
+  } = usePrevSafe();
+  const [showPdfModal, setShowPdfModal] = useState(false);
 
-  const technicians = profiles.filter(p => p.role === 'TÉCNICO' || p.role === 'GESTOR');
+  const technicians = (profiles || []).filter(p => p?.role === 'TÉCNICO' || p?.role === 'GESTOR');
 
   // Collect all tasks across all active service orders
   const allTasks: { 
@@ -31,29 +41,35 @@ export const OperationalDashboard: React.FC<{ onNavigate: (view: string) => void
     isDelayed: boolean; 
   }[] = [];
 
-  serviceOrders.forEach(os => {
-    os.stages.forEach(stage => {
-      stage.tasks.forEach(task => {
-        const isDelayed = task.status !== 'COMPLETED' && task.status !== 'CANCELLED' && new Date(task.due_date) < new Date();
-        allTasks.push({ task, stage, os, isDelayed });
+  (serviceOrders || []).forEach(os => {
+    if (os && Array.isArray(os.stages)) {
+      os.stages.forEach(stage => {
+        if (stage && Array.isArray(stage.tasks)) {
+          stage.tasks.forEach(task => {
+            if (task) {
+              const isDelayed = task.status !== 'COMPLETED' && task.status !== 'CANCELLED' && task.due_date && new Date(task.due_date) < new Date();
+              allTasks.push({ task, stage, os, isDelayed });
+            }
+          });
+        }
       });
-    });
+    }
   });
 
-  const todayTasks = allTasks.filter(t => t.task.status === 'IN_PROGRESS' || t.task.status === 'TODO');
+  const todayTasks = allTasks.filter(t => t.task?.status === 'IN_PROGRESS' || t.task?.status === 'TODO');
   const delayedTasks = allTasks.filter(t => t.isDelayed);
-  const waitingClientStages = serviceOrders.flatMap(os => os.stages.filter(s => s.status === 'WAITING_CLIENT' || (os.sla_is_paused && s.status === 'IN_PROGRESS')));
-  const expiringSoonOS = serviceOrders.filter(os => {
-    if (os.status === 'COMPLETED' || os.status === 'CANCELLED') return false;
+  const waitingClientStages = (serviceOrders || []).flatMap(os => (os?.stages || []).filter(s => s?.status === 'WAITING_CLIENT' || (os.sla_is_paused && s?.status === 'IN_PROGRESS')));
+  const expiringSoonOS = (serviceOrders || []).filter(os => {
+    if (!os || os.status === 'COMPLETED' || os.status === 'CANCELLED') return false;
     const diffDays = Math.ceil((new Date(os.due_date).getTime() - new Date().getTime()) / 86400000);
     return diffDays >= 0 && diffDays <= 7;
   });
 
   // Technician workload
-  const techWorkload = technicians.map(tech => {
-    const assignedTasks = allTasks.filter(t => t.task.assigned_to === tech.id || t.stage.assigned_to === tech.id);
-    const completed = assignedTasks.filter(t => t.task.status === 'COMPLETED').length;
-    const pending = assignedTasks.filter(t => t.task.status !== 'COMPLETED').length;
+  const techWorkload = (technicians || []).map(tech => {
+    const assignedTasks = allTasks.filter(t => t.task?.assigned_to === tech.id || t.stage?.assigned_to === tech.id);
+    const completed = assignedTasks.filter(t => t.task?.status === 'COMPLETED').length;
+    const pending = assignedTasks.filter(t => t.task?.status !== 'COMPLETED').length;
     return {
       tech,
       total: assignedTasks.length,
@@ -76,7 +92,17 @@ export const OperationalDashboard: React.FC<{ onNavigate: (view: string) => void
             <p className="text-xs text-slate-400 mt-0.5">Controle de execução diária de campo, SLAs internos, carga técnica e etapas aguardando cliente.</p>
           </div>
         </div>
-        <div className="flex items-center space-x-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <button 
+            id="btn-op-export-os-summary-pdf"
+            onClick={() => setShowPdfModal(true)}
+            className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-2xl text-xs font-bold transition flex items-center space-x-1.5 shadow-sm"
+            title="Exportar Resumo Consolidado de Serviços em PDF"
+          >
+            <Download className="w-4 h-4 text-emerald-400" />
+            <span>Exportar Resumo (PDF)</span>
+          </button>
+
           <button 
             onClick={() => onNavigate('esocial')}
             className="px-3.5 py-2 bg-emerald-950/60 border border-emerald-700/50 hover:bg-emerald-900/60 text-emerald-300 rounded-2xl text-xs font-bold transition flex items-center space-x-1.5"
@@ -275,6 +301,12 @@ export const OperationalDashboard: React.FC<{ onNavigate: (view: string) => void
           </div>
         </div>
       </div>
+
+      {/* Modal de Exportação de Resumo de Serviços em PDF */}
+      <ServiceSummaryPdfModal
+        isOpen={showPdfModal}
+        onClose={() => setShowPdfModal(false)}
+      />
     </div>
   );
 };

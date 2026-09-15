@@ -23,9 +23,9 @@ import {
 
 export const RequestsView: React.FC<{ onNavigate: (view: string) => void }> = ({ onNavigate }) => {
   const { 
-    requests, 
-    clients, 
-    serviceOrders, 
+    requests = [], 
+    clients = [], 
+    serviceOrders = [], 
     createRequest,
     updateRequest,
     deleteRequest,
@@ -42,20 +42,21 @@ export const RequestsView: React.FC<{ onNavigate: (view: string) => void }> = ({
 
   // Form
   const [reqForm, setReqForm] = useState(() => ({
-    client_id: clients[0]?.id || '',
-    service_order_id: serviceOrders[0]?.id || '',
+    client_id: clients?.[0]?.id || '',
+    service_order_id: serviceOrders?.[0]?.id || '',
     title: 'Envio de Quadro de Empregados e Funções',
     description: 'Solicitamos a relação atualizada dos colaboradores ativos para elaboração do PCMSO.',
     due_date: new Date(Date.now() + 5 * 86400000).toISOString().split('T')[0],
     priority: 'HIGH' as RequestItem['priority']
   }));
 
-  const filteredRequests = requests.filter(r => {
+  const filteredRequests = (requests || []).filter(r => {
+    if (!r) return false;
     const matchesStatus = statusFilter === 'ALL' || 
       (statusFilter === 'OPEN' ? r.status === 'OPEN' || r.status === 'SENT' || r.status === 'VIEWED' : r.status === 'RESOLVED');
-    const matchesSearch = r.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      r.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      r.req_number.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = (r.title || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (r.description || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (r.req_number || '').toLowerCase().includes(searchTerm.toLowerCase());
     return matchesStatus && matchesSearch;
   });
 
@@ -447,13 +448,13 @@ export const RequestsView: React.FC<{ onNavigate: (view: string) => void }> = ({
 
 export const ServiceTemplatesView: React.FC<{ onNavigate: (view: string) => void }> = ({ onNavigate }) => {
   const { 
-    serviceTemplates, 
+    serviceTemplates = [], 
     addServiceTemplate, 
     updateServiceTemplate, 
     deleteServiceTemplate 
   } = usePrevSafe();
 
-  const [selectedTemplate, setSelectedTemplate] = useState<ServiceTemplate | null>(serviceTemplates[0] || null);
+  const [selectedTemplate, setSelectedTemplate] = useState<ServiceTemplate | null>(serviceTemplates?.[0] || null);
   const [showNewTemplateModal, setShowNewTemplateModal] = useState(false);
   const [editingTemplate, setEditingTemplate] = useState<ServiceTemplate | null>(null);
   const [deletingTemplate, setDeletingTemplate] = useState<ServiceTemplate | null>(null);

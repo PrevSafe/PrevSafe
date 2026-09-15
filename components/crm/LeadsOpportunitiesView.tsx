@@ -25,8 +25,8 @@ import {
 
 export const LeadsOpportunitiesView: React.FC<{ onNavigate: (view: string) => void }> = ({ onNavigate }) => {
   const { 
-    leads, 
-    opportunities, 
+    leads = [], 
+    opportunities = [], 
     addLead, 
     updateLead,
     deleteLead,
@@ -35,7 +35,7 @@ export const LeadsOpportunitiesView: React.FC<{ onNavigate: (view: string) => vo
     updateOpportunity,
     deleteOpportunity,
     updateOpportunityStage,
-    clients 
+    clients = [] 
   } = usePrevSafe();
 
   const [activeTab, setActiveTab] = useState<'LEADS' | 'OPPORTUNITIES'>('LEADS');

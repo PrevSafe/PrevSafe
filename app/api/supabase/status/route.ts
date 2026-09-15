@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { testSupabaseConnection, SUPABASE_PROJECT_REF, SUPABASE_PROJECT_NAME, supabaseUrl } from '@/lib/supabase';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   try {
     const status = await testSupabaseConnection();

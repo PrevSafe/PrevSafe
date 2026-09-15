@@ -15,12 +15,12 @@ import {
 } from 'lucide-react';
 
 export const AICopilotModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onClose }) => {
-  const { clients } = usePrevSafe();
+  const { clients = [] } = usePrevSafe();
 
   const [activeAction, setActiveAction] = useState<'ANALYZE_CNAE' | 'DRAFT_PROPOSAL' | 'REVIEW_FIELD'>('ANALYZE_CNAE');
-  const [selectedClient, setSelectedClient] = useState(clients[0] || null);
-  const [cnaeInput, setCnaeInput] = useState(clients[0]?.main_cnae || '25.11-0-00');
-  const [employeeCount, setEmployeeCount] = useState(clients[0]?.employee_count || 85);
+  const [selectedClient, setSelectedClient] = useState(clients?.[0] || null);
+  const [cnaeInput, setCnaeInput] = useState(clients?.[0]?.main_cnae || '25.11-0-00');
+  const [employeeCount, setEmployeeCount] = useState(clients?.[0]?.employee_count || 85);
   const [fieldNotes, setFieldNotes] = useState('Ruído intenso na estamparia (estimado > 88 dBA). Prensas com proteção mecânica incompleta. Operadores de solda usando avental de raspa mas sem exaustor móvel.');
 
   const [isLoading, setIsLoading] = useState(false);

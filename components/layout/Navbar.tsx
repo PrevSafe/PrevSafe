@@ -18,7 +18,14 @@ import {
   AlertTriangle,
   Clock,
   Menu,
-  X
+  X,
+  BookOpen,
+  GraduationCap,
+  LogOut,
+  KeyRound,
+  Search,
+  Plus,
+  Keyboard
 } from 'lucide-react';
 
 interface NavbarProps {
@@ -26,8 +33,13 @@ interface NavbarProps {
   onOpenFastTrack: () => void;
   activeView: string;
   setActiveView: (view: string) => void;
+  onToggleSidebar?: () => void;
+  isSidebarOpen?: boolean;
   onToggleMobileSidebar?: () => void;
   isMobileSidebarOpen?: boolean;
+  onOpenCommandPalette?: () => void;
+  onOpenNewOS?: () => void;
+  onOpenShortcutsHelp?: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -35,29 +47,37 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenFastTrack,
   activeView,
   setActiveView,
+  onToggleSidebar,
+  isSidebarOpen = false,
   onToggleMobileSidebar,
-  isMobileSidebarOpen = false
+  isMobileSidebarOpen = false,
+  onOpenCommandPalette,
+  onOpenNewOS,
+  onOpenShortcutsHelp
 }) => {
+  const toggleMenu = onToggleSidebar || onToggleMobileSidebar;
+  const menuIsOpen = isSidebarOpen || isMobileSidebarOpen;
   const { 
     currentProfile, 
     switchRole, 
+    logout,
     organization, 
-    notifications, 
+    notifications = [], 
     markNotificationAsRead, 
     markAllNotificationsAsRead,
     runDailyJobSimulation,
     resetDatabaseToSeed,
-    serviceOrders,
-    requests
+    serviceOrders = [], 
+    requests = [] 
   } = usePrevSafe();
 
   const [showNotifMenu, setShowNotifMenu] = useState(false);
   const [showRoleMenu, setShowRoleMenu] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  const unreadNotifs = notifications.filter(n => n.status === 'UNREAD');
-  const delayedOSCount = serviceOrders.filter(os => os.status === 'IN_PROGRESS' && new Date(os.due_date) < new Date()).length;
-  const criticalRequestsCount = requests.filter(r => r.status === 'OPEN' && r.priority === 'HIGH').length;
+  const unreadNotifs = (notifications || []).filter(n => n?.status === 'UNREAD');
+  const delayedOSCount = (serviceOrders || []).filter(os => os?.status === 'IN_PROGRESS' && os?.due_date && new Date(os.due_date) < new Date()).length;
+  const criticalRequestsCount = (requests || []).filter(r => r?.status === 'OPEN' && r?.priority === 'HIGH').length;
 
   const roles: { role: RoleType; label: string; desc: string }[] = [
     { role: 'ADMIN', label: 'Admin Geral', desc: 'Acesso integral ao SaaS e configurações' },
@@ -93,22 +113,32 @@ export const Navbar: React.FC<NavbarProps> = ({
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          {/* Mobile Hamburger & Logo & Brand */}
+          {/* Menu Lateral Toggle Button & Logo & Brand */}
           <div className="flex items-center space-x-2 sm:space-x-3">
-            {/* Mobile Hamburger Button */}
-            {onToggleMobileSidebar && (
+            {/* Sidebar Menu Toggle Button (Desktop & Mobile) */}
+            {toggleMenu && (
               <button
                 type="button"
-                onClick={onToggleMobileSidebar}
-                className="md:hidden p-2 -ml-1 text-slate-300 hover:text-white hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 rounded-lg transition active:scale-95 touch-manipulation min-w-[44px] min-h-[44px] flex items-center justify-center"
-                aria-label={isMobileSidebarOpen ? "Fechar menu de navegação" : "Abrir menu de navegação SST"}
-                title="Menu Principal SST"
+                onClick={toggleMenu}
+                className={`p-2 rounded-xl border transition-all duration-200 active:scale-95 touch-manipulation min-w-[42px] min-h-[42px] flex items-center justify-center space-x-2 ${
+                  menuIsOpen 
+                    ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 shadow-sm shadow-emerald-950/50' 
+                    : 'text-slate-300 hover:text-white bg-slate-800/80 hover:bg-slate-800 border-slate-700/80'
+                }`}
+                aria-label={menuIsOpen ? "Recolher menu lateral" : "Abrir menu lateral"}
+                title={menuIsOpen ? "Recolher Menu Lateral (Esc)" : "Abrir Menu Lateral de Módulos"}
               >
-                {isMobileSidebarOpen ? (
-                  <X className="w-6 h-6 text-emerald-400" />
+                {menuIsOpen ? (
+                  <X className="w-5 h-5 text-emerald-400" />
                 ) : (
-                  <Menu className="w-6 h-6 text-slate-200" />
+                  <Menu className="w-5 h-5 text-slate-200" />
                 )}
+                <span className="text-xs font-semibold hidden md:inline-block">
+                  {menuIsOpen ? 'Recolher Menu' : 'Menu Lateral'}
+                </span>
+                <span className="hidden lg:inline-block text-[9px] px-1.5 py-0.5 rounded bg-slate-900 text-emerald-400 font-mono border border-emerald-500/30">
+                  {menuIsOpen ? 'Aberto' : 'Recolhido'}
+                </span>
               </button>
             )}
 
@@ -158,6 +188,67 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           {/* Right Action Controls */}
           <div className="flex items-center space-x-2 sm:space-x-3">
+            {/* Global Quick Search Button (Ctrl+K) */}
+            {onOpenCommandPalette && (
+              <button
+                type="button"
+                onClick={onOpenCommandPalette}
+                className="flex items-center space-x-2 px-2.5 sm:px-3 py-1.5 bg-slate-800/90 hover:bg-slate-750 text-slate-300 hover:text-white border border-slate-700/80 hover:border-emerald-500/40 rounded-xl text-xs transition shadow-xs group"
+                title="Busca rápida e paleta de comandos (Ctrl + K)"
+                aria-label="Abrir busca rápida"
+              >
+                <Search className="w-3.5 h-3.5 text-emerald-400 group-hover:scale-110 transition-transform" />
+                <span className="hidden md:inline text-slate-300">Busca rápida</span>
+                <kbd className="hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-slate-900 border border-slate-700 text-[10px] font-mono text-slate-400 group-hover:text-emerald-300 group-hover:border-emerald-500/40">
+                  <span className="text-[9px]">Ctrl</span> K
+                </kbd>
+              </button>
+            )}
+
+            {/* Global Nova OS Button (Ctrl+N) */}
+            {onOpenNewOS && (
+              <button
+                type="button"
+                onClick={onOpenNewOS}
+                className="flex items-center space-x-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-semibold shadow-md shadow-emerald-950/40 transition active:scale-95 group"
+                title="Criar Nova Ordem de Serviço (Ctrl + N)"
+                aria-label="Criar Nova Ordem de Serviço"
+              >
+                <Plus className="w-4 h-4" />
+                <span className="hidden sm:inline">Nova OS</span>
+                <kbd className="hidden lg:inline-flex items-center px-1.5 py-0.2 rounded bg-emerald-700/90 text-[10px] font-mono text-emerald-100 border border-emerald-500/40">
+                  Ctrl+N
+                </kbd>
+              </button>
+            )}
+
+            {/* Shortcuts Help Cheat Sheet Button */}
+            {onOpenShortcutsHelp && (
+              <button
+                type="button"
+                onClick={onOpenShortcutsHelp}
+                className="hidden md:flex p-2 text-slate-400 hover:text-emerald-300 bg-slate-800/60 hover:bg-slate-800 border border-slate-700/60 rounded-xl transition"
+                title="Guia de Atalhos Globais: Ctrl+K, Ctrl+N e Códigos Numéricos (ex: 100 para Funcionários) (?)"
+                aria-label="Ver atalhos de teclado"
+              >
+                <Keyboard className="w-4 h-4" />
+              </button>
+            )}
+
+            {/* Help Center Button */}
+            <button
+              onClick={() => setActiveView('help-center')}
+              className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border transition ${
+                activeView === 'help-center'
+                  ? 'bg-emerald-600 text-white border-emerald-500 shadow-md shadow-emerald-950/40'
+                  : 'bg-slate-800 hover:bg-slate-700 text-emerald-300 hover:text-white border-emerald-500/40'
+              }`}
+              title="Central de Ajuda, Tutoriais com Prints, Infográficos e Vídeos"
+            >
+              <GraduationCap className="w-4 h-4 text-emerald-400" />
+              <span className="hidden sm:inline">Ajuda & Tutoriais</span>
+            </button>
+
             {/* Master Flow Walkthrough Button */}
             <button
               onClick={onOpenFastTrack}
@@ -331,7 +422,43 @@ export const Navbar: React.FC<NavbarProps> = ({
                     ))}
                   </div>
 
-                  <div className="pt-2 border-t border-slate-800 mt-2 px-2 text-[10px] text-slate-500">
+                  <div className="pt-2 border-t border-slate-800 mt-2 px-1 space-y-1">
+                    <button
+                      onClick={() => {
+                        setActiveView('users-management');
+                        setShowRoleMenu(false);
+                      }}
+                      className="w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold text-teal-300 hover:text-white hover:bg-teal-950/40 border border-teal-900/30 transition flex items-center space-x-2"
+                    >
+                      <UserCheck className="w-3.5 h-3.5 text-teal-400" />
+                      <span>Gerenciar Usuários & RBAC</span>
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        setActiveView('login');
+                        setShowRoleMenu(false);
+                      }}
+                      className="w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold text-slate-300 hover:text-white hover:bg-slate-800 transition flex items-center space-x-2"
+                    >
+                      <KeyRound className="w-3.5 h-3.5 text-emerald-400" />
+                      <span>Ir para Tela de Login</span>
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        logout();
+                        setShowRoleMenu(false);
+                        setActiveView('login');
+                      }}
+                      className="w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold text-rose-300 hover:text-rose-200 hover:bg-rose-950/40 border border-rose-900/30 transition flex items-center space-x-2"
+                    >
+                      <LogOut className="w-3.5 h-3.5 text-rose-400" />
+                      <span>Encerrar Sessão (Logout)</span>
+                    </button>
+                  </div>
+
+                  <div className="pt-2 border-t border-slate-800/80 mt-1 px-2 text-[10px] text-slate-500">
                     SaaS Multi-tenant: {organization.name}
                   </div>
                 </div>

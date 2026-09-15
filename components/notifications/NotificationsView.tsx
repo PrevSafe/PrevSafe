@@ -21,8 +21,8 @@ import {
 
 export const NotificationsView: React.FC<{ onNavigate: (view: string) => void }> = ({ onNavigate }) => {
   const { 
-    notifications, 
-    clients, 
+    notifications = [], 
+    clients = [], 
     markNotificationAsRead, 
     markAllNotificationsAsRead, 
     runDailyJobSimulation, 
@@ -34,15 +34,16 @@ export const NotificationsView: React.FC<{ onNavigate: (view: string) => void }>
   const [showSimulateSend, setShowSimulateSend] = useState(false);
 
   // Manual message form
-  const [targetClientId, setTargetClientId] = useState(clients[0]?.id || '');
+  const [targetClientId, setTargetClientId] = useState(clients?.[0]?.id || '');
   const [msgChannel, setMsgChannel] = useState<'WHATSAPP' | 'EMAIL' | 'SMS'>('WHATSAPP');
   const [msgTitle, setMsgTitle] = useState('Alerta de Vencimento de Exames Periódicos (PCMSO)');
   const [msgBody, setMsgBody] = useState('Prezados, informamos que 12 colaboradores estão com exame periódico a vencer em 15 dias. Acesse o portal para agendamento.');
 
-  const filteredNotifications = notifications.filter(n => {
+  const filteredNotifications = (notifications || []).filter(n => {
+    if (!n) return false;
     const matchesChannel = channelFilter === 'ALL' || n.channel === channelFilter;
-    const matchesSearch = n.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      n.message.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = (n.title || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (n.message || '').toLowerCase().includes(searchTerm.toLowerCase());
     return matchesChannel && matchesSearch;
   });
 
@@ -253,7 +254,11 @@ export const NotificationsView: React.FC<{ onNavigate: (view: string) => void }>
 };
 
 export const EvaluationsView: React.FC<{ onNavigate: (view: string) => void }> = ({ onNavigate }) => {
-  const { evaluations, clients, serviceOrders } = usePrevSafe();
+  const { 
+    evaluations = [], 
+    clients = [], 
+    serviceOrders = [] 
+  } = usePrevSafe();
 
   return (
     <div className="space-y-6 pb-12">

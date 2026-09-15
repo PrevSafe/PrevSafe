@@ -27,19 +27,22 @@ import {
   Layers,
   FileCode2,
   Play,
-  Check
+  Check,
+  Palette,
+  Sparkles
 } from 'lucide-react';
 import { SUPABASE_PROJECT_REF, SUPABASE_PROJECT_NAME, DEFAULT_SUPABASE_URL } from '@/lib/supabase';
 import { SUPABASE_SQL_SCHEMA, SUPABASE_MIGRATIONS, SupabaseMigration } from '@/lib/supabaseSchema';
 
 export const AuditLogsView: React.FC<{ onNavigate: (view: string) => void }> = ({ onNavigate }) => {
-  const { auditLogs } = usePrevSafe();
+  const { auditLogs = [] } = usePrevSafe();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedEntity, setSelectedEntity] = useState<string>('ALL');
 
-  const filteredLogs = auditLogs.filter(log => {
-    const matchesSearch = log.action.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      log.user_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  const filteredLogs = (auditLogs || []).filter(log => {
+    if (!log) return false;
+    const matchesSearch = (log.action || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (log.user_name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
       (log.entity_number && log.entity_number.toLowerCase().includes(searchTerm.toLowerCase()));
     const matchesEntity = selectedEntity === 'ALL' || log.entity_type === selectedEntity;
     return matchesSearch && matchesEntity;
@@ -426,6 +429,22 @@ export const SettingsView: React.FC<{ onNavigate: (view: string) => void }> = ({
           </div>
 
           <div className="pt-4 space-y-2.5">
+            <button
+              onClick={() => onNavigate('tenant-theme-settings')}
+              className="w-full px-4 py-3 bg-gradient-to-r from-emerald-600/30 to-teal-600/30 hover:from-emerald-600/40 hover:to-teal-600/40 text-emerald-200 border border-emerald-500/40 rounded-2xl text-xs font-bold transition flex items-center justify-center space-x-2 shadow-lg"
+            >
+              <Palette className="w-4 h-4 text-emerald-400" />
+              <span>Personalizar Tema & Cores do Tenant (PWA/Portal)</span>
+            </button>
+
+            <button
+              onClick={() => onNavigate('saas-management')}
+              className="w-full px-4 py-3 bg-teal-500/10 hover:bg-teal-500/20 text-teal-300 border border-teal-500/30 rounded-2xl text-xs font-bold transition flex items-center justify-center space-x-2"
+            >
+              <Building className="w-4 h-4" />
+              <span>Gestão de Assinantes SaaS (Super Admin)</span>
+            </button>
+
             <button
               onClick={() => setShowSqlModal(true)}
               className="w-full px-4 py-3 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 rounded-2xl text-xs font-bold transition flex items-center justify-center space-x-2"

@@ -31,20 +31,25 @@ import {
 } from 'recharts';
 
 export const CommercialDashboard: React.FC<{ onNavigate: (view: string) => void }> = ({ onNavigate }) => {
-  const { leads, opportunities, proposals, contracts } = usePrevSafe();
+  const { 
+    leads = [], 
+    opportunities = [], 
+    proposals = [], 
+    contracts = [] 
+  } = usePrevSafe();
 
-  const totalLeads = leads.length;
-  const totalOpps = opportunities.length;
-  const totalProposals = proposals.length;
-  const approvedProposals = proposals.filter(p => p.status === 'APPROVED');
-  const rejectedProposals = proposals.filter(p => p.status === 'REJECTED');
-  const sentProposals = proposals.filter(p => p.status === 'SENT');
+  const totalLeads = (leads || []).length;
+  const totalOpps = (opportunities || []).length;
+  const totalProposals = (proposals || []).length;
+  const approvedProposals = (proposals || []).filter(p => p?.status === 'APPROVED');
+  const rejectedProposals = (proposals || []).filter(p => p?.status === 'REJECTED');
+  const sentProposals = (proposals || []).filter(p => p?.status === 'SENT');
 
   const conversionRate = totalProposals > 0
     ? Math.round((approvedProposals.length / totalProposals) * 100)
     : 75;
 
-  const totalValueApproved = approvedProposals.reduce((acc, p) => acc + p.total, 0);
+  const totalValueApproved = approvedProposals.reduce((acc, p) => acc + (p?.total || 0), 0);
   const averageTicket = approvedProposals.length > 0
     ? Math.round(totalValueApproved / approvedProposals.length)
     : 15000;
@@ -217,15 +222,18 @@ export const CommercialDashboard: React.FC<{ onNavigate: (view: string) => void 
 };
 
 export const QualityDashboard: React.FC<{ onNavigate: (view: string) => void }> = ({ onNavigate }) => {
-  const { evaluations, serviceOrders } = usePrevSafe();
+  const { 
+    evaluations = [], 
+    serviceOrders = [] 
+  } = usePrevSafe();
 
-  const totalEvaluations = evaluations.length;
-  const averageNps = evaluations.length > 0
-    ? (evaluations.reduce((acc, e) => acc + e.nps_score, 0) / evaluations.length).toFixed(1)
+  const totalEvaluations = (evaluations || []).length;
+  const averageNps = (evaluations || []).length > 0
+    ? ((evaluations || []).reduce((acc, e) => acc + (e?.nps_score || 0), 0) / evaluations.length).toFixed(1)
     : '9.5';
 
-  const reworkCount = serviceOrders.filter(o => o.status === 'REWORK' || (o.rework_history && o.rework_history.length > 0)).length;
-  const reworkRate = serviceOrders.length > 0
+  const reworkCount = (serviceOrders || []).filter(o => o?.status === 'REWORK' || (o?.rework_history && o.rework_history.length > 0)).length;
+  const reworkRate = (serviceOrders || []).length > 0
     ? ((reworkCount / serviceOrders.length) * 100).toFixed(1)
     : '0.0';
 

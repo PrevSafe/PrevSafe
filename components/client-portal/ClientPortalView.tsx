@@ -28,30 +28,41 @@ import {
   Filter,
   Check,
   Award,
-  FileSpreadsheet
+  FileSpreadsheet,
+  PenTool,
+  KeyRound,
+  QrCode,
+  Lock,
+  UserCheck,
+  Smartphone,
+  Layers
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import { RequestItem, Evaluation, Document as DocumentType } from '@/types';
+import { RequestItem, Evaluation, Document as DocumentType, SSTDocumentSignature } from '@/types';
+import { SSTElectronicSignatureModal } from '@/components/sst/SSTElectronicSignatureModal';
 
 export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> = ({ onNavigate }) => {
   const { 
-    clients, 
-    contracts, 
-    serviceOrders, 
-    documents, 
-    requests, 
-    evaluations,
+    clients = [], 
+    contracts = [], 
+    serviceOrders = [], 
+    documents = [], 
+    requests = [], 
+    evaluations = [], 
+    sstSignatures = [], 
+    tenantTheme, 
+    activeTenantContext, 
     clientAcceptService, 
     clientRequestRework, 
     submitEvaluation, 
-    resolveRequest,
-    createRequest,
-    deleteRequest
+    resolveRequest, 
+    createRequest, 
+    deleteRequest 
   } = usePrevSafe();
 
   // Active client selector state
-  const [selectedClientId, setSelectedClientId] = useState<string>(clients[0]?.id || 'cli-001');
-  const currentClient = clients.find(c => c.id === selectedClientId) || clients[0] || {
+  const [selectedClientId, setSelectedClientId] = useState<string>(clients?.[0]?.id || 'cli-001');
+  const currentClient = (clients || []).find(c => c?.id === selectedClientId) || clients?.[0] || {
     id: 'cli-001',
     trade_name: 'Metalúrgica Valença',
     legal_name: 'Metalúrgica Valença Indústria e Comércio S/A',
@@ -66,14 +77,15 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
   };
 
   // Active portal tab
-  const [activeTab, setActiveTab] = useState<'OS' | 'DOCS' | 'REQUESTS' | 'CONTRACTS' | 'EVALUATIONS'>('OS');
+  const [activeTab, setActiveTab] = useState<'OS' | 'DOCS' | 'SIGNATURES' | 'REQUESTS' | 'CONTRACTS' | 'EVALUATIONS'>('OS');
 
   // Filtered data for active client
-  const clientContracts = contracts.filter(c => c.client_id === currentClient.id);
-  const clientOS = serviceOrders.filter(o => o.client_id === currentClient.id);
-  const clientDocs = documents.filter(d => d.client_id === currentClient.id && d.is_client_released);
-  const clientRequests = requests.filter(r => r.client_id === currentClient.id);
-  const clientEvals = evaluations.filter(e => e.client_id === currentClient.id);
+  const clientContracts = (contracts || []).filter(c => c && currentClient && c.client_id === currentClient.id);
+  const clientOS = (serviceOrders || []).filter(o => o && currentClient && o.client_id === currentClient.id);
+  const clientDocs = (documents || []).filter(d => d && currentClient && d.client_id === currentClient.id && d.is_client_released);
+  const clientRequests = (requests || []).filter(r => r && currentClient && r.client_id === currentClient.id);
+  const clientEvals = (evaluations || []).filter(e => e && currentClient && e.client_id === currentClient.id);
+  const clientSignatures = (sstSignatures || []).filter(s => s && currentClient && s.client_id === currentClient.id);
 
   const [selectedOS, setSelectedOS] = useState(clientOS[0] || null);
 
@@ -86,6 +98,13 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
   const [showDocPreviewModal, setShowDocPreviewModal] = useState(false);
   const [selectedDocPreview, setSelectedDocPreview] = useState<DocumentType | null>(null);
   const [selectedRequestToResolve, setSelectedRequestToResolve] = useState<RequestItem | null>(null);
+
+  // Electronic Signature state in Client Portal
+  const [selectedSignatureEnvelope, setSelectedSignatureEnvelope] = useState<SSTDocumentSignature | null>(null);
+  const [activeSignerForPortal, setActiveSignerForPortal] = useState<string | undefined>(undefined);
+  const [showSignatureModal, setShowSignatureModal] = useState(false);
+  const [sigFilterType, setSigFilterType] = useState('ALL');
+  const [sigFilterStatus, setSigFilterStatus] = useState('ALL');
 
   // Acceptance & Feedback Form states
   const [acceptorName, setAcceptorName] = useState('Dr. Marcelo Silva');
@@ -217,12 +236,16 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
 
   return (
     <div className="space-y-6 pb-16">
-      {/* Header Bento Card with Client Selector */}
-      <div className="bg-slate-900 border border-slate-800 text-white p-6 rounded-3xl shadow-xl flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-        <div className="space-y-2">
-          <div className="flex items-center space-x-2 text-emerald-400 text-xs font-bold uppercase tracking-wider">
-            <Building2 className="w-4 h-4" />
-            <span>Portal do Cliente SST • Área Segura de Autoatendimento</span>
+      {/* Header Bento Card with Client Selector & Tenant Branding */}
+      <div className="bg-slate-900 border border-slate-800 text-white p-6 rounded-3xl shadow-xl flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative overflow-hidden">
+        <div 
+          className="absolute -right-20 -top-20 w-72 h-72 rounded-full blur-3xl opacity-10 pointer-events-none transition-all"
+          style={{ backgroundColor: 'var(--tenant-primary)' }}
+        />
+        <div className="space-y-2 relative z-10">
+          <div className="flex items-center space-x-2 text-tenant-primary text-xs font-bold uppercase tracking-wider">
+            <span className="text-base">{tenantTheme.pwa_icon_emoji || '🛡️'}</span>
+            <span>{tenantTheme.portal_brand_name || 'Portal do Cliente SST'} • {tenantTheme.portal_tagline || 'Área Segura de Autoatendimento'}</span>
           </div>
           <div className="flex flex-wrap items-center gap-3">
             <h1 className="text-2xl font-bold tracking-tight text-white">{currentClient.trade_name}</h1>
@@ -232,6 +255,11 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
             <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-500/10 text-blue-400 border border-blue-500/20">
               {currentClient.employee_count} Colaboradores
             </span>
+            {activeTenantContext && (
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold border" style={{ borderColor: 'var(--tenant-primary)', color: 'var(--tenant-primary)' }}>
+                {activeTenantContext.trade_name}
+              </span>
+            )}
           </div>
           <p className="text-xs text-slate-400">
             CNPJ: <span className="font-mono text-slate-300">{currentClient.document_number}</span> • {currentClient.address} • {currentClient.city}/{currentClient.state}
@@ -239,13 +267,13 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
         </div>
 
         {/* Client Switcher Selector */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 bg-slate-950 p-3 rounded-2xl border border-slate-800">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 bg-slate-950 p-3 rounded-2xl border border-slate-800 relative z-10">
           <div className="text-xs">
             <span className="text-slate-400 block text-[10px] font-bold uppercase">Empresa Autenticada:</span>
             <select
               value={selectedClientId}
               onChange={(e) => handleClientChange(e.target.value)}
-              className="bg-slate-900 text-white text-xs font-bold rounded-xl border border-slate-800 px-3 py-1.5 focus:outline-none focus:border-indigo-500 mt-1 cursor-pointer"
+              className="bg-slate-900 text-white text-xs font-bold rounded-xl border border-slate-800 px-3 py-1.5 focus:outline-none focus:border-emerald-500 mt-1 cursor-pointer"
             >
               {clients.map(c => (
                 <option key={c.id} value={c.id}>
@@ -255,75 +283,91 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
             </select>
           </div>
           <div className="h-8 w-px bg-slate-800 hidden sm:block" />
-          <div className="flex items-center space-x-2 text-emerald-400 text-xs font-bold">
+          <div className="flex items-center space-x-2 text-tenant-primary text-xs font-bold">
             <ShieldCheck className="w-5 h-5 flex-shrink-0" />
-            <span className="text-[11px] text-slate-300 leading-tight">eSocial S-2240<br/><span className="text-emerald-400 font-normal">Sincronizado</span></span>
+            <span className="text-[11px] text-slate-300 leading-tight">eSocial S-2240<br/><span className="text-tenant-primary font-normal">Sincronizado</span></span>
           </div>
         </div>
       </div>
 
       {/* Metric Quick Stats Bento Bar */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
         <div 
           onClick={() => setActiveTab('OS')}
-          className={`p-4 rounded-2xl border transition cursor-pointer ${
-            activeTab === 'OS' ? 'bg-indigo-950/40 border-indigo-500/40' : 'bg-slate-900 border-slate-800 hover:border-slate-700'
+          className={`p-3.5 rounded-2xl border transition cursor-pointer ${
+            activeTab === 'OS' ? 'bg-slate-900 border-tenant-primary shadow-tenant-glow' : 'bg-slate-900 border-slate-800 hover:border-slate-700'
           }`}
         >
           <div className="flex items-center justify-between text-slate-400 text-xs font-semibold">
             <span>Ordens de Serviço</span>
-            <Clock className="w-4 h-4 text-indigo-400" />
+            <Clock className="w-4 h-4 text-tenant-primary" />
           </div>
-          <div className="text-2xl font-bold text-white mt-2 font-mono">{clientOS.length}</div>
-          <div className="text-[11px] text-slate-400 mt-0.5">
+          <div className="text-2xl font-bold text-white mt-1 font-mono">{clientOS.length}</div>
+          <div className="text-[10px] text-slate-400 mt-0.5">
             {clientOS.filter(o => o.status === 'WAITING_ACCEPTANCE').length} aguardando aceite
           </div>
         </div>
 
         <div 
           onClick={() => setActiveTab('DOCS')}
-          className={`p-4 rounded-2xl border transition cursor-pointer ${
-            activeTab === 'DOCS' ? 'bg-indigo-950/40 border-indigo-500/40' : 'bg-slate-900 border-slate-800 hover:border-slate-700'
+          className={`p-3.5 rounded-2xl border transition cursor-pointer ${
+            activeTab === 'DOCS' ? 'bg-slate-900 border-tenant-primary shadow-tenant-glow' : 'bg-slate-900 border-slate-800 hover:border-slate-700'
           }`}
         >
           <div className="flex items-center justify-between text-slate-400 text-xs font-semibold">
             <span>Laudos Liberados</span>
-            <FileText className="w-4 h-4 text-emerald-400" />
+            <FileText className="w-4 h-4 text-tenant-primary" />
           </div>
-          <div className="text-2xl font-bold text-white mt-2 font-mono">{clientDocs.length}</div>
-          <div className="text-[11px] text-slate-400 mt-0.5">Com assinatura & ART</div>
+          <div className="text-2xl font-bold text-white mt-1 font-mono">{clientDocs.length}</div>
+          <div className="text-[10px] text-slate-400 mt-0.5">Com ART & Liberação</div>
+        </div>
+
+        <div 
+          onClick={() => setActiveTab('SIGNATURES')}
+          className={`p-3.5 rounded-2xl border transition cursor-pointer ${
+            activeTab === 'SIGNATURES' ? 'bg-slate-900 border-teal-500 shadow-teal-500/20' : 'bg-slate-900 border-slate-800 hover:border-slate-700'
+          }`}
+        >
+          <div className="flex items-center justify-between text-slate-400 text-xs font-semibold">
+            <span>Assinaturas Digitais</span>
+            <ShieldCheck className="w-4 h-4 text-teal-400" />
+          </div>
+          <div className="text-2xl font-bold text-teal-400 mt-1 font-mono">{clientSignatures.length}</div>
+          <div className="text-[10px] text-slate-400 mt-0.5">
+            {clientSignatures.filter(s => s.status === 'PENDING' || s.status === 'PARTIALLY_SIGNED').length} pendente(s) de aceite
+          </div>
         </div>
 
         <div 
           onClick={() => setActiveTab('REQUESTS')}
-          className={`p-4 rounded-2xl border transition cursor-pointer ${
-            activeTab === 'REQUESTS' ? 'bg-indigo-950/40 border-indigo-500/40' : 'bg-slate-900 border-slate-800 hover:border-slate-700'
+          className={`p-3.5 rounded-2xl border transition cursor-pointer ${
+            activeTab === 'REQUESTS' ? 'bg-slate-900 border-tenant-primary shadow-tenant-glow' : 'bg-slate-900 border-slate-800 hover:border-slate-700'
           }`}
         >
           <div className="flex items-center justify-between text-slate-400 text-xs font-semibold">
-            <span>Pendências Abertas</span>
+            <span>Pendências</span>
             <AlertCircle className="w-4 h-4 text-amber-400" />
           </div>
-          <div className="text-2xl font-bold text-white mt-2 font-mono">{openRequestsCount}</div>
-          <div className="text-[11px] text-slate-400 mt-0.5">
+          <div className="text-2xl font-bold text-white mt-1 font-mono">{openRequestsCount}</div>
+          <div className="text-[10px] text-slate-400 mt-0.5">
             {openRequestsCount > 0 ? 'Ação necessária' : 'Tudo em dia'}
           </div>
         </div>
 
         <div 
           onClick={() => setActiveTab('EVALUATIONS')}
-          className={`p-4 rounded-2xl border transition cursor-pointer ${
-            activeTab === 'EVALUATIONS' ? 'bg-indigo-950/40 border-indigo-500/40' : 'bg-slate-900 border-slate-800 hover:border-slate-700'
+          className={`p-3.5 rounded-2xl border transition cursor-pointer ${
+            activeTab === 'EVALUATIONS' ? 'bg-slate-900 border-tenant-primary shadow-tenant-glow' : 'bg-slate-900 border-slate-800 hover:border-slate-700'
           }`}
         >
           <div className="flex items-center justify-between text-slate-400 text-xs font-semibold">
-            <span>NPS & Avaliações</span>
+            <span>NPS & Satisfação</span>
             <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
           </div>
-          <div className="text-2xl font-bold text-white mt-2 font-mono">
+          <div className="text-2xl font-bold text-white mt-1 font-mono">
             {clientEvals.length > 0 ? (clientEvals.reduce((acc, curr) => acc + curr.nps_score, 0) / clientEvals.length).toFixed(1) : '10.0'}
           </div>
-          <div className="text-[11px] text-slate-400 mt-0.5">{clientEvals.length} avaliação(ões)</div>
+          <div className="text-[10px] text-slate-400 mt-0.5">{clientEvals.length} avaliação(ões)</div>
         </div>
       </div>
 
@@ -332,7 +376,7 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
         <button
           onClick={() => setActiveTab('OS')}
           className={`px-4 py-2.5 rounded-xl text-xs font-bold transition whitespace-nowrap flex items-center space-x-2 ${
-            activeTab === 'OS' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-400 hover:text-white'
+            activeTab === 'OS' ? 'bg-tenant-primary text-white shadow-tenant-glow' : 'text-slate-400 hover:text-white'
           }`}
         >
           <Clock className="w-4 h-4" />
@@ -342,7 +386,7 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
         <button
           onClick={() => setActiveTab('DOCS')}
           className={`px-4 py-2.5 rounded-xl text-xs font-bold transition whitespace-nowrap flex items-center space-x-2 ${
-            activeTab === 'DOCS' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-400 hover:text-white'
+            activeTab === 'DOCS' ? 'bg-tenant-primary text-white shadow-tenant-glow' : 'text-slate-400 hover:text-white'
           }`}
         >
           <FileText className="w-4 h-4" />
@@ -350,9 +394,24 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
         </button>
 
         <button
+          onClick={() => setActiveTab('SIGNATURES')}
+          className={`px-4 py-2.5 rounded-xl text-xs font-bold transition whitespace-nowrap flex items-center space-x-2 ${
+            activeTab === 'SIGNATURES' ? 'bg-teal-500 text-slate-950 font-black shadow-lg shadow-teal-500/20' : 'text-slate-400 hover:text-white'
+          }`}
+        >
+          <ShieldCheck className="w-4 h-4" />
+          <span>Assinaturas Digitais ({clientSignatures.length})</span>
+          {clientSignatures.filter(s => s.status === 'PENDING' || s.status === 'PARTIALLY_SIGNED').length > 0 && (
+            <span className="px-1.5 py-0.2 bg-amber-400 text-slate-950 text-[10px] font-black rounded-full animate-pulse">
+              {clientSignatures.filter(s => s.status === 'PENDING' || s.status === 'PARTIALLY_SIGNED').length}
+            </span>
+          )}
+        </button>
+
+        <button
           onClick={() => setActiveTab('REQUESTS')}
           className={`px-4 py-2.5 rounded-xl text-xs font-bold transition whitespace-nowrap flex items-center space-x-2 ${
-            activeTab === 'REQUESTS' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-400 hover:text-white'
+            activeTab === 'REQUESTS' ? 'bg-tenant-primary text-white shadow-tenant-glow' : 'text-slate-400 hover:text-white'
           }`}
         >
           <AlertCircle className="w-4 h-4" />
@@ -367,7 +426,7 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
         <button
           onClick={() => setActiveTab('CONTRACTS')}
           className={`px-4 py-2.5 rounded-xl text-xs font-bold transition whitespace-nowrap flex items-center space-x-2 ${
-            activeTab === 'CONTRACTS' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-400 hover:text-white'
+            activeTab === 'CONTRACTS' ? 'bg-tenant-primary text-white shadow-tenant-glow' : 'text-slate-400 hover:text-white'
           }`}
         >
           <Award className="w-4 h-4" />
@@ -377,11 +436,11 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
         <button
           onClick={() => setActiveTab('EVALUATIONS')}
           className={`px-4 py-2.5 rounded-xl text-xs font-bold transition whitespace-nowrap flex items-center space-x-2 ${
-            activeTab === 'EVALUATIONS' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-400 hover:text-white'
+            activeTab === 'EVALUATIONS' ? 'bg-tenant-primary text-white shadow-tenant-glow' : 'text-slate-400 hover:text-white'
           }`}
         >
           <Star className="w-4 h-4" />
-          <span>Pesquisa de Satisfação & NPS ({clientEvals.length})</span>
+          <span>Pesquisa & NPS ({clientEvals.length})</span>
         </button>
       </div>
 
@@ -639,6 +698,188 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
           </div>
         </div>
       )}
+
+      {/* ==================== TAB: ASSINATURAS ELETRÔNICAS & ACEITE DIGITAL (LEI 14.063/2020) ==================== */}
+      {activeTab === 'SIGNATURES' && (
+        <div className="space-y-6">
+          <div className="bg-slate-900 p-6 rounded-3xl border border-slate-800 shadow-xl space-y-5">
+            
+            {/* Header & Legal Framework Notice */}
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-800 pb-5">
+              <div className="space-y-1">
+                <div className="flex items-center space-x-2">
+                  <h2 className="text-base font-bold text-white">Central de Assinaturas & Aceites Digitais</h2>
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-teal-500/10 text-teal-300 border border-teal-500/20">
+                    Art. 10 MP 2.200-2 & Lei 14.063
+                  </span>
+                </div>
+                <p className="text-xs text-slate-400 leading-relaxed max-w-2xl">
+                  Revise e assine eletronicamente os laudos técnicos de SST, ordens de serviço e eventos do eSocial da sua empresa. 
+                  Todas as assinaturas possuem rastreabilidade criptográfica, registro de IP e carimbo de tempo ICP-Brasil.
+                </p>
+              </div>
+
+              {/* Filters */}
+              <div className="flex flex-wrap items-center gap-2">
+                <select
+                  value={sigFilterType}
+                  onChange={(e) => setSigFilterType(e.target.value)}
+                  className="px-3 py-1.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-teal-500"
+                >
+                  <option value="ALL">Todos os Documentos</option>
+                  <option value="PGR_NR01">PGR (NR-01)</option>
+                  <option value="PCMSO_NR07">PCMSO (NR-07)</option>
+                  <option value="LTCAT_INSS">LTCAT (INSS)</option>
+                  <option value="ORDEM_SERVICO_NR01">Ordem de Serviço (NR-01)</option>
+                  <option value="ESOCIAL_S2240">eSocial S-2240</option>
+                  <option value="RIAA_ACIDENTE">RIAA Acidente</option>
+                </select>
+
+                <select
+                  value={sigFilterStatus}
+                  onChange={(e) => setSigFilterStatus(e.target.value)}
+                  className="px-3 py-1.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-teal-500"
+                >
+                  <option value="ALL">Todos os Status</option>
+                  <option value="PENDING">Pendentes de Aceite</option>
+                  <option value="SIGNED">100% Assinados</option>
+                  <option value="REJECTED">Recusados</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Envelopes List */}
+            {clientSignatures
+              .filter(env => (sigFilterType === 'ALL' || env.document_type === sigFilterType) && 
+                             (sigFilterStatus === 'ALL' || 
+                              (sigFilterStatus === 'PENDING' && (env.status === 'PENDING' || env.status === 'PARTIALLY_SIGNED')) ||
+                              (sigFilterStatus === 'SIGNED' && env.status === 'SIGNED') ||
+                              (sigFilterStatus === 'REJECTED' && env.status === 'REJECTED')))
+              .length > 0 ? (
+              <div className="space-y-4">
+                {clientSignatures
+                  .filter(env => (sigFilterType === 'ALL' || env.document_type === sigFilterType) && 
+                                 (sigFilterStatus === 'ALL' || 
+                                  (sigFilterStatus === 'PENDING' && (env.status === 'PENDING' || env.status === 'PARTIALLY_SIGNED')) ||
+                                  (sigFilterStatus === 'SIGNED' && env.status === 'SIGNED') ||
+                                  (sigFilterStatus === 'REJECTED' && env.status === 'REJECTED')))
+                  .map((env) => {
+                    const isFullySigned = env.status === 'SIGNED';
+                    const isRejected = env.status === 'REJECTED';
+                    const employerSigner = env.signers.find(s => s.signer_role === 'EMPLOYER_REPRESENTATIVE' || s.role_type === 'EMPLOYER_REPRESENTATIVE') || env.signers[0];
+                    const techSigner = env.signers.find(s => s.signer_role === 'TECHNICAL_RESPONSIBLE' || s.role_type === 'TECHNICAL_RESPONSIBLE');
+                    const needsMySignature = employerSigner && employerSigner.signature_status === 'PENDING';
+
+                    return (
+                      <div 
+                        key={env.id} 
+                        className={`p-5 rounded-2xl border transition space-y-4 ${
+                          needsMySignature 
+                            ? 'bg-slate-950 border-teal-500/50 ring-1 ring-teal-500/30' 
+                            : 'bg-slate-950/60 border-slate-800 hover:border-slate-700'
+                        }`}
+                      >
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+                          <div className="flex items-start space-x-3">
+                            <div className={`p-2.5 rounded-2xl border flex-shrink-0 mt-0.5 ${
+                              isFullySigned ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' :
+                              isRejected ? 'bg-rose-500/10 border-rose-500/20 text-rose-400' :
+                              'bg-amber-500/10 border-amber-500/20 text-amber-400'
+                            }`}>
+                              <ShieldCheck className="w-6 h-6" />
+                            </div>
+                            <div>
+                              <div className="flex flex-wrap items-center gap-2">
+                                <span className="font-mono text-[10px] font-bold text-teal-300 bg-slate-900 px-2 py-0.5 rounded-full border border-slate-800">
+                                  {env.document_number}
+                                </span>
+                                <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${
+                                  isFullySigned ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
+                                  isRejected ? 'bg-rose-500/10 text-rose-400 border-rose-500/20' :
+                                  'bg-amber-500/10 text-amber-400 border-amber-500/20 animate-pulse'
+                                }`}>
+                                  {isFullySigned ? 'CONCLUÍDO & HOMOLOGADO' : isRejected ? 'RECUSADO' : 'AGUARDANDO SEU ACEITE DIGITAL'}
+                                </span>
+                              </div>
+                              <h3 className="text-sm font-bold text-white mt-1">{env.document_title}</h3>
+                              <p className="text-[11px] text-slate-400 mt-0.5">
+                                Criado em {new Date(env.created_at).toLocaleDateString('pt-BR')}{env.expires_at ? ` • Expira em ${new Date(env.expires_at).toLocaleDateString('pt-BR')}` : ''}
+                              </p>
+                            </div>
+                          </div>
+
+                          {/* Action Buttons */}
+                          <div className="flex items-center space-x-2 self-end md:self-auto">
+                            {needsMySignature ? (
+                              <button
+                                onClick={() => {
+                                  setSelectedSignatureEnvelope(env);
+                                  setActiveSignerForPortal(employerSigner.id);
+                                  setShowSignatureModal(true);
+                                }}
+                                className="px-5 py-2.5 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold rounded-xl text-xs flex items-center space-x-1.5 transition shadow-lg shadow-teal-500/20"
+                              >
+                                <PenTool className="w-4 h-4" />
+                                <span>Assinar & Dar Aceite</span>
+                              </button>
+                            ) : (
+                              <button
+                                onClick={() => {
+                                  setSelectedSignatureEnvelope(env);
+                                  setShowSignatureModal(true);
+                                }}
+                                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold rounded-xl text-xs flex items-center space-x-1.5 transition"
+                              >
+                                <Eye className="w-4 h-4 text-teal-400" />
+                                <span>Ver Certificado & Trilha</span>
+                              </button>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Signers Row */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5 pt-3 border-t border-slate-800/80 text-xs">
+                          {env.signers.map(s => {
+                            const isSg = s.signature_status === 'SIGNED';
+                            const isRj = s.signature_status === 'REJECTED';
+
+                            return (
+                              <div key={s.id} className="p-2.5 bg-slate-900/80 rounded-xl border border-slate-800 flex items-center justify-between">
+                                <div>
+                                  <span className="font-bold text-white text-[11px] block">{s.name}</span>
+                                  <span className="text-[10px] text-slate-400 block">{s.role_description || s.role_title}</span>
+                                </div>
+                                <span className={`px-2 py-0.5 rounded text-[9px] font-bold ${
+                                  isSg ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' :
+                                  isRj ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20' :
+                                  'bg-amber-500/10 text-amber-400 border border-amber-500/20'
+                                }`}>
+                                  {isSg ? 'Assinado' : isRj ? 'Recusado' : 'Pendente'}
+                                </span>
+                              </div>
+                            );
+                          })}
+                        </div>
+
+                        {/* Cryptographic SHA-256 footer */}
+                        <div className="flex flex-wrap items-center justify-between gap-2 text-[10px] text-slate-400 bg-slate-900/40 p-2 rounded-xl border border-slate-800/60 font-mono">
+                          <span className="truncate max-w-md">SHA-256: {env.document_sha256}</span>
+                          <span className="text-teal-400">Padrão ICP-Brasil / Avançada (Lei 14.063)</span>
+                        </div>
+                      </div>
+                    );
+                  })}
+              </div>
+            ) : (
+              <div className="p-8 text-center bg-slate-950/40 rounded-2xl border border-slate-800 text-slate-400 text-xs">
+                Nenhum envelope de assinatura digital encontrado com os filtros selecionados.
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ==================== TAB 3: PENDÊNCIAS & CHAMADOS (CRUD) ==================== */}
 
       {/* ==================== TAB 3: PENDÊNCIAS & CHAMADOS (CRUD) ==================== */}
       {activeTab === 'REQUESTS' && (
@@ -1315,6 +1556,23 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
             </div>
           </div>
         </div>
+      )}
+
+      {/* ==================== MODAL: ASSINATURA ELETRÔNICA DO CLIENTE (LEI 14.063) ==================== */}
+      {showSignatureModal && selectedSignatureEnvelope && (
+        <SSTElectronicSignatureModal
+          isOpen={showSignatureModal}
+          onClose={() => {
+            setShowSignatureModal(false);
+            setSelectedSignatureEnvelope(null);
+            setActiveSignerForPortal(undefined);
+          }}
+          signatureEnvelope={selectedSignatureEnvelope}
+          activeSignerId={activeSignerForPortal}
+          onSignComplete={() => {
+            // Updated dynamically via context
+          }}
+        />
       )}
     </div>
   );

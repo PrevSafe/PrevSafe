@@ -1,1 +1,85 @@
 @import "tailwindcss";
+
+:root {
+  --tenant-primary: #10b981;
+  --tenant-primary-rgb: 16, 185, 129;
+  --tenant-primary-hover: #059669;
+  --tenant-primary-hover-rgb: 5, 150, 105;
+  --tenant-primary-50: rgba(16, 185, 129, 0.05);
+  --tenant-primary-100: rgba(16, 185, 129, 0.1);
+  --tenant-primary-200: rgba(16, 185, 129, 0.2);
+  --tenant-primary-subtle: rgba(16, 185, 129, 0.12);
+  --tenant-primary-border: rgba(16, 185, 129, 0.35);
+  --tenant-primary-glow: 0 0 24px rgba(16, 185, 129, 0.4);
+  --tenant-secondary: #0f172a;
+  --tenant-secondary-rgb: 15, 23, 42;
+  --tenant-accent: #06b6d4;
+  --tenant-accent-rgb: 6, 182, 212;
+  --tenant-pwa-theme: #022c22;
+}
+
+/* Tenant Dynamic Theme Helper Classes */
+.bg-tenant-primary {
+  background-color: var(--tenant-primary);
+}
+
+.bg-tenant-primary-hover:hover {
+  background-color: var(--tenant-primary-hover);
+}
+
+.bg-tenant-subtle {
+  background-color: var(--tenant-primary-subtle);
+}
+
+.text-tenant-primary {
+  color: var(--tenant-primary);
+}
+
+.border-tenant-primary {
+  border-color: var(--tenant-primary);
+}
+
+.border-tenant-border {
+  border-color: var(--tenant-primary-border);
+}
+
+.ring-tenant-primary {
+  --tw-ring-color: var(--tenant-primary);
+}
+
+.shadow-tenant-glow {
+  box-shadow: var(--tenant-primary-glow);
+}
+
+.btn-tenant-primary {
+  background-color: var(--tenant-primary);
+  color: #ffffff;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-tenant-primary:hover {
+  background-color: var(--tenant-primary-hover);
+  box-shadow: var(--tenant-primary-glow);
+}
+
+.btn-tenant-outline {
+  background-color: var(--tenant-primary-subtle);
+  border: 1px solid var(--tenant-primary-border);
+  color: var(--tenant-primary);
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-tenant-outline:hover {
+  background-color: rgba(var(--tenant-primary-rgb), 0.22);
+  border-color: var(--tenant-primary);
+}
+
+.badge-tenant-primary {
+  background-color: var(--tenant-primary-subtle);
+  border: 1px solid var(--tenant-primary-border);
+  color: var(--tenant-primary);
+}
+
+.accent-tenant-primary {
+  accent-color: var(--tenant-primary);
+}

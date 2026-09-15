@@ -36,18 +36,22 @@ import {
   Building2,
   Layers,
   ArrowRight,
-  ShieldCheck
+  ShieldCheck,
+  Download,
+  Printer
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { ServiceSummaryPdfModal } from '@/components/services/ServiceSummaryPdfModal';
+import { exportSingleServiceOrderPdf, exportServiceOrdersSummaryPdf } from '@/lib/pdfExportService';
 
 export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }> = ({ onNavigate }) => {
   const { 
-    serviceOrders, 
-    clients, 
-    contracts, 
-    requests, 
-    documents,
-    serviceTemplates,
+    serviceOrders = [], 
+    clients = [], 
+    contracts = [], 
+    requests = [], 
+    documents = [], 
+    serviceTemplates = [], 
     createServiceOrderManual,
     updateServiceOrder,
     deleteServiceOrder,
@@ -59,7 +63,9 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
     deliverServiceOrder, 
     clientAcceptService, 
     clientRequestRework, 
-    createRequest
+    createRequest,
+    organization,
+    profiles = [] 
   } = usePrevSafe();
 
   // Search and Filters
@@ -69,7 +75,7 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
   const [clientFilter, setClientFilter] = useState<string>('ALL');
 
   // Active OS and Tab
-  const [selectedOSId, setSelectedOSId] = useState<string>(serviceOrders[0]?.id || '');
+  const [selectedOSId, setSelectedOSId] = useState<string>(serviceOrders?.[0]?.id || '');
   const [activeTab, setActiveTab] = useState<'STAGES' | 'TASKS' | 'REQUESTS' | 'DOCS' | 'HISTORY'>('STAGES');
 
   // Modals
@@ -80,6 +86,8 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
   const [showSlaPauseModal, setShowSlaPauseModal] = useState(false);
   const [showNewTaskModal, setShowNewTaskModal] = useState(false);
   const [showNewRequestModal, setShowNewRequestModal] = useState(false);
+  const [showPdfModal, setShowPdfModal] = useState(false);
+  const [pdfInitialOS, setPdfInitialOS] = useState<ServiceOrder | null>(null);
 
   // Forms state (using state initializers to avoid impure render calls)
   const [osForm, setOsForm] = useState(() => ({
@@ -318,6 +326,19 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
         
         <div className="flex flex-wrap items-center gap-2">
           <button 
+            id="btn-export-os-summary-pdf"
+            onClick={() => {
+              setPdfInitialOS(null);
+              setShowPdfModal(true);
+            }}
+            className="px-3.5 py-2 bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 border border-indigo-500/30 rounded-2xl text-xs font-bold transition flex items-center space-x-1.5 shadow-sm"
+            title="Exportar Resumo Consolidado de Ordens de Serviço em PDF"
+          >
+            <Download className="w-4 h-4 text-indigo-400" />
+            <span>Exportar Resumo (PDF)</span>
+          </button>
+
+          <button 
             id="btn-nav-field-pwa"
             onClick={() => onNavigate('technician-field')}
             className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-2xl text-xs font-semibold shadow-sm transition flex items-center space-x-1.5"
@@ -330,9 +351,13 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
             id="btn-new-service-order"
             onClick={handleOpenNewOS}
             className="px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-2xl text-xs font-bold shadow-lg shadow-emerald-950/40 transition flex items-center space-x-1.5"
+            title="Criar Nova Ordem de Serviço (Ctrl + N)"
           >
             <Plus className="w-4 h-4" />
             <span>+ Nova Ordem de Serviço</span>
+            <kbd className="hidden sm:inline-flex px-1.5 py-0.5 rounded bg-emerald-800/80 text-[10px] font-mono text-emerald-100 border border-emerald-500/40 ml-1">
+              Ctrl+N
+            </kbd>
           </button>
         </div>
       </div>
@@ -537,6 +562,21 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
 
                 {/* Primary Action Buttons */}
                 <div className="flex flex-wrap items-center gap-2">
+                  <button
+                    id="btn-export-single-os-pdf"
+                    onClick={() => {
+                      if (selectedOS) {
+                        setPdfInitialOS(selectedOS);
+                        setShowPdfModal(true);
+                      }
+                    }}
+                    className="px-3 py-1.5 bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 rounded-xl text-xs font-semibold transition flex items-center space-x-1.5"
+                    title="Exportar Dossiê Técnico desta O.S. em PDF"
+                  >
+                    <Download className="w-3.5 h-3.5" />
+                    <span>Dossiê em PDF</span>
+                  </button>
+
                   <button
                     id="btn-edit-os"
                     onClick={handleOpenEditOS}
@@ -1443,6 +1483,13 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
           </div>
         </div>
       )}
+
+      {/* Modal de Exportação em PDF */}
+      <ServiceSummaryPdfModal
+        isOpen={showPdfModal}
+        onClose={() => setShowPdfModal(false)}
+        initialSelectedOS={pdfInitialOS}
+      />
     </div>
   );
 };

@@ -43,8 +43,24 @@ import {
   Stethoscope,
   HeartPulse,
   HardHat,
-  Ban
+  Ban,
+  Zap,
+  Bot,
+  Cpu,
+  CheckCheck,
+  Workflow,
+  ShieldAlert,
+  Smartphone,
+  MessageSquare,
+  Settings2,
+  ArrowRight,
+  Lock,
+  Printer
 } from 'lucide-react';
+import { ESocialPdfReportModal } from './ESocialPdfReportModal';
+import { ESocialConfigView } from './ESocialConfigView';
+import { SSTDeadlineAlertBanner } from './SSTDeadlineAlertBanner';
+import { exportESocialEventLogsPdf } from '@/lib/pdfExportService';
 
 interface ESocialEventsViewProps {
   onNavigate?: (view: string) => void;
@@ -52,10 +68,11 @@ interface ESocialEventsViewProps {
 
 export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate }) => {
   const {
-    esocialEvents,
-    esocialBatches,
-    clients,
-    serviceOrders,
+    organization,
+    esocialEvents = [],
+    esocialBatches = [],
+    clients = [],
+    serviceOrders = [],
     currentRole,
     createESocialEvent,
     updateESocialEvent,
@@ -66,11 +83,35 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
     generateESocialFromServiceOrder,
     generateExclusionEventS3000,
     generateESocialXmlPreview,
-    runESocialFullTestSuite
+    runESocialFullTestSuite,
+    runESocialAutomationJob
   } = usePrevSafe();
 
   // Navigation Tabs
-  const [activeTab, setActiveTab] = useState<'events' | 'batches' | 'extractor' | 'tests'>('events');
+  const [activeTab, setActiveTab] = useState<'automation' | 'events' | 'batches' | 'extractor' | 'tests' | 'config'>('automation');
+
+  // Automation Robot State
+  const [isAutomating, setIsAutomating] = useState(false);
+  const [automationStep, setAutomationStep] = useState<number>(0);
+  const [automationLogs, setAutomationLogs] = useState<Array<{ timestamp: string; message: string; level: 'info' | 'success' | 'warning' }>>([
+    { timestamp: new Date().toLocaleTimeString('pt-BR'), message: '🤖 Robô de Automação eSocial inicializado com sucesso.', level: 'info' },
+    { timestamp: new Date().toLocaleTimeString('pt-BR'), message: '📡 Monitorando ordens de serviço (PGR/PCMSO/ASO) para geração e transmissão contínua.', level: 'info' }
+  ]);
+  const [automationSettings, setAutomationSettings] = useState({
+    autoScanOS: true,
+    autoGenerateS2220: true,
+    autoGenerateS2240: true,
+    autoValidateXSD: true,
+    autoSignA1: true,
+    autoTransmitSerpro: true,
+    autoNotifyWhatsApp: true,
+    autoNotifyEmail: true
+  });
+  const [lastAutomationResult, setLastAutomationResult] = useState<{
+    generatedCount: number;
+    transmittedCount: number;
+    batchNumber?: string;
+  } | null>(null);
 
   // Filters
   const [filterType, setFilterType] = useState<string>('ALL');
@@ -88,6 +129,8 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
   const [xmlActiveTab, setXmlActiveTab] = useState<'xml' | 'receipt' | 'history'>('xml');
   const [isBatchModalOpen, setIsBatchModalOpen] = useState(false);
   const [isExtractModalOpen, setIsExtractModalOpen] = useState(false);
+  const [isPdfModalOpen, setIsPdfModalOpen] = useState(false);
+  const [selectedPdfEvent, setSelectedPdfEvent] = useState<ESocialEvent | null>(null);
 
   // Test Suite State
   const [testResults, setTestResults] = useState<{
@@ -219,6 +262,77 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
     }, 400);
   };
 
+  // Handle Automation Execution Job
+  const handleExecuteAutomation = () => {
+    setIsAutomating(true);
+    setAutomationStep(1);
+    
+    const now = () => new Date().toLocaleTimeString('pt-BR');
+    
+    setAutomationLogs(prev => [
+      { timestamp: now(), message: '🚀 Iniciando Varredura Automática de Ordens de Serviço (PGR / PCMSO / ASO)...', level: 'info' },
+      ...prev
+    ]);
+
+    setTimeout(() => {
+      setAutomationStep(2);
+      setAutomationLogs(prev => [
+        { timestamp: now(), message: '🔍 Mapeando registros de exames ocupacionais e fatores ambientais (Tabela 24 eSocial)...', level: 'info' },
+        ...prev
+      ]);
+
+      setTimeout(() => {
+        setAutomationStep(3);
+        setAutomationLogs(prev => [
+          { timestamp: now(), message: '📄 Gerando XMLs padrão layout v.S-1.2 e validando Schemas XSD...', level: 'info' },
+          ...prev
+        ]);
+
+        setTimeout(() => {
+          setAutomationStep(4);
+          setAutomationLogs(prev => [
+            { timestamp: now(), message: '🔏 Aplicando Assinatura Digital ICP-Brasil A1 e transmitindo lote ao Serpro...', level: 'info' },
+            ...prev
+          ]);
+
+          // Execute actual context logic
+          const result = runESocialAutomationJob({
+            autoExtractS2220: automationSettings.autoGenerateS2220,
+            autoExtractS2240: automationSettings.autoGenerateS2240,
+            autoTransmitReady: automationSettings.autoTransmitSerpro,
+            notifyClient: automationSettings.autoNotifyWhatsApp,
+            certificateType: 'A1_DIGITAL'
+          });
+          
+          setLastAutomationResult({
+            generatedCount: result.extractedCount,
+            transmittedCount: result.transmittedCount,
+            batchNumber: result.batchNumber
+          });
+
+          setAutomationStep(5);
+          setAutomationLogs(prev => [
+            { 
+              timestamp: now(), 
+              message: `✅ ${result.summary}`, 
+              level: 'success' 
+            },
+            ...result.logs.map(logMsg => ({
+              timestamp: now(),
+              message: logMsg,
+              level: 'info' as const
+            })),
+            ...prev
+          ]);
+
+          setIsAutomating(false);
+          setAutomationStep(0);
+          showToast(`Automação eSocial concluída! ${result.extractedCount} eventos gerados e ${result.transmittedCount} transmitidos.`, 'success');
+        }, 800);
+      }, 700);
+    }, 600);
+  };
+
   // Handle Extraction from Service Order
   const handleExecuteExtraction = () => {
     if (!selectedExtractionOS) return;
@@ -272,6 +386,9 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
         </div>
       )}
 
+      {/* Alertas Automáticos de Vencimento de Exames ASO e Laudos PGR/PCMSO */}
+      <SSTDeadlineAlertBanner onNavigate={onNavigate} />
+
       {/* Header & Quick Action Banner */}
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 pb-2 border-b border-slate-800/80">
         <div>
@@ -290,7 +407,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                 </span>
               </div>
               <p className="text-xs text-slate-400 mt-0.5">
-                Emissão, validação XSD, assinatura ICP-Brasil e transmissão WebService de S-2210 (CAT), S-2220 (ASO/Saúde), S-2240 (Condições Ambientais) e S-3000 (Exclusão).
+                Emissão, validação XSD, assinatura ICP-Brasil e transmissão WebService de S-2210 (CAT), S-2220 (ASO/Saúde), S-2230 (Afastamentos) e S-2240 (Condições Ambientais).
               </p>
             </div>
           </div>
@@ -298,6 +415,30 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
 
         {/* Global Action Buttons */}
         <div className="flex flex-wrap items-center gap-2.5">
+          <button
+            id="btn-open-esocial-pdf-report"
+            onClick={() => {
+              setSelectedPdfEvent(null);
+              setIsPdfModalOpen(true);
+            }}
+            className="flex items-center space-x-2 px-3.5 py-2 rounded-xl bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 hover:text-indigo-200 border border-indigo-500/30 text-xs font-bold transition shadow-sm"
+            title="Gera relatórios oficiais em PDF para conferência individual ou em massa dos eventos S-2210, S-2220, S-2230 e S-2240"
+          >
+            <Printer className="w-4 h-4 text-indigo-400" />
+            <span>Relatórios em PDF (S-2210/20/30/40)</span>
+          </button>
+
+          <button
+            id="btn-run-esocial-automation-job"
+            onClick={handleExecuteAutomation}
+            disabled={isAutomating}
+            className="flex items-center space-x-2 px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-bold transition shadow-lg shadow-emerald-950/50 border border-emerald-400/30 active:scale-95 touch-manipulation"
+            title="Executa a varredura de OSs, gera XMLs eSocial e transmite para o Serpro automaticamente"
+          >
+            <Zap className={`w-4 h-4 text-amber-300 ${isAutomating ? 'animate-bounce' : 'fill-amber-300'}`} />
+            <span>{isAutomating ? 'Automação em Execução...' : '⚡ Executar Automação eSocial'}</span>
+          </button>
+
           <button
             id="btn-run-esocial-tests"
             onClick={handleRunTests}
@@ -307,6 +448,17 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
             <Play className={`w-3.5 h-3.5 ${isRunningTests ? 'animate-spin' : ''}`} />
             <span>{isRunningTests ? 'Executando Testes...' : '🧪 Testes Automatizados'}</span>
           </button>
+
+          {onNavigate && (
+            <button
+              id="btn-nav-to-sst-engineering"
+              onClick={() => onNavigate('sst-engineering')}
+              className="flex items-center space-x-2 px-3.5 py-2 rounded-xl bg-teal-500/10 hover:bg-teal-500/20 text-teal-300 hover:text-teal-200 border border-teal-500/30 text-xs font-bold transition shadow-sm"
+            >
+              <HardHat className="w-3.5 h-3.5 text-teal-400" />
+              <span>Engenharia SST Unificada (PGR/PCMSO)</span>
+            </button>
+          )}
 
           <button
             id="btn-extract-from-so"
@@ -323,10 +475,10 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
               setEditingEvent(null);
               setIsCreateModalOpen(true);
             }}
-            className="flex items-center space-x-2 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition shadow-lg shadow-emerald-950/40"
+            className="flex items-center space-x-2 px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold transition border border-slate-700 shadow-sm"
           >
-            <Plus className="w-4 h-4" />
-            <span>Novo Evento Manual</span>
+            <Plus className="w-4 h-4 text-emerald-400" />
+            <span>Novo Manual</span>
           </button>
         </div>
       </div>
@@ -404,12 +556,29 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
       </div>
 
       {/* Navigation Tabs Header */}
-      <div className="flex items-center justify-between border-b border-slate-800">
-        <div className="flex space-x-2">
+      <div className="flex items-center justify-between border-b border-slate-800 overflow-x-auto">
+        <div className="flex space-x-1 sm:space-x-2 min-w-max">
+          <button
+            id="tab-btn-automation"
+            onClick={() => setActiveTab('automation')}
+            className={`flex items-center space-x-2 px-3.5 py-2.5 text-xs font-bold border-b-2 transition ${
+              activeTab === 'automation'
+                ? 'border-emerald-500 text-emerald-300 bg-emerald-500/10'
+                : 'border-transparent text-slate-400 hover:text-slate-200 hover:border-slate-700'
+            }`}
+          >
+            <Bot className="w-4 h-4 text-emerald-400" />
+            <span>Robô de Automação</span>
+            <span className="flex h-2 w-2 relative">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            </span>
+          </button>
+
           <button
             id="tab-btn-events"
             onClick={() => setActiveTab('events')}
-            className={`flex items-center space-x-2 px-4 py-2.5 text-xs font-semibold border-b-2 transition ${
+            className={`flex items-center space-x-2 px-3.5 py-2.5 text-xs font-semibold border-b-2 transition ${
               activeTab === 'events'
                 ? 'border-emerald-500 text-emerald-400 bg-emerald-500/5'
                 : 'border-transparent text-slate-400 hover:text-slate-200 hover:border-slate-700'
@@ -425,7 +594,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
           <button
             id="tab-btn-batches"
             onClick={() => setActiveTab('batches')}
-            className={`flex items-center space-x-2 px-4 py-2.5 text-xs font-semibold border-b-2 transition ${
+            className={`flex items-center space-x-2 px-3.5 py-2.5 text-xs font-semibold border-b-2 transition ${
               activeTab === 'batches'
                 ? 'border-emerald-500 text-emerald-400 bg-emerald-500/5'
                 : 'border-transparent text-slate-400 hover:text-slate-200 hover:border-slate-700'
@@ -441,27 +610,27 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
           <button
             id="tab-btn-extractor"
             onClick={() => setActiveTab('extractor')}
-            className={`flex items-center space-x-2 px-4 py-2.5 text-xs font-semibold border-b-2 transition ${
+            className={`flex items-center space-x-2 px-3.5 py-2.5 text-xs font-semibold border-b-2 transition ${
               activeTab === 'extractor'
                 ? 'border-emerald-500 text-emerald-400 bg-emerald-500/5'
                 : 'border-transparent text-slate-400 hover:text-slate-200 hover:border-slate-700'
             }`}
           >
-            <Sparkles className="w-4 h-4" />
-            <span>Assistente de Extração PGR/PCMSO</span>
+            <Sparkles className="w-4 h-4 text-amber-400" />
+            <span>Assistente PGR/PCMSO</span>
           </button>
 
           <button
             id="tab-btn-tests"
             onClick={() => setActiveTab('tests')}
-            className={`flex items-center space-x-2 px-4 py-2.5 text-xs font-semibold border-b-2 transition ${
+            className={`flex items-center space-x-2 px-3.5 py-2.5 text-xs font-semibold border-b-2 transition ${
               activeTab === 'tests'
                 ? 'border-emerald-500 text-emerald-400 bg-emerald-500/5'
                 : 'border-transparent text-slate-400 hover:text-slate-200 hover:border-slate-700'
             }`}
           >
             <CheckCircle2 className="w-4 h-4" />
-            <span>Suíte de Testes & Validador XSD</span>
+            <span>Testes & XSD</span>
             {testResults && (
               <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-mono ${
                 testResults.failed === 0 ? 'bg-emerald-950 text-emerald-400' : 'bg-rose-950 text-rose-400'
@@ -469,6 +638,19 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                 {testResults.passed}/{testResults.results.length}
               </span>
             )}
+          </button>
+
+          <button
+            id="tab-btn-config"
+            onClick={() => setActiveTab('config')}
+            className={`flex items-center space-x-2 px-3.5 py-2.5 text-xs font-semibold border-b-2 transition ${
+              activeTab === 'config'
+                ? 'border-indigo-500 text-indigo-400 bg-indigo-500/10 font-bold'
+                : 'border-transparent text-slate-400 hover:text-slate-200 hover:border-slate-700'
+            }`}
+          >
+            <Settings2 className="w-4 h-4 text-indigo-400" />
+            <span>Configurações & Certificado A1</span>
           </button>
         </div>
 
@@ -488,6 +670,236 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
           </div>
         )}
       </div>
+
+      {/* TAB 0: ROBÔ DE AUTOMAÇÃO ESOCIAL SST */}
+      {activeTab === 'automation' && (
+        <div className="space-y-6">
+          {/* Automation Robot Header Banner */}
+          <div className="p-6 rounded-3xl bg-gradient-to-br from-slate-900 via-slate-900/90 to-emerald-950/40 border border-emerald-500/30 shadow-2xl relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+            
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 relative z-10">
+              <div className="space-y-2">
+                <div className="flex items-center space-x-3">
+                  <div className="p-3 rounded-2xl bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-inner">
+                    <Bot className="w-8 h-8" />
+                  </div>
+                  <div>
+                    <div className="flex items-center space-x-2">
+                      <h2 className="text-xl font-bold text-white tracking-tight">Robô Autônomo eSocial SST</h2>
+                      <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center space-x-1">
+                        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                        <span>SERPRO 24/7 ONLINE</span>
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-300">
+                      Geração de XMLs, validação XSD S-1.2, assinatura digital A1 e transmissão em lotes com notificação multicanal.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-4 text-xs text-slate-400 pt-1 font-mono">
+                  <div className="flex items-center space-x-1.5 text-slate-300">
+                    <CheckCheck className="w-4 h-4 text-emerald-400" />
+                    <span>Conformidade XSD: <strong>100%</strong></span>
+                  </div>
+                  <div className="flex items-center space-x-1.5 text-slate-300">
+                    <Lock className="w-4 h-4 text-emerald-400" />
+                    <span>Certificado: <strong>ICP-Brasil A1 (Ativo)</strong></span>
+                  </div>
+                  <div className="flex items-center space-x-1.5 text-slate-300">
+                    <Smartphone className="w-4 h-4 text-emerald-400" />
+                    <span>Notificações: <strong>WhatsApp / E-mail Ativo</strong></span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Run Automation Trigger Action */}
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                <button
+                  id="btn-run-full-automation"
+                  onClick={handleExecuteAutomation}
+                  disabled={isAutomating}
+                  className={`flex items-center justify-center space-x-3 px-6 py-3.5 rounded-2xl font-bold text-sm text-white transition-all duration-300 shadow-xl touch-manipulation ${
+                    isAutomating
+                      ? 'bg-slate-800 text-slate-400 border border-slate-700 cursor-not-allowed'
+                      : 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 border border-emerald-400/40 shadow-emerald-950/60 hover:scale-[1.02] active:scale-95'
+                  }`}
+                >
+                  <Zap className={`w-5 h-5 text-amber-300 ${isAutomating ? 'animate-bounce' : 'fill-amber-300'}`} />
+                  <span>{isAutomating ? 'Processando Automação...' : 'Executar Automação Agora'}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Interactive Automation Pipeline Progress */}
+          <div className="p-6 rounded-2xl bg-slate-900/70 border border-slate-800 space-y-4 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <Workflow className="w-4 h-4 text-emerald-400" />
+                <h3 className="text-sm font-bold text-white uppercase tracking-wider">Pipeline de Automação Contínua</h3>
+              </div>
+              <span className="text-xs text-slate-400 font-mono">
+                {isAutomating ? `Etapa ${automationStep} de 5` : 'Aguardando próximo ciclo ou disparo manual'}
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
+              {[
+                { step: 1, title: '1. Varredura de OSs', desc: 'Scan de ASOs e Laudos PGR/LTCAT', icon: Search },
+                { step: 2, title: '2. Mapeamento SST', desc: 'Fatores Tabela 24 & Riscos', icon: FileCode2 },
+                { step: 3, title: '3. Validação XSD', desc: 'Schemas oficiais v.S-1.2', icon: ShieldCheck },
+                { step: 4, title: '4. Assinatura & Envio', desc: 'ICP-Brasil A1 + WebService', icon: Send },
+                { step: 5, title: '5. Recibos & WhatsApp', desc: 'Protocolo ao RH do Cliente', icon: MessageSquare }
+              ].map((item) => {
+                const Icon = item.icon;
+                const isCurrent = isAutomating && automationStep === item.step;
+                const isPassed = isAutomating && automationStep > item.step;
+
+                return (
+                  <div
+                    key={item.step}
+                    className={`p-4 rounded-xl border transition-all duration-300 flex flex-col justify-between ${
+                      isCurrent
+                        ? 'bg-emerald-500/20 border-emerald-400 shadow-lg shadow-emerald-950/50 scale-[1.03]'
+                        : isPassed
+                        ? 'bg-emerald-950/30 border-emerald-800/60 text-emerald-300'
+                        : 'bg-slate-950/60 border-slate-800/80 text-slate-400'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <span className={`text-[10px] font-bold uppercase tracking-wider ${isCurrent ? 'text-emerald-300 font-mono animate-pulse' : 'text-slate-400'}`}>
+                        {item.title}
+                      </span>
+                      <Icon className={`w-4 h-4 ${isCurrent ? 'text-emerald-400 animate-spin' : isPassed ? 'text-emerald-400' : 'text-slate-500'}`} />
+                    </div>
+                    <p className="text-[11px] text-slate-300">{item.desc}</p>
+                    <div className="mt-3 h-1.5 w-full bg-slate-900 rounded-full overflow-hidden">
+                      <div 
+                        className={`h-full transition-all duration-500 ${
+                          isPassed || isCurrent ? 'bg-emerald-500 w-full' : 'w-0'
+                        }`} 
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Configuration Matrix & Execution Telemetry Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            {/* Automation Triggers & Rules Settings */}
+            <div className="lg:col-span-6 p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-4">
+              <div className="flex items-center justify-between pb-2 border-b border-slate-800">
+                <div className="flex items-center space-x-2">
+                  <Settings2 className="w-4 h-4 text-emerald-400" />
+                  <h3 className="text-sm font-bold text-white uppercase tracking-wider">Regras & Gatilhos Inteligentes</h3>
+                </div>
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 font-mono">
+                  Tempo Real
+                </span>
+              </div>
+
+              <div className="space-y-3">
+                {[
+                  { key: 'autoScanOS', label: 'Varredura Automática de Ordens de Serviço (OSs Concluídas)', desc: 'Gera eventos ao finalizar atendimentos técnicos ou emitir ASOs' },
+                  { key: 'autoGenerateS2220', label: 'Gatilho S-2220 (Monitoramento da Saúde / ASO)', desc: 'Extrai exames clínicos, complementares e CRM do médico coordenador' },
+                  { key: 'autoGenerateS2240', label: 'Gatilho S-2240 (Condições Ambientais do Trabalho)', desc: 'Mapeia agentes nocivos da Tabela 24, EPI/EPC e responsável técnico' },
+                  { key: 'autoValidateXSD', label: 'Validação Prévia de Schemas XSD e Regras de Negócio', desc: 'Impede o envio de XMLs com dados ausentes ou CPFs inconsistentes' },
+                  { key: 'autoSignA1', label: 'Assinatura Digital Automática com Certificado A1', desc: 'Aplica assinatura digital XMLDSig X.509 em conformidade ICP-Brasil' },
+                  { key: 'autoTransmitSerpro', label: 'Transmissão em Lote para o WebService Serpro', desc: 'Envia lotes de até 50 eventos com retry automático e captura de recibo' },
+                  { key: 'autoNotifyWhatsApp', label: 'Notificação Automática do RH via WhatsApp', desc: 'Envia número de protocolo, data e link do recibo em PDF para o cliente' }
+                ].map((item) => {
+                  const isChecked = automationSettings[item.key as keyof typeof automationSettings];
+
+                  return (
+                    <div 
+                      key={item.key}
+                      onClick={() => setAutomationSettings(prev => ({ ...prev, [item.key]: !prev[item.key as keyof typeof automationSettings] }))}
+                      className="p-3 rounded-xl bg-slate-950/70 border border-slate-800/80 hover:border-slate-700 transition flex items-center justify-between cursor-pointer group"
+                    >
+                      <div className="pr-4">
+                        <div className="text-xs font-semibold text-white group-hover:text-emerald-300 transition">
+                          {item.label}
+                        </div>
+                        <div className="text-[10px] text-slate-400 mt-0.5">
+                          {item.desc}
+                        </div>
+                      </div>
+
+                      <div className={`w-10 h-5 rounded-full p-0.5 transition-colors duration-200 ease-in-out shrink-0 ${
+                        isChecked ? 'bg-emerald-600' : 'bg-slate-800'
+                      }`}>
+                        <div className={`w-4 h-4 rounded-full bg-white transition-transform duration-200 ease-in-out ${
+                          isChecked ? 'translate-x-5' : 'translate-x-0'
+                        }`} />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Live Robot Execution Console & Audit Feed */}
+            <div className="lg:col-span-6 p-6 rounded-2xl bg-slate-900/60 border border-slate-800 flex flex-col justify-between space-y-4">
+              <div>
+                <div className="flex items-center justify-between pb-2 border-b border-slate-800">
+                  <div className="flex items-center space-x-2">
+                    <Activity className="w-4 h-4 text-emerald-400" />
+                    <h3 className="text-sm font-bold text-white uppercase tracking-wider">Console de Telemetria e Logs ao Vivo</h3>
+                  </div>
+                  <button
+                    onClick={() => setAutomationLogs([{ timestamp: new Date().toLocaleTimeString('pt-BR'), message: 'Console de telemetria limpo.', level: 'info' }])}
+                    className="text-[10px] text-slate-400 hover:text-slate-200 transition font-mono"
+                  >
+                    Limpar Logs
+                  </button>
+                </div>
+
+                {/* Console Window */}
+                <div className="mt-3 p-4 rounded-xl bg-slate-950 border border-slate-800 font-mono text-xs text-slate-300 space-y-2 h-72 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-800">
+                  {automationLogs.map((log, index) => (
+                    <div key={index} className="flex items-start space-x-2 text-[11px] leading-relaxed">
+                      <span className="text-slate-400 shrink-0 select-none">[{log.timestamp}]</span>
+                      <span className={
+                        log.level === 'success' 
+                          ? 'text-emerald-400 font-semibold' 
+                          : log.level === 'warning'
+                          ? 'text-amber-400'
+                          : 'text-slate-300'
+                      }>
+                        {log.message}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Last Automation Stats Card */}
+              {lastAutomationResult && (
+                <div className="p-4 rounded-xl bg-emerald-950/30 border border-emerald-500/30 flex items-center justify-between">
+                  <div>
+                    <div className="text-xs font-bold text-emerald-300">Última Execução com Sucesso</div>
+                    <div className="text-[11px] text-slate-300 mt-0.5">
+                      Lote <strong>{lastAutomationResult.batchNumber || 'SERPRO-AUTO'}</strong> transmitido com {lastAutomationResult.transmittedCount} eventos aceitos.
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setActiveTab('batches')}
+                    className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition"
+                  >
+                    <span>Ver Lotes</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* TAB 1: EVENTS LIST & CRUD */}
       {activeTab === 'events' && (
@@ -545,6 +957,29 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                   <option key={c.id} value={c.id}>{c.trade_name || c.legal_name}</option>
                 ))}
               </select>
+
+              <button
+                id="btn-export-esocial-table-pdf"
+                onClick={() => {
+                  if (filteredEvents.length === 0) {
+                    showToast('Nenhum evento para exportar nos filtros selecionados.', 'error');
+                    return;
+                  }
+                  exportESocialEventLogsPdf({
+                    organization,
+                    clients,
+                    events: filteredEvents,
+                    filterType,
+                    filterStatus
+                  });
+                  showToast(`Relatório PDF com ${filteredEvents.length} eventos baixado com sucesso.`, 'success');
+                }}
+                className="flex items-center space-x-1.5 px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-semibold transition shadow-sm"
+                title="Exportar tabela de eventos filtrados diretamente em arquivo PDF vetorial"
+              >
+                <Download className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Exportar PDF ({filteredEvents.length})</span>
+              </button>
             </div>
           </div>
 
@@ -748,6 +1183,19 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                                 className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition"
                               >
                                 <Eye className="w-3.5 h-3.5" />
+                              </button>
+
+                              {/* PDF Report Export (S-2210, S-2220, S-2230, S-2240) */}
+                              <button
+                                id={`btn-pdf-${evt.id}`}
+                                onClick={() => {
+                                  setSelectedPdfEvent(evt);
+                                  setIsPdfModalOpen(true);
+                                }}
+                                title="Gerar Espelho / Relatório PDF deste Evento SST"
+                                className="p-1.5 rounded-lg bg-indigo-950/80 hover:bg-indigo-900 text-indigo-300 hover:text-indigo-200 transition border border-indigo-800/40"
+                              >
+                                <Printer className="w-3.5 h-3.5" />
                               </button>
 
                               {/* Validate Action */}
@@ -1098,8 +1546,12 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
         </div>
       )}
 
-      {/* ========================================================================= */}
-      {/* MODAL 1: XML VIEWER & OFFICIAL RECEIPT                                    */}
+      {/* TAB 5: CONFIGURAÇÕES ESOCIAL & CERTIFICADO A1 */}
+      {activeTab === 'config' && (
+        <div className="pt-2">
+          <ESocialConfigView />
+        </div>
+      )}
       {/* ========================================================================= */}
       {xmlModalEvent && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
@@ -1464,6 +1916,18 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
         </div>
       )}
 
+      {/* MODAL: RELATÓRIOS EM PDF (S-2210, S-2220, S-2230, S-2240) */}
+      {isPdfModalOpen && (
+        <ESocialPdfReportModal
+          isOpen={isPdfModalOpen}
+          initialSelectedEvent={selectedPdfEvent}
+          onClose={() => {
+            setIsPdfModalOpen(false);
+            setSelectedPdfEvent(null);
+          }}
+        />
+      )}
+
     </div>
   );
 };
@@ -1517,7 +1981,7 @@ const CreateEditEventModal: React.FC<CreateEditEventModalProps> = ({
   const [s2210DaysAway, setS2210DaysAway] = useState<number>(initialEvent?.cat_data?.days_away || 0);
 
   // S-3000 State
-  const [s3000TargetType, setS3000TargetType] = useState<'S-2210' | 'S-2220' | 'S-2240'>(initialEvent?.exclusion_data?.target_event_type || 'S-2240');
+  const [s3000TargetType, setS3000TargetType] = useState<'S-2210' | 'S-2220' | 'S-2230' | 'S-2240'>(initialEvent?.exclusion_data?.target_event_type || 'S-2240');
   const [s3000Receipt, setS3000Receipt] = useState<string>(initialEvent?.exclusion_data?.target_receipt_number || '1.2.202608.0000000000000000000-01');
   const [s3000Reason, setS3000Reason] = useState<string>(initialEvent?.exclusion_data?.exclusion_reason || 'Exclusão de evento enviado com erro no vínculo empregatício.');
 

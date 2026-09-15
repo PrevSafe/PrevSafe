@@ -21,9 +21,9 @@ import {
 
 export const DocumentsView: React.FC<{ onNavigate: (view: string) => void }> = ({ onNavigate }) => {
   const { 
-    documents, 
-    clients, 
-    serviceOrders, 
+    documents = [], 
+    clients = [], 
+    serviceOrders = [], 
     createNewDocument, 
     updateDocument,
     deleteDocument,
@@ -42,7 +42,7 @@ export const DocumentsView: React.FC<{ onNavigate: (view: string) => void }> = (
   const [docForm, setDocForm] = useState({
     name: 'PGR - Programa de Gerenciamento de Riscos 2026',
     document_type: 'PGR' as Document['document_type'],
-    client_id: clients[0]?.id || '',
+    client_id: clients?.[0]?.id || '',
     service_order_id: serviceOrders[0]?.id || '',
     notes: 'Documento técnico homologado e publicado no repositório.',
     is_client_released: true
@@ -133,6 +133,15 @@ export const DocumentsView: React.FC<{ onNavigate: (view: string) => void }> = (
           </div>
         </div>
         <div className="flex items-center space-x-2">
+          <button 
+            type="button"
+            onClick={() => onNavigate('reports')}
+            className="px-3.5 py-2.5 bg-slate-800 hover:bg-slate-700 text-teal-400 hover:text-teal-300 border border-teal-500/30 rounded-2xl text-xs font-bold transition flex items-center space-x-1.5 shadow-sm"
+            title="Ir para o módulo de relatórios com filtros multidimensionais e exportações"
+          >
+            <FolderKanban className="w-4 h-4 text-teal-400" />
+            <span>Central de Relatórios BI (Excel / PDF)</span>
+          </button>
           <button 
             id="btn-new-document"
             onClick={handleOpenNewDoc}

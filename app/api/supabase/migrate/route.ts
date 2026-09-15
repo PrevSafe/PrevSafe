@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabaseUrl, SUPABASE_PROJECT_REF, SUPABASE_PROJECT_NAME } from '@/lib/supabase';
 import { SUPABASE_MIGRATIONS } from '@/lib/supabaseSchema';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   return NextResponse.json({
     projectRef: SUPABASE_PROJECT_REF,
