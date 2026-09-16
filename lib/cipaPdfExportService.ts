@@ -167,7 +167,7 @@ export function generateCipaDocumentHTML(
               </tr>
               <tr>
                 <td><strong>Divulgação e Homologação dos Inscritos</strong></td>
-                <td>${process.timeline.candidacy_publication_date}</td>
+                <td>${process.timeline.candidate_list_publication_date}</td>
                 <td>Imediato após o término das inscrições</td>
               </tr>
               <tr>
@@ -239,7 +239,7 @@ export function generateCipaDocumentHTML(
 
         <div class="section">
           <p>
-            Aos <strong>${process.timeline.electoral_commission_date}</strong>, nas dependências da empresa <strong>${orgName}</strong>, 
+            Aos <strong>${process.timeline.commission_formation_date}</strong>, nas dependências da empresa <strong>${orgName}</strong>, 
             reuniram-se os representantes do empregador e dos trabalhadores para constituir a <strong>Comissão Eleitoral</strong> responsável 
             pela organização, condução e apuração da eleição da <strong>${normInfo.title}</strong> para a gestão <strong>${process.mandate_year}</strong>, 
             nos termos da <strong>${normInfo.normReference}</strong>.

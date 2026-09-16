@@ -1161,7 +1161,7 @@ export function exportEPIDeliveryFichaPDF(
     del.ca_number,
     del.epi_name,
     del.quantity.toString(),
-    del.delivery_reason === 'INITIAL_ADMISSION' ? 'Admissional' : (del.delivery_reason === 'PERIODIC_REPLACEMENT' ? 'Periódica' : 'Substituição'),
+    del.delivery_reason === 'ADMISSAO' ? 'Admissional' : (del.delivery_reason === 'PERIODICA_SUBSTITUICAO' ? 'Periódica' : 'Substituição'),
     del.biometric_face_matched ? `Biometria Facial ✓ (${(del.biometric_confidence! * 100).toFixed(0)}%)` : (del.term_receipt_accepted ? 'Assinatura Manual' : 'Pendente'),
     del.delivered_by_user_name || 'SESMT'
   ]);
@@ -1426,11 +1426,10 @@ export function exportEPIDeliveriesExcel(
     'Nome do Colaborador': d.employee_name,
     'CPF': d.employee_cpf,
     'Matrícula': d.employee_registration,
-    'Cargo': d.employee_job_title,
+    'Cargo': d.employee_job,
     'Setor': d.employee_sector,
     'Nome do EPI': d.epi_name,
     'C.A. (Certificado)': d.ca_number,
-    'Validade C.A.': d.ca_expiration_date,
     'Quantidade': d.quantity,
     'Motivo': d.delivery_reason,
     'Método': d.delivery_method,
@@ -1850,7 +1849,7 @@ export function exportAdmissionKitPDF(
       ],
       [
         { content: '4. ASO Admissional (NR-07)', styles: { fontStyle: 'bold' } },
-        { content: employee.asos && employee.asos.length > 0 ? `ASO Admissional Apto em ${formatDate(employee.asos[0].exam_date)}` : 'Atestado de Saúde Ocupacional' },
+        { content: employee.aso_history && employee.aso_history.length > 0 ? `ASO Admissional Apto em ${formatDate(employee.aso_history[0].exam_date)}` : 'Atestado de Saúde Ocupacional' },
         { content: employee.status === 'ACTIVE' ? 'Apto ✓' : 'Aguardando', styles: { halign: 'center' } }
       ]
     ],
@@ -2321,7 +2320,7 @@ export function exportPGRDocumentPdf({
       ],
       [
         { content: 'Endereço:', styles: { fontStyle: 'bold' } },
-        { content: `${client.address_street || 'Logradouro Principal'}, nº ${client.address_number || 'S/N'}, ${client.address_city || 'São Paulo'}/${client.address_state || 'SP'}` },
+        { content: `${client.address || 'Logradouro Principal'}, ${client.city || 'São Paulo'}/${client.state || 'SP'}` },
         { content: 'População Exposta:', styles: { fontStyle: 'bold' } },
         { content: `${employees.length} trabalhadores ativos` }
       ],

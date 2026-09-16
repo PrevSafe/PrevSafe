@@ -336,8 +336,8 @@ export const GlobalCommandPalette: React.FC<GlobalCommandPaletteProps> = ({
       const client = clients.find(c => c.id === os.client_id);
       return {
         id: `os-${os.id}`,
-        title: `${os.code || 'OS'}: ${os.title}`,
-        subtitle: `Cliente: ${client?.trade_name || client?.corporate_name || 'Empresa'} • Status: ${os.status} • Prioridade: ${os.priority}`,
+        title: `${os.os_number || 'OS'}: ${os.title}`,
+        subtitle: `Cliente: ${client?.trade_name || client?.legal_name || 'Empresa'} • Status: ${os.status} • Prioridade: ${os.priority}`,
         category: 'SERVICE_ORDERS' as const,
         icon: Briefcase,
         badge: os.priority,
@@ -353,8 +353,8 @@ export const GlobalCommandPalette: React.FC<GlobalCommandPaletteProps> = ({
   const clientItems: CommandItem[] = useMemo(() => {
     return clients.slice(0, 8).map(client => ({
       id: `client-${client.id}`,
-      title: client.trade_name || client.corporate_name,
-      subtitle: `CNPJ: ${client.cnpj || 'Não informado'} • Grau de Risco: ${client.risk_grade || 2} • ${client.segment || 'Indústria'}`,
+      title: client.trade_name || client.legal_name,
+      subtitle: `CNPJ: ${client.document_number || 'Não informado'} • Grau de Risco: ${client.risk_degree || 2} • ${client.cnae_description || 'Indústria'}`,
       category: 'CLIENTS' as const,
       icon: Building2,
       badge: 'Empresa',
@@ -737,7 +737,7 @@ export const QuickNewOSModal: React.FC<QuickNewOSModalProps> = ({
               <option value="">Selecione um cliente contratante...</option>
               {clients.map(client => (
                 <option key={client.id} value={client.id}>
-                  {client.trade_name || client.corporate_name} ({client.cnpj || 'Sem CNPJ'})
+                  {client.trade_name || client.legal_name} ({client.document_number || 'Sem CNPJ'})
                 </option>
               ))}
             </select>

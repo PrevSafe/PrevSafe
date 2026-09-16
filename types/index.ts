@@ -1209,7 +1209,7 @@ export interface OccupationalRiskExamSuggestion {
   exam_name: string;
   periodicity_months: number;
   triggers: Array<'ADMISSIONAL' | 'PERIODICO' | 'RETORNO_TRABALHO' | 'MUDANCA_RISCO' | 'DEMISSIONAL'>;
-  mandatory_standard?: 'NR-07' | 'NR-15' | 'NR-35' | 'NR-33' | 'NR-10' | 'CRITERIO_MEDICO';
+  mandatory_standard?: 'NR-07' | 'NR-11' | 'NR-15' | 'NR-35' | 'NR-33' | 'NR-10' | 'CRITERIO_MEDICO';
 }
 
 export interface OccupationalRiskCatalogItem {
@@ -1244,6 +1244,14 @@ export interface OccupationalRiskCatalogItem {
   status: 'ACTIVE' | 'INACTIVE';
   created_at: string;
   updated_at: string;
+
+  // Custom risk entry extras (user-editable items only)
+  regulatory_norm_reference?: string;
+  suggested_medium?: string;
+  suggested_source?: string;
+  suggested_measured_value?: number;
+  suggested_controls_summary?: string;
+  description?: string;
 }
 
 export interface SSTEnvironmentalRisk {
@@ -1325,7 +1333,7 @@ export interface SSTExamProtocol {
   exam_name: string;
   periodicity_months: number; // ex: 6, 12, 24
   triggers: Array<'ADMISSIONAL' | 'PERIODICO' | 'RETORNO_TRABALHO' | 'MUDANCA_RISCO' | 'DEMISSIONAL'>;
-  mandatory_by_standard: 'NR-07' | 'NR-15' | 'NR-35' | 'NR-33' | 'NR-10' | 'CRITERIO_MEDICO';
+  mandatory_by_standard: 'NR-07' | 'NR-11' | 'NR-15' | 'NR-35' | 'NR-33' | 'NR-10' | 'CRITERIO_MEDICO';
   preparation_instructions?: string; // ex: "Repouso auditivo de 14h antes do exame", "Jejum de 8h"
   status: 'ACTIVE' | 'INACTIVE';
   created_at: string;
@@ -1604,8 +1612,9 @@ export interface EPIDeliveryRecord {
 // ==========================================
 // 53. SST Integration Trainings & Legal Attendance Lists (NR-01 item 1.7)
 // ==========================================
-export type TrainingModality = 'PRESENCIAL' | 'SEMIPRESENCIAL' | 'EAD';
+export type TrainingModality = 'PRESENCIAL' | 'SEMIPRESENCIAL' | 'EAD' | 'PRESENTIAL' | 'HYBRID' | 'EAD_DISTANCE';
 export type TrainingStatus = 'SCHEDULED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
+export type IntegrationTrainingType = 'ADMISSION_INTEGRATION' | 'PERIODIC_REFRESHER' | 'ROLE_CHANGE' | 'RETURN_TO_WORK' | 'SPECIAL_NR';
 
 export interface TrainingAttendee {
   employee_id: string;
@@ -1614,13 +1623,21 @@ export interface TrainingAttendee {
   employee_registration?: string;
   employee_job_title: string;
   employee_sector: string;
-  present: boolean;
+  employee_ghe_name?: string;
+  present?: boolean;
+  completed?: boolean;
   score_grade?: number; // 0-100%
-  approved: boolean;
-  signature_type: 'MANUAL' | 'DIGITAL_BIOMETRIC' | 'ELECTRONIC_TOKEN';
+  grade_score?: number; // 0-10
+  attendance_rate_percent?: number;
+  approved?: boolean;
+  signed?: boolean;
+  signature_type?: 'MANUAL' | 'DIGITAL_BIOMETRIC' | 'ELECTRONIC_TOKEN';
+  signature_method?: string;
   signature_timestamp?: string;
+  issued_at?: string;
   signature_photo_url?: string;
   signature_hash?: string;
+  certificate_code?: string;
 }
 
 export interface SSTIntegrationTraining {
@@ -1628,41 +1645,54 @@ export interface SSTIntegrationTraining {
   organization_id: string;
   client_id: string;
   client_name?: string;
-  
+
   // Training Identification
-  code: string; // ex: TR-INT-2026-001
-  title: string; // ex: Treinamento Admissional de Integração em SST (NR-01)
-  normative_reference: string; // "NR-01 (Portaria MTP nº 4.219/2022) e NR-06"
+  code?: string; // ex: TR-INT-2026-001
+  training_code?: string; // legacy alias for code
+  title?: string; // ex: Treinamento Admissional de Integração em SST (NR-01)
+  training_title?: string; // legacy alias for title
+  training_type?: IntegrationTrainingType;
+  normative_reference?: string; // "NR-01 (Portaria MTP nº 4.219/2022) e NR-06"
+  nr_framework?: string; // legacy alias for normative_reference
   modality: TrainingModality;
   training_modality?: string;
   workload_hours: number; // ex: 4, 6, 8 horas
+  validity_months?: number;
   status: TrainingStatus;
-  
+
   // Dates & Location
   start_date: string; // YYYY-MM-DD
   end_date?: string; // YYYY-MM-DD
   training_date?: string;
   valid_until?: string;
-  schedule_time: string; // ex: "08:00 às 12:00"
-  location: string; // ex: "Sala de Treinamento SESMT - Unidade Matriz"
-  
+  schedule_time?: string; // ex: "08:00 às 12:00"
+  location?: string; // ex: "Sala de Treinamento SESMT - Unidade Matriz"
+  location_or_platform?: string; // legacy alias for location
+
   // Legal Requirements & Syllabus (Conteúdo Programático Exigido por Lei)
-  syllabus: string[];
-  evaluation_method: string; // ex: "Avaliação prática e teórica com aproveitamento mínimo de 70%"
-  
+  syllabus?: string[];
+  program_content_syllabus?: string[]; // legacy alias for syllabus
+  evaluation_method?: string; // ex: "Avaliação prática e teórica com aproveitamento mínimo de 70%"
+  training_evaluation_method?: string; // legacy alias for evaluation_method
+  certificate_validity_legal_statement?: string;
+
   // Instructor / Technical Responsible (Qualificação e Registro Legal)
   instructor_name: string;
   instructor_qualification: string; // ex: "Engenheiro de Segurança do Trabalho" / "Técnico em Segurança do Trabalho"
-  instructor_registration: string; // ex: "CREA-SP 5061234567" ou "MTE/SP 0012345"
+  instructor_registration?: string; // ex: "CREA-SP 5061234567" ou "MTE/SP 0012345"
+  instructor_registration_number?: string; // legacy alias for instructor_registration
   instructor_cpf?: string;
-  
+
   // Responsible Technical Director / Engineer
-  technical_manager_name: string;
-  technical_manager_registration: string;
-  
+  technical_manager_name?: string;
+  technical_manager_registration?: string;
+  technical_supervisor_name?: string; // legacy alias for technical_manager_name
+  technical_supervisor_qualification?: string;
+  technical_supervisor_registration?: string; // legacy alias for technical_manager_registration
+
   // Attendees & Attendance Records
   attendees: TrainingAttendee[];
-  
+
   notes?: string;
   created_at: string;
   updated_at: string;
@@ -1886,6 +1916,7 @@ export interface DocumentSigner {
   role_type?: SignerRoleType;
   name: string;
   email: string;
+  phone?: string;
   cpf: string;
   role_title: string; // Ex: Eng. de Segurança do Trabalho - CREA 12345/D ou Diretor Industrial
   role_description?: string;

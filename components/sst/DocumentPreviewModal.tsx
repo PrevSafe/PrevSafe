@@ -102,13 +102,8 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
   const validityYear = `${new Date().getFullYear()} / ${new Date().getFullYear() + 1}`;
   const digitalHash = `SHA256: 7f8a9e2d4c6b1a0f5e3d7c9b2a4f6e8d1c3b5a7f9e1d3c5b7a9f1e3d5c7b9a1`;
 
-  // Find or map signature envelope for this document
-  const mappedDocType = docType === 'PGR' ? 'PGR_NR01' : 
-                        docType === 'PCMSO' ? 'PCMSO_NR07' :
-                        docType === 'LTCAT' ? 'LTCAT_INSS' :
-                        docType === 'ORDEM_SERVICO' ? 'ORDEM_SERVICO_NR01' : 'PGR_NR01';
-
-  const existingEnvelope = sstSignatures.find(s => s.client_id === client?.id && s.document_type === mappedDocType) || sstSignatures[0];
+  // Find signature envelope matching this document
+  const existingEnvelope = sstSignatures.find(s => s.client_id === client?.id && (s.document_type as string) === docType) || sstSignatures[0];
 
   const handleOpenSignature = () => {
     setIsSignatureModalOpen(true);
@@ -370,7 +365,7 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
                     <div><strong>Nome Fantasia:</strong> {clientName}</div>
                     <div><strong>CNPJ / CAEPF:</strong> <span className="font-mono">{clientDoc}</span></div>
                     <div><strong>CNAE Principal:</strong> {clientCnae} • <strong>Grau de Risco:</strong> {clientRiskDegree} (NR-04)</div>
-                    <div><strong>Endereço:</strong> {client?.address_street || 'Av. Industrial'}, nº {client?.address_number || '1000'}, {client?.address_city || 'São Paulo'}/{client?.address_state || 'SP'}</div>
+                    <div><strong>Endereço:</strong> {client?.address || 'Av. Industrial'}, {client?.city || 'São Paulo'}/{client?.state || 'SP'}</div>
                   </div>
                 </div>
 

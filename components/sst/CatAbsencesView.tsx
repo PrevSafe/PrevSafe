@@ -36,7 +36,7 @@ export const CatAbsencesView: React.FC<CatAbsencesViewProps> = ({ onNavigate }) 
     return !selectedClientId || (emp && emp.client_id === selectedClientId);
   });
 
-  const transmittedCats = clientCats.filter(c => c.esocial_status === 'TRANSMITTED' || c.esocial_receipt).length;
+  const transmittedCats = clientCats.filter(c => c.status === 'TRANSMITTED').length;
   const pendingCats = clientCats.length - transmittedCats;
 
   return (
@@ -81,7 +81,7 @@ export const CatAbsencesView: React.FC<CatAbsencesViewProps> = ({ onNavigate }) 
                 <option value="">Todos os Clientes</option>
                 {clients.map(client => (
                   <option key={client.id} value={client.id}>
-                    {client.corporate_reason || client.trading_name} ({client.cnpj})
+                    {client.legal_name || client.trade_name} ({client.document_number})
                   </option>
                 ))}
               </select>
@@ -91,7 +91,7 @@ export const CatAbsencesView: React.FC<CatAbsencesViewProps> = ({ onNavigate }) 
               <div className="flex items-center gap-2 text-xs text-slate-400 bg-slate-800/80 px-3 py-1.5 rounded-lg border border-slate-700/50">
                 <Building2 className="w-3.5 h-3.5 text-rose-400" />
                 <span className="font-semibold text-slate-200 truncate max-w-[200px]">
-                  {selectedClient.trading_name || selectedClient.corporate_reason}
+                  {selectedClient.trade_name || selectedClient.legal_name}
                 </span>
               </div>
             )}

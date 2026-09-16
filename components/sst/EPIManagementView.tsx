@@ -32,7 +32,7 @@ export const EPIManagementView: React.FC<EPIManagementViewProps> = ({ onNavigate
     const emp = (employees || []).find(e => e.id === d.employee_id);
     return !selectedClientId || (emp && emp.client_id === selectedClientId);
   });
-  const biometricSigned = clientDeliveries.filter(d => d.biometric_photo_signature || d.electronic_signature_hash).length;
+  const biometricSigned = clientDeliveries.filter(d => d.biometric_photo_data_url || d.signature_data_url).length;
 
   return (
     <div className="space-y-6" id="epi-management-workspace">
@@ -76,7 +76,7 @@ export const EPIManagementView: React.FC<EPIManagementViewProps> = ({ onNavigate
                 <option value="">Todos os Clientes</option>
                 {clients.map(client => (
                   <option key={client.id} value={client.id}>
-                    {client.corporate_reason || client.trading_name} ({client.cnpj})
+                    {client.legal_name || client.trade_name} ({client.document_number})
                   </option>
                 ))}
               </select>
@@ -86,10 +86,10 @@ export const EPIManagementView: React.FC<EPIManagementViewProps> = ({ onNavigate
               <div className="flex items-center gap-2 text-xs text-slate-400 bg-slate-800/80 px-3 py-1.5 rounded-lg border border-slate-700/50">
                 <Building2 className="w-3.5 h-3.5 text-amber-400" />
                 <span className="font-semibold text-slate-200 truncate max-w-[200px]">
-                  {selectedClient.trading_name || selectedClient.corporate_reason}
+                  {selectedClient.trade_name || selectedClient.legal_name}
                 </span>
                 <span className="text-slate-500">•</span>
-                <span className="text-amber-400 font-mono">Grau {selectedClient.risk_grade || 2}</span>
+                <span className="text-amber-400 font-mono">Grau {selectedClient.risk_degree || 2}</span>
               </div>
             )}
           </div>

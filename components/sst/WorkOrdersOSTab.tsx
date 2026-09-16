@@ -42,8 +42,9 @@ export const WorkOrdersOSTab: React.FC<WorkOrdersOSTabProps> = ({ selectedClient
     addWorkOrderOS,
     updateWorkOrderOS,
     deleteWorkOrderOS,
-    generateWorkOrderForEmployee,
-    generateBatchWorkOrders
+    generateWorkOrderOSForEmployee,
+    generateBatchWorkOrdersOS,
+    organization
   } = usePrevSafe();
 
   const [searchTerm, setSearchTerm] = useState('');
@@ -56,16 +57,29 @@ export const WorkOrdersOSTab: React.FC<WorkOrdersOSTabProps> = ({ selectedClient
   const clientEmployees = employees.filter(e => !selectedClientId || e.client_id === selectedClientId);
   const clientWorkOrders = workOrdersOS.filter(os => !selectedClientId || os.client_id === selectedClientId);
 
+  const getSignatureStatus = (os: SSTWorkOrderOS): 'SIGNED_ELECTRONIC' | 'SIGNED_PHYSICAL' | 'PENDING' => {
+    if (!os.employee_signed) return 'PENDING';
+    return os.signature_method === 'PHYSICAL_MANUAL' ? 'SIGNED_PHYSICAL' : 'SIGNED_ELECTRONIC';
+  };
+
+  const getOccupationalRisksList = (os: SSTWorkOrderOS): { category: string; agent: string }[] => [
+    ...os.physical_risks.map(agent => ({ category: 'Físico', agent })),
+    ...os.chemical_risks.map(agent => ({ category: 'Químico', agent })),
+    ...os.biological_risks.map(agent => ({ category: 'Biológico', agent })),
+    ...os.ergonomic_risks.map(agent => ({ category: 'Ergonômico', agent })),
+    ...os.accident_mechanical_risks.map(agent => ({ category: 'Acidente/Mecânico', agent }))
+  ];
+
   const filteredWorkOrders = clientWorkOrders.filter(os => {
-    if (filterSignature !== 'ALL' && os.signature_status !== filterSignature) return false;
+    if (filterSignature !== 'ALL' && getSignatureStatus(os) !== filterSignature) return false;
     if (searchTerm.trim()) {
       const q = searchTerm.toLowerCase();
       return (
         os.employee_name.toLowerCase().includes(q) ||
         os.employee_cpf.includes(q) ||
         os.os_code.toLowerCase().includes(q) ||
-        os.job_title.toLowerCase().includes(q) ||
-        os.sector_name.toLowerCase().includes(q)
+        os.employee_job_title.toLowerCase().includes(q) ||
+        os.employee_sector.toLowerCase().includes(q)
       );
     }
     return true;
@@ -79,9 +93,9 @@ export const WorkOrdersOSTab: React.FC<WorkOrdersOSTabProps> = ({ selectedClient
 
     if (targetEmployees.length === 0) {
       // If everyone has OS, regenerate for all
-      generateBatchWorkOrders(clientEmployees.map(e => e.id));
+      generateBatchWorkOrdersOS(clientEmployees.map(e => e.id));
     } else {
-      generateBatchWorkOrders(targetEmployees.map(e => e.id));
+      generateBatchWorkOrdersOS(targetEmployees.map(e => e.id));
     }
     setIsGeneratingBatch(false);
   };
@@ -99,9 +113,9 @@ export const WorkOrdersOSTab: React.FC<WorkOrdersOSTabProps> = ({ selectedClient
   const handleExportSelectedBatchPDF = () => {
     const selectedOrders = clientWorkOrders.filter(os => selectedOSIds.includes(os.id));
     if (selectedOrders.length === 0) {
-      exportBatchWorkOrdersOSPDF(clientWorkOrders, selectedClient || clients[0]);
+      exportBatchWorkOrdersOSPDF(clientWorkOrders, organization);
     } else {
-      exportBatchWorkOrdersOSPDF(selectedOrders, selectedClient || clients[0]);
+      exportBatchWorkOrdersOSPDF(selectedOrders, organization);
     }
   };
 
@@ -237,19 +251,19 @@ export const WorkOrdersOSTab: React.FC<WorkOrdersOSTabProps> = ({ selectedClient
                     </td>
                     <td className="py-3 px-4 font-mono">
                       <div className="font-bold text-teal-300">{os.os_code}</div>
-                      <div className="text-[10px] text-slate-500">v.{os.version} • {os.created_at.split('T')[0]}</div>
+                      <div className="text-[10px] text-slate-500">v.{os.revision} • {os.created_at.split('T')[0]}</div>
                     </td>
                     <td className="py-3 px-4">
                       <div className="font-bold text-slate-100">{os.employee_name}</div>
                       <div className="text-[10px] font-mono text-slate-400">CPF: {os.employee_cpf} • Matr: {os.employee_registration}</div>
                     </td>
                     <td className="py-3 px-4">
-                      <div className="text-slate-200 font-semibold">{os.job_title}</div>
-                      <div className="text-[10px] text-slate-400">{os.sector_name} (CBO {os.cbo})</div>
+                      <div className="text-slate-200 font-semibold">{os.employee_job_title}</div>
+                      <div className="text-[10px] text-slate-400">{os.employee_sector} (CBO {os.employee_cbo})</div>
                     </td>
                     <td className="py-3 px-4">
                       <span className="px-2 py-0.5 bg-amber-500/10 text-amber-300 border border-amber-500/30 rounded text-[10px] font-medium">
-                        {os.occupational_risks.length} riscos mapeados
+                        {getOccupationalRisksList(os).length} riscos mapeados
                       </span>
                     </td>
                     <td className="py-3 px-4">
@@ -259,11 +273,11 @@ export const WorkOrdersOSTab: React.FC<WorkOrdersOSTabProps> = ({ selectedClient
                     </td>
                     <td className="py-3 px-4 text-center">
                       <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                        os.signature_status === 'SIGNED_ELECTRONIC' || os.signature_status === 'SIGNED_PHYSICAL'
+                        getSignatureStatus(os) === 'SIGNED_ELECTRONIC' || getSignatureStatus(os) === 'SIGNED_PHYSICAL'
                           ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
                           : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
                       }`}>
-                        {os.signature_status === 'SIGNED_ELECTRONIC' ? 'Assinatura Digital' : os.signature_status === 'SIGNED_PHYSICAL' ? 'Assinado Físico' : 'Pendente de Assinatura'}
+                        {getSignatureStatus(os) === 'SIGNED_ELECTRONIC' ? 'Assinatura Digital' : getSignatureStatus(os) === 'SIGNED_PHYSICAL' ? 'Assinado Físico' : 'Pendente de Assinatura'}
                       </span>
                     </td>
                     <td className="py-3 px-4 text-right">
@@ -278,7 +292,7 @@ export const WorkOrdersOSTab: React.FC<WorkOrdersOSTabProps> = ({ selectedClient
                         </button>
                         <button
                           type="button"
-                          onClick={() => exportWorkOrderOSPDF(os, selectedClient || clients[0])}
+                          onClick={() => exportWorkOrderOSPDF(os, organization)}
                           className="p-1.5 text-slate-400 hover:text-teal-400 hover:bg-slate-800 rounded transition-colors"
                           title="Exportar OS em PDF"
                         >
@@ -287,7 +301,7 @@ export const WorkOrdersOSTab: React.FC<WorkOrdersOSTabProps> = ({ selectedClient
                         <button
                           type="button"
                           onClick={() => {
-                            exportWorkOrderOSPDF(os, selectedClient || clients[0]);
+                            exportWorkOrderOSPDF(os, organization);
                             window.print();
                           }}
                           className="p-1.5 text-slate-400 hover:text-slate-200 hover:bg-slate-800 rounded transition-colors"
@@ -334,7 +348,7 @@ export const WorkOrdersOSTab: React.FC<WorkOrdersOSTabProps> = ({ selectedClient
                     Ordem de Serviço de Segurança do Trabalho (NR-01 / Art. 157 CLT)
                   </h3>
                   <p className="text-xs font-mono text-teal-400 font-semibold">
-                    {selectedOSForView.os_code} • {selectedOSForView.employee_name} ({selectedOSForView.job_title})
+                    {selectedOSForView.os_code} • {selectedOSForView.employee_name} ({selectedOSForView.employee_job_title})
                   </p>
                 </div>
               </div>
@@ -342,7 +356,7 @@ export const WorkOrdersOSTab: React.FC<WorkOrdersOSTabProps> = ({ selectedClient
               <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  onClick={() => exportWorkOrderOSPDF(selectedOSForView, selectedClient || clients[0])}
+                  onClick={() => exportWorkOrderOSPDF(selectedOSForView, organization)}
                   className="px-3 py-1.5 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs rounded-lg flex items-center gap-1.5 shadow-sm"
                 >
                   <Download className="w-3.5 h-3.5" />
@@ -351,7 +365,7 @@ export const WorkOrdersOSTab: React.FC<WorkOrdersOSTabProps> = ({ selectedClient
                 <button
                   type="button"
                   onClick={() => {
-                    exportWorkOrderOSPDF(selectedOSForView, selectedClient || clients[0]);
+                    exportWorkOrderOSPDF(selectedOSForView, organization);
                     window.print();
                   }}
                   className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-lg flex items-center gap-1.5 border border-slate-700"
@@ -383,11 +397,11 @@ export const WorkOrdersOSTab: React.FC<WorkOrdersOSTabProps> = ({ selectedClient
                 </div>
                 <div>
                   <span className="text-slate-500 block text-[10px] uppercase font-bold">Cargo & CBO</span>
-                  <span className="text-slate-200">{selectedOSForView.job_title} ({selectedOSForView.cbo})</span>
+                  <span className="text-slate-200">{selectedOSForView.employee_job_title} ({selectedOSForView.employee_cbo})</span>
                 </div>
                 <div>
                   <span className="text-slate-500 block text-[10px] uppercase font-bold">Setor / GHE</span>
-                  <span className="text-slate-200">{selectedOSForView.sector_name} • {selectedOSForView.ghe_name}</span>
+                  <span className="text-slate-200">{selectedOSForView.employee_sector} • {selectedOSForView.employee_ghe_name}</span>
                 </div>
               </div>
 
@@ -398,7 +412,7 @@ export const WorkOrdersOSTab: React.FC<WorkOrdersOSTabProps> = ({ selectedClient
                   Descrição das Atividades e Funções do Cargo:
                 </h4>
                 <ul className="list-disc list-inside bg-slate-950 p-3 rounded-lg border border-slate-800/80 text-slate-400 space-y-1 text-[11px]">
-                  {selectedOSForView.activities_description.map((act, i) => (
+                  {selectedOSForView.routine_activities.map((act, i) => (
                     <li key={i}>{act}</li>
                   ))}
                 </ul>
@@ -416,17 +430,13 @@ export const WorkOrdersOSTab: React.FC<WorkOrdersOSTabProps> = ({ selectedClient
                       <tr>
                         <th className="py-2 px-3">Grupo / Categoria</th>
                         <th className="py-2 px-3">Agente Nocivo</th>
-                        <th className="py-2 px-3">Fonte Geradora</th>
-                        <th className="py-2 px-3">Possíveis Danos à Saúde</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-800/60">
-                      {selectedOSForView.occupational_risks.map((risk, i) => (
+                      {getOccupationalRisksList(selectedOSForView).map((risk, i) => (
                         <tr key={i}>
                           <td className="py-2 px-3 font-semibold text-teal-400">{risk.category}</td>
                           <td className="py-2 px-3 text-slate-200">{risk.agent}</td>
-                          <td className="py-2 px-3 text-slate-400">{risk.source}</td>
-                          <td className="py-2 px-3 text-slate-400">{risk.possible_harm}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -445,9 +455,9 @@ export const WorkOrdersOSTab: React.FC<WorkOrdersOSTabProps> = ({ selectedClient
                     <div key={i} className="p-2.5 bg-slate-950 rounded-lg border border-slate-800/80 flex items-start gap-2">
                       <HardHat className="w-4 h-4 text-teal-400 shrink-0 mt-0.5" />
                       <div>
-                        <div className="font-bold text-slate-200 text-[11px]">{epi.name}</div>
-                        <div className="text-[10px] text-teal-400 font-mono">CA: {epi.ca}</div>
-                        <div className="text-[10px] text-slate-400 mt-0.5">{epi.instructions}</div>
+                        <div className="font-bold text-slate-200 text-[11px]">{epi.epi_name}</div>
+                        <div className="text-[10px] text-teal-400 font-mono">CA: {epi.ca_number}</div>
+                        <div className="text-[10px] text-slate-400 mt-0.5">{epi.usage_recommendation}</div>
                       </div>
                     </div>
                   ))}
@@ -462,7 +472,7 @@ export const WorkOrdersOSTab: React.FC<WorkOrdersOSTabProps> = ({ selectedClient
                     Medidas Preventivas:
                   </h4>
                   <ul className="list-disc list-inside bg-slate-950 p-3 rounded-lg border border-slate-800/80 text-slate-400 space-y-1 text-[11px]">
-                    {selectedOSForView.preventive_measures.map((m, i) => (
+                    {selectedOSForView.safe_work_procedures.map((m, i) => (
                       <li key={i}>{m}</li>
                     ))}
                   </ul>
@@ -474,7 +484,7 @@ export const WorkOrdersOSTab: React.FC<WorkOrdersOSTabProps> = ({ selectedClient
                     Proibições e Atos Inseguros:
                   </h4>
                   <ul className="list-disc list-inside bg-slate-950 p-3 rounded-lg border border-rose-500/20 text-slate-400 space-y-1 text-[11px]">
-                    {selectedOSForView.prohibitions.map((p, i) => (
+                    {selectedOSForView.prohibitions_unsafe_acts.map((p, i) => (
                       <li key={i}>{p}</li>
                     ))}
                   </ul>
@@ -492,12 +502,14 @@ export const WorkOrdersOSTab: React.FC<WorkOrdersOSTabProps> = ({ selectedClient
                     type="button"
                     onClick={() => {
                       updateWorkOrderOS(selectedOSForView.id, {
-                        signature_status: 'SIGNED_ELECTRONIC',
+                        employee_signed: true,
+                        signature_method: 'DIGITAL_BIOMETRIC',
                         signed_at: new Date().toISOString()
                       });
                       setSelectedOSForView({
                         ...selectedOSForView,
-                        signature_status: 'SIGNED_ELECTRONIC',
+                        employee_signed: true,
+                        signature_method: 'DIGITAL_BIOMETRIC',
                         signed_at: new Date().toISOString()
                       });
                     }}

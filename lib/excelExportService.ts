@@ -175,7 +175,7 @@ export function exportServiceOrdersToExcel({
       'Data de Abertura': os.created_at ? formatDate(os.created_at) : '-',
       'Data Limite (SLA)': os.due_date ? formatDate(os.due_date) : '-',
       'Data de Conclusão': os.completed_at ? formatDate(os.completed_at) : 'Em aberto',
-      'Responsável Técnico': tech ? tech.name : (os.technical_responsible_name || 'Não atribuído'),
+      'Responsável Técnico': tech ? tech.full_name : (os.technical_responsible_name || 'Não atribuído'),
       'Etapas Totais': os.stages ? os.stages.length : 0,
       'Etapas Concluídas': os.stages ? os.stages.filter(s => s.status === 'COMPLETED').length : 0,
       'Possui Evidências de Campo': os.stages?.some(s => s.field_evidence) ? 'SIM' : 'NÃO',
@@ -238,7 +238,7 @@ export function exportRisksPgrToExcel({
   const rows = risks.map((risk) => {
     const ghe = risk.ghe_id ? gheMap.get(risk.ghe_id) : undefined;
     const client = ghe ? clientMap.get(ghe.client_id) : (risk.client_id ? clientMap.get(risk.client_id) : undefined);
-    const sector = ghe?.sector_id ? sectorMap.get(ghe.sector_id) : undefined;
+    const sector = ghe?.sector_ids?.[0] ? sectorMap.get(ghe.sector_ids[0]) : undefined;
 
     const episDesc = risk.epis?.map(e => `${e.epi_name} (CA ${e.ca_number})`).join(', ');
     return {
@@ -407,13 +407,13 @@ export function exportESocialEventsToExcel({
       'Status de Transmissão': translateESocialStatus(ev.status),
       'Data de Geração': ev.created_at ? formatDate(ev.created_at) : '-',
       'Data de Envio': ev.transmitted_at ? formatDate(ev.transmitted_at) : 'Pendente',
-      'Ambiente': ev.environment === 'PROD' ? 'Produção Oficial' : 'Produção Restrita / Homologação',
+      'Ambiente': ev.environment === 'PRODUCAO' ? 'Produção Oficial' : 'Produção Restrita / Homologação',
       'Recibo de Entrega': ev.receipt_number || 'Aguardando envio',
       'Protocolo de Envio': ev.protocol_number || '-',
-      'Código de Resposta do Gov': ev.response_code || '-',
-      'Mensagem de Retorno': ev.response_message || 'Nenhum erro retornado',
-      'Tipo de Certificado': ev.certificate_used || 'A1 Digital ICP-Brasil',
-      'Hash XML SHA-256': ev.xml_hash ? ev.xml_hash.substring(0, 16) + '...' : 'Gerado dinamicamente'
+      'Código de Resposta do Gov': ev.return_code || '-',
+      'Mensagem de Retorno': ev.return_message || 'Nenhum erro retornado',
+      'Tipo de Certificado': 'A1 Digital ICP-Brasil',
+      'Hash XML SHA-256': ev.xml_content ? ev.xml_content.substring(0, 16) + '...' : 'Gerado dinamicamente'
     };
   });
 

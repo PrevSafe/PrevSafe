@@ -111,14 +111,14 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
   const filteredRisks = useMemo(() => {
     return occupationalRisksCatalog.filter(item => {
       const matchSearch = 
-        item.agent_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.risk_code_table_24.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.harmful_effects.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.code_table_24.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.health_effects.toLowerCase().includes(searchTerm.toLowerCase()) ||
         item.regulatory_norm_reference.toLowerCase().includes(searchTerm.toLowerCase()) ||
         (item.suggested_source && item.suggested_source.toLowerCase().includes(searchTerm.toLowerCase()));
 
       const matchGroup = selectedGroup === 'ALL' || item.group === selectedGroup;
-      const matchEval = evaluationTypeFilter === 'ALL' || item.evaluation_type_standard === evaluationTypeFilter;
+      const matchEval = evaluationTypeFilter === 'ALL' || item.evaluation_type === evaluationTypeFilter;
 
       return matchSearch && matchGroup && matchEval;
     });
@@ -131,7 +131,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
       'QUÍMICO': 0,
       'BIOLÓGICO': 0,
       'ERGONÔMICO': 0,
-      'ACIDENTE': 0
+      'ACIDENTES': 0
     };
     occupationalRisksCatalog.forEach(r => {
       if (stats[r.group] !== undefined) stats[r.group]++;
@@ -164,18 +164,18 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
 
   const handleOpenEditModal = (item: OccupationalRiskCatalogItem) => {
     setEditingItem(item);
-    const episText = item.suggested_epis.map(e => `${e.epi_name} (CA ${e.ca_number})`).join(', ');
-    const examsText = item.suggested_exams.map(e => `${e.exam_name} [${e.exam_code_table_27}] - ${e.periodicity_months}m`).join(', ');
+    const episText = item.recommended_epis.map(e => `${e.name} (CA ${e.ca_example})`).join(', ');
+    const examsText = item.suggested_exams_pcmso.map(e => `${e.exam_name} [${e.exam_code}] - ${e.periodicity_months}m`).join(', ');
     
     setForm({
-      risk_code_table_24: item.risk_code_table_24,
-      agent_name: item.agent_name,
+      risk_code_table_24: item.code_table_24,
+      agent_name: item.name,
       group: item.group,
-      evaluation_type_standard: item.evaluation_type_standard,
-      measurement_unit_standard: item.measurement_unit_standard || '',
-      tolerance_limit_nr15: item.tolerance_limit_nr15 || '',
-      action_level_nr09: item.action_level_nr09 || '',
-      harmful_effects: item.harmful_effects,
+      evaluation_type_standard: item.evaluation_type,
+      measurement_unit_standard: item.standard_unit || '',
+      tolerance_limit_nr15: item.tolerance_limit_reference || '',
+      action_level_nr09: item.action_level_reference || '',
+      harmful_effects: item.health_effects,
       regulatory_norm_reference: item.regulatory_norm_reference,
       suggested_medium: item.suggested_medium || 'AR',
       suggested_source: item.suggested_source || '',
@@ -201,9 +201,9 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
         const caMatch = part.match(/CA\s*(\d+)/i);
         const name = part.replace(/\(CA\s*\d+\)/i, '').trim();
         return {
-          epi_name: name || 'Equipamento de Proteção Individual',
-          ca_number: caMatch ? caMatch[1] : '12345',
-          is_effective: true
+          name: name || 'Equipamento de Proteção Individual',
+          ca_example: caMatch ? caMatch[1] : '12345',
+          protection_type: 'Proteção Individual'
         };
       });
 
@@ -216,33 +216,44 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
         const codeMatch = part.match(/\[(\d+)\]/);
         const name = part.replace(/\[\d+\]/g, '').replace(/-\s*\d+m/g, '').trim();
         return {
-          exam_code_table_27: codeMatch ? codeMatch[1] : '0295',
+          exam_code: codeMatch ? codeMatch[1] : '0295',
           exam_name: name || 'Exame Clínico Ocupacional',
           periodicity_months: 12,
           triggers: ['ADMISSIONAL', 'PERIODICO', 'DEMISSIONAL'] as Array<'ADMISSIONAL' | 'PERIODICO' | 'RETORNO_TRABALHO' | 'MUDANCA_RISCO' | 'DEMISSIONAL'>,
-          mandatory_by_standard: 'NR-07' as const
+          mandatory_standard: 'NR-07' as const
         };
       });
 
     const payload = {
-      risk_code_table_24: form.risk_code_table_24,
-      agent_name: form.agent_name,
+      code_table_24: form.risk_code_table_24,
+      name: form.agent_name,
       group: form.group,
-      evaluation_type_standard: form.evaluation_type_standard,
-      measurement_unit_standard: form.measurement_unit_standard || undefined,
-      tolerance_limit_nr15: form.tolerance_limit_nr15 || undefined,
-      action_level_nr09: form.action_level_nr09 || undefined,
-      harmful_effects: form.harmful_effects,
+      evaluation_type: form.evaluation_type_standard,
+      standard_unit: form.measurement_unit_standard || undefined,
+      tolerance_limit_reference: form.tolerance_limit_nr15 || undefined,
+      action_level_reference: form.action_level_nr09 || undefined,
+      health_effects: form.harmful_effects,
       regulatory_norm_reference: form.regulatory_norm_reference,
       suggested_medium: form.suggested_medium,
       suggested_source: form.suggested_source,
       suggested_controls_summary: form.suggested_controls_summary,
       suggested_measured_value: form.suggested_measured_value,
-      suggested_epis: episParsed.length > 0 ? episParsed : [
-        { epi_name: 'EPI Adequado', ca_number: '12345', is_effective: true }
+      recommended_epis: episParsed.length > 0 ? episParsed : [
+        { name: 'EPI Adequado', ca_example: '12345', protection_type: 'Proteção Individual' }
       ],
-      suggested_exams: examsParsed,
-      description: form.description
+      suggested_exams_pcmso: examsParsed,
+      description: form.description,
+      generating_sources: form.suggested_source || 'Fonte não especificada',
+      propagation_paths: form.suggested_medium || 'Não especificado',
+      recommended_epcs: form.suggested_controls_summary || 'Não especificado',
+      default_severity: 3 as const,
+      default_probability: 3 as const,
+      special_retirement_eligible: false,
+      gfip_code_suggested: '00' as const,
+      insalubridade_applicable: false,
+      periculosidade_applicable: false,
+      status: 'ACTIVE' as const,
+      is_custom: true
     };
 
     if (editingItem) {
@@ -312,7 +323,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
       case 'QUÍMICO': return 'bg-rose-50 text-rose-700 border-rose-200';
       case 'BIOLÓGICO': return 'bg-emerald-50 text-emerald-700 border-emerald-200';
       case 'ERGONÔMICO': return 'bg-purple-50 text-purple-700 border-purple-200';
-      case 'ACIDENTE': return 'bg-sky-50 text-sky-700 border-sky-200';
+      case 'ACIDENTES': return 'bg-sky-50 text-sky-700 border-sky-200';
       default: return 'bg-slate-50 text-slate-700 border-slate-200';
     }
   };
@@ -456,9 +467,9 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
           </button>
 
           <button
-            onClick={() => setSelectedGroup(selectedGroup === 'ACIDENTE' ? 'ALL' : 'ACIDENTE')}
+            onClick={() => setSelectedGroup(selectedGroup === 'ACIDENTES' ? 'ALL' : 'ACIDENTES')}
             className={`p-3 rounded-lg border text-left transition-all ${
-              selectedGroup === 'ACIDENTE' 
+              selectedGroup === 'ACIDENTES' 
                 ? 'border-sky-500 bg-sky-50/70 shadow-sm ring-2 ring-sky-200' 
                 : 'border-slate-200 hover:border-sky-300 hover:bg-sky-50/30'
             }`}
@@ -468,7 +479,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
               <Zap className="w-4 h-4 text-sky-600" />
             </div>
             <div className="mt-2 flex items-baseline gap-1">
-              <span className="text-xl font-extrabold text-slate-900">{groupStats['ACIDENTE']}</span>
+              <span className="text-xl font-extrabold text-slate-900">{groupStats['ACIDENTES']}</span>
               <span className="text-xs text-slate-500">agentes</span>
             </div>
             <span className="text-[11px] text-sky-700 block mt-0.5">Queda, choque, máquinas</span>
@@ -601,41 +612,41 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                             {item.group}
                           </span>
                           <span className="font-mono text-xs font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200">
-                            eSocial {item.risk_code_table_24}
+                            eSocial {item.code_table_24}
                           </span>
                           <span className="text-xs font-semibold text-slate-600">
                             Ref: {item.regulatory_norm_reference}
                           </span>
                           <span className={`text-[11px] font-medium px-2 py-0.5 rounded-full ${
-                            item.evaluation_type_standard === 'QUANTITATIVA' 
+                            item.evaluation_type === 'QUANTITATIVA' 
                               ? 'bg-blue-50 text-blue-700 border border-blue-200' 
                               : 'bg-slate-100 text-slate-700'
                           }`}>
-                            Avaliação {item.evaluation_type_standard}
+                            Avaliação {item.evaluation_type}
                           </span>
                         </div>
 
                         <h3 className="text-base font-bold text-slate-900">
-                          {item.agent_name}
+                          {item.name}
                         </h3>
 
                         <p className="text-sm text-slate-600">
-                          <span className="font-semibold text-slate-700">Danos Prováveis à Saúde:</span> {item.harmful_effects}
+                          <span className="font-semibold text-slate-700">Danos Prováveis à Saúde:</span> {item.health_effects}
                         </p>
 
                         {/* Characterization Details Grid */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 pt-2 text-xs">
-                          {item.tolerance_limit_nr15 && (
+                          {item.tolerance_limit_reference && (
                             <div className="p-2 rounded bg-slate-50 border border-slate-100">
                               <span className="font-semibold text-slate-500 block">Limite Tolerância (NR-15):</span>
-                              <span className="font-medium text-slate-800">{item.tolerance_limit_nr15}</span>
+                              <span className="font-medium text-slate-800">{item.tolerance_limit_reference}</span>
                             </div>
                           )}
 
-                          {item.action_level_nr09 && (
+                          {item.action_level_reference && (
                             <div className="p-2 rounded bg-slate-50 border border-slate-100">
                               <span className="font-semibold text-slate-500 block">Nível de Ação (NR-09):</span>
-                              <span className="font-medium text-slate-800">{item.action_level_nr09}</span>
+                              <span className="font-medium text-slate-800">{item.action_level_reference}</span>
                             </div>
                           )}
 
@@ -658,27 +669,27 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
 
                         {/* Suggested EPIs & PCMSO Exams tags */}
                         <div className="flex flex-wrap items-center gap-3 pt-2">
-                          {item.suggested_epis.length > 0 && (
+                          {item.recommended_epis.length > 0 && (
                             <div className="flex items-center gap-1.5 flex-wrap">
                               <span className="text-[11px] font-bold text-amber-700 flex items-center gap-1">
                                 <HardHat className="w-3.5 h-3.5" /> EPIs Sugeridos:
                               </span>
-                              {item.suggested_epis.map((epi, idx) => (
+                              {item.recommended_epis.map((epi, idx) => (
                                 <span key={idx} className="text-[11px] px-2 py-0.5 rounded bg-amber-50 text-amber-800 border border-amber-200">
-                                  {epi.epi_name} (CA {epi.ca_number})
+                                  {epi.name} (CA {epi.ca_example})
                                 </span>
                               ))}
                             </div>
                           )}
 
-                          {item.suggested_exams.length > 0 && (
+                          {item.suggested_exams_pcmso.length > 0 && (
                             <div className="flex items-center gap-1.5 flex-wrap">
                               <span className="text-[11px] font-bold text-blue-700 flex items-center gap-1">
                                 <Stethoscope className="w-3.5 h-3.5" /> Exames PCMSO (Tab 27):
                               </span>
-                              {item.suggested_exams.map((ex, idx) => (
+                              {item.suggested_exams_pcmso.map((ex, idx) => (
                                 <span key={idx} className="text-[11px] px-2 py-0.5 rounded bg-blue-50 text-blue-800 border border-blue-200">
-                                  {ex.exam_name} [{ex.exam_code_table_27}] ({ex.periodicity_months}m)
+                                  {ex.exam_name} [{ex.exam_code}] ({ex.periodicity_months}m)
                                 </span>
                               ))}
                             </div>
@@ -711,7 +722,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                       <button
                         id={`btn-delete-risk-${item.id}`}
                         onClick={() => {
-                          if (confirm(`Excluir o risco "${item.agent_name}" do catálogo?`)) {
+                          if (confirm(`Excluir o risco "${item.name}" do catálogo?`)) {
                             deleteOccupationalRiskCatalogItem(item.id);
                           }
                         }}
@@ -988,7 +999,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                 <div className="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto">
                   {occupationalRisksCatalog.filter(r => selectedRiskIdsToApply.includes(r.id)).map(r => (
                     <span key={r.id} className="text-xs px-2 py-0.5 rounded bg-white border border-slate-200 text-slate-800 font-medium">
-                      {r.agent_name} ({r.risk_code_table_24})
+                      {r.name} ({r.code_table_24})
                     </span>
                   ))}
                 </div>
@@ -1010,7 +1021,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                 >
                   {clients.map(c => (
                     <option key={c.id} value={c.id}>
-                      {c.company_name} ({c.document_number})
+                      {c.trade_name || c.legal_name} ({c.document_number})
                     </option>
                   ))}
                 </select>

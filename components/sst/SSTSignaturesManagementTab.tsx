@@ -40,7 +40,8 @@ import {
   Award,
   Sparkles,
   Layers,
-  HelpCircle
+  HelpCircle,
+  X
 } from 'lucide-react';
 import { SSTElectronicSignatureModal } from './SSTElectronicSignatureModal';
 
@@ -76,7 +77,7 @@ export const SSTSignaturesManagementTab: React.FC<SSTSignaturesManagementTabProp
   const [verifyResult, setVerifyResult] = useState<{ isValid: boolean; message: string; signature?: SSTDocumentSignature } | null>(null);
 
   // New Envelope Form state
-  const [newDocType, setNewDocType] = useState<SSTDocumentSignatureType>('PGR_NR01');
+  const [newDocType, setNewDocType] = useState<SSTDocumentSignatureType>('PGR');
   const [newDocTitle, setNewDocTitle] = useState('Programa de Gerenciamento de Riscos - PGR 2026');
   const [newDocNumber, setNewDocNumber] = useState(`PGR-2026-${Math.floor(100 + Math.random() * 900)}`);
   const [newClientId, setNewClientId] = useState(clients[0]?.id || 'cli-001');
@@ -89,11 +90,13 @@ export const SSTSignaturesManagementTab: React.FC<SSTSignaturesManagementTabProp
       email: 'eduardo.sst@prevsafe.com.br',
       phone: '(11) 98765-4321',
       cpf: '234.567.890-11',
+      signer_role: 'TECHNICAL_RESPONSIBLE',
       role_type: 'TECHNICAL_RESPONSIBLE',
+      role_title: 'Engenheiro de Segurança do Trabalho (CREA 201812345-D)',
       role_description: 'Engenheiro de Segurança do Trabalho (CREA 201812345-D)',
-      council_registration: 'CREA-SP 201812345-D',
+      professional_council_number: 'CREA-SP 201812345-D',
       signature_status: 'PENDING',
-      signature_mode: 'ICP_BRASIL_A1_A3'
+      signature_mode: 'DIGITAL_CERTIFICATE_ICP'
     },
     {
       id: 'sig-emp-01',
@@ -101,10 +104,12 @@ export const SSTSignaturesManagementTab: React.FC<SSTSignaturesManagementTabProp
       email: 'marcelo.silva@valenca.com.br',
       phone: '(24) 99876-5432',
       cpf: '123.456.789-00',
+      signer_role: 'EMPLOYER_REPRESENTATIVE',
       role_type: 'EMPLOYER_REPRESENTATIVE',
+      role_title: 'Diretor Administrativo / Representante Legal',
       role_description: 'Diretor Administrativo / Representante Legal',
       signature_status: 'PENDING',
-      signature_mode: 'ASSINATURA_AVANCADA_OTP'
+      signature_mode: 'ELECTRONIC_PORTAL'
     }
   ]);
 
@@ -147,10 +152,12 @@ export const SSTSignaturesManagementTab: React.FC<SSTSignaturesManagementTabProp
       name: newSignerName,
       email: newSignerEmail || 'contato@cliente.com.br',
       cpf: newSignerCpf,
+      signer_role: newSignerRole,
       role_type: newSignerRole,
+      role_title: newSignerDesc,
       role_description: newSignerDesc,
       signature_status: 'PENDING',
-      signature_mode: newSignerRole === 'TECHNICAL_RESPONSIBLE' ? 'ICP_BRASIL_A1_A3' : 'ASSINATURA_AVANCADA_OTP'
+      signature_mode: newSignerRole === 'TECHNICAL_RESPONSIBLE' ? 'DIGITAL_CERTIFICATE_ICP' : 'ELECTRONIC_PORTAL'
     };
 
     setSignersList(prev => [...prev, newSigner]);
@@ -175,15 +182,16 @@ export const SSTSignaturesManagementTab: React.FC<SSTSignaturesManagementTabProp
     expiryDate.setDate(expiryDate.getDate() + newExpiresDays);
 
     createSSTSignatureEnvelope({
+      organization_id: currentProfile.organization_id,
       document_type: newDocType,
       document_title: newDocTitle,
       document_number: newDocNumber,
       client_id: targetClient.id,
       client_name: targetClient.trade_name,
-      client_document: targetClient.document_number,
       signers: signersList,
       expires_at: expiryDate.toISOString(),
       document_sha256: '',
+      legal_framework: 'Lei Federal 14.063/2020, MP 2.200-2/2001, Portaria MTP 672/2021',
       qr_code_verification_url: '',
       status: 'PENDING'
     });
@@ -343,12 +351,12 @@ export const SSTSignaturesManagementTab: React.FC<SSTSignaturesManagementTabProp
             className="bg-slate-950 text-slate-300 border border-slate-800 rounded-xl px-3 py-2 text-xs font-bold focus:outline-none focus:border-teal-500"
           >
             <option value="ALL">Todos os Tipos</option>
-            <option value="PGR_NR01">PGR (NR-01)</option>
-            <option value="PCMSO_NR07">PCMSO (NR-07)</option>
-            <option value="LTCAT_INSS">LTCAT (INSS)</option>
-            <option value="ORDEM_SERVICO_NR01">Ordem de Serviço (NR-01)</option>
+            <option value="PGR">PGR (NR-01)</option>
+            <option value="PCMSO">PCMSO (NR-07)</option>
+            <option value="LTCAT">LTCAT (INSS)</option>
+            <option value="ORDEM_SERVICO">Ordem de Serviço (NR-01)</option>
             <option value="ESOCIAL_S2240">eSocial S-2240</option>
-            <option value="RIAA_ACIDENTE">RIAA Acidente</option>
+            <option value="RELATORIO_ACIDENTE_RIAA">RIAA Acidente</option>
           </select>
 
           {/* Status Filter */}
@@ -418,7 +426,7 @@ export const SSTSignaturesManagementTab: React.FC<SSTSignaturesManagementTabProp
                       </div>
                       <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-400 mt-1">
                         <span>Empresa: <strong className="text-slate-300">{envelope.client_name}</strong></span>
-                        <span>• CNPJ: <strong className="font-mono text-slate-300">{envelope.client_document}</strong></span>
+                        <span>• CNPJ: <strong className="font-mono text-slate-300">{clients.find(c => c.id === envelope.client_id)?.document_number}</strong></span>
                         <span>• Criado em: <strong>{new Date(envelope.created_at).toLocaleDateString('pt-BR')}</strong></span>
                       </div>
                     </div>
@@ -589,13 +597,13 @@ export const SSTSignaturesManagementTab: React.FC<SSTSignaturesManagementTabProp
                     onChange={(e) => setNewDocType(e.target.value as SSTDocumentSignatureType)}
                     className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white font-bold focus:outline-none focus:border-teal-500"
                   >
-                    <option value="PGR_NR01">PGR - Programa de Gerenciamento de Riscos (NR-01)</option>
-                    <option value="PCMSO_NR07">PCMSO - Controle Médico de Saúde Ocupacional (NR-07)</option>
-                    <option value="LTCAT_INSS">LTCAT - Laudo Técnico das Condições Ambientais</option>
-                    <option value="ORDEM_SERVICO_NR01">Ordem de Serviço de Segurança (NR-01)</option>
+                    <option value="PGR">PGR - Programa de Gerenciamento de Riscos (NR-01)</option>
+                    <option value="PCMSO">PCMSO - Controle Médico de Saúde Ocupacional (NR-07)</option>
+                    <option value="LTCAT">LTCAT - Laudo Técnico das Condições Ambientais</option>
+                    <option value="ORDEM_SERVICO">Ordem de Serviço de Segurança (NR-01)</option>
                     <option value="ESOCIAL_S2240">eSocial S-2240 - Condições Ambientais</option>
-                    <option value="FICHA_EPI_NR06">Ficha de Entrega de EPI (NR-06)</option>
-                    <option value="RIAA_ACIDENTE">RIAA - Investigação de Acidente</option>
+                    <option value="FICHA_EPI">Ficha de Entrega de EPI (NR-06)</option>
+                    <option value="RELATORIO_ACIDENTE_RIAA">RIAA - Investigação de Acidente</option>
                   </select>
                 </div>
               </div>
@@ -679,7 +687,7 @@ export const SSTSignaturesManagementTab: React.FC<SSTSignaturesManagementTabProp
                         setNewSignerRole(r);
                         if (r === 'TECHNICAL_RESPONSIBLE') setNewSignerDesc('Responsável Técnico SST');
                         else if (r === 'EMPLOYER_REPRESENTATIVE') setNewSignerDesc('Diretor / RH');
-                        else if (r === 'CIPA_MEMBER') setNewSignerDesc('Representante CIPA');
+                        else if (r === 'CIPA_REPRESENTATIVE') setNewSignerDesc('Representante CIPA');
                         else setNewSignerDesc('Colaborador / Operador');
                       }}
                       className="bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-white font-bold focus:outline-none focus:border-teal-500"
@@ -687,7 +695,7 @@ export const SSTSignaturesManagementTab: React.FC<SSTSignaturesManagementTabProp
                       <option value="TECHNICAL_RESPONSIBLE">Responsável Técnico</option>
                       <option value="EMPLOYER_REPRESENTATIVE">Empregador / RH</option>
                       <option value="EMPLOYEE">Colaborador</option>
-                      <option value="CIPA_MEMBER">Membro CIPA</option>
+                      <option value="CIPA_REPRESENTATIVE">Membro CIPA</option>
                     </select>
                   </div>
 

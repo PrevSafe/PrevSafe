@@ -240,7 +240,7 @@ export function exportServiceOrdersPdf({
       os.priority,
       os.status,
       os.due_date ? formatDate(os.due_date) : '-',
-      tech ? tech.name.split(' ')[0] : (os.technical_responsible_name?.split(' ')[0] || '-'),
+      tech ? tech.full_name.split(' ')[0] : (os.technical_responsible_name?.split(' ')[0] || '-'),
       `${stagesDone}/${stagesTotal} (${pct})`
     ];
   });
@@ -466,7 +466,7 @@ export function exportESocialEventsPdf({
       ev.created_at ? formatDate(ev.created_at) : '-',
       ev.transmitted_at ? formatDate(ev.transmitted_at) : 'Pendente',
       ev.receipt_number || 'Aguardando envio',
-      ev.environment === 'PROD' ? 'Produção' : 'Homologação'
+      ev.environment === 'PRODUCAO' ? 'Produção' : 'Homologação'
     ];
   });
 

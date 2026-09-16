@@ -78,7 +78,7 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
     exam_code_table_27: string;
     periodicity_months: number;
     triggers: Array<'ADMISSIONAL' | 'PERIODICO' | 'RETORNO_TRABALHO' | 'MUDANCA_RISCO' | 'DEMISSIONAL'>;
-    mandatory_by_standard: 'NR-07' | 'NR-15' | 'NR-35' | 'NR-33' | 'NR-10' | 'CRITERIO_MEDICO';
+    mandatory_by_standard: 'NR-07' | 'NR-11' | 'NR-15' | 'NR-35' | 'NR-33' | 'NR-10' | 'CRITERIO_MEDICO';
     preparation_instructions: string;
     target_mode: 'ALL_GHES' | 'MULTI_GHE' | 'CURRENT_GHE' | 'JOB' | 'SECTOR_TREE';
     target_ghe_ids: string[];
@@ -388,7 +388,7 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
     const res = applyRisksToTargets({
       client_id: selectedClientId || activeGhe?.client_id || 'cli-valenca-01',
       risk_catalog_ids: selectedCatalogRiskIds,
-      target_mode: catalogTargetMode === 'CURRENT_GHE' ? 'GHE' : catalogTargetMode,
+      target_mode: (catalogTargetMode === 'CURRENT_GHE' || catalogTargetMode === 'MULTI_GHE') ? 'GHE' : catalogTargetMode,
       target_ghe_ids: targetGheIdsToUse,
       target_job_ids: catalogSelectedJobIds,
       target_sector_ids: catalogSelectedSectorIds,
@@ -425,18 +425,18 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
 
     const res = applyExamsToTargets({
       client_id: selectedClientId || activeGhe?.client_id || 'cli-valenca-01',
-      exam_name: multiExamForm.exam_name,
-      exam_code_table_27: multiExamForm.exam_code_table_27,
-      periodicity_months: multiExamForm.periodicity_months,
-      triggers: multiExamForm.triggers,
-      mandatory_by_standard: multiExamForm.mandatory_by_standard,
-      preparation_instructions: multiExamForm.preparation_instructions,
-      target_mode: multiExamForm.target_mode === 'CURRENT_GHE' ? 'GHE' : (multiExamForm.target_mode === 'ALL_GHES' ? 'GHE' : multiExamForm.target_mode),
-      target_ghe_ids: multiExamForm.target_mode === 'CURRENT_GHE' && activeGhe 
-        ? [activeGhe.id] 
+      exam_catalog_items: [{
+        exam_name: multiExamForm.exam_name,
+        exam_code_table_27: multiExamForm.exam_code_table_27,
+        periodicity_months: multiExamForm.periodicity_months,
+        triggers: multiExamForm.triggers,
+        mandatory_by_standard: multiExamForm.mandatory_by_standard,
+        preparation_instructions: multiExamForm.preparation_instructions
+      }],
+      target_ghe_ids: multiExamForm.target_mode === 'CURRENT_GHE' && activeGhe
+        ? [activeGhe.id]
         : (multiExamForm.target_mode === 'ALL_GHES' ? clientGhes.map(g => g.id) : multiExamForm.target_ghe_ids),
-      target_job_ids: multiExamForm.target_job_ids,
-      target_sector_ids: multiExamForm.target_sector_ids
+      target_job_ids: multiExamForm.target_job_ids
     });
 
     setMultiExamFeedback(res.message);
@@ -1288,7 +1288,7 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
                     onClick={() => {
                       const visible = occupationalRisksCatalog.filter(r => {
                         const matchGroup = catalogGroupFilter === 'ALL' || r.group === catalogGroupFilter;
-                        const matchSearch = r.agent_name.toLowerCase().includes(catalogSearch.toLowerCase()) || r.risk_code_table_24.includes(catalogSearch);
+                        const matchSearch = r.name.toLowerCase().includes(catalogSearch.toLowerCase()) || r.code_table_24.includes(catalogSearch);
                         return matchGroup && matchSearch;
                       });
                       if (selectedCatalogRiskIds.length === visible.length) {
@@ -1307,9 +1307,9 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
                   {occupationalRisksCatalog
                     .filter(r => {
                       const matchGroup = catalogGroupFilter === 'ALL' || r.group === catalogGroupFilter;
-                      const matchSearch = r.agent_name.toLowerCase().includes(catalogSearch.toLowerCase()) || 
-                                          r.risk_code_table_24.includes(catalogSearch) ||
-                                          r.harmful_effects.toLowerCase().includes(catalogSearch.toLowerCase());
+                      const matchSearch = r.name.toLowerCase().includes(catalogSearch.toLowerCase()) || 
+                                          r.code_table_24.includes(catalogSearch) ||
+                                          r.health_effects.toLowerCase().includes(catalogSearch.toLowerCase());
                       return matchGroup && matchSearch;
                     })
                     .map(item => {
@@ -1341,33 +1341,30 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
                           <div className="flex-1 space-y-1">
                             <div className="flex items-center gap-2 flex-wrap">
                               <span className="font-mono text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-800 text-amber-300 border border-slate-700">
-                                {item.risk_code_table_24}
+                                {item.code_table_24}
                               </span>
                               <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-slate-800 text-slate-300">
                                 {item.group}
                               </span>
                               <span className="text-slate-100 font-bold text-xs">
-                                {item.agent_name}
-                              </span>
-                              <span className="text-slate-500 text-[10px]">
-                                ({item.regulatory_norm_reference})
+                                {item.name}
                               </span>
                             </div>
 
                             <p className="text-[11px] text-slate-400 line-clamp-1">
-                              <strong>Efeitos:</strong> {item.harmful_effects}
+                              <strong>Efeitos:</strong> {item.health_effects}
                             </p>
 
                             <div className="flex items-center gap-2 text-[10px] text-slate-400 pt-0.5">
-                              {item.tolerance_limit_nr15 && (
+                              {item.tolerance_limit_reference && (
                                 <span className="bg-slate-950 px-1.5 py-0.5 rounded border border-slate-800">
-                                  LT: {item.tolerance_limit_nr15}
+                                  LT: {item.tolerance_limit_reference}
                                 </span>
                               )}
-                              {item.suggested_exams.length > 0 && (
+                              {item.suggested_exams_pcmso.length > 0 && (
                                 <span className="text-blue-400 flex items-center gap-1">
                                   <Stethoscope className="w-3 h-3" />
-                                  Exames PCMSO: {item.suggested_exams.map(e => e.exam_name).join(', ')}
+                                  Exames PCMSO: {item.suggested_exams_pcmso.map(e => e.exam_name).join(', ')}
                                 </span>
                               )}
                             </div>

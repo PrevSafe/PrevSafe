@@ -60,7 +60,7 @@ export const SSTElectronicSignatureModal: React.FC<SSTElectronicSignatureModalPr
 
   const [selectedSignerId, setSelectedSignerId] = useState<string>(defaultSigner?.id || signatureEnvelope.signers[0]?.id || '');
   const [activeStep, setActiveStep] = useState<'REVIEW' | 'SIGN' | 'REJECT' | 'SUCCESS'>('REVIEW');
-  const [signatureMode, setSignatureMode] = useState<SignatureMode>('ASSINATURA_AVANCADA_OTP');
+  const [signatureMode, setSignatureMode] = useState<SignatureMode>('ELECTRONIC_PORTAL');
 
   // OTP state
   const [otpCode, setOtpCode] = useState('');
@@ -97,7 +97,7 @@ export const SSTElectronicSignatureModal: React.FC<SSTElectronicSignatureModalPr
 
   // Handle canvas initialization
   useEffect(() => {
-    if (activeStep === 'SIGN' && signatureMode === 'ASSINATURA_MANUSCRITA_CANVAS' && canvasRef.current) {
+    if (activeStep === 'SIGN' && signatureMode === 'BIOMETRIC_DRAW' && canvasRef.current) {
       const canvas = canvasRef.current;
       const ctx = canvas.getContext('2d');
       if (ctx) {
@@ -172,12 +172,12 @@ export const SSTElectronicSignatureModal: React.FC<SSTElectronicSignatureModalPr
       return;
     }
 
-    if (signatureMode === 'ASSINATURA_AVANCADA_OTP' && otpCode !== generatedOtp) {
+    if (signatureMode === 'ELECTRONIC_PORTAL' && otpCode !== generatedOtp) {
       alert('Código de segurança OTP inválido.');
       return;
     }
 
-    if (signatureMode === 'ASSINATURA_MANUSCRITA_CANVAS' && !hasDrawn) {
+    if (signatureMode === 'BIOMETRIC_DRAW' && !hasDrawn) {
       alert('Por favor, desenhe sua assinatura no quadro.');
       return;
     }
@@ -185,7 +185,7 @@ export const SSTElectronicSignatureModal: React.FC<SSTElectronicSignatureModalPr
     setIsSubmitting(true);
 
     let signatureImageUrl: string | undefined;
-    if (signatureMode === 'ASSINATURA_MANUSCRITA_CANVAS' && canvasRef.current) {
+    if (signatureMode === 'BIOMETRIC_DRAW' && canvasRef.current) {
       signatureImageUrl = canvasRef.current.toDataURL();
     }
 
@@ -195,7 +195,7 @@ export const SSTElectronicSignatureModal: React.FC<SSTElectronicSignatureModalPr
         signature_image_url: signatureImageUrl,
         compliance_statement: `Aceite digital emitido e assinado eletronicamente sob a égide da Lei Federal 14.063/2020 e MP 2.200-2/2001 por ${currentSigner.name} (${currentSigner.cpf}).`,
         ip_address: '177.135.90.14',
-        security_auth_code: signatureMode === 'ASSINATURA_AVANCADA_OTP' ? `OTP-${otpCode}` : `ICP-AUTH-${Date.now().toString().slice(-6)}`
+        security_auth_code: signatureMode === 'ELECTRONIC_PORTAL' ? `OTP-${otpCode}` : `ICP-AUTH-${Date.now().toString().slice(-6)}`
       });
 
       setIsSubmitting(false);
@@ -288,7 +288,7 @@ export const SSTElectronicSignatureModal: React.FC<SSTElectronicSignatureModalPr
                 <div>
                   <span className="text-slate-400 block text-[10px] uppercase font-bold">Empresa Cliente:</span>
                   <span className="font-bold text-white text-sm">{signatureEnvelope.client_name}</span>
-                  <span className="font-mono text-slate-400 block mt-0.5">{signatureEnvelope.client_document}</span>
+                  <span className="font-mono text-slate-400 block mt-0.5">{clients.find(c => c.id === signatureEnvelope.client_id)?.document_number}</span>
                 </div>
                 <div>
                   <span className="text-slate-400 block text-[10px] uppercase font-bold">Validade Jurídica & Hash:</span>
@@ -359,8 +359,8 @@ export const SSTElectronicSignatureModal: React.FC<SSTElectronicSignatureModalPr
                             <span className="text-xs text-slate-400 block mt-0.5">{signer.role_description}</span>
                             <div className="flex items-center space-x-2 text-[11px] text-slate-400 mt-1 font-mono">
                               <span>CPF: {signer.cpf}</span>
-                              {signer.council_registration && (
-                                <span>• {signer.council_registration}</span>
+                              {signer.professional_council_number && (
+                                <span>• {signer.professional_council_number}</span>
                               )}
                             </div>
                           </div>
@@ -489,9 +489,9 @@ export const SSTElectronicSignatureModal: React.FC<SSTElectronicSignatureModalPr
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <button
                     type="button"
-                    onClick={() => setSignatureMode('ASSINATURA_AVANCADA_OTP')}
+                    onClick={() => setSignatureMode('ELECTRONIC_PORTAL')}
                     className={`p-3.5 rounded-2xl border text-left transition space-y-1.5 ${
-                      signatureMode === 'ASSINATURA_AVANCADA_OTP'
+                      signatureMode === 'ELECTRONIC_PORTAL'
                         ? 'bg-teal-500/10 border-teal-500 text-white ring-1 ring-teal-500'
                         : 'bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-700'
                     }`}
@@ -507,9 +507,9 @@ export const SSTElectronicSignatureModal: React.FC<SSTElectronicSignatureModalPr
 
                   <button
                     type="button"
-                    onClick={() => setSignatureMode('ICP_BRASIL_A1_A3')}
+                    onClick={() => setSignatureMode('DIGITAL_CERTIFICATE_ICP')}
                     className={`p-3.5 rounded-2xl border text-left transition space-y-1.5 ${
-                      signatureMode === 'ICP_BRASIL_A1_A3'
+                      signatureMode === 'DIGITAL_CERTIFICATE_ICP'
                         ? 'bg-teal-500/10 border-teal-500 text-white ring-1 ring-teal-500'
                         : 'bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-700'
                     }`}
@@ -525,9 +525,9 @@ export const SSTElectronicSignatureModal: React.FC<SSTElectronicSignatureModalPr
 
                   <button
                     type="button"
-                    onClick={() => setSignatureMode('ASSINATURA_MANUSCRITA_CANVAS')}
+                    onClick={() => setSignatureMode('BIOMETRIC_DRAW')}
                     className={`p-3.5 rounded-2xl border text-left transition space-y-1.5 ${
-                      signatureMode === 'ASSINATURA_MANUSCRITA_CANVAS'
+                      signatureMode === 'BIOMETRIC_DRAW'
                         ? 'bg-teal-500/10 border-teal-500 text-white ring-1 ring-teal-500'
                         : 'bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-700'
                     }`}
@@ -544,7 +544,7 @@ export const SSTElectronicSignatureModal: React.FC<SSTElectronicSignatureModalPr
               </div>
 
               {/* Mode 1: OTP Interaction */}
-              {signatureMode === 'ASSINATURA_AVANCADA_OTP' && (
+              {signatureMode === 'ELECTRONIC_PORTAL' && (
                 <div className="bg-slate-950 p-5 rounded-2xl border border-slate-800 space-y-4">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div>
@@ -590,7 +590,7 @@ export const SSTElectronicSignatureModal: React.FC<SSTElectronicSignatureModalPr
               )}
 
               {/* Mode 2: ICP-Brasil Certificate */}
-              {signatureMode === 'ICP_BRASIL_A1_A3' && (
+              {signatureMode === 'DIGITAL_CERTIFICATE_ICP' && (
                 <div className="bg-slate-950 p-5 rounded-2xl border border-slate-800 space-y-4">
                   <div className="space-y-1">
                     <span className="font-bold text-white text-sm block">Seleção de Certificado Digital ICP-Brasil</span>
@@ -643,7 +643,7 @@ export const SSTElectronicSignatureModal: React.FC<SSTElectronicSignatureModalPr
               )}
 
               {/* Mode 3: Canvas Rubric */}
-              {signatureMode === 'ASSINATURA_MANUSCRITA_CANVAS' && (
+              {signatureMode === 'BIOMETRIC_DRAW' && (
                 <div className="bg-slate-950 p-5 rounded-2xl border border-slate-800 space-y-3">
                   <div className="flex items-center justify-between">
                     <div>

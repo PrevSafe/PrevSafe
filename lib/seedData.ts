@@ -5219,7 +5219,7 @@ export const INITIAL_ACCIDENTS_INCIDENTS: SSTAccidentIncidentRecord[] = [
     code: 'INC-2026-002',
     title: 'Quase-Acidente (Near-Miss): Rompimento de cinta de elevação durante içamento de chapa de aço de 1.8 ton',
     type: 'INCIDENTE_QUASE_ACIDENTE',
-    severity: 'ALTA',
+    severity: 'GRAVE',
     occurrence_date: '2026-08-18',
     occurrence_time: '10:15',
     shift: 'MANHA',

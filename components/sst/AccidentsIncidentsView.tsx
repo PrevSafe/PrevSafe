@@ -77,7 +77,7 @@ export const AccidentsIncidentsView: React.FC<AccidentsIncidentsViewProps> = ({ 
                 <option value="">Todos os Clientes</option>
                 {clients.map(client => (
                   <option key={client.id} value={client.id}>
-                    {client.trade_name || client.legal_name || (client as any).corporate_reason || (client as any).trading_name} ({client.cnpj})
+                    {client.trade_name || client.legal_name} ({client.document_number})
                   </option>
                 ))}
               </select>

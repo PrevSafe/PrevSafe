@@ -84,11 +84,11 @@ import {
   CipaCandidate,
   CipaEmployerAppointee,
   CipaElectoralCommissionMember,
-  CipaAuditVoteRecord,
+  CipaAuditVote,
   CipaMeetingRecord,
-  CipaGeneratedDocument,
   CipaVoteVerificationMethod,
-  OccupationalRiskCatalogItem
+  OccupationalRiskCatalogItem,
+  RiskLevelType
 } from '@/types';
 
 import {
@@ -486,7 +486,7 @@ interface PrevSafeContextType {
       exam_name: string;
       periodicity_months: number;
       triggers: Array<'ADMISSIONAL' | 'PERIODICO' | 'RETORNO_TRABALHO' | 'MUDANCA_RISCO' | 'DEMISSIONAL'>;
-      mandatory_by_standard: 'NR-07' | 'NR-15' | 'NR-35' | 'NR-33' | 'NR-10' | 'CRITERIO_MEDICO';
+      mandatory_by_standard: 'NR-07' | 'NR-11' | 'NR-15' | 'NR-35' | 'NR-33' | 'NR-10' | 'CRITERIO_MEDICO';
       preparation_instructions?: string;
     }>;
     target_ghe_ids?: string[];
@@ -588,7 +588,7 @@ interface PrevSafeContextType {
 
   // CIPA & CIPATR & CIPAMIN Management (NR-05, NR-31.7, NR-22.36, NR-18, NR-30, NR-32 & Lei 14.457)
   cipaProcesses: CipaManagementProcess[];
-  addCipaProcess: (data: Omit<CipaManagementProcess, 'id' | 'created_at' | 'updated_at' | 'organization_id'>) => CipaManagementProcess;
+  addCipaProcess: (data: Omit<CipaManagementProcess, 'id'>) => CipaManagementProcess;
   updateCipaProcess: (id: string, updates: Partial<CipaManagementProcess>) => void;
   deleteCipaProcess: (id: string) => void;
   addElectoralCommissionMember: (processId: string, member: Omit<CipaElectoralCommissionMember, 'id'>) => void;
@@ -4456,13 +4456,13 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
       updated_at: now
     };
     setOccupationalRisksCatalog(prev => [newItem, ...prev]);
-    logAudit('CREATE_ESTABLISHMENT_SECTOR' as any, 'CLIENT' as any, newItem.id, `Novo risco no catálogo: ${newItem.agent_name}`, { code_24: newItem.risk_code_table_24, group: newItem.group });
+    logAudit('CREATE_ESTABLISHMENT_SECTOR' as any, 'CLIENT' as any, newItem.id, `Novo risco no catálogo: ${newItem.name}`, { code_24: newItem.code_table_24, group: newItem.group });
     return newItem;
   }, [logAudit]);
 
   const updateOccupationalRiskCatalogItem = useCallback((id: string, updates: Partial<OccupationalRiskCatalogItem>) => {
     setOccupationalRisksCatalog(prev => prev.map(item => item.id === id ? { ...item, ...updates, updated_at: new Date().toISOString() } : item));
-    logAudit('UPDATE_ESTABLISHMENT_SECTOR' as any, 'CLIENT' as any, id, updates.agent_name ? `Risco atualizado: ${updates.agent_name}` : 'Risco do catálogo atualizado', updates);
+    logAudit('UPDATE_ESTABLISHMENT_SECTOR' as any, 'CLIENT' as any, id, updates.name ? `Risco atualizado: ${updates.name}` : 'Risco do catálogo atualizado', updates);
   }, [logAudit]);
 
   const deleteOccupationalRiskCatalogItem = useCallback((id: string) => {
@@ -4502,7 +4502,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
         const job = hierarchyJobs.find(j => j.id === jobId);
         if (!job) return;
         // Find existing GHE that mentions this job or same sector
-        const existingGhe = matchingGhes.find(g => g.hierarchy_job_ids?.includes(jobId) || g.name.toLowerCase().includes(job.name.toLowerCase()) || g.sector_id === job.sector_id);
+        const existingGhe = matchingGhes.find(g => g.job_ids?.includes(jobId) || g.name.toLowerCase().includes(job.name.toLowerCase()) || g.sector_ids?.includes(job.sector_id));
         if (existingGhe && !resolvedGheIds.includes(existingGhe.id)) {
           resolvedGheIds.push(existingGhe.id);
         } else if (matchingGhes.length > 0 && !resolvedGheIds.includes(matchingGhes[0].id)) {
@@ -4511,14 +4511,14 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
       });
     } else if (payload.target_mode === 'SECTOR_TREE' && payload.target_sector_ids) {
       // Find all GHEs in the selected sectors
-      const sectorGhes = ghes.filter(g => g.client_id === payload.client_id && g.sector_id && payload.target_sector_ids?.includes(g.sector_id));
+      const sectorGhes = ghes.filter(g => g.client_id === payload.client_id && g.sector_ids?.some(sid => payload.target_sector_ids?.includes(sid)));
       sectorGhes.forEach(g => {
         if (!resolvedGheIds.includes(g.id)) resolvedGheIds.push(g.id);
       });
       // Also if any GHE has jobs in that sector
       const jobsInSectors = hierarchyJobs.filter(j => payload.target_sector_ids?.includes(j.sector_id));
       const jobIdsInSectors = jobsInSectors.map(j => j.id);
-      ghes.filter(g => g.client_id === payload.client_id && g.hierarchy_job_ids?.some(jid => jobIdsInSectors.includes(jid))).forEach(g => {
+      ghes.filter(g => g.client_id === payload.client_id && g.job_ids?.some(jid => jobIdsInSectors.includes(jid))).forEach(g => {
         if (!resolvedGheIds.includes(g.id)) resolvedGheIds.push(g.id);
       });
     }
@@ -4545,34 +4545,57 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
 
       selectedCatalogRisks.forEach(catRisk => {
         const riskId = `risk-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
+        const severityValue = payload.custom_risk_data?.severity || catRisk.default_severity;
+        const probabilityValue = payload.custom_risk_data?.probability || catRisk.default_probability;
+        const riskScore = severityValue * probabilityValue;
+        const derivedRiskLevel: RiskLevelType =
+          riskScore >= 20 ? 'CRITICO' :
+          riskScore >= 15 ? 'ALTO' :
+          riskScore >= 10 ? 'MEDIO' :
+          riskScore >= 5 ? 'BAIXO' : 'MUITO_BAIXO';
+
         const riskObj: SSTEnvironmentalRisk = {
           id: riskId,
           organization_id: organization.id,
+          client_id: payload.client_id,
+          client_unit_id: payload.client_unit_id || '',
           ghe_id: gheId,
-          group: catRisk.group,
-          agent_name: catRisk.agent_name,
-          risk_code_table_24: catRisk.risk_code_table_24,
-          source_or_generating_activity: catRisk.suggested_source || targetGhe.description || 'Atividades operacionais no ambiente de trabalho',
-          exposure_type: 'HABITUAL_PERMANENTE',
-          propagation_medium: catRisk.suggested_medium || 'AR',
-          evaluation_type: catRisk.evaluation_type_standard,
-          measurement_unit: catRisk.measurement_unit_standard,
-          tolerance_limit: catRisk.tolerance_limit_nr15,
-          action_level: catRisk.action_level_nr09,
-          measured_value: payload.custom_risk_data?.measured_value || catRisk.suggested_measured_value || 0,
-          severity: payload.custom_risk_data?.severity || (catRisk.harmful_effects.toLowerCase().includes('perda') || catRisk.harmful_effects.toLowerCase().includes('morte') ? 'ALTA' : 'MEDIA'),
-          probability: payload.custom_risk_data?.probability || 'MEDIA',
-          risk_level: payload.custom_risk_data?.risk_level || 'MODERADO',
-          is_controlled: true,
-          controls_summary: catRisk.suggested_controls_summary || 'Utilização de EPIs com CA válido e treinamentos de segurança periódicos.',
+          risk_category: catRisk.group,
+          agent_name: catRisk.name,
+          risk_code_table_24: catRisk.code_table_24,
+          generating_source: catRisk.suggested_source || catRisk.generating_sources || targetGhe.description || 'Atividades operacionais no ambiente de trabalho',
+          propagation_path: catRisk.suggested_medium || catRisk.propagation_paths || 'Aérea',
+          health_effects: catRisk.health_effects,
+          evaluation_type: catRisk.evaluation_type,
+          measurement_unit: catRisk.standard_unit,
+          tolerance_limit: catRisk.tolerance_limit_reference,
+          action_level: catRisk.action_level_reference,
+          measured_value: payload.custom_risk_data?.measured_value || String(catRisk.suggested_measured_value ?? 0),
+          severity: severityValue,
+          probability: probabilityValue,
+          risk_level: payload.custom_risk_data?.risk_level || derivedRiskLevel,
           epc_implemented: true,
-          epc_details: 'Ventilação e enclausuramento quando aplicável.',
-          epi_required: catRisk.suggested_epis.length > 0,
-          epis: catRisk.suggested_epis.map(epi => ({
-            epi_name: epi.epi_name,
-            ca_number: epi.ca_number,
-            is_effective: epi.is_effective,
-            unusable_life_days: 180
+          epc_description: catRisk.suggested_controls_summary || catRisk.recommended_epcs || 'Ventilação e enclausuramento quando aplicável.',
+          epc_effective: true,
+          special_retirement_applies: catRisk.special_retirement_eligible,
+          gfip_code: catRisk.gfip_code_suggested,
+          ltcat_technical_conclusion: `Exposição ao agente ${catRisk.name} caracterizada conforme critérios técnicos e legais aplicáveis (${catRisk.code_table_24}).`,
+          insalubridade_applies: catRisk.insalubridade_applicable,
+          insalubridade_degree: catRisk.insalubridade_degree_suggested,
+          insalubridade_legal_basis: catRisk.insalubridade_legal_basis,
+          periculosidade_applies: catRisk.periculosidade_applicable,
+          periculosidade_legal_basis: catRisk.periculosidade_legal_basis,
+          status: 'ACTIVE',
+          epi_required: catRisk.recommended_epis.length > 0,
+          epis: catRisk.recommended_epis.map(epi => ({
+            epi_name: epi.name,
+            ca_number: epi.ca_example || '12345',
+            attenuation_factor: epi.attenuation,
+            is_effective: true,
+            complies_with_nr06: true,
+            uninterrupted_use: true,
+            periodic_replacement: true,
+            hygienic_conditions: true
           })),
           created_at: now,
           updated_at: now,
@@ -4581,22 +4604,24 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
         newRisks.push(riskObj);
 
         // Include suggested exams if requested
-        if (payload.include_suggested_exams && catRisk.suggested_exams.length > 0) {
-          catRisk.suggested_exams.forEach(suggExam => {
+        if (payload.include_suggested_exams && catRisk.suggested_exams_pcmso.length > 0) {
+          catRisk.suggested_exams_pcmso.forEach(suggExam => {
             // Check if protocol already exists in this GHE to avoid duplicate
-            const alreadyExists = examProtocols.some(p => p.ghe_id === gheId && p.exam_code_table_27 === suggExam.exam_code_table_27);
+            const alreadyExists = examProtocols.some(p => p.ghe_id === gheId && p.exam_code_table_27 === suggExam.exam_code);
             if (!alreadyExists) {
               const protoId = `proto-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
               newExams.push({
                 id: protoId,
                 organization_id: organization.id,
+                client_id: payload.client_id,
                 ghe_id: gheId,
-                exam_code_table_27: suggExam.exam_code_table_27,
+                exam_code_table_27: suggExam.exam_code,
                 exam_name: suggExam.exam_name,
                 periodicity_months: suggExam.periodicity_months,
                 triggers: suggExam.triggers,
-                mandatory_by_standard: suggExam.mandatory_by_standard,
-                preparation_instructions: suggExam.preparation_instructions || 'Comparecer em jejum se solicitado ou repouso auditivo de 14h para audiometria.',
+                mandatory_by_standard: suggExam.mandatory_standard,
+                preparation_instructions: 'Comparecer em jejum se solicitado ou repouso auditivo de 14h para audiometria.',
+                status: 'ACTIVE',
                 created_at: now
               });
             }
@@ -4632,7 +4657,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
       exam_name: string;
       periodicity_months: number;
       triggers: Array<'ADMISSIONAL' | 'PERIODICO' | 'RETORNO_TRABALHO' | 'MUDANCA_RISCO' | 'DEMISSIONAL'>;
-      mandatory_by_standard: 'NR-07' | 'NR-15' | 'NR-35' | 'NR-33' | 'NR-10' | 'CRITERIO_MEDICO';
+      mandatory_by_standard: 'NR-07' | 'NR-11' | 'NR-15' | 'NR-35' | 'NR-33' | 'NR-10' | 'CRITERIO_MEDICO';
       preparation_instructions?: string;
     }>;
     target_ghe_ids?: string[];
@@ -4649,7 +4674,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     if (payload.target_job_ids && payload.target_job_ids.length > 0) {
       const clientGhes = ghes.filter(g => g.client_id === payload.client_id);
       payload.target_job_ids.forEach(jobId => {
-        const matchingGhe = clientGhes.find(g => g.hierarchy_job_ids?.includes(jobId));
+        const matchingGhe = clientGhes.find(g => g.job_ids?.includes(jobId));
         if (matchingGhe && !targetGheIds.includes(matchingGhe.id)) {
           targetGheIds.push(matchingGhe.id);
         } else if (clientGhes.length > 0 && !targetGheIds.includes(clientGhes[0].id)) {
@@ -4679,6 +4704,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
           newProtocols.push({
             id: `proto-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
             organization_id: organization.id,
+            client_id: payload.client_id,
             ghe_id: gheId,
             exam_code_table_27: exam.exam_code_table_27,
             exam_name: exam.exam_name,
@@ -4686,6 +4712,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
             triggers: exam.triggers,
             mandatory_by_standard: exam.mandatory_by_standard,
             preparation_instructions: exam.preparation_instructions || 'Conforme orientação médica ocupacional.',
+            status: 'ACTIVE',
             created_at: now
           });
         }
@@ -5284,12 +5311,12 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     const accidentRisks: string[] = [];
 
     risksForGhe.forEach(r => {
-      const riskDesc = `${r.name} (${r.intensity_concentration || 'Avaliação de campo'}) - Fonte: ${r.source_generator || 'Processo produtivo'}`;
-      if (r.type === 'FISICO') physicalRisks.push(riskDesc);
-      else if (r.type === 'QUIMICO') chemicalRisks.push(riskDesc);
-      else if (r.type === 'BIOLOGICO') biologicalRisks.push(riskDesc);
-      else if (r.type === 'ERGONOMICO') ergonomicRisks.push(riskDesc);
-      else if (r.type === 'ACIDENTE') accidentRisks.push(riskDesc);
+      const riskDesc = `${r.agent_name} (${r.measured_value || 'Avaliação de campo'}) - Fonte: ${r.generating_source || 'Processo produtivo'}`;
+      if (r.risk_category === 'FISICO') physicalRisks.push(riskDesc);
+      else if (r.risk_category === 'QUIMICO') chemicalRisks.push(riskDesc);
+      else if (r.risk_category === 'BIOLOGICO') biologicalRisks.push(riskDesc);
+      else if (r.risk_category === 'ERGONOMICO') ergonomicRisks.push(riskDesc);
+      else if (r.risk_category === 'ACIDENTES') accidentRisks.push(riskDesc);
     });
 
     if (physicalRisks.length === 0) physicalRisks.push('Ruído de fundo operacional e iluminação de área de trabalho');
@@ -5305,8 +5332,8 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
       'Sistema de combate a incêndio com extintores e hidrantes inspecionados',
       'Aterramento elétrico de tomadas e quadros protegidos por disjuntores DR'
     ];
-    if (ghe?.epc_summary) {
-      collectiveProtections.unshift(ghe.epc_summary);
+    if (ghe?.environment_description) {
+      collectiveProtections.unshift(ghe.environment_description);
     }
 
     // Mandatory EPIs with CA
@@ -5329,8 +5356,8 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
       });
     }
 
-    const routineActivities: string[] = job?.description 
-      ? [job.description, 'Manutenção da ordem e limpeza do posto de trabalho 5S', 'Inspeção visual preliminar de máquinas e ferramentas de uso']
+    const routineActivities: string[] = job?.activities_description 
+      ? [job.activities_description, 'Manutenção da ordem e limpeza do posto de trabalho 5S', 'Inspeção visual preliminar de máquinas e ferramentas de uso']
       : ['Executar as atribuições inerentes à função contratada conforme orientações da liderança', 'Participar dos DDS (Diálogos Diários de Segurança)', 'Conservar os materiais e equipamentos sob sua responsabilidade'];
 
     const osNumberCount = workOrdersOS.length + 1;
@@ -5347,8 +5374,8 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
       validity_start_date: todayStr,
       employer_name: client?.legal_name || 'Razão Social da Empresa',
       employer_document: client?.document_number || '00.000.000/0001-00',
-      employer_cnae: client?.cnae || 'CNAE Principal',
-      employer_risk_grade: client?.risk_grade || 2,
+      employer_cnae: client?.main_cnae || 'CNAE Principal',
+      employer_risk_grade: client?.risk_degree || 2,
       establishment_address: unit?.address ? `${unit.address}, ${unit.city}/${unit.state}` : (client?.address ? `${client.address}, ${client.city}/${client.state}` : 'Endereço da Unidade'),
       employee_name: emp.name,
       employee_cpf: emp.cpf,
@@ -5360,7 +5387,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
       employee_admission_date: emp.admission_date,
       employee_ghe_id: emp.ghe_id,
       employee_ghe_name: ghe?.name || 'GHE Padrão Operacional',
-      job_description: job?.description || `Atividades desempenhadas no cargo de ${emp.job_title} conforme especificações da empresa e CBO.`,
+      job_description: job?.activities_description || `Atividades desempenhadas no cargo de ${emp.job_title} conforme especificações da empresa e CBO.`,
       routine_activities: routineActivities,
       physical_risks: physicalRisks,
       chemical_risks: chemicalRisks,
@@ -5717,20 +5744,17 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
       employee_registration: emp?.registration_number || '',
       employee_job_title: emp?.job_title || '',
       employee_sector: emp?.sector_name || '',
-      employee_ghe_name: ghe?.name || '',
       occurrence_date: targetCat.accident_date,
       occurrence_time: targetCat.accident_time || '08:00',
-      occurrence_type: targetCat.cat_type === 'INITIAL' ? 'TYPICAL_ACCIDENT' : 'TYPICAL_ACCIDENT',
-      classification: targetCat.days_absent && targetCat.days_absent > 0 ? 'ACCIDENT_WITH_ABSENCE' : 'ACCIDENT_WITHOUT_ABSENCE',
+      occurrence_type: 'TYPICAL_ACCIDENT',
+      classification: targetCat.days_away && targetCat.days_away > 0 ? 'ACCIDENT_WITH_ABSENCE' : 'ACCIDENT_WITHOUT_ABSENCE',
       exact_location: targetCat.accident_location || 'Instalações da Empresa',
       body_part_affected: targetCat.affected_body_part,
-      causing_agent: targetCat.injury_agent,
-      days_absent: targetCat.days_absent || 0,
+      causing_agent: targetCat.causative_agent,
+      days_absent: targetCat.days_away || 0,
       days_debited: 0,
-      detailed_description: targetCat.description_detailed || 'Ocorrência importada a partir da CAT S-2210 nº ' + (targetCat.receipt_number || targetCat.id),
-      medical_diagnosis_cid10: targetCat.medical_cid10,
-      doctor_name: targetCat.medical_doctor_name,
-      doctor_crm: targetCat.medical_doctor_crm,
+      detailed_description: 'Ocorrência importada a partir da CAT S-2210 nº ' + (targetCat.receipt_number || targetCat.id),
+      cid_10: targetCat.cid_10,
       title: `Acidente de Trabalho - ${targetCat.employee_name} (${targetCat.accident_date})`
     };
   }, [catRecords, employees, ghes, clients]);
@@ -5746,7 +5770,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
       id: `aud-${Date.now()}-1`,
       timestamp: now,
       action: 'ENVELOPE_CRIADO',
-      actor_name: currentProfile.name || 'Operador Técnico SST',
+      actor_name: currentProfile.full_name || 'Operador Técnico SST',
       actor_cpf: currentProfile.email || '123.456.789-00',
       ip_address: '189.120.45.102',
       details: data.initial_audit || `Envelope de assinatura criado para o documento ${data.document_title} (${data.document_number}).`
@@ -5967,14 +5991,10 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
   }, [sstSignatures]);
 
   // CIPA & CIPATR & CIPAMIN Management Implementation
-  const addCipaProcess = useCallback((data: Omit<CipaManagementProcess, 'id' | 'created_at' | 'updated_at' | 'organization_id'>): CipaManagementProcess => {
-    const now = new Date().toISOString();
+  const addCipaProcess = useCallback((data: Omit<CipaManagementProcess, 'id'>): CipaManagementProcess => {
     const newProcess: CipaManagementProcess = {
       ...data,
-      id: `cipa-proc-${Date.now()}`,
-      organization_id: organization.id,
-      created_at: now,
-      updated_at: now
+      id: `cipa-proc-${Date.now()}`
     };
 
     setCipaProcesses(prev => [newProcess, ...prev]);
@@ -6138,9 +6158,8 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     
     const receipt = generateAuditProofReceipt(voteHash, now);
 
-    const voteRecord: CipaAuditVoteRecord = {
+    const voteRecord: CipaAuditVote = {
       id: `vote-${Date.now()}-${Math.random().toString(36).substring(2, 5)}`,
-      candidate_id: vote.candidate_id,
       anonymous_vote_hash: voteHash,
       voter_cpf_masked: maskedCpf,
       verification_method: vote.verification_method,
