@@ -61,19 +61,19 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
   } = usePrevSafe();
 
   // Active client selector state
-  const [selectedClientId, setSelectedClientId] = useState<string>(clients?.[0]?.id || 'cli-001');
+  const [selectedClientId, setSelectedClientId] = useState<string>(clients?.[0]?.id || '');
   const currentClient = (clients || []).find(c => c?.id === selectedClientId) || clients?.[0] || {
-    id: 'cli-001',
-    trade_name: 'Metalúrgica Valença',
-    legal_name: 'Metalúrgica Valença Indústria e Comércio S/A',
-    document_number: '12.345.678/0001-90',
-    employee_count: 85,
-    risk_degree: 3,
-    address: 'Av. das Indústrias, 1500 - Distrito Industrial',
-    city: 'Valença',
-    state: 'RJ',
-    email: 'marcelo.silva@valenca.com.br',
-    phone: '(24) 2453-9900'
+    id: '',
+    trade_name: 'Nenhum cliente cadastrado',
+    legal_name: '',
+    document_number: '',
+    employee_count: 0,
+    risk_degree: 1,
+    address: '',
+    city: '',
+    state: '',
+    email: '',
+    phone: ''
   };
 
   // Active portal tab
@@ -169,7 +169,7 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
 
     submitEvaluation({
       client_id: currentClient.id,
-      service_order_id: osTarget ? osTarget.id : (clientOS[0]?.id || 'os-001'),
+      service_order_id: osTarget ? osTarget.id : (clientOS[0]?.id || ''),
       service_title: osTarget ? osTarget.service_name : 'Consultoria Técnica SST',
       overall_score: Math.round((techScore + puncScore + servScore + clarScore) / 4),
       quality_score: techScore,
@@ -1059,7 +1059,7 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
 
               <button
                 onClick={() => {
-                  setEvalOSId(clientOS[0]?.id || 'os-001');
+                  setEvalOSId(clientOS[0]?.id || '');
                   setShowFeedbackModal(true);
                 }}
                 className="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold rounded-2xl shadow-lg transition flex items-center space-x-1.5 self-start sm:self-auto"

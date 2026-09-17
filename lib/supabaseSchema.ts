@@ -1,11 +1,11 @@
 /**
  * Supabase SQL Schema Definition for PrevSafe SST (Prev Workflow)
- * Project: Prev Workflow (dnmbwsvdyskbbfvribkb)
+ * Project: Prev Workflow (dijwqveojqnazphzifhg)
  */
 
 export const SUPABASE_SQL_SCHEMA = `-- ==========================================
 -- PrevSafe SST - Database Schema for Prev Workflow
--- Supabase Project Ref: dnmbwsvdyskbbfvribkb
+-- Supabase Project Ref: dijwqveojqnazphzifhg
 -- ==========================================
 
 -- Enable UUID extension
@@ -328,30 +328,20 @@ export const SUPABASE_MIGRATIONS: SupabaseMigration[] = [
     sql: `-- ==============================================================================
 -- Migration: 20260825120001_seed_data.sql
 -- Description: Seed initial service templates, default organization, and standard NRs
--- Supabase Project Reference: dnmbwsvdyskbbfvribkb
+-- Supabase Project Reference: dijwqveojqnazphzifhg
 -- ==============================================================================
 
 -- 1. INSERT DEFAULT ORGANIZATION
 INSERT INTO public.organizations (id, name, legal_name, document_number, email, phone, logo_url)
 VALUES (
   'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
-  'PrevSafe Consultoria em SST',
-  'PrevSafe Engenharia e Medicina Ocupacional Ltda',
-  '12.345.678/0001-90',
-  'contato@prevsafe.com.br',
-  '(11) 3456-7890',
-  'https://images.unsplash.com/photo-1577495508048-b635879837f1?auto=format&fit=crop&q=80&w=200'
+  'PrevSafe',
+  'G MONTEIRO EMPREENDIMENTOS LTDA',
+  '69.133.606/0001-00',
+  'evoluaevenca@gmail.com',
+  '(73) 99918-9499',
+  NULL
 )
-ON CONFLICT (id) DO NOTHING;
-
--- 2. INSERT PROFILES
-INSERT INTO public.profiles (id, organization_id, full_name, email, role, phone)
-VALUES
-  ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b01', 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', 'Carlos Mendes', 'carlos.admin@prevsafe.com.br', 'ADMIN', '(11) 98765-4321'),
-  ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b02', 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', 'Juliana Rocha', 'juliana.comercial@prevsafe.com.br', 'COMMERCIAL', '(11) 98765-4322'),
-  ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b03', 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', 'Eng. Roberto Alves', 'roberto.coordenador@prevsafe.com.br', 'COORDINATOR', '(11) 98765-4323'),
-  ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b04', 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', 'Téc. Fernando Costa', 'fernando.tecnico@prevsafe.com.br', 'ENGINEER_TECHNICIAN', '(11) 98765-4324'),
-  ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b05', 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', 'Mariana Souza (Cliente)', 'mariana.rh@industriaalpha.com.br', 'CLIENT', '(11) 98765-4325')
 ON CONFLICT (id) DO NOTHING;
 
 -- 3. INSERT STANDARD SST SERVICE TEMPLATES (CATALOG OF NRs)

@@ -455,15 +455,15 @@ export const SettingsView: React.FC<{ onNavigate: (view: string) => void }> = ({
 
             <button
               onClick={() => {
-                if (confirm('Deseja restaurar todos os dados iniciais de demonstração da PrevSafe?')) {
+                if (confirm('Deseja limpar a base e voltar ao estado inicial? Todos os cadastros e movimentos serão apagados deste navegador. Esta ação não pode ser desfeita.')) {
                   resetDatabaseToSeed();
-                  alert('Base de dados restaurada com sucesso!');
+                  alert('Base limpa. Os catálogos de referência foram mantidos.');
                 }
               }}
               className="w-full px-4 py-3 bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/30 rounded-2xl text-xs font-bold transition flex items-center justify-center space-x-2"
             >
               <Database className="w-4 h-4" />
-              <span>Restaurar Base de Demonstração</span>
+              <span>Limpar Base de Dados</span>
             </button>
           </div>
         </div>

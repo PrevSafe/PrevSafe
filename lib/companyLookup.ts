@@ -38,128 +38,8 @@ export interface CompanyLookupResult {
 }
 
 // Base de entidades verificadas para demonstração instantânea e fallback de alta confiabilidade
-const VERIFIED_ENTITIES_MOCK: Record<string, Partial<CompanyLookupResult>> = {
-  // CNPJ: Metalúrgica Valença (Indústria)
-  '33456789000112': {
-    document_type: 'CNPJ',
-    document_number: '33.456.789/0001-12',
-    legal_name: 'Metalúrgica Valença e Estruturas Metálicas S/A',
-    trade_name: 'Metalúrgica Valença',
-    main_cnae: '25.11-0-00',
-    cnae_description: 'Fabricação de estruturas metálicas',
-    risk_degree: 4,
-    address: 'Av. das Indústrias Pesadas, 1420',
-    neighborhood: 'Distrito Industrial',
-    city: 'São Paulo',
-    state: 'SP',
-    zip_code: '04578-000',
-    phone: '(11) 4002-8922',
-    email: 'sst@valencametal.com.br',
-    porte: 'DEMAIS (GRANDE PORTE)',
-    natureza_juridica: '205-4 - Sociedade Anônima Fechada',
-    status_receita: 'ATIVA'
-  },
-  // CNPJ: Petrobras Distribuidora / Refinaria
-  '33000167000101': {
-    document_type: 'CNPJ',
-    document_number: '33.000.167/0001-01',
-    legal_name: 'Petróleo Brasileiro S.A. - Petrobras',
-    trade_name: 'Petrobras',
-    main_cnae: '06.00-0-01',
-    cnae_description: 'Extração de petróleo e gás natural',
-    risk_degree: 4,
-    address: 'Av. República do Chile, 65',
-    neighborhood: 'Centro',
-    city: 'Rio de Janeiro',
-    state: 'RJ',
-    zip_code: '20031-912',
-    phone: '(21) 3224-4477',
-    email: 'sst@petrobras.com.br',
-    porte: 'GRANDE PORTE',
-    natureza_juridica: '204-6 - Sociedade Anônima Aberta',
-    status_receita: 'ATIVA'
-  },
-  // CNPJ: Construtora Alfa (Construção Civil)
-  '44112990000188': {
-    document_type: 'CNPJ',
-    document_number: '44.112.990/0001-88',
-    legal_name: 'Alfa Engenharia e Construções Civis Ltda',
-    trade_name: 'Construtora Alfa',
-    main_cnae: '41.20-4-00',
-    cnae_description: 'Construção de edifícios',
-    risk_degree: 3,
-    address: 'Rua Bela Cintra, 890',
-    neighborhood: 'Consolação',
-    city: 'São Paulo',
-    state: 'SP',
-    zip_code: '01415-000',
-    phone: '(11) 3100-5544',
-    email: 'seguranca@alfaeng.com.br',
-    porte: 'DEMAIS (MÉDIO PORTE)',
-    natureza_juridica: '206-2 - Sociedade Empresária Limitada',
-    status_receita: 'ATIVA'
-  },
-  // CAEPF: Fazenda Esperança (Produtor Rural Pessoa Física)
-  '12345678900144': {
-    document_type: 'CAEPF',
-    document_number: '123.456.789/001-44',
-    legal_name: 'Antônio Carlos Silveira (Produtor Rural)',
-    trade_name: 'Fazenda Santa Esperança - Café & Grãos',
-    main_cnae: '01.21-1-01',
-    cnae_description: 'Cultivo de café',
-    risk_degree: 3,
-    address: 'Rodovia Municipal do Café, Km 14 - Gleba 2',
-    neighborhood: 'Zona Rural',
-    city: 'Franca',
-    state: 'SP',
-    zip_code: '14400-000',
-    phone: '(16) 99876-1234',
-    email: 'contato@fazendasantarural.com.br',
-    porte: 'PRODUTOR RURAL (PESSOA FÍSICA)',
-    natureza_juridica: '412-0 - Produtor Rural (Pessoa Física)',
-    status_receita: 'ATIVA'
-  },
-  // CNO: Obra Residencial Sky Tower (Construção Civil)
-  '901234567890': {
-    document_type: 'CNO',
-    document_number: '90.123.45678/90',
-    legal_name: 'Obra Edifício Residencial Sky Tower (CNO)',
-    trade_name: 'Canteiro Sky Tower 38 Pavimentos',
-    main_cnae: '41.20-4-00',
-    cnae_description: 'Construção de edifícios',
-    risk_degree: 3,
-    address: 'Av. Brigadeiro Faria Lima, 3400',
-    neighborhood: 'Itaim Bibi',
-    city: 'São Paulo',
-    state: 'SP',
-    zip_code: '04538-132',
-    phone: '(11) 3100-5544',
-    email: 'obra.skytower@alfaeng.com.br',
-    porte: 'CANTEIRO DE OBRAS',
-    natureza_juridica: 'CNO - Obra de Construção Civil',
-    status_receita: 'ATIVA'
-  },
-  // CPF: Empregador Doméstico / Profissional Liberal (Médico / Advogado)
-  '98765432100': {
-    document_type: 'CPF',
-    document_number: '987.654.321-00',
-    legal_name: 'Dr. Roberto Magalhães (Clínica Médica Particular)',
-    trade_name: 'Consultório Dr. Roberto Magalhães',
-    main_cnae: '86.30-5-03',
-    cnae_description: 'Atividade médica ambulatorial restrita a consultas',
-    risk_degree: 1,
-    address: 'Rua Oscar Freire, 1120 - Conj. 42',
-    neighborhood: 'Jardins',
-    city: 'São Paulo',
-    state: 'SP',
-    zip_code: '01426-001',
-    phone: '(11) 3088-7700',
-    email: 'dr.roberto@consultoriomed.com.br',
-    porte: 'PESSOA FÍSICA EMPREGADORA',
-    natureza_juridica: '400-0 - Pessoa Física Empregadora',
-    status_receita: 'ATIVA'
-  }
-};
+const VERIFIED_ENTITIES_MOCK: Record<string, Partial<CompanyLookupResult>> = {};
+
 
 /**
  * Formata qualquer número de documento brasileiro
@@ -326,38 +206,37 @@ export async function lookupCompanyData(
     }
   }
 
-  // 3. Fallback Sintético Inteligente com Enquadramento NR-04
-  const defaultCnae = type === 'CAEPF' ? '01.11-3-01' : type === 'CNO' ? '41.20-4-00' : '25.11-0-00';
-  const nr4Default = lookupRiskDegreeByCnae(defaultCnae);
+  // 3. Sem consulta publica disponivel.
+  // CNPJ tem API publica: se ela falhou, avisamos em vez de inventar dados.
+  if (cleanDigits.length === 14 && type === 'CNPJ') {
+    throw new Error('Não foi possível consultar este CNPJ na Receita Federal agora. Verifique sua conexão e tente novamente, ou preencha os dados manualmente.');
+  }
 
+  // CPF / CAEPF / CNO nao possuem consulta publica: classificamos o documento para o
+  // eSocial e deixamos o cadastro em branco para o usuario preencher. Nada e inventado —
+  // em especial o CNAE e o grau de risco, que definem o enquadramento do PGR/PCMSO.
   return {
     success: true,
     document_type: type,
     document_number: formatDocumentNumber(cleanDigits, type),
-    legal_name: type === 'CAEPF' 
-      ? `Produtor Rural Inscrição ${cleanDigits.slice(0, 8)}` 
-      : type === 'CNO' 
-        ? `Obra CNO nº ${cleanDigits}` 
-        : type === 'CPF' 
-          ? `Empregador Individual (${cleanDigits.slice(0, 3)}...${cleanDigits.slice(-2)})` 
-          : `Empresa Comercial & Industrial Ltda (${cleanDigits.slice(0, 4)})`,
-    trade_name: type === 'CAEPF' ? 'Unidade de Produção Agropecuária' : type === 'CNO' ? 'Canteiro de Obras CNO' : 'PrevSafe Cliente',
-    main_cnae: nr4Default.cnaeFormatted,
-    cnae_description: nr4Default.description,
-    risk_degree: nr4Default.riskDegree,
-    risk_legal_basis: nr4Default.legalBasis,
-    address: 'Av. Paulista, 1000 - Centro Empresarial',
-    neighborhood: 'Bela Vista',
-    city: 'São Paulo',
-    state: 'SP',
-    zip_code: '01310-100',
-    phone: '(11) 3200-1000',
-    email: 'contato@prevsafe.com.br',
-    status_receita: 'ATIVA',
-    porte: type === 'CAEPF' ? 'PRODUTOR RURAL' : type === 'CNO' ? 'OBRA CIVIL' : 'EMPRESA REGISTRADA',
-    natureza_juridica: type === 'CAEPF' ? '412-0 Produtor Rural' : '206-2 Sociedade Empresária Limitada',
+    legal_name: '',
+    trade_name: '',
+    main_cnae: '',
+    cnae_description: '',
+    risk_degree: 1,
+    risk_legal_basis: 'Grau de risco a confirmar: informe o CNAE da atividade (Quadro I da NR-04).',
+    address: '',
+    neighborhood: '',
+    city: '',
+    state: '',
+    zip_code: '',
+    phone: '',
+    email: '',
+    porte: '',
+    natureza_juridica: '',
     esocial_tp_insc: tpInsc,
     esocial_explanation: explanation,
-    source: 'CALCULADO_NR4'
+    source: 'CALCULADO_NR4',
+    raw_message: 'Documento classificado para o eSocial. Complete os dados cadastrais manualmente.'
   };
 }

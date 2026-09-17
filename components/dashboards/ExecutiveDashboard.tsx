@@ -84,11 +84,11 @@ export const ExecutiveDashboard: React.FC<{ onNavigate: (view: string) => void }
 
   const averageNps = (evaluations || []).length > 0
     ? ((evaluations || []).reduce((acc, e) => acc + (e?.nps_score || 0), 0) / evaluations.length).toFixed(1)
-    : '9.8';
+    : '—';
 
   const averageSatisfaction = (evaluations || []).length > 0
     ? ((evaluations || []).reduce((acc, e) => acc + (e?.overall_score || 0), 0) / evaluations.length).toFixed(1)
-    : '4.9';
+    : '—';
 
   const osStatusData = [
     { name: 'Em Execução', value: inProgressOSCount, fill: '#6366f1' },

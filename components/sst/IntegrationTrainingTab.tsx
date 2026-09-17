@@ -171,7 +171,7 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
     const trainingCode = `CAP-INT-${new Date().getFullYear()}-${String(count).padStart(3, '0')}`;
 
     const created = addIntegrationTraining({
-      client_id: activeClient?.id || 'cli-01',
+      client_id: activeClient?.id || '',
       client_name: activeClient?.trade_name || activeClient?.legal_name || 'Empresa Cliente',
       training_code: trainingCode,
       training_title: newTrainingTitle,

@@ -157,24 +157,7 @@ export const CipaManagementView: React.FC = () => {
       quorum_percentage: 0,
       dimensioning: dim,
       timeline,
-      electoral_commission: [
-        {
-          id: 'ecm-1',
-          name: 'Carlos Mendes',
-          cpf: '111.222.333-44',
-          role: 'PRESIDENT',
-          represented_party: 'EMPLOYER',
-          department: 'SESMT'
-        },
-        {
-          id: 'ecm-2',
-          name: 'Renata Souza',
-          cpf: '222.333.444-55',
-          role: 'SECRETARY',
-          represented_party: 'EMPLOYEE',
-          department: 'Recursos Humanos'
-        }
-      ],
+      electoral_commission: [],
       employer_appointees: [
         {
           id: 'app-1',

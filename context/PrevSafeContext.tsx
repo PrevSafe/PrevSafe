@@ -611,7 +611,10 @@ interface PrevSafeContextType {
   runDailyJobSimulation: () => { summary: string; alertsGenerated: number };
 }
 
-const STORAGE_KEY = 'prevsafe_sst_v1_database';
+// Bumped to v2 when the demo data was removed: browsers that had cached the
+// demo database under the v1 key start clean instead of restoring it.
+const STORAGE_KEY = 'prevsafe_sst_v2_database';
+const LEGACY_STORAGE_KEYS = ['prevsafe_sst_v1_database'];
 
 const PrevSafeContext = createContext<PrevSafeContextType | undefined>(undefined);
 
@@ -647,7 +650,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
   const [tenants, setTenants] = useState<Tenant[]>(INITIAL_TENANTS);
   const [saasPlans, setSaasPlans] = useState<SaaSSubscriptionPlan[]>(INITIAL_SAAS_PLANS);
   const [activeTenantContext, setActiveTenantContext] = useState<Tenant | null>(null);
-  const [activeClientId, setActiveClientId] = useState<string | undefined>('cli-valenca-01');
+  const [activeClientId, setActiveClientId] = useState<string | undefined>(undefined);
   const [tenantTheme, setTenantTheme] = useState<TenantThemeSettings>(
     INITIAL_ORGANIZATION.theme_settings || DEFAULT_THEME_SETTINGS
   );
@@ -689,6 +692,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
   // Load from LocalStorage
   useEffect(() => {
     try {
+      LEGACY_STORAGE_KEYS.forEach(key => localStorage.removeItem(key));
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
@@ -861,7 +865,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     };
     setCurrentProfile(matchedProfile);
     if (role === 'CLIENTE_ADMIN' || role === 'CLIENTE_USER') {
-      setActiveClientId('cli-valenca-01');
+      setActiveClientId(clients[0]?.id);
     }
   }, [profiles, currentProfile]);
 
@@ -956,7 +960,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     setCurrentProfile(matched);
     setIsAuthenticated(true);
     if (matched.role === 'CLIENTE_ADMIN' || matched.role === 'CLIENTE_USER') {
-      setActiveClientId(matched.client_id || 'cli-valenca-01');
+      setActiveClientId(matched.client_id);
     }
 
     logAudit('LOGIN', 'ORGANIZATION', organization.id, organization.name, {
@@ -1106,7 +1110,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     setCurrentProfile(target);
     setIsAuthenticated(true);
     if (target.role === 'CLIENTE_ADMIN' || target.role === 'CLIENTE_USER') {
-      setActiveClientId(target.client_id || 'cli-valenca-01');
+      setActiveClientId(target.client_id);
     }
 
     logAudit('LOGIN', 'ORGANIZATION', organization.id, organization.name, {
@@ -1174,7 +1178,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     const newNotif: Notification = {
       id: notifId,
       organization_id: organization.id,
-      recipient_user_id: data.recipient_user_id || 'user-client-01',
+      recipient_user_id: data.recipient_user_id || currentProfile.id,
       recipient_name: data.recipient_name,
       recipient_email: data.recipient_email,
       recipient_phone: data.recipient_phone,
@@ -1417,7 +1421,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     logAudit('PROPOSAL_SENT', 'PROPOSAL', proposal.id, proposal.proposal_number, { channel });
 
     dispatchNotification({
-      recipient_user_id: 'user-client-01',
+      recipient_user_id: currentProfile.id,
       recipient_name: client?.trade_name || 'Cliente',
       recipient_email: client?.email,
       recipient_phone: client?.whatsapp,
@@ -1457,7 +1461,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     logAudit('PROPOSAL_APPROVED', 'PROPOSAL', proposal.id, proposal.proposal_number, { comment });
 
     dispatchNotification({
-      recipient_user_id: 'user-manager-01',
+      recipient_user_id: currentProfile.id,
       recipient_name: 'Coordenação PrevSafe',
       event_type: 'proposal.approved',
       title: `Proposta ${proposal.proposal_number} Aprovada!`,
@@ -1604,7 +1608,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     logAudit('CONTRACT_SIGNED', 'CONTRACT', contract.id, contract.contract_number, { signerName, hash: signature.signature_hash });
 
     dispatchNotification({
-      recipient_user_id: 'user-manager-01',
+      recipient_user_id: currentProfile.id,
       recipient_name: 'Equipe Operacional',
       event_type: 'contract.signed',
       title: `Contrato ${contract.contract_number} Assinado!`,
@@ -1638,8 +1642,8 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
         description: tsk.description,
         status: (stgIdx === 0 && tskIdx === 0) ? 'IN_PROGRESS' : 'TODO',
         priority: 'HIGH',
-        assigned_to: 'user-tech-01',
-        assigned_name: 'Eng. Eduardo Vasconcelos',
+        assigned_to: currentProfile.id,
+        assigned_name: currentProfile.full_name,
         due_date: dueDate,
         is_mandatory: tsk.is_mandatory,
         order_index: tsk.order_index
@@ -1661,8 +1665,8 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
         status: stgIdx === 0 ? 'IN_PROGRESS' : 'TODO',
         start_date: startDate,
         due_date: dueDate,
-        assigned_to: 'user-tech-01',
-        assigned_name: 'Eng. Eduardo Vasconcelos',
+        assigned_to: currentProfile.id,
+        assigned_name: currentProfile.full_name,
         progress: 0,
         is_mandatory: stg.is_mandatory,
         requires_client: stg.requires_client,
@@ -1687,10 +1691,10 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
       start_date: startDate,
       due_date: dueDate,
       progress: 0,
-      manager_id: 'user-manager-01',
-      manager_name: 'Mariana Siqueira',
-      technical_responsible_id: 'user-tech-01',
-      technical_responsible_name: 'Eng. Eduardo Vasconcelos',
+      manager_id: currentProfile.id,
+      manager_name: currentProfile.full_name,
+      technical_responsible_id: currentProfile.id,
+      technical_responsible_name: currentProfile.full_name,
       stages,
       dependencies: [],
       sla_total_days: template.default_duration_days,
@@ -1730,7 +1734,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
         description: tsk.description,
         status: (stgIdx === 0 && tskIdx === 0) ? 'IN_PROGRESS' : 'TODO',
         priority: data.priority,
-        assigned_to: 'user-tech-01',
+        assigned_to: currentProfile.id,
         assigned_name: techName,
         due_date: data.due_date,
         is_mandatory: tsk.is_mandatory,
@@ -1747,7 +1751,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
         status: stgIdx === 0 ? 'IN_PROGRESS' : 'TODO',
         start_date: startDate,
         due_date: data.due_date,
-        assigned_to: 'user-tech-01',
+        assigned_to: currentProfile.id,
         assigned_name: techName,
         progress: 0,
         is_mandatory: stg.is_mandatory,
@@ -1771,9 +1775,9 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
       start_date: startDate,
       due_date: data.due_date,
       progress: 0,
-      manager_id: 'user-manager-01',
-      manager_name: 'Mariana Siqueira',
-      technical_responsible_id: 'user-tech-01',
+      manager_id: currentProfile.id,
+      manager_name: currentProfile.full_name,
+      technical_responsible_id: currentProfile.id,
       technical_responsible_name: techName,
       stages,
       dependencies: [],
@@ -1812,8 +1816,8 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
           description: description || '',
           status: 'TODO',
           priority: 'MEDIUM',
-          assigned_to: 'user-tech-01',
-          assigned_name: 'Eng. Eduardo Vasconcelos',
+          assigned_to: os.technical_responsible_id || currentProfile.id,
+          assigned_name: os.technical_responsible_name || currentProfile.full_name,
           due_date: os.due_date,
           is_mandatory: true,
           order_index: stg.tasks.length + 1
@@ -2010,7 +2014,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     logAudit('STAGE_COMPLETED', 'STAGE', stageId, stage.name, { stage: stage.name });
 
     dispatchNotification({
-      recipient_user_id: 'user-manager-01',
+      recipient_user_id: currentProfile.id,
       recipient_name: 'Gestor de SST',
       event_type: 'service.stage.completed',
       title: `Etapa Concluída: ${stage.name}`,
@@ -2083,7 +2087,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
 
     const client = clients.find(c => c.id === os.client_id);
     dispatchNotification({
-      recipient_user_id: 'user-client-01',
+      recipient_user_id: currentProfile.id,
       recipient_name: client?.trade_name || 'Cliente',
       recipient_email: client?.email,
       recipient_phone: client?.whatsapp,
@@ -2116,7 +2120,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     logAudit('SERVICE_ACCEPTED', 'SERVICE_ORDER', os.id, os.os_number, { feedback, accepted_by: currentProfile.full_name });
 
     dispatchNotification({
-      recipient_user_id: 'user-manager-01',
+      recipient_user_id: currentProfile.id,
       recipient_name: 'Equipe PrevSafe',
       event_type: 'service.accepted',
       title: `Aceite Registrado: OS ${os.os_number}`,
@@ -2167,8 +2171,8 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     logAudit('REWORK_REQUESTED', 'SERVICE_ORDER', os.id, os.os_number, { reason });
 
     dispatchNotification({
-      recipient_user_id: 'user-tech-01',
-      recipient_name: 'Eng. Eduardo Vasconcelos',
+      recipient_user_id: os.technical_responsible_id || currentProfile.id,
+      recipient_name: os.technical_responsible_name || currentProfile.full_name,
       event_type: 'service.rework.requested',
       title: `Solicitação de Revisão (Rework) - OS ${os.os_number}`,
       message: `O cliente solicitou correção técnica: "${reason}". Uma tarefa de revisão foi reaberta.`,
@@ -2319,7 +2323,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
 
     const client = clients.find(c => c.id === data.client_id);
     dispatchNotification({
-      recipient_user_id: 'user-client-01',
+      recipient_user_id: currentProfile.id,
       recipient_name: client?.trade_name || 'Cliente',
       recipient_email: client?.email,
       recipient_phone: client?.whatsapp,
@@ -2360,7 +2364,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     const client = clients.find(c => c.id === req.client_id);
 
     dispatchNotification({
-      recipient_user_id: 'user-client-01',
+      recipient_user_id: currentProfile.id,
       recipient_name: client?.trade_name || 'Cliente',
       recipient_email: client?.email,
       recipient_phone: client?.whatsapp,
@@ -3332,7 +3336,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
             const client = clients.find(c => c.id === cId);
             if (client) {
               dispatchNotification({
-                recipient_user_id: 'user-client-01',
+                recipient_user_id: currentProfile.id,
                 recipient_name: client.trade_name || client.legal_name,
                 event_type: 'document.client_released',
                 title: `Robô eSocial: ${transmittedCount} eventos transmitidos`,
@@ -5843,7 +5847,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     data.signers.forEach(signer => {
       if (signer.signature_status === 'PENDING') {
         dispatchNotification({
-          recipient_user_id: 'user-client-01',
+          recipient_user_id: currentProfile.id,
           recipient_name: signer.name,
           event_type: 'service_order.created' as any,
           title: `Solicitação de Assinatura: ${data.document_title}`,
@@ -5941,7 +5945,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
 
     if (isSuccessful) {
       dispatchNotification({
-        recipient_user_id: 'user-manager-01',
+        recipient_user_id: currentProfile.id,
         recipient_name: 'SESMT PrevSafe',
         event_type: 'service_order.accepted' as any,
         title: 'Assinatura Eletrônica Registrada',
@@ -5999,7 +6003,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
 
     if (isSuccessful) {
       dispatchNotification({
-        recipient_user_id: 'user-manager-01',
+        recipient_user_id: currentProfile.id,
         recipient_name: 'SESMT PrevSafe',
         event_type: 'service_order.rework_requested' as any,
         title: 'Documento Recusado pelo Cliente/Signatário',
@@ -6050,7 +6054,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     setCipaProcesses(prev => [newProcess, ...prev]);
     logAudit('CREATE_SERVICE_ORDER' as any, 'DOCUMENT' as any, newProcess.id, `Novo processo eleitoral CIPA criado: Gestão ${newProcess.mandate_year} (${newProcess.norm})`);
     dispatchNotification({
-      recipient_user_id: 'user-manager-01',
+      recipient_user_id: currentProfile.id,
       recipient_name: 'SESMT PrevSafe',
       event_type: 'service_order.created' as any,
       title: `Processo CIPA Criado: ${newProcess.client_name}`,
@@ -6370,7 +6374,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     requests.filter(r => r.status === 'OPEN').forEach(r => {
       alertsCount++;
       dispatchNotification({
-        recipient_user_id: 'user-client-01',
+        recipient_user_id: currentProfile.id,
         recipient_name: 'Cliente Notificado',
         event_type: 'request.deadline_reminder',
         title: `Alerta Automático Diário: ${r.title}`,

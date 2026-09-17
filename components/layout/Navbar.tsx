@@ -96,9 +96,9 @@ export const Navbar: React.FC<NavbarProps> = ({
   };
 
   const handleReset = () => {
-    if (confirm('Deseja restaurar a base de dados de demonstração da PrevSafe?')) {
+    if (confirm('Deseja limpar a base e voltar ao estado inicial? Todos os cadastros e movimentos serão apagados deste navegador. Esta ação não pode ser desfeita.')) {
       resetDatabaseToSeed();
-      setToastMessage('Base de dados restaurada com sucesso.');
+      setToastMessage('Base limpa. Os catálogos de referência foram mantidos.');
       setTimeout(() => setToastMessage(null), 4000);
     }
   };
@@ -364,7 +364,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                       onClick={handleReset}
                       className="text-[11px] text-slate-500 hover:text-rose-400"
                     >
-                      Restaurar Dados
+                      Limpar Base
                     </button>
                   </div>
                 </div>

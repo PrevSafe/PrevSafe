@@ -190,7 +190,7 @@ export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) 
     const selectedGheObj = ghes.find(g => g.id === employeeForm.ghe_id);
 
     const empData = {
-      client_id: selectedClientId || units[0]?.client_id || 'cli-valenca-01',
+      client_id: selectedClientId || units[0]?.client_id || (clients[0]?.id || ''),
       client_unit_id: employeeForm.unit_id || units[0]?.id || 'unit-01',
       sector_id: employeeForm.sector_id || hierarchySectors[0]?.id || 'sec-01',
       job_id: employeeForm.job_id || hierarchyJobs[0]?.id || 'job-01',

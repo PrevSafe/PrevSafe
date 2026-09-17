@@ -214,7 +214,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onSuccess, onNavigateHelp 
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="ex: carlos.mendes@prevsafe.com.br"
+                    placeholder="seu.email@empresa.com.br"
                     className="w-full pl-10 pr-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition"
                   />
                 </div>
@@ -293,7 +293,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onSuccess, onNavigateHelp 
           {/* Footer Assistance & Tutorials link */}
           <div className="mt-8 pt-4 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] text-slate-400">
             <div>
-              Dúvidas no acesso? Contate o suporte SST: <span className="text-emerald-400 font-mono">suporte@prevsafe.com.br</span>
+              Dúvidas no acesso? Contate o suporte SST: <span className="text-emerald-400 font-mono">evoluaevenca@gmail.com</span>
             </div>
             {onNavigateHelp && (
               <button
@@ -327,7 +327,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onSuccess, onNavigateHelp 
               <Info className="w-4 h-4 flex-shrink-0 text-emerald-400 mt-0.5" />
               <span>
                 Por segurança, a redefinição de senha é feita por um administrador do sistema, na tela de <strong>Gestão de Usuários</strong>.
-                Entre em contato com o administrador da sua organização ou com o suporte SST (<span className="text-emerald-400 font-mono">suporte@prevsafe.com.br</span>) para solicitar uma nova senha.
+                Entre em contato com o administrador da sua organização ou com o suporte SST (<span className="text-emerald-400 font-mono">evoluaevenca@gmail.com</span>) para solicitar uma nova senha.
               </span>
             </div>
 

@@ -41,7 +41,7 @@ function applyReportHeaderAndFooter(
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
   const orgName = organization?.name || 'PrevSafe Gestão em SST';
-  const orgCnpj = organization?.document_number || '12.345.678/0001-90';
+  const orgCnpj = organization?.document_number || '';
 
   // Primary top bar
   doc.setFillColor(15, 23, 42); // slate-900

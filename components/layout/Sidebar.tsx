@@ -116,7 +116,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         { id: 'dashboard-exec', label: 'Dashboard Executivo', icon: BarChart3, code: '010' },
         { id: 'dashboard-oper', label: 'Dashboard Operacional', icon: Activity, code: '020', badge: (serviceOrders || []).filter(o => o?.status === 'IN_PROGRESS').length.toString() },
         { id: 'dashboard-comm', label: 'Dashboard Comercial', icon: TrendingUp, code: '030', badge: (proposals || []).filter(p => p?.status === 'SENT').length.toString() },
-        { id: 'dashboard-qual', label: 'Dashboard de Qualidade', icon: Award, code: '040', badge: 'NPS 9.6' },
+        { id: 'dashboard-qual', label: 'Dashboard de Qualidade', icon: Award, code: '040' },
       ]
     },
     {

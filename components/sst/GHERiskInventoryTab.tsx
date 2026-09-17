@@ -227,7 +227,7 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
       updateGhe(editingGhe.id, gheForm);
     } else {
       const created = addGhe({
-        client_id: selectedClientId || 'cli-valenca-01',
+        client_id: selectedClientId,
         client_unit_id: 'unit-01',
         ...gheForm,
         total_exposed_workers: employees.filter(emp => !selectedClientId || emp.client_id === selectedClientId).length || 5
@@ -386,7 +386,7 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
     }
 
     const res = applyRisksToTargets({
-      client_id: selectedClientId || activeGhe?.client_id || 'cli-valenca-01',
+      client_id: selectedClientId || activeGhe?.client_id,
       risk_catalog_ids: selectedCatalogRiskIds,
       target_mode: (catalogTargetMode === 'CURRENT_GHE' || catalogTargetMode === 'MULTI_GHE') ? 'GHE' : catalogTargetMode,
       target_ghe_ids: targetGheIdsToUse,
@@ -424,7 +424,7 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
     if (!multiExamForm.exam_name || !multiExamForm.exam_code_table_27) return;
 
     const res = applyExamsToTargets({
-      client_id: selectedClientId || activeGhe?.client_id || 'cli-valenca-01',
+      client_id: selectedClientId || activeGhe?.client_id,
       exam_catalog_items: [{
         exam_name: multiExamForm.exam_name,
         exam_code_table_27: multiExamForm.exam_code_table_27,

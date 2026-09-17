@@ -80,14 +80,14 @@ export const SSTSignaturesManagementTab: React.FC<SSTSignaturesManagementTabProp
   const [newDocType, setNewDocType] = useState<SSTDocumentSignatureType>('PGR');
   const [newDocTitle, setNewDocTitle] = useState('Programa de Gerenciamento de Riscos - PGR 2026');
   const [newDocNumber, setNewDocNumber] = useState(`PGR-2026-${Math.floor(100 + Math.random() * 900)}`);
-  const [newClientId, setNewClientId] = useState(clients[0]?.id || 'cli-001');
+  const [newClientId, setNewClientId] = useState(clients[0]?.id || '');
   const [newExpiresDays, setNewExpiresDays] = useState(30);
 
   const [signersList, setSignersList] = useState<DocumentSigner[]>([
     {
       id: 'sig-tech-01',
       name: 'Eng. Eduardo Vasconcelos',
-      email: 'eduardo.sst@prevsafe.com.br',
+      email: '',
       phone: '(11) 98765-4321',
       cpf: '234.567.890-11',
       signer_role: 'TECHNICAL_RESPONSIBLE',

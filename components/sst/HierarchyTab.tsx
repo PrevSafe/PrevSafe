@@ -163,7 +163,7 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
       updateHierarchySector(editingSector.id, sectorForm);
     } else {
       addHierarchySector({
-        client_id: selectedClientId || clientUnits[0]?.client_id || 'cli-valenca-01',
+        client_id: selectedClientId || clientUnits[0]?.client_id,
         client_unit_id: sectorForm.client_unit_id || clientUnits[0]?.id || 'unit-01',
         name: sectorForm.name,
         code: sectorForm.code,
@@ -254,7 +254,7 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
       });
     } else {
       addHierarchyJob({
-        client_id: selectedClientId || sector?.client_id || 'cli-valenca-01',
+        client_id: selectedClientId || sector?.client_id,
         client_unit_id: sector?.client_unit_id || jobForm.client_unit_id || 'unit-01',
         sector_id: jobForm.sector_id,
         name: jobForm.name,
@@ -273,7 +273,7 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
     e.preventDefault();
     if (!unitForm.name) return;
     addUnit({
-      client_id: selectedClientId || 'cli-valenca-01',
+      client_id: selectedClientId,
       name: unitForm.name,
       document_number: unitForm.cnpj_cno_caepf || '12.345.678/0001-99',
       address: 'Endereço da Unidade',

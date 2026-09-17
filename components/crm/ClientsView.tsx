@@ -180,24 +180,24 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
       // Auto-fill form fields with verified data
       setClientForm(prev => ({
         ...prev,
-        legal_name: result.legal_name,
-        trade_name: result.trade_name || result.legal_name,
+        legal_name: result.legal_name || prev.legal_name,
+        trade_name: result.trade_name || result.legal_name || prev.trade_name,
         document_number: result.document_number,
         document_type: result.document_type,
         caepf: result.document_type === 'CAEPF' ? result.document_number : prev.caepf,
         cno: result.document_type === 'CNO' ? result.document_number : prev.cno,
-        main_cnae: result.main_cnae,
-        cnae_description: result.cnae_description,
+        main_cnae: result.main_cnae || prev.main_cnae,
+        cnae_description: result.cnae_description || prev.cnae_description,
         risk_degree: result.risk_degree,
-        address: result.address,
-        neighborhood: result.neighborhood || '',
-        zip_code: result.zip_code || '',
-        city: result.city,
-        state: result.state,
+        address: result.address || prev.address,
+        neighborhood: result.neighborhood || prev.neighborhood,
+        zip_code: result.zip_code || prev.zip_code,
+        city: result.city || prev.city,
+        state: result.state || prev.state,
         phone: result.phone || prev.phone,
         email: result.email || prev.email,
-        porte: result.porte || '',
-        natureza_juridica: result.natureza_juridica || ''
+        porte: result.porte || prev.porte,
+        natureza_juridica: result.natureza_juridica || prev.natureza_juridica
       }));
     } catch (err: any) {
       setLookupError(err.message || 'Não foi possível consultar os dados do documento.');
@@ -947,13 +947,27 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
               </div>
 
               {lookupFeedback && (
-                <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-xs text-emerald-300 space-y-1">
-                  <div className="flex items-center justify-between font-bold">
-                    <span>✓ Dados localizados ({lookupFeedback.source})</span>
-                    <span className="font-mono text-[10px]">{lookupFeedback.esocial_tp_insc}</span>
+                lookupFeedback.source === 'RECEITA_FEDERAL_ONLINE' ? (
+                  <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-xs text-emerald-300 space-y-1">
+                    <div className="flex items-center justify-between font-bold">
+                      <span>✓ Dados localizados na Receita Federal</span>
+                      <span className="font-mono text-[10px]">{lookupFeedback.esocial_tp_insc}</span>
+                    </div>
+                    <p className="text-[11px] text-emerald-200">{lookupFeedback.esocial_explanation}</p>
                   </div>
-                  <p className="text-[11px] text-emerald-200">{lookupFeedback.esocial_explanation}</p>
-                </div>
+                ) : (
+                  <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl text-xs text-amber-300 space-y-1">
+                    <div className="flex items-center justify-between font-bold">
+                      <span>Documento classificado — preencha os dados manualmente</span>
+                      <span className="font-mono text-[10px]">{lookupFeedback.esocial_tp_insc}</span>
+                    </div>
+                    <p className="text-[11px] text-amber-200">{lookupFeedback.esocial_explanation}</p>
+                    <p className="text-[11px] text-amber-200/80">
+                      Não há consulta pública para este tipo de documento. Informe razão social, endereço e o CNAE
+                      (que define o grau de risco do PGR/PCMSO).
+                    </p>
+                  </div>
+                )
               )}
 
               {lookupError && (

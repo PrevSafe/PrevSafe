@@ -1960,9 +1960,9 @@ const CreateEditEventModal: React.FC<CreateEditEventModalProps> = ({
   const [s2240StartDate, setS2240StartDate] = useState<string>(initialEvent?.ambient_data?.start_date || new Date().toISOString().split('T')[0]);
   const [s2240Description, setS2240Description] = useState<string>(initialEvent?.ambient_data?.description_activities || 'Atividades operacionais e de manutenção.');
   const [s2240Environment, setS2240Environment] = useState<string>(initialEvent?.ambient_data?.work_environment || 'Planta Operacional');
-  const [s2240TechName, setS2240TechName] = useState<string>(initialEvent?.ambient_data?.responsible_technician_name || 'Eng. Eduardo Vasconcelos');
-  const [s2240TechCpf, setS2240TechCpf] = useState<string>(initialEvent?.ambient_data?.responsible_technician_cpf || '123.456.789-00');
-  const [s2240TechCrea, setS2240TechCrea] = useState<string>(initialEvent?.ambient_data?.responsible_technician_crea_crm || 'CREA-SP 5069812/D');
+  const [s2240TechName, setS2240TechName] = useState<string>(initialEvent?.ambient_data?.responsible_technician_name || '');
+  const [s2240TechCpf, setS2240TechCpf] = useState<string>(initialEvent?.ambient_data?.responsible_technician_cpf || '');
+  const [s2240TechCrea, setS2240TechCrea] = useState<string>(initialEvent?.ambient_data?.responsible_technician_crea_crm || '');
 
   // S-2220 State
   const [s2220AsoType, setS2220AsoType] = useState<any>(initialEvent?.aso_data?.aso_type || 'PERIODICO');

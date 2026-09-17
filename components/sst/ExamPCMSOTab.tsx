@@ -133,12 +133,12 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
     if (editingProtocol) {
       updateExamProtocol(editingProtocol.id, {
         ...protocolForm,
-        client_id: selectedGhe?.client_id || selectedClientId || 'cli-valenca-01'
+        client_id: selectedGhe?.client_id || selectedClientId || ''
       });
     } else {
       addExamProtocol({
-        client_id: selectedGhe?.client_id || selectedClientId || 'cli-valenca-01',
-        ghe_id: protocolForm.ghe_id || ghes[0]?.id || 'ghe-01',
+        client_id: selectedGhe?.client_id || selectedClientId || '',
+        ghe_id: protocolForm.ghe_id || ghes[0]?.id || '',
         exam_name: protocolForm.exam_name,
         exam_code_table_27: protocolForm.exam_code_table_27,
         periodicity_months: protocolForm.periodicity_months,

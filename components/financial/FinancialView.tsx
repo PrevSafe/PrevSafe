@@ -97,7 +97,8 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
     contracts = [], 
     serviceOrders = [], 
     clients = [], 
-    currentProfile
+    currentProfile,
+    organization
   } = usePrevSafe();
 
   // Navigation & Tabs
@@ -1845,9 +1846,9 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
               {/* Header */}
               <div className="flex items-start justify-between border-b border-slate-800 pb-4">
                 <div>
-                  <div className="text-base font-bold text-white tracking-tight">PrevSafe Consultoria & Engenharia SST</div>
-                  <div className="text-slate-400 text-[11px] mt-0.5">CNPJ: 12.345.678/0001-90 • CREA/SP: 988421</div>
-                  <div className="text-slate-400 text-[11px]">Av. Paulista, 1000 - Bela Vista, São Paulo - SP</div>
+                  <div className="text-base font-bold text-white tracking-tight">{organization.legal_name || organization.name}</div>
+                  <div className="text-slate-400 text-[11px] mt-0.5">CNPJ: {organization.document_number}</div>
+                  <div className="text-slate-400 text-[11px]">{[organization.email, organization.phone].filter(Boolean).join(' • ')}</div>
                 </div>
                 <div className="text-right font-mono">
                   <div className="text-xs font-bold text-emerald-400">{selectedTxForReceipt.document_number || 'FAT-2026-0091'}</div>
@@ -1888,10 +1889,10 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
                     <span>Pagamento Instantâneo via PIX</span>
                   </div>
                   <p className="text-[11px] text-slate-400 font-mono truncate max-w-[320px]">
-                    {selectedTxForReceipt.barcode_or_pix || '00020126580014br.gov.bcb.pix0136prevsafe-financeiro@prevsafe.com.br'}
+                    {selectedTxForReceipt.barcode_or_pix || 'Chave PIX não informada nesta cobrança'}
                   </p>
                   <button
-                    onClick={() => copyPixToClipboard(selectedTxForReceipt.barcode_or_pix || 'prevsafe-financeiro@prevsafe.com.br')}
+                    onClick={() => copyPixToClipboard(selectedTxForReceipt.barcode_or_pix || '')}
                     className="mt-1 px-3 py-1 rounded-lg bg-emerald-600/20 hover:bg-emerald-600 text-emerald-300 hover:text-white text-[11px] font-semibold flex items-center space-x-1.5 transition mx-auto sm:mx-0"
                   >
                     <Copy className="w-3 h-3" />

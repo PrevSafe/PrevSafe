@@ -351,7 +351,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
                 Inventário Geral de Riscos Ocupacionais & Plano de Ação (GRO / PGR)
               </h2>
               <p className="text-xs text-slate-400">
-                Empresa: <strong className="text-slate-200">{clientObj?.trade_name || clientObj?.legal_name || 'Empresa Cliente'}</strong> • CNPJ: <span className="font-mono">{clientObj?.document_number || '12.345.678/0001-90'}</span>
+                Empresa: <strong className="text-slate-200">{clientObj?.trade_name || clientObj?.legal_name || 'Empresa Cliente'}</strong> • CNPJ: <span className="font-mono">{clientObj?.document_number || 'Não informado'}</span>
               </p>
             </div>
             <div className="text-right text-xs text-slate-400 space-y-1">
@@ -512,7 +512,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
                 Gestão de Segurança, Saúde e Meio Ambiente de Trabalho Rural
               </h2>
               <p className="text-xs text-slate-400">
-                Propriedade Rural: <strong className="text-slate-200">{clientObj?.trade_name || clientObj?.legal_name || 'Fazenda / Agroindústria'}</strong> • CNPJ/CAEPF: <span className="font-mono">{clientObj?.document_number || '12.345.678/0001-90'}</span>
+                Propriedade Rural: <strong className="text-slate-200">{clientObj?.trade_name || clientObj?.legal_name || 'Fazenda / Agroindústria'}</strong> • CNPJ/CAEPF: <span className="font-mono">{clientObj?.document_number || 'Não informado'}</span>
               </p>
             </div>
             <div className="text-right text-xs text-slate-400 space-y-1">

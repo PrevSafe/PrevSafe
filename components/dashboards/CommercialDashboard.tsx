@@ -230,7 +230,7 @@ export const QualityDashboard: React.FC<{ onNavigate: (view: string) => void }> 
   const totalEvaluations = (evaluations || []).length;
   const averageNps = (evaluations || []).length > 0
     ? ((evaluations || []).reduce((acc, e) => acc + (e?.nps_score || 0), 0) / evaluations.length).toFixed(1)
-    : '9.5';
+    : '—';
 
   const reworkCount = (serviceOrders || []).filter(o => o?.status === 'REWORK' || (o?.rework_history && o.rework_history.length > 0)).length;
   const reworkRate = (serviceOrders || []).length > 0

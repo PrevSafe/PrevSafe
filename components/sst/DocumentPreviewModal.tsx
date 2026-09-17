@@ -95,7 +95,7 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
   if (!isOpen) return null;
 
   const clientName = client?.trade_name || client?.legal_name || 'Empresa Cliente';
-  const clientDoc = client?.document_number || '12.345.678/0001-90';
+  const clientDoc = client?.document_number || 'Não informado';
   const clientCnae = client?.main_cnae || '41.20-4-00';
   const clientRiskDegree = client?.risk_degree || 3;
   const issueDate = new Date().toLocaleDateString('pt-BR');
