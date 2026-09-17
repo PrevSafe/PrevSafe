@@ -1448,6 +1448,23 @@ export function exportEPIDeliveriesExcel(
   XLSX.writeFile(workbook, finalName);
 }
 
+// SSTIntegrationTraining carries two generations of field names (see types/index.ts);
+// records created by the UI use the *_title / nr_framework / program_content_* spelling.
+function resolveTrainingFields(training: SSTIntegrationTraining) {
+  return {
+    title: training.title || training.training_title || 'Treinamento de Integração em SST',
+    code: training.code || training.training_code || 'SEM-CODIGO',
+    normativeReference: training.normative_reference || training.nr_framework || 'NR-01',
+    location: training.location || training.location_or_platform || 'Não informado',
+    scheduleTime: training.schedule_time || 'Não informado',
+    syllabus: training.syllabus || training.program_content_syllabus || [],
+    evaluationMethod: training.evaluation_method || training.training_evaluation_method || 'Não informado',
+    instructorRegistration: training.instructor_registration || training.instructor_registration_number || 'Não informado',
+    technicalManagerName: training.technical_manager_name || training.technical_supervisor_name,
+    technicalManagerRegistration: training.technical_manager_registration || training.technical_supervisor_registration,
+  };
+}
+
 /**
  * Generates an official, legally compliant Ata de Presença / Lista de Presença de Treinamento de Integração (NR-01 item 1.7) PDF
  */
@@ -1456,6 +1473,7 @@ export function exportTrainingAttendanceListPDF(
   organization: Organization,
   client?: Client
 ): void {
+  const t = resolveTrainingFields(training);
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
   const pageWidth = doc.internal.pageSize.getWidth();
   const margin = 14;
@@ -1473,7 +1491,7 @@ export function exportTrainingAttendanceListPDF(
   doc.text('LISTA DE PRESENÇA E ATA DE TREINAMENTO DE INTEGRAÇÃO - NR-01', margin, 16);
   doc.setTextColor(255, 255, 255);
   doc.setFont('helvetica', 'bold');
-  doc.text(`Cód: ${training.code}`, pageWidth - margin, 10, { align: 'right' });
+  doc.text(`Cód: ${t.code}`, pageWidth - margin, 10, { align: 'right' });
   doc.setFillColor(79, 70, 229);
   doc.rect(0, 24, pageWidth, 1.5, 'F');
 
@@ -1483,11 +1501,11 @@ export function exportTrainingAttendanceListPDF(
   doc.setTextColor(15, 23, 42);
   doc.setFontSize(10);
   doc.setFont('helvetica', 'bold');
-  doc.text(training.title.toUpperCase(), pageWidth / 2, 34, { align: 'center' });
+  doc.text(t.title.toUpperCase(), pageWidth / 2, 34, { align: 'center' });
   doc.setFontSize(7.5);
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(71, 85, 105);
-  doc.text(`Enquadramento Legal: ${training.normative_reference} | Carga Horária: ${training.workload_hours}h | Modalidade: ${training.modality}`, pageWidth / 2, 38, { align: 'center' });
+  doc.text(`Enquadramento Legal: ${t.normativeReference} | Carga Horária: ${training.workload_hours}h | Modalidade: ${training.modality}`, pageWidth / 2, 38, { align: 'center' });
 
   // Identification Table
   autoTable(doc, {
@@ -1506,19 +1524,19 @@ export function exportTrainingAttendanceListPDF(
       ],
       [
         { content: 'Local de Realização:', styles: { fontStyle: 'bold' } },
-        { content: training.location },
+        { content: t.location },
         { content: 'Data e Horário:', styles: { fontStyle: 'bold' } },
-        { content: `${formatDate(training.start_date)} ${training.end_date && training.end_date !== training.start_date ? `a ${formatDate(training.end_date)}` : ''} (${training.schedule_time})` }
+        { content: `${formatDate(training.start_date)} ${training.end_date && training.end_date !== training.start_date ? `a ${formatDate(training.end_date)}` : ''} (${t.scheduleTime})` }
       ],
       [
         { content: 'Instrutor Responsável:', styles: { fontStyle: 'bold' } },
         { content: `${training.instructor_name} (${training.instructor_qualification})` },
         { content: 'Registro / Conselho:', styles: { fontStyle: 'bold' } },
-        { content: training.instructor_registration }
+        { content: t.instructorRegistration }
       ],
       [
         { content: 'Critério de Avaliação:', styles: { fontStyle: 'bold' } },
-        { content: training.evaluation_method, colSpan: 3 }
+        { content: t.evaluationMethod, colSpan: 3 }
       ]
     ],
     styles: { fontSize: 7.5, cellPadding: 2 }
@@ -1527,7 +1545,7 @@ export function exportTrainingAttendanceListPDF(
   let currentY = (doc as any).lastAutoTable.finalY + 3;
 
   // Programmatic Content (Conteúdo Programático Obrigatório NR-01)
-  const syllabusBullets = training.syllabus.map((s, idx) => `${idx + 1}. ${s}`).join('\n');
+  const syllabusBullets = t.syllabus.map((s, idx) => `${idx + 1}. ${s}`).join('\n');
   autoTable(doc, {
     startY: currentY,
     margin: { left: margin, right: margin },
@@ -1595,7 +1613,7 @@ export function exportTrainingAttendanceListPDF(
   doc.setFontSize(6.5);
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(100, 116, 139);
-  doc.text(`Instrutor / ${training.instructor_qualification} (${training.instructor_registration})`, margin + (colWidth / 2), currentY + 18, { align: 'center' });
+  doc.text(`Instrutor / ${training.instructor_qualification} (${t.instructorRegistration})`, margin + (colWidth / 2), currentY + 18, { align: 'center' });
 
   // Technical Manager signature
   const rightX = margin + colWidth + 10;
@@ -1603,15 +1621,15 @@ export function exportTrainingAttendanceListPDF(
   doc.setFontSize(7.5);
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(15, 23, 42);
-  doc.text(training.technical_manager_name || 'Engenharia de Segurança do Trabalho', rightX + (colWidth / 2), currentY + 14, { align: 'center' });
+  doc.text(t.technicalManagerName || 'Engenharia de Segurança do Trabalho', rightX + (colWidth / 2), currentY + 14, { align: 'center' });
   doc.setFontSize(6.5);
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(100, 116, 139);
-  doc.text(training.technical_manager_registration || 'SESMT / Registro CREA-MTE', rightX + (colWidth / 2), currentY + 18, { align: 'center' });
+  doc.text(t.technicalManagerRegistration || 'SESMT / Registro CREA-MTE', rightX + (colWidth / 2), currentY + 18, { align: 'center' });
 
   applyPageNumbers(doc);
 
-  const cleanCode = training.code.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase();
+  const cleanCode = t.code.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase();
   doc.save(`lista-presenca-treinamento-integracao-nr01-${cleanCode}.pdf`);
 }
 
@@ -1624,6 +1642,7 @@ export function exportTrainingCertificatePDF(
   organization: Organization,
   client?: Client
 ): void {
+  const t = resolveTrainingFields(training);
   const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
@@ -1682,18 +1701,18 @@ export function exportTrainingCertificatePDF(
   doc.setFontSize(14);
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(79, 70, 229);
-  doc.text(training.title.toUpperCase(), pageWidth / 2, 103, { align: 'center' });
+  doc.text(t.title.toUpperCase(), pageWidth / 2, 103, { align: 'center' });
 
   doc.setFontSize(9.5);
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(71, 85, 105);
-  doc.text(`Em estrita conformidade com a ${training.normative_reference}, com carga horária total de ${training.workload_hours} horas,`, pageWidth / 2, 111, { align: 'center' });
-  doc.text(`na modalidade ${training.modality}, realizado no dia ${formatDate(training.start_date)} em ${training.location}.`, pageWidth / 2, 116, { align: 'center' });
+  doc.text(`Em estrita conformidade com a ${t.normativeReference}, com carga horária total de ${training.workload_hours} horas,`, pageWidth / 2, 111, { align: 'center' });
+  doc.text(`na modalidade ${training.modality}, realizado no dia ${formatDate(training.start_date)} em ${t.location}.`, pageWidth / 2, 116, { align: 'center' });
 
   // Date of Issue
   doc.setFontSize(9);
   doc.setTextColor(100, 116, 139);
-  doc.text(`Emitido em ${formatDate(training.start_date)} | Código de Validação: ${training.code}-${attendee.employee_cpf.replace(/\D/g, '').slice(-4)}`, pageWidth / 2, 132, { align: 'center' });
+  doc.text(`Emitido em ${formatDate(training.start_date)} | Código de Validação: ${t.code}-${attendee.employee_cpf.replace(/\D/g, '').slice(-4)}`, pageWidth / 2, 132, { align: 'center' });
 
   // Signatures
   const signY = 155;
@@ -1711,7 +1730,7 @@ export function exportTrainingCertificatePDF(
   doc.setFontSize(7);
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(100, 116, 139);
-  doc.text(`${training.instructor_qualification} - ${training.instructor_registration}`, leftX + (colW / 2), signY + 8, { align: 'center' });
+  doc.text(`${training.instructor_qualification} - ${t.instructorRegistration}`, leftX + (colW / 2), signY + 8, { align: 'center' });
 
   // Technical Manager Signature
   const rightX = (pageWidth / 2) + 15;
@@ -1719,11 +1738,11 @@ export function exportTrainingCertificatePDF(
   doc.setFontSize(8.5);
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(15, 23, 42);
-  doc.text(training.technical_manager_name || 'Responsável Técnico SESMT', rightX + (colW / 2), signY + 4, { align: 'center' });
+  doc.text(t.technicalManagerName || 'Responsável Técnico SESMT', rightX + (colW / 2), signY + 4, { align: 'center' });
   doc.setFontSize(7);
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(100, 116, 139);
-  doc.text(training.technical_manager_registration || 'CREA / MTE', rightX + (colW / 2), signY + 8, { align: 'center' });
+  doc.text(t.technicalManagerRegistration || 'CREA / MTE', rightX + (colW / 2), signY + 8, { align: 'center' });
 
   // Participant Signature (small on the side)
   const partX = (pageWidth / 2) - (colW / 2);
@@ -1844,7 +1863,7 @@ export function exportAdmissionKitPDF(
       ],
       [
         { content: '3. Treinamento de Integração (NR-01)', styles: { fontStyle: 'bold' } },
-        { content: training ? `${training.title} (${training.workload_hours}h) - ${training.modality}` : 'Treinamento Registrado no SESMT' },
+        { content: training ? `${training.training_title || training.title || 'Treinamento de Integração em SST'} (${training.workload_hours}h) - ${training.modality}` : 'Treinamento Registrado no SESMT' },
         { content: 'Presença Confirmada ✓', styles: { halign: 'center' } }
       ],
       [
@@ -2203,17 +2222,19 @@ export function exportTrainingAttendanceExcel(
 ): void {
   if (!training) return;
 
+  const t = resolveTrainingFields(training);
+
   // Sheet 1: Attendees
   const data = (training.attendees || []).map((att, idx) => ({
     'Nº': idx + 1,
-    'Código Treinamento': training.code,
-    'Título Treinamento': training.title,
+    'Código Treinamento': t.code,
+    'Título Treinamento': t.title,
     'Carga Horária': `${training.workload_hours}h`,
     'Modalidade': training.modality,
     'Data Realização': training.start_date,
-    'Local': training.location,
+    'Local': t.location,
     'Instrutor': training.instructor_name,
-    'Registro Instrutor': training.instructor_registration,
+    'Registro Instrutor': t.instructorRegistration,
     'Nome Participante': att.employee_name,
     'CPF': att.employee_cpf,
     'Matrícula': att.employee_registration || 'S/N',
@@ -2227,10 +2248,10 @@ export function exportTrainingAttendanceExcel(
   }));
 
   // Sheet 2: Syllabus & Legal Data
-  const syllabusData = training.syllabus.map((item, idx) => ({
+  const syllabusData = t.syllabus.map((item, idx) => ({
     'Módulo': idx + 1,
     'Tema Ministrado': item,
-    'Amparo Legal': training.normative_reference
+    'Amparo Legal': t.normativeReference
   }));
 
   const workbook = XLSX.utils.book_new();
@@ -2240,7 +2261,7 @@ export function exportTrainingAttendanceExcel(
   XLSX.utils.book_append_sheet(workbook, attWorksheet, 'Lista de Presença');
   XLSX.utils.book_append_sheet(workbook, sylWorksheet, 'Conteúdo Programático');
 
-  const finalName = fileName || `lista-presenca-${training.code}-${new Date().toISOString().split('T')[0]}.xlsx`;
+  const finalName = fileName || `lista-presenca-${t.code}-${new Date().toISOString().split('T')[0]}.xlsx`;
   XLSX.writeFile(workbook, finalName);
 }
 
