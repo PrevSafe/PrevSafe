@@ -1093,6 +1093,16 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     const target = profiles.find(p => p.id === id);
     if (!target) return { success: false, message: 'Usuário não encontrado.' };
 
+    if (currentProfile.role !== 'ADMIN') {
+      logAudit('LOGIN', 'ORGANIZATION', organization.id, organization.name, {
+        event: 'USER_IMPERSONATION_DENIED',
+        attempted_by: currentProfile.full_name,
+        attempted_by_role: currentProfile.role,
+        target_user: target.full_name
+      });
+      return { success: false, message: 'Apenas o Administrador Geral pode entrar como outro usuário.' };
+    }
+
     setCurrentProfile(target);
     setIsAuthenticated(true);
     if (target.role === 'CLIENTE_ADMIN' || target.role === 'CLIENTE_USER') {

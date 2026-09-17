@@ -594,6 +594,8 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
       } else {
         onNavigate('dashboard-exec');
       }
+    } else {
+      showToast(res.message || 'Não foi possível entrar como este usuário.', 'error');
     }
   };
 
@@ -994,14 +996,16 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
 
                     {/* Card Actions Bottom Strip */}
                     <div className="pt-2 flex items-center justify-between gap-1.5">
-                      <button
-                        onClick={() => handleImpersonate(p)}
-                        className="flex-1 flex items-center justify-center space-x-1.5 py-2 px-2.5 rounded-xl bg-slate-800 hover:bg-teal-500 hover:text-slate-950 text-slate-300 text-xs font-semibold border border-slate-700/80 transition"
-                        title="Entrar temporariamente com as permissões deste perfil"
-                      >
-                        <UserCheck className="w-3.5 h-3.5" />
-                        <span>Acessar Como</span>
-                      </button>
+                      {currentProfile.role === 'ADMIN' && (
+                        <button
+                          onClick={() => handleImpersonate(p)}
+                          className="flex-1 flex items-center justify-center space-x-1.5 py-2 px-2.5 rounded-xl bg-slate-800 hover:bg-teal-500 hover:text-slate-950 text-slate-300 text-xs font-semibold border border-slate-700/80 transition"
+                          title="Entrar temporariamente com as permissões deste perfil"
+                        >
+                          <UserCheck className="w-3.5 h-3.5" />
+                          <span>Acessar Como</span>
+                        </button>
+                      )}
 
                       <button
                         onClick={() => handleOpenEditModal(p)}
@@ -1146,13 +1150,15 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
 
                           <td className="py-3 px-4 text-right">
                             <div className="flex items-center justify-end space-x-1">
-                              <button
-                                onClick={() => handleImpersonate(p)}
-                                className="p-1.5 rounded-lg bg-slate-800 hover:bg-teal-500 hover:text-slate-950 text-slate-300 transition"
-                                title="Entrar como este usuário"
-                              >
-                                <UserCheck className="w-3.5 h-3.5" />
-                              </button>
+                              {currentProfile.role === 'ADMIN' && (
+                                <button
+                                  onClick={() => handleImpersonate(p)}
+                                  className="p-1.5 rounded-lg bg-slate-800 hover:bg-teal-500 hover:text-slate-950 text-slate-300 transition"
+                                  title="Entrar como este usuário"
+                                >
+                                  <UserCheck className="w-3.5 h-3.5" />
+                                </button>
+                              )}
                               <button
                                 onClick={() => handleOpenEditModal(p)}
                                 className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition"
