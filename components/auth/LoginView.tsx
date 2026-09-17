@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { usePrevSafe } from '@/context/PrevSafeContext';
+import { getSupabaseClient } from '@/lib/supabase';
 import {
   Shield,
   ShieldCheck,
@@ -18,8 +19,7 @@ import {
   RefreshCw,
   HelpCircle,
   Clock,
-  Fingerprint,
-  Info
+  Fingerprint
 } from 'lucide-react';
 
 interface LoginViewProps {
@@ -39,8 +39,54 @@ export const LoginView: React.FC<LoginViewProps> = ({ onSuccess, onNavigateHelp 
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  // Self-service password reset isn't available yet — an administrator resets it in Gestão de Usuários
+  // Password recovery (Supabase sends a reset link to the user's e-mail)
   const [showRecoveryModal, setShowRecoveryModal] = useState(false);
+  const [recoveryEmail, setRecoveryEmail] = useState('');
+  const [recoveryError, setRecoveryError] = useState<string | null>(null);
+  const [recoverySent, setRecoverySent] = useState(false);
+  const [isSendingRecovery, setIsSendingRecovery] = useState(false);
+
+  const closeRecoveryModal = () => {
+    setShowRecoveryModal(false);
+    setRecoveryError(null);
+    setRecoverySent(false);
+    setIsSendingRecovery(false);
+  };
+
+  const handleRecoverySubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setRecoveryError(null);
+
+    const target = recoveryEmail.trim().toLowerCase();
+    if (!target) {
+      setRecoveryError('Informe o e-mail cadastrado.');
+      return;
+    }
+
+    const supabase = getSupabaseClient();
+    if (!supabase) {
+      setRecoveryError('Serviço de autenticação indisponível no momento.');
+      return;
+    }
+
+    setIsSendingRecovery(true);
+    const { error } = await supabase.auth.resetPasswordForEmail(target, {
+      redirectTo: `${window.location.origin}/redefinir-senha`,
+    });
+    setIsSendingRecovery(false);
+
+    if (error) {
+      setRecoveryError(
+        /rate limit|too many/i.test(error.message)
+          ? 'Muitas solicitações em pouco tempo. Aguarde alguns minutos e tente novamente.'
+          : 'Não foi possível enviar o link agora. Tente novamente em instantes.'
+      );
+      return;
+    }
+
+    // Resposta genérica de propósito: não revela se o e-mail existe na base
+    setRecoverySent(true);
+  };
 
   const handleCredentialsSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -309,7 +355,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onSuccess, onNavigateHelp 
         </div>
       </div>
 
-      {/* Password Recovery Info Modal (self-service reset isn't available yet) */}
+      {/* Password Recovery: envia link de redefinicao por e-mail (Supabase Auth) */}
       {showRecoveryModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md p-6 shadow-2xl relative">
@@ -319,27 +365,78 @@ export const LoginView: React.FC<LoginViewProps> = ({ onSuccess, onNavigateHelp 
               </div>
               <div>
                 <h3 className="text-base font-bold text-white">Recuperação de Acesso</h3>
-                <p className="text-xs text-slate-400">Redefinição de senha PrevSafe</p>
+                <p className="text-xs text-slate-400">Enviamos um link de redefinição por e-mail</p>
               </div>
             </div>
 
-            <div className="mt-4 p-3 rounded-xl bg-slate-800/60 border border-slate-700/60 text-slate-300 text-xs flex items-start space-x-2.5">
-              <Info className="w-4 h-4 flex-shrink-0 text-emerald-400 mt-0.5" />
-              <span>
-                Por segurança, a redefinição de senha é feita por um administrador do sistema, na tela de <strong>Gestão de Usuários</strong>.
-                Entre em contato com o administrador da sua organização ou com o suporte SST (<span className="text-emerald-400 font-mono">evoluaevenca@gmail.com</span>) para solicitar uma nova senha.
-              </span>
-            </div>
+            {recoverySent ? (
+              <div className="mt-4 space-y-4">
+                <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs flex items-start space-x-2.5">
+                  <CheckCircle2 className="w-4 h-4 flex-shrink-0 text-emerald-400 mt-0.5" />
+                  <span>
+                    Se houver uma conta com esse e-mail, o link de redefinição chegará em instantes.
+                    Confira também a caixa de spam — o link vale por 1 hora.
+                  </span>
+                </div>
+                <div className="flex justify-end">
+                  <button
+                    type="button"
+                    onClick={closeRecoveryModal}
+                    className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-500 transition shadow"
+                  >
+                    Entendi
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <form onSubmit={handleRecoverySubmit} className="mt-4 space-y-4">
+                <p className="text-xs text-slate-400">
+                  Informe o e-mail cadastrado e enviaremos um link para você criar uma nova senha.
+                </p>
 
-            <div className="flex justify-end pt-4">
-              <button
-                type="button"
-                onClick={() => setShowRecoveryModal(false)}
-                className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-500 transition shadow"
-              >
-                Entendi
-              </button>
-            </div>
+                {recoveryError && (
+                  <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-center space-x-2.5">
+                    <AlertCircle className="w-4 h-4 flex-shrink-0 text-rose-400" />
+                    <span>{recoveryError}</span>
+                  </div>
+                )}
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">E-mail cadastrado</label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
+                      <Mail className="w-4 h-4" />
+                    </div>
+                    <input
+                      type="email"
+                      required
+                      value={recoveryEmail}
+                      onChange={(e) => setRecoveryEmail(e.target.value)}
+                      placeholder="seu.email@empresa.com.br"
+                      className="w-full pl-10 pr-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex justify-end space-x-2">
+                  <button
+                    type="button"
+                    onClick={closeRecoveryModal}
+                    className="px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 transition"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isSendingRecovery}
+                    className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-500 transition shadow disabled:opacity-50 flex items-center space-x-1.5"
+                  >
+                    {isSendingRecovery && <RefreshCw className="w-3.5 h-3.5 animate-spin" />}
+                    <span>{isSendingRecovery ? 'Enviando...' : 'Enviar link'}</span>
+                  </button>
+                </div>
+              </form>
+            )}
           </div>
         </div>
       )}

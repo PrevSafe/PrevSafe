@@ -143,7 +143,50 @@ export const AuditLogsView: React.FC<{ onNavigate: (view: string) => void }> = (
 };
 
 export const SettingsView: React.FC<{ onNavigate: (view: string) => void }> = ({ onNavigate }) => {
-  const { organization, resetDatabaseToSeed } = usePrevSafe();
+  const { organization, updateOrganization, resetDatabaseToSeed } = usePrevSafe();
+
+  const buildOrgForm = (org: typeof organization) => ({
+    legal_name: org.legal_name || '',
+    name: org.name || '',
+    document_number: org.document_number || '',
+    email: org.email || '',
+    phone: org.phone || '',
+  });
+
+  const [orgForm, setOrgForm] = useState(() => buildOrgForm(organization));
+  const [orgSaved, setOrgSaved] = useState(false);
+  const [orgError, setOrgError] = useState<string | null>(null);
+
+  const orgDirty = (Object.keys(orgForm) as Array<keyof typeof orgForm>)
+    .some(key => orgForm[key] !== buildOrgForm(organization)[key]);
+
+  const handleResetOrgForm = () => {
+    setOrgForm(buildOrgForm(organization));
+    setOrgError(null);
+  };
+
+  const handleSaveOrg = () => {
+    if (!orgForm.legal_name.trim() || !orgForm.name.trim()) {
+      setOrgError('Informe a razão social e o nome fantasia.');
+      return;
+    }
+    if (!orgForm.document_number.trim()) {
+      setOrgError('Informe o CNPJ — ele consta nos documentos técnicos emitidos.');
+      return;
+    }
+
+    setOrgError(null);
+    updateOrganization({
+      legal_name: orgForm.legal_name.trim(),
+      name: orgForm.name.trim(),
+      document_number: orgForm.document_number.trim(),
+      email: orgForm.email.trim(),
+      phone: orgForm.phone.trim(),
+    });
+    setOrgSaved(true);
+    setTimeout(() => setOrgSaved(false), 3000);
+  };
+
   const [copiedCli, setCopiedCli] = useState(false);
   const [copiedSql, setCopiedSql] = useState(false);
   const [copiedMigrationIdx, setCopiedMigrationIdx] = useState<number | null>(null);
@@ -375,24 +418,91 @@ export const SettingsView: React.FC<{ onNavigate: (view: string) => void }> = ({
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         <div className="bg-slate-900 p-6 rounded-3xl border border-slate-800 shadow-xl space-y-5 lg:col-span-2">
-          <h2 className="text-base font-bold text-white">Dados da Consultoria de SST</h2>
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <h2 className="text-base font-bold text-white">Dados da Empresa</h2>
+              <p className="text-[11px] text-slate-400 mt-0.5">
+                Sai no cabeçalho de todos os PDFs, na tela de login e no portal do cliente.
+              </p>
+            </div>
+            {orgSaved && (
+              <span className="text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold px-2.5 py-1 rounded-full whitespace-nowrap">
+                SALVO
+              </span>
+            )}
+          </div>
+
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
             <div>
               <label className="block font-semibold text-slate-400 mb-1">Razão Social</label>
-              <input type="text" defaultValue={organization.legal_name} className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-2xl text-white focus:outline-none focus:border-indigo-500" />
+              <input
+                type="text"
+                value={orgForm.legal_name}
+                onChange={(e) => setOrgForm({ ...orgForm, legal_name: e.target.value })}
+                className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-2xl text-white focus:outline-none focus:border-indigo-500"
+              />
             </div>
             <div>
               <label className="block font-semibold text-slate-400 mb-1">Nome Fantasia</label>
-              <input type="text" defaultValue={organization.name} className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-2xl text-white focus:outline-none focus:border-indigo-500" />
+              <input
+                type="text"
+                value={orgForm.name}
+                onChange={(e) => setOrgForm({ ...orgForm, name: e.target.value })}
+                className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-2xl text-white focus:outline-none focus:border-indigo-500"
+              />
             </div>
             <div>
               <label className="block font-semibold text-slate-400 mb-1">CNPJ</label>
-              <input type="text" defaultValue={organization.document_number} className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-2xl font-mono text-white focus:outline-none focus:border-indigo-500" />
+              <input
+                type="text"
+                value={orgForm.document_number}
+                onChange={(e) => setOrgForm({ ...orgForm, document_number: e.target.value })}
+                className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-2xl font-mono text-white focus:outline-none focus:border-indigo-500"
+              />
             </div>
             <div>
               <label className="block font-semibold text-slate-400 mb-1">E-mail Corporativo</label>
-              <input type="text" defaultValue={organization.email} className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-2xl text-white focus:outline-none focus:border-indigo-500" />
+              <input
+                type="email"
+                value={orgForm.email}
+                onChange={(e) => setOrgForm({ ...orgForm, email: e.target.value })}
+                className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-2xl text-white focus:outline-none focus:border-indigo-500"
+              />
             </div>
+            <div>
+              <label className="block font-semibold text-slate-400 mb-1">Telefone / WhatsApp</label>
+              <input
+                type="text"
+                value={orgForm.phone}
+                onChange={(e) => setOrgForm({ ...orgForm, phone: e.target.value })}
+                className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-2xl text-white focus:outline-none focus:border-indigo-500"
+              />
+            </div>
+          </div>
+
+          {orgError && (
+            <div className="p-3 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-[11px]">
+              {orgError}
+            </div>
+          )}
+
+          <div className="flex items-center justify-end gap-2">
+            <button
+              type="button"
+              onClick={handleResetOrgForm}
+              disabled={!orgDirty}
+              className="px-4 py-2 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition disabled:opacity-40"
+            >
+              Descartar
+            </button>
+            <button
+              type="button"
+              onClick={handleSaveOrg}
+              disabled={!orgDirty}
+              className="px-5 py-2 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition disabled:opacity-40"
+            >
+              Salvar alterações
+            </button>
           </div>
 
           <h2 className="text-base font-bold text-white pt-4 border-t border-slate-800">Integração com eSocial & Mensageria</h2>

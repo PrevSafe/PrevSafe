@@ -155,6 +155,7 @@ interface PrevSafeContextType {
   currentRole: RoleType;
   switchRole: (role: RoleType) => void;
   organization: Organization;
+  updateOrganization: (updates: Partial<Organization>) => void;
 
   // Data Collections
   profiles: Profile[];
@@ -858,6 +859,16 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
   }, [organization.id, currentProfile]);
 
   // Role Switcher helper
+  const updateOrganization = useCallback((updates: Partial<Organization>) => {
+    setOrganization(prev => {
+      const next = { ...prev, ...updates, updated_at: new Date().toISOString() };
+      logAudit('ORGANIZATION_UPDATED' as any, 'ORGANIZATION', prev.id, next.name, {
+        updated_fields: Object.keys(updates)
+      });
+      return next;
+    });
+  }, [logAudit]);
+
   const switchRole = useCallback((role: RoleType) => {
     const matchedProfile = profiles.find(p => p.role === role) || {
       ...currentProfile,
@@ -6400,6 +6411,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
   }, [requests, serviceOrders.length, dispatchNotification, generateDueSoonFinancialAlerts, checkSSTDeadlinesAndNotify]);
 
   const value = useMemo(() => ({
+    updateOrganization,
     isAuthenticated,
     isAuthLoading,
     setIsAuthenticated,
