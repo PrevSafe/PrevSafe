@@ -51,7 +51,17 @@ import {
   RefreshCw
 } from 'lucide-react';
 
+// Um link de recuperação de senha pode cair na raiz (ex.: gerado antes de a URL de
+// redirecionamento ser autorizada no Supabase). Sem isto, o token viraria uma sessão
+// e o usuário entraria no sistema em vez de definir a nova senha.
+function isRecoveryLink(hash: string) {
+  return hash.includes('type=recovery') && (hash.includes('access_token=') || hash.includes('error='));
+}
+
 export default function Home() {
+  const [isRedirectingToRecovery, setIsRedirectingToRecovery] = useState(
+    () => typeof window !== 'undefined' && isRecoveryLink(window.location.hash)
+  );
   const [activeView, setActiveView] = useState('dashboard-exec');
   const [sstInitialTab, setSstInitialTab] = useState<'HIERARCHY' | 'GHE_RISKS' | 'EXAMS_PCMSO' | 'EMPLOYEES' | 'WORK_ORDERS_OS' | 'DOCS_XML' | 'INTEGRATION_TRAINING' | 'SIGNATURES'>('HIERARCHY');
   const [isCopilotOpen, setIsCopilotOpen] = useState(false);
@@ -73,6 +83,14 @@ export default function Home() {
     requests = [],
     esocialEvents = []
   } = usePrevSafe();
+
+  // Runs before the provider's session effect (child effects fire first), so the
+  // recovery token is still in the URL and can be forwarded to the reset page.
+  useEffect(() => {
+    if (isRedirectingToRecovery) {
+      window.location.replace(`/redefinir-senha${window.location.hash}`);
+    }
+  }, [isRedirectingToRecovery]);
 
   // Helper to execute numeric navigation immediately
   const executeNumericNavigation = (code: string) => {
@@ -206,7 +224,7 @@ export default function Home() {
   };
 
   // Checking for a real Supabase Auth session before deciding whether to show the login screen
-  if (isAuthLoading) {
+  if (isRedirectingToRecovery || isAuthLoading) {
     return (
       <div className="min-h-screen w-full bg-slate-950 flex items-center justify-center">
         <RefreshCw className="w-6 h-6 text-emerald-500 animate-spin" />
