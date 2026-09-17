@@ -39,6 +39,7 @@ import {
   Radio,
   FileText
 } from 'lucide-react';
+import { shareViaChannel } from '@/lib/shareLinks';
 
 export const SaaSManagementView: React.FC<{ onNavigate: (view: string) => void }> = ({ onNavigate }) => {
   const { 
@@ -117,11 +118,22 @@ export const SaaSManagementView: React.FC<{ onNavigate: (view: string) => void }
   };
 
   const handleResendInvite = (tenantId: string, channel: 'WHATSAPP' | 'EMAIL') => {
+    const tenant = tenants.find(t => t.id === tenantId);
+    if (!tenant) return;
+
     const result = resendTenantInvite(tenantId, channel);
-    if (result.success) {
-      setInviteSuccessMsg(result.message);
-      setTimeout(() => setInviteSuccessMsg(null), 4000);
-    }
+    if (!result.success) return;
+
+    const share = shareViaChannel(channel, {
+      phone: tenant.admin_phone || tenant.whatsapp || tenant.phone,
+      email: tenant.admin_email,
+      subject: `Acesso PrevSafe SST - ${tenant.trade_name}`,
+      message: `Olá ${tenant.admin_name}! Seu ambiente PrevSafe SST para a consultoria ${tenant.trade_name} está pronto. Acesse por: ${result.url}`,
+      recipientName: tenant.admin_name,
+    });
+
+    setInviteSuccessMsg(share.message);
+    setTimeout(() => setInviteSuccessMsg(null), 5000);
   };
 
   const handleCreateSubmit = (e: React.FormEvent) => {

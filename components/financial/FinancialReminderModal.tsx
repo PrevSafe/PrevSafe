@@ -2,12 +2,13 @@
 
 import React, { useState } from 'react';
 import { FinancialTransaction, ChannelType } from '@/types';
+import { usePrevSafe } from '@/context/PrevSafeContext';
+import { shareViaChannel } from '@/lib/shareLinks';
 import { 
   Send, 
   X, 
   MessageSquare, 
   Mail, 
-  Smartphone, 
   CheckCircle2, 
   Building, 
   Clock, 
@@ -26,8 +27,10 @@ export const FinancialReminderModal: React.FC<FinancialReminderModalProps> = ({
   onClose,
   onSend
 }) => {
-  const [channel, setChannel] = useState<ChannelType>('WHATSAPP');
+  const { clients = [] } = usePrevSafe();
+  const [channel, setChannel] = useState<'WHATSAPP' | 'EMAIL'>('WHATSAPP');
   const [isSending, setIsSending] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const formatCurrency = (val: number) => {
     return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val || 0);
@@ -52,12 +55,26 @@ export const FinancialReminderModal: React.FC<FinancialReminderModalProps> = ({
     : `Prezado(a) ${recipientName}, informamos que o pagamento referente a "${transaction.title}" no valor de ${formatCurrency(transaction.final_amount)} está com quitação agendada para ${formatDate(transaction.due_date)}.`;
 
   const handleSend = () => {
+    setErrorMessage(null);
+    const client = transaction.client_id ? clients.find(c => c.id === transaction.client_id) : undefined;
+
+    const res = shareViaChannel(channel, {
+      phone: client?.whatsapp || client?.phone,
+      email: client?.email,
+      subject: `Lembrete de vencimento - ${transaction.title}`,
+      message: defaultMessage,
+      recipientName,
+    });
+
+    if (!res.success) {
+      setErrorMessage(res.message);
+      return;
+    }
+
     setIsSending(true);
-    setTimeout(() => {
-      onSend(transaction.id, channel);
-      setIsSending(false);
-      onClose();
-    }, 400);
+    onSend(transaction.id, channel);
+    setIsSending(false);
+    onClose();
   };
 
   return (
@@ -108,7 +125,7 @@ export const FinancialReminderModal: React.FC<FinancialReminderModalProps> = ({
           {/* Channel selector */}
           <div>
             <label className="block text-slate-300 font-medium mb-1.5">Canal de Envio Preferencial</label>
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-2 gap-2">
               <button
                 type="button"
                 onClick={() => setChannel('WHATSAPP')}
@@ -135,18 +152,6 @@ export const FinancialReminderModal: React.FC<FinancialReminderModalProps> = ({
                 <span className="text-[11px]">E-mail</span>
               </button>
 
-              <button
-                type="button"
-                onClick={() => setChannel('SMS')}
-                className={`p-2.5 rounded-xl border flex flex-col items-center justify-center space-y-1 transition ${
-                  channel === 'SMS'
-                    ? 'bg-purple-500/20 border-purple-500 text-purple-300 font-bold'
-                    : 'bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-700'
-                }`}
-              >
-                <Smartphone className="w-4 h-4 text-purple-400" />
-                <span className="text-[11px]">SMS</span>
-              </button>
             </div>
           </div>
 
@@ -164,6 +169,12 @@ export const FinancialReminderModal: React.FC<FinancialReminderModalProps> = ({
             </div>
           </div>
 
+          {errorMessage && (
+            <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-[11px]">
+              {errorMessage}
+            </div>
+          )}
+
           {/* Footer */}
           <div className="pt-3 border-t border-slate-800 flex items-center justify-end space-x-2">
             <button
@@ -180,7 +191,7 @@ export const FinancialReminderModal: React.FC<FinancialReminderModalProps> = ({
               className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold shadow-lg shadow-emerald-950/40 flex items-center space-x-1.5 transition active:scale-95"
             >
               <Send className="w-3.5 h-3.5" />
-              <span>{isSending ? 'Disparando...' : 'Disparar Lembrete'}</span>
+              <span>{isSending ? 'Abrindo...' : 'Abrir mensagem'}</span>
             </button>
           </div>
         </div>

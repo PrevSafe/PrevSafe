@@ -2,8 +2,9 @@
 
 import React, { useState, useMemo } from 'react';
 import { usePrevSafe } from '@/context/PrevSafeContext';
-import { Proposal, ProposalItem, ServiceTemplate } from '@/types';
-import { formatDate } from '@/lib/utils';
+import { Proposal, ProposalItem, ServiceTemplate, Client } from '@/types';
+import { formatDate, formatCurrency } from '@/lib/utils';
+import { shareViaChannel } from '@/lib/shareLinks';
 import { 
   FileSpreadsheet, 
   Plus, 
@@ -53,7 +54,8 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
     sendProposal, 
     approveProposal, 
     rejectProposal,
-    currentProfile 
+    currentProfile,
+    organization
   } = usePrevSafe();
 
   const [selectedProposal, setSelectedProposal] = useState<Proposal | null>(proposals?.[0] || null);
@@ -440,10 +442,38 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
     setSelectedProposal(remaining[0] || null);
   };
 
-  const handleSendViaWhatsApp = (prop: Proposal) => {
-    sendProposal(prop.id, 'WHATSAPP');
+  const buildProposalMessage = (prop: Proposal, client?: Client) => {
+    const greeting = client?.trade_name || client?.legal_name || 'Prezados';
+    return [
+      `Olá, ${greeting}!`,
+      '',
+      `Segue nossa proposta comercial ${prop.proposal_number} — ${prop.title}.`,
+      `Valor total: ${formatCurrency(prop.total)}`,
+      `Validade: ${formatDate(prop.valid_until)}`,
+      '',
+      `Qualquer dúvida estou à disposição.`,
+      `${currentProfile.full_name} — ${organization.name}`,
+    ].join('\n');
+  };
+
+  const handleSendProposal = (prop: Proposal, channel: 'WHATSAPP' | 'EMAIL') => {
+    const client = clients.find(c => c.id === prop.client_id);
+    const res = shareViaChannel(channel, {
+      phone: client?.whatsapp || client?.phone,
+      email: client?.email,
+      subject: `Proposta ${prop.proposal_number} - ${prop.title}`,
+      message: buildProposalMessage(prop, client),
+      recipientName: client?.trade_name || client?.legal_name,
+    });
+
+    if (!res.success) {
+      alert(res.message);
+      return;
+    }
+
+    sendProposal(prop.id, channel);
     setShowSendModal(false);
-    alert(`Link da Proposta ${prop.proposal_number} enviado via WhatsApp do cliente! Status alterado para SENT.`);
+    alert(res.message);
   };
 
   const handleApprove = (prop: Proposal) => {
@@ -1275,27 +1305,23 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
             </p>
             <div className="space-y-2.5">
               <button
-                onClick={() => handleSendViaWhatsApp(selectedProposal)}
+                onClick={() => handleSendProposal(selectedProposal, 'WHATSAPP')}
                 className="w-full p-4 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 rounded-2xl text-left flex items-center justify-between text-xs font-semibold text-emerald-200 transition"
               >
                 <div>
-                  <div className="font-bold text-white">📱 Enviar via WhatsApp Direto</div>
-                  <div className="text-[10px] text-emerald-400">Mensagem instantânea com link de visualização</div>
+                  <div className="font-bold text-white">📱 Abrir no WhatsApp</div>
+                  <div className="text-[10px] text-emerald-400">Abre o WhatsApp com a mensagem pronta para você enviar</div>
                 </div>
                 <Send className="w-4 h-4 text-emerald-400" />
               </button>
 
               <button
-                onClick={() => {
-                  sendProposal(selectedProposal.id, 'EMAIL');
-                  setShowSendModal(false);
-                  alert('E-mail institucional com proposta PDF anexa enviado com sucesso!');
-                }}
+                onClick={() => handleSendProposal(selectedProposal, 'EMAIL')}
                 className="w-full p-4 bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/30 rounded-2xl text-left flex items-center justify-between text-xs font-semibold text-indigo-200 transition"
               >
                 <div>
-                  <div className="font-bold text-white">✉️ Enviar via E-mail Formal</div>
-                  <div className="text-[10px] text-indigo-400">Disparo automático para os contatos cadastrados</div>
+                  <div className="font-bold text-white">✉️ Abrir no E-mail</div>
+                  <div className="text-[10px] text-indigo-400">Abre seu programa de e-mail com a mensagem pronta</div>
                 </div>
                 <Send className="w-4 h-4 text-indigo-400" />
               </button>

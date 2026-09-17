@@ -1123,9 +1123,9 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     const target = profiles.find(p => p.id === id);
     if (!target) return { success: false, message: 'Usuário não encontrado.', inviteUrl: '' };
 
-    const token = Math.random().toString(36).substring(2, 10);
-    const origin = typeof window !== 'undefined' ? window.location.origin : 'https://prevsafe.com.br';
-    const inviteUrl = `${origin}/login?invite=${token}&email=${encodeURIComponent(target.email)}`;
+    // There is no invite-token flow: the account is created already active with a
+    // password, so the link is simply the app's login page.
+    const inviteUrl = typeof window !== 'undefined' ? window.location.origin : 'https://prevsafe.com.br';
 
     logAudit('LOGIN', 'ORGANIZATION', organization.id, organization.name, {
       event: 'USER_INVITE_SENT',
@@ -1137,7 +1137,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
 
     return {
       success: true,
-      message: `Convite de ativação de conta gerado e despachado via ${channel} para ${target.full_name}!`,
+      message: `Dados de acesso de ${target.full_name} prontos para compartilhar.`,
       inviteUrl
     };
   }, [profiles, organization, logAudit]);
@@ -1190,10 +1190,14 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
           id: `del-${Date.now()}`,
           notification_id: notifId,
           channel: data.channel,
-          provider: data.channel === 'WHATSAPP' ? 'Z-API WhatsApp Cloud' : data.channel === 'EMAIL' ? 'Resend / SMTP' : data.channel === 'SMS' ? 'Twilio SMS' : 'InApp Portal',
-          status: 'DELIVERED',
+          // WhatsApp/e-mail are handed off to the user's own app (see lib/shareLinks.ts),
+          // so the system never gets a delivery confirmation for them.
+          provider: data.channel === 'WHATSAPP' ? 'WhatsApp (app do usuário)'
+            : data.channel === 'EMAIL' ? 'E-mail (app do usuário)'
+            : 'Portal interno PrevSafe',
+          status: data.channel === 'PORTAL' || data.channel === 'APP' ? 'DELIVERED' : 'SENT',
           sent_at: now,
-          delivered_at: now
+          delivered_at: data.channel === 'PORTAL' || data.channel === 'APP' ? now : undefined
         }
       ],
       sent_at: now

@@ -18,6 +18,7 @@ import {
   Sparkles,
   Star
 } from 'lucide-react';
+import { shareViaChannel } from '@/lib/shareLinks';
 
 export const NotificationsView: React.FC<{ onNavigate: (view: string) => void }> = ({ onNavigate }) => {
   const { 
@@ -35,7 +36,7 @@ export const NotificationsView: React.FC<{ onNavigate: (view: string) => void }>
 
   // Manual message form
   const [targetClientId, setTargetClientId] = useState(clients?.[0]?.id || '');
-  const [msgChannel, setMsgChannel] = useState<'WHATSAPP' | 'EMAIL' | 'SMS'>('WHATSAPP');
+  const [msgChannel, setMsgChannel] = useState<'WHATSAPP' | 'EMAIL'>('WHATSAPP');
   const [msgTitle, setMsgTitle] = useState('Alerta de Vencimento de Exames Periódicos (PCMSO)');
   const [msgBody, setMsgBody] = useState('Prezados, informamos que 12 colaboradores estão com exame periódico a vencer em 15 dias. Acesse o portal para agendamento.');
 
@@ -49,6 +50,20 @@ export const NotificationsView: React.FC<{ onNavigate: (view: string) => void }>
 
   const handleSendManual = (e: React.FormEvent) => {
     e.preventDefault();
+    const client = clients.find(c => c.id === targetClientId);
+    const res = shareViaChannel(msgChannel, {
+      phone: client?.whatsapp || client?.phone,
+      email: client?.email,
+      subject: msgTitle,
+      message: msgBody,
+      recipientName: client?.trade_name || client?.legal_name,
+    });
+
+    if (!res.success) {
+      alert(res.message);
+      return;
+    }
+
     sendCommunication({
       client_id: targetClientId,
       channel: msgChannel,
@@ -57,7 +72,7 @@ export const NotificationsView: React.FC<{ onNavigate: (view: string) => void }>
       content: msgBody
     });
     setShowSimulateSend(false);
-    alert(`Mensagem transmitida com sucesso através do canal ${msgChannel}!`);
+    alert(res.message);
   };
 
   return (
@@ -202,9 +217,8 @@ export const NotificationsView: React.FC<{ onNavigate: (view: string) => void }>
                   onChange={(e) => setMsgChannel(e.target.value as any)}
                   className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500"
                 >
-                  <option value="WHATSAPP">WhatsApp Direto</option>
-                  <option value="EMAIL">E-mail Corporativo</option>
-                  <option value="SMS">SMS Urgente</option>
+                  <option value="WHATSAPP">WhatsApp</option>
+                  <option value="EMAIL">E-mail</option>
                 </select>
               </div>
 

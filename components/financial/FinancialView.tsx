@@ -1935,7 +1935,7 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
           onClose={() => setSelectedTxForReminder(null)}
           onSend={(id, channel) => {
             sendFinancialReminder(id, channel);
-            showNotification(`📲 Lembrete de vencimento enviado com sucesso via ${channel}!`);
+            showNotification(`📲 Lembrete aberto no ${channel === 'WHATSAPP' ? 'WhatsApp' : 'seu programa de e-mail'} — confira e envie.`);
             setSelectedTxForReminder(null);
           }}
         />

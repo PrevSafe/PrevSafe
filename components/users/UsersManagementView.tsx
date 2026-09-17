@@ -6,6 +6,7 @@ import { usePrevSafe } from '@/context/PrevSafeContext';
 import { Profile, RoleType, PermissionModule, PermissionDefinition } from '@/types';
 import { formatDateTime } from '@/lib/utils';
 import { getSupabaseClient } from '@/lib/supabase';
+import { shareViaChannel } from '@/lib/shareLinks';
 import { 
   Users, 
   UserPlus, 
@@ -583,6 +584,33 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
     }
   };
 
+  const handleShareInvite = (channel: 'WHATSAPP' | 'EMAIL') => {
+    if (!inviteModalData) return;
+    const { profile, url } = inviteModalData;
+
+    const message = [
+      `Olá, ${profile.full_name}!`,
+      '',
+      `Seu acesso ao sistema PrevSafe SST foi criado.`,
+      `Endereço: ${url}`,
+      `Login (e-mail): ${profile.email}`,
+      '',
+      `A senha será informada separadamente, por segurança.`,
+      `Qualquer dúvida, estou à disposição.`,
+      `${currentProfile.full_name}`,
+    ].join('\n');
+
+    const res = shareViaChannel(channel, {
+      phone: profile.whatsapp || profile.phone,
+      email: profile.email,
+      subject: 'Seu acesso ao PrevSafe SST',
+      message,
+      recipientName: profile.full_name,
+    });
+
+    showToast(res.message, res.success ? 'success' : 'error');
+  };
+
   const handleImpersonate = (profile: Profile) => {
     const res = impersonateProfile(profile.id);
     if (res.success) {
@@ -1030,7 +1058,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
                           setInviteModalData({ profile: p, url: res.inviteUrl });
                         }}
                         className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-emerald-400 hover:text-emerald-300 border border-slate-700 transition"
-                        title="Gerar link de convite"
+                        title="Compartilhar dados de acesso"
                       >
                         <Send className="w-3.5 h-3.5" />
                       </button>
@@ -1631,6 +1659,28 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
                 </div>
               )}
             </div>
+
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                onClick={() => handleShareInvite('WHATSAPP')}
+                className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition flex items-center justify-center space-x-1.5"
+              >
+                <Send className="w-3.5 h-3.5" />
+                <span>Abrir no WhatsApp</span>
+              </button>
+              <button
+                onClick={() => handleShareInvite('EMAIL')}
+                className="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition flex items-center justify-center space-x-1.5"
+              >
+                <Mail className="w-3.5 h-3.5" />
+                <span>Abrir no E-mail</span>
+              </button>
+            </div>
+
+            <p className="text-[10px] text-slate-500 leading-relaxed">
+              A mensagem leva o link de acesso e o e-mail de login. Por segurança, a senha não vai na
+              mensagem — combine-a com a pessoa por outro meio.
+            </p>
 
             <div className="flex items-center justify-end space-x-2">
               <button
