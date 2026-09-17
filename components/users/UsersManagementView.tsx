@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { usePrevSafe } from '@/context/PrevSafeContext';
 import { Profile, RoleType, PermissionModule, PermissionDefinition } from '@/types';
 import { formatDateTime } from '@/lib/utils';
+import { getSupabaseClient } from '@/lib/supabase';
 import { 
   Users, 
   UserPlus, 
@@ -293,9 +294,8 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
     addProfile, 
     updateProfile, 
     deleteProfile, 
-    toggleProfileStatus, 
-    resetProfilePassword, 
-    impersonateProfile, 
+    toggleProfileStatus,
+    impersonateProfile,
     sendUserInvite,
     auditLogs = []
   } = usePrevSafe();
@@ -334,6 +334,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
     status: 'ACTIVE' | 'INACTIVE';
     two_factor_enabled: boolean;
     send_invite_now: boolean;
+    password: string;
   }>({
     full_name: '',
     email: '',
@@ -346,8 +347,26 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
     client_id: '',
     status: 'ACTIVE',
     two_factor_enabled: false,
-    send_invite_now: true
+    send_invite_now: true,
+    password: ''
   });
+  const [isSavingUser, setIsSavingUser] = useState(false);
+  const [isResettingPasswordId, setIsResettingPasswordId] = useState<string | null>(null);
+
+  const generateTempPassword = () => {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789';
+    let pass = '';
+    for (let i = 0; i < 12; i++) pass += chars[Math.floor(Math.random() * chars.length)];
+    return pass;
+  };
+
+  // Fetches the current admin's real Supabase session token, required by the admin API routes
+  const getAuthToken = async (): Promise<string | null> => {
+    const supabase = getSupabaseClient();
+    if (!supabase) return null;
+    const { data } = await supabase.auth.getSession();
+    return data.session?.access_token || null;
+  };
 
   // Calculate quick metrics
   const totalUsers = profiles.length;
@@ -395,7 +414,8 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
       client_id: '',
       status: 'ACTIVE',
       two_factor_enabled: false,
-      send_invite_now: true
+      send_invite_now: true,
+      password: generateTempPassword()
     });
     setIsNewUserModalOpen(true);
   };
@@ -414,12 +434,13 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
       client_id: profile.client_id || '',
       status: profile.status,
       two_factor_enabled: profile.two_factor_enabled ?? false,
-      send_invite_now: false
+      send_invite_now: false,
+      password: ''
     });
     setIsNewUserModalOpen(true);
   };
 
-  const handleSaveUser = (e: React.FormEvent) => {
+  const handleSaveUser = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!formData.full_name.trim() || !formData.email.trim()) {
@@ -437,7 +458,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
     }
 
     if (editingProfile) {
-      // Update existing
+      // Update existing (local profile data only — does not change the real login e-mail/password)
       updateProfile(editingProfile.id, {
         full_name: formData.full_name.trim(),
         email: formData.email.trim().toLowerCase(),
@@ -453,8 +474,46 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
       });
       showToast(`Usuário ${formData.full_name} atualizado com sucesso!`);
       setIsNewUserModalOpen(false);
-    } else {
-      // Create new profile
+      return;
+    }
+
+    // Create new profile — requires creating a real login (Supabase Auth) first
+    if (!formData.password || formData.password.length < 8) {
+      showToast('Defina uma senha de acesso com ao menos 8 caracteres.', 'error');
+      return;
+    }
+
+    setIsSavingUser(true);
+    try {
+      const token = await getAuthToken();
+      if (!token) {
+        showToast('Sessão expirada. Faça login novamente antes de criar usuários.', 'error');
+        return;
+      }
+
+      const res = await fetch('/api/admin/create-user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({
+          email: formData.email.trim().toLowerCase(),
+          password: formData.password,
+          full_name: formData.full_name.trim(),
+          role: formData.role,
+          phone: formData.phone.trim(),
+          whatsapp: formData.whatsapp.trim() || formData.phone.trim().replace(/\D/g, ''),
+          department: formData.department.trim(),
+          job_title: formData.job_title.trim(),
+          professional_register: formData.professional_register.trim() || undefined,
+          client_id: formData.role.startsWith('CLIENTE_') ? (formData.client_id || undefined) : undefined,
+        })
+      });
+      const json = await res.json();
+
+      if (!res.ok || !json.success) {
+        showToast(json.message || 'Não foi possível criar o usuário.', 'error');
+        return;
+      }
+
       const newProf = addProfile({
         full_name: formData.full_name.trim(),
         email: formData.email.trim().toLowerCase(),
@@ -467,33 +526,60 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
         client_id: formData.role.startsWith('CLIENTE_') ? (formData.client_id || undefined) : undefined,
         status: formData.status,
         two_factor_enabled: formData.two_factor_enabled,
-        avatar_url: `https://ui-avatars.com/api/?name=${encodeURIComponent(formData.full_name)}&background=0D9488&color=fff`
+        avatar_url: `https://ui-avatars.com/api/?name=${encodeURIComponent(formData.full_name)}&background=0D9488&color=fff`,
+        auth_user_id: json.auth_user_id
       });
 
       setIsNewUserModalOpen(false);
 
       if (formData.send_invite_now) {
-        const inviteRes = sendUserInvite(newProf.id, 'EMAIL');
+        const origin = typeof window !== 'undefined' ? window.location.origin : 'https://prevsafe.com.br';
         setInviteModalData({
           profile: newProf,
-          url: inviteRes.inviteUrl,
-          tempPass: `PrevSafe@${Math.floor(1000 + Math.random() * 9000)}`
+          url: origin,
+          tempPass: formData.password
         });
       } else {
         showToast(`Usuário ${newProf.full_name} cadastrado com sucesso!`);
       }
+    } finally {
+      setIsSavingUser(false);
     }
   };
 
-  const handleResetPassword = (profile: Profile) => {
-    const res = resetProfilePassword(profile.id);
-    if (res.success) {
+  const handleResetPassword = async (profile: Profile) => {
+    if (!profile.auth_user_id) {
+      showToast('Este usuário não possui um login real ainda. Exclua e cadastre-o novamente para criar uma conta.', 'error');
+      return;
+    }
+
+    setIsResettingPasswordId(profile.id);
+    try {
+      const token = await getAuthToken();
+      if (!token) {
+        showToast('Sessão expirada. Faça login novamente.', 'error');
+        return;
+      }
+
+      const newPassword = generateTempPassword();
+      const res = await fetch('/api/admin/reset-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ auth_user_id: profile.auth_user_id, password: newPassword })
+      });
+      const json = await res.json();
+
+      if (!res.ok || !json.success) {
+        showToast(json.message || 'Não foi possível redefinir a senha.', 'error');
+        return;
+      }
+
       setPasswordResetSuccess({
         name: profile.full_name,
-        pass: res.tempPass
+        pass: newPassword
       });
-    } else {
-      showToast(res.message, 'error');
+    } finally {
+      setIsResettingPasswordId(null);
     }
   };
 
@@ -927,7 +1013,8 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
 
                       <button
                         onClick={() => handleResetPassword(p)}
-                        className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-400 hover:text-amber-300 border border-slate-700 transition"
+                        disabled={isResettingPasswordId === p.id}
+                        className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-400 hover:text-amber-300 border border-slate-700 transition disabled:opacity-50"
                         title="Gerar nova senha temporária"
                       >
                         <KeyRound className="w-3.5 h-3.5" />
@@ -1075,7 +1162,8 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
                               </button>
                               <button
                                 onClick={() => handleResetPassword(p)}
-                                className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-amber-400 transition"
+                                disabled={isResettingPasswordId === p.id}
+                                className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-amber-400 transition disabled:opacity-50"
                                 title="Redefinir Senha"
                               >
                                 <KeyRound className="w-3.5 h-3.5" />
@@ -1419,6 +1507,34 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
                   </p>
                 </div>
 
+                {!editingProfile && (
+                  <div className="sm:col-span-2 space-y-1.5">
+                    <label className="text-xs font-semibold text-slate-300">Senha Inicial de Acesso</label>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        required
+                        minLength={8}
+                        value={formData.password}
+                        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                        placeholder="Mínimo 8 caracteres"
+                        className="flex-1 px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white font-mono placeholder-slate-500 focus:outline-none focus:border-teal-500"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setFormData({ ...formData, password: generateTempPassword() })}
+                        title="Gerar outra senha"
+                        className="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-teal-400 border border-slate-700 transition flex-shrink-0"
+                      >
+                        <Sparkles className="w-4 h-4" />
+                      </button>
+                    </div>
+                    <p className="text-[10px] text-slate-500">
+                      Essa é a senha real de login do usuário — anote-a para compartilhar com segurança.
+                    </p>
+                  </div>
+                )}
+
                 <div className="sm:col-span-2 flex items-center justify-between p-3 bg-slate-950 border border-slate-800 rounded-2xl">
                   <div>
                     <div className="text-xs font-bold text-white">Autenticação de Dois Fatores (2FA)</div>
@@ -1458,9 +1574,10 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-400 hover:to-emerald-500 text-slate-950 font-bold text-xs shadow-lg shadow-emerald-950/40 transition"
+                  disabled={isSavingUser}
+                  className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-400 hover:to-emerald-500 text-slate-950 font-bold text-xs shadow-lg shadow-emerald-950/40 transition disabled:opacity-50"
                 >
-                  {editingProfile ? 'Salvar Alterações' : 'Concluir Cadastro & Convidar'}
+                  {isSavingUser ? 'Criando conta real...' : editingProfile ? 'Salvar Alterações' : 'Concluir Cadastro & Convidar'}
                 </button>
               </div>
             </form>

@@ -1,8 +1,8 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
-// Supabase project constants for Prev Workflow
-export const SUPABASE_PROJECT_REF = 'dnmbwsvdyskbbfvribkb';
-export const SUPABASE_PROJECT_NAME = 'Prev Workflow';
+// Supabase project constants for PrevSafe SST (dedicated project, separate from the CIPA voting portal)
+export const SUPABASE_PROJECT_REF = 'dijwqveojqnazphzifhg';
+export const SUPABASE_PROJECT_NAME = 'PrevSafe SST';
 export const DEFAULT_SUPABASE_URL = `https://${SUPABASE_PROJECT_REF}.supabase.co`;
 
 export const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || DEFAULT_SUPABASE_URL;

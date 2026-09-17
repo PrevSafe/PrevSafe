@@ -141,15 +141,15 @@ import {
   generateAuditProofReceipt
 } from '@/lib/cipaService';
 import { DEFAULT_THEME_SETTINGS, applyTenantThemeToDom } from '@/lib/themeUtils';
+import { getSupabaseClient } from '@/lib/supabase';
 
 interface PrevSafeContextType {
   // Current active session state
   isAuthenticated: boolean;
+  isAuthLoading: boolean;
   setIsAuthenticated: (val: boolean) => void;
-  login: (email: string, password?: string, profileId?: string) => { success: boolean; message?: string; profile?: Profile };
+  login: (email: string, password: string) => Promise<{ success: boolean; message?: string; profile?: Profile }>;
   logout: () => void;
-  requestPasswordReset: (email: string) => { success: boolean; message: string; tempCode: string };
-  resetPasswordWithToken: (email: string, token: string, newPass: string) => { success: boolean; message: string };
   currentProfile: Profile;
   setCurrentProfile: (profile: Profile) => void;
   currentRole: RoleType;
@@ -623,6 +623,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
   const [profiles, setProfiles] = useState<Profile[]>(INITIAL_PROFILES);
   const [currentProfile, setCurrentProfile] = useState<Profile>(INITIAL_PROFILES[0]);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [isAuthLoading, setIsAuthLoading] = useState<boolean>(true);
   const [clients, setClients] = useState<Client[]>(INITIAL_CLIENTS);
   const [contacts, setContacts] = useState<ClientContact[]>(INITIAL_CONTACTS);
   const [units, setUnits] = useState<ClientUnit[]>(INITIAL_UNITS);
@@ -693,8 +694,6 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
         const parsed = JSON.parse(saved);
         if (parsed.organization && typeof parsed.organization === 'object') setOrganization(parsed.organization);
         if (Array.isArray(parsed.profiles)) setProfiles(parsed.profiles);
-        if (parsed.currentProfile && typeof parsed.currentProfile === 'object') setCurrentProfile(parsed.currentProfile);
-        if (typeof parsed.isAuthenticated === 'boolean') setIsAuthenticated(parsed.isAuthenticated);
         if (Array.isArray(parsed.clients) && parsed.clients.length > 0) setClients(parsed.clients);
         if (Array.isArray(parsed.contacts)) setContacts(parsed.contacts);
         if (Array.isArray(parsed.units)) setUnits(parsed.units);
@@ -747,8 +746,6 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
       const stateToSave = {
         organization,
         profiles,
-        currentProfile,
-        isAuthenticated,
         clients,
         contacts,
         units,
@@ -796,8 +793,6 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     isLoaded,
     organization,
     profiles,
-    currentProfile,
-    isAuthenticated,
     clients,
     contacts,
     units,
@@ -870,21 +865,91 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     }
   }, [profiles, currentProfile]);
 
-  // Authentication Actions
-  const login = useCallback((email: string, password?: string, profileId?: string) => {
-    let matched: Profile | undefined;
-    if (profileId) {
-      matched = profiles.find(p => p.id === profileId);
-    } else if (email) {
-      const cleanEmail = email.trim().toLowerCase();
-      matched = profiles.find(p => p.email.toLowerCase() === cleanEmail);
+  // Authentication Actions (backed by real Supabase Auth — auth.users)
+  const buildProfileFromAuthUser = useCallback((user: { id: string; email?: string; user_metadata?: Record<string, any> }): Profile => {
+    const meta = user.user_metadata || {};
+    const cleanEmail = (user.email || '').toLowerCase();
+    const localMatch = profiles.find(p => p.email.toLowerCase() === cleanEmail);
+    const now = new Date().toISOString();
+    const base: Profile = localMatch || {
+      id: `user-${user.id}`,
+      organization_id: organization.id,
+      full_name: meta.full_name || user.email || 'Usuário',
+      email: user.email || '',
+      phone: '',
+      whatsapp: '',
+      role: 'TÉCNICO',
+      status: 'ACTIVE',
+      created_at: now,
+      updated_at: now,
+    };
+    return {
+      ...base,
+      auth_user_id: user.id,
+      email: user.email || base.email,
+      full_name: meta.full_name || base.full_name,
+      role: (meta.role as RoleType) || base.role,
+    };
+  }, [profiles, organization]);
+
+  // Restore a real Supabase Auth session on load, and react to sign-out/token expiry
+  useEffect(() => {
+    const supabase = getSupabaseClient();
+    if (!supabase) {
+      setIsAuthLoading(false);
+      return;
     }
 
-    if (!matched) {
-      return { success: false, message: 'Usuário não encontrado com este e-mail.' };
+    let active = true;
+
+    supabase.auth.getSession().then(({ data }) => {
+      if (!active) return;
+      if (data.session?.user) {
+        setCurrentProfile(buildProfileFromAuthUser(data.session.user));
+        setIsAuthenticated(true);
+      }
+      setIsAuthLoading(false);
+    });
+
+    const { data: listener } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_OUT' || !session) {
+        setIsAuthenticated(false);
+        return;
+      }
+      if (session.user) {
+        setCurrentProfile(buildProfileFromAuthUser(session.user));
+        setIsAuthenticated(true);
+      }
+    });
+
+    return () => {
+      active = false;
+      listener.subscription.unsubscribe();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const login = useCallback(async (email: string, password: string) => {
+    const supabase = getSupabaseClient();
+    if (!supabase) {
+      return { success: false, message: 'Serviço de autenticação indisponível no momento.' };
     }
 
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: email.trim().toLowerCase(),
+      password,
+    });
+
+    if (error || !data.user) {
+      const message = error?.message === 'Invalid login credentials'
+        ? 'E-mail ou senha incorretos.'
+        : 'Não foi possível autenticar. Tente novamente em instantes.';
+      return { success: false, message };
+    }
+
+    const matched = buildProfileFromAuthUser(data.user);
     if (matched.status === 'INACTIVE') {
+      await supabase.auth.signOut();
       return { success: false, message: 'Usuário inativo. Entre em contato com o Administrador do SaaS.' };
     }
 
@@ -894,17 +959,16 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
       setActiveClientId(matched.client_id || 'cli-valenca-01');
     }
 
-    // Register audit log for login
     logAudit('LOGIN', 'ORGANIZATION', organization.id, organization.name, {
       event: 'USER_AUTHENTICATED',
       user_name: matched.full_name,
       user_email: matched.email,
       role: matched.role,
-      method: profileId ? 'QUICK_SELECT' : 'CREDENTIALS'
+      method: 'CREDENTIALS'
     });
 
     return { success: true, profile: matched };
-  }, [profiles, organization, logAudit]);
+  }, [buildProfileFromAuthUser, organization, logAudit]);
 
   const logout = useCallback(() => {
     logAudit('LOGOUT', 'ORGANIZATION', organization.id, organization.name, {
@@ -912,37 +976,9 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
       user_name: currentProfile.full_name,
       user_email: currentProfile.email
     });
+    getSupabaseClient()?.auth.signOut();
     setIsAuthenticated(false);
   }, [currentProfile, organization, logAudit]);
-
-  const requestPasswordReset = useCallback((email: string) => {
-    const cleanEmail = email.trim().toLowerCase();
-    const matched = profiles.find(p => p.email.toLowerCase() === cleanEmail);
-    const tempCode = Math.floor(100000 + Math.random() * 900000).toString();
-
-    if (matched) {
-      return { success: true, message: `Código de verificação enviado para ${matched.email} e WhatsApp.`, tempCode };
-    } else {
-      return { success: true, message: `Se o e-mail estiver cadastrado, o código foi gerado.`, tempCode };
-    }
-  }, [profiles]);
-
-  const resetPasswordWithToken = useCallback((email: string, token: string, newPass: string) => {
-    const cleanEmail = email.trim().toLowerCase();
-    const matched = profiles.find(p => p.email.toLowerCase() === cleanEmail);
-    if (!matched) {
-      return { success: false, message: 'Usuário não encontrado.' };
-    }
-    if (!token || token.trim().length < 4) {
-      return { success: false, message: 'Código de validação inválido.' };
-    }
-    logAudit('LOGIN', 'ORGANIZATION', organization.id, organization.name, {
-      event: 'PASSWORD_RESET_SUCCESS',
-      user_name: matched.full_name,
-      user_email: matched.email
-    });
-    return { success: true, message: 'Senha atualizada com sucesso! Você já pode fazer login.' };
-  }, [profiles, organization, logAudit]);
 
   // User Profile & Access Control Management
   const addProfile = useCallback((data: Omit<Profile, 'id' | 'organization_id' | 'created_at' | 'updated_at'>) => {
@@ -6347,11 +6383,10 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
 
   const value = useMemo(() => ({
     isAuthenticated,
+    isAuthLoading,
     setIsAuthenticated,
     login,
     logout,
-    requestPasswordReset,
-    resetPasswordWithToken,
     currentProfile,
     setCurrentProfile,
     currentRole: currentProfile.role,

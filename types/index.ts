@@ -128,6 +128,7 @@ export interface Organization {
 export interface Profile {
   id: string;
   organization_id: string;
+  auth_user_id?: string; // Links to the real Supabase Auth user (auth.users.id), when the account is real
   full_name: string;
   email: string;
   phone: string;

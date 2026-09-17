@@ -41,13 +41,14 @@ import {
 import { NumericQuickJumpIndicator } from '@/components/shortcuts/NumericQuickJump';
 import { findNavigationByCode } from '@/lib/navigationCodes';
 import { 
-  BarChart3, 
-  Briefcase, 
-  ShieldCheck, 
-  Smartphone, 
+  BarChart3,
+  Briefcase,
+  ShieldCheck,
+  Smartphone,
   Menu,
   CheckSquare,
-  Keyboard
+  Keyboard,
+  RefreshCw
 } from 'lucide-react';
 
 export default function Home() {
@@ -64,12 +65,13 @@ export default function Home() {
   const [numericBuffer, setNumericBuffer] = useState('');
   const [numericTimer, setNumericTimer] = useState<NodeJS.Timeout | null>(null);
 
-  const { 
-    isAuthenticated, 
-    currentRole, 
-    serviceOrders = [], 
-    requests = [], 
-    esocialEvents = [] 
+  const {
+    isAuthenticated,
+    isAuthLoading,
+    currentRole,
+    serviceOrders = [],
+    requests = [],
+    esocialEvents = []
   } = usePrevSafe();
 
   // Helper to execute numeric navigation immediately
@@ -203,10 +205,19 @@ export default function Home() {
     }
   };
 
+  // Checking for a real Supabase Auth session before deciding whether to show the login screen
+  if (isAuthLoading) {
+    return (
+      <div className="min-h-screen w-full bg-slate-950 flex items-center justify-center">
+        <RefreshCw className="w-6 h-6 text-emerald-500 animate-spin" />
+      </div>
+    );
+  }
+
   // If user is logged out or explicitly navigated to login view
   if (!isAuthenticated || activeView === 'login') {
     return (
-      <LoginView 
+      <LoginView
         onSuccess={handleLoginSuccess}
         onNavigateHelp={() => setActiveView('help-center')}
       />
