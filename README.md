@@ -1,20 +1,71 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
-</div>
+# PrevSafe SST
 
-# Run and deploy your AI Studio app
+Sistema de gestão de serviços de Segurança e Saúde no Trabalho: CRM comercial,
+ordens de serviço, engenharia SST (PGR, PCMSO, LTCAT, GHE e inventário de riscos),
+CIPA, eSocial, EPIs, financeiro, portal do cliente e PWA de campo.
 
-This contains everything you need to run your app locally.
+Next.js 15 + React 19 + TypeScript, com Supabase para autenticação, banco e
+armazenamento de arquivos.
 
-View your app in AI Studio: https://ai.studio/apps/f2a606da-4626-493c-8a57-760cc1fedd8d
+## Rodar localmente
 
-## Run Locally
+Pré-requisito: Node.js 22.
 
-**Prerequisites:**  Node.js
+```bash
+npm install
+cp .env.example .env.local   # preencha as chaves
+npm run dev                  # http://localhost:3000
+```
 
+As variáveis estão descritas em [.env.example](.env.example). As duas chaves do
+Supabase ficam em Project Settings → API. `GEMINI_API_KEY` é opcional: sem ela o
+copiloto de IA fica indisponível e o resto do sistema funciona normalmente.
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+## Colocar em produção
+
+Passo a passo em [docs/DEPLOY.md](docs/DEPLOY.md): projeto na Vercel, variáveis de
+ambiente, domínio, URLs de redirecionamento do Supabase Auth, liberação de acesso
+para a equipe e a checagem pós-deploy.
+
+## Onde os dados ficam
+
+Tudo é gravado no Supabase, na tabela `prevsafe_records` — uma linha por registro,
+com o conteúdo em JSONB:
+
+```
+organization_id + collection + record_id  ->  data (JSONB)
+```
+
+A RLS exige vínculo em `prevsafe_members` para ler ou escrever qualquer linha, e
+as exclusões são lógicas (`deleted_at`), para que apagar algo num dispositivo não
+seja desfeito por outro que ainda tivesse o registro em memória.
+
+O navegador mantém uma cópia em `localStorage`, usada só como cache offline: o
+que for editado sem conexão sobe quando ela volta. O chip na barra superior mostra
+o estado da gravação (Salvando / Salvo / Sem conexão / Não salvo).
+
+As fotos de vistoria vão para o bucket privado `prevsafe-evidencias`, isoladas por
+organização e acessíveis apenas por URL assinada temporária.
+
+## Migrações do banco
+
+Estão em [supabase/migrations/](supabase/migrations/). Para aplicar num projeto novo:
+
+```bash
+supabase link --project-ref <ref-do-projeto>
+supabase db push
+```
+
+## Estrutura
+
+| Pasta | Conteúdo |
+|---|---|
+| `app/` | rotas do Next (App Router) e rotas de API |
+| `components/` | telas, agrupadas por módulo |
+| `context/PrevSafeContext.tsx` | estado da aplicação e sincronização com o Supabase |
+| `lib/` | serviços: Supabase, sincronização, PDFs, Excel, catálogos técnicos |
+| `types/` | modelo de dados |
+| `supabase/migrations/` | esquema do banco |
+
+`src/`, `api/`, `index.html` e `vite.config.ts` são resíduos da versão anterior em
+Vite. Não entram no build (estão excluídos no `tsconfig.json`) e nada os importa.
