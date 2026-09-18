@@ -47,6 +47,19 @@ o estado da gravação (Salvando / Salvo / Sem conexão / Não salvo).
 As fotos de vistoria vão para o bucket privado `prevsafe-evidencias`, isoladas por
 organização e acessíveis apenas por URL assinada temporária.
 
+## Backup
+
+Uma tarefa agendada no Windows ("PrevSafe - Backup diario") exporta os dados
+todo dia às 20:00 para `backups/`. Manualmente:
+
+```bash
+node scripts/backup.mjs                       # gera backup
+node scripts/restore.mjs <arquivo> --wipe     # restaura
+```
+
+Detalhes, restauração e o que o script não cobre em
+[docs/DEPLOY.md](docs/DEPLOY.md#backups).
+
 ## Migrações do banco
 
 Estão em [supabase/migrations/](supabase/migrations/). Para aplicar num projeto novo:

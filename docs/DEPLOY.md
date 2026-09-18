@@ -104,10 +104,12 @@ Depois do deploy, na ordem:
 
 ## 8. Antes do primeiro lançamento real
 
-- **Configurações → Dados da Empresa → Responsabilidade Técnica:** preencha o
-  engenheiro responsável (nome, qualificação, CREA, ART) e o médico coordenador do
-  PCMSO (nome, CRM, RQE). Sem isso, PGR, PCMSO e LTCAT saem com
-  "Não informado nas Configurações" no lugar da assinatura técnica.
+- **Responsabilidade técnica.** No menu lateral, em **Governança & Qualidade →
+  Configurações SaaS** (ou digite `640` para ir direto), no card **Dados da
+  Empresa**, bloco **Responsabilidade Técnica**: preencha o engenheiro
+  responsável (nome, qualificação, CREA, ART) e o médico coordenador do PCMSO
+  (nome, CRM, RQE). Sem isso, PGR, PCMSO e LTCAT saem com "Não informado nas
+  Configurações" no lugar da assinatura técnica.
 - **eSocial:** o ambiente começa em **produção restrita** (homologação) de
   propósito. Valide os primeiros lotes antes de mudar para produção, e suba o
   certificado A1 na tela de configuração.
@@ -116,15 +118,71 @@ Depois do deploy, na ordem:
 
 ## Backups
 
-O plano gratuito do Supabase mantém backup diário com retenção curta. Antes dos
-lançamentos reais, avalie subir de plano para ampliar a retenção e liberar
-restauração para um ponto no tempo (PITR).
+O plano gratuito do Supabase mantém backup diário com retenção curta e sem
+restauração para um ponto no tempo. Para dados de SST, que sustentam documentos
+com valor legal, há uma cópia própria fora da plataforma.
 
-Para um backup manual por fora:
+### Backup automático
+
+Há uma tarefa agendada no Windows — **"PrevSafe - Backup diario"** — que roda
+todo dia às 20:00 e grava em `C:\PrevSafe\backups`, mantendo os 30 arquivos mais
+recentes. Se a máquina estiver desligada no horário, ela roda assim que ligar.
+
+Conferir o estado:
+
+```powershell
+Get-ScheduledTaskInfo -TaskName "PrevSafe - Backup diario"
+```
+
+`LastTaskResult` igual a `0` significa sucesso. Qualquer outro valor é falha.
+
+### Backup manual
 
 ```bash
-supabase db dump --project-ref dijwqveojqnazphzifhg -f backup.sql
+node scripts/backup.mjs                    # grava em ./backups
+node scripts/backup.mjs --out D:\copias    # outra pasta
+node scripts/backup.mjs --keep 90          # retenção maior
 ```
+
+O arquivo contém `prevsafe_records` (inclusive as linhas excluídas logicamente),
+`prevsafe_members` e o inventário das evidências fotográficas.
+
+> A pasta `backups/` está no `.gitignore`: ela carrega dados reais de clientes e
+> colaboradores e não pode ir para o repositório. Guarde uma cópia fora da
+> máquina — nuvem ou disco externo. Um backup que mora só no mesmo computador
+> não protege contra o que mais acontece, que é perder o computador.
+
+### Restaurar
+
+```bash
+node scripts/restore.mjs backups/prevsafe-backup-2026-09-18T23-04-46.json --wipe
+```
+
+Sem `--wipe` a restauração é um merge: o backup sobrescreve o que coincidir e o
+que foi criado depois permanece. Com `--wipe`, os registros da organização são
+apagados antes. O script pede confirmação; `--yes` pula a pergunta.
+
+O ciclo foi testado de ponta a ponta — semear, gerar backup, apagar o banco,
+restaurar e conferir — inclusive que um registro excluído de propósito continua
+excluído depois da restauração, em vez de ressuscitar.
+
+### O que o script não cobre
+
+As **imagens** das evidências ficam no bucket `prevsafe-evidencias`; o backup
+guarda o inventário (caminho, tamanho, data), não os arquivos. Para incluí-las:
+
+```bash
+npx supabase storage cp -r ss://prevsafe-evidencias ./backups/evidencias   --project-ref dijwqveojqnazphzifhg
+```
+
+Também não cobre os **usuários do Auth** — eles vivem no Supabase e não se
+perdem numa falha de dados da aplicação.
+
+### Vale subir de plano?
+
+O plano pago do Supabase amplia a retenção e libera restauração para um ponto no
+tempo (PITR), o que o script não faz: ele recupera o último backup, não o estado
+de dez minutos atrás. É uma decisão de custo, e fica a seu critério.
 
 ## Como os dados ficam guardados
 

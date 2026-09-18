@@ -10,3 +10,8 @@ coverage/
 tsconfig.tsbuildinfo
 *.zip
 .vercel
+
+# Backups locais gerados por scripts/backup.mjs (contem dados reais)
+backups/
+backups-teste/
+supabase/.temp/
