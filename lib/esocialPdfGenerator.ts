@@ -67,7 +67,7 @@ export function generateESocialReportHtml(
         <table class="data-table" style="margin-top: 10px;">
           <tr>
             <td style="width: 30%"><strong>Responsável Técnico (LTCAT/PGR):</strong></td>
-            <td>${event.ambient_data?.responsible_technician_name || 'Eng. Carlos Eduardo Ramos'} - ${event.ambient_data?.responsible_technician_crea_crm || 'CREA/SP 5069213488'}</td>
+            <td>${event.ambient_data?.responsible_technician_name || 'Nao informado'}${event.ambient_data?.responsible_technician_crea_crm ? ` - ${event.ambient_data.responsible_technician_crea_crm}` : ''}</td>
           </tr>
         </table>
       </div>

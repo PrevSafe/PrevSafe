@@ -845,7 +845,10 @@ export interface DigitalCertificateInfo {
   status: 'VALID' | 'EXPIRING' | 'EXPIRED' | 'NOT_CONFIGURED';
   has_password: boolean;
   last_tested_at?: string;
-  pfx_base64?: string;
+  // A chave privada do certificado A1 NAO e persistida. O arquivo .pfx nunca
+  // foi usado para assinar nada aqui, e guarda-lo no banco deixaria a chave
+  // privada da empresa legivel por qualquer membro da organizacao via API.
+  // Só os metadados de validade/titularidade ficam gravados.
 }
 
 export interface ESocialConfig {

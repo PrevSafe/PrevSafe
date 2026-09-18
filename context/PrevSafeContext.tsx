@@ -142,6 +142,8 @@ import {
 } from '@/lib/cipaService';
 import { DEFAULT_THEME_SETTINGS, applyTenantThemeToDom } from '@/lib/themeUtils';
 import { getSupabaseClient } from '@/lib/supabase';
+import { getClientIp, getCachedClientIp } from '@/lib/clientIp';
+import { getAppUrl, buildDocumentVerificationUrl } from '@/lib/appUrl';
 import {
   SYNCED_COLLECTIONS,
   SINGLETON_COLLECTIONS,
@@ -1086,6 +1088,14 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     };
   }, [isLoaded, isAuthenticated, syncOrganizationId, liveState, retryTick]);
 
+  // Busca o IP publico uma vez por sessao autenticada. getCachedClientIp() e
+  // sincrono e e usado nos registros de auditoria; sem esta chamada ele ficaria
+  // sempre vazio.
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    void getClientIp();
+  }, [isAuthenticated]);
+
   // Nova tentativa quando a conexao volta: mexer no status reagenda o envio.
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -1111,7 +1121,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
       entity_number,
       new_data: newData,
       old_data: oldData,
-      ip_address: '189.120.45.10',
+      ip_address: getCachedClientIp(),
       user_agent: typeof navigator !== 'undefined' ? navigator.userAgent : 'PrevSafe Web Client',
       created_at: new Date().toISOString()
     };
@@ -1400,7 +1410,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
 
     // There is no invite-token flow: the account is created already active with a
     // password, so the link is simply the app's login page.
-    const inviteUrl = typeof window !== 'undefined' ? window.location.origin : 'https://prevsafe.com.br';
+    const inviteUrl = getAppUrl();
 
     logAudit('LOGIN', 'ORGANIZATION', organization.id, organization.name, {
       event: 'USER_INVITE_SENT',
@@ -1716,7 +1726,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
       client_name: currentProfile.full_name,
       action: 'APPROVED' as const,
       comment: comment || 'Proposta aprovada no portal pelo cliente.',
-      ip_address: '189.120.45.10',
+      ip_address: getCachedClientIp(),
       user_agent: typeof navigator !== 'undefined' ? navigator.userAgent : 'Browser Client',
       created_at: new Date().toISOString()
     };
@@ -1860,7 +1870,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
       signer_email: signerEmail,
       signer_document: signerDoc || '000.000.000-00',
       signed_at: new Date().toISOString(),
-      ip_address: '189.120.45.10',
+      ip_address: getCachedClientIp(),
       provider: 'PREVSAFE_SIGN' as const,
       signature_hash: `SHA256:${Math.random().toString(36).substring(2, 12)}`
     };
@@ -3728,8 +3738,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
         days_remaining: 365,
         status: 'VALID',
         has_password: Boolean(password),
-        last_tested_at: new Date().toISOString(),
-        pfx_base64: fileBase64
+        last_tested_at: new Date().toISOString()
       },
       last_sync_at: new Date().toISOString()
     }));
@@ -4441,7 +4450,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     const mrr = data.billing_cycle === 'ANNUAL' ? (plan.yearly_price / 12) : plan.monthly_price;
     const tenantId = `tenant-${Date.now().toString(36)}-${Math.random().toString(36).substring(2, 5)}`;
     const inviteToken = `inv-tok-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
-    const inviteUrl = typeof window !== 'undefined' ? `${window.location.origin}/onboarding?token=${inviteToken}&tenant=${tenantId}` : `https://prevsafe.com.br/onboarding?token=${inviteToken}&tenant=${tenantId}`;
+    const inviteUrl = `${getAppUrl()}/onboarding?token=${inviteToken}&tenant=${tenantId}`;
     const nextBilling = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
 
     const newTenant: Tenant = {
@@ -4532,7 +4541,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
   const generateTenantInviteLink = useCallback((tenantId: string): { url: string; token: string } => {
     const tenant = tenants.find(t => t.id === tenantId);
     const token = tenant?.invite_token || `inv-tok-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
-    const url = typeof window !== 'undefined' ? `${window.location.origin}/onboarding?token=${token}&tenant=${tenantId}` : `https://prevsafe.com.br/onboarding?token=${token}&tenant=${tenantId}`;
+    const url = `${getAppUrl()}/onboarding?token=${token}&tenant=${tenantId}`;
     
     setTenants(prev => prev.map(t => t.id === tenantId ? { ...t, invite_token: token, invite_url: url, invite_sent_at: new Date().toISOString() } : t));
     return { url, token };
@@ -6089,7 +6098,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     const now = new Date().toISOString();
     const id = `sig-env-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
     const sha = data.document_sha256 || Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join('');
-    const qrUrl = data.qr_code_verification_url || `https://prevsafe.com.br/validar?doc=${encodeURIComponent(data.document_number)}&hash=${sha.substring(0, 16)}`;
+    const qrUrl = data.qr_code_verification_url || buildDocumentVerificationUrl(data.document_number, sha.substring(0, 16));
     
     const initialLog: SSTSignatureAuditLog = {
       id: `aud-${Date.now()}-1`,
@@ -6097,7 +6106,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
       action: 'ENVELOPE_CRIADO',
       actor_name: currentProfile.full_name || 'Operador Técnico SST',
       actor_cpf: currentProfile.email || '123.456.789-00',
-      ip_address: '189.120.45.102',
+      ip_address: getCachedClientIp(),
       details: data.initial_audit || `Envelope de assinatura criado para o documento ${data.document_title} (${data.document_number}).`
     };
 
@@ -6183,7 +6192,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
           signature_image_url: payload.signature_image_url || s.signature_image_url,
           compliance_statement: payload.compliance_statement || s.compliance_statement,
           signature_hash: generatedHash,
-          ip_address: payload.ip_address || '177.135.90.14',
+          ip_address: payload.ip_address || getCachedClientIp(),
           user_agent: typeof navigator !== 'undefined' ? navigator.userAgent : 'PrevSafe Web Client/Chrome 128.0',
           security_auth_code: payload.security_auth_code || `AUT-${Date.now().toString().slice(-6)}`
         };
@@ -6199,7 +6208,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
         action: 'ASSINATURA_REGISTRADA',
         actor_name: targetSigner.name,
         actor_cpf: targetSigner.cpf,
-        ip_address: payload.ip_address || '177.135.90.14',
+        ip_address: payload.ip_address || getCachedClientIp(),
         details: `Assinatura ${payload.signature_mode} registrada com sucesso. Hash: ${generatedHash.substring(0, 16)}... Código de Autenticação: ${payload.security_auth_code || 'OK'}`
       };
 
@@ -6257,7 +6266,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
         action: 'ASSINATURA_RECUSADA',
         actor_name: targetSigner.name,
         actor_cpf: targetSigner.cpf,
-        ip_address: '177.135.90.14',
+        ip_address: getCachedClientIp(),
         details: `Assinatura recusada pelo signatário. Justificativa: ${reason}`
       };
 
@@ -6490,7 +6499,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
       verification_method: vote.verification_method,
       facial_biometric_confidence: vote.facial_confidence,
       casted_at: now,
-      ip_address: vote.ip_address || '177.135.90.14',
+      ip_address: vote.ip_address || getCachedClientIp(),
       audit_proof_receipt: receipt
     };
 

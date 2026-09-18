@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { getClientIp } from '@/lib/clientIp';
 import { 
   CipaManagementProcess, 
   CipaCandidate, 
@@ -65,7 +66,7 @@ export const CipaVotingModal: React.FC<CipaVotingModalProps> = ({
     }, 1200);
   };
 
-  const handleConfirmVote = (e: React.FormEvent) => {
+  const handleConfirmVote = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedCandidateId) {
       setErrorMessage('Selecione um candidato ou a opção de voto em branco/nulo.');
@@ -80,12 +81,15 @@ export const CipaVotingModal: React.FC<CipaVotingModalProps> = ({
       return;
     }
 
+    // O IP entra na auditoria do voto, entao vem do servidor - nunca inventado.
+    const voterIp = await getClientIp();
+
     const result = onCastVote({
       candidate_id: selectedCandidateId,
       voter_cpf: voterCpf,
       verification_method: verificationMethod,
       facial_confidence: verificationMethod === 'FACIAL_BIOMETRICS' ? 98.6 : undefined,
-      ip_address: '177.135.90.14'
+      ip_address: voterIp
     });
 
     if (result.success) {

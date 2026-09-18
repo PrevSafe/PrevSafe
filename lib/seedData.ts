@@ -595,35 +595,32 @@ export const INITIAL_ESOCIAL_EVENTS: ESocialEvent[] = [];
 
 export const INITIAL_ESOCIAL_CONFIG: ESocialConfig = {
   organization_id: 'org-prevsafe-01',
+  // Producao restrita e o ambiente de homologacao do eSocial. Comeca aqui de
+  // proposito: mudar para producao e uma decisao consciente do usuario, feita
+  // na tela de configuracao do eSocial apos validar os primeiros lotes.
   environment: 'PRODUCAO_RESTRITA',
   layout_version: 'S-01.03.00',
   transmitter_mode: 'PROCURACAO_ELETRONICA',
   employer_type: '1',
-  employer_document: '48.910.234/0001-89',
-  transmitter_document: '48.910.234/0001-89',
+  employer_document: '69.133.606/0001-00',
+  transmitter_document: '69.133.606/0001-00',
   certificate: {
-    file_name: 'PREVSAFE_ENGENHARIA_SST_2026_2027.pfx',
+    file_name: '',
     certificate_type: 'A1_PFX',
-    subject_name: 'PREVSAFE ENGENHARIA E MEDICINA DO TRABALHO LTDA:48910234000189',
-    subject_cnpj: '48.910.234/0001-89',
-    issuer_name: 'AC CERTISIGN MULTIPLA G7 - ICP-BRASIL v5',
-    serial_number: '7F3A901B42CD88E10934F',
-    valid_from: '2026-01-10T00:00:00Z',
-    valid_until: '2027-01-10T23:59:59Z',
-    days_remaining: 135,
-    status: 'VALID',
-    has_password: true,
-    last_tested_at: '2026-08-28T08:30:00Z',
-    pfx_base64: 'MIIKWgIBAzCCClcGCSqGSIb3DQEHAaCCCkgEggpEMIIKQDCCBA8GCSqGSIb3DQEHBqCC...'
+    subject_name: '',
+    subject_cnpj: '',
+    issuer_name: '',
+    serial_number: '',
+    valid_from: '',
+    valid_until: '',
+    days_remaining: 0,
+    status: 'NOT_CONFIGURED',
+    has_password: false
   },
-  auto_sign_on_validation: true,
+  auto_sign_on_validation: false,
   auto_transmit_batches: false,
-  webhook_url: 'https://api.prevsafe.com.br/v1/esocial/webhooks/receipts',
-  serpro_client_id: 'serpro_prevsafe_live_883921',
-  serpro_client_secret: '••••••••••••••••••••••••••••••••',
   sla_exam_warning_days: 30,
-  sla_document_warning_days: 15,
-  last_sync_at: '2026-08-28T09:00:00Z'
+  sla_document_warning_days: 15
 };
 
 export const INITIAL_ESOCIAL_BATCHES: ESocialBatch[] = [];

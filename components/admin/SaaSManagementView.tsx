@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { usePrevSafe } from '@/context/PrevSafeContext';
+import { getAppUrl } from '@/lib/appUrl';
 import { Tenant, SaaSSubscriptionPlan, TenantStatus, SubscriptionPlanId } from '@/types';
 import { formatCurrency, formatDateTime } from '@/lib/utils';
 import { 
@@ -484,7 +485,7 @@ export const SaaSManagementView: React.FC<{ onNavigate: (view: string) => void }
                     <div className="min-w-0 flex-1">
                       <span className="text-slate-400 block text-[10px]">Link de Onboarding / Ativação:</span>
                       <p className="text-slate-300 font-mono text-[11px] truncate">
-                        {tenant.invite_url || `https://prevsafe.com.br/onboarding?token=${tenant.invite_token}`}
+                        {tenant.invite_url || `${getAppUrl()}/onboarding?token=${tenant.invite_token}`}
                       </p>
                     </div>
                     <div className="flex items-center space-x-1.5 shrink-0">

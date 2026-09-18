@@ -6,6 +6,7 @@ import { usePrevSafe } from '@/context/PrevSafeContext';
 import { Profile, RoleType, PermissionModule, PermissionDefinition } from '@/types';
 import { formatDateTime } from '@/lib/utils';
 import { getSupabaseClient } from '@/lib/supabase';
+import { getAppUrl } from '@/lib/appUrl';
 import { shareViaChannel } from '@/lib/shareLinks';
 import { 
   Users, 
@@ -540,7 +541,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
       setIsNewUserModalOpen(false);
 
       if (formData.send_invite_now) {
-        const origin = typeof window !== 'undefined' ? window.location.origin : 'https://prevsafe.com.br';
+        const origin = getAppUrl();
         setInviteModalData({
           profile: newProf,
           url: origin,

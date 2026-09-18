@@ -257,3 +257,67 @@ export async function purgeOrganizationRecords(organizationId: string): Promise<
   if (error) return { ok: false, message: describeError(error) };
   return { ok: true };
 }
+
+/** Bucket privado das evidencias fotograficas de campo. */
+export const EVIDENCE_BUCKET = 'prevsafe-evidencias';
+
+export interface UploadedEvidence {
+  /** Caminho dentro do bucket. E isto que fica gravado no registro. */
+  path: string;
+  /** URL assinada, temporaria, so para exibir agora. */
+  signedUrl: string;
+}
+
+/**
+ * Envia uma foto de evidencia. O caminho comeca pelo organization_id porque
+ * e a primeira pasta que a RLS do Storage usa para amarrar o objeto a
+ * organizacao.
+ */
+export async function uploadEvidencePhoto(
+  organizationId: string,
+  scope: string,
+  file: File | Blob,
+  fileName?: string
+): Promise<{ ok: boolean; evidence?: UploadedEvidence; message?: string }> {
+  const supabase = getSupabaseClient();
+  if (!supabase) return { ok: false, message: 'Supabase não configurado.' };
+
+  const safeScope = (scope || 'sem-os').replace(/[^a-zA-Z0-9_-]/g, '-');
+  const ext = (fileName || (file as File).name || 'foto.jpg').split('.').pop()?.toLowerCase() || 'jpg';
+  const path = `${organizationId}/${safeScope}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+
+  const { error } = await supabase.storage
+    .from(EVIDENCE_BUCKET)
+    .upload(path, file, { contentType: (file as File).type || 'image/jpeg', upsert: false });
+
+  if (error) return { ok: false, message: describeError(error) };
+
+  const signed = await createEvidenceSignedUrl(path);
+  return { ok: true, evidence: { path, signedUrl: signed || '' } };
+}
+
+/**
+ * Gera uma URL temporaria para exibir a foto. O bucket e privado, entao o
+ * caminho sozinho nao abre nada: a URL precisa ser renovada a cada sessao.
+ */
+export async function createEvidenceSignedUrl(path: string, expiresInSeconds = 60 * 60): Promise<string | null> {
+  const supabase = getSupabaseClient();
+  if (!supabase || !path) return null;
+
+  const { data, error } = await supabase.storage
+    .from(EVIDENCE_BUCKET)
+    .createSignedUrl(path, expiresInSeconds);
+
+  if (error || !data?.signedUrl) return null;
+  return data.signedUrl;
+}
+
+/** Remove a foto do bucket. Usado quando o tecnico exclui a evidencia. */
+export async function removeEvidencePhoto(path: string): Promise<SyncOutcome> {
+  const supabase = getSupabaseClient();
+  if (!supabase || !path) return { ok: false, message: 'Supabase não configurado.' };
+
+  const { error } = await supabase.storage.from(EVIDENCE_BUCKET).remove([path]);
+  if (error) return { ok: false, message: describeError(error) };
+  return { ok: true };
+}
