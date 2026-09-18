@@ -158,34 +158,12 @@ export const CipaManagementView: React.FC = () => {
       dimensioning: dim,
       timeline,
       electoral_commission: [],
-      employer_appointees: [
-        {
-          id: 'app-1',
-          name: 'Marcelo Pires',
-          cpf: '333.444.555-66',
-          role: 'PRESIDENT',
-          job_title: 'Gerente Operacional',
-          department: 'Diretoria',
-          is_president: true,
-          training_completed: false,
-          training_hours: 0
-        }
-      ],
+      // Designados do empregador e atas entram pelas próprias telas do processo:
+      // pré-preencher aqui gravaria membro e ata assinada inexistentes no registro legal.
+      employer_appointees: [],
       candidates: [],
       audit_votes: [],
-      meetings: [
-        {
-          id: 'meet-1',
-          meeting_number: 1,
-          type: 'ORDINARY',
-          date: timeline.inauguration_date,
-          title: 'Reunião de Posse e Instalação da CIPA',
-          agenda_topics: ['Instalação da comissão', 'Apresentação do calendário', 'Módulo Lei 14.457/2022'],
-          attendees_count: (dim.effective_members_employee || 2) + (dim.effective_members_employer || 2),
-          ata_document_sha256: 'a1b2c3d4e5f6',
-          is_signed_by_all: true
-        }
-      ],
+      meetings: [],
       generated_documents: []
     });
 

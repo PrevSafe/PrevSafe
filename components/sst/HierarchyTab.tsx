@@ -99,6 +99,7 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
     code: string;
     type: 'MATRIZ' | 'FILIAL' | 'OBRA' | 'POSTO_SERVICO';
     cnpj_cno_caepf: string;
+    address: string;
     city: string;
     state: string;
     cnae_preponderant: string;
@@ -108,9 +109,10 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
     code: '',
     type: 'MATRIZ',
     cnpj_cno_caepf: '',
-    city: 'São Paulo',
-    state: 'SP',
-    cnae_preponderant: '41.20-4-00',
+    address: '',
+    city: '',
+    state: '',
+    cnae_preponderant: '',
     risk_grade: 3
   });
 
@@ -275,8 +277,8 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
     addUnit({
       client_id: selectedClientId,
       name: unitForm.name,
-      document_number: unitForm.cnpj_cno_caepf || '12.345.678/0001-99',
-      address: 'Endereço da Unidade',
+      document_number: unitForm.cnpj_cno_caepf || '',
+      address: unitForm.address || '',
       city: unitForm.city,
       state: unitForm.state,
       cnae: unitForm.cnae_preponderant,
@@ -543,7 +545,7 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
                       {u.document_type || 'MATRIZ'}
                     </span>
                   </td>
-                  <td className="py-3 px-4 font-mono text-slate-300">{u.document_number || '12.345.678/0001-99'}</td>
+                  <td className="py-3 px-4 font-mono text-slate-300">{u.document_number || '—'}</td>
                   <td className="py-3 px-4">{u.city} - {u.state}</td>
                   <td className="py-3 px-4 font-mono text-slate-400">{u.cnae}</td>
                   <td className="py-3 px-4 text-center">
@@ -1056,6 +1058,40 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
                     value={unitForm.cnae_preponderant}
                     onChange={(e) => setUnitForm({ ...unitForm, cnae_preponderant: e.target.value })}
                     className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 font-mono"
+                  />
+                </div>
+
+                <div className="sm:col-span-2">
+                  <label className="block text-slate-400 font-semibold mb-1">Endereço da Unidade</label>
+                  <input
+                    type="text"
+                    placeholder="Rua, número, bairro"
+                    value={unitForm.address}
+                    onChange={(e) => setUnitForm({ ...unitForm, address: e.target.value })}
+                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-slate-400 font-semibold mb-1">Município</label>
+                  <input
+                    type="text"
+                    placeholder="Cidade da unidade"
+                    value={unitForm.city}
+                    onChange={(e) => setUnitForm({ ...unitForm, city: e.target.value })}
+                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-slate-400 font-semibold mb-1">UF</label>
+                  <input
+                    type="text"
+                    maxLength={2}
+                    placeholder="BA"
+                    value={unitForm.state}
+                    onChange={(e) => setUnitForm({ ...unitForm, state: e.target.value.toUpperCase() })}
+                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 uppercase"
                   />
                 </div>
               </div>

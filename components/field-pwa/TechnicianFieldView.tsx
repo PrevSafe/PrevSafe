@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Image from 'next/image';
 import { usePrevSafe } from '@/context/PrevSafeContext';
+import { uploadEvidencePhoto, createEvidenceSignedUrl, removeEvidencePhoto } from '@/lib/supabaseSync';
 import { 
   HardHat, 
   MapPin, 
@@ -73,23 +74,40 @@ interface HazardCheckItem {
 
 interface PhotoEvidenceItem {
   id: string;
+  /** URL exibivel agora: assinada (online) ou data URL local (offline). */
   url: string;
+  /**
+   * Caminho no bucket privado. E o que persiste: a URL assinada expira, entao
+   * ela e regerada a cada sessao a partir daqui.
+   */
+  storage_path?: string;
+  /** Foto tirada sem conexao, ainda no dispositivo, aguardando envio. */
+  pending_upload?: boolean;
   caption: string;
   nr_ref?: string;
   sector?: string;
   timestamp: string;
 }
 
-const DEFAULT_INITIAL_CHECKLIST: HazardCheckItem[] = [
+/**
+ * Catalogo de perigos comuns, oferecido como ponto de partida da vistoria.
+ *
+ * NAO e carregado sozinho: a inspecao comeca vazia e o tecnico escolhe usar
+ * o modelo. Antes, estes itens ja vinham marcados como NAO CONFORME com
+ * observacoes sobre uma fabrica ficticia - o tecnico chegava ao cliente com
+ * um laudo pre-preenchido de nao conformidades que ninguem tinha visto.
+ *
+ * Todo item entra sem avaliacao e sem observacao: quem inspeciona preenche.
+ */
+const HAZARD_TEMPLATE: HazardCheckItem[] = [
   {
     id: 'chk-1',
     category: 'Físico',
     hazard: 'Ruído Contínuo e Intermitente em Usinagem / Prensas',
     nr: 'NR-09 / NR-15',
     severity: 'ALTO',
-    status: 'NÃO_CONFORME',
-    observation: 'Operadores na linha 02 sem protetor auricular plug tipo concha. Dosimetria recomendada.',
-    corrective_measure: 'Fornecer protetor auricular CA válido e realizar dosimetria acústica.'
+    status: 'NÃO_APLICÁVEL',
+    observation: ''
   },
   {
     id: 'chk-2',
@@ -97,9 +115,8 @@ const DEFAULT_INITIAL_CHECKLIST: HazardCheckItem[] = [
     hazard: 'Proteções Coletivas em Máquinas & Equipamentos (Pontos de Prensagem)',
     nr: 'NR-12',
     severity: 'CRÍTICO',
-    status: 'NÃO_CONFORME',
-    observation: 'Guilhotina hidráulica sem cortina de luz e sem botão de emergência de duplo canal.',
-    corrective_measure: 'Instalação imediata de barreira óptica e rearme manual supervisionado.'
+    status: 'NÃO_APLICÁVEL',
+    observation: ''
   },
   {
     id: 'chk-3',
@@ -107,9 +124,8 @@ const DEFAULT_INITIAL_CHECKLIST: HazardCheckItem[] = [
     hazard: 'Trabalho em Altura em Manutenção de Telhados e Pontes Rolantes',
     nr: 'NR-35',
     severity: 'ALTO',
-    status: 'CONFORME',
-    observation: 'Linha de vida instalada, colaboradores com treinamento válido e cinto tipo paraquedista.',
-    corrective_measure: 'Manter inspeção periódica dos pontos de ancoragem.'
+    status: 'NÃO_APLICÁVEL',
+    observation: ''
   },
   {
     id: 'chk-4',
@@ -117,9 +133,8 @@ const DEFAULT_INITIAL_CHECKLIST: HazardCheckItem[] = [
     hazard: 'Postura Estática e Levantamento Manual de Cargas Pesadas (> 25kg)',
     nr: 'NR-17',
     severity: 'MÉDIO',
-    status: 'NÃO_CONFORME',
-    observation: 'Bancadas de expedição sem ajuste de altura. Necessário elaborar AET com comitê de ergonomia.',
-    corrective_measure: 'Adequar bancadas e instalar talhas mecânicas para movimentação.'
+    status: 'NÃO_APLICÁVEL',
+    observation: ''
   },
   {
     id: 'chk-5',
@@ -127,9 +142,8 @@ const DEFAULT_INITIAL_CHECKLIST: HazardCheckItem[] = [
     hazard: 'Vapores Orgânicos e Solventes em Cabine de Pintura',
     nr: 'NR-15 / NR-20',
     severity: 'MÉDIO',
-    status: 'CONFORME',
-    observation: 'Exaustão forçada operando normalmente. FISPQs e respiradores com filtro de carvão ativado.',
-    corrective_measure: 'Substituição semestral dos filtros químicos de exaustão.'
+    status: 'NÃO_APLICÁVEL',
+    observation: ''
   },
   {
     id: 'chk-6',
@@ -137,9 +151,8 @@ const DEFAULT_INITIAL_CHECKLIST: HazardCheckItem[] = [
     hazard: 'Painéis Elétricos de Alta Tensão e Desenergização Segura',
     nr: 'NR-10',
     severity: 'ALTO',
-    status: 'CONFORME',
-    observation: 'Prontuário das instalações elétricas atualizado e procedimentos de bloqueio e etiquetagem (LOTO) aplicados.',
-    corrective_measure: 'Realizar termografia preventiva anual nos quadros de distribuição.'
+    status: 'NÃO_APLICÁVEL',
+    observation: ''
   },
   {
     id: 'chk-7',
@@ -147,9 +160,8 @@ const DEFAULT_INITIAL_CHECKLIST: HazardCheckItem[] = [
     hazard: 'Extintores, Hidrantes e Sinalização de Rotas de Fuga',
     nr: 'NR-23',
     severity: 'MÉDIO',
-    status: 'CONFORME',
-    observation: 'Inspeção hidrostática dos extintores de pó químico e CO2 em dia.',
-    corrective_measure: 'Manter desobstruídos os acessos aos abrigos de hidrantes.'
+    status: 'NÃO_APLICÁVEL',
+    observation: ''
   },
   {
     id: 'chk-8',
@@ -158,9 +170,8 @@ const DEFAULT_INITIAL_CHECKLIST: HazardCheckItem[] = [
     nr: 'NR-33',
     severity: 'CRÍTICO',
     status: 'NÃO_APLICÁVEL',
-    observation: 'Planta fabril não opera espaços confinados neste setor.',
-    corrective_measure: 'N/A'
-  }
+    observation: ''
+  },
 ];
 
 export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void }> = ({ onNavigate }) => {
@@ -171,7 +182,8 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
     tenantTheme,
     completeStage, 
     createNewDocument, 
-    saveFieldEvidence 
+    saveFieldEvidence, 
+    syncOrganizationId 
   } = usePrevSafe();
 
   // Active OS being inspected
@@ -192,7 +204,7 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   // Inspection Checklist state (CRUD)
-  const [checklist, setChecklist] = useState<HazardCheckItem[]>(DEFAULT_INITIAL_CHECKLIST);
+  const [checklist, setChecklist] = useState<HazardCheckItem[]>([]);
 
   // Filters for checklist
   const [nrFilter, setNrFilter] = useState('ALL');
@@ -204,41 +216,29 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
   const [newHazard, setNewHazard] = useState('');
   const [newNr, setNewNr] = useState('NR-09');
   const [newSeverity, setNewSeverity] = useState<'BAIXO' | 'MÉDIO' | 'ALTO' | 'CRÍTICO'>('ALTO');
-  const [newStatus, setNewStatus] = useState<'CONFORME' | 'NÃO_CONFORME' | 'NÃO_APLICÁVEL'>('NÃO_CONFORME');
+  const [newStatus, setNewStatus] = useState<'CONFORME' | 'NÃO_CONFORME' | 'NÃO_APLICÁVEL'>('NÃO_APLICÁVEL');
   const [newObs, setNewObs] = useState('');
   const [newCorrective, setNewCorrective] = useState('');
 
   // Photo Evidences state (CRUD)
-  const [photos, setPhotos] = useState<PhotoEvidenceItem[]>([
-    {
-      id: 'p-1',
-      url: 'https://picsum.photos/seed/factory1/400/300',
-      caption: 'Ponto de operação de prensa sem enclausuramento de segurança.',
-      nr_ref: 'NR-12',
-      sector: 'Usinagem Pesada',
-      timestamp: new Date().toLocaleTimeString('pt-BR')
-    },
-    {
-      id: 'p-2',
-      url: 'https://picsum.photos/seed/pressmachine/400/300',
-      caption: 'Quadro elétrico com sinalização de advertência e LOTO aplicado.',
-      nr_ref: 'NR-10',
-      sector: 'Subestação Principal',
-      timestamp: new Date().toLocaleTimeString('pt-BR')
-    }
-  ]);
+  const [photos, setPhotos] = useState<PhotoEvidenceItem[]>([]);
 
   // Photo Modal & Zoom
   const [showAddPhotoModal, setShowAddPhotoModal] = useState(false);
   const [newPhotoCaption, setNewPhotoCaption] = useState('');
-  const [newPhotoSector, setNewPhotoSector] = useState('Linha de Montagem');
+  const [newPhotoSector, setNewPhotoSector] = useState('');
   const [newPhotoNr, setNewPhotoNr] = useState('NR-12');
+  const [newPhotoFile, setNewPhotoFile] = useState<File | null>(null);
+  const [newPhotoPreview, setNewPhotoPreview] = useState<string | null>(null);
+  const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
+  const [photoError, setPhotoError] = useState<string | null>(null);
+  const photoInputRef = useRef<HTMLInputElement | null>(null);
   const [zoomedPhoto, setZoomedPhoto] = useState<PhotoEvidenceItem | null>(null);
 
   // Digital Signature & GPS state
-  const [repName, setRepName] = useState('Carlos Eduardo Mendes');
-  const [repRole, setRepRole] = useState('Técnico de Segurança da Fábrica');
-  const [repCpf, setRepCpf] = useState('987.654.321-00');
+  const [repName, setRepName] = useState('');
+  const [repRole, setRepRole] = useState('');
+  const [repCpf, setRepCpf] = useState('');
   const [isSigned, setIsSigned] = useState(false);
   const [gpsLocation, setGpsLocation] = useState<{ lat: number; lng: number; precision: string }>({
     lat: -22.2472,
@@ -271,7 +271,37 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
             setChecklist(cached.checklist);
           }
           if (cached.photos && cached.photos.length > 0) {
-            setPhotos(cached.photos);
+            // A URL assinada expira; o que persiste e o storage_path. Aqui ela
+            // e regerada, e o que nao chegou a subir (foto tirada sem sinal)
+            // e reenviado.
+            const restored = await Promise.all(
+              (cached.photos as PhotoEvidenceItem[]).map(async (photo) => {
+                if (photo.storage_path) {
+                  const signed = await createEvidenceSignedUrl(photo.storage_path);
+                  return signed ? { ...photo, url: signed, pending_upload: false } : photo;
+                }
+                if (photo.pending_upload && syncOrganizationId && photo.url?.startsWith('data:')) {
+                  const blob = await fetch(photo.url).then(r => r.blob()).catch(() => null);
+                  if (blob) {
+                    const sent = await uploadEvidencePhoto(
+                      syncOrganizationId,
+                      cached.osNumber || selectedOSId,
+                      blob
+                    );
+                    if (sent.ok && sent.evidence) {
+                      return {
+                        ...photo,
+                        url: sent.evidence.signedUrl || photo.url,
+                        storage_path: sent.evidence.path,
+                        pending_upload: false
+                      };
+                    }
+                  }
+                }
+                return photo;
+              })
+            );
+            if (isMounted) setPhotos(restored);
           }
           if (cached.repName) setRepName(cached.repName);
           if (cached.repCpf) setRepCpf(cached.repCpf);
@@ -310,7 +340,7 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
       window.removeEventListener('online', onOnline);
       window.removeEventListener('offline', onOffline);
     };
-  }, [selectedOSId, refreshStorageData]);
+  }, [selectedOSId, refreshStorageData, syncOrganizationId]);
 
   // Persist Current Session Helper to IndexedDB and LocalStorage
   const persistSessionNow = useCallback(async (
@@ -430,24 +460,73 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
   };
 
   // Action: Add Photo (Create)
+  const handleSelectPhoto = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    setPhotoError(null);
+    setNewPhotoFile(file);
+    if (!file) {
+      setNewPhotoPreview(null);
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => setNewPhotoPreview(reader.result as string);
+    reader.readAsDataURL(file);
+  };
+
   const handleAddPhoto = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!newPhotoFile || !newPhotoPreview) {
+      setPhotoError('Tire ou escolha a foto antes de anexar a evidência.');
+      return;
+    }
+
+    setIsUploadingPhoto(true);
+    setPhotoError(null);
+
     const newId = `p-${Date.now()}`;
-    const sampleUrl = `https://picsum.photos/seed/evidencia-${Date.now()}/400/300`;
+    // A data URL vai junto desde ja: se o envio falhar (tipico em campo, sem
+    // sinal), a foto continua visivel e marcada para subir depois, em vez de
+    // se perder entre a captura e o servidor.
+    let url = newPhotoPreview;
+    let storagePath: string | undefined;
+    let pending = true;
+
+    if (syncOrganizationId) {
+      const result = await uploadEvidencePhoto(
+        syncOrganizationId,
+        activeOS?.os_number || selectedOSId || 'visita',
+        newPhotoFile
+      );
+      if (result.ok && result.evidence) {
+        url = result.evidence.signedUrl || newPhotoPreview;
+        storagePath = result.evidence.path;
+        pending = false;
+      } else {
+        setPhotoError(`${result.message || 'Falha no envio.'} A foto ficou salva no aparelho e sobe na próxima sincronização.`);
+      }
+    } else {
+      setPhotoError('Sem vínculo com a organização: a foto ficou salva apenas neste aparelho.');
+    }
 
     const newPhoto: PhotoEvidenceItem = {
       id: newId,
-      url: sampleUrl,
-      caption: newPhotoCaption || 'Evidência fotográfica de campo coletada pelo técnico.',
+      url,
+      storage_path: storagePath,
+      pending_upload: pending,
+      caption: newPhotoCaption,
       nr_ref: newPhotoNr,
       sector: newPhotoSector,
       timestamp: new Date().toLocaleTimeString('pt-BR')
     };
 
+    setIsUploadingPhoto(false);
+
     const updated = [...photos, newPhoto];
     setPhotos(updated);
     setShowAddPhotoModal(false);
     setNewPhotoCaption('');
+    setNewPhotoFile(null);
+    setNewPhotoPreview(null);
 
     await persistSessionNow(checklist, updated, isSigned);
 
@@ -464,8 +543,14 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
   // Action: Delete Photo (Delete)
   const handleDeletePhoto = async (id: string) => {
     if (confirm('Deseja excluir esta evidência fotográfica?')) {
+      const removed = photos.find(p => p.id === id);
       const updated = photos.filter(p => p.id !== id);
       setPhotos(updated);
+      // Sem isto o arquivo ficaria orfao no bucket, continuando a ocupar espaco
+      // e acessivel por caminho a quem for da organizacao.
+      if (removed?.storage_path) {
+        await removeEvidencePhoto(removed.storage_path);
+      }
       await persistSessionNow(checklist, updated, isSigned);
 
       if (isOffline) {
@@ -841,6 +926,29 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
         {/* ==================== TAB 1: CHECKLIST DE PERIGOS & NRS (CRUD) ==================== */}
         {selectedVisitTab === 'CHECKLIST' && (
           <div className="space-y-4 pt-2">
+            {checklist.length === 0 && (
+              <div className="p-5 bg-slate-950/60 border border-slate-800 rounded-2xl text-center space-y-3">
+                <div>
+                  <p className="text-sm font-bold text-white">Vistoria em branco</p>
+                  <p className="text-[11px] text-slate-400 mt-1">
+                    Adicione os perigos que você observar no local, ou parta do modelo
+                    com os perigos mais comuns e ajuste o que não se aplicar.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    const modelo = HAZARD_TEMPLATE.map(item => ({ ...item }));
+                    setChecklist(modelo);
+                    await persistSessionNow(modelo, photos, isSigned);
+                  }}
+                  className="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-100 rounded-xl text-xs font-bold transition"
+                >
+                  Carregar modelo de perigos comuns ({HAZARD_TEMPLATE.length} itens)
+                </button>
+              </div>
+            )}
+
             {/* Action Bar: Filters + Add Button */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-950/60 p-3 rounded-2xl border border-slate-800">
               <div className="flex flex-wrap items-center gap-2 text-xs">
@@ -1311,7 +1419,7 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-slate-400">Total de Recursos em Cache:</span>
-                  <span className="font-mono text-teal-400 font-bold">{storageStats?.swCacheEntries || 12} itens pré-cacheados</span>
+                  <span className="font-mono text-teal-400 font-bold">{storageStats?.swCacheEntries ?? 0} itens pré-cacheados</span>
                 </div>
 
                 {/* Detailed Breakdown */}
@@ -1543,11 +1651,48 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
             </div>
 
             <form onSubmit={handleAddPhoto} className="space-y-3.5 text-xs">
-              <div className="p-6 bg-slate-950 border-2 border-dashed border-slate-800 rounded-2xl text-center space-y-2">
-                <Camera className="w-8 h-8 mx-auto text-indigo-400" />
-                <div className="text-slate-300 font-semibold">Câmera de Campo Pronta</div>
-                <p className="text-[11px] text-slate-500">Resolução otimizada para laudos técnicos com metadados EXIF e carimbo de tempo.</p>
-              </div>
+              <input
+                ref={photoInputRef}
+                type="file"
+                accept="image/*"
+                capture="environment"
+                onChange={handleSelectPhoto}
+                className="hidden"
+              />
+
+              {newPhotoPreview ? (
+                <div className="space-y-2">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={newPhotoPreview}
+                    alt="Pré-visualização da evidência"
+                    className="w-full h-44 object-cover rounded-2xl border border-slate-800"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => photoInputRef.current?.click()}
+                    className="w-full py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl font-semibold"
+                  >
+                    Trocar foto
+                  </button>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => photoInputRef.current?.click()}
+                  className="w-full p-6 bg-slate-950 border-2 border-dashed border-slate-800 hover:border-indigo-600 rounded-2xl text-center space-y-2 transition"
+                >
+                  <Camera className="w-8 h-8 mx-auto text-indigo-400" />
+                  <div className="text-slate-300 font-semibold">Tirar foto ou escolher da galeria</div>
+                  <p className="text-[11px] text-slate-500">A imagem é enviada para o armazenamento privado da organização.</p>
+                </button>
+              )}
+
+              {photoError && (
+                <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-[11px]">
+                  {photoError}
+                </div>
+              )}
 
               <div className="grid grid-cols-2 gap-2">
                 <div>
@@ -1600,9 +1745,10 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-bold shadow-md"
+                  disabled={isUploadingPhoto}
+                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white rounded-xl font-bold shadow-md"
                 >
-                  Anexar Evidência Fotográfica
+                  {isUploadingPhoto ? 'Enviando...' : 'Anexar Evidência Fotográfica'}
                 </button>
               </div>
             </form>

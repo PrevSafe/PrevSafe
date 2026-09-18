@@ -52,7 +52,8 @@ export const ExecutiveDashboard: React.FC<{ onNavigate: (view: string) => void }
     esocialEvents = [], 
     esocialConfig, 
     organization, 
-    profiles = [] 
+    profiles = [], 
+    transactions = [] 
   } = usePrevSafe();
   const [showPdfModal, setShowPdfModal] = useState(false);
 
@@ -80,7 +81,10 @@ export const ExecutiveDashboard: React.FC<{ onNavigate: (view: string) => void }
 
   const openRequestsCount = (requests || []).filter(r => r?.status === 'OPEN').length;
   const totalContractedValue = (contracts || []).reduce((acc, c) => acc + (c?.total_value || 0), 0);
-  const totalReceivedValue = totalContractedValue * 0.75;
+  // Recebido = contas a receber efetivamente baixadas no financeiro (nunca estimado sobre o contratado).
+  const totalReceivedValue = (transactions || [])
+    .filter(t => t?.type === 'RECEIVABLE' && t?.status === 'PAID')
+    .reduce((acc, t) => acc + (t?.final_amount || t?.amount || 0), 0);
 
   const averageNps = (evaluations || []).length > 0
     ? ((evaluations || []).reduce((acc, e) => acc + (e?.nps_score || 0), 0) / evaluations.length).toFixed(1)
@@ -98,20 +102,43 @@ export const ExecutiveDashboard: React.FC<{ onNavigate: (view: string) => void }
     { name: 'Retrabalho', value: (serviceOrders || []).filter(o => o?.status === 'REWORK').length, fill: '#f59e0b' },
   ];
 
-  const serviceTypeData = [
-    { name: 'PGR (NR-01)', count: 18, color: '#10b981' },
-    { name: 'PCMSO (NR-07)', count: 14, color: '#6366f1' },
-    { name: 'LTCAT (Previd.)', count: 11, color: '#0ea5e9' },
-    { name: 'AET (NR-17)', count: 8, color: '#f59e0b' },
-    { name: 'Treinamento NR-35', count: 6, color: '#ec4899' },
-  ];
+  // Serviços mais demandados: contagem real de OS por tipo/serviço contratado.
+  const SERVICE_TYPE_COLORS = ['#10b981', '#6366f1', '#0ea5e9', '#f59e0b', '#ec4899', '#a855f7'];
+  const serviceTypeCounts = (serviceOrders || []).reduce<Record<string, number>>((acc, os) => {
+    const key = os?.service_name || os?.title || 'Não classificado';
+    acc[key] = (acc[key] || 0) + 1;
+    return acc;
+  }, {});
+  const serviceTypeData = Object.entries(serviceTypeCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5)
+    .map(([name, count], idx) => ({ name, count, color: SERVICE_TYPE_COLORS[idx % SERVICE_TYPE_COLORS.length] }));
+  const serviceTypeMax = serviceTypeData.reduce((max, item) => Math.max(max, item.count), 0) || 1;
 
-  const monthlyRevenueData = [
-    { month: 'Mai', contratada: 38000, faturada: 32000 },
-    { month: 'Jun', contratada: 45000, faturada: 41000 },
-    { month: 'Jul', contratada: 52000, faturada: 48000 },
-    { month: 'Ago', contratada: totalContractedValue || 64000, faturada: totalReceivedValue || 51000 },
-  ];
+  // Evolução real dos últimos 6 meses: contratos assinados no mês x recebimentos baixados no mês.
+  const monthlyRevenueData = Array.from({ length: 6 }, (_, i) => {
+    const ref = new Date();
+    ref.setDate(1);
+    ref.setMonth(ref.getMonth() - (5 - i));
+    const year = ref.getFullYear();
+    const month = ref.getMonth();
+    const inMonth = (value?: string) => {
+      if (!value) return false;
+      const d = new Date(value);
+      return !isNaN(d.getTime()) && d.getFullYear() === year && d.getMonth() === month;
+    };
+    const contratada = (contracts || [])
+      .filter(c => inMonth(c?.signed_at || c?.start_date || c?.created_at))
+      .reduce((acc, c) => acc + (c?.total_value || 0), 0);
+    const faturada = (transactions || [])
+      .filter(t => t?.type === 'RECEIVABLE' && t?.status === 'PAID' && inMonth(t?.payment_date || t?.due_date))
+      .reduce((acc, t) => acc + (t?.final_amount || t?.amount || 0), 0);
+    return {
+      month: ref.toLocaleDateString('pt-BR', { month: 'short' }).replace('.', ''),
+      contratada,
+      faturada
+    };
+  });
 
   return (
     <div className="space-y-6 pb-12">
@@ -513,6 +540,11 @@ export const ExecutiveDashboard: React.FC<{ onNavigate: (view: string) => void }
             <p className="text-xs text-slate-400 mt-0.5">Distribuição por norma técnica</p>
           </div>
           <div className="space-y-3.5 pt-1">
+            {serviceTypeData.length === 0 && (
+              <p className="text-xs text-slate-500 py-6 text-center">
+                Nenhuma ordem de serviço aberta ainda. O ranking é montado a partir das OS emitidas.
+              </p>
+            )}
             {serviceTypeData.map((item, idx) => (
               <div key={idx} className="space-y-1.5">
                 <div className="flex justify-between text-xs font-medium text-slate-300">
@@ -522,7 +554,7 @@ export const ExecutiveDashboard: React.FC<{ onNavigate: (view: string) => void }
                 <div className="w-full h-2 bg-slate-950 rounded-full overflow-hidden border border-slate-800">
                   <div 
                     className="h-full rounded-full" 
-                    style={{ width: `${(item.count / 20) * 100}%`, backgroundColor: item.color }}
+                    style={{ width: `${(item.count / serviceTypeMax) * 100}%`, backgroundColor: item.color }}
                   />
                 </div>
               </div>

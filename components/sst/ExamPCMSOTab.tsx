@@ -22,6 +22,13 @@ interface ExamPCMSOTabProps {
   selectedClientId: string;
 }
 
+const todayISO = () => new Date().toISOString().split('T')[0];
+const addYearsISO = (years: number) => {
+  const d = new Date();
+  d.setFullYear(d.getFullYear() + years);
+  return d.toISOString().split('T')[0];
+};
+
 export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) => {
   const {
     examProtocols,
@@ -50,12 +57,12 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
     preparation_instructions: string;
   }>({
     ghe_id: '',
-    exam_name: 'Audiometria Tonal Ocupacional',
-    exam_code_table_27: '0295',
+    exam_name: '',
+    exam_code_table_27: '',
     periodicity_months: 12,
     triggers: ['ADMISSIONAL', 'PERIODICO', 'DEMISSIONAL'],
     mandatory_by_standard: 'NR-07',
-    preparation_instructions: 'Repouso auditivo de no mínimo 14 horas prévias ao exame.'
+    preparation_instructions: ''
   });
 
   // Apply ASO Modal
@@ -72,11 +79,11 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
     restrictions_description: string;
   }>({
     aso_type: 'PERIODICO',
-    issue_date: '2026-08-27',
-    validity_date: '2027-08-27',
-    doctor_name: 'Dra. Camila Vasconcelos',
-    doctor_crm: '189204',
-    doctor_crm_state: 'SP',
+    issue_date: todayISO(),
+    validity_date: addYearsISO(1),
+    doctor_name: '',
+    doctor_crm: '',
+    doctor_crm_state: '',
     result: 'APTO',
     restrictions_description: ''
   });
@@ -113,12 +120,12 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
       setEditingProtocol(null);
       setProtocolForm({
         ghe_id: ghes[0]?.id || '',
-        exam_name: 'Audiometria Tonal Ocupacional',
-        exam_code_table_27: '0295',
+        exam_name: '',
+        exam_code_table_27: '',
         periodicity_months: 12,
         triggers: ['ADMISSIONAL', 'PERIODICO', 'DEMISSIONAL'],
         mandatory_by_standard: 'NR-07',
-        preparation_instructions: 'Repouso auditivo de no mínimo 14 horas prévias ao exame.'
+        preparation_instructions: ''
       });
     }
     setIsProtocolModalOpen(true);
@@ -378,7 +385,7 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
                         {lastAso?.exam_date || emp.last_aso_date || emp.admission_date}
                       </td>
                       <td className="py-3 px-4 font-mono text-slate-300">
-                        {lastAso?.valid_until || emp.next_aso_date || '2027-08-27'}
+                        {lastAso?.valid_until || emp.next_aso_date || '—'}
                       </td>
                       <td className="py-3 px-4 text-center">
                         <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
@@ -386,7 +393,7 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
                         </span>
                       </td>
                       <td className="py-3 px-4 text-slate-400">
-                        {lastAso?.physician_name || 'Dra. Camila Vasconcelos'} ({lastAso?.physician_crm ? `CRM ${lastAso.physician_crm}` : 'CRM/SP 189204'})
+                        {lastAso?.physician_name || 'Médico não informado'}{lastAso?.physician_crm ? ` (CRM ${lastAso.physician_crm})` : ''}
                       </td>
                       <td className="py-3 px-4 text-right">
                         <button
@@ -444,6 +451,7 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
                   <input
                     type="text"
                     required
+                    placeholder="Ex.: Audiometria Tonal Ocupacional"
                     value={protocolForm.exam_name}
                     onChange={(e) => setProtocolForm({ ...protocolForm, exam_name: e.target.value })}
                     className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 focus:outline-none focus:border-teal-500"

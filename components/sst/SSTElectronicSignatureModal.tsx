@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { usePrevSafe } from '@/context/PrevSafeContext';
+import { getClientIp } from '@/lib/clientIp';
 import { 
   SSTDocumentSignature, 
   DocumentSigner, 
@@ -165,7 +166,7 @@ export const SSTElectronicSignatureModal: React.FC<SSTElectronicSignatureModalPr
     setHasDrawn(false);
   };
 
-  const handleConfirmSignature = () => {
+  const handleConfirmSignature = async () => {
     if (!currentSigner) return;
     if (!acceptedTerms) {
       alert('É necessário concordar com os termos de validade jurídica (Lei 14.063/2020).');
@@ -189,12 +190,16 @@ export const SSTElectronicSignatureModal: React.FC<SSTElectronicSignatureModalPr
       signatureImageUrl = canvasRef.current.toDataURL();
     }
 
+    // O IP faz parte do carimbo de autenticidade do documento assinado, entao
+    // e buscado do servidor antes de registrar a assinatura.
+    const signerIp = await getClientIp();
+
     setTimeout(() => {
       const success = signSSTDocument(signatureEnvelope.id, currentSigner.id, {
         signature_mode: signatureMode,
         signature_image_url: signatureImageUrl,
         compliance_statement: `Aceite digital emitido e assinado eletronicamente sob a égide da Lei Federal 14.063/2020 e MP 2.200-2/2001 por ${currentSigner.name} (${currentSigner.cpf}).`,
-        ip_address: '177.135.90.14',
+        ip_address: signerIp,
         security_auth_code: signatureMode === 'ELECTRONIC_PORTAL' ? `OTP-${otpCode}` : `ICP-AUTH-${Date.now().toString().slice(-6)}`
       });
 

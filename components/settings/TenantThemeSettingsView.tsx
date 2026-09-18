@@ -1000,7 +1000,7 @@ export const TenantThemeSettingsView: React.FC<TenantThemeSettingsViewProps> = (
                         <div>
                           <p className="text-xs font-bold text-white">Renovação Anual LTCAT</p>
                           <p className={`text-[10px] ${enableOutdoorHighContrast ? 'text-slate-300' : 'text-slate-400'}`}>
-                            Vence em 15 dias • Valença Matriz
+                            Vence em 15 dias • Unidade Matriz
                           </p>
                         </div>
                       </div>

@@ -151,6 +151,13 @@ export const SettingsView: React.FC<{ onNavigate: (view: string) => void }> = ({
     document_number: org.document_number || '',
     email: org.email || '',
     phone: org.phone || '',
+    technical_responsible_name: org.technical_responsible_name || '',
+    technical_responsible_title: org.technical_responsible_title || '',
+    technical_responsible_council: org.technical_responsible_council || '',
+    technical_responsible_art: org.technical_responsible_art || '',
+    pcmso_physician_name: org.pcmso_physician_name || '',
+    pcmso_physician_crm: org.pcmso_physician_crm || '',
+    pcmso_physician_rqe: org.pcmso_physician_rqe || '',
   });
 
   const [orgForm, setOrgForm] = useState(() => buildOrgForm(organization));
@@ -182,6 +189,13 @@ export const SettingsView: React.FC<{ onNavigate: (view: string) => void }> = ({
       document_number: orgForm.document_number.trim(),
       email: orgForm.email.trim(),
       phone: orgForm.phone.trim(),
+      technical_responsible_name: orgForm.technical_responsible_name.trim(),
+      technical_responsible_title: orgForm.technical_responsible_title.trim(),
+      technical_responsible_council: orgForm.technical_responsible_council.trim(),
+      technical_responsible_art: orgForm.technical_responsible_art.trim(),
+      pcmso_physician_name: orgForm.pcmso_physician_name.trim(),
+      pcmso_physician_crm: orgForm.pcmso_physician_crm.trim(),
+      pcmso_physician_rqe: orgForm.pcmso_physician_rqe.trim(),
     });
     setOrgSaved(true);
     setTimeout(() => setOrgSaved(false), 3000);
@@ -476,6 +490,84 @@ export const SettingsView: React.FC<{ onNavigate: (view: string) => void }> = ({
                 value={orgForm.phone}
                 onChange={(e) => setOrgForm({ ...orgForm, phone: e.target.value })}
                 className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-2xl text-white focus:outline-none focus:border-indigo-500"
+              />
+            </div>
+
+            <div className="sm:col-span-2 pt-2 border-t border-slate-800">
+              <p className="font-bold text-slate-300 text-[11px] uppercase tracking-wider">Responsabilidade Técnica</p>
+              <p className="text-[10px] text-slate-500 mt-0.5">
+                Assina o PGR, o PCMSO e o LTCAT emitidos pelo sistema. Sem isto, os documentos saem marcados como &quot;não informado&quot;.
+              </p>
+            </div>
+
+            <div>
+              <label className="block font-semibold text-slate-400 mb-1">Responsável Técnico (Engenharia)</label>
+              <input
+                type="text"
+                placeholder="Nome completo do engenheiro(a)"
+                value={orgForm.technical_responsible_name}
+                onChange={(e) => setOrgForm({ ...orgForm, technical_responsible_name: e.target.value })}
+                className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-2xl text-white focus:outline-none focus:border-indigo-500"
+              />
+            </div>
+            <div>
+              <label className="block font-semibold text-slate-400 mb-1">Qualificação do Responsável</label>
+              <input
+                type="text"
+                placeholder="Ex.: Engenheiro de Segurança do Trabalho"
+                value={orgForm.technical_responsible_title}
+                onChange={(e) => setOrgForm({ ...orgForm, technical_responsible_title: e.target.value })}
+                className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-2xl text-white focus:outline-none focus:border-indigo-500"
+              />
+            </div>
+            <div>
+              <label className="block font-semibold text-slate-400 mb-1">Registro no Conselho (CREA/CRM)</label>
+              <input
+                type="text"
+                placeholder="Ex.: CREA-BA 201812345-D"
+                value={orgForm.technical_responsible_council}
+                onChange={(e) => setOrgForm({ ...orgForm, technical_responsible_council: e.target.value })}
+                className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-2xl font-mono text-white focus:outline-none focus:border-indigo-500"
+              />
+            </div>
+            <div>
+              <label className="block font-semibold text-slate-400 mb-1">ART de Cargo / Função</label>
+              <input
+                type="text"
+                placeholder="Número da ART"
+                value={orgForm.technical_responsible_art}
+                onChange={(e) => setOrgForm({ ...orgForm, technical_responsible_art: e.target.value })}
+                className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-2xl font-mono text-white focus:outline-none focus:border-indigo-500"
+              />
+            </div>
+            <div>
+              <label className="block font-semibold text-slate-400 mb-1">Médico(a) Coordenador(a) do PCMSO</label>
+              <input
+                type="text"
+                placeholder="Nome completo do médico(a)"
+                value={orgForm.pcmso_physician_name}
+                onChange={(e) => setOrgForm({ ...orgForm, pcmso_physician_name: e.target.value })}
+                className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-2xl text-white focus:outline-none focus:border-indigo-500"
+              />
+            </div>
+            <div>
+              <label className="block font-semibold text-slate-400 mb-1">CRM do Coordenador PCMSO</label>
+              <input
+                type="text"
+                placeholder="Ex.: CRM 189204/BA"
+                value={orgForm.pcmso_physician_crm}
+                onChange={(e) => setOrgForm({ ...orgForm, pcmso_physician_crm: e.target.value })}
+                className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-2xl font-mono text-white focus:outline-none focus:border-indigo-500"
+              />
+            </div>
+            <div className="sm:col-span-2">
+              <label className="block font-semibold text-slate-400 mb-1">RQE em Medicina do Trabalho</label>
+              <input
+                type="text"
+                placeholder="Registro de Qualificação de Especialista"
+                value={orgForm.pcmso_physician_rqe}
+                onChange={(e) => setOrgForm({ ...orgForm, pcmso_physician_rqe: e.target.value })}
+                className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-2xl font-mono text-white focus:outline-none focus:border-indigo-500"
               />
             </div>
           </div>

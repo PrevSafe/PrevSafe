@@ -35,6 +35,8 @@ interface EmployeesTabProps {
   selectedClientId: string;
 }
 
+const todayISO = () => new Date().toISOString().split('T')[0];
+
 export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) => {
   const {
     organization,
@@ -86,10 +88,10 @@ export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) 
     name: '',
     cpf: '',
     nis_pis: '',
-    birth_date: '1990-05-15',
+    birth_date: '',
     gender: 'M',
     registration_number: '',
-    admission_date: '2026-08-27',
+    admission_date: todayISO(),
     worker_category: '101',
     employment_regime: 'CLT',
     unit_id: '',
@@ -109,10 +111,10 @@ export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) 
     delivery_date: string;
     term_signed: boolean;
   }>({
-    ca_number: '14235',
-    epi_name: 'Protetor Auditivo tipo Plug de Silicone',
-    delivery_date: '2026-08-27',
-    term_signed: true
+    ca_number: '',
+    epi_name: '',
+    delivery_date: todayISO(),
+    term_signed: false
   });
 
   // View Dossier Modal
@@ -162,11 +164,11 @@ export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) 
       setEmployeeForm({
         name: '',
         cpf: '',
-        nis_pis: '123.45678.90-1',
-        birth_date: '1992-04-10',
+        nis_pis: '',
+        birth_date: '',
         gender: 'M',
         registration_number: `MAT-${String(clientEmployees.length + 1).padStart(4, '0')}`,
-        admission_date: '2026-08-27',
+        admission_date: todayISO(),
         worker_category: '101',
         employment_regime: 'CLT',
         unit_id: defaultUnit,
@@ -174,7 +176,7 @@ export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) 
         job_id: defaultJob,
         ghe_id: defaultGhe,
         email: '',
-        phone: '(11) 98765-4321'
+        phone: ''
       });
     }
     setIsEmployeeModalOpen(true);

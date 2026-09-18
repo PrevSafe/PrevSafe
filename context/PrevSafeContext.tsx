@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { 
   Organization, 
   Profile, 
@@ -142,6 +142,19 @@ import {
 } from '@/lib/cipaService';
 import { DEFAULT_THEME_SETTINGS, applyTenantThemeToDom } from '@/lib/themeUtils';
 import { getSupabaseClient } from '@/lib/supabase';
+import { getClientIp, getCachedClientIp } from '@/lib/clientIp';
+import { getAppUrl, buildDocumentVerificationUrl } from '@/lib/appUrl';
+import {
+  SYNCED_COLLECTIONS,
+  SINGLETON_COLLECTIONS,
+  SINGLETON_ID,
+  fetchMemberOrganizationId,
+  fetchRemoteSnapshot,
+  pushRecords,
+  purgeOrganizationRecords,
+  type SyncedCollection,
+  type RemoteSnapshot
+} from '@/lib/supabaseSync';
 
 interface PrevSafeContextType {
   // Current active session state
@@ -607,6 +620,12 @@ interface PrevSafeContextType {
   updateCipaMeeting: (processId: string, meetingId: string, updates: Partial<CipaMeetingRecord>) => void;
   deleteCipaMeeting: (processId: string, meetingId: string) => void;
 
+  // Sincronizacao com o Supabase
+  syncStatus: SyncStatus;
+  syncMessage: string | null;
+  lastSyncedAt: string | null;
+  syncOrganizationId: string | null;
+
   // Utilities & Reset
   resetDatabaseToSeed: () => void;
   runDailyJobSimulation: () => { summary: string; alertsGenerated: number };
@@ -616,6 +635,22 @@ interface PrevSafeContextType {
 // demo database under the v1 key start clean instead of restoring it.
 const STORAGE_KEY = 'prevsafe_sst_v2_database';
 const LEGACY_STORAGE_KEYS = ['prevsafe_sst_v1_database'];
+
+/**
+ * IDLE     sem sessao ou sem nada pendente ainda
+ * LOADING  baixando os dados da organizacao
+ * SAVING   enviando alteracoes
+ * SAVED    tudo que esta na tela ja esta no servidor
+ * OFFLINE  falha de rede: segue gravando no cache local e tenta de novo
+ * ERROR    o servidor recusou (sessao/permissao) - exige acao do usuario
+ */
+export type SyncStatus = 'IDLE' | 'LOADING' | 'SAVING' | 'SAVED' | 'OFFLINE' | 'ERROR';
+
+/** Espera entre a ultima digitacao/acao e o envio, para agrupar alteracoes. */
+const SYNC_DEBOUNCE_MS = 1200;
+
+/** Espera antes de tentar de novo apos uma falha de gravacao. */
+const SYNC_RETRY_MS = 15000;
 
 const PrevSafeContext = createContext<PrevSafeContextType | undefined>(undefined);
 
@@ -690,113 +725,124 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
   const [cipaProcesses, setCipaProcesses] = useState<CipaManagementProcess[]>(INITIAL_CIPA_PROCESSES);
   const [occupationalRisksCatalog, setOccupationalRisksCatalog] = useState<OccupationalRiskCatalogItem[]>(INITIAL_OCCUPATIONAL_RISKS_CATALOG);
 
-  // Load from LocalStorage
-  useEffect(() => {
+  // Estado da sincronizacao com o Supabase, exposto na barra superior.
+  const [syncStatus, setSyncStatus] = useState<SyncStatus>('IDLE');
+  const [syncMessage, setSyncMessage] = useState<string | null>(null);
+  const [lastSyncedAt, setLastSyncedAt] = useState<string | null>(null);
+  const [syncOrganizationId, setSyncOrganizationId] = useState<string | null>(null);
+
+  // Ultimo estado confirmado pelo servidor, por colecao: id -> JSON do registro.
+  // E contra ele que calculamos o que mudou, para enviar apenas o delta.
+  const syncedShadow = useRef<Record<string, Map<string, string>>>({});
+  const pendingSync = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const syncInFlight = useRef(false);
+  // Incrementar reagenda o envio. Cobre os casos em que o estado nao muda
+  // mais mas ainda ha delta pendente: falha de rede ou envio em voo.
+  const [retryTick, setRetryTick] = useState(0);
+
+  /**
+   * Aplica um snapshot ao estado.
+   *
+   * `authoritative` distingue as duas origens:
+   *  - servidor (true): o que veio e a verdade. `materialized` diz quais
+   *    colecoes ja existem la, mesmo com todas as linhas excluidas. Assim
+   *    conseguimos separar "nunca sincronizou" (usa o catalogo padrao) de
+   *    "o usuario apagou tudo" (fica vazio mesmo). Sem essa distincao, apagar
+   *    todos os EPIs do catalogo nunca ficaria gravado: os padroes de fabrica
+   *    voltariam e seriam reenviados no proximo sync.
+   *  - cache local (false): so preenche o que existir, preservando os catalogos
+   *    padrao para caches gravados por versoes antigas do app.
+   */
+  const applySnapshot = useCallback((
+    parsed: any,
+    authoritative = false,
+    materialized?: Set<string>
+  ) => {
+    if (!parsed || typeof parsed !== 'object') return;
+
+    const list = <T,>(value: any, fallback: T[], key?: string): T[] | undefined => {
+      const keepDefaults = Boolean(key);
+      if (Array.isArray(value)) {
+        if (!authoritative && keepDefaults && value.length === 0) return undefined;
+        return value as T[];
+      }
+      if (!authoritative) return undefined;
+      // Colecao com catalogo padrao e ausente do servidor: so vai para vazio se
+      // ela ja existiu la (ou seja, foi esvaziada de proposito).
+      if (keepDefaults && !materialized?.has(key as string)) return fallback;
+      return keepDefaults ? ([] as T[]) : fallback;
+    };
+    const apply = <T,>(setter: (v: T[]) => void, value: T[] | undefined) => {
+      if (value !== undefined) setter(value);
+    };
+
+    if (parsed.organization && typeof parsed.organization === 'object') setOrganization(parsed.organization);
+    if (parsed.esocialConfig && typeof parsed.esocialConfig === 'object') setEsocialConfig(parsed.esocialConfig);
+
+    apply(setProfiles, list(parsed.profiles, INITIAL_PROFILES, 'profiles'));
+    apply(setClients, list(parsed.clients, []));
+    apply(setContacts, list(parsed.contacts, []));
+    apply(setUnits, list(parsed.units, []));
+    apply(setLeads, list(parsed.leads, []));
+    apply(setOpportunities, list(parsed.opportunities, []));
+    apply(setProposals, list(parsed.proposals, []));
+    apply(setContracts, list(parsed.contracts, []));
+    apply(setServiceTemplates, list(parsed.serviceTemplates, INITIAL_SERVICE_TEMPLATES, 'serviceTemplates'));
+    apply(setServiceOrders, list(parsed.serviceOrders, []));
+    apply(setDocuments, list(parsed.documents, []));
+    apply(setRequests, list(parsed.requests, []));
+    apply(setNotifications, list(parsed.notifications, []));
+    apply(setNotificationTemplates, list(parsed.notificationTemplates, INITIAL_NOTIFICATION_TEMPLATES, 'notificationTemplates'));
+    apply(setCommunications, list(parsed.communications, []));
+    apply(setEvaluations, list(parsed.evaluations, []));
+    apply(setAuditLogs, list(parsed.auditLogs, []));
+    apply(setEsocialEvents, list(parsed.esocialEvents, []));
+    apply(setEsocialBatches, list(parsed.esocialBatches, []));
+    apply(setTransactions, list(parsed.transactions, []));
+    apply(setTenants, list(parsed.tenants, []));
+    apply(setSaasPlans, list(parsed.saasPlans, INITIAL_SAAS_PLANS, 'saasPlans'));
+    apply(setHierarchySectors, list(parsed.hierarchySectors, []));
+    apply(setHierarchyJobs, list(parsed.hierarchyJobs, []));
+    apply(setGhes, list(parsed.ghes, []));
+    apply(setEnvironmentalRisks, list(parsed.environmentalRisks, []));
+    apply(setExamProtocols, list(parsed.examProtocols, INITIAL_EXAM_PROTOCOLS, 'examProtocols'));
+    apply(setEmployees, list(parsed.employees, []));
+    apply(setCatRecords, list(parsed.catRecords, []));
+    apply(setWorkAbsences, list(parsed.workAbsences, []));
+    apply(setEpiCatalog, list(parsed.epiCatalog, INITIAL_EPI_CATALOG, 'epiCatalog'));
+    apply(setEpiDeliveries, list(parsed.epiDeliveries, []));
+    apply(setWorkOrdersOS, list(parsed.workOrdersOS, []));
+    apply(setIntegrationTrainings, list(parsed.integrationTrainings, []));
+    apply(setAccidentsIncidents, list(parsed.accidentsIncidents, []));
+    apply(setSstSignatures, list(parsed.sstSignatures, []));
+    apply(setCipaProcesses, list(parsed.cipaProcesses, []));
+    apply(setOccupationalRisksCatalog, list(parsed.occupationalRisksCatalog, INITIAL_OCCUPATIONAL_RISKS_CATALOG, 'occupationalRisksCatalog'));
+  }, []);
+
+  const readLocalCache = useCallback((): any | null => {
     try {
       LEGACY_STORAGE_KEYS.forEach(key => localStorage.removeItem(key));
       const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (parsed.organization && typeof parsed.organization === 'object') setOrganization(parsed.organization);
-        if (Array.isArray(parsed.profiles)) setProfiles(parsed.profiles);
-        if (Array.isArray(parsed.clients) && parsed.clients.length > 0) setClients(parsed.clients);
-        if (Array.isArray(parsed.contacts)) setContacts(parsed.contacts);
-        if (Array.isArray(parsed.units)) setUnits(parsed.units);
-        if (Array.isArray(parsed.leads)) setLeads(parsed.leads);
-        if (Array.isArray(parsed.opportunities)) setOpportunities(parsed.opportunities);
-        if (Array.isArray(parsed.proposals)) setProposals(parsed.proposals);
-        if (Array.isArray(parsed.contracts)) setContracts(parsed.contracts);
-        if (Array.isArray(parsed.serviceTemplates)) setServiceTemplates(parsed.serviceTemplates);
-        if (Array.isArray(parsed.serviceOrders)) setServiceOrders(parsed.serviceOrders);
-        if (Array.isArray(parsed.documents)) setDocuments(parsed.documents);
-        if (Array.isArray(parsed.requests)) setRequests(parsed.requests);
-        if (Array.isArray(parsed.notifications)) setNotifications(parsed.notifications);
-        if (Array.isArray(parsed.notificationTemplates)) setNotificationTemplates(parsed.notificationTemplates);
-        if (Array.isArray(parsed.communications)) setCommunications(parsed.communications);
-        if (Array.isArray(parsed.evaluations)) setEvaluations(parsed.evaluations);
-        if (Array.isArray(parsed.auditLogs)) setAuditLogs(parsed.auditLogs);
-        if (Array.isArray(parsed.esocialEvents)) setEsocialEvents(parsed.esocialEvents);
-        if (Array.isArray(parsed.esocialBatches)) setEsocialBatches(parsed.esocialBatches);
-        if (parsed.esocialConfig && typeof parsed.esocialConfig === 'object') setEsocialConfig(parsed.esocialConfig);
-        if (Array.isArray(parsed.transactions)) setTransactions(parsed.transactions);
-        if (Array.isArray(parsed.tenants)) setTenants(parsed.tenants);
-        if (Array.isArray(parsed.saasPlans)) setSaasPlans(parsed.saasPlans);
-        if (Array.isArray(parsed.hierarchySectors)) setHierarchySectors(parsed.hierarchySectors);
-        if (Array.isArray(parsed.hierarchyJobs)) setHierarchyJobs(parsed.hierarchyJobs);
-        if (Array.isArray(parsed.ghes)) setGhes(parsed.ghes);
-        if (Array.isArray(parsed.environmentalRisks)) setEnvironmentalRisks(parsed.environmentalRisks);
-        if (Array.isArray(parsed.examProtocols)) setExamProtocols(parsed.examProtocols);
-        if (Array.isArray(parsed.employees)) setEmployees(parsed.employees);
-        if (Array.isArray(parsed.catRecords)) setCatRecords(parsed.catRecords);
-        if (Array.isArray(parsed.workAbsences)) setWorkAbsences(parsed.workAbsences);
-        if (Array.isArray(parsed.epiCatalog)) setEpiCatalog(parsed.epiCatalog);
-        if (Array.isArray(parsed.epiDeliveries)) setEpiDeliveries(parsed.epiDeliveries);
-        if (Array.isArray(parsed.workOrdersOS)) setWorkOrdersOS(parsed.workOrdersOS);
-        if (Array.isArray(parsed.integrationTrainings)) setIntegrationTrainings(parsed.integrationTrainings);
-        if (Array.isArray(parsed.accidentsIncidents)) setAccidentsIncidents(parsed.accidentsIncidents);
-        if (Array.isArray(parsed.sstSignatures)) setSstSignatures(parsed.sstSignatures);
-        if (Array.isArray(parsed.cipaProcesses) && parsed.cipaProcesses.length > 0) setCipaProcesses(parsed.cipaProcesses);
-        if (Array.isArray(parsed.occupationalRisksCatalog) && parsed.occupationalRisksCatalog.length > 0) setOccupationalRisksCatalog(parsed.occupationalRisksCatalog);
-      }
+      return saved ? JSON.parse(saved) : null;
     } catch (e) {
-      console.warn('Failed to parse saved state from local storage', e);
+      console.warn('Failed to parse local cache', e);
+      return null;
     }
-    setIsLoaded(true);
   }, []);
 
-  // Save to LocalStorage on change
+  // Sobe imediatamente o cache local enquanto o servidor responde: a tela nao
+  // pisca vazia em quem ja usava o sistema neste dispositivo.
   useEffect(() => {
-    if (!isLoaded) return;
-    try {
-      const stateToSave = {
-        organization,
-        profiles,
-        clients,
-        contacts,
-        units,
-        leads,
-        opportunities,
-        proposals,
-        contracts,
-        serviceTemplates,
-        serviceOrders,
-        documents,
-        requests,
-        notifications,
-        notificationTemplates,
-        communications,
-        evaluations,
-        auditLogs,
-        esocialEvents,
-        esocialBatches,
-        esocialConfig,
-        transactions,
-        tenants,
-        saasPlans,
-        hierarchySectors,
-        hierarchyJobs,
-        ghes,
-        environmentalRisks,
-        examProtocols,
-        employees,
-        catRecords,
-        workAbsences,
-        epiCatalog,
-        epiDeliveries,
-        workOrdersOS,
-        integrationTrainings,
-        accidentsIncidents,
-        sstSignatures,
-        cipaProcesses,
-        occupationalRisksCatalog
-      };
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
-    } catch (e) {
-      console.warn('Failed to save state to local storage', e);
-    }
-  }, [
-    isLoaded,
+    const cached = readLocalCache();
+    if (cached) applySnapshot(cached);
+    setIsLoaded(true);
+  }, [applySnapshot, readLocalCache]);
+
+  // Estado atual, no mesmo formato usado tanto pelo cache local quanto pelo
+  // store do Supabase.
+  const liveState = useMemo(() => ({
     organization,
+    esocialConfig,
     profiles,
     clients,
     contacts,
@@ -816,7 +862,6 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     auditLogs,
     esocialEvents,
     esocialBatches,
-    esocialConfig,
     transactions,
     tenants,
     saasPlans,
@@ -834,8 +879,233 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     integrationTrainings,
     accidentsIncidents,
     sstSignatures,
-    cipaProcesses
+    cipaProcesses,
+    occupationalRisksCatalog
+  }), [
+    organization,
+    esocialConfig,
+    profiles,
+    clients,
+    contacts,
+    units,
+    leads,
+    opportunities,
+    proposals,
+    contracts,
+    serviceTemplates,
+    serviceOrders,
+    documents,
+    requests,
+    notifications,
+    notificationTemplates,
+    communications,
+    evaluations,
+    auditLogs,
+    esocialEvents,
+    esocialBatches,
+    transactions,
+    tenants,
+    saasPlans,
+    hierarchySectors,
+    hierarchyJobs,
+    ghes,
+    environmentalRisks,
+    examProtocols,
+    employees,
+    catRecords,
+    workAbsences,
+    epiCatalog,
+    epiDeliveries,
+    workOrdersOS,
+    integrationTrainings,
+    accidentsIncidents,
+    sstSignatures,
+    cipaProcesses,
+    occupationalRisksCatalog
   ]);
+
+  // Cache local: nao e mais a fonte da verdade, e sim a copia que permite abrir
+  // o sistema offline e nao perder o que foi digitado sem conexao.
+  useEffect(() => {
+    if (!isLoaded) return;
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(liveState));
+    } catch (e) {
+      console.warn('Failed to write local cache', e);
+    }
+  }, [isLoaded, liveState]);
+
+  // Redefine a sombra (estado ja confirmado pelo servidor) a partir de um
+  // snapshot. Depois disso, so o que divergir dela e enviado.
+  const resetShadowFrom = useCallback((state: Record<string, any>) => {
+    const shadow: Record<string, Map<string, string>> = {};
+    for (const collection of SYNCED_COLLECTIONS) {
+      const map = new Map<string, string>();
+      const value = state[collection];
+      if ((SINGLETON_COLLECTIONS as readonly string[]).includes(collection)) {
+        if (value) map.set(SINGLETON_ID, JSON.stringify(value));
+      } else if (Array.isArray(value)) {
+        for (const row of value) {
+          if (row?.id) map.set(String(row.id), JSON.stringify(row));
+        }
+      }
+      shadow[collection] = map;
+    }
+    syncedShadow.current = shadow;
+  }, []);
+
+  // Baixa os dados da organizacao assim que existe sessao. Se o servidor ainda
+  // estiver vazio, a sombra fica zerada e o efeito de envio sobe tudo o que
+  // houver em memoria - e a migracao do localStorage para o Supabase.
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setSyncOrganizationId(null);
+      setSyncStatus('IDLE');
+      return;
+    }
+
+    let active = true;
+
+    (async () => {
+      setSyncStatus('LOADING');
+      setSyncMessage(null);
+
+      const orgId = await fetchMemberOrganizationId();
+      if (!active) return;
+
+      if (!orgId) {
+        setSyncStatus('ERROR');
+        setSyncMessage('Seu usuario ainda nao esta vinculado a uma organizacao no servidor. Ate isso ser liberado, os dados ficam salvos apenas neste dispositivo.');
+        return;
+      }
+
+      setSyncOrganizationId(orgId);
+
+      const { snapshot, materialized, isEmpty, error } = await fetchRemoteSnapshot(orgId);
+      if (!active) return;
+
+      if (error) {
+        setSyncStatus('OFFLINE');
+        setSyncMessage(error);
+        return;
+      }
+
+      if (isEmpty) {
+        resetShadowFrom({});
+        setSyncStatus('IDLE');
+        setSyncMessage(null);
+        return;
+      }
+
+      applySnapshot(snapshot as RemoteSnapshot, true, materialized);
+      resetShadowFrom(snapshot as Record<string, any>);
+      setSyncStatus('SAVED');
+      setLastSyncedAt(new Date().toISOString());
+      setSyncMessage(null);
+    })();
+
+    return () => { active = false; };
+  }, [isAuthenticated, applySnapshot, resetShadowFrom]);
+
+  // Envia o delta para o Supabase, com debounce para agrupar rajadas de edicao.
+  useEffect(() => {
+    if (!isLoaded || !isAuthenticated || !syncOrganizationId) return;
+
+    if (pendingSync.current) clearTimeout(pendingSync.current);
+
+    pendingSync.current = setTimeout(async () => {
+      // Outro envio ainda em voo: tenta de novo em seguida, senao este delta
+      // so subiria na proxima vez que o usuario mexesse em alguma coisa.
+      if (syncInFlight.current) {
+        setRetryTick(t => t + 1);
+        return;
+      }
+
+      const changes: Array<{ collection: SyncedCollection; rows: any[]; deletedIds: string[] }> = [];
+      const nextShadow: Record<string, Map<string, string>> = {};
+
+      for (const collection of SYNCED_COLLECTIONS) {
+        const previous = syncedShadow.current[collection] || new Map<string, string>();
+        const current = new Map<string, string>();
+        const rows: any[] = [];
+        const value = (liveState as Record<string, any>)[collection];
+
+        if ((SINGLETON_COLLECTIONS as readonly string[]).includes(collection)) {
+          if (value) {
+            const serialized = JSON.stringify(value);
+            current.set(SINGLETON_ID, serialized);
+            if (previous.get(SINGLETON_ID) !== serialized) rows.push(value);
+          }
+        } else if (Array.isArray(value)) {
+          for (const row of value) {
+            if (!row?.id) continue;
+            const id = String(row.id);
+            const serialized = JSON.stringify(row);
+            current.set(id, serialized);
+            if (previous.get(id) !== serialized) rows.push(row);
+          }
+        }
+
+        const deletedIds: string[] = [];
+        for (const id of previous.keys()) {
+          if (!current.has(id)) deletedIds.push(id);
+        }
+
+        nextShadow[collection] = current;
+        if (rows.length > 0 || deletedIds.length > 0) {
+          changes.push({ collection, rows, deletedIds });
+        }
+      }
+
+      if (changes.length === 0) return;
+
+      syncInFlight.current = true;
+      setSyncStatus('SAVING');
+
+      const result = await pushRecords(syncOrganizationId, changes);
+
+      syncInFlight.current = false;
+
+      if (result.ok) {
+        // So avancamos a sombra apos a confirmacao: se o envio falhar, o mesmo
+        // delta e recalculado e reenviado na proxima tentativa.
+        syncedShadow.current = nextShadow;
+        setSyncStatus('SAVED');
+        setLastSyncedAt(new Date().toISOString());
+        setSyncMessage(null);
+      } else {
+        const offline = /conexao|conex/i.test(result.message || '');
+        setSyncStatus(offline ? 'OFFLINE' : 'ERROR');
+        setSyncMessage(result.message || 'Falha ao salvar no servidor.');
+        // A sombra nao avancou, entao o mesmo delta sera recalculado. Sem este
+        // reagendamento ele so subiria na proxima edicao do usuario.
+        setTimeout(() => setRetryTick(t => t + 1), SYNC_RETRY_MS);
+      }
+    }, SYNC_DEBOUNCE_MS);
+
+    return () => {
+      if (pendingSync.current) clearTimeout(pendingSync.current);
+    };
+  }, [isLoaded, isAuthenticated, syncOrganizationId, liveState, retryTick]);
+
+  // Busca o IP publico uma vez por sessao autenticada. getCachedClientIp() e
+  // sincrono e e usado nos registros de auditoria; sem esta chamada ele ficaria
+  // sempre vazio.
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    void getClientIp();
+  }, [isAuthenticated]);
+
+  // Nova tentativa quando a conexao volta: mexer no status reagenda o envio.
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const onOnline = () => {
+      setSyncStatus(prev => (prev === 'OFFLINE' ? 'IDLE' : prev));
+      setRetryTick(t => t + 1);
+    };
+    window.addEventListener('online', onOnline);
+    return () => window.removeEventListener('online', onOnline);
+  }, []);
 
   // Log Audit helper (RN011)
   const logAudit = useCallback((action: AuditLog['action'], entity_type: AuditLog['entity_type'], entity_id: string, entity_number?: string, newData?: Record<string, any>, oldData?: Record<string, any>) => {
@@ -851,7 +1121,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
       entity_number,
       new_data: newData,
       old_data: oldData,
-      ip_address: '189.120.45.10',
+      ip_address: getCachedClientIp(),
       user_agent: typeof navigator !== 'undefined' ? navigator.userAgent : 'PrevSafe Web Client',
       created_at: new Date().toISOString()
     };
@@ -1140,7 +1410,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
 
     // There is no invite-token flow: the account is created already active with a
     // password, so the link is simply the app's login page.
-    const inviteUrl = typeof window !== 'undefined' ? window.location.origin : 'https://prevsafe.com.br';
+    const inviteUrl = getAppUrl();
 
     logAudit('LOGIN', 'ORGANIZATION', organization.id, organization.name, {
       event: 'USER_INVITE_SENT',
@@ -1386,7 +1656,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     valid_until: string;
   }): Proposal => {
     const count = proposals.length + 1;
-    const propNumber = `PROP-2026-${String(count).padStart(6, '0')}`;
+    const propNumber = `PROP-${new Date().getFullYear()}-${String(count).padStart(6, '0')}`;
     const subtotal = data.items.reduce((acc, it) => acc + (it.unit_price * it.quantity), 0);
     const discount = data.discount !== undefined ? data.discount : 0;
     const total = Math.max(0, subtotal - discount);
@@ -1456,7 +1726,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
       client_name: currentProfile.full_name,
       action: 'APPROVED' as const,
       comment: comment || 'Proposta aprovada no portal pelo cliente.',
-      ip_address: '189.120.45.10',
+      ip_address: getCachedClientIp(),
       user_agent: typeof navigator !== 'undefined' ? navigator.userAgent : 'Browser Client',
       created_at: new Date().toISOString()
     };
@@ -1502,7 +1772,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     if (!proposal) throw new Error('Proposal not found');
 
     const count = contracts.length + 1;
-    const contractNumber = `CONT-2026-${String(count).padStart(6, '0')}`;
+    const contractNumber = `CONT-${new Date().getFullYear()}-${String(count).padStart(6, '0')}`;
     const startDate = new Date().toISOString().split('T')[0];
     const endDate = new Date(Date.now() + 365 * 86400000).toISOString().split('T')[0];
 
@@ -1539,7 +1809,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     services_summary?: string;
   }): Contract => {
     const count = contracts.length + 1;
-    const contractNumber = `CONT-2026-${String(count).padStart(6, '0')}`;
+    const contractNumber = `CONT-${new Date().getFullYear()}-${String(count).padStart(6, '0')}`;
     const newContract: Contract = {
       id: `cont-${Date.now()}`,
       organization_id: organization.id,
@@ -1600,7 +1870,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
       signer_email: signerEmail,
       signer_document: signerDoc || '000.000.000-00',
       signed_at: new Date().toISOString(),
-      ip_address: '189.120.45.10',
+      ip_address: getCachedClientIp(),
       provider: 'PREVSAFE_SIGN' as const,
       signature_hash: `SHA256:${Math.random().toString(36).substring(2, 12)}`
     };
@@ -1637,7 +1907,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     if (!contract) throw new Error('Contract not found');
 
     const count = serviceOrders.length + 1;
-    const osNumber = `OS-2026-${String(count).padStart(6, '0')}`;
+    const osNumber = `OS-${new Date().getFullYear()}-${String(count).padStart(6, '0')}`;
     const startDate = new Date().toISOString().split('T')[0];
     const dueDate = new Date(Date.now() + template.default_duration_days * 86400000).toISOString().split('T')[0];
 
@@ -1731,7 +2001,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
   }): ServiceOrder => {
     const template = serviceTemplates.find(t => t.id === data.service_template_id) || serviceTemplates[0];
     const count = serviceOrders.length + 1;
-    const osNumber = `OS-2026-${String(count).padStart(6, '0')}`;
+    const osNumber = `OS-${new Date().getFullYear()}-${String(count).padStart(6, '0')}`;
     const startDate = new Date().toISOString().split('T')[0];
     const newOsId = `os-${Date.now()}`;
     const techName = data.technical_responsible_name || 'Eng. Eduardo Vasconcelos';
@@ -2246,7 +2516,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     is_client_released?: boolean;
   }): Document => {
     const count = documents.length + 1;
-    const docNumber = `DOC-2026-${String(count).padStart(6, '0')}`;
+    const docNumber = `DOC-${new Date().getFullYear()}-${String(count).padStart(6, '0')}`;
     const newDocId = `doc-${Date.now()}`;
 
     const version1: DocumentVersion = {
@@ -2321,7 +2591,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     due_date: string;
   }): RequestItem => {
     const count = requests.length + 1;
-    const reqNumber = `REQ-2026-${String(count).padStart(6, '0')}`;
+    const reqNumber = `REQ-${new Date().getFullYear()}-${String(count).padStart(6, '0')}`;
     const newReq: RequestItem = {
       ...data,
       id: `req-${Date.now()}`,
@@ -2740,7 +3010,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
   // Create eSocial Event
   const createESocialEvent = useCallback((data: Omit<ESocialEvent, 'id' | 'organization_id' | 'event_number' | 'created_at' | 'updated_at' | 'status'> & { status?: ESocialEventStatus }): ESocialEvent => {
     const nextSeq = esocialEvents.length + 101;
-    const eventNumber = `EVT-2026-${String(nextSeq).padStart(6, '0')}`;
+    const eventNumber = `EVT-${new Date().getFullYear()}-${String(nextSeq).padStart(6, '0')}`;
     const newEvent: ESocialEvent = {
       ...data,
       id: `evt-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
@@ -3017,7 +3287,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     let errorCount = 0;
 
     const batchSeq = esocialBatches.length + 1;
-    const batchNumber = `LOTE-2026-${String(batchSeq).padStart(5, '0')}`;
+    const batchNumber = `LOTE-${new Date().getFullYear()}-${String(batchSeq).padStart(5, '0')}`;
     const batchId = `batch-${Date.now()}`;
     const protocolNumber = `PROT-SERPRO-${Math.floor(100000 + Math.random() * 900000)}-${new Date().getFullYear()}`;
 
@@ -3468,8 +3738,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
         days_remaining: 365,
         status: 'VALID',
         has_password: Boolean(password),
-        last_tested_at: new Date().toISOString(),
-        pfx_base64: fileBase64
+        last_tested_at: new Date().toISOString()
       },
       last_sync_at: new Date().toISOString()
     }));
@@ -4181,7 +4450,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     const mrr = data.billing_cycle === 'ANNUAL' ? (plan.yearly_price / 12) : plan.monthly_price;
     const tenantId = `tenant-${Date.now().toString(36)}-${Math.random().toString(36).substring(2, 5)}`;
     const inviteToken = `inv-tok-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
-    const inviteUrl = typeof window !== 'undefined' ? `${window.location.origin}/onboarding?token=${inviteToken}&tenant=${tenantId}` : `https://prevsafe.com.br/onboarding?token=${inviteToken}&tenant=${tenantId}`;
+    const inviteUrl = `${getAppUrl()}/onboarding?token=${inviteToken}&tenant=${tenantId}`;
     const nextBilling = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
 
     const newTenant: Tenant = {
@@ -4272,7 +4541,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
   const generateTenantInviteLink = useCallback((tenantId: string): { url: string; token: string } => {
     const tenant = tenants.find(t => t.id === tenantId);
     const token = tenant?.invite_token || `inv-tok-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
-    const url = typeof window !== 'undefined' ? `${window.location.origin}/onboarding?token=${token}&tenant=${tenantId}` : `https://prevsafe.com.br/onboarding?token=${token}&tenant=${tenantId}`;
+    const url = `${getAppUrl()}/onboarding?token=${token}&tenant=${tenantId}`;
     
     setTenants(prev => prev.map(t => t.id === tenantId ? { ...t, invite_token: token, invite_url: url, invite_sent_at: new Date().toISOString() } : t));
     return { url, token };
@@ -4863,7 +5132,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
 
   const addCatRecord = useCallback((data: Omit<SSTCATRecord, 'id' | 'organization_id' | 'created_at'>): SSTCATRecord => {
     const count = catRecords.length + 1;
-    const catNumber = `CAT-2026-${String(count).padStart(6, '0')}`;
+    const catNumber = `CAT-${new Date().getFullYear()}-${String(count).padStart(6, '0')}`;
     const newCat: SSTCATRecord = {
       ...data,
       id: `cat-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
@@ -4961,7 +5230,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
       organization_id: organization.id,
       client_id: abs.client_id,
       event_type: 'S-2230',
-      event_number: `ABS-2026-${id.substring(4, 10)}`,
+      event_number: `ABS-${new Date().getFullYear()}-${id.substring(4, 10)}`,
       receipt_number: receipt,
       protocol_number: protocol,
       status: 'SUCCESS',
@@ -5829,7 +6098,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     const now = new Date().toISOString();
     const id = `sig-env-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
     const sha = data.document_sha256 || Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join('');
-    const qrUrl = data.qr_code_verification_url || `https://prevsafe.com.br/validar?doc=${encodeURIComponent(data.document_number)}&hash=${sha.substring(0, 16)}`;
+    const qrUrl = data.qr_code_verification_url || buildDocumentVerificationUrl(data.document_number, sha.substring(0, 16));
     
     const initialLog: SSTSignatureAuditLog = {
       id: `aud-${Date.now()}-1`,
@@ -5837,7 +6106,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
       action: 'ENVELOPE_CRIADO',
       actor_name: currentProfile.full_name || 'Operador Técnico SST',
       actor_cpf: currentProfile.email || '123.456.789-00',
-      ip_address: '189.120.45.102',
+      ip_address: getCachedClientIp(),
       details: data.initial_audit || `Envelope de assinatura criado para o documento ${data.document_title} (${data.document_number}).`
     };
 
@@ -5923,7 +6192,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
           signature_image_url: payload.signature_image_url || s.signature_image_url,
           compliance_statement: payload.compliance_statement || s.compliance_statement,
           signature_hash: generatedHash,
-          ip_address: payload.ip_address || '177.135.90.14',
+          ip_address: payload.ip_address || getCachedClientIp(),
           user_agent: typeof navigator !== 'undefined' ? navigator.userAgent : 'PrevSafe Web Client/Chrome 128.0',
           security_auth_code: payload.security_auth_code || `AUT-${Date.now().toString().slice(-6)}`
         };
@@ -5939,7 +6208,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
         action: 'ASSINATURA_REGISTRADA',
         actor_name: targetSigner.name,
         actor_cpf: targetSigner.cpf,
-        ip_address: payload.ip_address || '177.135.90.14',
+        ip_address: payload.ip_address || getCachedClientIp(),
         details: `Assinatura ${payload.signature_mode} registrada com sucesso. Hash: ${generatedHash.substring(0, 16)}... Código de Autenticação: ${payload.security_auth_code || 'OK'}`
       };
 
@@ -5997,7 +6266,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
         action: 'ASSINATURA_RECUSADA',
         actor_name: targetSigner.name,
         actor_cpf: targetSigner.cpf,
-        ip_address: '177.135.90.14',
+        ip_address: getCachedClientIp(),
         details: `Assinatura recusada pelo signatário. Justificativa: ${reason}`
       };
 
@@ -6230,7 +6499,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
       verification_method: vote.verification_method,
       facial_biometric_confidence: vote.facial_confidence,
       casted_at: now,
-      ip_address: vote.ip_address || '177.135.90.14',
+      ip_address: vote.ip_address || getCachedClientIp(),
       audit_proof_receipt: receipt
     };
 
@@ -6374,7 +6643,16 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     if (typeof localStorage !== 'undefined') {
       localStorage.removeItem(STORAGE_KEY);
     }
-  }, []);
+    // Zera tambem o servidor: senao o proximo carregamento baixaria de volta
+    // tudo o que acabou de ser apagado neste dispositivo.
+    if (syncOrganizationId) {
+      void purgeOrganizationRecords(syncOrganizationId).then(() => {
+        syncedShadow.current = {};
+        setSyncStatus('SAVED');
+        setLastSyncedAt(new Date().toISOString());
+      });
+    }
+  }, [syncOrganizationId]);
 
   // Job Simulation (Regra 47 & 88): Check D-3, D-1, D0, D+1, D+3 e Prazos Financeiros
   const runDailyJobSimulation = useCallback((): { summary: string; alertsGenerated: number } => {
@@ -6667,6 +6945,10 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     addCipaMeeting,
     updateCipaMeeting,
     deleteCipaMeeting,
+    syncStatus,
+    syncMessage,
+    lastSyncedAt,
+    syncOrganizationId,
     resetDatabaseToSeed,
     runDailyJobSimulation
   }), [
@@ -6910,6 +7192,10 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     testCertificateValidation,
     uploadCertificateFile,
     checkSSTDeadlinesAndNotify,
+    syncStatus,
+    syncMessage,
+    lastSyncedAt,
+    syncOrganizationId,
     resetDatabaseToSeed,
     runDailyJobSimulation
   ]);

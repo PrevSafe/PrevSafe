@@ -78,40 +78,14 @@ export const SSTSignaturesManagementTab: React.FC<SSTSignaturesManagementTabProp
 
   // New Envelope Form state
   const [newDocType, setNewDocType] = useState<SSTDocumentSignatureType>('PGR');
-  const [newDocTitle, setNewDocTitle] = useState('Programa de Gerenciamento de Riscos - PGR 2026');
-  const [newDocNumber, setNewDocNumber] = useState(`PGR-2026-${Math.floor(100 + Math.random() * 900)}`);
+  const [newDocTitle, setNewDocTitle] = useState('');
+  const [newDocNumber, setNewDocNumber] = useState(`PGR-${new Date().getFullYear()}-${Math.floor(100 + Math.random() * 900)}`);
   const [newClientId, setNewClientId] = useState(clients[0]?.id || '');
   const [newExpiresDays, setNewExpiresDays] = useState(30);
 
-  const [signersList, setSignersList] = useState<DocumentSigner[]>([
-    {
-      id: 'sig-tech-01',
-      name: 'Eng. Eduardo Vasconcelos',
-      email: '',
-      phone: '(11) 98765-4321',
-      cpf: '234.567.890-11',
-      signer_role: 'TECHNICAL_RESPONSIBLE',
-      role_type: 'TECHNICAL_RESPONSIBLE',
-      role_title: 'Engenheiro de Segurança do Trabalho (CREA 201812345-D)',
-      role_description: 'Engenheiro de Segurança do Trabalho (CREA 201812345-D)',
-      professional_council_number: 'CREA-SP 201812345-D',
-      signature_status: 'PENDING',
-      signature_mode: 'DIGITAL_CERTIFICATE_ICP'
-    },
-    {
-      id: 'sig-emp-01',
-      name: 'Dr. Marcelo Silva',
-      email: 'marcelo.silva@valenca.com.br',
-      phone: '(24) 99876-5432',
-      cpf: '123.456.789-00',
-      signer_role: 'EMPLOYER_REPRESENTATIVE',
-      role_type: 'EMPLOYER_REPRESENTATIVE',
-      role_title: 'Diretor Administrativo / Representante Legal',
-      role_description: 'Diretor Administrativo / Representante Legal',
-      signature_status: 'PENDING',
-      signature_mode: 'ELECTRONIC_PORTAL'
-    }
-  ]);
+  // O envelope nasce sem assinantes: cada signatário é adicionado pelo formulário abaixo,
+  // com nome e CPF reais, porque é o que fica gravado no carimbo de autenticidade.
+  const [signersList, setSignersList] = useState<DocumentSigner[]>([]);
 
   const [newSignerName, setNewSignerName] = useState('');
   const [newSignerEmail, setNewSignerEmail] = useState('');
@@ -173,6 +147,11 @@ export const SSTSignaturesManagementTab: React.FC<SSTSignaturesManagementTabProp
 
   const handleCreateEnvelopeSubmit = () => {
     const targetClient = clients.find(c => c.id === newClientId) || clients[0];
+    if (!newDocTitle.trim()) {
+      alert('Informe o título do documento que será assinado.');
+      return;
+    }
+
     if (signersList.length === 0) {
       alert('Adicione pelo menos 1 signatário ao envelope.');
       return;
@@ -614,6 +593,8 @@ export const SSTSignaturesManagementTab: React.FC<SSTSignaturesManagementTabProp
                   <label className="text-slate-400 font-bold block mb-1">Título do Documento: *</label>
                   <input
                     type="text"
+                    required
+                    placeholder="Ex.: Programa de Gerenciamento de Riscos - PGR 2026"
                     value={newDocTitle}
                     onChange={(e) => setNewDocTitle(e.target.value)}
                     className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-teal-500"

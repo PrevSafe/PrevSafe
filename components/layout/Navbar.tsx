@@ -25,7 +25,11 @@ import {
   KeyRound,
   Search,
   Plus,
-  Keyboard
+  Keyboard,
+  CloudOff,
+  Cloud,
+  CloudUpload,
+  Loader2
 } from 'lucide-react';
 
 interface NavbarProps {
@@ -68,7 +72,11 @@ export const Navbar: React.FC<NavbarProps> = ({
     runDailyJobSimulation,
     resetDatabaseToSeed,
     serviceOrders = [], 
-    requests = [] 
+    requests = [], 
+    clients = [], 
+    syncStatus, 
+    syncMessage, 
+    lastSyncedAt 
   } = usePrevSafe();
 
   const [showNotifMenu, setShowNotifMenu] = useState(false);
@@ -78,6 +86,27 @@ export const Navbar: React.FC<NavbarProps> = ({
   const unreadNotifs = (notifications || []).filter(n => n?.status === 'UNREAD');
   const delayedOSCount = (serviceOrders || []).filter(os => os?.status === 'IN_PROGRESS' && os?.due_date && new Date(os.due_date) < new Date()).length;
   const criticalRequestsCount = (requests || []).filter(r => r?.status === 'OPEN' && r?.priority === 'HIGH').length;
+  // Indicador de gravacao no servidor: o usuario precisa saber, sem clicar em
+  // nada, se o que ele acabou de digitar ja saiu deste dispositivo.
+  const syncBadge = (() => {
+    switch (syncStatus) {
+      case 'LOADING':
+        return { icon: Loader2, spin: true, label: 'Carregando dados...', tone: 'text-slate-300 border-slate-700 bg-slate-800/80', title: 'Baixando os dados da organização do servidor.' };
+      case 'SAVING':
+        return { icon: CloudUpload, spin: false, label: 'Salvando...', tone: 'text-sky-300 border-sky-700/50 bg-sky-950/50', title: 'Enviando as alterações para o Supabase.' };
+      case 'SAVED':
+        return { icon: Cloud, spin: false, label: 'Salvo', tone: 'text-emerald-300 border-emerald-700/50 bg-emerald-950/50', title: lastSyncedAt ? `Última gravação no servidor às ${formatTime(lastSyncedAt)}.` : 'Dados salvos no servidor.' };
+      case 'OFFLINE':
+        return { icon: CloudOff, spin: false, label: 'Sem conexão', tone: 'text-amber-300 border-amber-700/50 bg-amber-950/50', title: syncMessage || 'Sem conexão com o servidor. As alterações sobem quando a conexão voltar.' };
+      case 'ERROR':
+        return { icon: AlertTriangle, spin: false, label: 'Não salvo', tone: 'text-rose-300 border-rose-700/50 bg-rose-950/50', title: syncMessage || 'Não foi possível salvar no servidor.' };
+      default:
+        return null;
+    }
+  })();
+
+  const activeClients = (clients || []).filter(c => c?.status === 'ACTIVE');
+  const firstClientName = activeClients[0]?.trade_name || activeClients[0]?.legal_name || '';
 
   const roles: { role: RoleType; label: string; desc: string }[] = [
     { role: 'ADMIN', label: 'Admin Geral', desc: 'Acesso integral ao SaaS e configurações' },
@@ -160,7 +189,13 @@ export const Navbar: React.FC<NavbarProps> = ({
           <div className="hidden lg:flex items-center space-x-4 px-3 py-1.5 bg-slate-800/80 rounded-lg border border-slate-700/60 text-xs">
             <div className="flex items-center space-x-1.5 text-slate-300">
               <Building2 className="w-3.5 h-3.5 text-slate-400" />
-              <span className="font-medium text-slate-200">Metalúrgica Valença & +3</span>
+              <span className="font-medium text-slate-200">
+                {activeClients.length === 0
+                  ? 'Nenhum cliente ativo'
+                  : activeClients.length === 1
+                    ? firstClientName
+                    : `${firstClientName} & +${activeClients.length - 1}`}
+              </span>
             </div>
             <div className="w-px h-3.5 bg-slate-700" />
             <div className="flex items-center space-x-1.5 text-slate-300">
@@ -188,6 +223,16 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           {/* Right Action Controls */}
           <div className="flex items-center space-x-2 sm:space-x-3">
+            {syncBadge && (
+              <div
+                title={syncBadge.title}
+                aria-live="polite"
+                className={`hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border text-[11px] font-semibold ${syncBadge.tone}`}
+              >
+                <syncBadge.icon className={`w-3.5 h-3.5 ${syncBadge.spin ? 'animate-spin' : ''}`} />
+                <span>{syncBadge.label}</span>
+              </div>
+            )}
             {/* Global Quick Search Button (Ctrl+K) */}
             {onOpenCommandPalette && (
               <button

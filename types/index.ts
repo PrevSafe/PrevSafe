@@ -120,6 +120,14 @@ export interface Organization {
   phone: string;
   status: 'ACTIVE' | 'INACTIVE';
   theme_settings?: TenantThemeSettings;
+  // Responsabilidade técnica impressa nos documentos legais (PGR, PCMSO, LTCAT).
+  technical_responsible_name?: string;
+  technical_responsible_title?: string; // Ex.: Engenheiro de Segurança do Trabalho
+  technical_responsible_council?: string; // Ex.: CREA-BA 201812345-D
+  technical_responsible_art?: string; // ART de cargo/função
+  pcmso_physician_name?: string;
+  pcmso_physician_crm?: string; // Ex.: CRM 189204/BA
+  pcmso_physician_rqe?: string; // RQE em Medicina do Trabalho
   created_at: string;
   updated_at: string;
 }
@@ -837,7 +845,10 @@ export interface DigitalCertificateInfo {
   status: 'VALID' | 'EXPIRING' | 'EXPIRED' | 'NOT_CONFIGURED';
   has_password: boolean;
   last_tested_at?: string;
-  pfx_base64?: string;
+  // A chave privada do certificado A1 NAO e persistida. O arquivo .pfx nunca
+  // foi usado para assinar nada aqui, e guarda-lo no banco deixaria a chave
+  // privada da empresa legivel por qualquer membro da organizacao via API.
+  // Só os metadados de validade/titularidade ficam gravados.
 }
 
 export interface ESocialConfig {

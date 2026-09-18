@@ -85,6 +85,17 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
   onTransmitESocial
 }) => {
   const { sstSignatures, createSSTSignatureEnvelope } = usePrevSafe();
+
+  // Responsabilidade técnica vem das Configurações da empresa: um laudo assinado
+  // nunca pode carregar nome, CREA ou CRM inventados pelo sistema.
+  const NAO_INFORMADO = 'Não informado nas Configurações';
+  const rtName = organization?.technical_responsible_name || NAO_INFORMADO;
+  const rtTitle = organization?.technical_responsible_title || 'Responsável Técnico';
+  const rtCouncil = organization?.technical_responsible_council || '';
+  const rtArt = organization?.technical_responsible_art || '';
+  const pcmsoName = organization?.pcmso_physician_name || NAO_INFORMADO;
+  const pcmsoCrm = organization?.pcmso_physician_crm || '';
+  const pcmsoRqe = organization?.pcmso_physician_rqe || '';
   const [zoomLevel, setZoomLevel] = useState<number>(100);
   const [copiedHash, setCopiedHash] = useState(false);
   const [activePage, setActivePage] = useState<number>(1);
@@ -375,10 +386,10 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
                     Responsabilidade Técnica & Enquadramento
                   </h3>
                   <div className="space-y-1 text-slate-700">
-                    <div><strong>Responsável Técnico:</strong> Eng. Eduardo Vasconcelos</div>
-                    <div><strong>Qualificação:</strong> Engenheiro de Seg. do Trabalho • CREA 201812345-D</div>
-                    <div><strong>ART de Cargo / Função:</strong> <span className="font-mono font-bold text-teal-800">2026.0098124-SP</span></div>
-                    <div><strong>Médica Coordenadora PCMSO:</strong> Dra. Camila Vasconcelos (CRM 189204/SP - RQE 98214)</div>
+                    <div><strong>Responsável Técnico:</strong> {rtName}</div>
+                    <div><strong>Qualificação:</strong> {rtTitle}{rtCouncil ? ` • ${rtCouncil}` : ''}</div>
+                    <div><strong>ART de Cargo / Função:</strong> <span className="font-mono font-bold text-teal-800">{rtArt || '—'}</span></div>
+                    <div><strong>Coordenação PCMSO:</strong> {pcmsoName}{pcmsoCrm ? ` (${pcmsoCrm}${pcmsoRqe ? ` - RQE ${pcmsoRqe}` : ''})` : ''}</div>
                     <div><strong>População Coberta:</strong> {employees.length} trabalhadores ativos</div>
                   </div>
                 </div>
@@ -712,9 +723,9 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
                   <div className="space-y-1">
                     <div className="font-mono text-[10px] text-teal-800 font-bold">ASSINADO DIGITALMENTE (ICP-BRASIL)</div>
                     <div className="w-48 h-0.5 bg-slate-900 mx-auto mt-6"></div>
-                    <div className="font-bold text-slate-950">Eng. Eduardo Vasconcelos</div>
-                    <div className="text-slate-600">Engenheiro de Segurança do Trabalho • CREA 201812345-D</div>
-                    <div className="text-[10px] text-slate-500">ART nº 2026.0098124-SP</div>
+                    <div className="font-bold text-slate-950">{rtName}</div>
+                    <div className="text-slate-600">{rtTitle}{rtCouncil ? ` • ${rtCouncil}` : ''}</div>
+                    <div className="text-[10px] text-slate-500">{rtArt ? `ART nº ${rtArt}` : 'ART não informada'}</div>
                   </div>
 
                   <div className="space-y-1">
