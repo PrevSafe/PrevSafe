@@ -81,12 +81,12 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
   const [newValidityMonths, setNewValidityMonths] = useState(12);
   const [newStartDate, setNewStartDate] = useState(new Date().toISOString().split('T')[0]);
   const [newEndDate, setNewEndDate] = useState(new Date().toISOString().split('T')[0]);
-  const [newLocation, setNewLocation] = useState('Sala de Treinamento SESMT / Auditório');
+  const [newLocation, setNewLocation] = useState('');
   const [newInstructorName, setNewInstructorName] = useState('Carlos Alberto Ferreira');
-  const [newInstructorQualif, setNewInstructorQualif] = useState('Técnico em Segurança do Trabalho (MTE/RJ 0019842)');
+  const [newInstructorQualif, setNewInstructorQualif] = useState('');
   const [newInstructorReg, setNewInstructorReg] = useState('Reg. MTE nº 0019842');
-  const [newSupervisorName, setNewSupervisorName] = useState('Eng. Eduardo Vasconcelos');
-  const [newSupervisorQualif, setNewSupervisorQualif] = useState('Engenheiro de Segurança do Trabalho e Mecânico');
+  const [newSupervisorName, setNewSupervisorName] = useState('');
+  const [newSupervisorQualif, setNewSupervisorQualif] = useState('');
   const [newSupervisorReg, setNewSupervisorReg] = useState('CREA-RJ 201812345-D');
   const [newNrFramework, setNewNrFramework] = useState('NR-01 item 1.7, NR-06, NR-12, NR-17 e Artigo 157 da CLT.');
   const [newSyllabusText, setNewSyllabusText] = useState(
@@ -151,7 +151,7 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
       return {
         employee_id: empId,
         employee_name: emp?.name || 'Colaborador',
-        employee_cpf: emp?.cpf || '000.000.000-00',
+        employee_cpf: emp?.cpf || '',
         employee_registration: emp?.registration_number,
         employee_job_title: emp?.job_title || 'Cargo',
         employee_sector: emp?.sector_name || 'Setor',

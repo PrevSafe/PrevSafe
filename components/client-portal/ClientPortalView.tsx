@@ -107,10 +107,12 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
   const [sigFilterStatus, setSigFilterStatus] = useState('ALL');
 
   // Acceptance & Feedback Form states
-  const [acceptorName, setAcceptorName] = useState('Dr. Marcelo Silva');
-  const [acceptorRole, setAcceptorRole] = useState('Diretor Administrativo / RH');
-  const [acceptorCpf, setAcceptorCpf] = useState('123.456.789-00');
-  const [reworkComment, setReworkComment] = useState('Solicitamos revisar a descrição do setor de usinagem e os EPIs recomendados para ruído intermitente.');
+  // Aceite formal: nome, cargo e CPF ficam no carimbo de autenticidade do documento,
+  // então nunca são pré-preenchidos - quem aceita precisa digitar os próprios dados.
+  const [acceptorName, setAcceptorName] = useState('');
+  const [acceptorRole, setAcceptorRole] = useState('');
+  const [acceptorCpf, setAcceptorCpf] = useState('');
+  const [reworkComment, setReworkComment] = useState('');
 
   // NPS Form states
   const [evalOSId, setEvalOSId] = useState<string>(selectedOS?.id || clientOS[0]?.id || '');
@@ -119,7 +121,7 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
   const [puncScore, setPuncScore] = useState(5);
   const [servScore, setServScore] = useState(5);
   const [clarScore, setClarScore] = useState(5);
-  const [evalComment, setEvalComment] = useState('Excelente consultoria técnica! Entrega pontual e laudo completo para o eSocial.');
+  const [evalComment, setEvalComment] = useState('');
 
   // New Request Form states (Client creating a request)
   const [reqTitle, setReqTitle] = useState('');

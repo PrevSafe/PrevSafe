@@ -120,6 +120,14 @@ export interface Organization {
   phone: string;
   status: 'ACTIVE' | 'INACTIVE';
   theme_settings?: TenantThemeSettings;
+  // Responsabilidade técnica impressa nos documentos legais (PGR, PCMSO, LTCAT).
+  technical_responsible_name?: string;
+  technical_responsible_title?: string; // Ex.: Engenheiro de Segurança do Trabalho
+  technical_responsible_council?: string; // Ex.: CREA-BA 201812345-D
+  technical_responsible_art?: string; // ART de cargo/função
+  pcmso_physician_name?: string;
+  pcmso_physician_crm?: string; // Ex.: CRM 189204/BA
+  pcmso_physician_rqe?: string; // RQE em Medicina do Trabalho
   created_at: string;
   updated_at: string;
 }

@@ -43,9 +43,9 @@ export const ContractsView: React.FC<{ onNavigate: (view: string) => void }> = (
   const [deletingContract, setDeletingContract] = useState<Contract | null>(null);
 
   // Digital signature form
-  const [signerName, setSignerName] = useState(currentProfile?.full_name || 'Dr. Marcelo Silva');
+  const [signerName, setSignerName] = useState(currentProfile?.full_name || '');
   const [signerRole, setSignerRole] = useState('Diretor de Operações / RH');
-  const [signerCpf, setSignerCpf] = useState('123.456.789-00');
+  const [signerCpf, setSignerCpf] = useState('');
 
   // Contract form state
   const [contractForm, setContractForm] = useState(() => ({

@@ -18,6 +18,13 @@ interface CatAndAbsenceTabProps {
   selectedClientId: string;
 }
 
+const todayISO = () => new Date().toISOString().split('T')[0];
+const addDaysISO = (days: number) => {
+  const d = new Date();
+  d.setDate(d.getDate() + days);
+  return d.toISOString().split('T')[0];
+};
+
 export const CatAndAbsenceTab: React.FC<CatAndAbsenceTabProps> = ({ selectedClientId }) => {
   const {
     catRecords,
@@ -63,22 +70,22 @@ export const CatAndAbsenceTab: React.FC<CatAndAbsenceTabProps> = ({ selectedClie
     employee_id: employees[0]?.id || '',
     cat_type: 'INICIAL',
     accident_type: 'TIPICO',
-    accident_date: '2026-08-27',
-    accident_time: '14:30',
-    hours_worked_before_accident: '04:00',
+    accident_date: todayISO(),
+    accident_time: '',
+    hours_worked_before_accident: '',
     death_occurred: false,
     police_report: false,
     location_type: 'ESTABELECIMENTO_EMPREGADOR',
-    location_description: 'Setor de Usinagem, linha de produção 3, próximo ao torno CNC 02',
-    body_part_code: '70.20.10.200',
-    body_part_name: 'Dedo indicador da mão direita (Tabela 13 eSocial)',
-    causative_agent_code: '30.20.10.100',
-    causative_agent_name: 'Ferramenta manual / Máquina rotativa (Tabela 14/15 eSocial)',
-    medical_name: 'Dr. Fernando Arcoverde',
-    medical_crm: '142890',
-    medical_uf: 'SP',
-    cid_10: 'S61.0 - Ferimento de dedo sem lesão da unha',
-    days_away: 7,
+    location_description: '',
+    body_part_code: '',
+    body_part_name: '',
+    causative_agent_code: '',
+    causative_agent_name: '',
+    medical_name: '',
+    medical_crm: '',
+    medical_uf: '',
+    cid_10: '',
+    days_away: 0,
     treatment_type: 'AMBULATORIAL'
   });
 
@@ -100,14 +107,14 @@ export const CatAndAbsenceTab: React.FC<CatAndAbsenceTabProps> = ({ selectedClie
     employee_id: employees[0]?.id || '',
     reason_code_table_18: '01',
     reason_description: '01 - Acidente de trabalho / doença do trabalho',
-    start_date: '2026-08-27',
-    end_date: '2026-09-03',
-    estimated_days: 7,
+    start_date: todayISO(),
+    end_date: addDaysISO(1),
+    estimated_days: 1,
     is_traffic_accident: false,
-    physician_name: 'Dr. Fernando Arcoverde',
-    physician_crm: '142890',
-    physician_uf: 'SP',
-    cid_10: 'S61.0'
+    physician_name: '',
+    physician_crm: '',
+    physician_uf: '',
+    cid_10: ''
   });
 
   const [notificationMsg, setNotificationMsg] = useState<string | null>(null);
@@ -144,7 +151,7 @@ export const CatAndAbsenceTab: React.FC<CatAndAbsenceTabProps> = ({ selectedClie
     const newCat = addCatRecord({
       client_id: emp.client_id,
       employee_id: emp.id,
-      cat_number: `CAT-2026-${String(catRecords.length + 1).padStart(6, '0')}`,
+      cat_number: `CAT-${new Date().getFullYear()}-${String(catRecords.length + 1).padStart(6, '0')}`,
       worker_name: emp.name,
       worker_cpf: emp.cpf,
       worker_registration: emp.registration_number,

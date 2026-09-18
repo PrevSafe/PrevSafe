@@ -594,7 +594,7 @@ export const QuickNewOSModal: React.FC<QuickNewOSModalProps> = ({
   const [title, setTitle] = useState('');
   const [priority, setPriority] = useState<PriorityLevel>('HIGH');
   const [dueDate, setDueDate] = useState('');
-  const [technicalResp, setTechnicalResp] = useState('Eng. Eduardo Vasconcelos');
+  const [technicalResp, setTechnicalResp] = useState('');
   const [notes, setNotes] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
 
@@ -605,13 +605,13 @@ export const QuickNewOSModal: React.FC<QuickNewOSModalProps> = ({
       const defaultTemplate = serviceTemplates[0]?.id || '';
       setClientId(defaultClient);
       setTemplateId(defaultTemplate);
-      setTitle('Elaboração do PGR 2026 e Inventário de Riscos');
+      setTitle('');
       setPriority('HIGH');
       // 20 days default SLA
       const d = new Date();
       d.setDate(d.getDate() + 20);
       setDueDate(d.toISOString().split('T')[0]);
-      setTechnicalResp('Eng. Eduardo Vasconcelos');
+      setTechnicalResp('');
       setNotes('');
       setErrorMsg('');
     }

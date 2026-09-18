@@ -237,8 +237,8 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
 
   // Digital Signature & GPS state
   const [repName, setRepName] = useState('Carlos Eduardo Mendes');
-  const [repRole, setRepRole] = useState('Técnico de Segurança da Fábrica');
-  const [repCpf, setRepCpf] = useState('987.654.321-00');
+  const [repRole, setRepRole] = useState('');
+  const [repCpf, setRepCpf] = useState('');
   const [isSigned, setIsSigned] = useState(false);
   const [gpsLocation, setGpsLocation] = useState<{ lat: number; lng: number; precision: string }>({
     lat: -22.2472,
@@ -1311,7 +1311,7 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-slate-400">Total de Recursos em Cache:</span>
-                  <span className="font-mono text-teal-400 font-bold">{storageStats?.swCacheEntries || 12} itens pré-cacheados</span>
+                  <span className="font-mono text-teal-400 font-bold">{storageStats?.swCacheEntries ?? 0} itens pré-cacheados</span>
                 </div>
 
                 {/* Detailed Breakdown */}

@@ -515,6 +515,12 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
         return;
       }
 
+      // O usuário existe no Auth, mas sem o vínculo com a organização a RLS
+      // bloqueia os dados: ele entraria e veria o sistema vazio.
+      if (json.warning) {
+        showToast(json.warning, 'error');
+      }
+
       const newProf = addProfile({
         full_name: formData.full_name.trim(),
         email: formData.email.trim().toLowerCase(),

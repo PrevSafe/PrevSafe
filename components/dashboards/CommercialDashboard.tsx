@@ -47,28 +47,55 @@ export const CommercialDashboard: React.FC<{ onNavigate: (view: string) => void 
 
   const conversionRate = totalProposals > 0
     ? Math.round((approvedProposals.length / totalProposals) * 100)
-    : 75;
+    : 0;
 
   const totalValueApproved = approvedProposals.reduce((acc, p) => acc + (p?.total || 0), 0);
   const averageTicket = approvedProposals.length > 0
     ? Math.round(totalValueApproved / approvedProposals.length)
-    : 15000;
+    : 0;
 
-  const averageApprovalDays = 4.2; // Dias médios
+  // Ciclo médio real: dias entre a criação da proposta e a sua aprovação.
+  const approvalCycles = approvedProposals
+    .map(p => {
+      const created = new Date(p?.created_at || '');
+      const approved = new Date(p?.approved_at || p?.updated_at || '');
+      if (isNaN(created.getTime()) || isNaN(approved.getTime())) return null;
+      return Math.max(0, (approved.getTime() - created.getTime()) / 86400000);
+    })
+    .filter((d): d is number => d !== null);
+  const averageApprovalDays = approvalCycles.length > 0
+    ? (approvalCycles.reduce((acc, d) => acc + d, 0) / approvalCycles.length).toFixed(1)
+    : '—';
 
   const funnelData = [
-    { stage: 'Leads', count: totalLeads + 12, fill: '#3b82f6' },
-    { stage: 'Oportunidades', count: totalOpps + 8, fill: '#6366f1' },
-    { stage: 'Propostas Enviadas', count: totalProposals + 5, fill: '#8b5cf6' },
-    { stage: 'Propostas Aprovadas', count: approvedProposals.length + 3, fill: '#10b981' },
+    { stage: 'Leads', count: totalLeads, fill: '#3b82f6' },
+    { stage: 'Oportunidades', count: totalOpps, fill: '#6366f1' },
+    { stage: 'Propostas Enviadas', count: totalProposals, fill: '#8b5cf6' },
+    { stage: 'Propostas Aprovadas', count: approvedProposals.length, fill: '#10b981' },
   ];
 
-  const sourceData = [
-    { name: 'Indicação', value: 45, color: '#10b981' },
-    { name: 'Google Ads / SEO', value: 30, color: '#0ea5e9' },
-    { name: 'Outbound B2B', value: 15, color: '#f59e0b' },
-    { name: 'Eventos / Parcerias', value: 10, color: '#8b5cf6' },
-  ];
+  // Origem real dos leads cadastrados (campo "source" do CRM).
+  const SOURCE_COLORS = ['#10b981', '#0ea5e9', '#f59e0b', '#8b5cf6', '#ec4899', '#64748b'];
+  const SOURCE_LABELS: Record<string, string> = {
+    'INDICAÇÃO': 'Indicação',
+    GOOGLE: 'Google Ads / SEO',
+    EVENTO: 'Eventos / Parcerias',
+    OUTBOUND: 'Outbound B2B',
+    SITE: 'Site / Formulário',
+    OUTRO: 'Outros'
+  };
+  const sourceCounts = (leads || []).reduce<Record<string, number>>((acc, l) => {
+    const key = l?.source || 'OUTRO';
+    acc[key] = (acc[key] || 0) + 1;
+    return acc;
+  }, {});
+  const sourceData = Object.entries(sourceCounts)
+    .sort((a, b) => b[1] - a[1])
+    .map(([key, value], idx) => ({
+      name: SOURCE_LABELS[key] || key,
+      value,
+      color: SOURCE_COLORS[idx % SOURCE_COLORS.length]
+    }));
 
   return (
     <div className="space-y-6 pb-12">
@@ -190,6 +217,11 @@ export const CommercialDashboard: React.FC<{ onNavigate: (view: string) => void 
             <h2 className="text-base font-bold text-white mb-0.5">Origem dos Leads</h2>
             <p className="text-xs text-slate-400 mb-3">Canais de captação de clientes SST</p>
             <div className="h-40">
+              {sourceData.length === 0 ? (
+                <div className="h-full flex items-center justify-center text-center text-xs text-slate-500 px-4">
+                  Nenhum lead cadastrado ainda. A origem é preenchida no cadastro de cada lead.
+                </div>
+              ) : (
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie data={sourceData} cx="50%" cy="50%" innerRadius={45} outerRadius={68} dataKey="value">
@@ -202,6 +234,7 @@ export const CommercialDashboard: React.FC<{ onNavigate: (view: string) => void 
                   />
                 </PieChart>
               </ResponsiveContainer>
+              )}
             </div>
           </div>
           <div className="space-y-1.5 mt-2 pt-2 border-t border-slate-800/80">
@@ -211,7 +244,9 @@ export const CommercialDashboard: React.FC<{ onNavigate: (view: string) => void 
                   <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: s.color }} />
                   <span>{s.name}</span>
                 </div>
-                <span className="font-bold text-white font-mono">{s.value}%</span>
+                <span className="font-bold text-white font-mono">
+                  {s.value} ({Math.round((s.value / totalLeads) * 100)}%)
+                </span>
               </div>
             ))}
           </div>
@@ -237,11 +272,16 @@ export const QualityDashboard: React.FC<{ onNavigate: (view: string) => void }> 
     ? ((reworkCount / serviceOrders.length) * 100).toFixed(1)
     : '0.0';
 
+  // Médias reais por critério das avaliações recebidas (NPS pós-entrega).
+  const avgCriterion = (pick: (e: any) => number | undefined) => {
+    const values = (evaluations || []).map(pick).filter((v): v is number => typeof v === 'number');
+    return values.length > 0 ? Number((values.reduce((a, b) => a + b, 0) / values.length).toFixed(1)) : 0;
+  };
   const criteriaScores = [
-    { name: 'Qualidade Técnica dos Laudos', score: 4.9, max: 5 },
-    { name: 'Pontualidade no Prazo de Entrega', score: 4.7, max: 5 },
-    { name: 'Atendimento & Presteza da Equipe', score: 5.0, max: 5 },
-    { name: 'Clareza na Comunicação & Portal', score: 4.8, max: 5 },
+    { name: 'Qualidade Técnica dos Laudos', score: avgCriterion(e => e?.quality_score), max: 5 },
+    { name: 'Pontualidade no Prazo de Entrega', score: avgCriterion(e => e?.deadline_score), max: 5 },
+    { name: 'Atendimento & Presteza da Equipe', score: avgCriterion(e => e?.service_score), max: 5 },
+    { name: 'Clareza na Comunicação & Portal', score: avgCriterion(e => e?.communication_score), max: 5 },
   ];
 
   return (

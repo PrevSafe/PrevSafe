@@ -93,10 +93,10 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
   const [osForm, setOsForm] = useState(() => ({
     client_id: clients[0]?.id || '',
     service_template_id: serviceTemplates[0]?.id || '',
-    title: 'Elaboração do PGR 2026 e Inventário de Riscos',
+    title: '',
     priority: 'HIGH' as PriorityLevel,
     due_date: new Date(Date.now() + 20 * 86400000).toISOString().split('T')[0],
-    technical_responsible_name: 'Eng. Eduardo Vasconcelos',
+    technical_responsible_name: '',
     notes: ''
   }));
 
@@ -116,9 +116,9 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
     is_mandatory: true
   });
 
-  const [slaReason, setSlaReason] = useState('Aguardando envio do quadro funcional e mapa de layout da contratante (RN006).');
-  const [reworkReason, setReworkReason] = useState('Ajustar GHE de soldagem na tabela de ruído do PGR.');
-  const [requestTitle, setRequestTitle] = useState('Envio de Lista Atualizada de Colaboradores e Funções');
+  const [slaReason, setSlaReason] = useState('');
+  const [reworkReason, setReworkReason] = useState('');
+  const [requestTitle, setRequestTitle] = useState('');
   const [requestPriority, setRequestPriority] = useState<'LOW' | 'MEDIUM' | 'HIGH'>('HIGH');
 
   // Filtered OS list
@@ -163,10 +163,10 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
     setOsForm({
       client_id: clients[0]?.id || '',
       service_template_id: serviceTemplates[0]?.id || '',
-      title: 'Elaboração do PGR 2026 e Inventário de Riscos',
+      title: '',
       priority: 'HIGH',
       due_date: new Date(Date.now() + 20 * 86400000).toISOString().split('T')[0],
-      technical_responsible_name: 'Eng. Eduardo Vasconcelos',
+      technical_responsible_name: '',
       notes: ''
     });
     setShowNewOSModal(true);
@@ -199,8 +199,8 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
       title: selectedOS.title,
       priority: selectedOS.priority,
       due_date: selectedOS.due_date.split('T')[0],
-      technical_responsible_name: selectedOS.technical_responsible_name || 'Eng. Eduardo Vasconcelos',
-      manager_name: selectedOS.manager_name || 'Mariana Siqueira',
+      technical_responsible_name: selectedOS.technical_responsible_name || '',
+      manager_name: selectedOS.manager_name || '',
       description: selectedOS.description || ''
     });
     setShowEditOSModal(true);
@@ -552,7 +552,7 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
                   </div>
                   <h2 className="text-lg font-bold text-white mt-1">{selectedOS.title || selectedOS.service_name}</h2>
                   <div className="text-xs text-slate-400 mt-1 flex flex-wrap items-center gap-3">
-                    <span>Responsável: <strong className="text-slate-200">{selectedOS.technical_responsible_name || 'Eng. Eduardo Vasconcelos'}</strong></span>
+                    <span>Responsável: <strong className="text-slate-200">{selectedOS.technical_responsible_name || 'Não atribuído'}</strong></span>
                     <span>•</span>
                     <span>Prazo: <strong className="font-mono text-slate-200">{formatDate(selectedOS.due_date)}</strong></span>
                     <span>•</span>

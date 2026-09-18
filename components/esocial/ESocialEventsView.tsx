@@ -1968,7 +1968,7 @@ const CreateEditEventModal: React.FC<CreateEditEventModalProps> = ({
   const [s2220AsoType, setS2220AsoType] = useState<any>(initialEvent?.aso_data?.aso_type || 'PERIODICO');
   const [s2220ExamDate, setS2220ExamDate] = useState<string>(initialEvent?.aso_data?.exam_date || new Date().toISOString().split('T')[0]);
   const [s2220Result, setS2220Result] = useState<'APTO' | 'INAPTO'>(initialEvent?.aso_data?.result || 'APTO');
-  const [s2220DocName, setS2220DocName] = useState<string>(initialEvent?.aso_data?.physician_name || 'Dra. Camila Bittencourt Guimarães');
+  const [s2220DocName, setS2220DocName] = useState<string>(initialEvent?.aso_data?.physician_name || '');
   const [s2220DocCrm, setS2220DocCrm] = useState<string>(initialEvent?.aso_data?.physician_crm || 'CRM-SP 145892');
 
   // S-2210 State

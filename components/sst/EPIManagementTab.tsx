@@ -314,7 +314,7 @@ export const EPIManagementTab: React.FC<EPIManagementTabProps> = ({ selectedClie
         replacement_due_date: repDate,
         delivery_reason: deliveryReason,
         delivery_method: deliveryMode === 'FACIAL' ? 'FACIAL_BIOMETRIC' : ('MANUAL_SHEET' as EPIDeliveryMethod),
-        delivered_by_user_name: currentProfile?.full_name ? `${currentProfile.full_name} (${currentProfile.role})` : 'Eng. Eduardo Vasconcelos (PrevSafe)',
+        delivered_by_user_name: currentProfile?.full_name ? `${currentProfile.full_name} (${currentProfile.role})` : 'Responsável não identificado',
         biometric_face_matched: deliveryMode === 'FACIAL',
         biometric_confidence: deliveryMode === 'FACIAL' ? (biometricResult?.confidence || 0.985) : undefined,
         biometric_photo_data_url: deliveryMode === 'FACIAL' ? (capturedPhoto || undefined) : undefined,
@@ -911,7 +911,7 @@ export const EPIManagementTab: React.FC<EPIManagementTabProps> = ({ selectedClie
               <div>
                 <p className="text-[10px] text-slate-500 uppercase font-bold">Empregador / Tomador de Serviços:</p>
                 <p className="font-bold text-slate-900">{currentClient?.legal_name || 'EMPRESA CONTRATANTE LTDA'}</p>
-                <p className="text-slate-600">CNPJ: {currentClient?.document_number || '00.000.000/0001-00'}</p>
+                <p className="text-slate-600">CNPJ: {currentClient?.document_number || '—'}</p>
               </div>
               <div>
                 <p className="text-[10px] text-slate-500 uppercase font-bold">Colaborador / Empregado:</p>
@@ -1014,7 +1014,7 @@ export const EPIManagementTab: React.FC<EPIManagementTabProps> = ({ selectedClie
 
               <div>
                 <div className="border-t border-slate-800 pt-1 font-bold text-slate-900">
-                  {currentProfile?.full_name || 'Eng. Eduardo Vasconcelos'}
+                  {currentProfile?.full_name || '—'}
                 </div>
                 <p className="text-slate-500">Responsável pela Entrega / Segurança do Trabalho</p>
               </div>

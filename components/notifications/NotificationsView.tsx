@@ -37,8 +37,8 @@ export const NotificationsView: React.FC<{ onNavigate: (view: string) => void }>
   // Manual message form
   const [targetClientId, setTargetClientId] = useState(clients?.[0]?.id || '');
   const [msgChannel, setMsgChannel] = useState<'WHATSAPP' | 'EMAIL'>('WHATSAPP');
-  const [msgTitle, setMsgTitle] = useState('Alerta de Vencimento de Exames Periódicos (PCMSO)');
-  const [msgBody, setMsgBody] = useState('Prezados, informamos que 12 colaboradores estão com exame periódico a vencer em 15 dias. Acesse o portal para agendamento.');
+  const [msgTitle, setMsgTitle] = useState('');
+  const [msgBody, setMsgBody] = useState('');
 
   const filteredNotifications = (notifications || []).filter(n => {
     if (!n) return false;

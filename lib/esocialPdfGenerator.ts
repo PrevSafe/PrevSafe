@@ -91,11 +91,11 @@ export function generateESocialReportHtml(
             <td><strong>Resultado ASO:</strong></td>
             <td><strong style="color: ${aso?.result === 'APTO' ? '#16a34a' : '#dc2626'}">${aso?.result || 'APTO'}</strong></td>
             <td><strong>Médico Examinador:</strong></td>
-            <td>${aso?.physician_name || 'Dr. Marcelo Silva'} (CRM ${aso?.physician_crm || '12345'}/${aso?.physician_uf || 'SP'})</td>
+            <td>${aso?.physician_name || 'Nao informado'}${aso?.physician_crm ? ` (CRM ${aso.physician_crm}${aso?.physician_uf ? '/' + aso.physician_uf : ''})` : ''}</td>
           </tr>
           <tr>
             <td><strong>Médico Coord. PCMSO:</strong></td>
-            <td colspan="3">${aso?.pcmso_coordinator_name || 'Dra. Vanessa Martins - CRM 67890/SP'}</td>
+            <td colspan="3">${aso?.pcmso_coordinator_name || 'Nao informado'}</td>
           </tr>
         </table>
 

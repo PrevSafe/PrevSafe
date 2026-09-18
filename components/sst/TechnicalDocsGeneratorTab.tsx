@@ -57,6 +57,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
     transmitESocialEvent
   } = usePrevSafe();
 
+
   const [activeDocType, setActiveDocType] = useState<'PGR' | 'PGRTR' | 'PCMSO' | 'LTCAT' | 'INSALUBRIDADE' | 'PERICULOSIDADE' | 'XML_ESOCIAL'>('PGR');
   const [selectedXmlEventId, setSelectedXmlEventId] = useState<string>(esocialEvents[0]?.id || '');
   const [copiedCode, setCopiedCode] = useState(false);
@@ -71,6 +72,43 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
   const clientGhes = ghes.filter(g => !selectedClientId || g.client_id === selectedClientId);
   const clientRisks = environmentalRisks.filter(r => clientGhes.some(g => g.id === r.ghe_id));
   const clientEmployees = employees.filter(e => !selectedClientId || e.client_id === selectedClientId);
+
+  // Mesma fonte de verdade do preview/PDF: Configurações > Responsabilidade Técnica.
+  const NAO_INFORMADO = 'Não informado nas Configurações';
+  const rtName = organization?.technical_responsible_name || NAO_INFORMADO;
+  const rtCouncil = organization?.technical_responsible_council || '';
+  const rtArt = organization?.technical_responsible_art || '';
+  const pcmsoName = organization?.pcmso_physician_name || NAO_INFORMADO;
+  const pcmsoCrm = organization?.pcmso_physician_crm || '';
+  const pcmsoRqe = organization?.pcmso_physician_rqe || '';
+  const rtWithCouncil = rtCouncil ? `${rtName} (${rtCouncil})` : rtName;
+
+  // Plano de ação 5W2H derivado do inventário real de riscos: entra no plano todo risco
+  // alto/crítico ou com controle coletivo ausente/ineficaz. Sem riscos cadastrados, o
+  // quadro fica vazio em vez de exibir ações fictícias.
+  const actionPlanRows = clientRisks
+    .filter(r =>
+      r.risk_level === 'ALTO' ||
+      r.risk_level === 'CRITICO' ||
+      !r.epc_implemented ||
+      !r.epc_effective
+    )
+    .map(r => {
+      const ghe = clientGhes.find(g => g.id === r.ghe_id);
+      const isCritical = r.risk_level === 'CRITICO' || r.risk_level === 'ALTO';
+      return {
+        id: r.id,
+        action: !r.epc_implemented
+          ? `Implantar medida de controle coletivo para ${r.agent_name}`
+          : !r.epc_effective
+            ? `Revisar eficácia do controle coletivo de ${r.agent_name}`
+            : `Reavaliar exposição e controles de ${r.agent_name}`,
+        target: ghe?.name || 'GHE não vinculado',
+        deadline: isCritical ? 'Imediato (risco alto/crítico)' : 'Próximo ciclo anual',
+        statusLabel: r.epc_implemented && r.epc_effective ? 'Em monitoramento' : 'Pendente',
+        isPending: !(r.epc_implemented && r.epc_effective)
+      };
+    });
 
   const selectedEvent = esocialEvents.find(e => e.id === selectedXmlEventId) || esocialEvents[0];
   const xmlPayload = selectedEvent ? (selectedEvent.xml_content || generateESocialXmlPreview(selectedEvent)) : '<esocial>Nenhum evento selecionado</esocial>';
@@ -472,27 +510,26 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-800/60">
-                  <tr className="hover:bg-slate-900/40">
-                    <td className="py-2.5 px-3 font-semibold text-slate-100">Manutenção do Programa de Proteção Auditiva (PCA)</td>
-                    <td className="py-2.5 px-3 text-slate-400">GHE Operacional</td>
-                    <td className="py-2.5 px-3">Eng. Eduardo Vasconcelos</td>
-                    <td className="py-2.5 px-3 text-teal-400">Contínuo</td>
-                    <td className="py-2.5 px-3"><span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-300 rounded font-bold text-[10px]">Em Execução</span></td>
-                  </tr>
-                  <tr className="hover:bg-slate-900/40">
-                    <td className="py-2.5 px-3 font-semibold text-slate-100">Treinamento Admissional e Integração NR-01 item 1.7</td>
-                    <td className="py-2.5 px-3 text-slate-400">Todos os Colaboradores</td>
-                    <td className="py-2.5 px-3">Téc. Carlos Ferreira</td>
-                    <td className="py-2.5 px-3 text-teal-400">Admissão</td>
-                    <td className="py-2.5 px-3"><span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-300 rounded font-bold text-[10px]">100% Conforme</span></td>
-                  </tr>
-                  <tr className="hover:bg-slate-900/40">
-                    <td className="py-2.5 px-3 font-semibold text-slate-100">Análise Ergonômica do Trabalho (AET - NR-17)</td>
-                    <td className="py-2.5 px-3 text-slate-400">Administrativo e Logística</td>
-                    <td className="py-2.5 px-3">Ergonomista PrevSafe</td>
-                    <td className="py-2.5 px-3 text-teal-400">2º Semestre</td>
-                    <td className="py-2.5 px-3"><span className="px-2 py-0.5 bg-blue-500/20 text-blue-300 rounded font-bold text-[10px]">Planejado</span></td>
-                  </tr>
+                  {actionPlanRows.length === 0 ? (
+                    <tr>
+                      <td colSpan={5} className="py-6 px-3 text-center text-slate-500">
+                        Nenhuma ação pendente. O plano 5W2H é montado a partir do inventário de riscos
+                        (riscos altos/críticos ou sem controle coletivo eficaz).
+                      </td>
+                    </tr>
+                  ) : actionPlanRows.map(row => (
+                    <tr key={row.id} className="hover:bg-slate-900/40">
+                      <td className="py-2.5 px-3 font-semibold text-slate-100">{row.action}</td>
+                      <td className="py-2.5 px-3 text-slate-400">{row.target}</td>
+                      <td className="py-2.5 px-3">{rtName}</td>
+                      <td className="py-2.5 px-3 text-teal-400">{row.deadline}</td>
+                      <td className="py-2.5 px-3">
+                        <span className={`px-2 py-0.5 rounded font-bold text-[10px] ${row.isPending ? 'bg-amber-500/20 text-amber-300' : 'bg-emerald-500/20 text-emerald-300'}`}>
+                          {row.statusLabel}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
@@ -584,7 +621,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
                 Planejamento de Saúde Ocupacional & Protocolos de Exames (ASO / eSocial S-2220)
               </h2>
               <p className="text-xs text-slate-400">
-                Médico Coordenador do PCMSO: <strong className="text-slate-200">Dra. Camila Vasconcelos (CRM 189204/SP - RQE 98214)</strong>
+                Médico Coordenador do PCMSO: <strong className="text-slate-200">{pcmsoName}{pcmsoCrm ? ` (${pcmsoCrm}${pcmsoRqe ? ` - RQE ${pcmsoRqe}` : ''})` : ''}</strong>
               </p>
             </div>
             <div className="text-right text-xs text-slate-400 space-y-1">
@@ -648,7 +685,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
                 Caracterização para Aposentadoria Especial & eSocial S-2240
               </h2>
               <p className="text-xs text-slate-400">
-                Engenheiro de Segurança do Trabalho: <strong className="text-slate-200">Eng. Marcelo Duarte (CREA 50692184/SP - ART 202600192)</strong>
+                Engenheiro de Segurança do Trabalho: <strong className="text-slate-200">{rtWithCouncil}{rtArt ? ` - ART ${rtArt}` : ''}</strong>
               </p>
             </div>
             <div className="text-right text-xs text-slate-400 space-y-1">
@@ -695,7 +732,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
                 Avaliação de Limites de Tolerância & Adicionais Trabalhistas (10%, 20% e 40%)
               </h2>
               <p className="text-xs text-slate-400">
-                Perito Técnico Responsável: <strong className="text-slate-200">Eng. Eduardo Vasconcelos (CREA 201812345-D)</strong>
+                Perito Técnico Responsável: <strong className="text-slate-200">{rtWithCouncil}</strong>
               </p>
             </div>
             <div className="text-right text-xs text-slate-400 space-y-1">
@@ -755,7 +792,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
                 Atividades e Operações Perigosas com Adicional de 30% sobre o Salário Base
               </h2>
               <p className="text-xs text-slate-400">
-                Perito Técnico: <strong className="text-slate-200">Eng. Eduardo Vasconcelos (CREA 201812345-D / ART 2026991)</strong>
+                Perito Técnico: <strong className="text-slate-200">{rtWithCouncil}{rtArt ? ` / ART ${rtArt}` : ''}</strong>
               </p>
             </div>
             <div className="text-right text-xs text-slate-400 space-y-1">

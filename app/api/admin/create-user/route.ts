@@ -59,5 +59,40 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: false, message }, { status: 422 });
   }
 
+  // Sem o vínculo em prevsafe_members o usuário loga mas a RLS bloqueia todos
+  // os dados da organização — ele veria o sistema vazio. O vínculo herda a
+  // organização de quem está criando.
+  const { data: adminMembership } = await supabaseAdmin
+    .from('prevsafe_members')
+    .select('organization_id')
+    .eq('auth_user_id', userData.user.id)
+    .limit(1)
+    .maybeSingle();
+
+  const organizationId = adminMembership?.organization_id;
+
+  if (!organizationId) {
+    return NextResponse.json({
+      success: true,
+      auth_user_id: data.user.id,
+      warning: 'Usuário criado, mas não foi possível vinculá-lo a uma organização: sua própria conta não tem vínculo. Os dados não aparecerão para ele até isso ser corrigido.'
+    });
+  }
+
+  const { error: memberError } = await supabaseAdmin
+    .from('prevsafe_members')
+    .upsert(
+      { auth_user_id: data.user.id, organization_id: organizationId, role: role || 'TÉCNICO' },
+      { onConflict: 'auth_user_id,organization_id' }
+    );
+
+  if (memberError) {
+    return NextResponse.json({
+      success: true,
+      auth_user_id: data.user.id,
+      warning: 'Usuário criado, mas o vínculo com a organização falhou. Ele conseguirá entrar, porém verá o sistema sem dados até o vínculo ser refeito.'
+    });
+  }
+
   return NextResponse.json({ success: true, auth_user_id: data.user.id });
 }

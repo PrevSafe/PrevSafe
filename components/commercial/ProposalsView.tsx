@@ -66,9 +66,9 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
 
   // Proposal Builder State
   const [builderClientId, setBuilderClientId] = useState(clients?.[0]?.id || '');
-  const [builderTitle, setBuilderTitle] = useState('Proposta de Gestão SST e Laudos Regulamentares');
+  const [builderTitle, setBuilderTitle] = useState('');
   const [builderValidityDays, setBuilderValidityDays] = useState(30);
-  const [builderNotes, setBuilderNotes] = useState('Condição padrão: Pagamento em parcelas vinculadas à entrega dos laudos técnicos.');
+  const [builderNotes, setBuilderNotes] = useState('');
   
   // Catalog Search & Filter in Builder
   const [catalogSearch, setCatalogSearch] = useState('');

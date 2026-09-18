@@ -127,6 +127,35 @@ function applyPageNumbers(doc: jsPDF) {
 /**
  * Export a complete summary report of Service Orders (OS) to PDF
  */
+// Responsabilidade tecnica dos laudos: vem sempre das Configuracoes da empresa.
+// Um PDF entregue ao cliente nunca pode sair com nome/CREA/CRM inventados.
+const RT_NAO_INFORMADO = 'Nao informado (preencha em Configuracoes > Responsabilidade Tecnica)';
+
+function technicalResponsibleLine(organization: Organization): string {
+  const name = organization?.technical_responsible_name?.trim();
+  if (!name) return RT_NAO_INFORMADO;
+  const parts = [
+    organization?.technical_responsible_title?.trim(),
+    organization?.technical_responsible_council?.trim(),
+    organization?.technical_responsible_art?.trim() ? `ART ${organization.technical_responsible_art.trim()}` : ''
+  ].filter(Boolean);
+  return parts.length > 0 ? `${name} (${parts.join(' - ')})` : name;
+}
+
+function technicalResponsibleName(organization: Organization): string {
+  return organization?.technical_responsible_name?.trim() || RT_NAO_INFORMADO;
+}
+
+function pcmsoPhysicianLine(organization: Organization): string {
+  const name = organization?.pcmso_physician_name?.trim();
+  if (!name) return RT_NAO_INFORMADO;
+  const parts = [
+    organization?.pcmso_physician_crm?.trim(),
+    organization?.pcmso_physician_rqe?.trim() ? `RQE ${organization.pcmso_physician_rqe.trim()}` : ''
+  ].filter(Boolean);
+  return parts.length > 0 ? `${name} (${parts.join(' / ')})` : name;
+}
+
 export function exportServiceOrdersSummaryPdf({
   title = 'Relatório Geral de Ordens de Serviço (SST)',
   subtitle = 'Resumo consolidado de entregas técnicas, status de SLA e prazos vigentes',
@@ -2072,12 +2101,12 @@ export function exportAdmissionKitPDF(
   doc.setFont('helvetica', 'bold');
   const tCode = training?.training_code || (training as any)?.code || 'CAP-INT-001';
   const tTitle = training?.training_title || (training as any)?.title || 'Treinamento Admissional de Integração em Segurança e Saúde no Trabalho (NR-01)';
-  const tLocation = training?.location_or_platform || (training as any)?.location || 'Sala de Treinamento SESMT / Auditório';
-  const tInstructorName = training?.instructor_name || 'Carlos Alberto Ferreira';
-  const tInstructorQualif = training?.instructor_qualification || 'Técnico em Segurança do Trabalho (MTE/RJ 0019842)';
-  const tInstructorReg = training?.instructor_registration_number || (training as any)?.instructor_registration || 'Reg. MTE nº 0019842';
-  const tSupervisorName = training?.technical_supervisor_name || (training as any)?.technical_manager_name || 'Eng. Eduardo Vasconcelos';
-  const tSupervisorReg = training?.technical_supervisor_registration || (training as any)?.technical_manager_registration || 'CREA-RJ 201812345-D';
+  const tLocation = training?.location_or_platform || (training as any)?.location || '';
+  const tInstructorName = training?.instructor_name || '';
+  const tInstructorQualif = training?.instructor_qualification || '';
+  const tInstructorReg = training?.instructor_registration_number || (training as any)?.instructor_registration || '';
+  const tSupervisorName = training?.technical_supervisor_name || (training as any)?.technical_manager_name || technicalResponsibleName(organization);
+  const tSupervisorReg = training?.technical_supervisor_registration || (training as any)?.technical_manager_registration || (organization?.technical_responsible_council || '');
   const tSyllabus = training?.program_content_syllabus || (training as any)?.syllabus || [
     'Disposições Gerais da NR-01 e Política de Segurança',
     'Condições e Meio Ambiente de Trabalho',
@@ -2289,6 +2318,30 @@ export function exportPGRDocumentPdf({
   const pageWidth = doc.internal.pageSize.getWidth();
   const margin = 14;
 
+  // Plano 5W2H montado sobre o inventario real de riscos do cliente.
+  const rtNameForPlan = technicalResponsibleName(organization);
+  const actionPlanRows = (risks || []).filter((r: any) =>
+    r?.risk_level === 'ALTO' || r?.risk_level === 'CRITICO' || !r?.epc_implemented || !r?.epc_effective
+  );
+  const actionPlanBody = actionPlanRows.length > 0
+    ? actionPlanRows.map((r: any) => {
+        const ghe = (ghes || []).find((g: any) => g?.id === r?.ghe_id);
+        const critical = r?.risk_level === 'ALTO' || r?.risk_level === 'CRITICO';
+        const action = !r?.epc_implemented
+          ? `Implantar medida de controle coletivo para ${r?.agent_name || 'agente nao identificado'}`
+          : !r?.epc_effective
+            ? `Revisar eficacia do controle coletivo de ${r?.agent_name || 'agente nao identificado'}`
+            : `Reavaliar exposicao e controles de ${r?.agent_name || 'agente nao identificado'}`;
+        return [
+          action,
+          ghe?.name || 'GHE nao vinculado',
+          rtNameForPlan,
+          critical ? 'Imediato (risco alto/critico)' : 'Proximo ciclo anual',
+          r?.epc_implemented && r?.epc_effective ? 'Em monitoramento' : 'Pendente'
+        ];
+      })
+    : [['Nenhuma acao pendente no inventario de riscos deste cliente.', '-', '-', '-', '-']];
+
   // Header Bar
   doc.setFillColor(15, 23, 42);
   doc.rect(0, 0, pageWidth, 28, 'F');
@@ -2347,7 +2400,7 @@ export function exportPGRDocumentPdf({
       ],
       [
         { content: 'Responsável Técnico:', styles: { fontStyle: 'bold' } },
-        { content: 'Eng. Eduardo Vasconcelos (Engenheiro de Segurança do Trabalho - CREA 201812345-D / ART 2026009812)' },
+        { content: technicalResponsibleLine(organization) },
         { content: 'Data Elaboração:', styles: { fontStyle: 'bold' } },
         { content: formatDate(new Date().toISOString()) }
       ]
@@ -2419,12 +2472,7 @@ export function exportPGRDocumentPdf({
     ], [
       'O Que Fazer (Ação)', 'GHE / Setor Alvo', 'Responsável Técnico', 'Prazo Limite', 'Status / Evidência'
     ]],
-    body: [
-      ['Manter Programa de Proteção Auditiva (PCA) e inspeção periódica de EPIs', 'GHEs Operacionais', 'Eng. Eduardo Vasconcelos', 'Contínuo / Anual', 'Em Execução'],
-      ['Treinamento Admissional e Periódico de Integração (NR-01 item 1.7)', 'Todos os Trabalhadores', 'Téc. Carlos Alberto Ferreira', 'Admissão / Anual', '100% Conforme'],
-      ['Avaliação das Condições Ergonômicas do Trabalho (AET - NR-17)', 'Setores Administrativos e Linha', 'Ergonomista PrevSafe', '2º Semestre', 'Planejado'],
-      ['Revisão Bienal do Inventário Geral de Riscos Ocupacionais', 'Toda a Empresa', 'SESMT / Engenharia', 'Vigência 2027', 'Agendado']
-    ],
+    body: actionPlanBody,
     styles: { fontSize: 7, cellPadding: 2.2 },
     headStyles: { fillColor: [51, 65, 85], textColor: [255, 255, 255], fontStyle: 'bold' }
   });
@@ -2502,7 +2550,7 @@ export function exportPGRTRDocumentPdf({
       ],
       [
         { content: 'Responsável Técnico:', styles: { fontStyle: 'bold' } },
-        { content: 'Eng. Eduardo Vasconcelos (Engenheiro Agrônomo / Seg. Trabalho - CREA 201812345-D / ART)' },
+        { content: technicalResponsibleLine(organization) },
         { content: 'Data Avaliação:', styles: { fontStyle: 'bold' } },
         { content: formatDate(new Date().toISOString()) }
       ]
@@ -2598,7 +2646,7 @@ export function exportPCMSODocumentPdf({
       ],
       [
         { content: 'Médico Coordenador:', styles: { fontStyle: 'bold' } },
-        { content: 'Dra. Camila Vasconcelos (Médica do Trabalho - CRM 189204/SP / RQE 98214)' },
+        { content: pcmsoPhysicianLine(organization) },
         { content: 'Grau de Risco:', styles: { fontStyle: 'bold' } },
         { content: `Grau ${client.risk_degree || 3} (NR-04) - CNAE ${client.main_cnae || '41.20-4-00'}` }
       ]
@@ -2704,7 +2752,7 @@ export function exportLTCATDocumentPdf({
       ],
       [
         { content: 'Responsável Técnico:', styles: { fontStyle: 'bold' } },
-        { content: 'Eng. Eduardo Vasconcelos (CREA 201812345-D / ART de Cargo e Função 202619082)' },
+        { content: technicalResponsibleLine(organization) },
         { content: 'Enquadramento Geral:', styles: { fontStyle: 'bold' } },
         { content: 'Decreto 3.048/99 Anexo IV / Tabela 24 eSocial' }
       ]
@@ -2812,7 +2860,7 @@ export function exportInsalubridadeLaudoPdf({
       ],
       [
         { content: 'Perito Responsável:', styles: { fontStyle: 'bold' } },
-        { content: 'Eng. Eduardo Vasconcelos (Engenheiro de Segurança do Trabalho - CREA 201812345-D)' },
+        { content: technicalResponsibleLine(organization) },
         { content: 'Amparo Legal:', styles: { fontStyle: 'bold' } },
         { content: 'Artigos 189 a 192 da CLT e NR-15 do Ministério do Trabalho' }
       ]
@@ -2907,7 +2955,7 @@ export function exportPericulosidadeLaudoPdf({
       ],
       [
         { content: 'Perito Responsável:', styles: { fontStyle: 'bold' } },
-        { content: 'Eng. Eduardo Vasconcelos (Engenheiro de Segurança do Trabalho - CREA 201812345-D)' },
+        { content: technicalResponsibleLine(organization) },
         { content: 'Amparo Legal:', styles: { fontStyle: 'bold' } },
         { content: 'Artigo 193 da CLT e Anexos 1 a 5 da NR-16' }
       ]
