@@ -105,7 +105,7 @@ Depois do deploy, na ordem:
 ## 8. Antes do primeiro lançamento real
 
 - **Responsabilidade técnica.** No menu lateral, em **Governança & Qualidade →
-  Configurações SaaS** (ou digite `640` para ir direto), no card **Dados da
+  Configurações da Empresa** (ou digite `640` para ir direto), no card **Dados da
   Empresa**, bloco **Responsabilidade Técnica**: preencha o engenheiro
   responsável (nome, qualificação, CREA, ART) e o médico coordenador do PCMSO
   (nome, CRM, RQE). Sem isso, PGR, PCMSO e LTCAT saem com "Não informado nas

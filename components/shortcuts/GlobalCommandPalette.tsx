@@ -249,8 +249,8 @@ export const GlobalCommandPalette: React.FC<GlobalCommandPaletteProps> = ({
     },
     {
       id: 'mod-settings',
-      title: 'Configurações do Sistema',
-      subtitle: 'Parâmetros do SaaS, temas e personalização',
+      title: 'Configurações da Empresa',
+      subtitle: 'Dados da empresa, responsabilidade técnica dos laudos e banco de dados',
       category: 'MODULES',
       icon: Settings,
       badge: 'Admin',

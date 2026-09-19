@@ -1,0 +1,26 @@
+# Resíduos da versão anterior em Vite. Não fazem parte do app Next e o
+# tsconfig.json já os exclui do type-check — mas a Vercel publica /api/*.ts
+# como funções serverless por convenção, independente do tsconfig.
+#
+# Sem este arquivo, três endpoints mortos do portal CIPA vão ao ar em
+# produção: /api/admin/usuarios, /api/cipa/otp e /api/cipa/votar. O primeiro
+# usa a service role para criar usuários e redefinir senhas, e todos leem
+# variáveis VITE_* que não existem mais. As rotas de API válidas do sistema
+# vivem em app/api/ e não são afetadas por estas linhas.
+# A barra inicial ancora na raiz do projeto. Sem ela, "api/" casaria tambem
+# com app/api/ e derrubaria todas as rotas de API do sistema.
+/api/
+/src/
+/index.html
+/vite.config.ts
+/tsconfig.app.json
+/tsconfig.node.json
+
+# Backups locais: contêm dados reais de clientes e colaboradores.
+/backups/
+/backups-teste/
+
+# Nunca enviar para o build.
+/.env.local
+/sst_linter_validator.py
+/claude_code_multi_agent_prompt.md

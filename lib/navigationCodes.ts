@@ -367,11 +367,15 @@ export const NAVIGATION_CODES: NavigationCodeItem[] = [
   },
   {
     code: '640',
-    aliases: ['configuracoes', 'parametros', 'settings'],
+    aliases: [
+      'configuracoes', 'parametros', 'settings', 'empresa', 'dados da empresa',
+      'responsavel tecnico', 'responsabilidade tecnica', 'crea', 'art', 'crm',
+      'medico do pcmso', 'cnpj', 'razao social'
+    ],
     viewId: 'settings',
-    title: 'Configurações Globais do Sistema',
+    title: 'Configurações da Empresa',
     category: 'GOVERNANÇA & ACESSO',
-    description: 'Parâmetros técnicos, conexões de banco e credenciais de APIs',
+    description: 'Dados da empresa, responsabilidade técnica dos laudos e conexão com o banco',
     badge: 'Config'
   },
 

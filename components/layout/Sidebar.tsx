@@ -281,7 +281,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           badgeColor: 'bg-emerald-500', 
           highlight: true 
         },
-        { id: 'settings', label: 'Configurações SaaS', icon: Settings, code: '640' },
+        { id: 'settings', label: 'Configurações da Empresa', icon: Settings, code: '640' },
       ]
     },
     {
@@ -440,7 +440,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <button
           onClick={() => handleSelectView('settings')}
           className="w-full flex items-center justify-between p-2 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 transition text-left"
-          title="Ver configurações e status do banco Supabase"
+          title="Configurações da Empresa e status do banco Supabase"
         >
           <div className="flex items-center space-x-2">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse flex-shrink-0" />
