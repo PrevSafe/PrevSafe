@@ -39,7 +39,8 @@ import {
   Palette,
   Vote,
   AlertOctagon,
-  AlertTriangle
+  AlertTriangle,
+  Newspaper
 } from 'lucide-react';
 
 interface MenuItem {
@@ -281,6 +282,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           badgeColor: 'bg-emerald-500', 
           highlight: true 
         },
+        { id: 'site-content', label: 'Site & Conteúdo', icon: Newspaper, code: '650', badge: 'Público', badgeColor: 'bg-emerald-500' },
         { id: 'settings', label: 'Configurações da Empresa', icon: Settings, code: '640' },
       ]
     },

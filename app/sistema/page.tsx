@@ -31,6 +31,7 @@ import { AccidentsIncidentsView } from '@/components/sst/AccidentsIncidentsView'
 import { ReportsCenterView } from '@/components/reports/ReportsCenterView';
 import { FinancialView } from '@/components/financial/FinancialView';
 import { HelpCenterView } from '@/components/help-center/HelpCenterView';
+import { SiteContentView } from '@/components/site-admin/SiteContentView';
 import { LoginView } from '@/components/auth/LoginView';
 import { AICopilotModal, FastTrackFlowModal } from '@/components/ai/AICopilotModal';
 import { 
@@ -307,6 +308,8 @@ export default function Home() {
       case 'tenant-theme-settings':
       case 'theme-settings':
         return <TenantThemeSettingsView onNavigate={setActiveView} />;
+      case 'site-content':
+        return <SiteContentView onNavigate={setActiveView} />;
       case 'settings':
         return <SettingsView onNavigate={setActiveView} />;
       case 'client-portal':

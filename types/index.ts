@@ -258,6 +258,12 @@ export interface Lead {
   cnae?: string;
   estimated_employees?: number;
   notes?: string;
+  // Contexto de marketing, preenchido quando o lead vem do site publico.
+  // Sem isto nao da para saber qual pagina ou campanha converteu.
+  landing_page?: string;
+  utm_source?: string;
+  utm_medium?: string;
+  utm_campaign?: string;
   created_at: string;
 }
 

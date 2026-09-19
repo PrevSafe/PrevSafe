@@ -366,6 +366,15 @@ export const NAVIGATION_CODES: NavigationCodeItem[] = [
     badge: 'White-Label'
   },
   {
+    code: '650',
+    aliases: ['site', 'blog', 'conteudo', 'publicacao', 'artigo', 'noticia', 'landing', 'marketing'],
+    viewId: 'site-content',
+    title: 'Site & Conteúdo',
+    category: 'GOVERNANÇA & ACESSO',
+    description: 'Publicações e páginas de serviço do site público prevsafe.com.br',
+    badge: 'Público'
+  },
+  {
     code: '640',
     aliases: [
       'configuracoes', 'parametros', 'settings', 'empresa', 'dados da empresa',
