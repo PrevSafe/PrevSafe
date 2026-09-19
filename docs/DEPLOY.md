@@ -63,11 +63,25 @@ Em **Supabase → Authentication → URL Configuration**:
 Sem isto o e-mail de recuperação de senha leva o usuário para o lugar errado e ele
 não consegue definir a nova senha.
 
-## 5. Segurança do Auth
+## 5. Força de senha
 
-Em **Authentication → Policies / Passwords**, ative **Leaked password protection**.
-Ela compara a senha escolhida com a base do HaveIBeenPwned e rejeita senhas já
-vazadas. Está desligada por padrão e é um clique.
+Em **Authentication → Providers → Email**, na seção de senhas
+([link direto](https://supabase.com/dashboard/project/dijwqveojqnazphzifhg/auth/providers?provider=Email)):
+
+- **Minimum password length** — o padrão é 6. Suba para 8, no mínimo.
+- **Password Requirements** — exija dígitos, minúsculas, maiúsculas e símbolos.
+
+Ambas funcionam no plano gratuito.
+
+**Leaked password protection**, que rejeita senhas já vazadas comparando com a
+base do HaveIBeenPwned, está na mesma tela mas **exige plano Pro ou superior** —
+não é um toggle disponível no plano gratuito. O analisador de segurança do
+Supabase sinaliza essa proteção como desligada independentemente do plano, então
+o aviso continuará aparecendo enquanto o projeto estiver no free.
+
+> A validação de 8 caracteres feita em `/api/admin/create-user` só vale na
+> criação de usuário pelo sistema. Quem troca a senha pela tela de recuperação
+> passa direto pelo Supabase — por isso o mínimo precisa estar configurado lá.
 
 ## 6. Liberar acesso a cada pessoa da equipe
 
@@ -180,9 +194,17 @@ perdem numa falha de dados da aplicação.
 
 ### Vale subir de plano?
 
-O plano pago do Supabase amplia a retenção e libera restauração para um ponto no
-tempo (PITR), o que o script não faz: ele recupera o último backup, não o estado
-de dez minutos atrás. É uma decisão de custo, e fica a seu critério.
+O projeto está no plano **free**. Subir para o Pro resolveria duas coisas de uma
+vez, e por isso é uma decisão só:
+
+- **Retenção e PITR.** Restauração para um ponto no tempo, que o script não faz:
+  ele recupera o último backup, não o estado de dez minutos atrás.
+- **Leaked password protection.** A checagem contra a base do HaveIBeenPwned só
+  existe do Pro para cima (ver a seção 5).
+
+É uma decisão de custo, e fica a seu critério. Enquanto o projeto seguir no free,
+o backup próprio cobre o primeiro ponto de forma parcial e o mínimo de caracteres
+configurado no Auth cobre parte do segundo.
 
 ## Como os dados ficam guardados
 
