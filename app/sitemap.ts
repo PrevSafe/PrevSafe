@@ -5,7 +5,7 @@ import { SERVICOS_PADRAO } from '@/lib/siteServicos';
 export const revalidate = 3600;
 
 function base(): string {
-  return (process.env.NEXT_PUBLIC_APP_URL || 'https://www.prevsafe.com.br').replace(/\/+$/, '');
+  return (process.env.NEXT_PUBLIC_APP_URL || 'https://www.prevsafe.com').replace(/\/+$/, '');
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {

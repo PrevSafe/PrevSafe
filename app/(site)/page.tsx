@@ -284,7 +284,7 @@ export default async function HomePage() {
               <ol className="mt-4 space-y-3.5 text-sm">
                 {[
                   'Você recebe um convite por e-mail ou WhatsApp com seu login.',
-                  'Entre em prevsafe.com.br/sistema e defina sua senha.',
+                  'Entre em prevsafe.com/sistema e defina sua senha.',
                   'Pronto: documentos, prazos e pendências ficam disponíveis.',
                 ].map((passo, i) => (
                   <li key={passo} className="flex gap-3">

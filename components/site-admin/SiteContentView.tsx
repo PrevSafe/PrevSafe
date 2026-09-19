@@ -4,9 +4,11 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { usePrevSafe } from '@/context/PrevSafeContext';
 import { getSupabaseClient } from '@/lib/supabase';
 import { markdownParaHtml } from '@/lib/siteMarkdown';
+import { enviarImagemDoSite, removerImagemDoSite, formatarTamanho } from '@/lib/siteImagens';
 import {
   Newspaper, Plus, Search, Edit3, Trash2, Eye, EyeOff, ExternalLink,
   Save, X, Loader2, AlertTriangle, CheckCircle2, FileText, Wrench,
+  ImagePlus, ImageOff,
 } from 'lucide-react';
 
 /**
@@ -93,6 +95,9 @@ export const SiteContentView: React.FC<{ onNavigate: (view: string) => void }> =
   const [salvando, setSalvando] = useState(false);
   const [previa, setPrevia] = useState(false);
   const [slugTocado, setSlugTocado] = useState(false);
+  const [enviandoImagem, setEnviandoImagem] = useState(false);
+  const [avisoImagem, setAvisoImagem] = useState<string | null>(null);
+  const imagemInputRef = React.useRef<HTMLInputElement | null>(null);
 
   const carregar = useCallback(async () => {
     const supabase = getSupabaseClient();
@@ -232,6 +237,41 @@ export const SiteContentView: React.FC<{ onNavigate: (view: string) => void }> =
     }
   };
 
+  const escolherImagem = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = ''; // permite reenviar o mesmo arquivo depois de remover
+    if (!file) return;
+
+    setEnviandoImagem(true);
+    setAvisoImagem(null);
+
+    const r = await enviarImagemDoSite(organization.id, file);
+
+    if (r.ok && r.url) {
+      setForm(f => ({ ...f, imagem_url: r.url as string }));
+      setAvisoImagem(
+        r.reducao
+          ? `Imagem otimizada de ${formatarTamanho(r.reducao.de)} para ${formatarTamanho(r.reducao.para)} antes do envio.`
+          : 'Imagem enviada.'
+      );
+    } else {
+      setAvisoImagem(r.mensagem || 'Não foi possível enviar a imagem.');
+    }
+    setEnviandoImagem(false);
+  };
+
+  const removerImagem = async () => {
+    const url = form.imagem_url;
+    setForm(f => ({ ...f, imagem_url: '' }));
+    setAvisoImagem(null);
+    // Só apaga do bucket se for nossa; URL externa apenas sai do campo. E só
+    // depois de salvo o conteúdo é que a remoção do arquivo faz sentido — se o
+    // usuário cancelar a edição, o campo volta ao que estava.
+    if (url && editando?.imagem_url === url) {
+      await removerImagemDoSite(url);
+    }
+  };
+
   const filtrados = useMemo(() => {
     const q = busca.trim().toLowerCase();
     return posts.filter(p => {
@@ -256,7 +296,7 @@ export const SiteContentView: React.FC<{ onNavigate: (view: string) => void }> =
           <div>
             <h1 className="text-xl font-bold tracking-tight text-white">Site &amp; Conteúdo</h1>
             <p className="text-xs text-slate-400 mt-0.5">
-              {posts.length} {posts.length === 1 ? 'item' : 'itens'} · {publicados} no ar em prevsafe.com.br
+              {posts.length} {posts.length === 1 ? 'item' : 'itens'} · {publicados} no ar em prevsafe.com
             </p>
           </div>
         </div>
@@ -526,14 +566,67 @@ export const SiteContentView: React.FC<{ onNavigate: (view: string) => void }> =
 
               <div className="grid sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-400 mb-1.5">Imagem de capa (URL)</label>
+                  <label className="block text-xs font-semibold text-slate-400 mb-1.5">Imagem de capa</label>
+
                   <input
-                    type="url"
-                    value={form.imagem_url}
-                    onChange={e => setForm(f => ({ ...f, imagem_url: e.target.value }))}
-                    placeholder="https://..."
-                    className={campo}
+                    ref={imagemInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={escolherImagem}
+                    className="hidden"
                   />
+
+                  {form.imagem_url ? (
+                    <div className="space-y-2">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={form.imagem_url}
+                        alt="Capa escolhida"
+                        className="w-full h-32 object-cover rounded-xl border border-slate-800"
+                      />
+                      <div className="flex gap-2">
+                        <button
+                          type="button"
+                          onClick={() => imagemInputRef.current?.click()}
+                          disabled={enviandoImagem}
+                          className="flex-1 py-2 bg-slate-800 hover:bg-slate-700 disabled:opacity-60 text-slate-200 rounded-xl text-xs font-semibold transition"
+                        >
+                          Trocar
+                        </button>
+                        <button
+                          type="button"
+                          onClick={removerImagem}
+                          className="px-3 py-2 bg-slate-800 hover:bg-rose-900/60 text-slate-300 hover:text-rose-300 rounded-xl text-xs font-semibold transition flex items-center gap-1.5"
+                        >
+                          <ImageOff className="w-3.5 h-3.5" aria-hidden="true" />
+                          Remover
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => imagemInputRef.current?.click()}
+                      disabled={enviandoImagem}
+                      className="w-full py-6 border-2 border-dashed border-slate-800 hover:border-emerald-600 disabled:opacity-60 rounded-xl text-center transition"
+                    >
+                      {enviandoImagem ? (
+                        <Loader2 className="w-6 h-6 mx-auto text-emerald-400 animate-spin" aria-hidden="true" />
+                      ) : (
+                        <ImagePlus className="w-6 h-6 mx-auto text-slate-500" aria-hidden="true" />
+                      )}
+                      <span className="block mt-2 text-xs font-semibold text-slate-300">
+                        {enviandoImagem ? 'Enviando...' : 'Escolher imagem'}
+                      </span>
+                      <span className="block text-[11px] text-slate-500 mt-0.5">
+                        Redimensionada automaticamente antes do envio
+                      </span>
+                    </button>
+                  )}
+
+                  {avisoImagem && (
+                    <p className="text-[11px] text-slate-400 mt-1.5">{avisoImagem}</p>
+                  )}
                 </div>
                 <div>
                   <label className="block text-xs font-semibold text-slate-400 mb-1.5">Tags (separadas por vírgula)</label>

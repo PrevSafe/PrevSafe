@@ -5,7 +5,8 @@ login nas contas (Vercel, Supabase, registrador do domínio).
 
 **Projeto Supabase:** PrevSafe — ref `dijwqveojqnazphzifhg`, região `sa-east-1` (São Paulo)
 **Repositório:** `github.com/PrevSafe/PrevSafe`, branch `main`
-**Domínio de produção:** `prevsafe.com.br`
+**Domínio de produção:** `www.prevsafe.com` (canônico)
+**Também apontam para cá:** `prevsafe.com`, `prevsafe.com.br` e `www.prevsafe.com.br`, por redirecionamento 308
 
 ---
 
@@ -28,7 +29,7 @@ Em **Settings → Environment Variables**, marcando os três ambientes
 | `NEXT_PUBLIC_SUPABASE_URL` | `https://dijwqveojqnazphzifhg.supabase.co` | pública |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | anon key do projeto | pública, protegida por RLS |
 | `SUPABASE_SERVICE_ROLE_KEY` | service role key | **secreta** |
-| `NEXT_PUBLIC_APP_URL` | `https://prevsafe.com.br` | sem barra no final |
+| `NEXT_PUBLIC_APP_URL` | `https://www.prevsafe.com` | sem barra no final |
 | `GEMINI_API_KEY` | chave do Google AI Studio | opcional |
 
 As chaves do Supabase estão em **Supabase → Project Settings → API**.
@@ -42,7 +43,7 @@ do sistema funciona normalmente.
 
 ## 3. Domínio
 
-1. Em **Settings → Domains**, adicione `prevsafe.com.br` e `www.prevsafe.com.br`.
+1. Em **Settings → Domains**, `www.prevsafe.com` serve o site; os demais redirecionam para ele.
 2. Aponte o DNS no registrador conforme a Vercel indicar (normalmente um `A` para
    o apex e um `CNAME` para o `www`).
 3. Aguarde a propagação e o certificado HTTPS, que a Vercel emite sozinha.
@@ -54,10 +55,10 @@ basta ajustar `NEXT_PUBLIC_APP_URL` e o passo 4 para essa URL, e trocar depois.
 
 Em **Supabase → Authentication → URL Configuration**:
 
-- **Site URL:** `https://prevsafe.com.br`
+- **Site URL:** `https://www.prevsafe.com`
 - **Redirect URLs:** adicione
-  - `https://prevsafe.com.br/redefinir-senha`
-  - `https://prevsafe.com.br/**`
+  - `https://www.prevsafe.com/redefinir-senha`
+  - `https://www.prevsafe.com/**`
   - `http://localhost:3000/**` (desenvolvimento)
 
 Sem isto o e-mail de recuperação de senha leva o usuário para o lugar errado e ele
@@ -104,7 +105,7 @@ on conflict (auth_user_id, organization_id) do update set role = excluded.role;
 
 Depois do deploy, na ordem:
 
-1. Abra `https://prevsafe.com.br` e faça login.
+1. Abra `https://www.prevsafe.com` e faça login.
 2. Confira o chip de sincronização na barra superior: deve passar por
    **Carregando** e parar em **Salvo**. Se mostrar **Não salvo**, passe o mouse —
    a mensagem diz o motivo.
@@ -114,7 +115,7 @@ Depois do deploy, na ordem:
 4. Apague esse cliente de teste.
 5. Peça uma recuperação de senha e confirme que o link abre `/redefinir-senha`.
 6. Gere um documento assinado e escaneie o QR Code: ele deve abrir
-   `https://prevsafe.com.br/validar` mostrando o documento e os signatários.
+   `https://www.prevsafe.com/validar` mostrando o documento e os signatários.
 
 ## 8. Antes do primeiro lançamento real
 
