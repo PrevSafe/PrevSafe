@@ -15,3 +15,6 @@ tsconfig.tsbuildinfo
 backups/
 backups-teste/
 supabase/.temp/
+
+# Saida temporaria do verificador da NR-04
+.tmp-nr4-verificacao/

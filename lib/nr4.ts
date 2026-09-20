@@ -6,6 +6,12 @@
  * e Grau de Risco (1, 2, 3 ou 4) para dimensionamento de SESMT e enquadramento de SST.
  */
 
+import {
+  consultarGrauDeRisco,
+  formatarClasse,
+  buscarClasses,
+} from './nr4AnexoI';
+
 export interface CnaeRiskEntry {
   code: string;           // Código numérico formatado ex: "25.11-0-00"
   cleanCode: string;      // Código limpo 7 dígitos ex: "2511000"
@@ -345,84 +351,74 @@ export function formatCnaeCode(raw: string): string {
 /**
  * Consulta oficial de Grau de Risco por CNAE conforme NR-04 Quadro I
  */
+/**
+ * Consulta o grau de risco de um CNAE.
+ *
+ * Passou a ler exclusivamente do Anexo I oficial da NR-04 (lib/nr4AnexoI.ts).
+ *
+ * A versao anterior desta funcao tinha uma cadeia de aproximacoes: nao achando
+ * o codigo de 7 digitos, procurava por prefixo de 5, depois chutava pela
+ * divisao de 2 digitos e, por fim, assumia grau 2. Cada degrau dessa escada
+ * devolvia um numero com cara de oficial que podia estar errado - foi assim
+ * que a classe 86.50-0 (grau 2 no Anexo I) apareceu como grau 3.
+ *
+ * Agora: ou o CNAE consta na tabela oficial, ou `found` volta false e o grau
+ * fica indefinido, para ser preenchido por quem tem habilitacao.
+ */
 export function lookupRiskDegreeByCnae(cnaeInput: string): {
   found: boolean;
   cnaeFormatted: string;
   cleanCode: string;
   description: string;
-  riskDegree: 1 | 2 | 3 | 4;
+  /** null quando o CNAE nao consta no Anexo I. Nunca e estimado. */
+  riskDegree: 1 | 2 | 3 | 4 | null;
   sector: string;
   legalBasis: string;
   sesmtNotes?: string;
 } {
-  const clean = cnaeInput.replace(/\D/g, '');
-  if (!clean || clean.length < 2) {
+  const consulta = consultarGrauDeRisco(cnaeInput);
+  const limpo = (cnaeInput || '').replace(/\D/g, '');
+
+  if (!consulta.encontrado) {
     return {
       found: false,
-      cnaeFormatted: cnaeInput,
-      cleanCode: clean,
-      description: 'CNAE não especificado',
-      riskDegree: 2,
-      sector: 'GERAL',
-      legalBasis: 'Quadro I da NR-04 (Padrão Grau 2)'
+      cnaeFormatted: limpo ? formatCnaeCode(limpo) : (cnaeInput || ''),
+      cleanCode: limpo,
+      description: consulta.classe
+        ? 'CNAE não localizado no Anexo I da NR-04'
+        : 'CNAE não informado',
+      riskDegree: null,
+      sector: 'NÃO CLASSIFICADO',
+      legalBasis: consulta.fundamentacao,
     };
   }
 
-  // 1. Busca exata de 7 dígitos
-  const exact = NR4_CNAE_DATABASE.find(item => item.cleanCode === clean);
-  if (exact) {
-    return {
-      found: true,
-      cnaeFormatted: exact.code,
-      cleanCode: exact.cleanCode,
-      description: exact.description,
-      riskDegree: exact.riskDegree,
-      sector: exact.sector,
-      legalBasis: `Quadro I da NR-04 (Portaria MTP nº 4.219) - Código ${exact.code}`,
-      sesmtNotes: exact.sesmtObs
-    };
-  }
-
-  // 2. Busca por prefixo de 5 dígitos (Grupo)
-  const groupMatch = NR4_CNAE_DATABASE.find(item => item.cleanCode.startsWith(clean.slice(0, 5)));
-  if (groupMatch && clean.length >= 5) {
-    return {
-      found: true,
-      cnaeFormatted: formatCnaeCode(clean),
-      cleanCode: clean,
-      description: `${groupMatch.description} (Grupo ${clean.slice(0, 2)}.${clean.slice(2, 4)})`,
-      riskDegree: groupMatch.riskDegree,
-      sector: groupMatch.sector,
-      legalBasis: `Quadro I da NR-04 - Enquadramento por Grupo CNAE ${clean.slice(0, 4)}`,
-      sesmtNotes: groupMatch.sesmtObs
-    };
-  }
-
-  // 3. Busca por Divisão de 2 dígitos
-  const divisionCode = clean.slice(0, 2);
-  const divInfo = DIVISION_RISK_MAP[divisionCode];
-  if (divInfo) {
-    return {
-      found: true,
-      cnaeFormatted: formatCnaeCode(clean),
-      cleanCode: clean,
-      description: `Atividades da Divisão ${divisionCode}: ${divInfo.name}`,
-      riskDegree: divInfo.riskDegree,
-      sector: 'ENQUADRAMENTO POR DIVISÃO NR-04',
-      legalBasis: `Quadro I da NR-04 - Divisão ${divisionCode} (${divInfo.name})`
-    };
-  }
-
-  // Fallback seguro (Grau 2)
   return {
-    found: false,
-    cnaeFormatted: formatCnaeCode(clean),
-    cleanCode: clean,
-    description: 'Atividades Comerciais / Serviços em Geral',
-    riskDegree: 2,
-    sector: 'GERAL',
-    legalBasis: 'Quadro I da NR-04 (Estimativa subsidiária Grau 2)'
+    found: true,
+    cnaeFormatted: limpo.length >= 7 ? formatCnaeCode(limpo) : formatarClasse(consulta.classe as string),
+    cleanCode: limpo,
+    description: consulta.denominacao as string,
+    riskDegree: consulta.grau as 1 | 2 | 3 | 4,
+    sector: setorDaClasse(consulta.classe as string),
+    legalBasis: consulta.fundamentacao,
   };
+}
+
+/** Agrupamento apenas para exibicao; nao influencia o grau de risco. */
+function setorDaClasse(classe: string): string {
+  const divisao = Number(classe.slice(0, 2));
+  if (divisao <= 3) return 'AGROPECUÁRIA';
+  if (divisao <= 9) return 'INDÚSTRIA EXTRATIVA';
+  if (divisao <= 33) return 'INDÚSTRIA DE TRANSFORMAÇÃO';
+  if (divisao === 35) return 'ELETRICIDADE & GÁS';
+  if (divisao <= 39) return 'ÁGUA & ESGOTO';
+  if (divisao <= 43) return 'CONSTRUÇÃO CIVIL';
+  if (divisao <= 47) return 'COMÉRCIO';
+  if (divisao <= 53) return 'TRANSPORTE & LOGÍSTICA';
+  if (divisao <= 63) return 'INFORMAÇÃO & COMUNICAÇÃO';
+  if (divisao <= 82) return 'SERVIÇOS';
+  if (divisao <= 88) return 'SERVIÇOS & SAÚDE';
+  return 'OUTROS';
 }
 
 /**
@@ -526,16 +522,14 @@ export function calculateSesmtDimensioning(riskDegree: 1 | 2 | 3 | 4, employeeCo
  * Busca preditiva de CNAEs para auto-complete
  */
 export function searchCnaes(query: string): CnaeRiskEntry[] {
-  if (!query || query.trim().length === 0) {
-    return NR4_CNAE_DATABASE.slice(0, 15);
-  }
-  const cleanQ = query.toLowerCase().trim();
-  const digitsQ = query.replace(/\D/g, '');
-
-  return NR4_CNAE_DATABASE.filter(item => {
-    const matchCode = digitsQ.length > 0 && item.cleanCode.includes(digitsQ);
-    const matchDesc = item.description.toLowerCase().includes(cleanQ);
-    const matchSector = item.sector.toLowerCase().includes(cleanQ);
-    return matchCode || matchDesc || matchSector;
-  }).slice(0, 20);
+  // Busca na tabela oficial do Anexo I, nao mais na lista curada a mao.
+  return buscarClasses(query).map(item => ({
+    code: item.codigo,
+    cleanCode: item.classe,
+    description: item.denominacao,
+    riskDegree: item.grau,
+    division: item.classe.slice(0, 2),
+    sector: setorDaClasse(item.classe) as CnaeRiskEntry['sector'],
+  }));
 }
+

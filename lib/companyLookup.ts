@@ -17,7 +17,8 @@ export interface CompanyLookupResult {
   trade_name: string;
   main_cnae: string;
   cnae_description: string;
-  risk_degree: 1 | 2 | 3 | 4;
+  /** null quando o CNAE nao consta no Anexo I da NR-04. Nunca estimado. */
+  risk_degree: 1 | 2 | 3 | 4 | null;
   risk_legal_basis: string;
   address: string;
   number?: string;
@@ -223,8 +224,8 @@ export async function lookupCompanyData(
     trade_name: '',
     main_cnae: '',
     cnae_description: '',
-    risk_degree: 1,
-    risk_legal_basis: 'Grau de risco a confirmar: informe o CNAE da atividade (Quadro I da NR-04).',
+    risk_degree: null,
+    risk_legal_basis: 'Grau de risco a confirmar: informe o CNAE da atividade (Anexo I da NR-04).',
     address: '',
     neighborhood: '',
     city: '',

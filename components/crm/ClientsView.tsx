@@ -309,7 +309,7 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
       ...clientForm,
       risk_degree: finalRisk,
       cnae_description: clientForm.cnae_description || nr4Result.description,
-      whatsapp: clientForm.phone.replace(/\D/g, '') || '5511999999999'
+      whatsapp: clientForm.phone.replace(/\D/g, '')
     };
 
     if (showEditClientModal && selectedClient) {
@@ -1008,11 +1008,17 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
                 <div className="flex items-center justify-between">
                   <span className="font-semibold text-slate-300">CNAE Principal & Grau de Risco (NR-04 Automático)</span>
                   {currentClientNr4 && (
-                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
-                      currentClientNr4.riskDegree >= 3 ? 'bg-rose-500/10 text-rose-400 border-rose-500/20' : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
-                    }`}>
-                      Grau de Risco {currentClientNr4.riskDegree} ({currentClientNr4.riskDegree === 4 ? 'Crítico' : currentClientNr4.riskDegree === 3 ? 'Grave' : 'Médio/Leve'})
-                    </span>
+                    currentClientNr4.riskDegree === null ? (
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full border bg-amber-500/10 text-amber-400 border-amber-500/20">
+                        CNAE não classificado — informe o grau
+                      </span>
+                    ) : (
+                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+                        currentClientNr4.riskDegree >= 3 ? 'bg-rose-500/10 text-rose-400 border-rose-500/20' : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+                      }`}>
+                        Grau de Risco {currentClientNr4.riskDegree} ({currentClientNr4.riskDegree === 4 ? 'Crítico' : currentClientNr4.riskDegree === 3 ? 'Grave' : 'Médio/Leve'})
+                      </span>
+                    )
                   )}
                 </div>
 
@@ -1029,7 +1035,7 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
                         setClientForm({
                           ...clientForm,
                           main_cnae: val,
-                          risk_degree: nr4.riskDegree,
+                          risk_degree: nr4.riskDegree ?? clientForm.risk_degree,
                           cnae_description: nr4.description || clientForm.cnae_description
                         });
                       }}
@@ -1294,7 +1300,7 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
                       setUnitForm({
                         ...unitForm,
                         cnae: val,
-                        risk_degree: nr4.riskDegree,
+                        risk_degree: nr4.riskDegree ?? unitForm.risk_degree,
                         cnae_description: nr4.description
                       });
                     }}
