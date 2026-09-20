@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { 
   registerFieldServiceWorker, 
   getOfflineStorageStats, 
@@ -19,6 +19,13 @@ export const ServiceWorkerManager: React.FC = () => {
   const [bannerMessage, setBannerMessage] = useState<string>('');
   const [bannerType, setBannerType] = useState<'INFO' | 'SUCCESS' | 'OFFLINE'>('INFO');
   const [latencyMs, setLatencyMs] = useState<number | null>(null);
+
+  // Quando um Service Worker novo assume uma aba que ja estava sendo controlada
+  // por um antigo, a pagina aberta continua sendo a versao antiga ate recarregar.
+  // Sem este aviso o usuario fica usando um build velho sem nenhum sinal disso -
+  // foi assim que a tabela corrigida da NR-04 demorou a chegar.
+  const [precisaRecarregar, setPrecisaRecarregar] = useState(false);
+  const tinhaControlador = useRef(false);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -41,7 +48,17 @@ export const ServiceWorkerManager: React.FC = () => {
       window.addEventListener('online', handleOnline);
       window.addEventListener('offline', handleOffline);
 
-      // 2. Register Service Worker & measure cache response latency
+      // 2. Detecta troca de Service Worker numa aba ja controlada
+      if ('serviceWorker' in navigator) {
+        tinhaControlador.current = !!navigator.serviceWorker.controller;
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+          // Na primeira instalacao nao havia controlador: nao ha versao antiga
+          // na tela e recarregar seria so um susto.
+          if (tinhaControlador.current) setPrecisaRecarregar(true);
+        });
+      }
+
+      // 3. Register Service Worker & measure cache response latency
       registerFieldServiceWorker().then((registered) => {
         setSwRegistered(registered);
         if (registered) {
@@ -51,7 +68,7 @@ export const ServiceWorkerManager: React.FC = () => {
         }
       });
 
-      // 3. Listen for SW messages
+      // 4. Listen for SW messages
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.addEventListener('message', (event) => {
           if (event.data?.type === 'SW_ACTIVATED') {
@@ -74,6 +91,31 @@ export const ServiceWorkerManager: React.FC = () => {
       };
     }
   }, []);
+
+  // Tem prioridade sobre os avisos informativos: enquanto nao recarregar, o
+  // usuario esta vendo codigo desatualizado.
+  if (precisaRecarregar) {
+    return (
+      <div className="fixed bottom-4 right-4 z-50 w-[min(24rem,calc(100vw-2rem))] bg-slate-900 border border-emerald-600/50 text-white p-4 rounded-2xl shadow-2xl flex items-start space-x-3">
+        <div className="p-2 rounded-xl shrink-0 bg-emerald-500/20 text-emerald-400">
+          <RefreshCw className="w-5 h-5" />
+        </div>
+        <div className="space-y-2 text-xs min-w-0">
+          <div className="font-bold text-white">Nova versão do PrevSafe disponível</div>
+          <p className="text-slate-300 leading-relaxed text-[11px]">
+            Esta aba ainda está executando a versão anterior. Recarregue para usar a atualizada —
+            cadastros e tabelas oficiais podem ter mudado.
+          </p>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold transition"
+          >
+            Recarregar agora
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   if (!showBanner) return null;
 

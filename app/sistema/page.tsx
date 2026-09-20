@@ -358,7 +358,7 @@ export default function Home() {
             container acima em vez de rolar. Era a causa da tela aparecer
             cortada nos cantos no celular. */}
         <main className="flex-1 min-w-0 overflow-y-auto overflow-x-hidden p-3.5 sm:p-6 lg:p-7 pb-24 md:pb-7 bg-slate-950">
-          <div className="max-w-7xl mx-auto w-full min-w-0 space-y-6">
+          <div className="max-w-[1600px] mx-auto w-full min-w-0 space-y-6">
             {renderActiveView()}
           </div>
         </main>

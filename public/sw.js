@@ -1,7 +1,25 @@
-// PrevSafe Field PWA - Service Worker v2.2.0 (High Performance Field Inspection Engine)
-// Optimized for instant loading, aggressive pre-caching, and offline-first operation on unstable mobile networks (NR-01 / NR-12 Field Inspections)
+// PrevSafe Field PWA - Service Worker v3.0.0
+//
+// Objetivo: funcionar offline em campo SEM nunca servir uma versao antiga do
+// sistema para quem esta online.
+//
+// A v2.2.0 servia. O HTML era buscado na rede com timeout de 1,5s e, passado
+// esse tempo, vinha do cache. Esse HTML antigo aponta para chunks antigos, que
+// tambem estavam em cache (cache-first). Bastava uma conexao lenta para o
+// navegador rodar um build inteiro antigo por tempo indeterminado - inclusive
+// com a tabela da NR-04 desatualizada, que classificava o CNAE 86.50-0 como
+// grau 3 em vez de 2. Como a versao do cache nunca mudava, isso nao se
+// resolvia sozinho em deploy nenhum.
+//
+// Regras agora:
+//   - HTML: sempre rede primeiro; cache so quando a rede realmente falha.
+//   - /_next/static/: cache-first e seguro, porque o nome do arquivo contem o
+//     hash do conteudo - build novo gera URL nova.
+//   - demais .js/.css (inclusive /sw.js): rede primeiro.
+//   - /api/: nunca interceptado. Um 200 sintetico faria uma falha parecer
+//     sucesso para quem chamou.
 
-const CACHE_VERSION = 'v2.2.0';
+const CACHE_VERSION = 'v3.0.0';
 const CACHE_STATIC_NAME = `prevsafe-static-${CACHE_VERSION}`;
 const CACHE_IMAGES_NAME = `prevsafe-images-${CACHE_VERSION}`;
 const CACHE_RUNTIME_NAME = `prevsafe-runtime-${CACHE_VERSION}`;
@@ -202,11 +220,24 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // A. Next.js Static Chunks, CSS, JS, and Fonts -> Cache-First with Stale-While-Revalidate
-  // This guarantees sub-millisecond instant load times on mobile networks!
+  // Chamadas de API e de terceiros (Supabase, Receita Federal) passam direto.
+  if (url.pathname.startsWith('/api/') || url.origin !== self.location.origin) {
+    if (!url.hostname.includes('fonts.googleapis.com') && !url.hostname.includes('fonts.gstatic.com')) {
+      return;
+    }
+  }
+
+  // O proprio script do SW nunca sai do cache, senao uma correcao aqui dentro
+  // nunca chegaria a quem mais precisa dela.
+  if (url.pathname === '/sw.js') {
+    return;
+  }
+
+  // A. Arquivos com hash no nome -> Cache-First.
+  // Seguro porque o conteudo e imutavel: se o conteudo muda, a URL muda.
   if (
     url.pathname.startsWith('/_next/static/') ||
-    url.pathname.match(/\.(js|css|woff2|woff|ttf|eot|ico)$/i) ||
+    url.pathname.match(/\.(woff2|woff|ttf|eot)$/i) ||
     url.hostname.includes('fonts.googleapis.com') ||
     url.hostname.includes('fonts.gstatic.com')
   ) {
@@ -267,39 +298,37 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // C. Navigation Requests (HTML Page loads) -> Fast Network-First (with 1.5s timeout) + Cache Fallback
-  // On flaky 3G/4G field connections, a 1.5s timeout prevents the browser from freezing on dead signals
+  // C. HTML -> rede primeiro, cache so em falha real de rede.
+  //
+  // O timeout e generoso de proposito. Um timeout curto trocava "conexao lenta"
+  // por "servir build antigo", que e muito pior: o usuario nao tem como saber
+  // que esta vendo uma versao velha do sistema. Quando o aparelho esta mesmo
+  // offline, o fetch falha na hora e o cache responde sem esperar nada.
   if (request.mode === 'navigate' || request.destination === 'document') {
     event.respondWith(
       (async () => {
         const staticCache = await caches.open(CACHE_STATIC_NAME);
 
-        // Setup fast network fetch with AbortController timeout (1500ms)
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 1500);
+        const timeoutId = setTimeout(() => controller.abort(), 15000);
 
         try {
           const networkResponse = await fetch(request, { signal: controller.signal });
           clearTimeout(timeoutId);
 
           if (networkResponse && networkResponse.status === 200) {
+            // Guardado apenas sob a propria URL. A v2.2.0 gravava qualquer pagina
+            // navegada tambem em '/', e depois servia '/' como fallback de
+            // qualquer rota - o site publico podia aparecer em /sistema.
             staticCache.put(request, networkResponse.clone());
-            // Also store as root '/' fallback
-            staticCache.put('/', networkResponse.clone());
           }
           return networkResponse;
         } catch (fetchError) {
           clearTimeout(timeoutId);
 
-          // 1. Try exact cached route
           const cachedRoute = await staticCache.match(request);
           if (cachedRoute) return cachedRoute;
 
-          // 2. Try root page shell
-          const rootCached = await staticCache.match('/');
-          if (rootCached) return rootCached;
-
-          // 3. Fallback to embedded Offline HTML Shell
           return new Response(OFFLINE_HTML_FALLBACK, {
             headers: {
               'Content-Type': 'text/html; charset=utf-8',
@@ -312,7 +341,12 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // D. Dynamic JSON API / Runtime requests -> Network-First with Runtime Cache
+  // D. Demais GETs do proprio site (inclusive .js e .css sem hash) -> rede
+  // primeiro, cache como rede de seguranca.
+  //
+  // Sem resposta sintetica de sucesso: a v2.2.0 devolvia 200 com
+  // {offline:true} quando uma chamada falhava, e quem chamou lia isso como
+  // "deu certo". Falha de rede volta a ser falha de rede.
   event.respondWith(
     caches.open(CACHE_RUNTIME_NAME).then(async (cache) => {
       try {
@@ -325,20 +359,6 @@ self.addEventListener('fetch', (event) => {
         const cachedResponse = await cache.match(request);
         if (cachedResponse) {
           return cachedResponse;
-        }
-        // Return structured offline JSON response if it's an API route
-        if (url.pathname.startsWith('/api/')) {
-          return new Response(
-            JSON.stringify({
-              offline: true,
-              message: 'Operação registrada no cache local do dispositivo.',
-              timestamp: new Date().toISOString()
-            }),
-            {
-              headers: { 'Content-Type': 'application/json' },
-              status: 200
-            }
-          );
         }
         throw err;
       }

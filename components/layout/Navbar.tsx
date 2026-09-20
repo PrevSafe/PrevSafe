@@ -28,7 +28,8 @@ import {
   CloudOff,
   Cloud,
   CloudUpload,
-  Loader2
+  Loader2,
+  MoreHorizontal
 } from 'lucide-react';
 
 interface NavbarProps {
@@ -80,6 +81,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   const [showNotifMenu, setShowNotifMenu] = useState(false);
   const [showRoleMenu, setShowRoleMenu] = useState(false);
+  const [showMoreMenu, setShowMoreMenu] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const unreadNotifs = (notifications || []).filter(n => n?.status === 'UNREAD');
@@ -139,7 +141,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
       )}
       
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between gap-2 h-16">
           {/* Menu Lateral Toggle Button & Logo & Brand */}
           <div className="flex items-center space-x-2 sm:space-x-3 min-w-0 flex-1 lg:flex-initial">
@@ -176,16 +178,16 @@ export const Navbar: React.FC<NavbarProps> = ({
                   <span className="font-bold text-base sm:text-lg tracking-tight text-white truncate">PrevSafe</span>
                   <span className="hidden sm:inline-block text-[10px] uppercase font-mono tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-1.5 py-0.5 rounded shrink-0">V1.0 SST</span>
                 </div>
-                <p className="text-[10px] sm:text-[11px] text-slate-400 hidden sm:block">Gestão Integrada de Serviços Contratados</p>
+                <p className="text-[10px] sm:text-[11px] text-slate-400 hidden sm:block truncate">Gestão Integrada de Serviços Contratados</p>
               </div>
             </div>
           </div>
 
           {/* Quick Metrics Bar */}
-          <div className="hidden lg:flex items-center space-x-4 px-3 py-1.5 bg-slate-800/80 rounded-lg border border-slate-700/60 text-xs">
+          <div className="hidden 2xl:flex shrink-0 items-center space-x-4 px-3 py-1.5 bg-slate-800/80 rounded-lg border border-slate-700/60 text-xs whitespace-nowrap">
             <div className="flex items-center space-x-1.5 text-slate-300">
               <Building2 className="w-3.5 h-3.5 text-slate-400" />
-              <span className="font-medium text-slate-200">
+              <span className="font-medium text-slate-200 truncate max-w-[220px]">
                 {activeClients.length === 0
                   ? 'Nenhum cliente ativo'
                   : activeClients.length === 1
@@ -263,75 +265,98 @@ export const Navbar: React.FC<NavbarProps> = ({
               </button>
             )}
 
-            {/* Shortcuts Help Cheat Sheet Button */}
-            {onOpenShortcutsHelp && (
+            {/* Acoes secundarias.
+                Somadas, elas deixavam o grupo da direita com 1204px dentro de um
+                container de 1216px: sobrava zero para o nome e para a barra de
+                metricas, que colapsavam em coluna de uma palavra por linha.
+                Agrupadas aqui, continuam todas acessiveis num clique. */}
+            <div className="relative shrink-0">
               <button
                 type="button"
-                onClick={onOpenShortcutsHelp}
-                className="hidden md:flex p-2 text-slate-400 hover:text-emerald-300 bg-slate-800/60 hover:bg-slate-800 border border-slate-700/60 rounded-xl transition"
-                title="Guia de Atalhos Globais: Ctrl+K, Ctrl+N e Códigos Numéricos (ex: 100 para Funcionários) (?)"
-                aria-label="Ver atalhos de teclado"
+                onClick={() => setShowMoreMenu(!showMoreMenu)}
+                className={`flex items-center space-x-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition ${
+                  showMoreMenu
+                    ? 'bg-slate-700 text-white border-slate-600'
+                    : 'bg-slate-800 text-slate-300 hover:text-white border-slate-700 hover:bg-slate-700'
+                }`}
+                title="Ajuda, IA Copilot, Campo PWA, Fluxo Master, atalhos e robô de prazos"
+                aria-haspopup="menu"
+                aria-expanded={showMoreMenu}
               >
-                <Keyboard className="w-4 h-4" />
+                <MoreHorizontal className="w-4 h-4" />
+                <span className="hidden lg:inline">Mais</span>
               </button>
-            )}
 
-            {/* Help Center Button */}
-            <button
-              onClick={() => setActiveView('help-center')}
-              className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border transition ${
-                activeView === 'help-center'
-                  ? 'bg-emerald-600 text-white border-emerald-500 shadow-md shadow-emerald-950/40'
-                  : 'bg-slate-800 hover:bg-slate-700 text-emerald-300 hover:text-white border-emerald-500/40'
-              }`}
-              title="Central de Ajuda, Tutoriais com Prints, Infográficos e Vídeos"
-            >
-              <GraduationCap className="w-4 h-4 text-emerald-400" />
-              <span className="hidden sm:inline">Ajuda & Tutoriais</span>
-            </button>
+              {showMoreMenu && (
+                <div
+                  role="menu"
+                  className="absolute right-0 mt-2 w-64 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl z-50 p-2 text-slate-200"
+                >
+                  <button
+                    role="menuitem"
+                    onClick={() => { setActiveView('help-center'); setShowMoreMenu(false); }}
+                    className={`w-full text-left px-2.5 py-2 rounded-lg text-xs font-semibold transition flex items-center space-x-2 ${
+                      activeView === 'help-center' ? 'bg-emerald-600/20 text-emerald-300' : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+                    }`}
+                  >
+                    <GraduationCap className="w-4 h-4 text-emerald-400 shrink-0" />
+                    <span>Ajuda &amp; Tutoriais</span>
+                  </button>
 
-            {/* Master Flow Walkthrough Button */}
-            <button
-              onClick={onOpenFastTrack}
-              className="flex items-center space-x-1.5 px-3 py-1.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-lg text-xs font-semibold shadow-md shadow-emerald-950/40 transition"
-              title="Simular o Fluxo Completo de Lead até Avaliação"
-            >
-              <PlayCircle className="w-4 h-4" />
-              <span className="hidden sm:inline">Fluxo Master</span>
-            </button>
+                  <button
+                    role="menuitem"
+                    onClick={() => { onOpenCopilot(); setShowMoreMenu(false); }}
+                    className="w-full text-left px-2.5 py-2 rounded-lg text-xs font-semibold text-slate-300 hover:bg-slate-800 hover:text-white transition flex items-center space-x-2"
+                  >
+                    <Sparkles className="w-4 h-4 text-emerald-400 shrink-0" />
+                    <span>IA Copilot (Normas e SST)</span>
+                  </button>
 
-            {/* AI Assistant Button */}
-            <button
-              onClick={onOpenCopilot}
-              className="flex items-center space-x-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-emerald-300 hover:text-emerald-200 border border-emerald-500/30 rounded-lg text-xs font-medium transition"
-              title="Assistente IA de Normas Regulamentadoras e SST"
-            >
-              <Sparkles className="w-4 h-4 text-emerald-400" />
-              <span className="hidden md:inline">IA Copilot</span>
-            </button>
+                  <button
+                    role="menuitem"
+                    onClick={() => { onOpenFastTrack(); setShowMoreMenu(false); }}
+                    className="w-full text-left px-2.5 py-2 rounded-lg text-xs font-semibold text-slate-300 hover:bg-slate-800 hover:text-white transition flex items-center space-x-2"
+                  >
+                    <PlayCircle className="w-4 h-4 text-teal-400 shrink-0" />
+                    <span>Fluxo Master (Lead a Avaliação)</span>
+                  </button>
 
-            {/* Field PWA Switch */}
-            <button
-              onClick={() => setActiveView('technician-field')}
-              className={`p-2 rounded-lg text-xs font-medium border transition flex items-center space-x-1 ${
-                activeView === 'technician-field'
-                  ? 'bg-blue-600 text-white border-blue-500'
-                  : 'bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-700'
-              }`}
-              title="Modo Técnico de Campo (PWA Mobile)"
-            >
-              <Smartphone className="w-4 h-4" />
-              <span className="hidden md:inline">Campo PWA</span>
-            </button>
+                  <button
+                    role="menuitem"
+                    onClick={() => { setActiveView('technician-field'); setShowMoreMenu(false); }}
+                    className={`w-full text-left px-2.5 py-2 rounded-lg text-xs font-semibold transition flex items-center space-x-2 ${
+                      activeView === 'technician-field' ? 'bg-blue-600/20 text-blue-300' : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+                    }`}
+                  >
+                    <Smartphone className="w-4 h-4 text-blue-400 shrink-0" />
+                    <span>Campo PWA (Modo Técnico)</span>
+                  </button>
 
-            {/* Run Daily Jobs */}
-            <button
-              onClick={handleRunJobs}
-              className="p-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg border border-slate-700 transition"
-              title="Executar Robô Diário de Prazos (08:00 D-3/D-1/D0)"
-            >
-              <RefreshCw className="w-4 h-4" />
-            </button>
+                  <div className="my-1 border-t border-slate-800" />
+
+                  {onOpenShortcutsHelp && (
+                    <button
+                      role="menuitem"
+                      onClick={() => { onOpenShortcutsHelp(); setShowMoreMenu(false); }}
+                      className="w-full text-left px-2.5 py-2 rounded-lg text-xs text-slate-300 hover:bg-slate-800 hover:text-white transition flex items-center space-x-2"
+                    >
+                      <Keyboard className="w-4 h-4 text-slate-400 shrink-0" />
+                      <span>Atalhos de teclado</span>
+                    </button>
+                  )}
+
+                  <button
+                    role="menuitem"
+                    onClick={() => { handleRunJobs(); setShowMoreMenu(false); }}
+                    className="w-full text-left px-2.5 py-2 rounded-lg text-xs text-slate-300 hover:bg-slate-800 hover:text-white transition flex items-center space-x-2"
+                    title="Executar Robô Diário de Prazos (D-3 / D-1 / D0)"
+                  >
+                    <RefreshCw className="w-4 h-4 text-slate-400 shrink-0" />
+                    <span>Rodar robô de prazos</span>
+                  </button>
+                </div>
+              )}
+            </div>
 
             {/* Notification Bell */}
             <div className="relative">

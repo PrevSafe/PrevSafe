@@ -72,7 +72,7 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
     cno: '',
     main_cnae: '',
     cnae_description: '',
-    risk_degree: 3 as 1 | 2 | 3 | 4,
+    risk_degree: null as 1 | 2 | 3 | 4 | null,
     employee_count: 50,
     email: '',
     phone: '',
@@ -114,7 +114,7 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
     state: 'SP',
     cnae: '',
     cnae_description: '',
-    risk_degree: 3 as 1 | 2 | 3 | 4,
+    risk_degree: null as 1 | 2 | 3 | 4 | null,
     employee_count: 20
   });
   const [isSearchingUnitDoc, setIsSearchingUnitDoc] = useState(false);
@@ -243,9 +243,9 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
       document_number: '',
       caepf: '',
       cno: '',
-      main_cnae: '25.11-0-00',
-      cnae_description: 'Fabricação de estruturas metálicas',
-      risk_degree: 3,
+      main_cnae: '',
+      cnae_description: '',
+      risk_degree: null,
       employee_count: 50,
       email: '',
       phone: '',
@@ -301,13 +301,22 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
       return;
     }
 
-    // Auto-compute final NR-04 risk degree
+    // O grau de risco define o dimensionamento do SESMT (Quadro II da NR-04) e
+    // entra em documento assinado: nao pode ficar em branco nem ser adivinhado.
     const nr4Result = lookupRiskDegreeByCnae(clientForm.main_cnae);
-    const finalRisk = nr4Result.riskDegree || clientForm.risk_degree;
+    const grauEscolhido = Number(clientForm.risk_degree);
+    if (![1, 2, 3, 4].includes(grauEscolhido)) {
+      alert(
+        'Informe o Grau de Risco NR-04.\n\n' +
+        'O CNAE informado não consta no Anexo I da NR-04, então o sistema não o preenche ' +
+        'automaticamente. Confira o CNAE ou selecione o grau manualmente.'
+      );
+      return;
+    }
 
     const payload = {
       ...clientForm,
-      risk_degree: finalRisk,
+      risk_degree: grauEscolhido as 1 | 2 | 3 | 4,
       cnae_description: clientForm.cnae_description || nr4Result.description,
       whatsapp: clientForm.phone.replace(/\D/g, '')
     };
@@ -383,7 +392,8 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
       state: unitForm.state,
       cnae: unitForm.cnae || selectedClient.main_cnae,
       cnae_description: unitForm.cnae_description || unitNr4.description,
-      risk_degree: unitNr4.riskDegree || unitForm.risk_degree,
+      // Igual ao cliente: vale o que esta no formulario, nao a reconsulta.
+      risk_degree: unitForm.risk_degree,
       employee_count: Number(unitForm.employee_count) || 10,
       status: 'ACTIVE'
     });
@@ -399,7 +409,7 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
       state: 'SP',
       cnae: '',
       cnae_description: '',
-      risk_degree: 3,
+      risk_degree: null,
       employee_count: 20
     });
     setShowNewUnitModal(false);
@@ -1057,10 +1067,13 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
                   <div className="sm:col-span-3">
                     <label className="block text-[11px] text-slate-400 mb-1">Grau de Risco NR-04</label>
                     <select
-                      value={clientForm.risk_degree}
-                      onChange={(e) => setClientForm({ ...clientForm, risk_degree: Number(e.target.value) as any })}
-                      className="w-full px-3 py-2 bg-slate-900 border border-slate-800 rounded-xl text-xs text-white font-bold focus:outline-none focus:border-indigo-500"
+                      value={clientForm.risk_degree ?? ''}
+                      onChange={(e) => setClientForm({ ...clientForm, risk_degree: (e.target.value ? Number(e.target.value) : null) as any })}
+                      className={`w-full px-3 py-2 bg-slate-900 border rounded-xl text-xs text-white font-bold focus:outline-none focus:border-indigo-500 ${
+                        clientForm.risk_degree ? 'border-slate-800' : 'border-amber-500/60'
+                      }`}
                     >
+                      <option value="">Não classificado — selecione</option>
                       <option value={1}>Grau 1 (Leve)</option>
                       <option value={2}>Grau 2 (Médio)</option>
                       <option value={3}>Grau 3 (Grave)</option>
@@ -1311,8 +1324,8 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
                 <div>
                   <label className="block font-semibold text-slate-300 mb-1">Grau de Risco (NR-04)</label>
                   <select
-                    value={unitForm.risk_degree}
-                    onChange={(e) => setUnitForm({ ...unitForm, risk_degree: Number(e.target.value) as any })}
+                    value={unitForm.risk_degree ?? ''}
+                    onChange={(e) => setUnitForm({ ...unitForm, risk_degree: (e.target.value ? Number(e.target.value) : null) as any })}
                     className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white font-bold focus:outline-none focus:border-indigo-500"
                   >
                     <option value={1}>Grau 1 (Leve)</option>
