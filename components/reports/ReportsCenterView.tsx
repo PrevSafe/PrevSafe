@@ -1631,343 +1631,169 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
               </button>
             </div>
           ) : (
-            <table className="w-full text-left text-xs text-slate-300">
-              <thead className="bg-slate-950/80 text-slate-400 uppercase text-[10px] tracking-wider border-b border-slate-800 font-bold">
-                {activeCategory === 'SERVICE_ORDERS' && (
-                  <tr>
-                    <th className="p-3.5">Código O.S.</th>
-                    <th className="p-3.5">Cliente</th>
-                    <th className="p-3.5">Serviço</th>
-                    <th className="p-3.5">Prioridade</th>
-                    <th className="p-3.5">Status</th>
-                    <th className="p-3.5">Prazo SLA</th>
-                    <th className="p-3.5">Responsável</th>
-                    <th className="p-3.5 text-right">Ações</th>
-                  </tr>
-                )}
-
-                {activeCategory === 'RISKS_PGR' && (
-                  <tr>
-                    <th className="p-3.5">Agente / Risco</th>
-                    <th className="p-3.5">Grupo</th>
-                    <th className="p-3.5">Fonte Geradora</th>
-                    <th className="p-3.5">Intensidade</th>
-                    <th className="p-3.5">Matriz PGR</th>
-                    <th className="p-3.5">Insalubridade/Periculosidade</th>
-                    <th className="p-3.5 text-right">Ações</th>
-                  </tr>
-                )}
-
-                {activeCategory === 'ASOS_HEALTH' && (
-                  <tr>
-                    <th className="p-3.5">Colaborador</th>
-                    <th className="p-3.5">CPF / Cargo</th>
-                    <th className="p-3.5">Tipo ASO</th>
-                    <th className="p-3.5">Data Exame</th>
-                    <th className="p-3.5">Validade</th>
-                    <th className="p-3.5">Situação</th>
-                    <th className="p-3.5">Aptidão</th>
-                    <th className="p-3.5 text-right">Ações</th>
-                  </tr>
-                )}
-
-                {activeCategory === 'ESOCIAL_EVENTS' && (
-                  <tr>
-                    <th className="p-3.5">Evento</th>
-                    <th className="p-3.5">Descrição</th>
-                    <th className="p-3.5">Status Transmissão</th>
-                    <th className="p-3.5">Recibo de Entrega</th>
-                    <th className="p-3.5">Data Envio</th>
-                    <th className="p-3.5">Ambiente</th>
-                    <th className="p-3.5 text-right">Ações</th>
-                  </tr>
-                )}
-
-                {activeCategory === 'FINANCIAL' && (
-                  <tr>
-                    <th className="p-3.5">Código</th>
-                    <th className="p-3.5">Tipo</th>
-                    <th className="p-3.5">Descrição</th>
-                    <th className="p-3.5">Valor</th>
-                    <th className="p-3.5">Vencimento</th>
-                    <th className="p-3.5">Status</th>
-                    <th className="p-3.5 text-right">Ações</th>
-                  </tr>
-                )}
-
-                {activeCategory === 'EPI_MANAGEMENT' && (
-                  <tr>
-                    <th className="p-3.5">Colaborador</th>
-                    <th className="p-3.5">Equipamento / EPI</th>
-                    <th className="p-3.5">Nº CA</th>
-                    <th className="p-3.5">Data Entrega</th>
-                    <th className="p-3.5">Método Assinatura</th>
-                    <th className="p-3.5">Status</th>
-                    <th className="p-3.5 text-right">Ações</th>
-                  </tr>
-                )}
-
-                {activeCategory === 'CAT_ACCIDENTS' && (
-                  <tr>
-                    <th className="p-3.5">Nº CAT</th>
-                    <th className="p-3.5">Tipo Acidente</th>
-                    <th className="p-3.5">Data Acidente</th>
-                    <th className="p-3.5">Local</th>
-                    <th className="p-3.5">Agente Causador</th>
-                    <th className="p-3.5">Afastamento?</th>
-                    <th className="p-3.5 text-right">Ações</th>
-                  </tr>
-                )}
-
-                {activeCategory === 'TRAININGS_NR01' && (
-                  <tr>
-                    <th className="p-3.5">Treinamento</th>
-                    <th className="p-3.5">Modalidade</th>
-                    <th className="p-3.5">Carga Horária</th>
-                    <th className="p-3.5">Data Realização</th>
-                    <th className="p-3.5">Validade</th>
-                    <th className="p-3.5">Status</th>
-                    <th className="p-3.5 text-right">Ações</th>
-                  </tr>
-                )}
-
-                {activeCategory === 'COMMERCIAL_CONTRACTS' && (
-                  <tr>
-                    <th className="p-3.5">Nº Contrato</th>
-                    <th className="p-3.5">Título</th>
-                    <th className="p-3.5">Valor Recorrente</th>
-                    <th className="p-3.5">Recorrência</th>
-                    <th className="p-3.5">Status</th>
-                    <th className="p-3.5">Início / Fim</th>
-                    <th className="p-3.5 text-right">Ações</th>
-                  </tr>
-                )}
-
-                {activeCategory === 'AUDIT_QUALITY' && (
-                  <tr>
-                    <th className="p-3.5">Data / Hora</th>
-                    <th className="p-3.5">Ação</th>
-                    <th className="p-3.5">Entidade</th>
-                    <th className="p-3.5">Usuário</th>
-                    <th className="p-3.5">IP</th>
-                    <th className="p-3.5 text-right">Ações</th>
-                  </tr>
-                )}
-              </thead>
-
-              <tbody className="divide-y divide-slate-800/60 font-medium">
-                {activeCategory === 'SERVICE_ORDERS' && (paginatedData as typeof serviceOrders).map((os) => {
-                  const client = clients.find(c => c.id === os.client_id);
-                  const isDelayed = (os.status !== 'COMPLETED' && os.status !== 'CANCELLED') && new Date(os.due_date) < new Date();
-                  return (
-                    <tr key={os.id} className="hover:bg-slate-800/40 transition">
-                      <td className="p-3.5 font-mono font-bold text-white">{os.os_number || os.id.substring(0, 8)}</td>
-                      <td className="p-3.5">{client ? (client.trade_name || client.legal_name) : 'N/A'}</td>
-                      <td className="p-3.5 font-semibold text-slate-200">{os.title}</td>
-                      <td className="p-3.5">
-                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                          os.priority === 'URGENT' ? 'bg-rose-500/20 text-rose-300 border border-rose-500/30' :
-                          os.priority === 'HIGH' ? 'bg-amber-500/20 text-amber-300' : 'bg-slate-800 text-slate-300'
-                        }`}>
-                          {os.priority}
-                        </span>
-                      </td>
-                      <td className="p-3.5">
-                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                          os.status === 'COMPLETED' ? 'bg-emerald-500/20 text-emerald-300' :
-                          os.status === 'IN_PROGRESS' ? 'bg-blue-500/20 text-blue-300' : 'bg-slate-800 text-slate-300'
-                        }`}>
-                          {os.status}
-                        </span>
-                      </td>
-                      <td className="p-3.5">
-                        <span className={isDelayed ? 'text-rose-400 font-bold' : ''}>
-                          {os.due_date ? formatDate(os.due_date) : '-'}
-                          {isDelayed && ' (Atrasada)'}
-                        </span>
-                      </td>
-                      <td className="p-3.5 text-slate-400">{os.technical_responsible_name || 'Não atribuído'}</td>
-                      <td className="p-3.5 text-right">
-                        <button
-                          type="button"
-                          onClick={() => setSelectedRowDetail(os)}
-                          className="p-1.5 hover:bg-slate-800 text-teal-400 hover:text-teal-300 rounded-lg transition"
-                          title="Ver detalhes da O.S."
-                        >
-                          <Eye className="w-4 h-4" />
-                        </button>
-                      </td>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs text-slate-300">
+                <thead className="bg-slate-950/80 text-slate-400 uppercase text-[10px] tracking-wider border-b border-slate-800 font-bold">
+                  {activeCategory === 'SERVICE_ORDERS' && (
+                    <tr>
+                      <th className="p-3.5">Código O.S.</th>
+                      <th className="p-3.5">Cliente</th>
+                      <th className="p-3.5">Serviço</th>
+                      <th className="p-3.5">Prioridade</th>
+                      <th className="p-3.5">Status</th>
+                      <th className="p-3.5">Prazo SLA</th>
+                      <th className="p-3.5">Responsável</th>
+                      <th className="p-3.5 text-right">Ações</th>
                     </tr>
-                  );
-                })}
-
-                {activeCategory === 'RISKS_PGR' && (paginatedData as typeof environmentalRisks).map((r) => {
-                  return (
-                    <tr key={r.id} className="hover:bg-slate-800/40 transition">
-                      <td className="p-3.5 font-bold text-white">{r.agent_name || (r as any).description}</td>
-                      <td className="p-3.5">
-                        <span className="px-2 py-0.5 bg-slate-800 text-slate-300 rounded text-[10px] font-mono">
-                          {r.risk_category || (r as any).category}
-                        </span>
-                      </td>
-                      <td className="p-3.5 text-slate-400">{r.generating_source || 'Processo produtivo'}</td>
-                      <td className="p-3.5 font-mono">{r.measured_value ? `${r.measured_value} ${r.measurement_unit || ''}` : 'Qualitativo'}</td>
-                      <td className="p-3.5">
-                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                          (r.risk_level || '').includes('ALTO') || (r.risk_level || '').includes('CRITICO') ? 'bg-rose-500/20 text-rose-300' :
-                          (r.risk_level || '').includes('MEDIO') ? 'bg-amber-500/20 text-amber-300' : 'bg-emerald-500/20 text-emerald-300'
-                        }`}>
-                          {r.risk_level || 'MEDIO'}
-                        </span>
-                      </td>
-                      <td className="p-3.5">
-                        {r.insalubridade_applies && <span className="px-1.5 py-0.5 bg-amber-500/20 text-amber-300 rounded text-[10px] mr-1">Insalubridade</span>}
-                        {r.periculosidade_applies && <span className="px-1.5 py-0.5 bg-rose-500/20 text-rose-300 rounded text-[10px]">Periculosidade</span>}
-                        {!r.insalubridade_applies && !r.periculosidade_applies && <span className="text-slate-500">Não enquadrado</span>}
-                      </td>
-                      <td className="p-3.5 text-right">
-                        <button
-                          type="button"
-                          onClick={() => setSelectedRowDetail(r)}
-                          className="p-1.5 hover:bg-slate-800 text-teal-400 hover:text-teal-300 rounded-lg transition"
-                          title="Ver detalhes do risco"
-                        >
-                          <Eye className="w-4 h-4" />
-                        </button>
-                      </td>
+                  )}
+  
+                  {activeCategory === 'RISKS_PGR' && (
+                    <tr>
+                      <th className="p-3.5">Agente / Risco</th>
+                      <th className="p-3.5">Grupo</th>
+                      <th className="p-3.5">Fonte Geradora</th>
+                      <th className="p-3.5">Intensidade</th>
+                      <th className="p-3.5">Matriz PGR</th>
+                      <th className="p-3.5">Insalubridade/Periculosidade</th>
+                      <th className="p-3.5 text-right">Ações</th>
                     </tr>
-                  );
-                })}
-
-                {activeCategory === 'ASOS_HEALTH' && (paginatedData as Array<{ employee: Employee; aso?: EmployeeASOHistory; isOverdue?: boolean; isSoon?: boolean }>).map((item, idx) => {
-                  const emp = item.employee;
-                  const aso = item.aso;
-                  return (
-                    <tr key={idx} className="hover:bg-slate-800/40 transition">
-                      <td className="p-3.5 font-bold text-white">{emp.name}</td>
-                      <td className="p-3.5 text-slate-400">{emp.cpf} | {emp.job_title}</td>
-                      <td className="p-3.5 font-semibold text-teal-300">{aso ? (aso.aso_type || (aso as any).exam_type) : 'Sem ASO'}</td>
-                      <td className="p-3.5">{aso?.exam_date ? formatDate(aso.exam_date) : '-'}</td>
-                      <td className="p-3.5 font-mono">{aso?.valid_until ? formatDate(aso.valid_until) : '-'}</td>
-                      <td className="p-3.5">
-                        {item.isOverdue ? (
-                          <span className="px-2 py-0.5 bg-rose-500/20 text-rose-300 border border-rose-500/30 rounded text-[10px] font-bold">
-                            VENCIDO
-                          </span>
-                        ) : item.isSoon ? (
-                          <span className="px-2 py-0.5 bg-amber-500/20 text-amber-300 border border-amber-500/30 rounded text-[10px] font-bold">
-                            A VENCER (30d)
-                          </span>
-                        ) : (
-                          <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-300 rounded text-[10px] font-bold">
-                            VIGENTE
-                          </span>
-                        )}
-                      </td>
-                      <td className="p-3.5">
-                        <span className="text-emerald-400 font-bold">{aso?.result || (aso as any)?.aptitude || 'PENDENTE'}</span>
-                      </td>
-                      <td className="p-3.5 text-right">
-                        <button
-                          type="button"
-                          onClick={() => setSelectedRowDetail({ ...emp, selectedAso: aso })}
-                          className="p-1.5 hover:bg-slate-800 text-teal-400 hover:text-teal-300 rounded-lg transition"
-                          title="Ver ficha de saúde do colaborador"
-                        >
-                          <Eye className="w-4 h-4" />
-                        </button>
-                      </td>
+                  )}
+  
+                  {activeCategory === 'ASOS_HEALTH' && (
+                    <tr>
+                      <th className="p-3.5">Colaborador</th>
+                      <th className="p-3.5">CPF / Cargo</th>
+                      <th className="p-3.5">Tipo ASO</th>
+                      <th className="p-3.5">Data Exame</th>
+                      <th className="p-3.5">Validade</th>
+                      <th className="p-3.5">Situação</th>
+                      <th className="p-3.5">Aptidão</th>
+                      <th className="p-3.5 text-right">Ações</th>
                     </tr>
-                  );
-                })}
-
-                {activeCategory === 'ESOCIAL_EVENTS' && (paginatedData as typeof esocialEvents).map((ev) => {
-                  return (
-                    <tr key={ev.id} className="hover:bg-slate-800/40 transition">
-                      <td className="p-3.5 font-mono font-bold text-teal-400">{ev.event_type}</td>
-                      <td className="p-3.5 text-slate-200">
-                        {ev.event_type === 'S-2210' ? 'CAT - Acidente de Trabalho' :
-                         ev.event_type === 'S-2220' ? 'ASO - Monitoramento da Saúde' :
-                         ev.event_type === 'S-2240' ? 'Condições Ambientais do Trabalho' : 'Evento SST'}
-                      </td>
-                      <td className="p-3.5">
-                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                          ev.status === 'SUCCESS' || (ev.status as string) === 'TRANSMITTED' || (ev.status as string) === 'ACCEPTED' ? 'bg-emerald-500/20 text-emerald-300' :
-                          ev.status === 'REJECTED' ? 'bg-rose-500/20 text-rose-300' : 'bg-amber-500/20 text-amber-300'
-                        }`}>
-                          {ev.status}
-                        </span>
-                      </td>
-                      <td className="p-3.5 font-mono text-slate-300">{ev.receipt_number || 'Aguardando envio'}</td>
-                      <td className="p-3.5">{ev.transmitted_at ? formatDate(ev.transmitted_at) : '-'}</td>
-                      <td className="p-3.5 text-slate-400">{ev.environment === 'PRODUCAO' ? 'Produção' : 'Homologação'}</td>
-                      <td className="p-3.5 text-right">
-                        <button
-                          type="button"
-                          onClick={() => setSelectedRowDetail(ev)}
-                          className="p-1.5 hover:bg-slate-800 text-teal-400 hover:text-teal-300 rounded-lg transition"
-                          title="Ver detalhes do evento eSocial"
-                        >
-                          <Eye className="w-4 h-4" />
-                        </button>
-                      </td>
+                  )}
+  
+                  {activeCategory === 'ESOCIAL_EVENTS' && (
+                    <tr>
+                      <th className="p-3.5">Evento</th>
+                      <th className="p-3.5">Descrição</th>
+                      <th className="p-3.5">Status Transmissão</th>
+                      <th className="p-3.5">Recibo de Entrega</th>
+                      <th className="p-3.5">Data Envio</th>
+                      <th className="p-3.5">Ambiente</th>
+                      <th className="p-3.5 text-right">Ações</th>
                     </tr>
-                  );
-                })}
-
-                {activeCategory === 'FINANCIAL' && (paginatedData as typeof transactions).map((t) => {
-                  return (
-                    <tr key={t.id} className="hover:bg-slate-800/40 transition">
-                      <td className="p-3.5 font-mono text-slate-400">{t.id.substring(0, 8)}</td>
-                      <td className="p-3.5">
-                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                          t.type === 'RECEIVABLE' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-rose-500/20 text-rose-300'
-                        }`}>
-                          {t.type === 'RECEIVABLE' ? 'RECEITA' : 'DESPESA'}
-                        </span>
-                      </td>
-                      <td className="p-3.5 font-semibold text-white">{t.title}</td>
-                      <td className="p-3.5 font-mono font-bold text-teal-300">
-                        {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(t.amount)}
-                      </td>
-                      <td className="p-3.5">{t.due_date ? formatDate(t.due_date) : '-'}</td>
-                      <td className="p-3.5">
-                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                          t.status === 'PAID' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-amber-500/20 text-amber-300'
-                        }`}>
-                          {t.status}
-                        </span>
-                      </td>
-                      <td className="p-3.5 text-right">
-                        <button
-                          type="button"
-                          onClick={() => setSelectedRowDetail(t)}
-                          className="p-1.5 hover:bg-slate-800 text-teal-400 hover:text-teal-300 rounded-lg transition"
-                          title="Ver detalhes do lançamento financeiro"
-                        >
-                          <Eye className="w-4 h-4" />
-                        </button>
-                      </td>
+                  )}
+  
+                  {activeCategory === 'FINANCIAL' && (
+                    <tr>
+                      <th className="p-3.5">Código</th>
+                      <th className="p-3.5">Tipo</th>
+                      <th className="p-3.5">Descrição</th>
+                      <th className="p-3.5">Valor</th>
+                      <th className="p-3.5">Vencimento</th>
+                      <th className="p-3.5">Status</th>
+                      <th className="p-3.5 text-right">Ações</th>
                     </tr>
-                  );
-                })}
-
-                {/* Default generic fallback for other categories */}
-                {['EPI_MANAGEMENT', 'CAT_ACCIDENTS', 'TRAININGS_NR01', 'COMMERCIAL_CONTRACTS', 'AUDIT_QUALITY'].includes(activeCategory) &&
-                  paginatedData.map((item: any, idx: number) => {
-                    const keys = Object.keys(item).slice(0, 6);
+                  )}
+  
+                  {activeCategory === 'EPI_MANAGEMENT' && (
+                    <tr>
+                      <th className="p-3.5">Colaborador</th>
+                      <th className="p-3.5">Equipamento / EPI</th>
+                      <th className="p-3.5">Nº CA</th>
+                      <th className="p-3.5">Data Entrega</th>
+                      <th className="p-3.5">Método Assinatura</th>
+                      <th className="p-3.5">Status</th>
+                      <th className="p-3.5 text-right">Ações</th>
+                    </tr>
+                  )}
+  
+                  {activeCategory === 'CAT_ACCIDENTS' && (
+                    <tr>
+                      <th className="p-3.5">Nº CAT</th>
+                      <th className="p-3.5">Tipo Acidente</th>
+                      <th className="p-3.5">Data Acidente</th>
+                      <th className="p-3.5">Local</th>
+                      <th className="p-3.5">Agente Causador</th>
+                      <th className="p-3.5">Afastamento?</th>
+                      <th className="p-3.5 text-right">Ações</th>
+                    </tr>
+                  )}
+  
+                  {activeCategory === 'TRAININGS_NR01' && (
+                    <tr>
+                      <th className="p-3.5">Treinamento</th>
+                      <th className="p-3.5">Modalidade</th>
+                      <th className="p-3.5">Carga Horária</th>
+                      <th className="p-3.5">Data Realização</th>
+                      <th className="p-3.5">Validade</th>
+                      <th className="p-3.5">Status</th>
+                      <th className="p-3.5 text-right">Ações</th>
+                    </tr>
+                  )}
+  
+                  {activeCategory === 'COMMERCIAL_CONTRACTS' && (
+                    <tr>
+                      <th className="p-3.5">Nº Contrato</th>
+                      <th className="p-3.5">Título</th>
+                      <th className="p-3.5">Valor Recorrente</th>
+                      <th className="p-3.5">Recorrência</th>
+                      <th className="p-3.5">Status</th>
+                      <th className="p-3.5">Início / Fim</th>
+                      <th className="p-3.5 text-right">Ações</th>
+                    </tr>
+                  )}
+  
+                  {activeCategory === 'AUDIT_QUALITY' && (
+                    <tr>
+                      <th className="p-3.5">Data / Hora</th>
+                      <th className="p-3.5">Ação</th>
+                      <th className="p-3.5">Entidade</th>
+                      <th className="p-3.5">Usuário</th>
+                      <th className="p-3.5">IP</th>
+                      <th className="p-3.5 text-right">Ações</th>
+                    </tr>
+                  )}
+                </thead>
+  
+                <tbody className="divide-y divide-slate-800/60 font-medium">
+                  {activeCategory === 'SERVICE_ORDERS' && (paginatedData as typeof serviceOrders).map((os) => {
+                    const client = clients.find(c => c.id === os.client_id);
+                    const isDelayed = (os.status !== 'COMPLETED' && os.status !== 'CANCELLED') && new Date(os.due_date) < new Date();
                     return (
-                      <tr key={item.id || idx} className="hover:bg-slate-800/40 transition">
-                        {keys.map((k) => (
-                          <td key={k} className="p-3.5 max-w-[200px] truncate">
-                            {String(item[k] !== undefined && item[k] !== null ? item[k] : '-')}
-                          </td>
-                        ))}
+                      <tr key={os.id} className="hover:bg-slate-800/40 transition">
+                        <td className="p-3.5 font-mono font-bold text-white">{os.os_number || os.id.substring(0, 8)}</td>
+                        <td className="p-3.5">{client ? (client.trade_name || client.legal_name) : 'N/A'}</td>
+                        <td className="p-3.5 font-semibold text-slate-200">{os.title}</td>
+                        <td className="p-3.5">
+                          <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                            os.priority === 'URGENT' ? 'bg-rose-500/20 text-rose-300 border border-rose-500/30' :
+                            os.priority === 'HIGH' ? 'bg-amber-500/20 text-amber-300' : 'bg-slate-800 text-slate-300'
+                          }`}>
+                            {os.priority}
+                          </span>
+                        </td>
+                        <td className="p-3.5">
+                          <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                            os.status === 'COMPLETED' ? 'bg-emerald-500/20 text-emerald-300' :
+                            os.status === 'IN_PROGRESS' ? 'bg-blue-500/20 text-blue-300' : 'bg-slate-800 text-slate-300'
+                          }`}>
+                            {os.status}
+                          </span>
+                        </td>
+                        <td className="p-3.5">
+                          <span className={isDelayed ? 'text-rose-400 font-bold' : ''}>
+                            {os.due_date ? formatDate(os.due_date) : '-'}
+                            {isDelayed && ' (Atrasada)'}
+                          </span>
+                        </td>
+                        <td className="p-3.5 text-slate-400">{os.technical_responsible_name || 'Não atribuído'}</td>
                         <td className="p-3.5 text-right">
                           <button
                             type="button"
-                            onClick={() => setSelectedRowDetail(item)}
+                            onClick={() => setSelectedRowDetail(os)}
                             className="p-1.5 hover:bg-slate-800 text-teal-400 hover:text-teal-300 rounded-lg transition"
+                            title="Ver detalhes da O.S."
                           >
                             <Eye className="w-4 h-4" />
                           </button>
@@ -1975,8 +1801,184 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
                       </tr>
                     );
                   })}
-              </tbody>
-            </table>
+  
+                  {activeCategory === 'RISKS_PGR' && (paginatedData as typeof environmentalRisks).map((r) => {
+                    return (
+                      <tr key={r.id} className="hover:bg-slate-800/40 transition">
+                        <td className="p-3.5 font-bold text-white">{r.agent_name || (r as any).description}</td>
+                        <td className="p-3.5">
+                          <span className="px-2 py-0.5 bg-slate-800 text-slate-300 rounded text-[10px] font-mono">
+                            {r.risk_category || (r as any).category}
+                          </span>
+                        </td>
+                        <td className="p-3.5 text-slate-400">{r.generating_source || 'Processo produtivo'}</td>
+                        <td className="p-3.5 font-mono">{r.measured_value ? `${r.measured_value} ${r.measurement_unit || ''}` : 'Qualitativo'}</td>
+                        <td className="p-3.5">
+                          <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                            (r.risk_level || '').includes('ALTO') || (r.risk_level || '').includes('CRITICO') ? 'bg-rose-500/20 text-rose-300' :
+                            (r.risk_level || '').includes('MEDIO') ? 'bg-amber-500/20 text-amber-300' : 'bg-emerald-500/20 text-emerald-300'
+                          }`}>
+                            {r.risk_level || 'MEDIO'}
+                          </span>
+                        </td>
+                        <td className="p-3.5">
+                          {r.insalubridade_applies && <span className="px-1.5 py-0.5 bg-amber-500/20 text-amber-300 rounded text-[10px] mr-1">Insalubridade</span>}
+                          {r.periculosidade_applies && <span className="px-1.5 py-0.5 bg-rose-500/20 text-rose-300 rounded text-[10px]">Periculosidade</span>}
+                          {!r.insalubridade_applies && !r.periculosidade_applies && <span className="text-slate-500">Não enquadrado</span>}
+                        </td>
+                        <td className="p-3.5 text-right">
+                          <button
+                            type="button"
+                            onClick={() => setSelectedRowDetail(r)}
+                            className="p-1.5 hover:bg-slate-800 text-teal-400 hover:text-teal-300 rounded-lg transition"
+                            title="Ver detalhes do risco"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+  
+                  {activeCategory === 'ASOS_HEALTH' && (paginatedData as Array<{ employee: Employee; aso?: EmployeeASOHistory; isOverdue?: boolean; isSoon?: boolean }>).map((item, idx) => {
+                    const emp = item.employee;
+                    const aso = item.aso;
+                    return (
+                      <tr key={idx} className="hover:bg-slate-800/40 transition">
+                        <td className="p-3.5 font-bold text-white">{emp.name}</td>
+                        <td className="p-3.5 text-slate-400">{emp.cpf} | {emp.job_title}</td>
+                        <td className="p-3.5 font-semibold text-teal-300">{aso ? (aso.aso_type || (aso as any).exam_type) : 'Sem ASO'}</td>
+                        <td className="p-3.5">{aso?.exam_date ? formatDate(aso.exam_date) : '-'}</td>
+                        <td className="p-3.5 font-mono">{aso?.valid_until ? formatDate(aso.valid_until) : '-'}</td>
+                        <td className="p-3.5">
+                          {item.isOverdue ? (
+                            <span className="px-2 py-0.5 bg-rose-500/20 text-rose-300 border border-rose-500/30 rounded text-[10px] font-bold">
+                              VENCIDO
+                            </span>
+                          ) : item.isSoon ? (
+                            <span className="px-2 py-0.5 bg-amber-500/20 text-amber-300 border border-amber-500/30 rounded text-[10px] font-bold">
+                              A VENCER (30d)
+                            </span>
+                          ) : (
+                            <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-300 rounded text-[10px] font-bold">
+                              VIGENTE
+                            </span>
+                          )}
+                        </td>
+                        <td className="p-3.5">
+                          <span className="text-emerald-400 font-bold">{aso?.result || (aso as any)?.aptitude || 'PENDENTE'}</span>
+                        </td>
+                        <td className="p-3.5 text-right">
+                          <button
+                            type="button"
+                            onClick={() => setSelectedRowDetail({ ...emp, selectedAso: aso })}
+                            className="p-1.5 hover:bg-slate-800 text-teal-400 hover:text-teal-300 rounded-lg transition"
+                            title="Ver ficha de saúde do colaborador"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+  
+                  {activeCategory === 'ESOCIAL_EVENTS' && (paginatedData as typeof esocialEvents).map((ev) => {
+                    return (
+                      <tr key={ev.id} className="hover:bg-slate-800/40 transition">
+                        <td className="p-3.5 font-mono font-bold text-teal-400">{ev.event_type}</td>
+                        <td className="p-3.5 text-slate-200">
+                          {ev.event_type === 'S-2210' ? 'CAT - Acidente de Trabalho' :
+                           ev.event_type === 'S-2220' ? 'ASO - Monitoramento da Saúde' :
+                           ev.event_type === 'S-2240' ? 'Condições Ambientais do Trabalho' : 'Evento SST'}
+                        </td>
+                        <td className="p-3.5">
+                          <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                            ev.status === 'SUCCESS' || (ev.status as string) === 'TRANSMITTED' || (ev.status as string) === 'ACCEPTED' ? 'bg-emerald-500/20 text-emerald-300' :
+                            ev.status === 'REJECTED' ? 'bg-rose-500/20 text-rose-300' : 'bg-amber-500/20 text-amber-300'
+                          }`}>
+                            {ev.status}
+                          </span>
+                        </td>
+                        <td className="p-3.5 font-mono text-slate-300">{ev.receipt_number || 'Aguardando envio'}</td>
+                        <td className="p-3.5">{ev.transmitted_at ? formatDate(ev.transmitted_at) : '-'}</td>
+                        <td className="p-3.5 text-slate-400">{ev.environment === 'PRODUCAO' ? 'Produção' : 'Homologação'}</td>
+                        <td className="p-3.5 text-right">
+                          <button
+                            type="button"
+                            onClick={() => setSelectedRowDetail(ev)}
+                            className="p-1.5 hover:bg-slate-800 text-teal-400 hover:text-teal-300 rounded-lg transition"
+                            title="Ver detalhes do evento eSocial"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+  
+                  {activeCategory === 'FINANCIAL' && (paginatedData as typeof transactions).map((t) => {
+                    return (
+                      <tr key={t.id} className="hover:bg-slate-800/40 transition">
+                        <td className="p-3.5 font-mono text-slate-400">{t.id.substring(0, 8)}</td>
+                        <td className="p-3.5">
+                          <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                            t.type === 'RECEIVABLE' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-rose-500/20 text-rose-300'
+                          }`}>
+                            {t.type === 'RECEIVABLE' ? 'RECEITA' : 'DESPESA'}
+                          </span>
+                        </td>
+                        <td className="p-3.5 font-semibold text-white">{t.title}</td>
+                        <td className="p-3.5 font-mono font-bold text-teal-300">
+                          {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(t.amount)}
+                        </td>
+                        <td className="p-3.5">{t.due_date ? formatDate(t.due_date) : '-'}</td>
+                        <td className="p-3.5">
+                          <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                            t.status === 'PAID' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-amber-500/20 text-amber-300'
+                          }`}>
+                            {t.status}
+                          </span>
+                        </td>
+                        <td className="p-3.5 text-right">
+                          <button
+                            type="button"
+                            onClick={() => setSelectedRowDetail(t)}
+                            className="p-1.5 hover:bg-slate-800 text-teal-400 hover:text-teal-300 rounded-lg transition"
+                            title="Ver detalhes do lançamento financeiro"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+  
+                  {/* Default generic fallback for other categories */}
+                  {['EPI_MANAGEMENT', 'CAT_ACCIDENTS', 'TRAININGS_NR01', 'COMMERCIAL_CONTRACTS', 'AUDIT_QUALITY'].includes(activeCategory) &&
+                    paginatedData.map((item: any, idx: number) => {
+                      const keys = Object.keys(item).slice(0, 6);
+                      return (
+                        <tr key={item.id || idx} className="hover:bg-slate-800/40 transition">
+                          {keys.map((k) => (
+                            <td key={k} className="p-3.5 max-w-[200px] truncate">
+                              {String(item[k] !== undefined && item[k] !== null ? item[k] : '-')}
+                            </td>
+                          ))}
+                          <td className="p-3.5 text-right">
+                            <button
+                              type="button"
+                              onClick={() => setSelectedRowDetail(item)}
+                              className="p-1.5 hover:bg-slate-800 text-teal-400 hover:text-teal-300 rounded-lg transition"
+                            >
+                              <Eye className="w-4 h-4" />
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                </tbody>
+              </table>
+            </div>
           )}
         </div>
       </div>

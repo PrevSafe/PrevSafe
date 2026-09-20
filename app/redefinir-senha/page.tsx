@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from 'react';
 import { getSupabaseClient } from '@/lib/supabase';
 import {
-  Shield,
   Lock,
   Eye,
   EyeOff,
@@ -98,10 +97,7 @@ export default function RedefinirSenhaPage() {
   return (
     <div className="min-h-screen w-full bg-slate-950 flex items-center justify-center p-4 font-sans">
       <div className="w-full max-w-md bg-slate-900/90 border border-slate-800 rounded-3xl shadow-2xl p-6 sm:p-8">
-        <div className="flex items-center space-x-3 mb-6">
-          <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-700 flex items-center justify-center flex-shrink-0">
-            <Shield className="w-6 h-6 text-white" />
-          </div>
+        <div className="mb-6">
           <div>
             <div className="text-lg font-bold text-white tracking-tight">PrevSafe</div>
             <p className="text-xs text-slate-400">Redefinição de senha</p>

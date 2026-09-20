@@ -616,7 +616,7 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
                   </span>
                   <span className="text-[11px] text-slate-400">Escopos e Valores Customizados</span>
                 </div>
-                <div className="border border-slate-800 rounded-2xl overflow-hidden bg-slate-950/40">
+                <div className="border border-slate-800 rounded-2xl overflow-x-auto bg-slate-950/40">
                   <table className="w-full text-left text-xs">
                     <thead className="text-slate-400 font-semibold border-b border-slate-800 text-[11px] uppercase bg-slate-900/60">
                       <tr>

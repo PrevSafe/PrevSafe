@@ -561,7 +561,7 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
                   </h4>
                 </div>
 
-                <div className="bg-slate-950/60 border border-slate-800 rounded-xl overflow-hidden">
+                <div className="bg-slate-950/60 border border-slate-800 rounded-xl overflow-x-auto">
                   <table className="w-full text-left border-collapse">
                     <thead>
                       <tr className="bg-slate-950 border-b border-slate-800 text-[10px] font-bold text-slate-400 uppercase">

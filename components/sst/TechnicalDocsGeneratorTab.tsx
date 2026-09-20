@@ -498,7 +498,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
               <FileSpreadsheet className="w-4 h-4 text-teal-400" />
               3. Plano de Ação Anual (Cronograma 5W2H)
             </h3>
-            <div className="bg-slate-950 border border-slate-800 rounded-xl overflow-hidden">
+            <div className="bg-slate-950 border border-slate-800 rounded-xl overflow-x-auto">
               <table className="w-full text-left text-xs text-slate-300">
                 <thead className="bg-slate-900 text-slate-400 uppercase text-[10px] border-b border-slate-800">
                   <tr>
@@ -636,7 +636,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
               Matriz de Monitoramento Biológico e Exames Clínicos por GHE
             </h3>
 
-            <div className="bg-slate-950 border border-slate-800 rounded-xl overflow-hidden">
+            <div className="bg-slate-950 border border-slate-800 rounded-xl overflow-x-auto">
               <table className="w-full text-left text-xs text-slate-300">
                 <thead className="bg-slate-900 text-slate-400 uppercase text-[10px] border-b border-slate-800">
                   <tr>
@@ -741,7 +741,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
             </div>
           </div>
 
-          <div className="bg-slate-950 border border-slate-800 rounded-xl overflow-hidden">
+          <div className="bg-slate-950 border border-slate-800 rounded-xl overflow-x-auto">
             <table className="w-full text-left text-xs text-slate-300">
               <thead className="bg-slate-900 text-slate-400 uppercase text-[10px] border-b border-slate-800">
                 <tr>
@@ -801,7 +801,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
             </div>
           </div>
 
-          <div className="bg-slate-950 border border-slate-800 rounded-xl overflow-hidden">
+          <div className="bg-slate-950 border border-slate-800 rounded-xl overflow-x-auto">
             <table className="w-full text-left text-xs text-slate-300">
               <thead className="bg-slate-900 text-slate-400 uppercase text-[10px] border-b border-slate-800">
                 <tr>

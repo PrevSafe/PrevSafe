@@ -409,60 +409,62 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
                       <span className="text-[10px] text-slate-300 font-mono">Tabela 24 eSocial</span>
                     </div>
 
-                    <table className="w-full text-left text-xs border-collapse">
-                      <thead className="bg-slate-100 text-slate-700 text-[11px] font-bold border-b border-slate-300">
-                        <tr>
-                          <th className="p-2.5 border-r border-slate-200">GHE / Posto</th>
-                          <th className="p-2.5 border-r border-slate-200">Perigo / Agente Nocivo</th>
-                          <th className="p-2.5 border-r border-slate-200">Tipo Avaliação</th>
-                          <th className="p-2.5 border-r border-slate-200">Nível Risco</th>
-                          <th className="p-2.5">Medidas de Controle & EPI (CA)</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-slate-200 text-slate-800">
-                        {ghes.map((ghe) => {
-                          const gheRisks = risks.filter(r => r.ghe_id === ghe.id);
-                          if (gheRisks.length === 0) {
-                            return (
-                              <tr key={ghe.id} className="hover:bg-slate-50">
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left text-xs border-collapse">
+                        <thead className="bg-slate-100 text-slate-700 text-[11px] font-bold border-b border-slate-300">
+                          <tr>
+                            <th className="p-2.5 border-r border-slate-200">GHE / Posto</th>
+                            <th className="p-2.5 border-r border-slate-200">Perigo / Agente Nocivo</th>
+                            <th className="p-2.5 border-r border-slate-200">Tipo Avaliação</th>
+                            <th className="p-2.5 border-r border-slate-200">Nível Risco</th>
+                            <th className="p-2.5">Medidas de Controle & EPI (CA)</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-200 text-slate-800">
+                          {ghes.map((ghe) => {
+                            const gheRisks = risks.filter(r => r.ghe_id === ghe.id);
+                            if (gheRisks.length === 0) {
+                              return (
+                                <tr key={ghe.id} className="hover:bg-slate-50">
+                                  <td className="p-2.5 font-bold border-r border-slate-200">{ghe.name}</td>
+                                  <td className="p-2.5 text-slate-600 border-r border-slate-200">Ausência de riscos específicos / Fatores ergonômicos gerais</td>
+                                  <td className="p-2.5 border-r border-slate-200">Qualitativa</td>
+                                  <td className="p-2.5 border-r border-slate-200"><span className="px-2 py-0.5 bg-emerald-100 text-emerald-800 font-bold rounded text-[10px]">Trivial</span></td>
+                                  <td className="p-2.5 text-slate-600">Recomendações posturais (NR-17)</td>
+                                </tr>
+                              );
+                            }
+                            return gheRisks.map((r, rIdx) => (
+                              <tr key={r.id || rIdx} className="hover:bg-slate-50">
                                 <td className="p-2.5 font-bold border-r border-slate-200">{ghe.name}</td>
-                                <td className="p-2.5 text-slate-600 border-r border-slate-200">Ausência de riscos específicos / Fatores ergonômicos gerais</td>
-                                <td className="p-2.5 border-r border-slate-200">Qualitativa</td>
-                                <td className="p-2.5 border-r border-slate-200"><span className="px-2 py-0.5 bg-emerald-100 text-emerald-800 font-bold rounded text-[10px]">Trivial</span></td>
-                                <td className="p-2.5 text-slate-600">Recomendações posturais (NR-17)</td>
+                                <td className="p-2.5 border-r border-slate-200">
+                                  <div className="font-bold text-slate-900">{r.agent_name}</div>
+                                  <div className="text-[10px] text-slate-500 font-mono">Cód: {r.risk_code_table_24} • Fonte: {r.generating_source || 'Processo produtivo'}</div>
+                                </td>
+                                <td className="p-2.5 border-r border-slate-200">
+                                  {r.evaluation_type}
+                                  {r.measured_value && <div className="font-mono text-[10px] font-bold text-teal-700">{r.measured_value} {r.measurement_unit}</div>}
+                                </td>
+                                <td className="p-2.5 border-r border-slate-200">
+                                  <span className={`px-2 py-0.5 font-bold rounded text-[10px] ${
+                                    r.risk_level === 'CRITICAL' ? 'bg-rose-100 text-rose-800' :
+                                    r.risk_level === 'HIGH' ? 'bg-amber-100 text-amber-800' :
+                                    'bg-teal-100 text-teal-800'
+                                  }`}>
+                                    {r.risk_level || 'MODERADO'}
+                                  </span>
+                                </td>
+                                <td className="p-2.5 text-slate-700">
+                                  {r.epi_required && <div className="font-semibold text-teal-900">• EPI Eficaz (CA {r.epi_ca_number || '14235'})</div>}
+                                  {r.epc_implemented && <div>• EPC Instalado no ambiente</div>}
+                                  <div className="text-[10px] text-slate-500">{r.ltcat_technical_conclusion || 'Plano PrevSafe em vigor'}</div>
+                                </td>
                               </tr>
-                            );
-                          }
-                          return gheRisks.map((r, rIdx) => (
-                            <tr key={r.id || rIdx} className="hover:bg-slate-50">
-                              <td className="p-2.5 font-bold border-r border-slate-200">{ghe.name}</td>
-                              <td className="p-2.5 border-r border-slate-200">
-                                <div className="font-bold text-slate-900">{r.agent_name}</div>
-                                <div className="text-[10px] text-slate-500 font-mono">Cód: {r.risk_code_table_24} • Fonte: {r.generating_source || 'Processo produtivo'}</div>
-                              </td>
-                              <td className="p-2.5 border-r border-slate-200">
-                                {r.evaluation_type}
-                                {r.measured_value && <div className="font-mono text-[10px] font-bold text-teal-700">{r.measured_value} {r.measurement_unit}</div>}
-                              </td>
-                              <td className="p-2.5 border-r border-slate-200">
-                                <span className={`px-2 py-0.5 font-bold rounded text-[10px] ${
-                                  r.risk_level === 'CRITICAL' ? 'bg-rose-100 text-rose-800' :
-                                  r.risk_level === 'HIGH' ? 'bg-amber-100 text-amber-800' :
-                                  'bg-teal-100 text-teal-800'
-                                }`}>
-                                  {r.risk_level || 'MODERADO'}
-                                </span>
-                              </td>
-                              <td className="p-2.5 text-slate-700">
-                                {r.epi_required && <div className="font-semibold text-teal-900">• EPI Eficaz (CA {r.epi_ca_number || '14235'})</div>}
-                                {r.epc_implemented && <div>• EPC Instalado no ambiente</div>}
-                                <div className="text-[10px] text-slate-500">{r.ltcat_technical_conclusion || 'Plano PrevSafe em vigor'}</div>
-                              </td>
-                            </tr>
-                          ));
-                        })}
-                      </tbody>
-                    </table>
+                            ));
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
 
                   {/* Plan of Action */}
@@ -543,31 +545,33 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
                       <span className="text-[10px] text-cyan-300 font-bold">NR-07 Item 7.5</span>
                     </div>
 
-                    <table className="w-full text-left text-xs border-collapse">
-                      <thead className="bg-slate-100 text-slate-700 text-[11px] font-bold border-b border-slate-300">
-                        <tr>
-                          <th className="p-2.5 border-r border-slate-200">Exame / Procedimento</th>
-                          <th className="p-2.5 border-r border-slate-200">Cód. Tab. 27</th>
-                          <th className="p-2.5 border-r border-slate-200">GHE / Cargo</th>
-                          <th className="p-2.5 border-r border-slate-200">Periodicidade / Gatilhos</th>
-                          <th className="p-2.5">Fundamentação</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-slate-200 text-slate-800">
-                        {examProtocols.map(p => {
-                          const ghe = ghes.find(g => g.id === p.ghe_id);
-                          return (
-                            <tr key={p.id} className="hover:bg-slate-50">
-                              <td className="p-2.5 font-bold border-r border-slate-200">{p.exam_name}</td>
-                              <td className="p-2.5 font-mono font-bold text-cyan-800 border-r border-slate-200">{p.exam_code_table_27}</td>
-                              <td className="p-2.5 border-r border-slate-200">{ghe?.name || 'Todos os Colaboradores'}</td>
-                              <td className="p-2.5 border-r border-slate-200">{p.periodicity_months} meses ({p.triggers?.join(', ') || 'Admissional, Periódico'})</td>
-                              <td className="p-2.5 text-slate-600">{p.mandatory_by_standard || 'NR-07 Quadro I/II'}</td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left text-xs border-collapse">
+                        <thead className="bg-slate-100 text-slate-700 text-[11px] font-bold border-b border-slate-300">
+                          <tr>
+                            <th className="p-2.5 border-r border-slate-200">Exame / Procedimento</th>
+                            <th className="p-2.5 border-r border-slate-200">Cód. Tab. 27</th>
+                            <th className="p-2.5 border-r border-slate-200">GHE / Cargo</th>
+                            <th className="p-2.5 border-r border-slate-200">Periodicidade / Gatilhos</th>
+                            <th className="p-2.5">Fundamentação</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-200 text-slate-800">
+                          {examProtocols.map(p => {
+                            const ghe = ghes.find(g => g.id === p.ghe_id);
+                            return (
+                              <tr key={p.id} className="hover:bg-slate-50">
+                                <td className="p-2.5 font-bold border-r border-slate-200">{p.exam_name}</td>
+                                <td className="p-2.5 font-mono font-bold text-cyan-800 border-r border-slate-200">{p.exam_code_table_27}</td>
+                                <td className="p-2.5 border-r border-slate-200">{ghe?.name || 'Todos os Colaboradores'}</td>
+                                <td className="p-2.5 border-r border-slate-200">{p.periodicity_months} meses ({p.triggers?.join(', ') || 'Admissional, Periódico'})</td>
+                                <td className="p-2.5 text-slate-600">{p.mandatory_by_standard || 'NR-07 Quadro I/II'}</td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 </div>
               )}
@@ -584,37 +588,39 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
                       <span className="text-[10px] text-purple-300 font-bold">Decreto 3.048/99</span>
                     </div>
 
-                    <table className="w-full text-left text-xs border-collapse">
-                      <thead className="bg-slate-100 text-slate-700 text-[11px] font-bold border-b border-slate-300">
-                        <tr>
-                          <th className="p-2.5 border-r border-slate-200">GHE / Posto</th>
-                          <th className="p-2.5 border-r border-slate-200">Agente Nocivo</th>
-                          <th className="p-2.5 border-r border-slate-200">Intensidade / Concentração</th>
-                          <th className="p-2.5 border-r border-slate-200">Aposentadoria Especial</th>
-                          <th className="p-2.5">Eficácia EPI (eSocial)</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-slate-200 text-slate-800">
-                        {ghes.map(ghe => {
-                          const gheRisks = risks.filter(r => r.ghe_id === ghe.id);
-                          return gheRisks.map((r, idx) => (
-                            <tr key={r.id || idx} className="hover:bg-slate-50">
-                              <td className="p-2.5 font-bold border-r border-slate-200">{ghe.name}</td>
-                              <td className="p-2.5 border-r border-slate-200">{r.agent_name} ({r.risk_code_table_24})</td>
-                              <td className="p-2.5 border-r border-slate-200">{r.measured_value ? `${r.measured_value} ${r.measurement_unit}` : 'Qualitativa'}</td>
-                              <td className="p-2.5 border-r border-slate-200 font-bold">
-                                {r.special_retirement_applies ? (
-                                  <span className="text-rose-700">SIM (GFIP {r.gfip_code || '04'})</span>
-                                ) : (
-                                  <span className="text-emerald-700">NÃO ENSEJA</span>
-                                )}
-                              </td>
-                              <td className="p-2.5 text-slate-700">{r.epi_required ? 'EPI Eficaz (CA Mitigado)' : 'Sem EPI'}</td>
-                            </tr>
-                          ));
-                        })}
-                      </tbody>
-                    </table>
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left text-xs border-collapse">
+                        <thead className="bg-slate-100 text-slate-700 text-[11px] font-bold border-b border-slate-300">
+                          <tr>
+                            <th className="p-2.5 border-r border-slate-200">GHE / Posto</th>
+                            <th className="p-2.5 border-r border-slate-200">Agente Nocivo</th>
+                            <th className="p-2.5 border-r border-slate-200">Intensidade / Concentração</th>
+                            <th className="p-2.5 border-r border-slate-200">Aposentadoria Especial</th>
+                            <th className="p-2.5">Eficácia EPI (eSocial)</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-200 text-slate-800">
+                          {ghes.map(ghe => {
+                            const gheRisks = risks.filter(r => r.ghe_id === ghe.id);
+                            return gheRisks.map((r, idx) => (
+                              <tr key={r.id || idx} className="hover:bg-slate-50">
+                                <td className="p-2.5 font-bold border-r border-slate-200">{ghe.name}</td>
+                                <td className="p-2.5 border-r border-slate-200">{r.agent_name} ({r.risk_code_table_24})</td>
+                                <td className="p-2.5 border-r border-slate-200">{r.measured_value ? `${r.measured_value} ${r.measurement_unit}` : 'Qualitativa'}</td>
+                                <td className="p-2.5 border-r border-slate-200 font-bold">
+                                  {r.special_retirement_applies ? (
+                                    <span className="text-rose-700">SIM (GFIP {r.gfip_code || '04'})</span>
+                                  ) : (
+                                    <span className="text-emerald-700">NÃO ENSEJA</span>
+                                  )}
+                                </td>
+                                <td className="p-2.5 text-slate-700">{r.epi_required ? 'EPI Eficaz (CA Mitigado)' : 'Sem EPI'}</td>
+                              </tr>
+                            ));
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 </div>
               )}
@@ -630,40 +636,42 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
                       </span>
                       <span className="text-[10px] text-amber-300 font-bold">Adicionais: 10%, 20%, 40%</span>
                     </div>
-                    <table className="w-full text-left text-xs border-collapse">
-                      <thead className="bg-slate-100 text-slate-700 text-[11px] font-bold border-b border-slate-300">
-                        <tr>
-                          <th className="p-2.5 border-r border-slate-200">GHE / Posto</th>
-                          <th className="p-2.5 border-r border-slate-200">Agente Avaliado</th>
-                          <th className="p-2.5 border-r border-slate-200">Anexo NR-15</th>
-                          <th className="p-2.5 border-r border-slate-200">Limite x Medição</th>
-                          <th className="p-2.5">Conclusão Pericial</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-slate-200 text-slate-800">
-                        <tr className="hover:bg-slate-50">
-                          <td className="p-2.5 font-bold border-r border-slate-200">GHE Operacional</td>
-                          <td className="p-2.5 border-r border-slate-200">Ruído Contínuo</td>
-                          <td className="p-2.5 font-mono text-amber-800 border-r border-slate-200">Anexo 1</td>
-                          <td className="p-2.5 border-r border-slate-200">LT: 85 dBA (Encontrado: 83.5 dBA)</td>
-                          <td className="p-2.5 text-emerald-700 font-bold">NÃO INSALUBRE (EPI CA 14235 Eficaz)</td>
-                        </tr>
-                        <tr className="hover:bg-slate-50">
-                          <td className="p-2.5 font-bold border-r border-slate-200">GHE Soldagem / Manutenção</td>
-                          <td className="p-2.5 border-r border-slate-200">Fumos Metálicos e Radiação UV</td>
-                          <td className="p-2.5 font-mono text-amber-800 border-r border-slate-200">Anexo 11/13</td>
-                          <td className="p-2.5 border-r border-slate-200">LT: 5.0 mg/m³ (Encontrado: 2.1 mg/m³)</td>
-                          <td className="p-2.5 text-emerald-700 font-bold">NÃO INSALUBRE (EPC Exaustão + PFF2)</td>
-                        </tr>
-                        <tr className="hover:bg-slate-50">
-                          <td className="p-2.5 font-bold border-r border-slate-200">GHE Limpeza Sanitária</td>
-                          <td className="p-2.5 border-r border-slate-200">Agentes Biológicos (Uso Público)</td>
-                          <td className="p-2.5 font-mono text-amber-800 border-r border-slate-200">Anexo 14</td>
-                          <td className="p-2.5 border-r border-slate-200">Qualitativa</td>
-                          <td className="p-2.5 text-rose-700 font-bold">INSALUBRE GRAU MÁXIMO (40% CLT)</td>
-                        </tr>
-                      </tbody>
-                    </table>
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left text-xs border-collapse">
+                        <thead className="bg-slate-100 text-slate-700 text-[11px] font-bold border-b border-slate-300">
+                          <tr>
+                            <th className="p-2.5 border-r border-slate-200">GHE / Posto</th>
+                            <th className="p-2.5 border-r border-slate-200">Agente Avaliado</th>
+                            <th className="p-2.5 border-r border-slate-200">Anexo NR-15</th>
+                            <th className="p-2.5 border-r border-slate-200">Limite x Medição</th>
+                            <th className="p-2.5">Conclusão Pericial</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-200 text-slate-800">
+                          <tr className="hover:bg-slate-50">
+                            <td className="p-2.5 font-bold border-r border-slate-200">GHE Operacional</td>
+                            <td className="p-2.5 border-r border-slate-200">Ruído Contínuo</td>
+                            <td className="p-2.5 font-mono text-amber-800 border-r border-slate-200">Anexo 1</td>
+                            <td className="p-2.5 border-r border-slate-200">LT: 85 dBA (Encontrado: 83.5 dBA)</td>
+                            <td className="p-2.5 text-emerald-700 font-bold">NÃO INSALUBRE (EPI CA 14235 Eficaz)</td>
+                          </tr>
+                          <tr className="hover:bg-slate-50">
+                            <td className="p-2.5 font-bold border-r border-slate-200">GHE Soldagem / Manutenção</td>
+                            <td className="p-2.5 border-r border-slate-200">Fumos Metálicos e Radiação UV</td>
+                            <td className="p-2.5 font-mono text-amber-800 border-r border-slate-200">Anexo 11/13</td>
+                            <td className="p-2.5 border-r border-slate-200">LT: 5.0 mg/m³ (Encontrado: 2.1 mg/m³)</td>
+                            <td className="p-2.5 text-emerald-700 font-bold">NÃO INSALUBRE (EPC Exaustão + PFF2)</td>
+                          </tr>
+                          <tr className="hover:bg-slate-50">
+                            <td className="p-2.5 font-bold border-r border-slate-200">GHE Limpeza Sanitária</td>
+                            <td className="p-2.5 border-r border-slate-200">Agentes Biológicos (Uso Público)</td>
+                            <td className="p-2.5 font-mono text-amber-800 border-r border-slate-200">Anexo 14</td>
+                            <td className="p-2.5 border-r border-slate-200">Qualitativa</td>
+                            <td className="p-2.5 text-rose-700 font-bold">INSALUBRE GRAU MÁXIMO (40% CLT)</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 </div>
               )}
@@ -679,40 +687,42 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
                       </span>
                       <span className="text-[10px] text-rose-300 font-bold">Adicional: 30% Salário Base</span>
                     </div>
-                    <table className="w-full text-left text-xs border-collapse">
-                      <thead className="bg-slate-100 text-slate-700 text-[11px] font-bold border-b border-slate-300">
-                        <tr>
-                          <th className="p-2.5 border-r border-slate-200">GHE / Posto</th>
-                          <th className="p-2.5 border-r border-slate-200">Atividade Perigosa</th>
-                          <th className="p-2.5 border-r border-slate-200">Anexo NR-16</th>
-                          <th className="p-2.5 border-r border-slate-200">Delimitação de Área de Risco</th>
-                          <th className="p-2.5">Conclusão Pericial</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-slate-200 text-slate-800">
-                        <tr className="hover:bg-slate-50">
-                          <td className="p-2.5 font-bold border-r border-slate-200">GHE Eletricista</td>
-                          <td className="p-2.5 border-r border-slate-200">Intervenção em Sistema Elétrico de Potência (SEP)</td>
-                          <td className="p-2.5 font-mono text-rose-800 border-r border-slate-200">Anexo 4</td>
-                          <td className="p-2.5 border-r border-slate-200">Subestações e painéis de força</td>
-                          <td className="p-2.5 text-rose-700 font-bold">FAZ JUS A 30% (PERICULOSO)</td>
-                        </tr>
-                        <tr className="hover:bg-slate-50">
-                          <td className="p-2.5 font-bold border-r border-slate-200">GHE Almoxarifado Inflamáveis</td>
-                          <td className="p-2.5 border-r border-slate-200">Armazenamento líquidos inflamáveis &gt; 200L</td>
-                          <td className="p-2.5 font-mono text-rose-800 border-r border-slate-200">Anexo 2</td>
-                          <td className="p-2.5 border-r border-slate-200">Bacia de contenção e raio de 7,5m</td>
-                          <td className="p-2.5 text-rose-700 font-bold">FAZ JUS A 30% (PERICULOSO)</td>
-                        </tr>
-                        <tr className="hover:bg-slate-50">
-                          <td className="p-2.5 font-bold border-r border-slate-200">GHE Linha de Produção</td>
-                          <td className="p-2.5 border-r border-slate-200">Operação mecânica contínua</td>
-                          <td className="p-2.5 text-slate-500 border-r border-slate-200">Sem enquadramento</td>
-                          <td className="p-2.5 border-r border-slate-200">Fora de área de risco</td>
-                          <td className="p-2.5 text-emerald-700 font-bold">NÃO PERICULOSO</td>
-                        </tr>
-                      </tbody>
-                    </table>
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left text-xs border-collapse">
+                        <thead className="bg-slate-100 text-slate-700 text-[11px] font-bold border-b border-slate-300">
+                          <tr>
+                            <th className="p-2.5 border-r border-slate-200">GHE / Posto</th>
+                            <th className="p-2.5 border-r border-slate-200">Atividade Perigosa</th>
+                            <th className="p-2.5 border-r border-slate-200">Anexo NR-16</th>
+                            <th className="p-2.5 border-r border-slate-200">Delimitação de Área de Risco</th>
+                            <th className="p-2.5">Conclusão Pericial</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-200 text-slate-800">
+                          <tr className="hover:bg-slate-50">
+                            <td className="p-2.5 font-bold border-r border-slate-200">GHE Eletricista</td>
+                            <td className="p-2.5 border-r border-slate-200">Intervenção em Sistema Elétrico de Potência (SEP)</td>
+                            <td className="p-2.5 font-mono text-rose-800 border-r border-slate-200">Anexo 4</td>
+                            <td className="p-2.5 border-r border-slate-200">Subestações e painéis de força</td>
+                            <td className="p-2.5 text-rose-700 font-bold">FAZ JUS A 30% (PERICULOSO)</td>
+                          </tr>
+                          <tr className="hover:bg-slate-50">
+                            <td className="p-2.5 font-bold border-r border-slate-200">GHE Almoxarifado Inflamáveis</td>
+                            <td className="p-2.5 border-r border-slate-200">Armazenamento líquidos inflamáveis &gt; 200L</td>
+                            <td className="p-2.5 font-mono text-rose-800 border-r border-slate-200">Anexo 2</td>
+                            <td className="p-2.5 border-r border-slate-200">Bacia de contenção e raio de 7,5m</td>
+                            <td className="p-2.5 text-rose-700 font-bold">FAZ JUS A 30% (PERICULOSO)</td>
+                          </tr>
+                          <tr className="hover:bg-slate-50">
+                            <td className="p-2.5 font-bold border-r border-slate-200">GHE Linha de Produção</td>
+                            <td className="p-2.5 border-r border-slate-200">Operação mecânica contínua</td>
+                            <td className="p-2.5 text-slate-500 border-r border-slate-200">Sem enquadramento</td>
+                            <td className="p-2.5 border-r border-slate-200">Fora de área de risco</td>
+                            <td className="p-2.5 text-emerald-700 font-bold">NÃO PERICULOSO</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 </div>
               )}

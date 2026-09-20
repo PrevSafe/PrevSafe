@@ -382,78 +382,80 @@ export const SiteContentView: React.FC<{ onNavigate: (view: string) => void }> =
             </p>
           </div>
         ) : (
-          <table className="w-full text-left text-sm">
-            <thead className="bg-slate-950/60 text-slate-400 text-[11px] uppercase tracking-wider border-b border-slate-800">
-              <tr>
-                <th className="py-3 px-4">Título</th>
-                <th className="py-3 px-4 hidden md:table-cell">Tipo</th>
-                <th className="py-3 px-4 hidden lg:table-cell">Categoria</th>
-                <th className="py-3 px-4">Status</th>
-                <th className="py-3 px-4 text-right">Ações</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-800/70">
-              {filtrados.map(p => (
-                <tr key={p.id} className="hover:bg-slate-800/30">
-                  <td className="py-3 px-4">
-                    <p className="font-semibold text-slate-100">{p.titulo}</p>
-                    <p className="text-[11px] text-slate-500 font-mono mt-0.5">
-                      {p.tipo === 'ARTIGO' ? '/atualizacoes/' : '/servicos/'}{p.slug}
-                    </p>
-                  </td>
-                  <td className="py-3 px-4 hidden md:table-cell text-slate-400">
-                    {p.tipo === 'ARTIGO' ? 'Publicação' : 'Serviço'}
-                  </td>
-                  <td className="py-3 px-4 hidden lg:table-cell text-slate-400">{p.categoria || '—'}</td>
-                  <td className="py-3 px-4">
-                    <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${
-                      p.status === 'PUBLICADO'
-                        ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-600/40'
-                        : 'bg-slate-700/40 text-slate-300 border border-slate-600/40'
-                    }`}>
-                      {p.status === 'PUBLICADO' ? 'No ar' : 'Rascunho'}
-                    </span>
-                  </td>
-                  <td className="py-3 px-4">
-                    <div className="flex items-center justify-end gap-1">
-                      {p.status === 'PUBLICADO' && (
-                        <a
-                          href={`${p.tipo === 'ARTIGO' ? '/atualizacoes/' : '/servicos/'}${p.slug}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          title="Abrir no site"
-                          className="p-2 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-emerald-400 transition"
-                        >
-                          <ExternalLink className="w-4 h-4" />
-                        </a>
-                      )}
-                      <button
-                        onClick={() => alternarPublicacao(p)}
-                        title={p.status === 'PUBLICADO' ? 'Tirar do ar' : 'Publicar'}
-                        className="p-2 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-amber-400 transition"
-                      >
-                        {p.status === 'PUBLICADO' ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                      </button>
-                      <button
-                        onClick={() => abrirEdicao(p)}
-                        title="Editar"
-                        className="p-2 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-indigo-400 transition"
-                      >
-                        <Edit3 className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => excluir(p)}
-                        title="Excluir"
-                        className="p-2 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-rose-400 transition"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </td>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-sm">
+              <thead className="bg-slate-950/60 text-slate-400 text-[11px] uppercase tracking-wider border-b border-slate-800">
+                <tr>
+                  <th className="py-3 px-4">Título</th>
+                  <th className="py-3 px-4 hidden md:table-cell">Tipo</th>
+                  <th className="py-3 px-4 hidden lg:table-cell">Categoria</th>
+                  <th className="py-3 px-4">Status</th>
+                  <th className="py-3 px-4 text-right">Ações</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-slate-800/70">
+                {filtrados.map(p => (
+                  <tr key={p.id} className="hover:bg-slate-800/30">
+                    <td className="py-3 px-4">
+                      <p className="font-semibold text-slate-100">{p.titulo}</p>
+                      <p className="text-[11px] text-slate-500 font-mono mt-0.5">
+                        {p.tipo === 'ARTIGO' ? '/atualizacoes/' : '/servicos/'}{p.slug}
+                      </p>
+                    </td>
+                    <td className="py-3 px-4 hidden md:table-cell text-slate-400">
+                      {p.tipo === 'ARTIGO' ? 'Publicação' : 'Serviço'}
+                    </td>
+                    <td className="py-3 px-4 hidden lg:table-cell text-slate-400">{p.categoria || '—'}</td>
+                    <td className="py-3 px-4">
+                      <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${
+                        p.status === 'PUBLICADO'
+                          ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-600/40'
+                          : 'bg-slate-700/40 text-slate-300 border border-slate-600/40'
+                      }`}>
+                        {p.status === 'PUBLICADO' ? 'No ar' : 'Rascunho'}
+                      </span>
+                    </td>
+                    <td className="py-3 px-4">
+                      <div className="flex items-center justify-end gap-1">
+                        {p.status === 'PUBLICADO' && (
+                          <a
+                            href={`${p.tipo === 'ARTIGO' ? '/atualizacoes/' : '/servicos/'}${p.slug}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            title="Abrir no site"
+                            className="p-2 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-emerald-400 transition"
+                          >
+                            <ExternalLink className="w-4 h-4" />
+                          </a>
+                        )}
+                        <button
+                          onClick={() => alternarPublicacao(p)}
+                          title={p.status === 'PUBLICADO' ? 'Tirar do ar' : 'Publicar'}
+                          className="p-2 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-amber-400 transition"
+                        >
+                          {p.status === 'PUBLICADO' ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                        </button>
+                        <button
+                          onClick={() => abrirEdicao(p)}
+                          title="Editar"
+                          className="p-2 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-indigo-400 transition"
+                        >
+                          <Edit3 className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => excluir(p)}
+                          title="Excluir"
+                          className="p-2 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-rose-400 transition"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
 

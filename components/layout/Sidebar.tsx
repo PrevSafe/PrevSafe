@@ -178,7 +178,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         { 
           id: 'epi-management', 
           label: 'Gestão de EPI & Biometria (NR-06)', 
-          icon: ShieldCheck, 
+          icon: ShieldCheck,
           code: '200',
           badge: 'NR-06',
           badgeColor: 'bg-amber-500',
@@ -320,10 +320,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     <div className="flex flex-col h-full bg-slate-950 text-slate-200">
       {/* Sidebar Header with Close Button */}
       <div className="p-4 border-b border-slate-800 bg-slate-900/80 flex items-center justify-between">
-        <div className="flex items-center space-x-2.5">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-700 flex items-center justify-center shadow-md shadow-emerald-950/40">
-            <ShieldCheck className="w-5 h-5 text-white" />
-          </div>
+        <div className="min-w-0">
           <div>
             <div className="text-sm font-bold text-white flex items-center space-x-1.5">
               <span>PrevSafe</span>

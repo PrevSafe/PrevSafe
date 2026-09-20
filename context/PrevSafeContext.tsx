@@ -6952,6 +6952,14 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     resetDatabaseToSeed,
     runDailyJobSimulation
   }), [
+    isAuthenticated,
+    isAuthLoading,
+    login,
+    logout,
+    updateOrganization,
+    setActiveClientId,
+    setCurrentProfile,
+    setIsAuthenticated,
     currentProfile,
     switchRole,
     organization,

@@ -2073,28 +2073,30 @@ export const AccidentIncidentReportView: React.FC<AccidentIncidentReportViewProp
                   <div className="bg-slate-100 px-3 py-1.5 font-bold text-[11px] uppercase border-b border-slate-300">
                     5. Plano de Ação Corretivo e Preventivo (5W2H - NR-01)
                   </div>
-                  <table className="w-full text-left text-[11px] border-collapse">
-                    <thead>
-                      <tr className="bg-slate-50 border-b border-slate-300 text-slate-700">
-                        <th className="p-2">O Que</th>
-                        <th className="p-2">Por Que</th>
-                        <th className="p-2">Quem</th>
-                        <th className="p-2">Prazo</th>
-                        <th className="p-2">Status</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-200">
-                      {selectedIncidentForPrint.action_plan_5w2h?.map((act) => (
-                        <tr key={act.id}>
-                          <td className="p-2 font-semibold">{act.what}</td>
-                          <td className="p-2">{act.why}</td>
-                          <td className="p-2 font-semibold">{act.who_responsible}</td>
-                          <td className="p-2 font-mono">{act.when_deadline}</td>
-                          <td className="p-2">{act.status}</td>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left text-[11px] border-collapse">
+                      <thead>
+                        <tr className="bg-slate-50 border-b border-slate-300 text-slate-700">
+                          <th className="p-2">O Que</th>
+                          <th className="p-2">Por Que</th>
+                          <th className="p-2">Quem</th>
+                          <th className="p-2">Prazo</th>
+                          <th className="p-2">Status</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody className="divide-y divide-slate-200">
+                        {selectedIncidentForPrint.action_plan_5w2h?.map((act) => (
+                          <tr key={act.id}>
+                            <td className="p-2 font-semibold">{act.what}</td>
+                            <td className="p-2">{act.why}</td>
+                            <td className="p-2 font-semibold">{act.who_responsible}</td>
+                            <td className="p-2 font-mono">{act.when_deadline}</td>
+                            <td className="p-2">{act.status}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               )}
 

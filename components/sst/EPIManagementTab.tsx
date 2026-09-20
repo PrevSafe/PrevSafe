@@ -953,54 +953,56 @@ export const EPIManagementTab: React.FC<EPIManagementTabProps> = ({ selectedClie
             {/* Deliveries Lines Table */}
             <div>
               <p className="font-bold text-slate-900 mb-2 text-xs uppercase">Relação de Equipamentos Fornecidos:</p>
-              <table className="w-full border-collapse border border-slate-400 text-[10px]">
-                <thead>
-                  <tr className="bg-slate-200 text-slate-800 font-bold text-left">
-                    <th className="border border-slate-400 p-1.5 w-16">Data</th>
-                    <th className="border border-slate-400 p-1.5 w-12 text-center">Qtd.</th>
-                    <th className="border border-slate-400 p-1.5 w-16 text-center">Nº CA</th>
-                    <th className="border border-slate-400 p-1.5">Descrição do EPI e Fabricante</th>
-                    <th className="border border-slate-400 p-1.5 w-24">Motivo</th>
-                    <th className="border border-slate-400 p-1.5 w-36 text-center">Assinatura do Empregado</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {/* Rows filled with existing deliveries or blank lines */}
-                  {(sheetEmployeeId ? clientDeliveries.filter(d => d.employee_id === sheetEmployeeId) : clientDeliveries.slice(0, 5)).map((del, idx) => (
-                    <tr key={del.id || idx} className="border-b border-slate-300">
-                      <td className="border border-slate-400 p-1.5 font-mono">{del.delivery_date}</td>
-                      <td className="border border-slate-400 p-1.5 text-center">{del.quantity}</td>
-                      <td className="border border-slate-400 p-1.5 text-center font-mono font-bold">{del.ca_number}</td>
-                      <td className="border border-slate-400 p-1.5">
-                        <div className="font-semibold">{del.epi_name}</div>
-                        <div className="text-slate-500 text-[9px]">{del.manufacturer}</div>
-                      </td>
-                      <td className="border border-slate-400 p-1.5">{del.delivery_reason}</td>
-                      <td className="border border-slate-400 p-1.5 text-center">
-                        {del.delivery_method === 'FACIAL_BIOMETRIC' ? (
-                          <span className="text-[9px] text-emerald-800 font-bold font-mono">
-                            [AUTENTICADO VIA BIOMETRIA FACIAL]
-                          </span>
-                        ) : (
-                          <span className="text-slate-400 text-[9px]">______________________</span>
-                        )}
-                      </td>
+              <div className="overflow-x-auto">
+                <table className="w-full border-collapse border border-slate-400 text-[10px]">
+                  <thead>
+                    <tr className="bg-slate-200 text-slate-800 font-bold text-left">
+                      <th className="border border-slate-400 p-1.5 w-16">Data</th>
+                      <th className="border border-slate-400 p-1.5 w-12 text-center">Qtd.</th>
+                      <th className="border border-slate-400 p-1.5 w-16 text-center">Nº CA</th>
+                      <th className="border border-slate-400 p-1.5">Descrição do EPI e Fabricante</th>
+                      <th className="border border-slate-400 p-1.5 w-24">Motivo</th>
+                      <th className="border border-slate-400 p-1.5 w-36 text-center">Assinatura do Empregado</th>
                     </tr>
-                  ))}
-
-                  {/* Empty rows for manual handwritten entry */}
-                  {Array.from({ length: Math.max(3, 8 - (sheetEmployeeId ? clientDeliveries.filter(d => d.employee_id === sheetEmployeeId).length : 5)) }).map((_, i) => (
-                    <tr key={`blank-${i}`} className="h-9">
-                      <td className="border border-slate-400 p-1.5"></td>
-                      <td className="border border-slate-400 p-1.5"></td>
-                      <td className="border border-slate-400 p-1.5"></td>
-                      <td className="border border-slate-400 p-1.5"></td>
-                      <td className="border border-slate-400 p-1.5"></td>
-                      <td className="border border-slate-400 p-1.5 text-center text-slate-400"></td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {/* Rows filled with existing deliveries or blank lines */}
+                    {(sheetEmployeeId ? clientDeliveries.filter(d => d.employee_id === sheetEmployeeId) : clientDeliveries.slice(0, 5)).map((del, idx) => (
+                      <tr key={del.id || idx} className="border-b border-slate-300">
+                        <td className="border border-slate-400 p-1.5 font-mono">{del.delivery_date}</td>
+                        <td className="border border-slate-400 p-1.5 text-center">{del.quantity}</td>
+                        <td className="border border-slate-400 p-1.5 text-center font-mono font-bold">{del.ca_number}</td>
+                        <td className="border border-slate-400 p-1.5">
+                          <div className="font-semibold">{del.epi_name}</div>
+                          <div className="text-slate-500 text-[9px]">{del.manufacturer}</div>
+                        </td>
+                        <td className="border border-slate-400 p-1.5">{del.delivery_reason}</td>
+                        <td className="border border-slate-400 p-1.5 text-center">
+                          {del.delivery_method === 'FACIAL_BIOMETRIC' ? (
+                            <span className="text-[9px] text-emerald-800 font-bold font-mono">
+                              [AUTENTICADO VIA BIOMETRIA FACIAL]
+                            </span>
+                          ) : (
+                            <span className="text-slate-400 text-[9px]">______________________</span>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+  
+                    {/* Empty rows for manual handwritten entry */}
+                    {Array.from({ length: Math.max(3, 8 - (sheetEmployeeId ? clientDeliveries.filter(d => d.employee_id === sheetEmployeeId).length : 5)) }).map((_, i) => (
+                      <tr key={`blank-${i}`} className="h-9">
+                        <td className="border border-slate-400 p-1.5"></td>
+                        <td className="border border-slate-400 p-1.5"></td>
+                        <td className="border border-slate-400 p-1.5"></td>
+                        <td className="border border-slate-400 p-1.5"></td>
+                        <td className="border border-slate-400 p-1.5"></td>
+                        <td className="border border-slate-400 p-1.5 text-center text-slate-400"></td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
 
             {/* Bottom Signatures Block */}

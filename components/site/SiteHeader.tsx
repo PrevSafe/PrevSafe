@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { Shield, Menu, X, ArrowRight, LogIn } from 'lucide-react';
+import { Menu, X, ArrowRight, LogIn } from 'lucide-react';
 
 const LINKS = [
   { href: '/servicos', label: 'Serviços' },
@@ -19,11 +19,8 @@ export function SiteHeader() {
     <header className="sticky top-0 z-50 bg-white/90 backdrop-blur border-b border-slate-200">
       <div className="mx-auto max-w-[76rem] px-4 sm:px-6">
         <div className="flex items-center justify-between h-16">
-          <Link href="/" className="flex items-center gap-2.5 shrink-0" aria-label="PrevSafe, página inicial">
-            <span className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-700 flex items-center justify-center shadow-sm">
-              <Shield className="w-5 h-5 text-white" aria-hidden="true" />
-            </span>
-            <span className="font-bold text-lg tracking-tight text-slate-900">PrevSafe</span>
+          <Link href="/" className="shrink-0" aria-label="PrevSafe, página inicial">
+            <span className="font-bold text-xl tracking-tight text-slate-900">PrevSafe</span>
           </Link>
 
           <nav className="hidden lg:flex items-center gap-7" aria-label="Navegação principal">

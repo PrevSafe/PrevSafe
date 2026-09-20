@@ -83,3 +83,64 @@
 .accent-tenant-primary {
   accent-color: var(--tenant-primary);
 }
+
+
+/* ===========================================================================
+   Responsividade — rede de proteção contra corte lateral
+   ===========================================================================
+   O sistema tem telas densas (tabelas de inventário de riscos, matrizes de
+   exames, códigos do eSocial). No celular, qualquer elemento mais largo que a
+   viewport empurrava o layout e o excedente era cortado, porque o painel
+   principal vive dentro de um container com overflow-hidden.
+
+   As regras abaixo tratam as causas que não dá para resolver componente a
+   componente. */
+
+html,
+body {
+  /* Impede que um único elemento largo crie rolagem horizontal na página
+     inteira. A rolagem certa acontece dentro da tabela, não no documento. */
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* Conteúdo sem espaço para quebrar — hash SHA-256, URL de verificação, CNPJ,
+   código de evento do eSocial — esticava o container até cortar a tela.
+   Quebrar dentro da palavra é preferível a perder o conteúdo de vista. */
+.break-anywhere,
+[class*='font-mono'] {
+  overflow-wrap: anywhere;
+}
+
+/* Tabela nunca deve ser mais estreita que seu conteúdo: ela rola dentro do
+   próprio container (garantido pelos wrappers overflow-x-auto) em vez de
+   espremer as colunas a ponto de ficarem ilegíveis. */
+.overflow-x-auto > table {
+  min-width: max-content;
+}
+
+@media (max-width: 640px) {
+  /* Rolagem horizontal com inércia no iOS, para as tabelas largas. */
+  .overflow-x-auto {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Modal ocupando a tela toda no celular: com margem lateral, sobrava pouco
+     espaço útil para formulários longos como o de CAT e o de ASO. */
+  .modal-mobile-full {
+    max-width: 100%;
+    border-radius: 1rem;
+  }
+}
+
+/* Respeita quem pediu menos animação no sistema operacional. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

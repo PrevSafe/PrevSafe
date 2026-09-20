@@ -424,7 +424,7 @@ export const WorkOrdersOSTab: React.FC<WorkOrdersOSTabProps> = ({ selectedClient
                   <span className="w-4 h-4 rounded-full bg-amber-500/20 text-amber-400 inline-flex items-center justify-center text-[10px]">2</span>
                   Inventário de Riscos Ocupacionais (PGR / NR-01):
                 </h4>
-                <div className="bg-slate-950 rounded-lg border border-slate-800/80 overflow-hidden">
+                <div className="bg-slate-950 rounded-lg border border-slate-800/80 overflow-x-auto">
                   <table className="w-full text-left text-[11px] text-slate-300">
                     <thead className="bg-slate-900 text-slate-400 uppercase text-[9px] border-b border-slate-800">
                       <tr>

@@ -1306,7 +1306,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
             </button>
           </div>
 
-          <div className="rounded-2xl bg-slate-900/60 border border-slate-800 overflow-hidden shadow-sm">
+          <div className="rounded-2xl bg-slate-900/60 border border-slate-800 overflow-x-auto shadow-sm">
             <table className="w-full text-left border-collapse text-xs">
               <thead>
                 <tr className="border-b border-slate-800 bg-slate-950/70 text-slate-400 uppercase tracking-wider font-semibold text-[10px]">

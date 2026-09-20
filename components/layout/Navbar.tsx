@@ -5,7 +5,6 @@ import { usePrevSafe } from '@/context/PrevSafeContext';
 import { RoleType } from '@/types';
 import { formatTime } from '@/lib/utils';
 import { 
-  Shield, 
   Bell, 
   Sparkles, 
   Smartphone, 
@@ -141,15 +140,15 @@ export const Navbar: React.FC<NavbarProps> = ({
       )}
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between gap-2 h-16">
           {/* Menu Lateral Toggle Button & Logo & Brand */}
-          <div className="flex items-center space-x-2 sm:space-x-3">
+          <div className="flex items-center space-x-2 sm:space-x-3 min-w-0 flex-1 lg:flex-initial">
             {/* Sidebar Menu Toggle Button (Desktop & Mobile) */}
             {toggleMenu && (
               <button
                 type="button"
                 onClick={toggleMenu}
-                className={`p-2 rounded-xl border transition-all duration-200 active:scale-95 touch-manipulation min-w-[42px] min-h-[42px] flex items-center justify-center space-x-2 ${
+                className={`p-2 rounded-xl border transition-all duration-200 active:scale-95 touch-manipulation min-w-[42px] min-h-[42px] shrink-0 flex items-center justify-center space-x-2 ${
                   menuIsOpen 
                     ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 shadow-sm shadow-emerald-950/50' 
                     : 'text-slate-300 hover:text-white bg-slate-800/80 hover:bg-slate-800 border-slate-700/80'
@@ -171,14 +170,11 @@ export const Navbar: React.FC<NavbarProps> = ({
               </button>
             )}
 
-            <div className="flex items-center space-x-2.5 sm:space-x-3 cursor-pointer" onClick={() => setActiveView('dashboard-exec')}>
-              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-700 flex items-center justify-center shadow-lg shadow-emerald-950/40 flex-shrink-0">
-                <Shield className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-              </div>
-              <div>
-                <div className="flex items-center space-x-1.5 sm:space-x-2">
-                  <span className="font-bold text-base sm:text-lg tracking-tight text-white">PrevSafe</span>
-                  <span className="text-[9px] sm:text-[10px] uppercase font-mono tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-1.5 py-0.5 rounded">V1.0 SST</span>
+            <div className="flex items-center cursor-pointer min-w-0" onClick={() => setActiveView('dashboard-exec')}>
+              <div className="min-w-0">
+                <div className="flex items-center space-x-1.5 sm:space-x-2 min-w-0">
+                  <span className="font-bold text-base sm:text-lg tracking-tight text-white truncate">PrevSafe</span>
+                  <span className="hidden sm:inline-block text-[10px] uppercase font-mono tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-1.5 py-0.5 rounded shrink-0">V1.0 SST</span>
                 </div>
                 <p className="text-[10px] sm:text-[11px] text-slate-400 hidden sm:block">Gestão Integrada de Serviços Contratados</p>
               </div>
@@ -222,7 +218,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
 
           {/* Right Action Controls */}
-          <div className="flex items-center space-x-2 sm:space-x-3">
+          <div className="flex items-center space-x-1.5 sm:space-x-3 shrink-0">
             {syncBadge && (
               <div
                 title={syncBadge.title}

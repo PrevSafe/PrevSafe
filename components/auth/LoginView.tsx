@@ -130,12 +130,9 @@ export const LoginView: React.FC<LoginViewProps> = ({ onSuccess, onNavigateHelp 
 
           {/* Top Brand Info */}
           <div>
-            <div className="flex items-center space-x-3 mb-6">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-700 flex items-center justify-center shadow-lg shadow-emerald-950/50 flex-shrink-0">
-                <Shield className="w-7 h-7 text-white" />
-              </div>
+            <div className="mb-6">
               <div>
-                <div className="flex items-center space-x-2">
+                <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
                   <span className="text-xl font-bold tracking-tight text-white">PrevSafe</span>
                   <span className="text-[10px] uppercase font-mono tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded-full">
                     V1.0 SST

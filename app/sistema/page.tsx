@@ -353,8 +353,12 @@ export default function Home() {
         />
 
         {/* Main Content Pane with Bento Frame */}
-        <main className="flex-1 overflow-y-auto p-3.5 sm:p-6 lg:p-7 pb-24 md:pb-7 bg-slate-950">
-          <div className="max-w-7xl mx-auto space-y-6">
+        {/* min-w-0: sem isto, um filho flex nao encolhe abaixo do proprio
+            conteudo, e o excedente era cortado pelo overflow-hidden do
+            container acima em vez de rolar. Era a causa da tela aparecer
+            cortada nos cantos no celular. */}
+        <main className="flex-1 min-w-0 overflow-y-auto overflow-x-hidden p-3.5 sm:p-6 lg:p-7 pb-24 md:pb-7 bg-slate-950">
+          <div className="max-w-7xl mx-auto w-full min-w-0 space-y-6">
             {renderActiveView()}
           </div>
         </main>

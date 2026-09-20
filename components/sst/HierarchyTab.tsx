@@ -521,7 +521,7 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
 
       {/* Units Table */}
       {activeSubTab === 'UNITS' && (
-        <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-lg" id="units-table">
+        <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-x-auto shadow-lg" id="units-table">
           <table className="w-full text-left text-xs text-slate-300">
             <thead className="bg-slate-950 text-slate-400 uppercase text-[10px] tracking-wider border-b border-slate-800">
               <tr>
