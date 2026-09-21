@@ -43,6 +43,14 @@ import {
   Zap
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import {
+  obterLocalizacao,
+  consultarPermissaoLocalizacao,
+  descreverPrecisao,
+  formatarCoordenada,
+  type Localizacao,
+  type StatusLocalizacao,
+} from '@/lib/geolocalizacao';
 import { 
   saveInspectionSession, 
   loadInspectionSession, 
@@ -240,11 +248,14 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
   const [repRole, setRepRole] = useState('');
   const [repCpf, setRepCpf] = useState('');
   const [isSigned, setIsSigned] = useState(false);
-  const [gpsLocation, setGpsLocation] = useState<{ lat: number; lng: number; precision: string }>({
-    lat: -22.2472,
-    lng: -43.7011,
-    precision: '± 4.2 metros (GPS Alta Precisão)'
-  });
+  // Comeca SEM coordenada. Antes o estado inicial era um ponto fixo no codigo
+  // (-22.2472, -43.7011) com precisao "± 4.2 metros" escrita a mao, e o botao
+  // de atualizar sorteava um deslocamento em volta dele. Esse valor ia para o
+  // relatorio de vistoria: afirmava, num documento assinado, que alguem esteve
+  // num lugar onde nao esteve.
+  const [gpsLocation, setGpsLocation] = useState<Localizacao | null>(null);
+  const [gpsStatus, setGpsStatus] = useState<StatusLocalizacao>('NAO_OBTIDA');
+  const [gpsMensagem, setGpsMensagem] = useState<string>('Localização ainda não coletada.');
 
   // Refresh Storage Stats & Queue
   const refreshStorageData = useCallback(async () => {
@@ -307,7 +318,20 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
           if (cached.repCpf) setRepCpf(cached.repCpf);
           if (cached.repRole) setRepRole(cached.repRole);
           if (typeof cached.isSigned === 'boolean') setIsSigned(cached.isSigned);
-          if (cached.gpsLocation) setGpsLocation(cached.gpsLocation);
+          // Sessao salva ANTES desta correcao guarda a coordenada fixa que o
+          // sistema inventava (campos lat/lng). Ela e descartada de proposito:
+          // migrar carregaria a mentira adiante, e uma coordenada falsa num
+          // relatorio de vistoria e pior que coordenada nenhuma.
+          const salva: any = cached.gpsLocation;
+          if (salva && typeof salva.latitude === 'number' && typeof salva.longitude === 'number') {
+            setGpsLocation(salva as Localizacao);
+            setGpsStatus('OBTIDA');
+            setGpsMensagem('Localização recuperada da sessão salva neste aparelho.');
+          } else if (salva) {
+            setGpsLocation(null);
+            setGpsStatus('NAO_OBTIDA');
+            setGpsMensagem('A localização salva nesta sessão era de uma versão anterior e foi descartada. Colete novamente.');
+          }
           
           if (cached.lastSavedAt) {
             const date = new Date(cached.lastSavedAt);
@@ -564,15 +588,17 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
     }
   };
 
-  // Action: Collect GPS
+  // Coleta a posicao real do aparelho. Falha nao vira coordenada aproximada:
+  // vira motivo na tela, e o relatorio sai sem coordenada.
   const handleRefreshGps = async () => {
-    const newLoc = {
-      lat: -22.2472 + (Math.random() - 0.5) * 0.001,
-      lng: -43.7011 + (Math.random() - 0.5) * 0.001,
-      precision: `± ${(3.5 + Math.random()).toFixed(1)} metros (Satélites GLONASS/GPS)`
-    };
-    setGpsLocation(newLoc);
-    await persistSessionNow(checklist, photos, isSigned, newLoc);
+    setGpsStatus('OBTENDO');
+    setGpsMensagem('Obtendo localização do aparelho...');
+
+    const r = await obterLocalizacao();
+    setGpsStatus(r.status);
+    setGpsMensagem(r.mensagem);
+    setGpsLocation(r.localizacao);
+    await persistSessionNow(checklist, photos, isSigned, r.localizacao);
   };
 
   // Action: Toggle Signature
@@ -695,7 +721,17 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
       photos: photos.map(p => ({ url: p.url, caption: `${p.nr_ref || ''} [${p.sector || ''}]: ${p.caption}`, timestamp: new Date().toISOString() })),
       client_signature: { name: `${repName} (CPF ${repCpf} - ${repRole})`, signed_at: new Date().toISOString() },
       inspection_notes: inspectionText,
-      geo_location: { latitude: gpsLocation.lat, longitude: gpsLocation.lng, label: `${client?.trade_name} - ${client?.city}/${client?.state}` }
+      // Sem posicao, o campo nao vai. Antes ia sempre, com a coordenada fixa
+      // do codigo - o relatorio afirmava um local que ninguem mediu.
+      geo_location: gpsLocation
+        ? {
+            latitude: gpsLocation.latitude,
+            longitude: gpsLocation.longitude,
+            label:
+              `${client?.trade_name} - ${client?.city}/${client?.state}` +
+              ` (${descreverPrecisao(gpsLocation.precisaoMetros)})`,
+          }
+        : undefined
     };
 
     // Find Stage 2 (Vistoria de Campo) or Stage 1
@@ -714,7 +750,12 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
       document_type: 'RELATÓRIO',
       file_name: `relatorio_vistoria_${activeOS.os_number.toLowerCase().replace('-', '_')}.pdf`,
       file_size: 3450000,
-      notes: `Vistoria de campo executada por ${currentProfile.full_name}, acompanhada e assinada por ${repName} (${repRole}). Coordenadas GPS: ${gpsLocation.lat.toFixed(4)}, ${gpsLocation.lng.toFixed(4)}.`,
+      notes:
+        `Vistoria de campo executada por ${currentProfile.full_name}, acompanhada e assinada por ${repName} (${repRole}). ` +
+        (gpsLocation
+          ? `Coordenadas obtidas no local: ${formatarCoordenada(gpsLocation)} (${descreverPrecisao(gpsLocation.precisaoMetros)}), ` +
+            `em ${new Date(gpsLocation.obtidaEm).toLocaleString('pt-BR')}.`
+          : 'Coordenadas não registradas: a localização do aparelho não pôde ser obtida durante a vistoria.'),
       is_client_released: true
     });
 
@@ -1154,21 +1195,57 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
                 <div className="p-2.5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-xl">
                   <Crosshair className="w-5 h-5" />
                 </div>
-                <div>
-                  <div className="text-xs font-bold text-white">Geolocalização de Campo Coletada</div>
-                  <p className="text-[11px] text-slate-400 font-mono mt-0.5">
-                    Lat: {gpsLocation.lat.toFixed(4)} • Lng: {gpsLocation.lng.toFixed(4)} ({gpsLocation.precision})
-                  </p>
+                <div className="min-w-0">
+                  <div className="text-xs font-bold text-white">
+                    {gpsLocation ? 'Localização do local da vistoria' : 'Localização não coletada'}
+                  </div>
+                  {gpsLocation ? (
+                    <>
+                      <p className="text-[11px] text-slate-300 font-mono mt-0.5 break-all">
+                        {formatarCoordenada(gpsLocation)}
+                      </p>
+                      <p className="text-[10px] text-slate-400 mt-0.5">
+                        {descreverPrecisao(gpsLocation.precisaoMetros)} ·{' '}
+                        {new Date(gpsLocation.obtidaEm).toLocaleString('pt-BR')}
+                      </p>
+                      {gpsLocation.precisaoMetros > 100 && (
+                        <p className="text-[10px] text-amber-400 mt-1">
+                          Precisão baixa. Verifique se o GPS está ligado e tente ao ar livre.
+                        </p>
+                      )}
+                    </>
+                  ) : (
+                    <p
+                      className={`text-[11px] mt-0.5 ${
+                        gpsStatus === 'PERMISSAO_NEGADA' ? 'text-rose-400' : 'text-slate-400'
+                      }`}
+                    >
+                      {gpsMensagem}
+                    </p>
+                  )}
                 </div>
               </div>
 
               <button
                 type="button"
                 onClick={handleRefreshGps}
-                className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-slate-300 rounded-xl font-semibold border border-slate-800 transition flex items-center space-x-1"
+                disabled={gpsStatus === 'OBTENDO'}
+                className={`px-3 py-1.5 rounded-xl font-semibold border transition flex items-center space-x-1.5 shrink-0 ${
+                  gpsStatus === 'OBTENDO'
+                    ? 'bg-slate-900 text-slate-500 border-slate-800 cursor-wait'
+                    : gpsLocation
+                      ? 'bg-slate-900 hover:bg-slate-800 text-slate-300 border-slate-800'
+                      : 'bg-emerald-600 hover:bg-emerald-500 text-white border-emerald-500'
+                }`}
               >
-                <RefreshCw className="w-3 h-3" />
-                <span>Atualizar GPS</span>
+                <RefreshCw className={`w-3 h-3 ${gpsStatus === 'OBTENDO' ? 'animate-spin' : ''}`} />
+                <span>
+                  {gpsStatus === 'OBTENDO'
+                    ? 'Obtendo...'
+                    : gpsLocation
+                      ? 'Atualizar'
+                      : 'Obter localização'}
+                </span>
               </button>
             </div>
 

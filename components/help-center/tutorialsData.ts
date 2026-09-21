@@ -535,7 +535,7 @@ export const TUTORIALS_DATA: TutorialItem[] = [
           actor: 'Técnico de Campo',
           actorColor: 'blue',
           title: '2. Visita Técnica & Medições',
-          description: 'Inspeção in loco, fotos geolocalizadas e dosimetrias.',
+          description: 'Inspeção in loco com registro de localização, fotos e dosimetrias.',
           output: 'Relatório de Campo no PWA'
         },
         {

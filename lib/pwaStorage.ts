@@ -33,11 +33,19 @@ export interface OfflineInspectionSession {
   repCpf: string;
   repRole: string;
   isSigned: boolean;
+  /**
+   * Localizacao da vistoria, ou null quando nao foi possivel obter.
+   * Null e um estado legitimo: antes havia sempre uma coordenada, porque ela
+   * era constante no codigo.
+   */
   gpsLocation: {
-    lat: number;
-    lng: number;
-    precision: string;
-  };
+    latitude: number;
+    longitude: number;
+    /** Raio de incerteza em metros, como informado pelo aparelho. */
+    precisaoMetros: number;
+    /** Momento do fixo, informado pelo aparelho. */
+    obtidaEm: string;
+  } | null;
   lastSavedAt: string;
   isSynced: boolean;
 }

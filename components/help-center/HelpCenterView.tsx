@@ -110,7 +110,7 @@ export const HelpCenterView: React.FC<HelpCenterViewProps> = ({ onNavigate }) =>
     },
     {
       title: '⚡ Trilha de Campo & Coleta Offline',
-      desc: 'Operação do PWA no smartphone, dosimetrias NHO e fotos geolocalizadas.',
+      desc: 'Operação do PWA no smartphone, dosimetrias NHO, fotos e registro de localização da vistoria.',
       tutId: 'tut-field-pwa-offline',
       badge: 'Técnico'
     },
