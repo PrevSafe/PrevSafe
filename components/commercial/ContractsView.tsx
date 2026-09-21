@@ -3,7 +3,8 @@
 import React, { useState } from 'react';
 import { usePrevSafe } from '@/context/PrevSafeContext';
 import { Contract } from '@/types';
-import { formatDate, formatDateTime } from '@/lib/utils';
+import { formatDate, formatDateTime, formatCurrency } from '@/lib/utils';
+import { montarTermosDoContrato, resumirServicos } from '@/lib/contratoTermos';
 import { 
   FileSignature, 
   CheckCircle2, 
@@ -32,7 +33,9 @@ export const ContractsView: React.FC<{ onNavigate: (view: string) => void }> = (
     updateContract,
     deleteContract,
     signContract, 
+    createContractFromProposal,
     serviceOrders = [], 
+    organization,
     currentProfile 
   } = usePrevSafe();
 
@@ -48,36 +51,90 @@ export const ContractsView: React.FC<{ onNavigate: (view: string) => void }> = (
   const [signerCpf, setSignerCpf] = useState('');
 
   // Contract form state
+  // Propostas aceitas que ainda nao viraram contrato. E a partir delas que um
+  // contrato deve nascer; criar do zero e a excecao.
+  const propostasAceitasSemContrato = React.useMemo(
+    () => proposals.filter(
+      p => p.status === 'APPROVED' && !contracts.some(c => c.proposal_id === p.id)
+    ),
+    [proposals, contracts]
+  );
+
   const [contractForm, setContractForm] = useState(() => ({
-    client_id: clients?.[0]?.id || '',
+    client_id: '',
+    proposal_id: '',
     title: 'Contrato de Prestação de Serviços SST',
-    total_value: 11000,
+    total_value: 0,
     start_date: new Date().toISOString().split('T')[0],
     end_date: new Date(Date.now() + 365 * 86400000).toISOString().split('T')[0],
-    terms: 'Contrato padrão de assessoria SST em conformidade com as Normas Regulamentadoras do MTE.'
+    services_summary: '',
+    terms: ''
   }));
 
-  const handleOpenNewContract = () => {
+  // `proposta` opcional: quando vem, o formulario abre com os dados dela. Antes
+  // abria sempre com o primeiro cliente da lista, titulo "...SST 2026" e valor
+  // fixo de R$ 12.000 - nada disso tinha relacao com a proposta aceita.
+  const handleOpenNewContract = (proposta?: typeof proposals[number]) => {
+    const inicio = new Date().toISOString().split('T')[0];
+    const fim = new Date(Date.now() + 365 * 86400000).toISOString().split('T')[0];
+    const alvo = proposta || propostasAceitasSemContrato[0];
+    const client = alvo ? clients.find(c => c.id === alvo.client_id) : null;
+
     setContractForm({
-      client_id: clients?.[0]?.id || '',
-      title: 'Contrato de Prestação de Serviços SST 2026',
-      total_value: 12000,
-      start_date: new Date().toISOString().split('T')[0],
-      end_date: new Date(Date.now() + 365 * 86400000).toISOString().split('T')[0],
-      terms: 'Contrato padrão de assessoria SST em conformidade com as Normas Regulamentadoras do MTE.'
+      client_id: alvo?.client_id || '',
+      proposal_id: alvo?.id || '',
+      title: alvo
+        ? `Contrato de Prestação de Serviços SST - ${alvo.title}`
+        : 'Contrato de Prestação de Serviços SST',
+      total_value: alvo?.total || 0,
+      start_date: inicio,
+      end_date: fim,
+      services_summary: alvo ? resumirServicos(alvo) : '',
+      terms: montarTermosDoContrato({
+        client,
+        organization,
+        proposal: alvo || null,
+        valorTotal: alvo?.total,
+        inicioVigencia: inicio,
+        fimVigencia: fim,
+        recorrencia: 'ANNUAL',
+      }),
     });
     setShowNewContractModal(true);
   };
 
+  // Gera o contrato direto da proposta aceita, sem passar pelo formulario.
+  const handleGerarDaProposta = (proposta: typeof proposals[number]) => {
+    try {
+      const criado = createContractFromProposal(proposta.id);
+      setSelectedContract(criado);
+    } catch (err: any) {
+      alert(err?.message || 'Não foi possível gerar o contrato.');
+    }
+  };
+
   const handleOpenEditContract = (c: Contract) => {
     setEditingContract(c);
+    const client = clients.find(cl => cl.id === c.client_id) || null;
     setContractForm({
       client_id: c.client_id,
+      proposal_id: c.proposal_id || '',
       title: c.title,
       total_value: c.total_value,
       start_date: c.start_date.split('T')[0],
       end_date: c.end_date.split('T')[0],
-      terms: 'Contrato padrão de assessoria SST em conformidade com as Normas Regulamentadoras do MTE.'
+      services_summary: c.services_summary || '',
+      // Contratos criados antes deste campo existir nao tem minuta gravada:
+      // geramos a padrao ja preenchida em vez de abrir o campo vazio.
+      terms: c.terms || montarTermosDoContrato({
+        client,
+        organization,
+        proposal: proposals.find(pr => pr.id === c.proposal_id) || null,
+        valorTotal: c.total_value,
+        inicioVigencia: c.start_date,
+        fimVigencia: c.end_date,
+        recorrencia: c.recurrence,
+      }),
     });
   };
 
@@ -94,18 +151,23 @@ export const ContractsView: React.FC<{ onNavigate: (view: string) => void }> = (
         title: contractForm.title,
         total_value: Number(contractForm.total_value) || 0,
         start_date: new Date(contractForm.start_date).toISOString(),
-        end_date: new Date(contractForm.end_date).toISOString()
+        end_date: new Date(contractForm.end_date).toISOString(),
+        // Faltava: o que fosse digitado em Termos e Condicoes era descartado.
+        terms: contractForm.terms,
+        services_summary: contractForm.services_summary
       });
       setEditingContract(null);
     } else {
       const created = createManualContract({
         client_id: contractForm.client_id,
+        proposal_id: contractForm.proposal_id || undefined,
         title: contractForm.title,
         total_value: Number(contractForm.total_value) || 0,
         recurrence: 'ANNUAL',
         start_date: new Date(contractForm.start_date).toISOString(),
         end_date: new Date(contractForm.end_date).toISOString(),
-        services_summary: contractForm.terms
+        services_summary: contractForm.services_summary,
+        terms: contractForm.terms
       });
       setSelectedContract(created);
       setShowNewContractModal(false);
@@ -149,7 +211,7 @@ export const ContractsView: React.FC<{ onNavigate: (view: string) => void }> = (
         <div className="flex items-center space-x-2">
           <button 
             id="btn-new-contract"
-            onClick={handleOpenNewContract}
+            onClick={() => handleOpenNewContract()}
             className="px-4 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-2xl text-xs font-bold shadow-lg shadow-emerald-950/40 transition flex items-center space-x-1.5"
           >
             <Plus className="w-4 h-4" />
@@ -157,6 +219,55 @@ export const ContractsView: React.FC<{ onNavigate: (view: string) => void }> = (
           </button>
         </div>
       </div>
+
+      {propostasAceitasSemContrato.length > 0 && (
+        <div className="bg-indigo-950/30 border border-indigo-500/30 rounded-3xl p-5 space-y-3">
+          <div className="flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-indigo-300 shrink-0" />
+            <span className="text-sm font-bold text-indigo-200">
+              {propostasAceitasSemContrato.length === 1
+                ? 'Uma proposta aceita ainda sem contrato'
+                : `${propostasAceitasSemContrato.length} propostas aceitas ainda sem contrato`}
+            </span>
+          </div>
+          <div className="space-y-2">
+            {propostasAceitasSemContrato.map(prop => {
+              const client = clients.find(c => c.id === prop.client_id);
+              return (
+                <div
+                  key={prop.id}
+                  className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 bg-slate-950/60 border border-slate-800 rounded-2xl"
+                >
+                  <div className="min-w-0">
+                    <div className="text-xs font-semibold text-slate-100 truncate">{prop.title}</div>
+                    <div className="text-[11px] text-slate-400 mt-0.5 truncate">
+                      {prop.proposal_number} · {client?.trade_name || client?.legal_name || 'Cliente'} ·{' '}
+                      <span className="font-mono text-emerald-400">{formatCurrency(prop.total)}</span>
+                      {prop.items?.length ? ` · ${prop.items.length} serviço(s)` : ''}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <button
+                      onClick={() => handleOpenNewContract(prop)}
+                      className="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-semibold border border-slate-700 transition"
+                      title="Abrir o formulário já preenchido com os dados desta proposta"
+                    >
+                      Revisar antes
+                    </button>
+                    <button
+                      onClick={() => handleGerarDaProposta(prop)}
+                      className="px-3 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5"
+                    >
+                      <span>Gerar contrato</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Main Split in Bento Grid style */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
@@ -251,17 +362,25 @@ export const ContractsView: React.FC<{ onNavigate: (view: string) => void }> = (
 
               {/* Contract Cláusulas & Resumo Jurídico */}
               <div className="space-y-2">
-                <span className="text-xs font-semibold uppercase text-slate-400 tracking-wider">Cláusulas e Termos SST</span>
-                <div className="p-4 bg-slate-950/60 border border-slate-800/90 rounded-2xl space-y-2 text-xs text-slate-300 leading-relaxed font-sans max-h-48 overflow-y-auto">
-                  <p>
-                    <strong className="text-indigo-300">DO OBJETO:</strong> O presente instrumento tem por finalidade a prestação de serviços técnicos especializados de Engenharia de Segurança e Medicina do Trabalho, contemplando a elaboração e gestão contínua dos programas previstos nas Normas Regulamentadoras da Portaria MTE (PGR - NR 01, PCMSO - NR 07 e Laudos Técnicos).
-                  </p>
-                  <p>
-                    <strong className="text-indigo-300">DO PRAZO E SLA:</strong> A CONTRATADA compromete-se a cumprir os prazos acordados nas Ordens de Serviço vinculadas, pausando a contagem de SLA estritamente em caso de pendências documentais atribuíveis à CONTRATANTE.
-                  </p>
-                  <p>
-                    <strong className="text-indigo-300">DA CONFIDENCIALIDADE (LGPD):</strong> Todos os prontuários médicos e dados de colaboradores serão tratados com sigilo médico absoluto nos termos da LGPD e resoluções do CFM.
-                  </p>
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-xs font-semibold uppercase text-slate-400 tracking-wider">Cláusulas e Termos SST</span>
+                  {selectedContract.proposal_id && (
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 shrink-0">
+                      {proposals.find(pr => pr.id === selectedContract.proposal_id)?.proposal_number || 'Proposta vinculada'}
+                    </span>
+                  )}
+                </div>
+                {/* A minuta deste contrato. Antes eram tres paragrafos fixos,
+                    identicos em todos os contratos e sem ligacao nenhuma com o
+                    que fosse escrito no campo Termos e Condicoes. */}
+                <div className="p-4 bg-slate-950/60 border border-slate-800/90 rounded-2xl text-xs text-slate-300 leading-relaxed max-h-72 overflow-y-auto">
+                  {selectedContract.terms ? (
+                    <pre className="whitespace-pre-wrap break-words font-sans">{selectedContract.terms}</pre>
+                  ) : (
+                    <p className="text-slate-500">
+                      Este contrato foi criado antes da minuta padrão existir. Clique em Editar para gerar as cláusulas já preenchidas com os dados do cliente e revisá-las.
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -428,13 +547,39 @@ export const ContractsView: React.FC<{ onNavigate: (view: string) => void }> = (
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-300 mb-1">Termos e Condições</label>
+                <div className="flex items-center justify-between gap-2 mb-1">
+                  <label className="block font-semibold text-slate-300">Termos e Condições (minuta do contrato)</label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (contractForm.terms && !confirm('Substituir a minuta atual pela padrão? O texto editado será perdido.')) return;
+                      setContractForm(f => ({
+                        ...f,
+                        terms: montarTermosDoContrato({
+                          client: clients.find(c => c.id === f.client_id) || null,
+                          organization,
+                          proposal: proposals.find(pr => pr.id === f.proposal_id) || null,
+                          valorTotal: Number(f.total_value) || 0,
+                          inicioVigencia: f.start_date,
+                          fimVigencia: f.end_date,
+                          recorrencia: 'ANNUAL',
+                        }),
+                      }));
+                    }}
+                    className="text-[11px] text-indigo-300 hover:text-indigo-200 font-semibold shrink-0"
+                  >
+                    Regerar minuta padrão
+                  </button>
+                </div>
                 <textarea
-                  rows={3}
+                  rows={16}
                   value={contractForm.terms}
                   onChange={(e) => setContractForm({ ...contractForm, terms: e.target.value })}
-                  className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-[11px] text-white font-mono leading-relaxed focus:outline-none focus:border-indigo-500"
                 />
+                <p className="text-[10px] text-slate-500 mt-1">
+                  Minuta padrão: revise com assessoria jurídica e preencha os campos entre colchetes antes de enviar para assinatura.
+                </p>
               </div>
 
               <div className="flex justify-end space-x-2 pt-3 border-t border-slate-800">

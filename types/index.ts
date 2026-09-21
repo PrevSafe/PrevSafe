@@ -360,6 +360,10 @@ export interface Contract {
   end_date: string;
   signed_at?: string;
   document_path?: string;
+  /** Minuta do contrato. Gerada a partir da proposta aceita e editavel. */
+  terms?: string;
+  /** Servicos contratados, copiados dos itens da proposta na geracao. */
+  services_summary?: string;
   signatures: ContractSignature[];
   created_at: string;
   updated_at: string;

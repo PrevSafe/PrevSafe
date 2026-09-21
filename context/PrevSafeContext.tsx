@@ -155,6 +155,7 @@ import {
   type SyncedCollection,
   type RemoteSnapshot
 } from '@/lib/supabaseSync';
+import { montarTermosDoContrato, resumirServicos } from '@/lib/contratoTermos';
 
 interface PrevSafeContextType {
   // Current active session state
@@ -240,6 +241,8 @@ interface PrevSafeContextType {
     end_date: string;
     clauses?: string[];
     services_summary?: string;
+    proposal_id?: string;
+    terms?: string;
   }) => Contract;
   updateContract: (id: string, updates: Partial<Contract>) => void;
   deleteContract: (id: string) => void;
@@ -1766,10 +1769,22 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     logAudit('PROPOSAL_REJECTED', 'PROPOSAL', proposal.id, proposal.proposal_number, { reason });
   }, [proposals, logAudit]);
 
-  // RN001: Create contract from approved proposal
+  // RN001: gera o contrato a partir da proposta aceita.
+  //
+  // Esta funcao existia e nao era chamada por ninguem: o botao "Aprovar & Gerar
+  // Contrato" apenas mudava o status da proposta e navegava para Contratos, onde
+  // nao havia contrato nenhum. Quem entao clicava em "Novo Contrato" recebia um
+  // formulario em branco - dai o relato de que os dados da proposta aceita nao
+  // eram carregados.
   const createContractFromProposal = useCallback((proposalId: string): Contract => {
     const proposal = proposals.find(p => p.id === proposalId);
     if (!proposal) throw new Error('Proposal not found');
+
+    // Aprovar duas vezes nao pode gerar dois contratos para a mesma proposta.
+    const existente = contracts.find(c => c.proposal_id === proposalId);
+    if (existente) return existente;
+
+    const client = clients.find(c => c.id === proposal.client_id) || null;
 
     const count = contracts.length + 1;
     const contractNumber = `CONT-${new Date().getFullYear()}-${String(count).padStart(6, '0')}`;
@@ -1788,6 +1803,16 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
       total_value: proposal.total,
       start_date: startDate,
       end_date: endDate,
+      services_summary: resumirServicos(proposal),
+      terms: montarTermosDoContrato({
+        client,
+        organization,
+        proposal,
+        valorTotal: proposal.total,
+        inicioVigencia: startDate,
+        fimVigencia: endDate,
+        recorrencia: 'ANNUAL',
+      }),
       signatures: [],
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
@@ -1796,7 +1821,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     setContracts(prev => [newContract, ...prev]);
     logAudit('CONTRACT_CREATED', 'CONTRACT', newContract.id, newContract.contract_number, { proposal_id: proposalId, total_value: newContract.total_value });
     return newContract;
-  }, [proposals, contracts.length, organization.id, logAudit]);
+  }, [proposals, contracts, clients, organization, logAudit]);
 
   const createManualContract = useCallback((data: {
     client_id: string;
@@ -1807,13 +1832,17 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     end_date: string;
     clauses?: string[];
     services_summary?: string;
+    proposal_id?: string;
+    terms?: string;
   }): Contract => {
     const count = contracts.length + 1;
     const contractNumber = `CONT-${new Date().getFullYear()}-${String(count).padStart(6, '0')}`;
+    const client = clients.find(c => c.id === data.client_id) || null;
     const newContract: Contract = {
       id: `cont-${Date.now()}`,
       organization_id: organization.id,
       client_id: data.client_id,
+      proposal_id: data.proposal_id,
       contract_number: contractNumber,
       title: data.title,
       total_value: data.total_value,
@@ -1821,6 +1850,17 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
       status: 'SENT',
       start_date: data.start_date,
       end_date: data.end_date,
+      services_summary: data.services_summary,
+      // Sem minuta informada, gera a padrao ja preenchida com o cliente e os
+      // valores desta contratacao - nao uma frase generica.
+      terms: data.terms || montarTermosDoContrato({
+        client,
+        organization,
+        valorTotal: data.total_value,
+        inicioVigencia: data.start_date,
+        fimVigencia: data.end_date,
+        recorrencia: data.recurrence || 'ANNUAL',
+      }),
       signatures: [],
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
@@ -1828,7 +1868,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     setContracts(prev => [newContract, ...prev]);
     logAudit('CONTRACT_CREATED', 'CONTRACT', newContract.id, newContract.contract_number, { manual: true, title: data.title });
     return newContract;
-  }, [contracts.length, organization.id, logAudit]);
+  }, [contracts.length, clients, organization, logAudit]);
 
   const updateContract = useCallback((id: string, updates: Partial<Contract>) => {
     setContracts(prev => prev.map(c => c.id === id ? { ...c, ...updates, updated_at: new Date().toISOString() } : c));

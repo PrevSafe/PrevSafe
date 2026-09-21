@@ -53,6 +53,7 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
     deleteProposal,
     sendProposal, 
     approveProposal, 
+    createContractFromProposal,
     rejectProposal,
     currentProfile,
     organization
@@ -478,8 +479,28 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
 
   const handleApprove = (prop: Proposal) => {
     approveProposal(prop.id);
+
+    // O botao promete "Aprovar & Gerar Contrato" e o aviso dizia que o contrato
+    // tinha sido gerado, mas nada chamava createContractFromProposal: a tela de
+    // Contratos abria sem contrato nenhum, e criar um do zero vinha em branco.
+    let contrato;
+    try {
+      contrato = createContractFromProposal(prop.id);
+    } catch (err: any) {
+      alert(
+        `A proposta ${prop.proposal_number} foi aprovada, mas o contrato nao pode ser gerado.\n\n` +
+        `${err?.message || 'Erro desconhecido'}\n\nGere o contrato manualmente na tela de Contratos.`
+      );
+      onNavigate('contracts');
+      return;
+    }
+
     confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
-    alert(`🎉 Proposta ${prop.proposal_number} APROVADA com sucesso!\nContrato comercial vinculado gerado e pronto para assinatura.`);
+    alert(
+      `Proposta ${prop.proposal_number} aprovada.\n\n` +
+      `Contrato ${contrato.contract_number} gerado com os dados da proposta ` +
+      `(${formatCurrency(prop.total)}) e com a minuta preenchida, pronto para revisao e assinatura.`
+    );
     onNavigate('contracts');
   };
 
