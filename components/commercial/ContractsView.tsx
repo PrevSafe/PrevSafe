@@ -24,6 +24,7 @@ import {
   Trash2
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { dataDeHoje, dataEmDias } from '@/lib/datas';
 
 export const ContractsView: React.FC<{ onNavigate: (view: string) => void }> = ({ onNavigate }) => {
   const { 
@@ -66,8 +67,8 @@ export const ContractsView: React.FC<{ onNavigate: (view: string) => void }> = (
     proposal_id: '',
     title: 'Contrato de Prestação de Serviços SST',
     total_value: 0,
-    start_date: new Date().toISOString().split('T')[0],
-    end_date: new Date(Date.now() + 365 * 86400000).toISOString().split('T')[0],
+    start_date: dataDeHoje(),
+    end_date: dataEmDias(365),
     services_summary: '',
     terms: ''
   }));
@@ -76,8 +77,8 @@ export const ContractsView: React.FC<{ onNavigate: (view: string) => void }> = (
   // abria sempre com o primeiro cliente da lista, titulo "...SST 2026" e valor
   // fixo de R$ 12.000 - nada disso tinha relacao com a proposta aceita.
   const handleOpenNewContract = (proposta?: typeof proposals[number]) => {
-    const inicio = new Date().toISOString().split('T')[0];
-    const fim = new Date(Date.now() + 365 * 86400000).toISOString().split('T')[0];
+    const inicio = dataDeHoje();
+    const fim = dataEmDias(365);
     const alvo = proposta || propostasAceitasSemContrato[0];
     const client = alvo ? clients.find(c => c.id === alvo.client_id) : null;
 
@@ -411,11 +412,11 @@ export const ContractsView: React.FC<{ onNavigate: (view: string) => void }> = (
               <div className="p-4 rounded-2xl border border-slate-800 bg-slate-950/50 space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold uppercase text-slate-300 flex items-center">
-                    <ShieldCheck className="w-4 h-4 text-emerald-400 mr-1.5" /> Assinatura Eletrônica Certificada
+                    <ShieldCheck className="w-4 h-4 text-emerald-400 mr-1.5" /> Assinatura Eletrônica Simples
                   </span>
                   {(selectedContract.status === 'ACTIVE' || selectedContract.status === 'SIGNED') ? (
                     <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded font-bold">
-                      VALIDADO JURIDICAMENTE
+                      ASSINADO ELETRONICAMENTE
                     </span>
                   ) : (
                     <span className="text-[10px] font-mono text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded font-bold">

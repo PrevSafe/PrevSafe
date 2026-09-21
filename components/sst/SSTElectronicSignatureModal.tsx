@@ -69,7 +69,8 @@ export const SSTElectronicSignatureModal: React.FC<SSTElectronicSignatureModalPr
   const [isOtpSent, setIsOtpSent] = useState(false);
   const [otpCountdown, setOtpCountdown] = useState(60);
 
-  // ICP-Brasil simulation state
+  // Selecao de certificado apenas na tela: nenhum certificado e lido ou usado
+  // para assinar. A assinatura gravada e eletronica simples.
   const [selectedCert, setSelectedCert] = useState('CERT_ICP_A1');
   const [certPin, setCertPin] = useState('');
 
@@ -309,7 +310,7 @@ export const SSTElectronicSignatureModal: React.FC<SSTElectronicSignatureModalPr
                       {copiedHash ? <Check className="w-3 h-3 text-teal-400" /> : <Copy className="w-3 h-3" />}
                     </button>
                   </div>
-                  <span className="text-[10px] text-slate-500">Padrão ICP-Brasil / Avançada</span>
+                  <span className="text-[10px] text-slate-500">Assinatura eletrônica simples (Lei 14.063/2020)</span>
                 </div>
               </div>
 
@@ -406,11 +407,9 @@ export const SSTElectronicSignatureModal: React.FC<SSTElectronicSignatureModalPr
               <div className="bg-gradient-to-r from-teal-950/40 via-slate-900 to-indigo-950/40 p-4 rounded-2xl border border-teal-500/30 flex items-start space-x-3 text-xs">
                 <ShieldCheck className="w-5 h-5 text-teal-400 flex-shrink-0 mt-0.5" />
                 <div className="space-y-1 text-slate-300">
-                  <span className="font-bold text-white block">Validade Jurídica de Acordo com a Legislação Brasileira</span>
+                  <span className="font-bold text-white block">Validade Jurídica e Limites desta Assinatura</span>
                   <p className="leading-relaxed text-[11px] text-slate-400">
-                    Este documento possui valor probatório pleno conforme o Artigo 10 da Medida Provisória nº 2.200-2/2001 e a 
-                    <strong> Lei Federal nº 14.063/2020</strong>. A integridade do arquivo digital é selada com algoritmo SHA-256 e 
-                    cada signatário possui trilha auditável de autenticação com IP, geolocalização e carimbo de tempo ICP-Brasil.
+                    Esta é uma <strong>assinatura eletrônica simples</strong>, admitida pela Lei Federal nº 14.063/2020 (art. 4º, I). O conteúdo assinado recebe um código SHA-256 e cada signatário tem registrados data, hora e IP, o que permite conferir em /validar que o documento não foi alterado depois de assinado. Não há certificado ICP-Brasil nem carimbo do tempo de terceiro, de modo que a autoria não goza da presunção do art. 10 da MP nº 2.200-2/2001 e a data não é oponível a terceiros.
                   </p>
                 </div>
               </div>
@@ -506,7 +505,7 @@ export const SSTElectronicSignatureModal: React.FC<SSTElectronicSignatureModalPr
                       <span className="font-bold text-xs">Token OTP / Celular</span>
                     </div>
                     <p className="text-[10px] text-slate-400 leading-snug">
-                      Código de 6 dígitos via E-mail / WhatsApp com Carimbo de Tempo.
+                      Código de 6 dígitos via E-mail / WhatsApp, com registro de data, hora e IP.
                     </p>
                   </button>
 
@@ -521,10 +520,10 @@ export const SSTElectronicSignatureModal: React.FC<SSTElectronicSignatureModalPr
                   >
                     <div className="flex items-center space-x-2 text-indigo-400">
                       <Lock className="w-4 h-4" />
-                      <span className="font-bold text-xs">Certificado ICP-Brasil</span>
+                      <span className="font-bold text-xs">Certificado ICP-Brasil (indisponível)</span>
                     </div>
                     <p className="text-[10px] text-slate-400 leading-snug">
-                      Certificado e-CPF / e-CNPJ padrão A1 / A3 (Assinatura Qualificada).
+                      e-CPF / e-CNPJ A1 ou A3: tela demonstrativa, ainda não implementada.
                     </p>
                   </button>
 
@@ -598,9 +597,9 @@ export const SSTElectronicSignatureModal: React.FC<SSTElectronicSignatureModalPr
               {signatureMode === 'DIGITAL_CERTIFICATE_ICP' && (
                 <div className="bg-slate-950 p-5 rounded-2xl border border-slate-800 space-y-4">
                   <div className="space-y-1">
-                    <span className="font-bold text-white text-sm block">Seleção de Certificado Digital ICP-Brasil</span>
+                    <span className="font-bold text-white text-sm block">Seleção de Certificado Digital ICP-Brasil (demonstração)</span>
                     <p className="text-xs text-slate-400">
-                      Utilize seu certificado A1 em arquivo (.pfx/.p12) ou A3 (Token/Smartcard).
+                      Tela demonstrativa: o sistema ainda não lê certificados A1 (.pfx/.p12) nem A3 (Token/Smartcard). A assinatura registrada será eletrônica simples, como nas demais opções.
                     </p>
                   </div>
 
@@ -745,7 +744,7 @@ export const SSTElectronicSignatureModal: React.FC<SSTElectronicSignatureModalPr
               <div className="space-y-2">
                 <h3 className="text-xl font-bold text-white">Assinatura Registrada com Sucesso!</h3>
                 <p className="text-xs text-slate-400 max-w-md mx-auto">
-                  O documento foi assinado digitalmente com carimbo de tempo criptográfico e selo de conformidade da Lei 14.063/2020.
+                  O documento foi assinado eletronicamente (Lei 14.063/2020, art. 4º, I). Ficaram registrados o código SHA-256 do conteúdo, a data, a hora e o IP do signatário, conferíveis em /validar.
                 </p>
               </div>
 

@@ -73,6 +73,7 @@ import { ReconciliationTab } from './ReconciliationTab';
 import { DueSoonAlertsTab } from './DueSoonAlertsTab';
 import { FinancialReconciliationModal } from './FinancialReconciliationModal';
 import { FinancialReminderModal } from './FinancialReminderModal';
+import { dataDeHoje } from '@/lib/datas';
 
 interface FinancialViewProps {
   onNavigate?: (view: string) => void;
@@ -123,7 +124,7 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
   const [copiedPix, setCopiedPix] = useState(false);
 
   // Settlement Form State
-  const [settlementDate, setSettlementDate] = useState<string>(new Date().toISOString().split('T')[0]);
+  const [settlementDate, setSettlementDate] = useState<string>(dataDeHoje());
   const [settlementMethod, setSettlementMethod] = useState<FinancialPaymentMethod>('PIX');
   const [settlementDiscount, setSettlementDiscount] = useState<number>(0);
   const [settlementInterest, setSettlementInterest] = useState<number>(0);
@@ -136,7 +137,7 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
   const [newSupplierName, setNewSupplierName] = useState('');
   const [newCategory, setNewCategory] = useState<FinancialCategoryKey>('MENSALIDADE_SST');
   const [newAmount, setNewAmount] = useState<number | ''>('');
-  const [newDueDate, setNewDueDate] = useState<string>(new Date().toISOString().split('T')[0]);
+  const [newDueDate, setNewDueDate] = useState<string>(dataDeHoje());
   const [newPaymentMethod, setNewPaymentMethod] = useState<FinancialPaymentMethod>('BOLETO');
   const [newDocNumber, setNewDocNumber] = useState('');
   const [newNotes, setNewNotes] = useState('');
@@ -264,7 +265,7 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
     setNewSupplierName('');
     setNewCategory(type === 'RECEIVABLE' ? 'MENSALIDADE_SST' : 'HONORARIOS_MEDICOS');
     setNewAmount('');
-    setNewDueDate(new Date().toISOString().split('T')[0]);
+    setNewDueDate(dataDeHoje());
     setNewPaymentMethod(type === 'RECEIVABLE' ? 'BOLETO' : 'PIX');
     setNewDocNumber('');
     setNewNotes('');
@@ -323,7 +324,7 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
 
   const handleOpenSettlement = (tx: FinancialTransaction) => {
     setSelectedTxForSettlement(tx);
-    setSettlementDate(new Date().toISOString().split('T')[0]);
+    setSettlementDate(dataDeHoje());
     setSettlementMethod(tx.payment_method || 'PIX');
     setSettlementDiscount(tx.discount || 0);
     setSettlementInterest(tx.fine_interest || 0);

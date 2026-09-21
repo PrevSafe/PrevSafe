@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { usePrevSafe } from '@/context/PrevSafeContext';
 import { SSTExamProtocol, Employee } from '@/types';
+import { dataDeHoje } from '@/lib/datas';
 import { 
   Stethoscope, 
   Plus, 
@@ -22,7 +23,7 @@ interface ExamPCMSOTabProps {
   selectedClientId: string;
 }
 
-const todayISO = () => new Date().toISOString().split('T')[0];
+const todayISO = () => dataDeHoje();
 const addYearsISO = (years: number) => {
   const d = new Date();
   d.setFullYear(d.getFullYear() + years);

@@ -425,7 +425,7 @@ export const TUTORIALS_DATA: TutorialItem[] = [
     faq: [
       {
         question: 'Como funciona a assinatura eletrônica no PrevSafe?',
-        answer: 'O sistema registra o IP, navegador, carimbo de tempo UTC e token único de assinatura do signatário, em conformidade com a MP 2.200-2.'
+        answer: 'É uma assinatura eletrônica simples (Lei 14.063/2020, art. 4º, I). O sistema registra o IP, o navegador, a data e a hora em UTC e um código SHA-256 do conteúdo assinado, que pode ser conferido na página pública /validar para provar que o documento não foi alterado depois de assinado. Não há certificado ICP-Brasil nem carimbo do tempo de terceiro.'
       }
     ],
     commonMistakes: [
@@ -688,7 +688,7 @@ export const TUTORIALS_DATA: TutorialItem[] = [
     infographic: {
       objective: 'Coletar evidências fidedignas no ambiente de trabalho sem depender de sinal de internet.',
       regulatoryCompliance: 'NR-01 (Identificação de Perigos) e NHO-01 (Avaliação de Ruído Ocupacional).',
-      criticalSuccessFactor: 'Garantia de fotos com geolocalização e carimbo de tempo para auditorias do Ministério do Trabalho.',
+      criticalSuccessFactor: 'Registro das fotos com data e hora da vistoria para auditorias do Ministério do Trabalho.',
       flowNodes: [
         {
           id: 'f1',
@@ -754,7 +754,7 @@ export const TUTORIALS_DATA: TutorialItem[] = [
           timestamp: 9,
           duration: 5,
           actionTitle: '3. Capturando Foto com Geotag',
-          narratorText: 'Tire a foto da máquina: a latitude, longitude e horário são gravados.',
+          narratorText: 'Tire a foto da máquina: o horário e a referência de local da vistoria são gravados.',
           cursorTarget: { x: 50, y: 70, label: 'Tirar Foto com GPS' },
           screenState: { bannerText: 'Foto Anexada (-23.5505, -46.6333)' }
         },
@@ -791,7 +791,7 @@ export const TUTORIALS_DATA: TutorialItem[] = [
     targetRoles: ['ADMIN', 'GESTOR', 'TÉCNICO'],
     difficulty: 'INTERMEDIÁRIO',
     estimatedMinutes: 5,
-    regulatoryRef: 'Regra RN009, Portaria MTP 672 & ICP-Brasil',
+    regulatoryRef: 'Regra RN009 & Portaria MTP 672',
     targetViewId: 'documents',
     tags: ['Laudos', 'PGR', 'PCMSO', 'LTCAT', 'RN009', 'Versionamento', 'Assinatura Digital', 'Liberação Formal'],
     summary: 'Gerencie todo o acervo de documentos técnicos de SST da consultoria. A Regra de Negócio RN009 impede que documentos em rascunho ou sem validação do Responsável Técnico sejam visualizados pelo cliente final, evitando vazamentos e inconformidades.',
@@ -818,7 +818,7 @@ export const TUTORIALS_DATA: TutorialItem[] = [
       {
         stepNumber: 2,
         title: 'Executar a Liberação Formal (Regra RN009)',
-        description: 'Clique em "Liberar para o Cliente". O sistema valida se o documento possui assinatura técnica, gera o carimbo de tempo e notifica a diretoria do cliente por e-mail.',
+        description: 'Clique em "Liberar para o Cliente". O sistema valida se o documento possui assinatura técnica, registra a data, a hora e o autor da liberação e notifica a diretoria do cliente por e-mail.',
         highlightAction: 'Clicar em "Liberar ao Cliente (RN009)"',
         screenType: 'MODAL',
         mockupDetails: {
@@ -1035,7 +1035,7 @@ export const TUTORIALS_DATA: TutorialItem[] = [
           actor: 'WebService eSocial (RFB)',
           actorColor: 'purple',
           title: '3. Envio do Lote SOAP',
-          description: 'Disparo seguro via HTTPS com Certificado Digital A1/ICP-Brasil.',
+          description: 'O eSocial exige disparo via HTTPS com Certificado Digital A1/ICP-Brasil. No PrevSafe esta etapa ainda é simulada.',
           output: 'Protocolo de Envio e Processamento',
           slaTime: '2 a 5 segundos'
         },
@@ -1300,7 +1300,7 @@ export const TUTORIALS_DATA: TutorialItem[] = [
           fieldsOrItems: [
             { label: 'Representante Legal', value: 'Carlos Valença (Diretor Executivo)' },
             { label: 'Declaração', value: 'Declaro ciência do Inventário de Riscos e Plano de Ação 5W2H' },
-            { label: 'Carimbo de Autenticidade', value: 'IP 189.40.22.110 • 26/08/2026 15:40' }
+            { label: 'Registro de Autenticidade', value: 'IP 189.40.22.110 • 26/08/2026 15:40' }
           ]
         }
       }
@@ -1672,7 +1672,7 @@ export const TUTORIALS_DATA: TutorialItem[] = [
   {
     id: 'tut-audit-compliance-rn011',
     title: 'Auditoria Geral (Audit Log), Trilha Imutável e Conformidade RN011',
-    subtitle: 'Rastreabilidade total: registro com carimbo de tempo, IP, usuário, antes/depois de alterações e exportação para auditorias do MTE.',
+    subtitle: 'Rastreabilidade total: registro de data e hora, IP, usuário, antes/depois de alterações e exportação para auditorias do MTE.',
     category: 'AUDIT_LOGS',
     categoryLabel: 'Auditoria Geral & Conformidade',
     targetRoles: ['ADMIN', 'GESTOR'],
@@ -1723,7 +1723,7 @@ export const TUTORIALS_DATA: TutorialItem[] = [
     infographic: {
       objective: 'Garantir a rastreabilidade e integridade jurídica de todos os atos técnicos e administrativos.',
       regulatoryCompliance: 'Portaria MTP 671/2021 e Princípio da Responsabilização da LGPD.',
-      criticalSuccessFactor: 'Imutabilidade absoluta dos registros com carimbo de tempo UTC e endereço IP.',
+      criticalSuccessFactor: 'Preservação dos registros de auditoria com data e hora em UTC e endereço IP.',
       flowNodes: [
         {
           id: 'al1',

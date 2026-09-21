@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { usePrevSafe } from '@/context/PrevSafeContext';
 import { SSTCATRecord, SSTWorkAbsence } from '@/types';
+import { dataDeHoje } from '@/lib/datas';
 import { 
   AlertOctagon, 
   Plus, 
@@ -18,7 +19,7 @@ interface CatAndAbsenceTabProps {
   selectedClientId: string;
 }
 
-const todayISO = () => new Date().toISOString().split('T')[0];
+const todayISO = () => dataDeHoje();
 const addDaysISO = (days: number) => {
   const d = new Date();
   d.setDate(d.getDate() + days);

@@ -61,6 +61,7 @@ import { ESocialPdfReportModal } from './ESocialPdfReportModal';
 import { ESocialConfigView } from './ESocialConfigView';
 import { SSTDeadlineAlertBanner } from './SSTDeadlineAlertBanner';
 import { exportESocialEventLogsPdf } from '@/lib/pdfExportService';
+import { dataDeHoje } from '@/lib/datas';
 
 interface ESocialEventsViewProps {
   onNavigate?: (view: string) => void;
@@ -227,7 +228,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
   const handleTransmitSingle = (id: string) => {
     const res = transmitESocialEvent(id);
     if (res.success) {
-      showToast(`Evento transmitido com sucesso! Recibo: ${res.receipt}`, 'success');
+      showToast(`Evento processado. Recibo simulado: ${res.receipt}`, 'success');
     } else {
       showToast(`Falha na transmissão: ${res.error}`, 'error');
     }
@@ -257,7 +258,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
         setIsTransmittingBatch(false);
         setIsBatchModalOpen(false);
         setSelectedEventIds([]);
-        showToast(`Lote ${result.batch.batch_number} transmitido: ${result.successCount} aceitos, ${result.errorCount} rejeitados.`, result.errorCount === 0 ? 'success' : 'info');
+        showToast(`Lote ${result.batch.batch_number} processado (envio simulado): ${result.successCount} aceitos, ${result.errorCount} rejeitados.`, result.errorCount === 0 ? 'success' : 'info');
       }, 500);
     }, 400);
   };
@@ -291,7 +292,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
         setTimeout(() => {
           setAutomationStep(4);
           setAutomationLogs(prev => [
-            { timestamp: now(), message: '🔏 Aplicando Assinatura Digital ICP-Brasil A1 e transmitindo lote ao Serpro...', level: 'info' },
+            { timestamp: now(), message: '🔏 Montando o lote. A assinatura com certificado A1 e o envio ao Serpro ainda não estão implementados: esta etapa é simulada...', level: 'info' },
             ...prev
           ]);
 
@@ -327,7 +328,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
 
           setIsAutomating(false);
           setAutomationStep(0);
-          showToast(`Automação eSocial concluída! ${result.extractedCount} eventos gerados e ${result.transmittedCount} transmitidos.`, 'success');
+          showToast(`Automação eSocial concluída! ${result.extractedCount} eventos gerados e ${result.transmittedCount} com envio simulado.`, 'success');
         }, 800);
       }, 700);
     }, 600);
@@ -403,11 +404,11 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                   Layout v.S-1.2
                 </span>
                 <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-blue-500/20 text-blue-300 border border-blue-500/30 font-mono">
-                  Ambiente Oficial
+                  Ambiente Simulado
                 </span>
               </div>
               <p className="text-xs text-slate-400 mt-0.5">
-                Emissão, validação XSD, assinatura ICP-Brasil e transmissão WebService de S-2210 (CAT), S-2220 (ASO/Saúde), S-2230 (Afastamentos) e S-2240 (Condições Ambientais).
+                Preparação dos eventos S-2210 (CAT), S-2220 (ASO/Saúde), S-2230 (Afastamentos) e S-2240 (Condições Ambientais). O eSocial exige assinatura com certificado ICP-Brasil A1/A3 e envio ao WebService — etapas ainda não implementadas: as transmissões, recibos e protocolos exibidos aqui são simulados.
               </p>
             </div>
           </div>
@@ -433,7 +434,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
             onClick={handleExecuteAutomation}
             disabled={isAutomating}
             className="flex items-center space-x-2 px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-bold transition shadow-lg shadow-emerald-950/50 border border-emerald-400/30 active:scale-95 touch-manipulation"
-            title="Executa a varredura de OSs, gera XMLs eSocial e transmite para o Serpro automaticamente"
+            title="Executa a varredura de OSs e gera os eventos eSocial. A assinatura e o envio ao Serpro são simulados."
           >
             <Zap className={`w-4 h-4 text-amber-300 ${isAutomating ? 'animate-bounce' : 'fill-amber-300'}`} />
             <span>{isAutomating ? 'Automação em Execução...' : '⚡ Executar Automação eSocial'}</span>
@@ -503,7 +504,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
           </div>
           <div className="mt-2 flex items-baseline justify-between">
             <span className="text-2xl font-bold text-emerald-400 tracking-tight">{stats.success}</span>
-            <span className="text-[10px] text-emerald-500 font-medium">Aceitos Serpro</span>
+            <span className="text-[10px] text-emerald-500 font-medium">Aceite simulado</span>
           </div>
         </div>
 
@@ -689,11 +690,11 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                       <h2 className="text-xl font-bold text-white tracking-tight">Robô Autônomo eSocial SST</h2>
                       <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center space-x-1">
                         <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                        <span>SERPRO 24/7 ONLINE</span>
+                        <span>ENVIO SIMULADO</span>
                       </span>
                     </div>
                     <p className="text-xs text-slate-300">
-                      Geração de XMLs, validação XSD S-1.2, assinatura digital A1 e transmissão em lotes com notificação multicanal.
+                      Geração dos eventos e validação das regras S-1.2. A assinatura A1 e a transmissão em lote ainda são simuladas.
                     </p>
                   </div>
                 </div>
@@ -705,7 +706,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                   </div>
                   <div className="flex items-center space-x-1.5 text-slate-300">
                     <Lock className="w-4 h-4 text-emerald-400" />
-                    <span>Certificado: <strong>ICP-Brasil A1 (Ativo)</strong></span>
+                    <span>Certificado: <strong>não configurado</strong></span>
                   </div>
                   <div className="flex items-center space-x-1.5 text-slate-300">
                     <Smartphone className="w-4 h-4 text-emerald-400" />
@@ -750,7 +751,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                 { step: 1, title: '1. Varredura de OSs', desc: 'Scan de ASOs e Laudos PGR/LTCAT', icon: Search },
                 { step: 2, title: '2. Mapeamento SST', desc: 'Fatores Tabela 24 & Riscos', icon: FileCode2 },
                 { step: 3, title: '3. Validação XSD', desc: 'Schemas oficiais v.S-1.2', icon: ShieldCheck },
-                { step: 4, title: '4. Assinatura & Envio', desc: 'ICP-Brasil A1 + WebService', icon: Send },
+                { step: 4, title: '4. Assinatura & Envio', desc: 'Simulado (sem certificado)', icon: Send },
                 { step: 5, title: '5. Recibos & WhatsApp', desc: 'Protocolo ao RH do Cliente', icon: MessageSquare }
               ].map((item) => {
                 const Icon = item.icon;
@@ -809,8 +810,8 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                   { key: 'autoGenerateS2220', label: 'Gatilho S-2220 (Monitoramento da Saúde / ASO)', desc: 'Extrai exames clínicos, complementares e CRM do médico coordenador' },
                   { key: 'autoGenerateS2240', label: 'Gatilho S-2240 (Condições Ambientais do Trabalho)', desc: 'Mapeia agentes nocivos da Tabela 24, EPI/EPC e responsável técnico' },
                   { key: 'autoValidateXSD', label: 'Validação Prévia de Schemas XSD e Regras de Negócio', desc: 'Impede o envio de XMLs com dados ausentes ou CPFs inconsistentes' },
-                  { key: 'autoSignA1', label: 'Assinatura Digital Automática com Certificado A1', desc: 'Aplica assinatura digital XMLDSig X.509 em conformidade ICP-Brasil' },
-                  { key: 'autoTransmitSerpro', label: 'Transmissão em Lote para o WebService Serpro', desc: 'Envia lotes de até 50 eventos com retry automático e captura de recibo' },
+                  { key: 'autoSignA1', label: 'Assinatura Digital Automática com Certificado A1', desc: 'O eSocial exige XMLDSig com certificado A1. Ainda não implementado: a etapa é simulada.' },
+                  { key: 'autoTransmitSerpro', label: 'Transmissão em Lote para o WebService Serpro', desc: 'Envio real ao WebService ainda não implementado: os recibos gerados são simulados' },
                   { key: 'autoNotifyWhatsApp', label: 'Notificação Automática do RH via WhatsApp', desc: 'Envia número de protocolo, data e link do recibo em PDF para o cliente' }
                 ].map((item) => {
                   const isChecked = automationSettings[item.key as keyof typeof automationSettings];
@@ -884,7 +885,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                   <div>
                     <div className="text-xs font-bold text-emerald-300">Última Execução com Sucesso</div>
                     <div className="text-[11px] text-slate-300 mt-0.5">
-                      Lote <strong>{lastAutomationResult.batchNumber || 'SERPRO-AUTO'}</strong> transmitido com {lastAutomationResult.transmittedCount} eventos aceitos.
+                      Lote <strong>{lastAutomationResult.batchNumber || 'SERPRO-AUTO'}</strong> preparado com {lastAutomationResult.transmittedCount} eventos (envio simulado).
                     </div>
                   </div>
                   <button
@@ -1215,7 +1216,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                                 <button
                                   id={`btn-transmit-${evt.id}`}
                                   onClick={() => handleTransmitSingle(evt.id)}
-                                  title="Transmitir WebService com Certificado Digital"
+                                  title="Processar evento (envio ao WebService simulado)"
                                   className="p-1.5 rounded-lg bg-emerald-600/80 hover:bg-emerald-600 text-white transition shadow-sm"
                                 >
                                   <Send className="w-3.5 h-3.5" />
@@ -1292,12 +1293,12 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
             <div>
               <h2 className="text-base font-bold text-white">Lotes de Transmissão WebService eSocial</h2>
               <p className="text-xs text-slate-400">
-                Histórico de pacotes XML transmitidos via protocolo seguro Serpro com certificado ICP-Brasil.
+                Histórico dos lotes montados no sistema. Os protocolos e recibos são simulados: ainda não há envio ao Serpro.
               </p>
             </div>
             <button
               onClick={() => {
-                showToast('Consultando status dos lotes no Serpro... Todos os lotes sincronizados.', 'info');
+                showToast('Consulta de status no Serpro ainda não disponível. Exibindo os lotes registrados localmente.', 'info');
               }}
               className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition"
             >
@@ -1332,7 +1333,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                       <td className="p-3.5 font-mono text-slate-300">{b.protocol_number}</td>
                       <td className="p-3.5">
                         <span className="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-slate-800 text-slate-300 border border-slate-700">
-                          {b.certificate_type === 'A1_DIGITAL' ? 'ICP-Brasil A1 (Nuvem)' : 'ICP-Brasil A3 (Token)'}
+                          {b.certificate_type === 'A1_DIGITAL' ? 'A1 (Nuvem)' : 'A3 (Token)'}
                         </span>
                       </td>
                       <td className="p-3.5 font-medium">
@@ -1655,8 +1656,8 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                       <div className="flex items-center space-x-3 text-emerald-400">
                         <CheckCircle2 className="w-6 h-6" />
                         <div>
-                          <h4 className="font-bold text-sm uppercase tracking-wide">Comprovante Oficial de Recepção eSocial</h4>
-                          <p className="text-[11px] opacity-80">Ambiente de Produção Nacional - Serpro / Receita Federal do Brasil</p>
+                          <h4 className="font-bold text-sm uppercase tracking-wide">Comprovante de Recepção eSocial (simulado)</h4>
+                          <p className="text-[11px] opacity-80">Recibo gerado pelo próprio sistema. Não houve envio ao Serpro / Receita Federal.</p>
                         </div>
                       </div>
 
@@ -1680,7 +1681,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                       </div>
 
                       <div className="p-3 rounded-xl bg-slate-950 border border-emerald-900/60 text-[11px] text-slate-300">
-                        <span className="text-emerald-400 font-bold block mb-1">Mensagem Oficial do eSocial:</span>
+                        <span className="text-emerald-400 font-bold block mb-1">Mensagem de retorno (simulada):</span>
                         {xmlModalEvent.return_message || 'Evento processado e recepcionado com sucesso pela base oficial do eSocial (Serpro).'}
                       </div>
                     </div>
@@ -1688,7 +1689,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                     <div className="p-8 text-center text-slate-500 rounded-2xl bg-slate-950 border border-slate-800">
                       <Clock className="w-8 h-8 mx-auto mb-2 opacity-40" />
                       <p className="text-sm font-medium">Este evento ainda não foi transmitido para o eSocial.</p>
-                      <p className="text-xs text-slate-600 mt-1">Valide e transmita o evento para gerar o Recibo Oficial do Serpro.</p>
+                      <p className="text-xs text-slate-600 mt-1">Valide e processe o evento para gerar o recibo simulado.</p>
                     </div>
                   )}
                 </div>
@@ -1762,12 +1763,12 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
             </div>
 
             <p className="text-xs text-slate-300">
-              Você selecionou <span className="font-bold text-emerald-400">{selectedEventIds.length} evento(s)</span> para assinatura digital e envio unificado ao WebService do eSocial.
+              Você selecionou <span className="font-bold text-emerald-400">{selectedEventIds.length} evento(s)</span> para montar um lote. A assinatura com certificado e o envio ao WebService do eSocial ainda não estão implementados: o resultado é simulado.
             </p>
 
             <div className="space-y-3">
               <label className="block text-xs font-semibold text-slate-300 uppercase">
-                Selecione o Certificado Digital ICP-Brasil
+                Certificado que o eSocial exigirá para este lote
               </label>
               <div className="grid grid-cols-2 gap-3">
                 <button
@@ -1801,7 +1802,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
             {isTransmittingBatch && (
               <div className="space-y-2 pt-2">
                 <div className="flex justify-between text-xs text-slate-300 font-medium">
-                  <span>Transmitindo lote para o Serpro...</span>
+                  <span>Simulando a transmissão do lote...</span>
                   <span>{batchProgress}%</span>
                 </div>
                 <div className="w-full h-2 rounded-full bg-slate-950 overflow-hidden">
@@ -1957,7 +1958,7 @@ const CreateEditEventModal: React.FC<CreateEditEventModalProps> = ({
   const [workerRole, setWorkerRole] = useState<string>(initialEvent?.worker_role || 'Operador Industrial');
 
   // S-2240 State
-  const [s2240StartDate, setS2240StartDate] = useState<string>(initialEvent?.ambient_data?.start_date || new Date().toISOString().split('T')[0]);
+  const [s2240StartDate, setS2240StartDate] = useState<string>(initialEvent?.ambient_data?.start_date || dataDeHoje());
   const [s2240Description, setS2240Description] = useState<string>(initialEvent?.ambient_data?.description_activities || 'Atividades operacionais e de manutenção.');
   const [s2240Environment, setS2240Environment] = useState<string>(initialEvent?.ambient_data?.work_environment || 'Planta Operacional');
   const [s2240TechName, setS2240TechName] = useState<string>(initialEvent?.ambient_data?.responsible_technician_name || '');
@@ -1966,14 +1967,14 @@ const CreateEditEventModal: React.FC<CreateEditEventModalProps> = ({
 
   // S-2220 State
   const [s2220AsoType, setS2220AsoType] = useState<any>(initialEvent?.aso_data?.aso_type || 'PERIODICO');
-  const [s2220ExamDate, setS2220ExamDate] = useState<string>(initialEvent?.aso_data?.exam_date || new Date().toISOString().split('T')[0]);
+  const [s2220ExamDate, setS2220ExamDate] = useState<string>(initialEvent?.aso_data?.exam_date || dataDeHoje());
   const [s2220Result, setS2220Result] = useState<'APTO' | 'INAPTO'>(initialEvent?.aso_data?.result || 'APTO');
   const [s2220DocName, setS2220DocName] = useState<string>(initialEvent?.aso_data?.physician_name || '');
   const [s2220DocCrm, setS2220DocCrm] = useState<string>(initialEvent?.aso_data?.physician_crm || 'CRM-SP 145892');
 
   // S-2210 State
   const [s2210CatType, setS2210CatType] = useState<any>(initialEvent?.cat_data?.cat_type || 'INICIAL');
-  const [s2210AccidentDate, setS2210AccidentDate] = useState<string>(initialEvent?.cat_data?.accident_date || new Date().toISOString().split('T')[0]);
+  const [s2210AccidentDate, setS2210AccidentDate] = useState<string>(initialEvent?.cat_data?.accident_date || dataDeHoje());
   const [s2210AccidentTime, setS2210AccidentTime] = useState<string>(initialEvent?.cat_data?.accident_time || '10:00');
   const [s2210BodyPart, setS2210BodyPart] = useState<string>(initialEvent?.cat_data?.body_part || 'Mão e Dedos');
   const [s2210Agent, setS2210Agent] = useState<string>(initialEvent?.cat_data?.accident_agent || 'Ferramenta manual ou máquina operatriz');

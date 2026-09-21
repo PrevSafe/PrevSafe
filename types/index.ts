@@ -343,6 +343,8 @@ export interface ContractSignature {
   ip_address: string;
   provider: 'PREVSAFE_SIGN' | 'DOCUSIGN' | 'CLICKSIGN' | 'MANUAL';
   external_id?: string;
+  /** SHA-256 do conteudo do contrato no momento da assinatura. */
+  document_hash?: string;
   signature_hash?: string;
 }
 
@@ -1961,6 +1963,8 @@ export interface SSTSignatureAuditLog {
   action: string;
   actor_name: string;
   actor_cpf?: string;
+  /** E-mail de quem agiu. Antes o e-mail era gravado em actor_cpf. */
+  actor_email?: string;
   ip_address: string;
   details: string;
 }

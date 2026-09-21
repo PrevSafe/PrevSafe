@@ -1,30 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
-import { supabaseUrl } from '@/lib/supabase';
+import { exigirAdminDaOrganizacao, autorizacaoNegada, ehUuid } from '@/lib/autorizacaoApi';
 
 export const dynamic = 'force-dynamic';
 
 export async function POST(req: NextRequest) {
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!serviceRoleKey || !anonKey) {
-    return NextResponse.json({ success: false, message: 'Supabase não está configurado no servidor.' }, { status: 500 });
-  }
-
-  const token = (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '');
-  if (!token) {
-    return NextResponse.json({ success: false, message: 'Não autenticado.' }, { status: 401 });
-  }
-
-  const supabaseAuth = createClient(supabaseUrl, anonKey, { auth: { persistSession: false } });
-  const { data: userData, error: userError } = await supabaseAuth.auth.getUser(token);
-  if (userError || !userData?.user) {
-    return NextResponse.json({ success: false, message: 'Sessão inválida ou expirada.' }, { status: 401 });
-  }
-
-  if (userData.user.user_metadata?.role !== 'ADMIN') {
-    return NextResponse.json({ success: false, message: 'Apenas administradores podem redefinir senhas.' }, { status: 403 });
-  }
+  // A autorizacao vem de prevsafe_members, nunca de user_metadata: aquele campo
+  // e gravavel pelo proprio usuario e permitiria que qualquer autenticado se
+  // declarasse ADMIN e redefinisse a senha de qualquer conta.
+  const auth = await exigirAdminDaOrganizacao(req);
+  if (autorizacaoNegada(auth)) return auth.resposta;
+  const { supabaseAdmin, organizationIds } = auth;
 
   const body = await req.json().catch(() => null);
   if (!body || typeof body !== 'object') {
@@ -35,12 +20,42 @@ export async function POST(req: NextRequest) {
   if (!auth_user_id || typeof auth_user_id !== 'string') {
     return NextResponse.json({ success: false, message: 'auth_user_id é obrigatório.' }, { status: 400 });
   }
+  if (!ehUuid(auth_user_id)) {
+    return NextResponse.json({ success: false, message: 'auth_user_id inválido.' }, { status: 400 });
+  }
   if (!password || typeof password !== 'string' || password.length < 8) {
     return NextResponse.json({ success: false, message: 'A senha precisa ter ao menos 8 caracteres.' }, { status: 400 });
   }
 
-  const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey, { auth: { persistSession: false } });
-  const { error } = await supabaseAdmin.auth.admin.updateUserById(auth_user_id, { password });
+  // O alvo precisa estar na mesma organizacao do admin. Sem esta checagem um
+  // admin de uma organizacao redefinia a senha de usuario de outra — inclusive
+  // a do dono do sistema.
+  const { data: vinculosAlvo, error: alvoError } = await supabaseAdmin
+    .from('prevsafe_members')
+    .select('organization_id')
+    .eq('auth_user_id', auth_user_id.trim());
+
+  if (alvoError) {
+    // Falha fechada: sem ler o vinculo do alvo nao da para afirmar que ele e da
+    // mesma organizacao, entao a senha nao e tocada.
+    return NextResponse.json(
+      { success: false, message: 'Não foi possível confirmar a organização deste usuário agora. Tente novamente.' },
+      { status: 503 }
+    );
+  }
+
+  const mesmaOrganizacao = (vinculosAlvo || []).some(v => organizationIds.includes(String(v.organization_id)));
+
+  if (!mesmaOrganizacao) {
+    // Mesma resposta para "nao existe", "sem vinculo" e "de outra organizacao":
+    // responder diferente revelaria quais contas existem fora da organizacao.
+    return NextResponse.json(
+      { success: false, message: 'Este usuário não pertence à sua organização.' },
+      { status: 403 }
+    );
+  }
+
+  const { error } = await supabaseAdmin.auth.admin.updateUserById(auth_user_id.trim(), { password });
 
   if (error) {
     return NextResponse.json({ success: false, message: 'Não foi possível redefinir a senha. Tente novamente.' }, { status: 422 });

@@ -657,10 +657,26 @@ export const SettingsView: React.FC<{ onNavigate: (view: string) => void }> = ({
 
             <button
               onClick={() => {
-                if (confirm('Deseja limpar a base e voltar ao estado inicial? Todos os cadastros e movimentos serão apagados deste navegador. Esta ação não pode ser desfeita.')) {
-                  resetDatabaseToSeed();
-                  alert('Base limpa. Os catálogos de referência foram mantidos.');
+                // Apaga a organizacao inteira, no dispositivo E no servidor. O aviso
+                // anterior dizia "apagados deste navegador", subestimando o estrago.
+                const primeiroAviso = confirm(
+                  'APAGAR TODOS OS DADOS DA ORGANIZAÇÃO\n\n' +
+                  'Serão excluídos clientes, funcionários, propostas, contratos, ordens de serviço, ' +
+                  'documentos, eventos do eSocial e assinaturas — NESTE DISPOSITIVO E NO SERVIDOR, ' +
+                  'para todos os usuários da organização.\n\n' +
+                  'Esta ação NÃO pode ser desfeita e não há backup automático.\n\n' +
+                  'Deseja continuar?'
+                );
+                if (!primeiroAviso) return;
+                
+                const digitado = prompt('Para confirmar a exclusão definitiva, digite: CONFIRMAR');
+                if ((digitado || '').trim().toUpperCase() !== 'CONFIRMAR') {
+                  alert('Exclusão cancelada. Nenhum dado foi apagado.');
+                  return;
                 }
+                
+                resetDatabaseToSeed();
+                alert('Todos os dados da organização foram apagados, aqui e no servidor.');
               }}
               className="w-full px-4 py-3 bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/30 rounded-2xl text-xs font-bold transition flex items-center justify-center space-x-2"
             >

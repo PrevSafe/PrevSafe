@@ -19,6 +19,10 @@ import {
 } from '@/types';
 import * as XLSX from 'xlsx';
 import { formatDate } from '@/lib/utils';
+import { DECLARACAO_DE_INTEGRIDADE } from '@/lib/documentoHash';
+import { ANEXOS_NR16, montarCorpoInsalubridade, montarCorpoPericulosidade } from '@/lib/laudoDados';
+import type { CorpoLaudo } from '@/lib/laudoDados';
+import { dataDeHoje } from '@/lib/datas';
 
 // Helper to format currency
 const formatCurrency = (val: number) => {
@@ -82,7 +86,7 @@ function applyDocumentTheme(
   const nowStr = `${new Date().toLocaleDateString('pt-BR')} ${new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
   doc.setFontSize(8);
   doc.text(`Gerado em: ${nowStr}`, pageWidth - 14, 12, { align: 'right' });
-  doc.text(`Doc: ${organization.document_number || 'PrevSafe Enterprise'}`, pageWidth - 14, 18, { align: 'right' });
+  doc.text(`Doc: ${organizationDocumentLine(organization)}`, pageWidth - 14, 18, { align: 'right' });
 
   // Accent Line
   doc.setFillColor(79, 70, 229); // indigo-600
@@ -158,6 +162,22 @@ function riskDegreeLine(client: Client): string {
   return client?.risk_degree
     ? `Grau ${client.risk_degree} (NR-04)`
     : 'GRAU DE RISCO NAO CLASSIFICADO';
+}
+
+/**
+ * Documento do cliente (CNPJ/CPF/CAEPF/CNO), ou aviso de pendencia.
+ *
+ * O fallback antigo era '00.000.000/0001-00' - um CNPJ de aparencia valida que
+ * nao pertence a ninguem. Num documento entregue ao cliente, um numero errado e
+ * pior que um campo declaradamente vazio.
+ */
+function clientDocumentLine(client?: Client | null): string {
+  return client?.document_number?.trim() || 'DOCUMENTO NAO INFORMADO';
+}
+
+/** Documento da organizacao emitente, ou aviso de pendencia. */
+function organizationDocumentLine(organization?: Organization | null): string {
+  return organization?.document_number?.trim() || 'CNPJ NAO INFORMADO';
 }
 
 function pcmsoPhysicianLine(organization: Organization): string {
@@ -303,7 +323,7 @@ export function exportServiceOrdersSummaryPdf({
 
   applyPageNumbers(doc);
 
-  const filename = `relatorio-ordens-servico-sst-${new Date().toISOString().split('T')[0]}.pdf`;
+  const filename = `relatorio-ordens-servico-sst-${dataDeHoje()}.pdf`;
   doc.save(filename);
 }
 
@@ -323,7 +343,7 @@ export function exportSingleServiceOrderPdf({
   });
 
   const title = `Dossiê Técnico da O.S.: ${serviceOrder.os_number || 'OS-' + serviceOrder.id.slice(0, 6)}`;
-  const subtitle = `Cliente: ${client?.trade_name || client?.legal_name || 'Cliente'} | CNPJ: ${client?.document_number || 'N/A'}`;
+  const subtitle = `Cliente: ${client?.trade_name || client?.legal_name || 'Cliente'} | CNPJ: ${clientDocumentLine(client)}`;
 
   applyDocumentTheme(doc, title, subtitle, organization);
 
@@ -346,7 +366,7 @@ export function exportSingleServiceOrderPdf({
   doc.setTextColor(51, 65, 85);
 
   doc.text(`Título / Escopo: ${serviceOrder.title}`, 18, currentY + 14);
-  doc.text(`Responsável Técnico: ${serviceOrder.technical_responsible_name || 'N/A'}`, 18, currentY + 20);
+  doc.text(`Responsável Técnico: ${serviceOrder.technical_responsible_name?.trim() || 'NAO INFORMADO'}`, 18, currentY + 20);
   doc.text(`Gestor Operacional: ${serviceOrder.manager_name || 'Engenharia de Segurança SST'}`, 18, currentY + 26);
   doc.text(`Prazo Final (SLA): ${formatDate(serviceOrder.due_date)}`, 18, currentY + 32);
 
@@ -584,7 +604,7 @@ export function exportESocialEventLogsPdf({
 
   applyPageNumbers(doc);
 
-  const filename = `relatorio-esocial-sst-logs-${new Date().toISOString().split('T')[0]}.pdf`;
+  const filename = `relatorio-esocial-sst-logs-${dataDeHoje()}.pdf`;
   doc.save(filename);
 }
 
@@ -660,7 +680,7 @@ export function exportWorkOrderOSPDF(
         { content: 'Razão Social:', styles: { fontStyle: 'bold', cellWidth: 26 } },
         { content: os.employer_name, styles: { cellWidth: 65 } },
         { content: 'CNPJ:', styles: { fontStyle: 'bold', cellWidth: 22 } },
-        { content: `${os.employer_document} | CNAE: ${os.employer_cnae || 'N/A'} (Grau ${os.employer_risk_grade || 2})`, styles: { cellWidth: 69 } }
+        { content: `${os.employer_document || 'DOCUMENTO NAO INFORMADO'} | CNAE: ${os.employer_cnae || 'NAO INFORMADO'} (${os.employer_risk_grade ? `Grau ${os.employer_risk_grade}` : 'GRAU DE RISCO NAO CLASSIFICADO'})`, styles: { cellWidth: 69 } }
       ],
       [
         { content: 'Estabelecimento:', styles: { fontStyle: 'bold' } },
@@ -931,12 +951,12 @@ export function exportWorkOrderOSPDF(
   doc.setFontSize(7.5);
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(15, 23, 42);
-  doc.text(os.responsible_engineer_name || 'Engenharia de Segurança do Trabalho', engX + (colWidth / 2), currentY + 16, { align: 'center' });
+  doc.text(os.responsible_engineer_name?.trim() || 'RESPONSAVEL TECNICO NAO INFORMADO', engX + (colWidth / 2), currentY + 16, { align: 'center' });
   
   doc.setFontSize(6.5);
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(100, 116, 139);
-  doc.text(os.responsible_engineer_registration || 'SESMT / Registro MTE', engX + (colWidth / 2), currentY + 20, { align: 'center' });
+  doc.text(os.responsible_engineer_registration?.trim() || 'REGISTRO PROFISSIONAL NAO INFORMADO', engX + (colWidth / 2), currentY + 20, { align: 'center' });
   doc.setTextColor(79, 70, 229);
   doc.setFont('helvetica', 'bold');
   doc.text(`[Responsável Técnico SST - ${organization.name}]`, engX + (colWidth / 2), currentY + 8, { align: 'center' });
@@ -1096,7 +1116,7 @@ export function exportBatchWorkOrdersOSPDF(
 
   applyPageNumbers(masterDoc);
 
-  const filename = `lote-ordens-de-servico-nr01-${workOrders.length}-funcionarios-${new Date().toISOString().split('T')[0]}.pdf`;
+  const filename = `lote-ordens-de-servico-nr01-${workOrders.length}-funcionarios-${dataDeHoje()}.pdf`;
   masterDoc.save(filename);
 }
 
@@ -1155,7 +1175,7 @@ export function exportEPIDeliveryFichaPDF(
         { content: 'Empresa:', styles: { fontStyle: 'bold', cellWidth: 22 } },
         { content: client?.trade_name || client?.legal_name || 'Empresa Cliente', styles: { cellWidth: 68 } },
         { content: 'CNPJ:', styles: { fontStyle: 'bold', cellWidth: 18 } },
-        { content: client?.document_number || '00.000.000/0001-00', styles: { cellWidth: 74 } }
+        { content: clientDocumentLine(client), styles: { cellWidth: 74 } }
       ],
       [
         { content: 'Colaborador:', styles: { fontStyle: 'bold' } },
@@ -1165,7 +1185,7 @@ export function exportEPIDeliveryFichaPDF(
       ],
       [
         { content: 'Cargo / Função:', styles: { fontStyle: 'bold' } },
-        { content: `${employee.job_title} (CBO: ${employee.cbo || 'N/A'})` },
+        { content: `${employee.job_title} (CBO: ${employee.cbo || 'não informado'})` },
         { content: 'Setor / GHE:', styles: { fontStyle: 'bold' } },
         { content: `${employee.sector_name} | ${employee.ghe_name || 'GHE Operacional'}` }
       ],
@@ -1173,7 +1193,7 @@ export function exportEPIDeliveryFichaPDF(
         { content: 'Admissão:', styles: { fontStyle: 'bold' } },
         { content: formatDate(employee.admission_date) },
         { content: 'Data Emissão:', styles: { fontStyle: 'bold' } },
-        { content: formatDate(new Date().toISOString().split('T')[0]) }
+        { content: formatDate(dataDeHoje()) }
       ]
     ],
     styles: { fontSize: 7.5, cellPadding: 2 }
@@ -1321,7 +1341,7 @@ export function exportBatchEPIDeliveryFichasPDF(
         ],
         [
           { content: 'Função:', styles: { fontStyle: 'bold' } },
-          { content: `${emp.job_title} (CBO: ${emp.cbo || 'N/A'})` },
+          { content: `${emp.job_title} (CBO: ${emp.cbo || 'não informado'})` },
           { content: 'Setor / GHE:', styles: { fontStyle: 'bold' } },
           { content: `${emp.sector_name} | ${emp.ghe_name || 'GHE'}` }
         ]
@@ -1384,7 +1404,7 @@ export function exportBatchEPIDeliveryFichasPDF(
 
   applyPageNumbers(doc);
 
-  doc.save(`lote-fichas-epi-nr06-${employees.length}-funcionarios-${new Date().toISOString().split('T')[0]}.pdf`);
+  doc.save(`lote-fichas-epi-nr06-${employees.length}-funcionarios-${dataDeHoje()}.pdf`);
 }
 
 /**
@@ -1450,7 +1470,7 @@ export function exportWorkOrdersOSExcel(
   XLSX.utils.book_append_sheet(workbook, osWorksheet, 'Ordens de Serviço NR-01');
   XLSX.utils.book_append_sheet(workbook, detailsWorksheet, 'Riscos e EPIs Detalhados');
 
-  const finalName = fileName || `ordens-de-servico-nr01-${new Date().toISOString().split('T')[0]}.xlsx`;
+  const finalName = fileName || `ordens-de-servico-nr01-${dataDeHoje()}.xlsx`;
   XLSX.writeFile(workbook, finalName);
 }
 
@@ -1487,7 +1507,7 @@ export function exportEPIDeliveriesExcel(
   const worksheet = XLSX.utils.json_to_sheet(data);
   XLSX.utils.book_append_sheet(workbook, worksheet, 'Controle de Entregas EPI');
 
-  const finalName = fileName || `relatorio-entregas-epi-nr06-${new Date().toISOString().split('T')[0]}.xlsx`;
+  const finalName = fileName || `relatorio-entregas-epi-nr06-${dataDeHoje()}.xlsx`;
   XLSX.writeFile(workbook, finalName);
 }
 
@@ -1563,7 +1583,7 @@ export function exportTrainingAttendanceListPDF(
         { content: 'Empresa / Razão Social:', styles: { fontStyle: 'bold', cellWidth: 32 } },
         { content: client?.legal_name || training.client_name || 'Empresa Cliente', styles: { cellWidth: 58 } },
         { content: 'CNPJ / Inscrição:', styles: { fontStyle: 'bold', cellWidth: 26 } },
-        { content: client?.document_number || '00.000.000/0001-00', styles: { cellWidth: 66 } }
+        { content: clientDocumentLine(client), styles: { cellWidth: 66 } }
       ],
       [
         { content: 'Local de Realização:', styles: { fontStyle: 'bold' } },
@@ -1668,7 +1688,7 @@ export function exportTrainingAttendanceListPDF(
   doc.setFontSize(6.5);
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(100, 116, 139);
-  doc.text(t.technicalManagerRegistration || 'SESMT / Registro CREA-MTE', rightX + (colWidth / 2), currentY + 18, { align: 'center' });
+  doc.text(t.technicalManagerRegistration?.trim() || 'REGISTRO PROFISSIONAL NAO INFORMADO', rightX + (colWidth / 2), currentY + 18, { align: 'center' });
 
   applyPageNumbers(doc);
 
@@ -1734,7 +1754,7 @@ export function exportTrainingCertificatePDF(
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(71, 85, 105);
   doc.text(`Portador(a) do CPF nº ${attendee.employee_cpf} | Função: ${attendee.employee_job_title} | Setor: ${attendee.employee_sector}`, pageWidth / 2, 77, { align: 'center' });
-  doc.text(`Empresa: ${client?.legal_name || training.client_name || 'Empresa Cliente'} - CNPJ: ${client?.document_number || '00.000.000/0001-00'}`, pageWidth / 2, 83, { align: 'center' });
+  doc.text(`Empresa: ${client?.legal_name || training.client_name || 'Empresa Cliente'} - CNPJ: ${clientDocumentLine(client)}`, pageWidth / 2, 83, { align: 'center' });
 
   doc.setFontSize(10.5);
   doc.setTextColor(30, 41, 59);
@@ -1785,7 +1805,7 @@ export function exportTrainingCertificatePDF(
   doc.setFontSize(7);
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(100, 116, 139);
-  doc.text(t.technicalManagerRegistration || 'CREA / MTE', rightX + (colW / 2), signY + 8, { align: 'center' });
+  doc.text(t.technicalManagerRegistration?.trim() || 'REGISTRO PROFISSIONAL NAO INFORMADO', rightX + (colW / 2), signY + 8, { align: 'center' });
 
   // Participant Signature (small on the side)
   const partX = (pageWidth / 2) - (colW / 2);
@@ -1869,7 +1889,7 @@ export function exportAdmissionKitPDF(
       ],
       [
         { content: 'Cargo / Função:', styles: { fontStyle: 'bold' } },
-        { content: `${employee.job_title} (CBO: ${employee.cbo || 'N/A'})` },
+        { content: `${employee.job_title} (CBO: ${employee.cbo || 'não informado'})` },
         { content: 'Setor / GHE:', styles: { fontStyle: 'bold' } },
         { content: `${employee.sector_name} | ${employee.ghe_name || 'GHE'}` }
       ],
@@ -1877,7 +1897,7 @@ export function exportAdmissionKitPDF(
         { content: 'Empresa:', styles: { fontStyle: 'bold' } },
         { content: client?.legal_name || client?.trade_name || 'Empresa Cliente' },
         { content: 'CNPJ:', styles: { fontStyle: 'bold' } },
-        { content: client?.document_number || '00.000.000/0001-00' }
+        { content: clientDocumentLine(client) }
       ]
     ],
     styles: { fontSize: 7.5, cellPadding: 2.2 }
@@ -2304,7 +2324,7 @@ export function exportTrainingAttendanceExcel(
   XLSX.utils.book_append_sheet(workbook, attWorksheet, 'Lista de Presença');
   XLSX.utils.book_append_sheet(workbook, sylWorksheet, 'Conteúdo Programático');
 
-  const finalName = fileName || `lista-presenca-${t.code}-${new Date().toISOString().split('T')[0]}.xlsx`;
+  const finalName = fileName || `lista-presenca-${t.code}-${dataDeHoje()}.xlsx`;
   XLSX.writeFile(workbook, finalName);
 }
 
@@ -2402,7 +2422,7 @@ export function exportPGRDocumentPdf({
       ],
       [
         { content: 'CNPJ:', styles: { fontStyle: 'bold' } },
-        { content: client.document_number || 'N/A' },
+        { content: clientDocumentLine(client) },
         { content: 'CNAE Principal:', styles: { fontStyle: 'bold' } },
         { content: `${cnaeLine(client)} (${riskDegreeLine(client)})` }
       ],
@@ -2425,28 +2445,42 @@ export function exportPGRDocumentPdf({
   let curY = (doc as any).lastAutoTable.finalY + 6;
 
   // GHE & Risk Inventory Table
+  // GHE sem risco cadastrado nao e GHE sem risco: e GHE nao avaliado. O texto
+  // antigo afirmava "Ausencia de riscos especificos" e ja recomendava NR-17 sem
+  // que ninguem tivesse olhado o posto de trabalho.
   const tableRows: any[] = [];
   ghes.forEach((ghe: any) => {
     const gheRisks = risks.filter((r: any) => r.ghe_id === ghe.id);
     const gheEmps = employees.filter(e => e.ghe_id === ghe.id);
+    const gheCode = ghe.code?.trim() || 'SEM CÓDIGO';
+    const gheName = ghe.name?.trim() || 'GHE sem identificação';
 
     if (gheRisks.length === 0) {
       tableRows.push([
-        ghe.code || 'GHE-01',
-        ghe.name,
-        'Ausência de riscos específicos / Fatores ergonômicos gerais',
-        'Avaliação Qualitativa',
-        'Manter medidas de conforto e ergonomia (NR-17)',
+        gheCode,
+        gheName,
+        'NENHUM RISCO INVENTARIADO PARA ESTE GHE',
+        'Não avaliado',
+        'Pendente: realizar o levantamento de perigos deste GHE (subitem 1.5.4.3 da NR-01)',
         `${gheEmps.length} trab.`
       ]);
     } else {
       gheRisks.forEach((r: any) => {
+        const codigo = r.risk_code_table_24?.trim();
+        const medicao = r.measured_value
+          ? `${r.measured_value} ${r.measurement_unit || ''}`.trim()
+          : 'Sem medição registrada';
+        const controles = [
+          r.epi_required ? 'EPI exigido' : '',
+          r.epc_implemented ? 'EPC implantado' : '',
+          r.ltcat_technical_conclusion?.trim() || ''
+        ].filter(Boolean);
         tableRows.push([
-          ghe.code || 'GHE-01',
-          ghe.name,
-          `${r.agent_name} (Tab.24: ${r.risk_code_table_24 || '01.01.001'})\nFonte: ${r.generating_source || 'Processo produtivo'}`,
-          `${r.evaluation_type || 'Qualitativa'}\n${r.measured_value ? r.measured_value + ' ' + (r.measurement_unit || '') : 'Sem medição pontual'}`,
-          `${r.epi_required ? 'EPI com CA Eficaz\n' : ''}${r.epc_implemented ? 'EPC Instalado\n' : ''}${r.ltcat_technical_conclusion || 'Plano de Ação PrevSafe'}`,
+          gheCode,
+          gheName,
+          `${r.agent_name || 'Agente não identificado'} (${codigo ? `Tab.24: ${codigo}` : 'Tab.24 não informada'})\nFonte: ${r.generating_source?.trim() || 'não informada'}`,
+          `${r.evaluation_type?.trim() || 'Tipo de avaliação não informado'}\n${medicao}`,
+          controles.length > 0 ? controles.join('\n') : 'Nenhuma medida de controle registrada',
           `${gheEmps.length} trab.`
         ]);
       });
@@ -2462,8 +2496,17 @@ export function exportPGRDocumentPdf({
     ], [
       'GHE', 'Setor / Posto', 'Perigo / Agente de Risco (eSocial)', 'Tipo de Avaliação / Medição', 'Medidas de Prevenção / Plano', 'Expostos'
     ]],
+    // Sem GHE cadastrado o PGR nao tem inventario. Antes saia uma linha de
+    // exemplo com ruido de 82 dBA e um CA que nunca existiu naquele cliente.
     body: tableRows.length > 0 ? tableRows : [
-      ['GHE-01', 'Operacional Geral', 'Ruído Contínuo / Poeiras', 'Quantitativa (82 dBA)', 'EPI Protetor Auditivo CA 14235', `${employees.length} trab.`]
+      [{
+        content:
+          'INVENTÁRIO DE RISCOS VAZIO. Não há GHE nem agente de risco cadastrado para este cliente. ' +
+          'Sem inventário, este documento não atende ao subitem 1.5.7 da NR-01 e não deve ser entregue ' +
+          'como PGR concluído: cadastre os GHEs e os riscos antes de emitir.',
+        colSpan: 6,
+        styles: { textColor: [180, 83, 9], fontStyle: 'bold' }
+      }]
     ],
     styles: { fontSize: 6.8, cellPadding: 2 },
     headStyles: { fillColor: [51, 65, 85], textColor: [255, 255, 255], fontStyle: 'bold' }
@@ -2554,7 +2597,7 @@ export function exportPGRTRDocumentPdf({
         { content: 'Propriedade / Fazenda:', styles: { fontStyle: 'bold', cellWidth: 32 } },
         { content: client.legal_name || client.trade_name },
         { content: 'CNPJ / CAEPF / NIRF:', styles: { fontStyle: 'bold', cellWidth: 32 } },
-        { content: client.document_number || 'N/A' }
+        { content: clientDocumentLine(client) }
       ],
       [
         { content: 'Atividade Rural:', styles: { fontStyle: 'bold' } },
@@ -2572,26 +2615,77 @@ export function exportPGRTRDocumentPdf({
     styles: { fontSize: 7.2, cellPadding: 2 }
   });
 
-  const curY = (doc as any).lastAutoTable.finalY + 6;
+  let curY = (doc as any).lastAutoTable.finalY + 6;
+
+  // Inventario rural montado sobre os riscos reais, como no PGR urbano.
+  const ruralRows: any[] = (risks || [])
+    .filter((r: any) => r && r.status !== 'INACTIVE')
+    .map((r: any) => {
+      const ghe = (ghes || []).find((g: any) => g?.id === r?.ghe_id);
+      const controles = [
+        r.epc_implemented ? `EPC: ${r.epc_description?.trim() || 'sem descrição'}` : '',
+        r.epi_required ? 'EPI exigido' : '',
+        r.ltcat_technical_conclusion?.trim() || ''
+      ].filter(Boolean);
+      return [
+        [ghe?.code, ghe?.name].filter(Boolean).join(' — ') || 'GHE não vinculado',
+        `${r.agent_name || 'Agente não identificado'}\nFonte: ${r.generating_source?.trim() || 'não informada'}`,
+        controles.length > 0 ? controles.join('\n') : 'Nenhuma medida de controle registrada',
+        r.epc_implemented && r.epc_effective
+          ? 'Controle implantado e avaliado como eficaz'
+          : r.epc_implemented
+            ? 'Controle implantado, eficácia não confirmada'
+            : 'PENDENTE — sem controle coletivo registrado'
+      ];
+    });
 
   autoTable(doc, {
     startY: curY,
     margin: { left: margin, right: margin },
     theme: 'grid',
     head: [[
-      { content: '2. REQUISITOS ESPECÍFICOS DE SEGURANÇA NO MEIO RURAL (NR-31)', colSpan: 4, styles: { fillColor: [15, 23, 42], textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 8 } }
+      { content: '2. INVENTÁRIO DE RISCOS DO ESTABELECIMENTO RURAL (NR-31)', colSpan: 4, styles: { fillColor: [15, 23, 42], textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 8 } }
     ], [
-      'Área Temática NR-31', 'Perigos / Riscos Mapeados', 'Controles Aplicados', 'Conformidade'
+      'GHE / Frente de trabalho', 'Perigo / Agente de risco inventariado', 'Medidas de controle registradas', 'Situação'
     ]],
-    body: [
-      ['Agrotóxicos e Adjuvantes (31.7)', 'Exposição dérmica e inalatória a defensivos agrícolas', 'EPI Hidrorrepelente completo com CA, filtro mecânico, capacitação 20h obrigatória', 'CONFORME'],
-      ['Máquinas e Tratores Agrícolas (31.12)', 'Tombamento, acoplamento de tomada de força (TDP) e atropelamento', 'Estrutura ROPS/FOPS, proteção integral da tomada de força e treinamento de operador', 'CONFORME'],
-      ['Trabalho a Céu Aberto e Calor (31.10)', 'Sobrecarga térmica solar, radiação UV e desidratação', 'Abrigos móveis no campo, fornecimento de água potável fresca e protetor solar FPS 50', 'CONFORME'],
-      ['Animais Peçonhentos e Biológicos (31.14)', 'Acidentes com serpentes, escorpiões, aranhas e vetores', 'Botinas de segurança com perneira de couro rígido e kit primeiros socorros', 'CONFORME']
+    // Antes saiam quatro linhas fixas declarando CONFORME em agrotoxicos,
+    // maquinas, calor e animais peconhentos - para qualquer propriedade, sem
+    // que nada disso tivesse sido verificado. Declarar conformidade que
+    // ninguem apurou e o pior tipo de dado inventado: passa na fiscalizacao
+    // ate o dia do acidente. Agora a tabela vem do inventario real.
+    body: ruralRows.length > 0 ? ruralRows : [
+      [{
+        content:
+          'INVENTÁRIO DE RISCOS VAZIO. Não há agente de risco cadastrado para este estabelecimento rural. ' +
+          'Este documento não avalia conformidade com os itens 31.7 (agrotóxicos), 31.10 (trabalho a céu ' +
+          'aberto), 31.12 (máquinas e implementos) e 31.14 (agentes biológicos e animais peçonhentos) da ' +
+          'NR-31 — nenhum deles foi verificado. Levante os perigos antes de emitir o PGRTR.',
+        colSpan: 4,
+        styles: { textColor: [180, 83, 9], fontStyle: 'bold' }
+      }]
     ],
     styles: { fontSize: 7, cellPadding: 2.2 },
     headStyles: { fillColor: [5, 150, 105], textColor: [255, 255, 255], fontStyle: 'bold' }
   });
+
+  curY = (doc as any).lastAutoTable.finalY + 6;
+
+  // O sistema nao guarda checklist tematico da NR-31. Dizer isso e obrigatorio:
+  // sem a ressalva, a ausencia do tema poderia ser lida como conformidade.
+  doc.setFont('helvetica', 'italic');
+  doc.setFontSize(7);
+  doc.setTextColor(120, 53, 15);
+  doc.text(
+    doc.splitTextToSize(
+      'Escopo deste documento: o inventário acima reproduz os riscos registrados no sistema. A verificação ' +
+      'específica dos itens 31.7 (agrotóxicos), 31.10 (trabalho a céu aberto), 31.12 (máquinas, implementos ' +
+      'e tomada de força) e 31.14 (agentes biológicos e animais peçonhentos) da NR-31 depende de inspeção ' +
+      'em campo e não está registrada neste sistema — a ausência de apontamento não significa conformidade.',
+      pageWidth - margin * 2
+    ),
+    margin,
+    curY
+  );
 
   applyPageNumbers(doc);
   doc.save(`pgrtr-nr31-${(client.trade_name || client.legal_name || 'rural').replace(/\s+/g, '_').toLowerCase()}.pdf`);
@@ -2656,7 +2750,7 @@ export function exportPCMSODocumentPdf({
         { content: 'Empresa:', styles: { fontStyle: 'bold', cellWidth: 26 } },
         { content: client.legal_name || client.trade_name },
         { content: 'CNPJ:', styles: { fontStyle: 'bold', cellWidth: 26 } },
-        { content: client.document_number || 'N/A' }
+        { content: clientDocumentLine(client) }
       ],
       [
         { content: 'Médico Coordenador:', styles: { fontStyle: 'bold' } },
@@ -2670,14 +2764,17 @@ export function exportPCMSODocumentPdf({
 
   const curY = (doc as any).lastAutoTable.finalY + 6;
 
+  // Quadro de exames: cada campo ausente e declarado ausente. Os defaults
+  // antigos (codigo 0295, periodicidade 12 meses, gatilhos e fundamentacao)
+  // faziam o PDF afirmar um protocolo medico que ninguem prescreveu.
   const examRows = examProtocols.map((p: any) => {
     const ghe = ghes.find((g: any) => g.id === p.ghe_id);
     return [
-      p.exam_name,
-      p.exam_code_table_27 || '0295',
-      ghe?.name || 'Todos os Colaboradores',
-      `${p.periodicity_months || 12} meses (${p.triggers?.join(', ') || 'Admissional, Periódico, Demissional'})`,
-      p.mandatory_by_standard || 'NR-07 Quadro 1 e 2'
+      p.exam_name?.trim() || 'Exame não identificado',
+      p.exam_code_table_27?.trim() || 'Cód. não informado',
+      ghe?.name?.trim() || 'GHE não vinculado',
+      `${p.periodicity_months ? `${p.periodicity_months} meses` : 'Periodicidade não definida'} (${p.triggers?.length ? p.triggers.join(', ') : 'gatilhos não definidos'})`,
+      p.mandatory_by_standard?.trim() || 'Fundamentação não informada'
     ];
   });
 
@@ -2690,10 +2787,17 @@ export function exportPCMSODocumentPdf({
     ], [
       'Exame / Procedimento', 'Cód. Tab. 27', 'GHE / Cargo Aplicado', 'Periodicidade / Gatilhos', 'Fundamentação Legal'
     ]],
+    // Sem protocolo cadastrado saiam tres exames de exemplo - audiometria e
+    // espirometria para GHEs que talvez nem existam no cliente.
     body: examRows.length > 0 ? examRows : [
-      ['Avaliação Clínica Ocupacional (Anamnese + Exame Físico)', '0295', 'Todos os GHEs', '12 meses (Admissional, Periódico, Mudança, Retorno, Demissional)', 'NR-07 Item 7.5.6'],
-      ['Audiometria Tonal e Vocal Ocupacional', '0055', 'GHE Operacional (Expostos a Ruído)', 'Admissional, 6º mês e Anual', 'NR-07 Anexo II'],
-      ['Espirometria Ocupacional', '0181', 'GHE Poeiras Minerais / Químicos', 'Bienal', 'NR-07 Anexo I']
+      [{
+        content:
+          'NENHUM PROTOCOLO DE EXAME CADASTRADO. O quadro de exames do PCMSO não pode ser emitido sem os ' +
+          'exames definidos pelo médico coordenador para cada GHE, conforme o item 7.5 da NR-07. Cadastre ' +
+          'os protocolos antes de entregar este documento.',
+        colSpan: 5,
+        styles: { textColor: [180, 83, 9], fontStyle: 'bold' }
+      }]
     ],
     styles: { fontSize: 7, cellPadding: 2.2 },
     headStyles: { fillColor: [13, 148, 136], textColor: [255, 255, 255], fontStyle: 'bold' }
@@ -2762,7 +2866,7 @@ export function exportLTCATDocumentPdf({
         { content: 'Empresa:', styles: { fontStyle: 'bold', cellWidth: 26 } },
         { content: client.legal_name || client.trade_name },
         { content: 'CNPJ:', styles: { fontStyle: 'bold', cellWidth: 26 } },
-        { content: client.document_number || 'N/A' }
+        { content: clientDocumentLine(client) }
       ],
       [
         { content: 'Responsável Técnico:', styles: { fontStyle: 'bold' } },
@@ -2776,17 +2880,27 @@ export function exportLTCATDocumentPdf({
 
   const curY = (doc as any).lastAutoTable.finalY + 6;
 
+  // O codigo GFIP define 15, 20 ou 25 anos de aposentadoria especial. O default
+  // '04' (25 anos) fazia o laudo afirmar um enquadramento previdenciario que
+  // ninguem tinha classificado - e esse numero vai para o eSocial S-2240.
   const ltcatRows: any[] = [];
   ghes.forEach((ghe: any) => {
-    const gheRisks = risks.filter((r: any) => r.ghe_id === ghe.id);
+    const gheRisks = risks.filter((r: any) => r.ghe_id === ghe.id && r.status !== 'INACTIVE');
     gheRisks.forEach((r: any) => {
+      const aposentadoria = r.special_retirement_applies
+        ? (r.gfip_code
+            ? `SIM — Código GFIP ${r.gfip_code}`
+            : 'SIM, MAS CÓDIGO GFIP NÃO CLASSIFICADO — enquadramento incompleto')
+        : 'NÃO ENSEJA APOSENTADORIA ESPECIAL';
       ltcatRows.push([
-        ghe.code || 'GHE',
-        ghe.name,
-        `${r.agent_name} (Tab.24: ${r.risk_code_table_24})`,
-        r.measured_value ? `${r.measured_value} ${r.measurement_unit}` : 'Avaliação Qualitativa',
-        r.special_retirement_applies ? `SIM - Código GFIP ${r.gfip_code || '04'}` : 'NÃO ENSEJA APOSENTADORIA ESPECIAL',
-        r.epi_required ? 'EPI Eficaz (Mitigado)' : 'Sem necessidade EPI'
+        ghe.code?.trim() || 'SEM CÓDIGO',
+        ghe.name?.trim() || 'GHE sem identificação',
+        `${r.agent_name || 'Agente não identificado'} (${r.risk_code_table_24?.trim() ? `Tab.24: ${r.risk_code_table_24}` : 'Tab.24 não informada'})`,
+        r.measured_value ? `${r.measured_value} ${r.measurement_unit || ''}`.trim() : 'Sem medição registrada (avaliação qualitativa)',
+        aposentadoria,
+        r.epi_required
+          ? (r.epis?.some((e: any) => e?.is_effective) ? 'EPI com CA declarado eficaz' : 'EPI exigido, eficácia não confirmada')
+          : 'EPI não exigido para este agente'
       ]);
     });
   });
@@ -2801,7 +2915,14 @@ export function exportLTCATDocumentPdf({
       'GHE', 'Setor / Posto', 'Agente Nocivo', 'Intensidade / Concentração', 'Aposentadoria Especial (INSS)', 'Eficácia EPI (eSocial)'
     ]],
     body: ltcatRows.length > 0 ? ltcatRows : [
-      ['GHE-01', 'Operacional', 'Ruído Contínuo (01.01.001)', '83 dBA (Abaixo N.Ação 85dBA)', 'NÃO ENSEJA APOSENTADORIA ESPECIAL', 'EPI Eficaz (CA 14235)']
+      [{
+        content:
+          'INVENTÁRIO DE RISCOS VAZIO. Não há agente nocivo registrado para este estabelecimento. ' +
+          'Este LTCAT não conclui pela existência nem pela inexistência de exposição a agentes nocivos e ' +
+          'não deve embasar o evento S-2240 do eSocial nem o preenchimento de PPP.',
+        colSpan: 6,
+        styles: { textColor: [180, 83, 9], fontStyle: 'bold' }
+      }]
     ],
     styles: { fontSize: 6.8, cellPadding: 2 },
     headStyles: { fillColor: [126, 34, 206], textColor: [255, 255, 255], fontStyle: 'bold' }
@@ -2809,6 +2930,59 @@ export function exportLTCATDocumentPdf({
 
   applyPageNumbers(doc);
   doc.save(`ltcat-inss-${(client.trade_name || client.legal_name || 'empresa').replace(/\s+/g, '_').toLowerCase()}.pdf`);
+}
+
+/**
+ * Blocos finais comuns aos dois laudos periciais: pendencias e conclusao.
+ *
+ * A conclusao nunca e montada aqui - ela chega pronta de `montarCorpoLaudo*`,
+ * que so afirma o que o inventario sustenta. Esta funcao apenas desenha.
+ */
+function renderBlocosPericiais(
+  doc: jsPDF,
+  corpo: CorpoLaudo,
+  opts: { margin: number; startY: number; tituloConclusao: string; corTitulo: [number, number, number] }
+) {
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
+  const larguraUtil = pageWidth - opts.margin * 2;
+  let curY = opts.startY;
+
+  const quebrarSePreciso = (alturaNecessaria: number) => {
+    if (curY + alturaNecessaria > pageHeight - 20) {
+      doc.addPage();
+      curY = 20;
+    }
+  };
+
+  const escreverParagrafo = (texto: string, tamanho: number, estilo: 'normal' | 'bold' | 'italic') => {
+    doc.setFont('helvetica', estilo);
+    doc.setFontSize(tamanho);
+    const linhas = doc.splitTextToSize(texto, larguraUtil);
+    for (const linha of linhas) {
+      quebrarSePreciso(5);
+      doc.text(linha, opts.margin, curY);
+      curY += tamanho * 0.5 + 0.7;
+    }
+    curY += 1.5;
+  };
+
+  if (corpo.pendencias.length > 0) {
+    quebrarSePreciso(16);
+    doc.setTextColor(180, 83, 9);
+    escreverParagrafo('PENDÊNCIAS E LIMITAÇÕES DESTA AVALIAÇÃO', 8.5, 'bold');
+    doc.setTextColor(120, 53, 15);
+    corpo.pendencias.forEach(p => escreverParagrafo(`• ${p}`, 7.5, 'normal'));
+    curY += 2;
+  }
+
+  quebrarSePreciso(16);
+  doc.setTextColor(opts.corTitulo[0], opts.corTitulo[1], opts.corTitulo[2]);
+  escreverParagrafo(opts.tituloConclusao, 9, 'bold');
+  doc.setTextColor(15, 23, 42);
+  corpo.conclusao.forEach(p => escreverParagrafo(p, 8, 'normal'));
+
+  return curY;
 }
 
 /**
@@ -2870,7 +3044,7 @@ export function exportInsalubridadeLaudoPdf({
         { content: 'Empresa:', styles: { fontStyle: 'bold', cellWidth: 26 } },
         { content: client.legal_name || client.trade_name },
         { content: 'CNPJ:', styles: { fontStyle: 'bold', cellWidth: 26 } },
-        { content: client.document_number || 'N/A' }
+        { content: clientDocumentLine(client) }
       ],
       [
         { content: 'Perito Responsável:', styles: { fontStyle: 'bold' } },
@@ -2884,22 +3058,38 @@ export function exportInsalubridadeLaudoPdf({
 
   const curY = (doc as any).lastAutoTable.finalY + 6;
 
+  // Corpo do laudo montado sobre o inventario real do cliente. Antes eram tres
+  // linhas escritas no codigo - inclusive uma que concluia "INSALUBRE GRAU
+  // MAXIMO (40%)" para toda e qualquer empresa que gerasse este PDF.
+  const corpo = montarCorpoInsalubridade(risks, ghes);
+
   autoTable(doc, {
     startY: curY,
     margin: { left: margin, right: margin },
     theme: 'grid',
     head: [[
-      { content: '2. ENQUADRAMENTO TÉCNICO POR ANEXO DA NR-15 E CONCLUSÃO JURÍDICA', colSpan: 5, styles: { fillColor: [15, 23, 42], textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 8 } }
+      { content: '2. ENQUADRAMENTO POR ANEXO DA NR-15 A PARTIR DO INVENTÁRIO DE RISCOS REGISTRADO', colSpan: 5, styles: { fillColor: [15, 23, 42], textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 8 } }
     ], [
-      'GHE / Posto', 'Agente Avaliado', 'Anexo NR-15', 'Limite Tolerância x Medição', 'Conclusão Técnica / Adicional'
+      'GHE / Posto', 'Agente avaliado', 'Anexo NR-15 registrado', 'Avaliação / Limite de tolerância', 'Conclusão / Adicional'
     ]],
-    body: [
-      ['GHE Operacional', 'Ruído Contínuo', 'Anexo nº 01', 'LT: 85 dBA (Encontrado: 83.5 dBA)', 'NÃO INSALUBRE (Dentro do limite com uso de EPI CA 14235)'],
-      ['GHE Solda / Caldeiraria', 'Fumos Metálicos', 'Anexo nº 11/13', 'LT: 5 mg/m³ (Encontrado: 2.1 mg/m³)', 'NÃO INSALUBRE (EPI com CA e exaustão localizada)'],
-      ['GHE Higienização Banheiros', 'Agentes Biológicos', 'Anexo nº 14', 'Avaliação Qualitativa (Uso público)', 'INSALUBRE GRAU MÁXIMO (40% - Súmula 448 TST)']
+    body: corpo.linhas.length > 0 ? corpo.linhas : [
+      [{
+        content:
+          'INVENTÁRIO DE RISCOS VAZIO — nenhum agente foi periciado. Veja a conclusão abaixo.',
+        colSpan: 5,
+        styles: { textColor: [180, 83, 9], fontStyle: 'bold' }
+      }]
     ],
-    styles: { fontSize: 7, cellPadding: 2.2 },
-    headStyles: { fillColor: [217, 119, 6], textColor: [255, 255, 255], fontStyle: 'bold' }
+    styles: { fontSize: 6.8, cellPadding: 2.2, overflow: 'linebreak' },
+    headStyles: { fillColor: [217, 119, 6], textColor: [255, 255, 255], fontStyle: 'bold' },
+    columnStyles: { 0: { cellWidth: 28 }, 2: { cellWidth: 32 }, 3: { cellWidth: 38 } }
+  });
+
+  renderBlocosPericiais(doc, corpo, {
+    margin,
+    startY: (doc as any).lastAutoTable.finalY + 8,
+    tituloConclusao: '3. CONCLUSÃO PERICIAL',
+    corTitulo: [180, 83, 9]
   });
 
   applyPageNumbers(doc);
@@ -2938,7 +3128,9 @@ export function exportPericulosidadeLaudoPdf({
   doc.text('LAUDO TÉCNICO PERICIAL DE PERICULOSIDADE (NR-16 / ART. 193 DA CLT)', margin, 18);
   doc.setTextColor(255, 255, 255);
   doc.setFont('helvetica', 'bold');
-  doc.text(`ADICIONAL DE 30% CLT`, pageWidth - margin, 12, { align: 'right' });
+  // O cabecalho anunciava "ADICIONAL DE 30% CLT" em todas as paginas, antes de
+  // qualquer analise. O titulo do documento nao pode antecipar a conclusao.
+  doc.text(`ART. 193 DA CLT`, pageWidth - margin, 12, { align: 'right' });
   doc.setFillColor(239, 68, 68); // red-500
   doc.rect(0, 28, pageWidth, 2, 'F');
 
@@ -2965,7 +3157,7 @@ export function exportPericulosidadeLaudoPdf({
         { content: 'Empresa:', styles: { fontStyle: 'bold', cellWidth: 26 } },
         { content: client.legal_name || client.trade_name },
         { content: 'CNPJ:', styles: { fontStyle: 'bold', cellWidth: 26 } },
-        { content: client.document_number || 'N/A' }
+        { content: clientDocumentLine(client) }
       ],
       [
         { content: 'Perito Responsável:', styles: { fontStyle: 'bold' } },
@@ -2979,22 +3171,50 @@ export function exportPericulosidadeLaudoPdf({
 
   const curY = (doc as any).lastAutoTable.finalY + 6;
 
+  // Aqui estava o pior caso do arquivo: tres linhas fixas que concluiam
+  // "PERICULOSO (Gera Adicional de 30% sobre o salario-base)" para qualquer
+  // empresa - uma clinica de fisioterapia recebia a mesma cabine primaria e o
+  // mesmo tanque de inflamaveis de uma subestacao. Agora o corpo vem do
+  // inventario de riscos do proprio cliente.
+  const corpo = montarCorpoPericulosidade(risks, ghes);
+
   autoTable(doc, {
     startY: curY,
     margin: { left: margin, right: margin },
     theme: 'grid',
     head: [[
-      { content: '2. CARACTERIZAÇÃO PERICIAL DE PERICULOSIDADE POR POSTO DE TRABALHO', colSpan: 5, styles: { fillColor: [15, 23, 42], textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 8 } }
+      { content: '2. CONFRONTO DO INVENTÁRIO DE RISCOS REGISTRADO COM OS ANEXOS DA NR-16', colSpan: 5, styles: { fillColor: [15, 23, 42], textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 8 } }
     ], [
-      'GHE / Cargo', 'Atividade / Operação', 'Anexo NR-16', 'Área de Risco Delimitada', 'Conclusão / Adicional 30%'
+      'GHE / Posto', 'Agente / Operação', 'Anexo NR-16 registrado', 'Fonte geradora / Local', 'Conclusão'
     ]],
-    body: [
-      ['GHE Manutenção Elétrica', 'Intervenção em Sistema Elétrico de Potência (SEP) e Alta Tensão', 'Anexo 4 (Energia Elétrica)', 'Cabine Primária e Quadros de Distribuição Força', 'PERICULOSO (Gera Adicional de 30% sobre o salário-base)'],
-      ['GHE Armazenamento Combustíveis', 'Abastecimento e estocagem de inflamáveis líquidos > 200L', 'Anexo 2 (Inflamáveis)', 'Bacia de contenção e raio de 7,5m dos pontos de descarga', 'PERICULOSO (Gera Adicional de 30%)'],
-      ['GHE Operação Geral', 'Trabalho em linha de produção sem contato com energia ou químicos', 'Nenhum anexo aplicável', 'Área sem perigo iminente', 'NÃO PERICULOSO (Sem adicional)']
+    body: corpo.linhas.length > 0 ? corpo.linhas : [
+      [{
+        content:
+          'INVENTÁRIO DE RISCOS VAZIO — nenhuma atividade ou operação foi periciada. Veja a conclusão abaixo.',
+        colSpan: 5,
+        styles: { textColor: [180, 83, 9], fontStyle: 'bold' }
+      }]
     ],
-    styles: { fontSize: 7, cellPadding: 2.2 },
-    headStyles: { fillColor: [220, 38, 38], textColor: [255, 255, 255], fontStyle: 'bold' }
+    styles: { fontSize: 6.8, cellPadding: 2.2, overflow: 'linebreak' },
+    headStyles: { fillColor: [220, 38, 38], textColor: [255, 255, 255], fontStyle: 'bold' },
+    columnStyles: { 0: { cellWidth: 28 }, 2: { cellWidth: 34 }, 3: { cellWidth: 32 } }
+  });
+
+  let laudoY = (doc as any).lastAutoTable.finalY + 5;
+  doc.setFont('helvetica', 'italic');
+  doc.setFontSize(6.5);
+  doc.setTextColor(100, 116, 139);
+  const refLinhas = doc.splitTextToSize(ANEXOS_NR16, pageWidth - margin * 2);
+  for (const linha of refLinhas) {
+    doc.text(linha, margin, laudoY);
+    laudoY += 3.2;
+  }
+
+  renderBlocosPericiais(doc, corpo, {
+    margin,
+    startY: laudoY + 5,
+    tituloConclusao: '3. CONCLUSÃO PERICIAL',
+    corTitulo: [185, 28, 28]
   });
 
   applyPageNumbers(doc);
@@ -3237,31 +3457,46 @@ export function exportContractPdf({
       startY: curY,
       margin: { left: margin, right: margin },
       theme: 'grid',
-      head: [['Signatário', 'Documento', 'Data e hora', 'Hash de integridade']],
+      // Dois hashes, identificados separadamente: o do contrato (o que estava
+      // escrito no momento da assinatura) e o da assinatura (quem assinou,
+      // quando e sobre qual documento). Eram a mesma coluna generica antes.
+      head: [['Signatário', 'Documento', 'Data e hora', 'SHA-256 do contrato assinado', 'SHA-256 da assinatura']],
       body: assinaturas.map(a => [
         `${a.signer_name || '-'}\n${a.signer_email || ''}`,
         a.signer_document || '-',
         a.signed_at ? formatDateTimeBR(a.signed_at) : '-',
-        a.signature_hash || '-'
+        formatHashParaImpressao(a.document_hash),
+        formatHashParaImpressao(a.signature_hash)
       ]),
-      styles: { fontSize: 6.5, cellPadding: 2, overflow: 'linebreak' },
+      styles: { fontSize: 6, cellPadding: 1.8, overflow: 'linebreak' },
       headStyles: { fillColor: [5, 150, 105], textColor: [255, 255, 255], fontStyle: 'bold' },
-      columnStyles: { 3: { cellWidth: 58, font: 'courier' } }
+      columnStyles: {
+        0: { cellWidth: 30 },
+        1: { cellWidth: 21 },
+        2: { cellWidth: 21 },
+        3: { cellWidth: 45, font: 'courier' },
+        4: { cellWidth: 45, font: 'courier' }
+      }
     });
     curY = (doc as any).lastAutoTable.finalY + 5;
 
+    // O texto antigo invocava a MP 2.200-2/2001 e dizia que "a integridade do
+    // documento e verificavel pelo hash acima" - naquele momento o hash era
+    // Math.random(). O hash agora e SHA-256 de verdade, e a declaracao vem de
+    // lib/documentoHash.ts, que descreve exatamente o que ele prova: assinatura
+    // eletronica simples, sem ICP-Brasil e sem carimbo do tempo.
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(7);
     doc.setTextColor(100, 116, 139);
-    doc.text(
-      doc.splitTextToSize(
-        'Assinatura eletrônica nos termos do art. 10, § 2º, da MP 2.200-2/2001 e da Lei 14.063/2020. ' +
-        'A integridade do documento é verificável pelo hash acima.',
-        larguraUtil
-      ),
-      margin,
-      curY
-    );
+    const declaracao = doc.splitTextToSize(DECLARACAO_DE_INTEGRIDADE, larguraUtil);
+    for (const linha of declaracao) {
+      if (curY > pageHeight - 18) {
+        doc.addPage();
+        curY = 20;
+      }
+      doc.text(linha, margin, curY);
+      curY += 3.4;
+    }
   } else {
     // Contrato ainda nao assinado: linhas para assinatura fisica, sem simular
     // uma assinatura eletronica que nao existe.
@@ -3293,6 +3528,19 @@ export function exportContractPdf({
     .replace(/\s+/g, '_')
     .toLowerCase()}.pdf`;
   doc.save(nomeArquivo);
+}
+
+/**
+ * Hash em blocos de 16 caracteres, uma linha por bloco.
+ *
+ * Sessenta e quatro caracteres sem espaco nao quebram em celula de tabela: o
+ * jsPDF-autotable trata como uma palavra so e estoura a largura da pagina. Em
+ * blocos, cabe e ainda fica conferivel a olho contra a tela do /validar.
+ */
+function formatHashParaImpressao(hash?: string): string {
+  const limpo = (hash || '').trim();
+  if (!limpo) return 'não registrado';
+  return (limpo.match(/.{1,16}/g) || [limpo]).join('\n');
 }
 
 /** Data e hora no formato brasileiro, para o quadro de assinaturas. */

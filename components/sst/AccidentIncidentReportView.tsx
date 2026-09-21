@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { usePrevSafe } from '@/context/PrevSafeContext';
+import { dataDeHoje } from '@/lib/datas';
 import { 
   SSTAccidentIncidentRecord, 
   AccidentWitness, 
@@ -97,7 +98,7 @@ export const AccidentIncidentReportView: React.FC<AccidentIncidentReportViewProp
     occurrence_type: 'TYPICAL_ACCIDENT',
     classification: 'ACCIDENT_WITH_ABSENCE',
     severity_level: 'MEDIUM',
-    occurrence_date: new Date().toISOString().split('T')[0],
+    occurrence_date: dataDeHoje(),
     occurrence_time: '10:00',
     title: '',
     detailed_description: '',
@@ -299,7 +300,7 @@ export const AccidentIncidentReportView: React.FC<AccidentIncidentReportViewProp
       witness_job_title: role,
       witness_phone: witnessTemp.witness_phone,
       statement_text: witnessTemp.witness_statement,
-      statement_date: new Date().toISOString().split('T')[0]
+      statement_date: dataDeHoje()
     };
 
     setFormData(prev => ({
@@ -458,7 +459,7 @@ export const AccidentIncidentReportView: React.FC<AccidentIncidentReportViewProp
       occurrence_type: 'TYPICAL_ACCIDENT',
       classification: 'ACCIDENT_WITH_ABSENCE',
       severity_level: 'MEDIUM',
-      occurrence_date: new Date().toISOString().split('T')[0],
+      occurrence_date: dataDeHoje(),
       occurrence_time: '10:00',
       title: '',
       detailed_description: '',

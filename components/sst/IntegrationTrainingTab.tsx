@@ -38,6 +38,7 @@ import {
   exportTrainingAttendanceExcel
 } from '@/lib/pdfExportService';
 import { formatDate } from '@/lib/utils';
+import { dataDeHoje } from '@/lib/datas';
 
 interface IntegrationTrainingTabProps {
   selectedClientId: string;
@@ -79,8 +80,8 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
   const [newModality, setNewModality] = useState<'PRESENTIAL' | 'HYBRID' | 'EAD_DISTANCE'>('PRESENTIAL');
   const [newWorkloadHours, setNewWorkloadHours] = useState(6);
   const [newValidityMonths, setNewValidityMonths] = useState(12);
-  const [newStartDate, setNewStartDate] = useState(new Date().toISOString().split('T')[0]);
-  const [newEndDate, setNewEndDate] = useState(new Date().toISOString().split('T')[0]);
+  const [newStartDate, setNewStartDate] = useState(dataDeHoje());
+  const [newEndDate, setNewEndDate] = useState(dataDeHoje());
   const [newLocation, setNewLocation] = useState('');
   const [newInstructorName, setNewInstructorName] = useState('Carlos Alberto Ferreira');
   const [newInstructorQualif, setNewInstructorQualif] = useState('');

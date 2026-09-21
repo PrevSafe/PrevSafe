@@ -1,10 +1,23 @@
 // PrevSafe SST - CIPA & CIPATR & CIPAMIN Intelligent Regulatory Service
 // Full compliance with NR-05, NR-31.7, NR-22.36, NR-18.17, NR-30, NR-32 and Brazilian Law 14.457/2022 (Harassment Prevention)
 
-import { 
-  CipaRegulatoryNorm, 
-  CipaProcessStatus, 
-  CipaManagementProcess, 
+import {
+  consultarQuadroI,
+  NR5_CARGA_HORARIA_TREINAMENTO,
+} from '@/lib/nr5Quadros';
+import {
+  consultarQuadroCipamin,
+  consultarQuadroCipatr,
+  NOTA_NR18_CONSTRUCAO,
+  NOTA_NR30_AQUAVIARIOS,
+  NOTA_NR32_SAUDE,
+  NR22_CARGA_HORARIA_CIPAMIN,
+  NR31_CARGA_HORARIA_CIPATR,
+} from '@/lib/cipaQuadrosSetoriais';
+import {
+  CipaRegulatoryNorm,
+  CipaProcessStatus,
+  CipaManagementProcess,
   CipaDimensioningResult,
   CipaElectoralTimeline,
   CipaCandidate,
@@ -49,12 +62,13 @@ export const CIPA_NORMS_CATALOG: Record<CipaRegulatoryNorm, NormInfo> = {
     title: 'Comissão Interna de Prevenção de Acidentes do Trabalho Rural',
     shortTitle: 'CIPATR (Rural)',
     scope: 'Agricultura, Pecuária, Silvicultura, Exploração Florestal e Aquicultura',
-    normReference: 'NR-31 Item 31.7 (Segurança e Saúde no Trabalho Rural)',
-    defaultTrainingHours: 20,
+    normReference: 'NR-31, item 31.5 (Comissão Interna de Prevenção de Acidentes e de Assédio do Trabalho Rural)',
+    defaultTrainingHours: NR31_CARGA_HORARIA_CIPATR,
     specialRequirements: [
-      'Carga horária mínima de 20 horas para todos os membros',
-      'Foco em defensivos agrícolas, maquinários agrícolas, animais peçonhentos e intempéries',
-      'Mandato de 2 anos para os membros eleitos pelos trabalhadores'
+      'Obrigatória para empregador rural com 20 ou mais empregados por prazo indeterminado (item 31.5.2)',
+      'Dimensionamento pelo Quadro 2 da NR-31, que depende apenas do número de trabalhadores — não do grau de risco',
+      'Carga horária mínima de 20 horas (item 31.5.25)',
+      'Mandato de 2 anos para os membros eleitos pelos trabalhadores (item 31.5.6)'
     ],
     badgeColor: 'amber'
   },
@@ -63,10 +77,11 @@ export const CIPA_NORMS_CATALOG: Record<CipaRegulatoryNorm, NormInfo> = {
     title: 'Comissão Interna de Prevenção de Acidentes e Assédio na Mineração',
     shortTitle: 'CIPAMIN (Mineração)',
     scope: 'Mineração a Céu Aberto, Mineração Subterrânea e Beneficiamento Mineral',
-    normReference: 'NR-22 Item 22.36 (Segurança e Saúde Ocupacional na Mineração)',
-    defaultTrainingHours: 40,
+    normReference: 'NR-22, item 22.36 (Segurança e Saúde Ocupacional na Mineração)',
+    defaultTrainingHours: NR22_CARGA_HORARIA_CIPAMIN,
     specialRequirements: [
-      'Carga horária mínima de 40 horas (incluindo módulo prático de resgate em minas)',
+      'Dimensionamento pelo Quadro III da NR-22, que depende apenas do número de empregados — não do grau de risco',
+      'Carga horária de 40 horas anuais, das quais 20 horas antes da posse (item 22.36.12.3)',
       'Vistoria mensal obrigatória em todas as frentes de lavra e galerias subterrâneas',
       'Relatório trimestral obrigatório sobre ventilação e estabilidade de taludes/galerias'
     ],
@@ -77,11 +92,12 @@ export const CIPA_NORMS_CATALOG: Record<CipaRegulatoryNorm, NormInfo> = {
     title: 'Comissão Interna de Prevenção de Acidentes na Indústria da Construção',
     shortTitle: 'CIPA Construção Civil',
     scope: 'Canteiros de Obras, Edificações, Infraestrutura e Demolição',
-    normReference: 'NR-18 Item 18.17 (Indústria da Construção)',
+    normReference: 'Anexo I da NR-05 — CIPA da Indústria da Construção (Portaria MTP nº 4.219/2022)',
     defaultTrainingHours: 16,
     specialRequirements: [
-      'Constituição por canteiro de obras a partir de 70 trabalhadores',
-      'Canteiros com menos de 70 trabalhadores: nomeação de representante de segurança',
+      'Constituição por canteiro de obras quando o número de empregados se enquadrar no Quadro I da NR-05 (Anexo I, item 3.1)',
+      'Canteiro que não se enquadra no Quadro I: nomeação de, no mínimo, um representante (Anexo I, item 3.1.1)',
+      'Obras com até 180 dias de duração e frentes de trabalho têm regra própria (Anexo I, itens 3.1.2 a 3.3)',
       'Foco prioritário em trabalho em altura (NR-35), eletricidade e escavações'
     ],
     badgeColor: 'orange'
@@ -91,11 +107,12 @@ export const CIPA_NORMS_CATALOG: Record<CipaRegulatoryNorm, NormInfo> = {
     title: 'Comissão de Prevenção de Acidentes no Trabalho Aquaviário e Portuário',
     shortTitle: 'CPNT (Aquaviários)',
     scope: 'Embarcações Comerciais, Rebocadores, Navegação Fluvial e Marítima',
-    normReference: 'NR-30 (Segurança e Saúde no Trabalho Aquaviário)',
-    defaultTrainingHours: 20,
+    normReference: 'NR-30, item 30.6 (Segurança e Saúde no Trabalho Aquaviário)',
+    defaultTrainingHours: 16,
     specialRequirements: [
-      'Treinamento com ênfase em sobrevivência no mar, combate a incêndio em embarcação e amarração',
-      'Comissão integrada a bordo de navios com mais de 20 tripulantes'
+      'A CIPA segue a NR-05 naquilo que não for contrário (item 30.6.1): dimensionamento pelo Quadro I da NR-05 e carga horária por grau de risco',
+      'Acréscimo de 1 titular para cada 10 embarcações (ou fração) e 1 suplente para cada 20 embarcações (ou fração), no estabelecimento com maior número de trabalhadores (item 30.6.1.1) — o sistema não calcula esse acréscimo porque não coleta o número de embarcações',
+      'Aquaviários eleitos em votação em separado (item 30.6.2)'
     ],
     badgeColor: 'cyan'
   },
@@ -115,180 +132,234 @@ export const CIPA_NORMS_CATALOG: Record<CipaRegulatoryNorm, NormInfo> = {
 };
 
 // ============================================================================
-// 2. DIMENSIONING ENGINE (NR-05 Quadro I & Sector Norms)
+// 2. DIMENSIONING ENGINE (NR-05 Quadro I e quadros setoriais)
 // ============================================================================
+//
+// Fonte unica de dimensionamento de CIPA do sistema:
+//   - NR-05, NR-18.17 (Anexo I da NR-05), NR-30 e NR-32 -> Quadro I da NR-05,
+//     em lib/nr5Quadros.ts (grau de risco x faixa de empregados);
+//   - NR-31.7 (CIPATR) -> Quadro 2 da NR-31;
+//   - NR-22.36 (CIPAMIN) -> Quadro III da NR-22.
+//
+// A funcao NAO adivinha argumentos, NAO tem valor padrao de grau de risco nem
+// de numero de empregados, e NAO devolve numero quando falta dado: devolve
+// dimensioning_status = 'NAO_DIMENSIONADO' com uma mensagem dizendo o que
+// informar. Um numero errado com cara de oficial e pior que numero nenhum.
 
-export function calculateCipaDimensioning(
-  arg1: any,
-  arg2: any,
-  arg3?: any
-): CipaDimensioningResult & {
+/** Desfecho do dimensionamento, para a tela saber o que mostrar. */
+export type CipaDimensioningStatus =
+  /** Enquadrou no quadro oficial: ha CIPA, com numero de membros definido. */
+  | 'DIMENSIONADO'
+  /** Nao se enquadra no quadro: a norma manda nomear representante. */
+  | 'REPRESENTANTE_NOMEADO'
+  /** Faltou dado. Nao ha o que dimensionar. */
+  | 'NAO_DIMENSIONADO';
+
+/**
+ * Retorno de calculateCipaDimensioning.
+ *
+ * Observacao sobre risk_grade: o tipo CipaDimensioningResult (types/index.ts)
+ * declara risk_grade como 1|2|3|4 e nao admite null. Quando o grau nao e
+ * informado, este servico devolve risk_grade = null em tempo de execucao,
+ * junto de dimensioning_status = 'NAO_DIMENSIONADO'. Quem le a tela deve
+ * checar o status antes de confiar em risk_grade.
+ */
+export type CipaDimensioningOutcome = CipaDimensioningResult & {
   titulares_employees: number;
   suplentes_employees: number;
   titulares_employer: number;
   suplentes_employer: number;
-} {
-  // Disambiguate arguments: (norm, riskGrade, totalEmployees) vs (riskGrade, totalEmployees, norm)
-  let norm: CipaRegulatoryNorm = 'NR-05';
-  let riskGrade: 1 | 2 | 3 | 4 = 3;
-  let totalEmployees = 100;
+  dimensioning_status: CipaDimensioningStatus;
+  /** Texto visivel ao usuario explicando o resultado ou o dado que falta. */
+  dimensioning_message: string;
+  /** Fundamentacao legal do quadro aplicado. */
+  legal_basis: string;
+  /** Avisos da norma que incidem sobre este caso. */
+  notes: string[];
+  /**
+   * true quando o quadro oficial nao estabelece suplentes (caso do Quadro 2 da
+   * NR-31). Nesse caso suplentes_* vem 0 porque o tipo exige numero, mas a
+   * norma simplesmente nao define suplentes — nao e "zero suplentes".
+   */
+  suplentes_nao_previstos_na_norma: boolean;
+};
 
-  if (typeof arg1 === 'string' && (arg1.startsWith('NR-') || CIPA_NORMS_CATALOG[arg1 as CipaRegulatoryNorm])) {
-    norm = arg1 as CipaRegulatoryNorm;
-    riskGrade = (Number(arg2) || 3) as 1 | 2 | 3 | 4;
-    totalEmployees = Number(arg3) || 100;
-  } else if (typeof arg3 === 'string' && (arg3.startsWith('NR-') || CIPA_NORMS_CATALOG[arg3 as CipaRegulatoryNorm])) {
-    norm = arg3 as CipaRegulatoryNorm;
-    riskGrade = (Number(arg1) || 3) as 1 | 2 | 3 | 4;
-    totalEmployees = Number(arg2) || 100;
-  } else {
-    riskGrade = (Number(arg1) || 3) as 1 | 2 | 3 | 4;
-    totalEmployees = Number(arg2) || 100;
-    if (arg3 && typeof arg3 === 'string') norm = arg3 as CipaRegulatoryNorm;
-  }
+/** Normas cujo dimensionamento e o Quadro I da NR-05. */
+const NORMAS_QUE_USAM_QUADRO_I: CipaRegulatoryNorm[] = ['NR-05', 'NR-18.17', 'NR-30', 'NR-32'];
 
-  // Ensure bounds
-  if (riskGrade < 1) riskGrade = 1;
-  if (riskGrade > 4) riskGrade = 4;
-  if (totalEmployees < 1) totalEmployees = 1;
+function notasDaNorma(norm: CipaRegulatoryNorm): string[] {
+  if (norm === 'NR-18.17') return [NOTA_NR18_CONSTRUCAO];
+  if (norm === 'NR-30') return [NOTA_NR30_AQUAVIARIOS];
+  if (norm === 'NR-32') return [NOTA_NR32_SAUDE];
+  return [];
+}
 
-  // Specific training hours according to NR-05 / Setorial
-  let trainingHours = 16;
-  if (norm === 'NR-22.36') trainingHours = 40;
-  else if (norm === 'NR-31.7' || norm === 'NR-30') trainingHours = 20;
-  else if (norm === 'NR-05' || norm === 'NR-18.17' || norm === 'NR-32') {
-    if (riskGrade === 1) trainingHours = 8;
-    else if (riskGrade === 2) trainingHours = 12;
-    else if (riskGrade === 3) trainingHours = 16;
-    else if (riskGrade === 4) trainingHours = 20;
-  }
-
-  // Check designated only criteria
-  // Less than 20 employees in standard NR-05
-  if (totalEmployees < 20 && (norm === 'NR-05' || norm === 'NR-31.7' || norm === 'NR-32')) {
-    return {
-      norm,
-      risk_grade: riskGrade,
-      total_employees: totalEmployees,
-      effective_members_employee: 0,
-      substitute_members_employee: 0,
-      effective_members_employer: 0,
-      substitute_members_employer: 0,
-      titulares_employees: 0,
-      suplentes_employees: 0,
-      titulares_employer: 0,
-      suplentes_employer: 0,
-      total_members: 0,
-      training_hours_required: trainingHours,
-      is_designated_only: true,
-      includes_harassment_module: true
-    };
-  }
-
-  // NR-18 (Construção) < 70 workers = Designated
-  if (norm === 'NR-18.17' && totalEmployees < 70) {
-    return {
-      norm,
-      risk_grade: riskGrade,
-      total_employees: totalEmployees,
-      effective_members_employee: 0,
-      substitute_members_employee: 0,
-      effective_members_employer: 0,
-      substitute_members_employer: 0,
-      titulares_employees: 0,
-      suplentes_employees: 0,
-      titulares_employer: 0,
-      suplentes_employer: 0,
-      total_members: 0,
-      training_hours_required: trainingHours,
-      is_designated_only: true,
-      includes_harassment_module: true
-    };
-  }
-
-  // Standard Dimensioning Matrix (NR-05 Quadro I)
-  let titulares = 1;
-  let suplentes = 1;
-
-  if (riskGrade === 1 || riskGrade === 2) {
-    if (totalEmployees <= 50) {
-      titulares = 1;
-      suplentes = 1;
-    } else if (totalEmployees <= 100) {
-      titulares = 2;
-      suplentes = 2;
-    } else if (totalEmployees <= 200) {
-      titulares = 3;
-      suplentes = 3;
-    } else if (totalEmployees <= 500) {
-      titulares = 4;
-      suplentes = 3;
-    } else if (totalEmployees <= 1000) {
-      titulares = 6;
-      suplentes = 4;
-    } else {
-      titulares = 8;
-      suplentes = 6;
-    }
-  } else if (riskGrade === 3) {
-    if (totalEmployees <= 50) {
-      titulares = 2;
-      suplentes = 2;
-    } else if (totalEmployees <= 100) {
-      titulares = 3;
-      suplentes = 3;
-    } else if (totalEmployees <= 200) {
-      titulares = 4;
-      suplentes = 3;
-    } else if (totalEmployees <= 500) {
-      titulares = 6;
-      suplentes = 4;
-    } else if (totalEmployees <= 1000) {
-      titulares = 8;
-      suplentes = 6;
-    } else {
-      titulares = 10;
-      suplentes = 7;
-    }
-  } else if (riskGrade === 4) {
-    if (totalEmployees <= 50) {
-      titulares = 3;
-      suplentes = 3;
-    } else if (totalEmployees <= 100) {
-      titulares = 4;
-      suplentes = 3;
-    } else if (totalEmployees <= 200) {
-      titulares = 5;
-      suplentes = 4;
-    } else if (totalEmployees <= 500) {
-      titulares = 8;
-      suplentes = 6;
-    } else if (totalEmployees <= 1000) {
-      titulares = 10;
-      suplentes = 8;
-    } else {
-      titulares = 12;
-      suplentes = 9;
-    }
-  }
-
+function resultadoBase(
+  norm: CipaRegulatoryNorm,
+  riskGrade: 1 | 2 | 3 | 4 | null,
+  totalEmployees: number | null
+): CipaDimensioningOutcome {
   return {
     norm,
-    risk_grade: riskGrade,
-    total_employees: totalEmployees,
-    effective_members_employee: titulares,
-    substitute_members_employee: suplentes,
-    effective_members_employer: titulares, // Employer has equal number of representatives
-    substitute_members_employer: suplentes,
-    titulares_employees: titulares,
-    suplentes_employees: suplentes,
-    titulares_employer: titulares,
-    suplentes_employer: suplentes,
-    total_members: (titulares + suplentes) * 2,
-    training_hours_required: trainingHours,
+    risk_grade: riskGrade as 1 | 2 | 3 | 4,
+    total_employees: (totalEmployees ?? 0) as number,
+    effective_members_employee: 0,
+    substitute_members_employee: 0,
+    effective_members_employer: 0,
+    substitute_members_employer: 0,
+    titulares_employees: 0,
+    suplentes_employees: 0,
+    titulares_employer: 0,
+    suplentes_employer: 0,
+    total_members: 0,
+    training_hours_required: 0,
     is_designated_only: false,
-    includes_harassment_module: true
+    includes_harassment_module: true,
+    dimensioning_status: 'NAO_DIMENSIONADO',
+    dimensioning_message: '',
+    legal_basis: '',
+    notes: notasDaNorma(norm),
+    suplentes_nao_previstos_na_norma: false,
   };
+}
+
+function normaValida(norm: any): norm is CipaRegulatoryNorm {
+  return typeof norm === 'string' && !!CIPA_NORMS_CATALOG[norm as CipaRegulatoryNorm];
+}
+
+function grauValido(grau: any): grau is 1 | 2 | 3 | 4 {
+  return grau === 1 || grau === 2 || grau === 3 || grau === 4;
+}
+
+/**
+ * Dimensiona a CIPA a partir do quadro oficial da norma aplicavel.
+ *
+ * ASSINATURA UNICA E EXPLICITA — nao existe mais deteccao de argumentos por
+ * tipo. A ordem e (grau de risco, numero de empregados, norma).
+ *
+ * @param riskGrade      Grau de risco do Anexo I da NR-04 (1 a 4). Obrigatorio
+ *                       para as normas que usam o Quadro I da NR-05; ignorado
+ *                       na CIPATR e na CIPAMIN, que nao dependem dele.
+ * @param totalEmployees Numero de empregados no estabelecimento. Sem ele nao
+ *                       ha dimensionamento.
+ * @param norm           Norma aplicavel.
+ */
+export function calculateCipaDimensioning(
+  riskGrade: 1 | 2 | 3 | 4 | null | undefined,
+  totalEmployees: number | null | undefined,
+  norm: CipaRegulatoryNorm
+): CipaDimensioningOutcome {
+  if (!normaValida(norm)) {
+    const r = resultadoBase('NR-05', null, null);
+    r.dimensioning_message =
+      'Norma regulamentadora não informada ou desconhecida. Não é possível dimensionar a CIPA sem saber ' +
+      'qual quadro oficial se aplica ao estabelecimento.';
+    return r;
+  }
+
+  const grau = grauValido(riskGrade) ? riskGrade : null;
+  const empregadosNum = Number(totalEmployees);
+  const empregados =
+    totalEmployees === null || totalEmployees === undefined || !Number.isFinite(empregadosNum) || empregadosNum < 0
+      ? null
+      : Math.floor(empregadosNum);
+
+  // -------------------------------------------------------------------------
+  // CIPATR (NR-31) e CIPAMIN (NR-22): quadros proprios, sem grau de risco.
+  // -------------------------------------------------------------------------
+  if (norm === 'NR-31.7' || norm === 'NR-22.36') {
+    const setorial =
+      norm === 'NR-31.7' ? consultarQuadroCipatr(empregados) : consultarQuadroCipamin(empregados);
+
+    const r = resultadoBase(norm, grau, empregados);
+    r.legal_basis = setorial.fundamentacao;
+    r.dimensioning_message = setorial.fundamentacao;
+    r.training_hours_required = setorial.cargaHorariaTreinamento ?? 0;
+
+    if (setorial.status === 'NAO_DIMENSIONADO') {
+      r.dimensioning_status = 'NAO_DIMENSIONADO';
+      r.training_hours_required = 0;
+      return r;
+    }
+
+    if (setorial.status === 'REPRESENTANTE_NR05') {
+      r.dimensioning_status = 'REPRESENTANTE_NOMEADO';
+      r.is_designated_only = true;
+      return r;
+    }
+
+    const titEmp = setorial.titularesEmpregados ?? 0;
+    const supEmp = setorial.suplentesEmpregados;
+    const titPat = setorial.titularesEmpregador ?? 0;
+    const supPat = setorial.suplentesEmpregador;
+
+    r.dimensioning_status = 'DIMENSIONADO';
+    r.effective_members_employee = titEmp;
+    r.substitute_members_employee = supEmp ?? 0;
+    r.effective_members_employer = titPat;
+    r.substitute_members_employer = supPat ?? 0;
+    r.titulares_employees = titEmp;
+    r.suplentes_employees = supEmp ?? 0;
+    r.titulares_employer = titPat;
+    r.suplentes_employer = supPat ?? 0;
+    r.total_members = titEmp + (supEmp ?? 0) + titPat + (supPat ?? 0);
+    r.suplentes_nao_previstos_na_norma = supEmp === null;
+    return r;
+  }
+
+  // -------------------------------------------------------------------------
+  // NR-05 e normas que remetem ao Quadro I da NR-05.
+  // -------------------------------------------------------------------------
+  if (!NORMAS_QUE_USAM_QUADRO_I.includes(norm)) {
+    const r = resultadoBase(norm, grau, empregados);
+    r.dimensioning_message =
+      `Não há quadro de dimensionamento carregado para a norma ${norm}. Informe o dimensionamento manualmente, ` +
+      'com base no quadro oficial da norma.';
+    return r;
+  }
+
+  const quadro = consultarQuadroI(grau, empregados);
+  const r = resultadoBase(norm, grau, empregados);
+  r.legal_basis = quadro.fundamentacao;
+  r.dimensioning_message = quadro.fundamentacao;
+  if (quadro.aplicouAcrescimoAcimaDe10000) {
+    r.notes = [...r.notes, quadro.fundamentacao];
+  }
+
+  if (quadro.status === 'NAO_DIMENSIONADO') {
+    r.dimensioning_status = 'NAO_DIMENSIONADO';
+    r.training_hours_required = 0;
+    return r;
+  }
+
+  // A carga horaria depende do grau de risco (NR-05, item 5.7.4) e ja esta
+  // definida mesmo quando o estabelecimento nao constitui CIPA: o representante
+  // nomeado tambem e treinado (item 5.7.1).
+  r.training_hours_required = quadro.cargaHorariaTreinamento ?? NR5_CARGA_HORARIA_TREINAMENTO[grau as 1 | 2 | 3 | 4];
+
+  if (quadro.status === 'REPRESENTANTE_NR05') {
+    r.dimensioning_status = 'REPRESENTANTE_NOMEADO';
+    r.is_designated_only = true;
+    return r;
+  }
+
+  const titulares = quadro.efetivos as number;
+  const suplentes = quadro.suplentes as number;
+
+  r.dimensioning_status = 'DIMENSIONADO';
+  // O Quadro I da NR-05 e paritario: o numero de representantes do empregador
+  // e igual ao dos empregados (item 5.4.1 - "composta de representantes da
+  // organizacao e dos empregados").
+  r.effective_members_employee = titulares;
+  r.substitute_members_employee = suplentes;
+  r.effective_members_employer = titulares;
+  r.substitute_members_employer = suplentes;
+  r.titulares_employees = titulares;
+  r.suplentes_employees = suplentes;
+  r.titulares_employer = titulares;
+  r.suplentes_employer = suplentes;
+  r.total_members = (titulares + suplentes) * 2;
+  return r;
 }
 
 // ============================================================================

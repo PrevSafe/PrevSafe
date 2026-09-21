@@ -1,30 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
-import { supabaseUrl } from '@/lib/supabase';
+import { exigirAdminDaOrganizacao, autorizacaoNegada, organizacaoUnica } from '@/lib/autorizacaoApi';
 
 export const dynamic = 'force-dynamic';
 
 export async function POST(req: NextRequest) {
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!serviceRoleKey || !anonKey) {
-    return NextResponse.json({ success: false, message: 'Supabase não está configurado no servidor.' }, { status: 500 });
-  }
+  // A autorizacao vem de prevsafe_members, nunca de user_metadata: aquele campo
+  // e gravavel pelo proprio usuario e permitiria que qualquer autenticado se
+  // declarasse ADMIN.
+  const auth = await exigirAdminDaOrganizacao(req);
+  if (autorizacaoNegada(auth)) return auth.resposta;
 
-  const token = (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '');
-  if (!token) {
-    return NextResponse.json({ success: false, message: 'Não autenticado.' }, { status: 401 });
-  }
-
-  const supabaseAuth = createClient(supabaseUrl, anonKey, { auth: { persistSession: false } });
-  const { data: userData, error: userError } = await supabaseAuth.auth.getUser(token);
-  if (userError || !userData?.user) {
-    return NextResponse.json({ success: false, message: 'Sessão inválida ou expirada.' }, { status: 401 });
-  }
-
-  if (userData.user.user_metadata?.role !== 'ADMIN') {
-    return NextResponse.json({ success: false, message: 'Apenas administradores podem criar usuários.' }, { status: 403 });
-  }
+  const org = organizacaoUnica(auth);
+  if ('erro' in org) return org.erro;
+  const { organizationId } = org;
+  const { supabaseAdmin } = auth;
 
   const body = await req.json().catch(() => null);
   if (!body || typeof body !== 'object') {
@@ -43,8 +32,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: false, message: 'Nome completo é obrigatório.' }, { status: 400 });
   }
 
-  const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey, { auth: { persistSession: false } });
-
   const { data, error } = await supabaseAdmin.auth.admin.createUser({
     email: email.trim().toLowerCase(),
     password,
@@ -59,26 +46,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: false, message }, { status: 422 });
   }
 
-  // Sem o vínculo em prevsafe_members o usuário loga mas a RLS bloqueia todos
-  // os dados da organização — ele veria o sistema vazio. O vínculo herda a
-  // organização de quem está criando.
-  const { data: adminMembership } = await supabaseAdmin
-    .from('prevsafe_members')
-    .select('organization_id')
-    .eq('auth_user_id', userData.user.id)
-    .limit(1)
-    .maybeSingle();
-
-  const organizationId = adminMembership?.organization_id;
-
-  if (!organizationId) {
-    return NextResponse.json({
-      success: true,
-      auth_user_id: data.user.id,
-      warning: 'Usuário criado, mas não foi possível vinculá-lo a uma organização: sua própria conta não tem vínculo. Os dados não aparecerão para ele até isso ser corrigido.'
-    });
-  }
-
+  // Sem o vinculo em prevsafe_members o usuario loga mas a RLS bloqueia todos
+  // os dados da organizacao — ele veria o sistema vazio. O vinculo herda a
+  // organizacao de quem esta criando, ja confirmada na autorizacao acima.
   const { error: memberError } = await supabaseAdmin
     .from('prevsafe_members')
     .upsert(

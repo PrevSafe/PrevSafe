@@ -3,6 +3,8 @@
 import React, { useState } from 'react';
 import { usePrevSafe } from '@/context/PrevSafeContext';
 import { Employee, WorkerCategoryType, EmploymentRegime } from '@/types';
+import { dataDeHoje } from '@/lib/datas';
+import { conferirDocumento } from '@/lib/validacoesBr';
 import { 
   Users, 
   Plus, 
@@ -35,7 +37,7 @@ interface EmployeesTabProps {
   selectedClientId: string;
 }
 
-const todayISO = () => new Date().toISOString().split('T')[0];
+const todayISO = () => dataDeHoje();
 
 export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) => {
   const {
@@ -185,6 +187,23 @@ export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) 
   const handleSaveEmployee = (e: React.FormEvent) => {
     e.preventDefault();
     if (!employeeForm.name || !employeeForm.cpf || !employeeForm.registration_number) return;
+
+    // CPF e PIS do trabalhador vao para o ASO, para a ficha de EPI, para a CAT
+    // e para os eventos S-2210/S-2220/S-2230 do eSocial. Um digito errado aqui
+    // se propaga por todos eles.
+    const cpfConferido = conferirDocumento(employeeForm.cpf, 'CPF');
+    if (!cpfConferido.valido) {
+      alert(`${cpfConferido.motivo}\n\nConfira o CPF antes de salvar.`);
+      return;
+    }
+
+    if (employeeForm.nis_pis && employeeForm.nis_pis.replace(/\D/g, '').length > 0) {
+      const pisConferido = conferirDocumento(employeeForm.nis_pis, 'PIS');
+      if (!pisConferido.valido) {
+        alert(`${pisConferido.motivo}\n\nConfira o PIS/NIS antes de salvar.`);
+        return;
+      }
+    }
 
     const selectedJobObj = hierarchyJobs.find(j => j.id === employeeForm.job_id);
     const selectedSectorObj = hierarchySectors.find(s => s.id === employeeForm.sector_id);

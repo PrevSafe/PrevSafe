@@ -712,12 +712,12 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
                 <div className="flex items-center space-x-2">
                   <h2 className="text-base font-bold text-white">Central de Assinaturas & Aceites Digitais</h2>
                   <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-teal-500/10 text-teal-300 border border-teal-500/20">
-                    Art. 10 MP 2.200-2 & Lei 14.063
+                    Lei 14.063/2020, art. 4º, I
                   </span>
                 </div>
                 <p className="text-xs text-slate-400 leading-relaxed max-w-2xl">
                   Revise e assine eletronicamente os laudos técnicos de SST, ordens de serviço e eventos do eSocial da sua empresa. 
-                  Todas as assinaturas possuem rastreabilidade criptográfica, registro de IP e carimbo de tempo ICP-Brasil.
+                  Cada assinatura registra data, hora e IP do signatário e um código SHA-256 do conteúdo assinado, que permite conferir em /validar que o registro não foi alterado depois de assinado. É assinatura eletrônica simples: não utiliza certificado ICP-Brasil nem carimbo do tempo.
                 </p>
               </div>
 
@@ -866,7 +866,7 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
                         {/* Cryptographic SHA-256 footer */}
                         <div className="flex flex-wrap items-center justify-between gap-2 text-[10px] text-slate-400 bg-slate-900/40 p-2 rounded-xl border border-slate-800/60 font-mono">
                           <span className="truncate max-w-md">SHA-256: {env.document_sha256}</span>
-                          <span className="text-teal-400">Padrão ICP-Brasil / Avançada (Lei 14.063)</span>
+                          <span className="text-teal-400">Assinatura eletrônica simples (Lei 14.063/2020, art. 4º, I)</span>
                         </div>
                       </div>
                     );
@@ -1025,7 +1025,7 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
                         <span className="text-emerald-400 font-semibold">
                           {contract.signatures && contract.signatures.length > 0 
                             ? `Assinado por ${contract.signatures[0].signer_name}` 
-                            : 'Assinado ICP-Brasil'}
+                            : 'Assinado eletronicamente'}
                         </span>
                       </div>
                     </div>
@@ -1162,7 +1162,7 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
               </div>
 
               <div className="p-3 bg-emerald-500/10 rounded-2xl border border-emerald-500/20 text-[11px] text-emerald-300 space-y-1">
-                <div>• Carimbo digital de data/hora registrado nos Audit Logs</div>
+                <div>• Data, hora e IP do aceite registrados nos Audit Logs</div>
                 <div>• Conclusão automática da Ordem de Serviço (RN008)</div>
               </div>
 

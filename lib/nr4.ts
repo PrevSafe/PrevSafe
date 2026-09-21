@@ -11,6 +11,12 @@ import {
   formatarClasse,
   buscarClasses,
 } from './nr4AnexoI';
+import {
+  consultarAnexoII,
+  OBSERVACAO_ESTABELECIMENTOS_DE_SAUDE,
+  ResultadoAnexoIIStatus,
+} from './nr4QuadroII';
+import { consultarQuadroI, ResultadoQuadroI } from './nr5Quadros';
 
 export interface CnaeRiskEntry {
   code: string;           // Código numérico formatado ex: "25.11-0-00"
@@ -23,15 +29,32 @@ export interface CnaeRiskEntry {
 }
 
 export interface SesmtDimensioningResult {
+  /**
+   * Grau de risco aplicado. Vem null em tempo de execucao quando nao foi
+   * informado (status 'NAO_DIMENSIONADO'); cheque o status antes de confiar.
+   */
   riskDegree: 1 | 2 | 3 | 4;
   employeeCount: number;
+  /** Desfecho: obrigado, dispensado ou sem dado para dimensionar. */
+  status: ResultadoAnexoIIStatus;
   tecnicoSeguranca: number;
   engenheiroSeguranca: number;
   auxiliarEnfermagem: number;
   enfermeiroTrabalho: number;
   medicoTrabalho: number;
-  cipaRequired: boolean;
-  cipaMinMembers: number;
+  /** Fundamentacao legal do Anexo II aplicada a este caso. */
+  legalBasis: string;
+  /** Rotulo da faixa do Anexo II, ou null se nao enquadrou. */
+  faixa: string | null;
+  /** Notas do Anexo II que incidem sobre este caso (tempo parcial etc.). */
+  notes: string[];
+  /**
+   * Dimensionamento da CIPA, DELEGADO a fonte unica (Quadro I da NR-05,
+   * lib/nr5Quadros.ts). Os antigos campos cipaRequired/cipaMinMembers foram
+   * removidos: eram uma segunda formula, sem norma, que discordava do
+   * cipaService para o mesmo estabelecimento.
+   */
+  cipa: ResultadoQuadroI;
   observations: string[];
 }
 
@@ -422,101 +445,76 @@ function setorDaClasse(classe: string): string {
 }
 
 /**
- * Dimensionamento de SESMT segundo o Quadro II da NR-04
+ * Dimensionamento do SESMT pelo Anexo II da NR-04.
+ *
+ * A tabela deixou de ser digitada a mao neste arquivo: ela vive em
+ * lib/nr4QuadroII.ts, transcrita do PDF oficial com a fundamentacao citada e
+ * verificada por scripts/verificar-sesmt.mjs.
+ *
+ * Sem grau de risco ou sem numero de trabalhadores, a funcao NAO estima:
+ * devolve status 'NAO_DIMENSIONADO' com todos os cargos zerados e uma
+ * observacao dizendo o que falta informar.
+ *
+ * A CIPA nao e mais calculada aqui. Este arquivo tinha uma segunda formula de
+ * CIPA (count/30 ou count/50) que nao vinha de norma nenhuma e discordava do
+ * cipaService. O campo `cipa` abaixo delega a fonte unica: o Quadro I da
+ * NR-05, em lib/nr5Quadros.ts.
  */
-export function calculateSesmtDimensioning(riskDegree: 1 | 2 | 3 | 4, employeeCount: number): SesmtDimensioningResult {
-  const count = Math.max(0, employeeCount);
-  let tec = 0;
-  let eng = 0;
-  let auxEnf = 0;
-  let enf = 0;
-  let med = 0;
+export function calculateSesmtDimensioning(
+  riskDegree: 1 | 2 | 3 | 4 | null | undefined,
+  employeeCount: number | null | undefined
+): SesmtDimensioningResult {
+  const anexoII = consultarAnexoII(riskDegree as any, employeeCount as any);
   const obs: string[] = [];
 
-  // Quadro II da NR-04:
-  if (riskDegree === 1) {
-    if (count >= 501 && count <= 1000) { tec = 1; }
-    else if (count >= 1001 && count <= 2000) { tec = 1; eng = 1; med = 1; }
-    else if (count >= 2001 && count <= 5000) { tec = 2; eng = 1; auxEnf = 1; med = 1; }
-    else if (count > 5000) {
-      const extraBlocks = Math.floor((count - 5000) / 2000);
-      tec = 2 + extraBlocks * 1;
-      eng = 1 + extraBlocks * 1;
-      auxEnf = 1 + extraBlocks * 1;
-      med = 1 + extraBlocks * 1;
-    }
-  } else if (riskDegree === 2) {
-    if (count >= 501 && count <= 1000) { tec = 1; }
-    else if (count >= 1001 && count <= 2000) { tec = 1; eng = 1; med = 1; }
-    else if (count >= 2001 && count <= 3500) { tec = 2; eng = 1; auxEnf = 1; med = 1; }
-    else if (count >= 3501 && count <= 5000) { tec = 3; eng = 1; enf = 1; med = 1; }
-    else if (count > 5000) {
-      const extraBlocks = Math.floor((count - 5000) / 2000);
-      tec = 3 + extraBlocks * 1;
-      eng = 1 + extraBlocks * 1;
-      enf = 1 + extraBlocks * 1;
-      med = 1 + extraBlocks * 1;
-    }
-  } else if (riskDegree === 3) {
-    if (count >= 101 && count <= 250) { tec = 1; }
-    else if (count >= 251 && count <= 500) { tec = 2; }
-    else if (count >= 501 && count <= 1000) { tec = 3; eng = 1; med = 1; }
-    else if (count >= 1001 && count <= 2000) { tec = 4; eng = 1; auxEnf = 1; med = 1; }
-    else if (count >= 2001 && count <= 3500) { tec = 6; eng = 2; auxEnf = 1; enf = 1; med = 2; }
-    else if (count >= 3501 && count <= 5000) { tec = 8; eng = 2; enf = 1; med = 2; }
-    else if (count > 5000) {
-      const extraBlocks = Math.floor((count - 5000) / 2000);
-      tec = 8 + extraBlocks * 3;
-      eng = 2 + extraBlocks * 1;
-      enf = 1 + extraBlocks * 1;
-      med = 2 + extraBlocks * 1;
-    }
-  } else if (riskDegree === 4) {
-    if (count >= 50 && count <= 100) { tec = 1; }
-    else if (count >= 101 && count <= 250) { tec = 2; eng = 1; med = 1; }
-    else if (count >= 251 && count <= 500) { tec = 3; eng = 1; med = 1; }
-    else if (count >= 501 && count <= 1000) { tec = 4; eng = 1; auxEnf = 1; med = 1; }
-    else if (count >= 1001 && count <= 2000) { tec = 5; eng = 1; auxEnf = 1; enf = 1; med = 1; }
-    else if (count >= 2001 && count <= 3500) { tec = 8; eng = 2; enf = 1; med = 2; }
-    else if (count >= 3501 && count <= 5000) { tec = 10; eng = 3; enf = 1; med = 3; }
-    else if (count > 5000) {
-      const extraBlocks = Math.floor((count - 5000) / 2000);
-      tec = 10 + extraBlocks * 3;
-      eng = 3 + extraBlocks * 1;
-      enf = 1 + extraBlocks * 1;
-      med = 3 + extraBlocks * 1;
-    }
+  const count =
+    anexoII.trabalhadores === null ? 0 : anexoII.trabalhadores;
+
+  const p = anexoII.profissionais;
+  const tec = p ? p.tecnicoSegurancaTrabalho : 0;
+  const eng = p ? p.engenheiroSegurancaTrabalho : 0;
+  const auxEnf = p ? p.auxTecEnfermagemTrabalho : 0;
+  const enf = p ? p.enfermeiroTrabalho : 0;
+  const med = p ? p.medicoTrabalho : 0;
+
+  if (anexoII.status === 'NAO_DIMENSIONADO') {
+    obs.push(anexoII.fundamentacao);
+  } else if (anexoII.status === 'DISPENSADO') {
+    obs.push(anexoII.fundamentacao);
+  } else {
+    const partes: string[] = [];
+    if (tec > 0) partes.push(`${tec} técnico(s) de segurança do trabalho`);
+    if (eng > 0) partes.push(`${eng} engenheiro(s) de segurança do trabalho`);
+    if (auxEnf > 0) partes.push(`${auxEnf} auxiliar(es)/técnico(s) em enfermagem do trabalho`);
+    if (enf > 0) partes.push(`${enf} enfermeiro(s) do trabalho`);
+    if (med > 0) partes.push(`${med} médico(s) do trabalho`);
+    obs.push(`SESMT obrigatório: ${partes.join(', ')}.`);
+    obs.push(anexoII.fundamentacao);
+    for (const nota of anexoII.notas) obs.push(nota);
+    if (count > 500) obs.push(OBSERVACAO_ESTABELECIMENTOS_DE_SAUDE);
   }
 
-  const isSesmtRequired = (tec + eng + auxEnf + enf + med) > 0;
-  if (!isSesmtRequired) {
-    obs.push(`Dispensado de SESMT próprio para ${count} colaboradores no Grau de Risco ${riskDegree} (NR-04 item 4.2).`);
-  } else {
-    obs.push(`SESMT obrigatório: ${tec > 0 ? `${tec} Técnico(s) de Seg.` : ''} ${eng > 0 ? `, ${eng} Eng. Seg.` : ''} ${med > 0 ? `, ${med} Médico(s)` : ''}`);
-  }
-
-  // CIPA (NR-05)
-  const cipaRequired = count >= 20;
-  const cipaMinMembers = count >= 20 ? (riskDegree >= 3 ? Math.ceil(count / 30) : Math.ceil(count / 50)) : 0;
-  if (cipaRequired) {
-    obs.push(`CIPA (NR-05) obrigatória para estabelecimentos com ${count} vidas.`);
-  } else {
-    obs.push('Designado de CIPA (NR-05 item 5.4.13) através de treinamento de 20h.');
-  }
+  // CIPA: fonte unica, sem formula paralela.
+  const cipa = consultarQuadroI(riskDegree as any, employeeCount as any);
+  obs.push(cipa.fundamentacao);
 
   return {
-    riskDegree,
+    riskDegree: (anexoII.grau ?? null) as 1 | 2 | 3 | 4,
     employeeCount: count,
+    status: anexoII.status,
     tecnicoSeguranca: tec,
     engenheiroSeguranca: eng,
     auxiliarEnfermagem: auxEnf,
     enfermeiroTrabalho: enf,
     medicoTrabalho: med,
-    cipaRequired,
-    cipaMinMembers,
+    legalBasis: anexoII.fundamentacao,
+    faixa: anexoII.faixa,
+    notes: anexoII.notas,
+    cipa,
     observations: obs
   };
 }
+
 
 /**
  * Busca preditiva de CNAEs para auto-complete

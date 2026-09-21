@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { supabaseUrl } from '@/lib/supabase';
+import { hashDoDocumento } from '@/lib/documentoHash';
 
 export const dynamic = 'force-dynamic';
 
@@ -88,8 +89,45 @@ export async function GET(req: NextRequest) {
 
   const allSigned = signers.length > 0 && signers.every((s: any) => s.signature_status === 'SIGNED');
 
+  // INTEGRIDADE: recalcula o SHA-256 sobre o conteudo guardado e compara com o
+  // que foi publicado no documento.
+  //
+  // Ate aqui esta rota apenas confirmava que o hash da URL era prefixo do hash
+  // guardado - e o hash guardado era um numero aleatorio. A verificacao
+  // comparava um numero com ele mesmo e respondia "autentico" para qualquer
+  // documento, alterado ou nao.
+  const hashRecalculado = hashDoDocumento({
+    documento: envelope.document_number,
+    titulo: envelope.document_title,
+    tipo: envelope.document_type,
+    cliente: envelope.client_id,
+    referencia: envelope.document_reference_id || null,
+    signatarios: (envelope.signers || []).map((sg: any) => ({
+      nome: sg?.name,
+      documento: sg?.cpf || null,
+      email: sg?.email || null,
+      papel: sg?.signer_role || null,
+    })),
+  });
+
+  const integro = hashRecalculado === String(envelope.document_sha256 || '').toLowerCase();
+
+  // Envelopes criados antes da correcao do hash guardam um valor aleatorio, que
+  // nunca vai bater. Nao da para afirmar que foram adulterados nem que estao
+  // integros - so que nao sao verificaveis, e e isso que a resposta diz.
+
   return NextResponse.json({
     found: true,
+    integrity: {
+      verified: integro,
+      status: integro ? 'INTEGRO' : 'NAO_VERIFICAVEL',
+      message: integro
+        ? 'O conteúdo registrado confere com o código de verificação impresso no documento.'
+        : 'Não foi possível confirmar a integridade deste registro. Ele pode ter sido emitido antes da ' +
+          'correção do cálculo de verificação, ou ter sido alterado. Solicite a via original ao emitente.',
+      note: 'Assinatura eletrônica simples (Lei 14.063/2020, art. 4º, I). Não constitui assinatura com ' +
+            'certificado ICP-Brasil nem carimbo do tempo.'
+    },
     document: {
       number: envelope.document_number,
       title: envelope.document_title,

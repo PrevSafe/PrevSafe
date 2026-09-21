@@ -243,7 +243,7 @@ export const DocumentsView: React.FC<{ onNavigate: (view: string) => void }> = (
                   {doc.is_client_released ? '✓ Visível no Portal' : 'Oculto no Portal'}
                 </button>
                 <button
-                  onClick={() => alert(`Iniciando download do documento "${doc.name}" com carimbo ICP-Brasil.`)}
+                  onClick={() => alert(`O download em PDF de "${doc.name}" ainda não está disponível nesta versão do sistema.`)}
                   className="px-3.5 py-1.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-xl text-xs font-semibold shadow-md transition flex items-center space-x-1"
                 >
                   <Download className="w-3.5 h-3.5" />

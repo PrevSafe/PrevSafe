@@ -107,17 +107,34 @@ function describeError(error: any): string {
  * Retorna null quando ele nao esta vinculado a nenhuma.
  */
 export async function fetchMemberOrganizationId(): Promise<string | null> {
+  const vinculo = await fetchMemberVinculo();
+  return vinculo?.organizationId || null;
+}
+
+/**
+ * Vinculo do usuario logado: organizacao e papel, lidos de prevsafe_members.
+ *
+ * Esta e a unica fonte confiavel do papel. O `user_metadata.role` do Supabase e
+ * gravavel pelo proprio usuario (auth.updateUser({ data: { role: 'ADMIN' } })),
+ * entao nao serve para autorizar nada - era exatamente por isso que as rotas
+ * de administracao podiam ser escaladas. A tabela prevsafe_members so aceita
+ * escrita da service role; a RLS deixa o usuario apenas LER a propria linha.
+ */
+export async function fetchMemberVinculo(): Promise<{ organizationId: string; role: string } | null> {
   const supabase = getSupabaseClient();
   if (!supabase) return null;
 
   const { data, error } = await supabase
     .from('prevsafe_members')
-    .select('organization_id')
+    .select('organization_id, role')
     .limit(1)
     .maybeSingle();
 
   if (error || !data) return null;
-  return data.organization_id as string;
+  return {
+    organizationId: data.organization_id as string,
+    role: (data.role as string) || '',
+  };
 }
 
 /**

@@ -5,6 +5,7 @@ import { usePrevSafe } from '@/context/PrevSafeContext';
 import { Client, ClientContact, ClientUnit, DocumentType } from '@/types';
 import { lookupRiskDegreeByCnae, calculateSesmtDimensioning } from '@/lib/nr4';
 import { lookupCompanyData, formatDocumentNumber, CompanyLookupResult } from '@/lib/companyLookup';
+import { conferirDocumento } from '@/lib/validacoesBr';
 import { 
   Building2, 
   Plus, 
@@ -299,6 +300,17 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
     if (!clientForm.legal_name || !clientForm.trade_name || !clientForm.document_number) {
       alert('Preencha os campos obrigatórios (Razão Social, Nome Fantasia, Documento).');
       return;
+    }
+
+    // Documento com digito verificador errado passa para o PGR, para o ASO e
+    // para o evento do eSocial, e so aparece como problema quando o governo
+    // rejeita - ou quando o documento ja foi entregue ao cliente.
+    if (clientForm.document_type === 'CNPJ' || clientForm.document_type === 'CPF') {
+      const conferencia = conferirDocumento(clientForm.document_number, clientForm.document_type);
+      if (!conferencia.valido) {
+        alert(`${conferencia.motivo}\n\nConfira o número informado antes de salvar.`);
+        return;
+      }
     }
 
     // O grau de risco define o dimensionamento do SESMT (Quadro II da NR-04) e

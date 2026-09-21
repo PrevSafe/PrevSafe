@@ -149,6 +149,7 @@ import {
   SINGLETON_COLLECTIONS,
   SINGLETON_ID,
   fetchMemberOrganizationId,
+  fetchMemberVinculo,
   fetchRemoteSnapshot,
   pushRecords,
   purgeOrganizationRecords,
@@ -156,6 +157,8 @@ import {
   type RemoteSnapshot
 } from '@/lib/supabaseSync';
 import { montarTermosDoContrato, resumirServicos } from '@/lib/contratoTermos';
+import { hashDoDocumento, hashDaAssinatura } from '@/lib/documentoHash';
+import { dataDeHoje, dataEmDias, formatarDataISO, novoId } from '@/lib/datas';
 
 interface PrevSafeContextType {
   // Current active session state
@@ -664,6 +667,12 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
   const [organization, setOrganization] = useState<Organization>(INITIAL_ORGANIZATION);
   const [profiles, setProfiles] = useState<Profile[]>(INITIAL_PROFILES);
   const [currentProfile, setCurrentProfile] = useState<Profile>(INITIAL_PROFILES[0]);
+  /**
+   * Papel REAL da conta, lido de prevsafe_members (que so a service role
+   * escreve). E o teto do que switchRole pode assumir. Nulo enquanto nao
+   * carregou; ate la nenhuma elevacao e permitida.
+   */
+  const [papelDaConta, setPapelDaConta] = useState<RoleType | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [isAuthLoading, setIsAuthLoading] = useState<boolean>(true);
   const [clients, setClients] = useState<Client[]>(INITIAL_CLIENTS);
@@ -1091,6 +1100,33 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     };
   }, [isLoaded, isAuthenticated, syncOrganizationId, liveState, retryTick]);
 
+  // Carrega o papel real da conta assim que ha sessao. Sem isto o front-end
+  // ficaria com o papel mais restrito para sempre, e com ele o usuario recebe
+  // exatamente o que o servidor reconhece - nem mais, nem menos.
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setPapelDaConta(null);
+      return;
+    }
+
+    let ativo = true;
+    (async () => {
+      const vinculo = await fetchMemberVinculo();
+      if (!ativo) return;
+
+      const papel = (vinculo?.role || '').trim().toUpperCase();
+      const reconhecido = (['ADMIN', 'GESTOR', 'COMERCIAL', 'FINANCEIRO', 'TÉCNICO', 'CLIENTE_ADMIN', 'CLIENTE_USER'] as string[])
+        .includes(papel) ? (papel as RoleType) : null;
+
+      setPapelDaConta(reconhecido);
+      if (reconhecido) {
+        setCurrentProfile(prev => (prev.role === reconhecido ? prev : { ...prev, role: reconhecido }));
+      }
+    })();
+
+    return () => { ativo = false; };
+  }, [isAuthenticated]);
+
   // Busca o IP publico uma vez por sessao autenticada. getCachedClientIp() e
   // sincrono e e usado nos registros de auditoria; sem esta chamada ele ficaria
   // sempre vazio.
@@ -1109,6 +1145,27 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     window.addEventListener('online', onOnline);
     return () => window.removeEventListener('online', onOnline);
   }, []);
+
+  /**
+   * <ideEmpregador> do evento, a partir do cadastro do cliente.
+   *
+   * tpInsc segue a tabela 05 do eSocial: 1 = CNPJ, 2 = CPF. Cliente sem
+   * documento cadastrado NAO gera evento - a funcao devolve null e quem chama
+   * avisa. Antes o codigo preenchia um CNPJ fixo e seguia em frente.
+   */
+  const identificacaoDoEmpregador = useCallback((clientId: string): { tpInsc: '1' | '2'; nrInsc: string } | null => {
+    const client = clients.find(c => c.id === clientId);
+    const digitos = (client?.document_number || '').replace(/\D/g, '');
+    if (!digitos) return null;
+
+    if (digitos.length === 14) return { tpInsc: '1', nrInsc: digitos };
+    if (digitos.length === 11) return { tpInsc: '2', nrInsc: digitos };
+    return null;
+  }, [clients]);
+
+  /** Mensagem unica para quando o empregador nao pode ser identificado. */
+  const ERRO_EMPREGADOR_SEM_DOCUMENTO =
+    'Este cliente nao possui CNPJ ou CPF valido cadastrado. O evento do eSocial nao pode ser gerado sem a identificacao do empregador.';
 
   // Log Audit helper (RN011)
   const logAudit = useCallback((action: AuditLog['action'], entity_type: AuditLog['entity_type'], entity_id: string, entity_number?: string, newData?: Record<string, any>, oldData?: Record<string, any>) => {
@@ -1142,16 +1199,49 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     });
   }, [logAudit]);
 
+  // Hierarquia de papeis, do mais amplo ao mais restrito. Usada para impedir
+  // que a troca de perfil AUMENTE o alcance de quem esta logado.
+  const NIVEL_DO_PAPEL: Record<RoleType, number> = {
+    ADMIN: 6,
+    GESTOR: 5,
+    COMERCIAL: 4,
+    FINANCEIRO: 4,
+    'TÉCNICO': 3,
+    CLIENTE_ADMIN: 2,
+    CLIENTE_USER: 1,
+  } as Record<RoleType, number>;
+
+  /**
+   * Visualiza o sistema com um papel mais restrito que o da conta.
+   *
+   * Antes esta funcao trocava o papel para qualquer valor, inclusive ADMIN, sem
+   * checagem nenhuma - bastava um clique no menu da barra superior. A
+   * autorizacao real do servidor nao depende disto (as rotas privilegiadas
+   * conferem o vinculo em prevsafe_members), mas o front-end liberava telas e
+   * acoes que o usuario nao deveria ver.
+   *
+   * Regra agora: so desce. Subir exige que a conta ja tenha o papel.
+   */
   const switchRole = useCallback((role: RoleType) => {
-    const matchedProfile = profiles.find(p => p.role === role) || {
-      ...currentProfile,
-      role
-    };
-    setCurrentProfile(matchedProfile);
+    const teto = papelDaConta || currentProfile.role;
+    const nivelAtual = NIVEL_DO_PAPEL[teto] ?? 0;
+    const nivelDesejado = NIVEL_DO_PAPEL[role] ?? 0;
+
+    if (nivelDesejado > nivelAtual) {
+      console.warn(
+        `[PrevSafe] Troca de perfil recusada: a conta tem papel ${teto} e nao pode assumir ${role}.`
+      );
+      return;
+    }
+
+    // Mantem a identidade da conta; muda apenas o papel efetivo. Assumir o
+    // perfil de OUTRA pessoa cadastrada mascararia a autoria na auditoria.
+    setCurrentProfile({ ...currentProfile, role });
+
     if (role === 'CLIENTE_ADMIN' || role === 'CLIENTE_USER') {
       setActiveClientId(clients[0]?.id);
     }
-  }, [profiles, currentProfile]);
+  }, [papelDaConta, currentProfile, clients]);
 
   // Authentication Actions (backed by real Supabase Auth — auth.users)
   const buildProfileFromAuthUser = useCallback((user: { id: string; email?: string; user_metadata?: Record<string, any> }): Profile => {
@@ -1176,7 +1266,11 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
       auth_user_id: user.id,
       email: user.email || base.email,
       full_name: meta.full_name || base.full_name,
-      role: (meta.role as RoleType) || base.role,
+      // NAO le o papel de user_metadata: esse campo e gravavel pelo proprio
+      // usuario via auth.updateUser({ data: { role: 'ADMIN' } }). O papel real
+      // vem de prevsafe_members, carregado logo apos a sessao (papelDaConta) e
+      // aplicado pelo efeito abaixo.
+      role: base.role,
     };
   }, [profiles, organization]);
 
@@ -1475,7 +1569,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
       related_entity_id: data.related_entity_id,
       deliveries: [
         {
-          id: `del-${Date.now()}`,
+          id: novoId('del'),
           notification_id: notifId,
           channel: data.channel,
           // WhatsApp/e-mail are handed off to the user's own app (see lib/shareLinks.ts),
@@ -1497,7 +1591,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
   const addClient = useCallback((clientData: Omit<Client, 'id' | 'organization_id' | 'created_at' | 'updated_at'>): Client => {
     const newClient: Client = {
       ...clientData,
-      id: `cli-${Date.now()}`,
+      id: novoId('cli'),
       organization_id: organization.id,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
@@ -1521,7 +1615,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     const newContact: ClientContact = {
       ...contactData,
       organization_id: organization.id,
-      id: `cnt-${Date.now()}`
+      id: novoId('cnt')
     };
     setContacts(prev => [...prev, newContact]);
     return newContact;
@@ -1535,7 +1629,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     const newUnit: ClientUnit = {
       ...unitData,
       organization_id: organization.id,
-      id: `unit-${Date.now()}`
+      id: novoId('unit')
     };
     setUnits(prev => [...prev, newUnit]);
     return newUnit;
@@ -1548,7 +1642,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
   const addLead = useCallback((leadData: Omit<Lead, 'id' | 'organization_id' | 'created_at'>): Lead => {
     const newLead: Lead = {
       ...leadData,
-      id: `lead-${Date.now()}`,
+      id: novoId('lead'),
       organization_id: organization.id,
       created_at: new Date().toISOString()
     };
@@ -1573,14 +1667,19 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     if (!lead) throw new Error('Lead not found');
 
     const newClient: Client = {
-      id: `cli-${Date.now()}`,
+      id: novoId('cli'),
       organization_id: organization.id,
-      legal_name: `${lead.company} Ltda`,
+      legal_name: lead.company,
       trade_name: lead.company,
-      document_number: '00.000.000/0001-00',
-      main_cnae: lead.cnae || '00.00-0-00',
-      cnae_description: 'Atividade comercial/industrial',
-      risk_degree: 3,
+      // Sem documento, CNAE ou grau inventados: o lead nao traz esses dados, e
+      // um cliente nascer com CNPJ 00.000.000/0001-00 e grau 3 faz o cadastro
+      // parecer completo. Estes campos ficam vazios ate serem preenchidos - de
+      // preferencia pela busca automatica do CNPJ, que traz CNAE e grau do
+      // Anexo I da NR-04.
+      document_number: '',
+      main_cnae: lead.cnae || '',
+      cnae_description: '',
+      risk_degree: null as any,
       employee_count: lead.estimated_employees || 50,
       email: lead.email,
       phone: lead.phone,
@@ -1594,7 +1693,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     };
 
     const newOpportunity: Opportunity = {
-      id: `opp-${Date.now()}`,
+      id: novoId('opp'),
       organization_id: organization.id,
       client_id: newClient.id,
       lead_id: lead.id,
@@ -1602,7 +1701,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
       estimated_value: 12000,
       probability: 70,
       stage: 'PROPOSAL',
-      expected_close_date: new Date(Date.now() + 30 * 86400000).toISOString().split('T')[0],
+      expected_close_date: dataEmDias(30),
       assigned_to: lead.assigned_to || currentProfile.id,
       created_at: new Date().toISOString()
     };
@@ -1618,7 +1717,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
   const addOpportunity = useCallback((oppData: Omit<Opportunity, 'id' | 'organization_id' | 'created_at'>): Opportunity => {
     const newOpp: Opportunity = {
       ...oppData,
-      id: `opp-${Date.now()}`,
+      id: novoId('opp'),
       organization_id: organization.id,
       created_at: new Date().toISOString()
     };
@@ -1723,7 +1822,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     if (!proposal) return;
 
     const approvalDetails = {
-      id: `appr-${Date.now()}`,
+      id: novoId('appr'),
       proposal_id: proposalId,
       client_user_id: currentProfile.id,
       client_name: currentProfile.full_name,
@@ -1788,11 +1887,11 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
 
     const count = contracts.length + 1;
     const contractNumber = `CONT-${new Date().getFullYear()}-${String(count).padStart(6, '0')}`;
-    const startDate = new Date().toISOString().split('T')[0];
-    const endDate = new Date(Date.now() + 365 * 86400000).toISOString().split('T')[0];
+    const startDate = dataDeHoje();
+    const endDate = dataEmDias(365);
 
     const newContract: Contract = {
-      id: `cont-${Date.now()}`,
+      id: novoId('cont'),
       organization_id: organization.id,
       client_id: proposal.client_id,
       proposal_id: proposal.id,
@@ -1839,7 +1938,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     const contractNumber = `CONT-${new Date().getFullYear()}-${String(count).padStart(6, '0')}`;
     const client = clients.find(c => c.id === data.client_id) || null;
     const newContract: Contract = {
-      id: `cont-${Date.now()}`,
+      id: novoId('cont'),
       organization_id: organization.id,
       client_id: data.client_id,
       proposal_id: data.proposal_id,
@@ -1883,7 +1982,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
   const addServiceTemplate = useCallback((tmplData: Omit<ServiceTemplate, 'id' | 'organization_id'>): ServiceTemplate => {
     const newTmpl: ServiceTemplate = {
       ...tmplData,
-      id: `tmpl-${Date.now()}`,
+      id: novoId('tmpl'),
       organization_id: organization.id
     };
     setServiceTemplates(prev => [...prev, newTmpl]);
@@ -1902,17 +2001,39 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     const contract = contracts.find(c => c.id === contractId);
     if (!contract) return;
 
+    // Hash do que esta sendo assinado, calculado sobre o conteudo. Antes era
+    // `SHA256:` + Math.random() - um rotulo de hash sobre um numero aleatorio.
+    const signedAt = new Date().toISOString();
+    const documentoHash = hashDoDocumento({
+      contrato: contract.contract_number,
+      cliente: contract.client_id,
+      titulo: contract.title,
+      valor: contract.total_value,
+      inicio: contract.start_date,
+      fim: contract.end_date,
+      minuta: contract.terms || null,
+      servicos: contract.services_summary || null,
+    });
+
     const signature = {
-      id: `sig-${Date.now()}`,
+      id: `sig-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
       contract_id: contractId,
       signer_user_id: currentProfile.id,
       signer_name: signerName,
       signer_email: signerEmail,
-      signer_document: signerDoc || '000.000.000-00',
-      signed_at: new Date().toISOString(),
+      // Sem CPF de fachada: campo vazio e um dado faltando, nao 000.000.000-00.
+      signer_document: signerDoc || undefined,
+      signed_at: signedAt,
       ip_address: getCachedClientIp(),
       provider: 'PREVSAFE_SIGN' as const,
-      signature_hash: `SHA256:${Math.random().toString(36).substring(2, 12)}`
+      document_hash: documentoHash,
+      signature_hash: hashDaAssinatura({
+        documentoHash,
+        signerName,
+        signerDocument: signerDoc,
+        signerEmail,
+        signedAt,
+      }),
     };
 
     const updatedSignatures = [...contract.signatures, signature];
@@ -1948,8 +2069,8 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
 
     const count = serviceOrders.length + 1;
     const osNumber = `OS-${new Date().getFullYear()}-${String(count).padStart(6, '0')}`;
-    const startDate = new Date().toISOString().split('T')[0];
-    const dueDate = new Date(Date.now() + template.default_duration_days * 86400000).toISOString().split('T')[0];
+    const startDate = dataDeHoje();
+    const dueDate = dataEmDias(template.default_duration_days);
 
     const newOsId = `os-${Date.now()}`;
 
@@ -2042,7 +2163,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     const template = serviceTemplates.find(t => t.id === data.service_template_id) || serviceTemplates[0];
     const count = serviceOrders.length + 1;
     const osNumber = `OS-${new Date().getFullYear()}-${String(count).padStart(6, '0')}`;
-    const startDate = new Date().toISOString().split('T')[0];
+    const startDate = dataDeHoje();
     const newOsId = `os-${Date.now()}`;
     const techName = data.technical_responsible_name || 'Eng. Eduardo Vasconcelos';
 
@@ -2131,7 +2252,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
       const updatedStages = os.stages.map(stg => {
         if (stg.id !== stageId) return stg;
         const newTask: ServiceTask = {
-          id: `tsk-${Date.now()}`,
+          id: novoId('tsk'),
           service_stage_id: stageId,
           name: title,
           description: description || '',
@@ -2516,7 +2637,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
       if (doc.id !== documentId) return doc;
       const nextVerNum = doc.current_version + 1;
       const newVersion: DocumentVersion = {
-        id: `ver-${Date.now()}`,
+        id: novoId('ver'),
         document_id: doc.id,
         version: nextVerNum,
         storage_path: `/storage/services/${doc.service_order_id || 'general'}/v${nextVerNum}/${fileData.file_name}`,
@@ -2560,7 +2681,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     const newDocId = `doc-${Date.now()}`;
 
     const version1: DocumentVersion = {
-      id: `ver-${Date.now()}`,
+      id: novoId('ver'),
       document_id: newDocId,
       version: 1,
       storage_path: `/storage/documents/${newDocId}/${data.file_name}`,
@@ -2634,7 +2755,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     const reqNumber = `REQ-${new Date().getFullYear()}-${String(count).padStart(6, '0')}`;
     const newReq: RequestItem = {
       ...data,
-      id: `req-${Date.now()}`,
+      id: novoId('req'),
       organization_id: organization.id,
       req_number: reqNumber,
       status: 'OPEN',
@@ -2708,7 +2829,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     content: string;
   }) => {
     const newComm: Communication = {
-      id: `comm-${Date.now()}`,
+      id: novoId('comm'),
       organization_id: organization.id,
       client_id: data.client_id,
       service_order_id: data.service_order_id,
@@ -2756,7 +2877,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
   }): Evaluation => {
     const newEval: Evaluation = {
       ...data,
-      id: `eval-${Date.now()}`,
+      id: novoId('eval'),
       organization_id: organization.id,
       created_at: new Date().toISOString()
     };
@@ -2848,10 +2969,10 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
       <agNoc>${risksXml}
       </agNoc>
       <respReg>
-        <cpfResp>${(amb?.responsible_technician_cpf || '12345678900').replace(/\D/g, '')}</cpfResp>
+        <cpfResp>${(amb?.responsible_technician_cpf || '').replace(/\D/g, '')}</cpfResp>
         <ideOC>1</ideOC>
-        <dscOC>${amb?.responsible_technician_crea_crm || 'CREA-SP'}</dscOC>
-        <ufOC>${amb?.responsible_technician_uf || 'SP'}</ufOC>
+        <dscOC>${amb?.responsible_technician_crea_crm || ''}</dscOC>
+        <ufOC>${amb?.responsible_technician_uf || ''}</ufOC>
       </respReg>
     </infoExpRisco>
   </evtExpRisco>
@@ -3271,30 +3392,30 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
       return { success: false, error: val.errors.join(' | ') };
     }
 
-    const randId = Math.floor(1000000000000000000 + Math.random() * 9000000000000000000);
-    const receiptNumber = `1.2.${new Date().getFullYear()}08.${randId}-01`;
-    const protocolNumber = `PROT-SERPRO-${Math.floor(100000 + Math.random() * 900000)}-${new Date().getFullYear()}`;
+    // Nao ha transmissao: o evento fica VALIDADO e pronto para envio. Recibo e
+    // protocolo so existem quando o governo os emite, entao nao sao preenchidos.
+    const agora = new Date().toISOString();
 
     setEsocialEvents(prev => prev.map(e => {
       if (e.id !== id) return e;
       return {
         ...e,
-        status: 'SUCCESS',
-        receipt_number: receiptNumber,
-        protocol_number: protocolNumber,
-        transmitted_at: new Date().toISOString(),
-        return_code: '201',
-        return_message: 'Evento processado e recepcionado com sucesso pela base oficial do eSocial (Serpro/Receita Federal).',
+        status: 'READY_TO_SEND',
+        transmitted_at: undefined,
+        return_code: undefined,
+        return_message: 'XML montado e validado pelo PrevSafe. O envio ao eSocial ainda não é feito pelo sistema: ' +
+          'transmita pelo canal oficial (portal do eSocial ou software transmissor com certificado ICP-Brasil) ' +
+          'e registre aqui o recibo recebido.',
         validation_errors: [],
-        updated_at: new Date().toISOString(),
+        updated_at: agora,
         history: [
           ...(e.history || []),
           {
-            date: new Date().toISOString(),
-            action: 'TRANSMISSÃO_GOVERNO',
+            date: agora,
+            action: 'VALIDADO_PARA_ENVIO',
             user_name: currentProfile.full_name,
-            status: 'SUCCESS',
-            details: `Transmissão com certificado digital ${certificateType}. Recibo Oficial: ${receiptNumber}`
+            status: 'READY_TO_SEND',
+            details: 'XML montado e validado no PrevSafe. Envio ao Serpro não realizado pelo sistema.'
           }
         ]
       };
@@ -3302,23 +3423,22 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
 
     const evt = esocialEvents.find(e => e.id === id);
     logAudit('ESOCIAL_EVENT_TRANSMITTED', 'ESOCIAL_EVENT', id, evt?.event_number, {
-      receipt: receiptNumber,
-      protocol: protocolNumber,
-      certificate: certificateType
+      resultado: 'VALIDADO_PARA_ENVIO',
+      observacao: 'O PrevSafe nao transmite ao eSocial. Envio pelo canal oficial.'
     });
 
     dispatchNotification({
       recipient_user_id: currentProfile.id,
       recipient_name: currentProfile.full_name,
       event_type: 'document.client_released',
-      title: `eSocial Transmitido com Sucesso: ${evt?.event_type || 'Evento'}`,
-      message: `Recibo de Entrega emitido pelo Serpro: ${receiptNumber}`,
+      title: `Evento ${evt?.event_type || 'eSocial'} pronto para envio`,
+      message: 'XML montado e validado. Transmita pelo canal oficial do eSocial e registre o recibo recebido.',
       channel: 'PORTAL',
       related_entity_type: 'ESOCIAL_EVENT',
       related_entity_id: id
     });
 
-    return { success: true, receipt: receiptNumber, protocol: protocolNumber };
+    return { success: true };
   }, [validateESocialEvent, esocialEvents, currentProfile.full_name, currentProfile.id, logAudit, dispatchNotification]);
 
   // Transmit Batch eSocial
@@ -3329,7 +3449,8 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     const batchSeq = esocialBatches.length + 1;
     const batchNumber = `LOTE-${new Date().getFullYear()}-${String(batchSeq).padStart(5, '0')}`;
     const batchId = `batch-${Date.now()}`;
-    const protocolNumber = `PROT-SERPRO-${Math.floor(100000 + Math.random() * 900000)}-${new Date().getFullYear()}`;
+    // Protocolo do lote so existe apos o envio real ao eSocial.
+    const protocolNumber = undefined as unknown as string;
 
     eventIds.forEach(id => {
       const res = transmitESocialEvent(id, certificateType);
@@ -3382,7 +3503,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
         worker_role: 'Operador Técnico Industrial',
         status: 'READY_TO_SEND',
         ambient_data: {
-          start_date: new Date().toISOString().split('T')[0],
+          start_date: dataDeHoje(),
           description_activities: `Atividades mapeadas na Ordem de Serviço ${so.os_number} (${so.title}) conforme diretrizes da NR-01 / NR-09.`,
           work_environment: `${client.trade_name || client.legal_name} - Planta Operacional`,
           ambient_risks: [
@@ -3426,7 +3547,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
         status: 'READY_TO_SEND',
         aso_data: {
           aso_type: 'PERIODICO',
-          exam_date: new Date().toISOString().split('T')[0],
+          exam_date: dataDeHoje(),
           result: 'APTO',
           physician_name: 'Dra. Camila Bittencourt Guimarães',
           physician_crm: 'CRM-SP 145892',
@@ -3438,7 +3559,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
             {
               code: '0295',
               name: 'Avaliação Clínica Ocupacional e Anamnese Geral',
-              date: new Date().toISOString().split('T')[0],
+              date: dataDeHoje(),
               procedure_type: 'CLINICO',
               result: 'NORMAL',
               observation: 'Sem queixas ocupacionais.'
@@ -3472,7 +3593,9 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
       status: 'READY_TO_SEND',
       exclusion_data: {
         target_event_type: target.event_type as 'S-2210' | 'S-2220' | 'S-2240',
-        target_receipt_number: target.receipt_number || '1.2.202608.0000000000000000000-00',
+        // Sem recibo original nao ha o que retificar; o campo fica vazio em vez
+        // de apontar para um recibo que nunca existiu.
+        target_receipt_number: target.receipt_number || undefined,
         exclusion_reason: reason
       }
     });
@@ -3932,7 +4055,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     const now = new Date();
     const currentYear = now.getFullYear();
     const currentMonth = now.getMonth();
-    const todayStr = now.toISOString().split('T')[0];
+    const todayStr = formatarDataISO(now);
 
     transactions.forEach(t => {
       const dueDate = new Date(t.due_date);
@@ -4043,7 +4166,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
   }, [transactions]);
 
   const addTransaction = useCallback((data: Omit<FinancialTransaction, 'id' | 'organization_id' | 'created_at' | 'updated_at'>): FinancialTransaction => {
-    const today = new Date().toISOString().split('T')[0];
+    const today = dataDeHoje();
     const amount = Number(data.amount) || 0;
     const discount = Number(data.discount) || 0;
     const fine_interest = Number(data.fine_interest) || 0;
@@ -4123,7 +4246,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
       notes?: string;
     }
   ) => {
-    const today = new Date().toISOString().split('T')[0];
+    const today = dataDeHoje();
     setTransactions(prev => prev.map(t => {
       if (t.id !== id) return t;
       const discount = options?.discount !== undefined ? Number(options.discount) : (t.discount || 0);
@@ -4158,7 +4281,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
       notes?: string;
     }
   ) => {
-    const today = new Date().toISOString().split('T')[0];
+    const today = dataDeHoje();
     const nowIso = new Date().toISOString();
     const shouldReconcile = options?.auto_reconcile !== false;
 
@@ -4387,7 +4510,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     const amount = contract.total_value;
 
     const newTx: FinancialTransaction = {
-      id: `fin-rec-${Date.now()}`,
+      id: novoId('fin-rec'),
       organization_id: organization.id,
       type: 'RECEIVABLE',
       status: 'PENDING',
@@ -4402,7 +4525,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
       discount: 0,
       fine_interest: 0,
       final_amount: amount,
-      due_date: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+      due_date: dataEmDias(10),
       payment_method: 'BOLETO',
       document_number: `FAT-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`,
       created_at: new Date().toISOString(),
@@ -4439,7 +4562,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     }
 
     const newTx: FinancialTransaction = {
-      id: `fin-rec-${Date.now()}`,
+      id: novoId('fin-rec'),
       organization_id: organization.id,
       type: 'RECEIVABLE',
       status: 'PENDING',
@@ -4455,7 +4578,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
       discount: 0,
       fine_interest: 0,
       final_amount: amount,
-      due_date: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+      due_date: dataEmDias(15),
       payment_method: 'BOLETO',
       document_number: `FAT-OS-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`,
       created_at: new Date().toISOString(),
@@ -4491,7 +4614,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     const tenantId = `tenant-${Date.now().toString(36)}-${Math.random().toString(36).substring(2, 5)}`;
     const inviteToken = `inv-tok-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
     const inviteUrl = `${getAppUrl()}/onboarding?token=${inviteToken}&tenant=${tenantId}`;
-    const nextBilling = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+    const nextBilling = dataEmDias(30);
 
     const newTenant: Tenant = {
       id: tenantId,
@@ -5194,15 +5317,19 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     const cat = catRecords.find(c => c.id === id);
     if (!cat) return { success: false, error: 'Registro CAT não encontrado.' };
 
-    const receipt = `1.2.202608.${Math.floor(100000000000000 + Math.random() * 900000000000000)}`;
-    const protocol = `PROT-SERPRO-${Math.floor(10000000 + Math.random() * 90000000)}`;
+    // Empregador vem do cadastro do cliente. Sem CNPJ/CPF valido nao ha evento:
+    // o XML antes saia com o CNPJ 12345678000199 fixo no codigo.
+    const empregador = identificacaoDoEmpregador(cat.client_id);
+    if (!empregador) return { success: false, error: ERRO_EMPREGADOR_SEM_DOCUMENTO };
 
+    // Recibo e protocolo nao sao gerados aqui: eles so existem quando o
+    // eSocial os emite. Antes eram Math.random() e o registro nascia como
+    // TRANSMITIDO, fazendo o usuario acreditar que a obrigacao legal do
+    // cliente estava cumprida.
     setCatRecords(prev => prev.map(c => c.id === id ? {
       ...c,
-      status: 'TRANSMITTED',
-      receipt_number: receipt,
-      protocol_number: protocol,
-      transmitted_at: new Date().toISOString()
+      status: 'READY_TO_SEND' as any,
+      transmitted_at: undefined
     } : c));
 
     // Register event in esocialEvents
@@ -5212,25 +5339,23 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
       client_id: cat.client_id,
       event_type: 'S-2210',
       event_number: cat.cat_number,
-      receipt_number: receipt,
-      protocol_number: protocol,
-      status: 'SUCCESS',
+      status: 'READY_TO_SEND',
       environment: 'PRODUCAO',
       is_rectification: false,
       worker_name: cat.worker_name,
       worker_cpf: cat.worker_cpf,
       worker_registration: cat.worker_registration,
-      worker_cbo: cat.worker_cbo || '7152-10',
-      worker_role: cat.worker_role || 'Operador',
-      xml_content: `<?xml version="1.0" encoding="UTF-8"?><eSocial xmlns="http://www.esocial.gov.br/schema/evt/evtCAT/v_S_01_02_00"><evtCAT id="ID1${cat.worker_cpf.replace(/\D/g, '')}202608"><ideEmpregador><tpInsc>1</tpInsc><nrInsc>12345678000199</nrInsc></ideEmpregador><ideTrabalhador><cpfTrab>${cat.worker_cpf.replace(/\D/g, '')}</cpfTrab></ideTrabalhador><cat><dtAcid>${cat.accident_date}</dtAcid><tpAcid>${cat.accident_type === 'TIPICO' ? 1 : 2}</tpAcid><hrAcid>${cat.accident_time.replace(':', '')}</hrAcid><localAcidente><tpLocal>${cat.location_type === 'ESTABELECIMENTO_EMPREGADOR' ? 1 : 3}</tpLocal><dscLocal>${cat.location_description}</dscLocal></localAcidente><parteAtingida><codParteAting>${cat.body_part_code}</codParteAting></parteAtingida><agenteCausador><codAgntCausador>${cat.causative_agent_code}</codAgntCausador></agenteCausador><atestado><dtAtendimento>${cat.accident_date}</dtAtendimento><codCID>${cat.cid_10}</codCID><emitente><nmEmit>${cat.medical_name}</nmEmit><ideOC>1</ideOC><nrOC>${cat.medical_crm}</nrOC><ufOC>${cat.medical_uf}</ufOC></emitente></atestado></cat></evtCAT></eSocial>`,
+      worker_cbo: cat.worker_cbo || undefined,
+      worker_role: cat.worker_role || '',
+      xml_content: `<?xml version="1.0" encoding="UTF-8"?><eSocial xmlns="http://www.esocial.gov.br/schema/evt/evtCAT/v_S_01_02_00"><evtCAT id="ID1${cat.worker_cpf.replace(/\D/g, '')}202608"><ideEmpregador><tpInsc>${empregador.tpInsc}</tpInsc><nrInsc>${empregador.nrInsc}</nrInsc></ideEmpregador><ideTrabalhador><cpfTrab>${cat.worker_cpf.replace(/\D/g, '')}</cpfTrab></ideTrabalhador><cat><dtAcid>${cat.accident_date}</dtAcid><tpAcid>${cat.accident_type === 'TIPICO' ? 1 : 2}</tpAcid><hrAcid>${cat.accident_time.replace(':', '')}</hrAcid><localAcidente><tpLocal>${cat.location_type === 'ESTABELECIMENTO_EMPREGADOR' ? 1 : 3}</tpLocal><dscLocal>${cat.location_description}</dscLocal></localAcidente><parteAtingida><codParteAting>${cat.body_part_code}</codParteAting></parteAtingida><agenteCausador><codAgntCausador>${cat.causative_agent_code}</codAgntCausador></agenteCausador><atestado><dtAtendimento>${cat.accident_date}</dtAtendimento><codCID>${cat.cid_10}</codCID><emitente><nmEmit>${cat.medical_name}</nmEmit><ideOC>1</ideOC><nrOC>${cat.medical_crm}</nrOC><ufOC>${cat.medical_uf}</ufOC></emitente></atestado></cat></evtCAT></eSocial>`,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
     };
     setEsocialEvents(prev => [evt, ...prev]);
 
-    logAudit('TRANSMIT_ESOCIAL_EVENT' as any, 'ESOCIAL' as any, id, `CAT ${cat.cat_number} transmitida via S-2210`, { receipt, protocol });
+    logAudit('TRANSMIT_ESOCIAL_EVENT' as any, 'ESOCIAL' as any, id, `CAT ${cat.cat_number} validada para envio (S-2210)`, { resultado: 'VALIDADO_PARA_ENVIO' });
 
-    return { success: true, receipt, protocol };
+    return { success: true };
   }, [catRecords, organization.id, logAudit]);
 
   const addWorkAbsence = useCallback((data: Omit<SSTWorkAbsence, 'id' | 'organization_id' | 'created_at'>): SSTWorkAbsence => {
@@ -5254,15 +5379,20 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     const abs = workAbsences.find(a => a.id === id);
     if (!abs) return { success: false, error: 'Registro de afastamento não encontrado.' };
 
-    const receipt = `1.2.202608.${Math.floor(100000000000000 + Math.random() * 900000000000000)}`;
-    const protocol = `PROT-SERPRO-${Math.floor(10000000 + Math.random() * 90000000)}`;
+    // Empregador vem do cadastro do cliente. Sem CNPJ/CPF valido nao ha evento:
+    // o XML antes saia com o CNPJ 12345678000199 fixo no codigo.
+    const empregador = identificacaoDoEmpregador(abs.client_id);
+    if (!empregador) return { success: false, error: ERRO_EMPREGADOR_SEM_DOCUMENTO };
+
+    // Recibo e protocolo nao sao gerados aqui: eles so existem quando o
+    // eSocial os emite. Antes eram Math.random() e o registro nascia como
+    // TRANSMITIDO, fazendo o usuario acreditar que a obrigacao legal do
+    // cliente estava cumprida.
 
     setWorkAbsences(prev => prev.map(a => a.id === id ? {
       ...a,
       status: 'ACTIVE_AWAY',
-      receipt_number: receipt,
-      protocol_number: protocol,
-      transmitted_at: new Date().toISOString()
+      transmitted_at: undefined
     } : a));
 
     const evt: ESocialEvent = {
@@ -5271,23 +5401,21 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
       client_id: abs.client_id,
       event_type: 'S-2230',
       event_number: `ABS-${new Date().getFullYear()}-${id.substring(4, 10)}`,
-      receipt_number: receipt,
-      protocol_number: protocol,
-      status: 'SUCCESS',
+      status: 'READY_TO_SEND',
       environment: 'PRODUCAO',
       is_rectification: false,
       worker_name: abs.worker_name,
       worker_cpf: abs.worker_cpf,
       worker_registration: abs.worker_registration,
-      worker_cbo: abs.worker_cbo || '7152-10',
-      worker_role: 'Operador',
-      xml_content: `<?xml version="1.0" encoding="UTF-8"?><eSocial xmlns="http://www.esocial.gov.br/schema/evt/evtAfastTemp/v_S_01_02_00"><evtAfastTemp id="ID1${abs.worker_cpf.replace(/\D/g, '')}202608"><ideEmpregador><tpInsc>1</tpInsc><nrInsc>12345678000199</nrInsc></ideEmpregador><ideTrabalhador><cpfTrab>${abs.worker_cpf.replace(/\D/g, '')}</cpfTrab></ideTrabalhador><infoAfastamento><iniAfastamento><dtIniAfast>${abs.start_date}</dtIniAfast><codMotAfast>${abs.reason_code_table_18}</codMotAfast><infoAtestado><codCID>${abs.cid_10 || 'N/A'}</codCID><qtdDiasAfast>${abs.estimated_days}</qtdDiasAfast><emitente><nmEmit>${abs.physician_name || 'Médico Assistente'}</nmEmit><nrOC>${abs.physician_crm || 'CRM'}</nrOC><ufOC>${abs.physician_uf || 'SP'}</ufOC></emitente></infoAtestado></iniAfastamento></infoAfastamento></evtAfastTemp></eSocial>`,
+      worker_cbo: abs.worker_cbo || undefined,
+      worker_role: '',
+      xml_content: `<?xml version="1.0" encoding="UTF-8"?><eSocial xmlns="http://www.esocial.gov.br/schema/evt/evtAfastTemp/v_S_01_02_00"><evtAfastTemp id="ID1${abs.worker_cpf.replace(/\D/g, '')}202608"><ideEmpregador><tpInsc>${empregador.tpInsc}</tpInsc><nrInsc>${empregador.nrInsc}</nrInsc></ideEmpregador><ideTrabalhador><cpfTrab>${abs.worker_cpf.replace(/\D/g, '')}</cpfTrab></ideTrabalhador><infoAfastamento><iniAfastamento><dtIniAfast>${abs.start_date}</dtIniAfast><codMotAfast>${abs.reason_code_table_18}</codMotAfast><infoAtestado><codCID>${abs.cid_10 || 'N/A'}</codCID><qtdDiasAfast>${abs.estimated_days}</qtdDiasAfast><emitente><nmEmit>${abs.physician_name || ''}</nmEmit><nrOC>${abs.physician_crm || ''}</nrOC><ufOC>${abs.physician_uf || ''}</ufOC></emitente></infoAtestado></iniAfastamento></infoAfastamento></evtAfastTemp></eSocial>`,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
     };
     setEsocialEvents(prev => [evt, ...prev]);
 
-    return { success: true, receipt, protocol };
+    return { success: true };
   }, [workAbsences, organization.id]);
 
   const generateS2240FromGhe = useCallback((gheId: string): ESocialEvent | null => {
@@ -5297,6 +5425,10 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     const risks = environmentalRisks.filter(r => r.ghe_id === gheId);
     const client = clients.find(c => c.id === ghe.client_id);
     const sampleWorker = employees.find(e => e.ghe_id === gheId) || employees[0];
+
+    // Empregador vem do cadastro do cliente. Sem CNPJ/CPF valido nao ha evento.
+    const empregador = identificacaoDoEmpregador(ghe.client_id);
+    if (!empregador) return null;
 
     const risksXml = risks.map(r => `
           <fatRisco>
@@ -5325,12 +5457,12 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
       <verProc>PrevSafe_SST_v1.0</verProc>
     </ideEvento>
     <ideEmpregador>
-      <tpInsc>1</tpInsc>
-      <nrInsc>${client?.document_number.replace(/\D/g, '') || '12345678000199'}</nrInsc>
+      <tpInsc>${empregador.tpInsc}</tpInsc>
+      <nrInsc>${empregador.nrInsc}</nrInsc>
     </ideEmpregador>
     <ideTrabalhador>
       <cpfTrab>${sampleWorker?.cpf.replace(/\D/g, '') || '12345678900'}</cpfTrab>
-      <matricula>${sampleWorker?.registration_number || 'MAT-001'}</matricula>
+      <matricula>${sampleWorker?.registration_number || ''}</matricula>
     </ideTrabalhador>
     <infoExpRisco>
       <dtIniCondicao>2026-01-01</dtIniCondicao>
@@ -5352,7 +5484,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
 </eSocial>`;
 
     const newEvt: ESocialEvent = {
-      id: `evt-2240-${Date.now()}`,
+      id: novoId('evt-2240'),
       organization_id: organization.id,
       client_id: ghe.client_id,
       event_type: 'S-2240',
@@ -5360,10 +5492,10 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
       status: 'READY_TO_SEND',
       environment: 'PRODUCAO',
       is_rectification: false,
-      worker_name: sampleWorker?.name || 'Trabalhador do GHE',
-      worker_cpf: sampleWorker?.cpf || '000.000.000-00',
-      worker_registration: sampleWorker?.registration_number || 'MAT-001',
-      worker_cbo: sampleWorker?.cbo || '7152-10',
+      worker_name: sampleWorker?.name || '',
+      worker_cpf: sampleWorker?.cpf || '',
+      worker_registration: sampleWorker?.registration_number || '',
+      worker_cbo: sampleWorker?.cbo || undefined,
       worker_role: sampleWorker?.job_title || 'Operador',
       xml_content: xml,
       created_at: new Date().toISOString(),
@@ -5380,12 +5512,16 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     const aso = emp.aso_history.find(a => a.id === asoId) || emp.aso_history[0];
     if (!aso) return null;
 
+    // Empregador vem do cadastro do cliente. Sem CNPJ/CPF valido nao ha evento.
+    const empregador = identificacaoDoEmpregador(emp.client_id);
+    if (!empregador) return null;
+
     const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <eSocial xmlns="http://www.esocial.gov.br/schema/evt/evtMonit/v_S_01_02_00">
   <evtMonit id="ID1${emp.cpf.replace(/\D/g, '')}202608">
     <ideEmpregador>
-      <tpInsc>1</tpInsc>
-      <nrInsc>12345678000199</nrInsc>
+      <tpInsc>${empregador.tpInsc}</tpInsc>
+      <nrInsc>${empregador.nrInsc}</nrInsc>
     </ideEmpregador>
     <ideTrabalhador>
       <cpfTrab>${emp.cpf.replace(/\D/g, '')}</cpfTrab>
@@ -5407,7 +5543,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
 </eSocial>`;
 
     const newEvt: ESocialEvent = {
-      id: `evt-2220-${Date.now()}`,
+      id: novoId('evt-2220'),
       organization_id: organization.id,
       client_id: emp.client_id,
       event_type: 'S-2220',
@@ -5418,7 +5554,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
       worker_name: emp.name,
       worker_cpf: emp.cpf,
       worker_registration: emp.registration_number,
-      worker_cbo: emp.cbo || '7152-10',
+      worker_cbo: emp.cbo || undefined,
       worker_role: emp.job_title || 'Operador',
       xml_content: xml,
       created_at: new Date().toISOString(),
@@ -5433,10 +5569,15 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     const cat = catRecords.find(c => c.id === catId);
     if (!cat) return null;
 
-    const xml = `<?xml version="1.0" encoding="UTF-8"?><eSocial xmlns="http://www.esocial.gov.br/schema/evt/evtCAT/v_S_01_02_00"><evtCAT id="ID1${cat.worker_cpf.replace(/\D/g, '')}202608"><ideEmpregador><tpInsc>1</tpInsc><nrInsc>12345678000199</nrInsc></ideEmpregador><ideTrabalhador><cpfTrab>${cat.worker_cpf.replace(/\D/g, '')}</cpfTrab></ideTrabalhador><cat><dtAcid>${cat.accident_date}</dtAcid><tpAcid>${cat.accident_type === 'TIPICO' ? 1 : 2}</tpAcid><hrAcid>${cat.accident_time.replace(':', '')}</hrAcid><localAcidente><tpLocal>${cat.location_type === 'ESTABELECIMENTO_EMPREGADOR' ? 1 : 3}</tpLocal><dscLocal>${cat.location_description}</dscLocal></localAcidente><parteAtingida><codParteAting>${cat.body_part_code}</codParteAting></parteAtingida><agenteCausador><codAgntCausador>${cat.causative_agent_code}</codAgntCausador></agenteCausador><atestado><dtAtendimento>${cat.accident_date}</dtAtendimento><codCID>${cat.cid_10}</codCID><emitente><nmEmit>${cat.medical_name}</nmEmit><ideOC>1</ideOC><nrOC>${cat.medical_crm}</nrOC><ufOC>${cat.medical_uf}</ufOC></emitente></atestado></cat></evtCAT></eSocial>`;
+    // Empregador vem do cadastro do cliente. Sem CNPJ/CPF valido nao ha evento:
+    // o XML antes saia com o CNPJ 12345678000199 fixo no codigo.
+    const empregador = identificacaoDoEmpregador(cat.client_id);
+    if (!empregador) return null;
+
+    const xml = `<?xml version="1.0" encoding="UTF-8"?><eSocial xmlns="http://www.esocial.gov.br/schema/evt/evtCAT/v_S_01_02_00"><evtCAT id="ID1${cat.worker_cpf.replace(/\D/g, '')}202608"><ideEmpregador><tpInsc>${empregador.tpInsc}</tpInsc><nrInsc>${empregador.nrInsc}</nrInsc></ideEmpregador><ideTrabalhador><cpfTrab>${cat.worker_cpf.replace(/\D/g, '')}</cpfTrab></ideTrabalhador><cat><dtAcid>${cat.accident_date}</dtAcid><tpAcid>${cat.accident_type === 'TIPICO' ? 1 : 2}</tpAcid><hrAcid>${cat.accident_time.replace(':', '')}</hrAcid><localAcidente><tpLocal>${cat.location_type === 'ESTABELECIMENTO_EMPREGADOR' ? 1 : 3}</tpLocal><dscLocal>${cat.location_description}</dscLocal></localAcidente><parteAtingida><codParteAting>${cat.body_part_code}</codParteAting></parteAtingida><agenteCausador><codAgntCausador>${cat.causative_agent_code}</codAgntCausador></agenteCausador><atestado><dtAtendimento>${cat.accident_date}</dtAtendimento><codCID>${cat.cid_10}</codCID><emitente><nmEmit>${cat.medical_name}</nmEmit><ideOC>1</ideOC><nrOC>${cat.medical_crm}</nrOC><ufOC>${cat.medical_uf}</ufOC></emitente></atestado></cat></evtCAT></eSocial>`;
 
     const newEvt: ESocialEvent = {
-      id: `evt-2210-${Date.now()}`,
+      id: novoId('evt-2210'),
       organization_id: organization.id,
       client_id: cat.client_id,
       event_type: 'S-2210',
@@ -5447,7 +5588,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
       worker_name: cat.worker_name,
       worker_cpf: cat.worker_cpf,
       worker_registration: cat.worker_registration,
-      worker_cbo: cat.worker_cbo || '7152-10',
+      worker_cbo: cat.worker_cbo || undefined,
       worker_role: cat.worker_role || 'Trabalhador',
       xml_content: xml,
       created_at: new Date().toISOString(),
@@ -5462,10 +5603,15 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     const abs = workAbsences.find(a => a.id === absenceId);
     if (!abs) return null;
 
-    const xml = `<?xml version="1.0" encoding="UTF-8"?><eSocial xmlns="http://www.esocial.gov.br/schema/evt/evtAfastTemp/v_S_01_02_00"><evtAfastTemp id="ID1${abs.worker_cpf.replace(/\D/g, '')}202608"><ideEmpregador><tpInsc>1</tpInsc><nrInsc>12345678000199</nrInsc></ideEmpregador><ideTrabalhador><cpfTrab>${abs.worker_cpf.replace(/\D/g, '')}</cpfTrab></ideTrabalhador><infoAfastamento><iniAfastamento><dtIniAfast>${abs.start_date}</dtIniAfast><codMotAfast>${abs.reason_code_table_18}</codMotAfast><infoAtestado><codCID>${abs.cid_10 || 'N/A'}</codCID><qtdDiasAfast>${abs.estimated_days}</qtdDiasAfast><emitente><nmEmit>${abs.physician_name || 'Médico Assistente'}</nmEmit><nrOC>${abs.physician_crm || 'CRM'}</nrOC><ufOC>${abs.physician_uf || 'SP'}</ufOC></emitente></infoAtestado></iniAfastamento></infoAfastamento></evtAfastTemp></eSocial>`;
+    // Empregador vem do cadastro do cliente. Sem CNPJ/CPF valido nao ha evento:
+    // o XML antes saia com o CNPJ 12345678000199 fixo no codigo.
+    const empregador = identificacaoDoEmpregador(abs.client_id);
+    if (!empregador) return null;
+
+    const xml = `<?xml version="1.0" encoding="UTF-8"?><eSocial xmlns="http://www.esocial.gov.br/schema/evt/evtAfastTemp/v_S_01_02_00"><evtAfastTemp id="ID1${abs.worker_cpf.replace(/\D/g, '')}202608"><ideEmpregador><tpInsc>${empregador.tpInsc}</tpInsc><nrInsc>${empregador.nrInsc}</nrInsc></ideEmpregador><ideTrabalhador><cpfTrab>${abs.worker_cpf.replace(/\D/g, '')}</cpfTrab></ideTrabalhador><infoAfastamento><iniAfastamento><dtIniAfast>${abs.start_date}</dtIniAfast><codMotAfast>${abs.reason_code_table_18}</codMotAfast><infoAtestado><codCID>${abs.cid_10 || 'N/A'}</codCID><qtdDiasAfast>${abs.estimated_days}</qtdDiasAfast><emitente><nmEmit>${abs.physician_name || ''}</nmEmit><nrOC>${abs.physician_crm || ''}</nrOC><ufOC>${abs.physician_uf || ''}</ufOC></emitente></infoAtestado></iniAfastamento></infoAfastamento></evtAfastTemp></eSocial>`;
 
     const newEvt: ESocialEvent = {
-      id: `evt-2230-${Date.now()}`,
+      id: novoId('evt-2230'),
       organization_id: organization.id,
       client_id: abs.client_id,
       event_type: 'S-2230',
@@ -5476,8 +5622,8 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
       worker_name: abs.worker_name,
       worker_cpf: abs.worker_cpf,
       worker_registration: abs.worker_registration,
-      worker_cbo: abs.worker_cbo || '7152-10',
-      worker_role: 'Operador',
+      worker_cbo: abs.worker_cbo || undefined,
+      worker_role: '',
       xml_content: xml,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
@@ -5655,7 +5801,17 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
           signed_at: now,
           signature_method: signatureData?.method || 'DIGITAL_BIOMETRIC',
           signature_photo_url: signatureData?.photoUrl || os.signature_photo_url,
-          signature_hash: signatureData?.hash || `HASH-SHA256-OS-${Date.now()}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`,
+          // Hash sobre o conteudo da OS entregue ao trabalhador, nao um
+          // identificador aleatorio com prefixo "HASH-SHA256-".
+          signature_hash: signatureData?.hash || hashDoDocumento({
+            os: os.id,
+            numero: (os as any).os_number || null,
+            trabalhador: (os as any).employee_id || null,
+            funcao: (os as any).job_title || null,
+            riscos: (os as any).risks || null,
+            epis: (os as any).required_epis || null,
+            assinado_em: now,
+          }),
           updated_at: now
         };
       }
@@ -5736,7 +5892,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
 
     const osNumberCount = workOrdersOS.length + 1;
     const osCode = `OS-NR01-${new Date().getFullYear()}-${String(osNumberCount).padStart(4, '0')}`;
-    const todayStr = new Date().toISOString().split('T')[0];
+    const todayStr = dataDeHoje();
 
     const newOSData: Omit<SSTWorkOrderOS, 'id' | 'organization_id' | 'created_at' | 'updated_at'> = {
       client_id: emp.client_id,
@@ -5887,7 +6043,12 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
             attendance_rate_percent: 100,
             signature_method: signatureData?.method || 'DIGITAL_BIOMETRIC',
             signature_photo_url: signatureData?.photoUrl || a.signature_photo_url,
-            signature_hash: signatureData?.hash || `HASH-SHA256-INT-${Date.now()}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`,
+            signature_hash: signatureData?.hash || hashDoDocumento({
+              treinamento: trainingId,
+              trabalhador: employeeId,
+              cpf: a.employee_cpf || null,
+              assinado_em: now,
+            }),
             certificate_code: a.certificate_code || `CERT-NR01-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`,
             issued_at: now
           };
@@ -5907,7 +6068,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
 
     const count = integrationTrainings.length + 1;
     const trainingCode = `CAP-INT-${new Date().getFullYear()}-${String(count).padStart(3, '0')}`;
-    const today = new Date().toISOString().split('T')[0];
+    const today = dataDeHoje();
 
     const attendees: TrainingAttendee[] = targetEmployees.map(emp => {
       const ghe = ghes.find(g => g.id === emp.ghe_id);
@@ -5919,14 +6080,18 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
         employee_job_title: emp.job_title,
         employee_sector: emp.sector_name,
         employee_ghe_name: ghe?.name || 'GHE Operacional',
-        attendance_rate_percent: 100,
-        grade_score: 10.0,
-        completed: true,
-        signed: true,
-        signature_method: 'DIGITAL_BIOMETRIC',
-        signature_hash: `SHA256-INT-${Date.now()}-${Math.random().toString(36).substring(2, 7).toUpperCase()}`,
-        certificate_code: `CERT-NR01-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`,
-        issued_at: new Date().toISOString()
+        // A turma nasce VAZIA: presenca, nota, conclusao, assinatura e
+        // certificado sao preenchidos quando o treinamento acontece de fato.
+        // Antes vinham 100%, nota 10,0 e assinatura pronta para todo mundo,
+        // antes da primeira aula.
+        attendance_rate_percent: 0,
+        grade_score: undefined,
+        completed: false,
+        signed: false,
+        signature_method: undefined,
+        signature_hash: undefined,
+        certificate_code: undefined,
+        issued_at: undefined
       };
     });
 
@@ -6137,15 +6302,35 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
   const createSSTSignatureEnvelope = useCallback((data: Omit<SSTDocumentSignature, 'id' | 'created_at' | 'updated_at' | 'audit_trail'> & { initial_audit?: string }): SSTDocumentSignature => {
     const now = new Date().toISOString();
     const id = `sig-env-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
-    const sha = data.document_sha256 || Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join('');
+    // SHA-256 do conteudo do envelope. Antes eram 64 caracteres hexadecimais
+    // sorteados: tinham a aparencia de um hash e nao passavam pelo documento,
+    // entao /validar confirmava autenticidade comparando um numero aleatorio
+    // com ele mesmo.
+    const sha = data.document_sha256 || hashDoDocumento({
+      documento: data.document_number,
+      titulo: data.document_title,
+      tipo: data.document_type,
+      cliente: data.client_id,
+      referencia: data.document_reference_id || null,
+      signatarios: (data.signers || []).map(sg => ({
+        nome: sg.name,
+        documento: sg.cpf || null,
+        email: sg.email || null,
+        papel: sg.signer_role || null,
+      })),
+    });
     const qrUrl = data.qr_code_verification_url || buildDocumentVerificationUrl(data.document_number, sha.substring(0, 16));
     
     const initialLog: SSTSignatureAuditLog = {
       id: `aud-${Date.now()}-1`,
       timestamp: now,
       action: 'ENVELOPE_CRIADO',
-      actor_name: currentProfile.full_name || 'Operador Técnico SST',
-      actor_cpf: currentProfile.email || '123.456.789-00',
+      actor_name: currentProfile.full_name || 'Operador não identificado',
+      // Era `currentProfile.email || '123.456.789-00'`: gravava e-mail num campo
+      // chamado CPF e, faltando ate isso, inventava um CPF. A trilha de
+      // auditoria e justamente o que da valor probatorio a assinatura.
+      actor_cpf: undefined,
+      actor_email: currentProfile.email || undefined,
       ip_address: getCachedClientIp(),
       details: data.initial_audit || `Envelope de assinatura criado para o documento ${data.document_title} (${data.document_number}).`
     };
@@ -6221,7 +6406,15 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
       const targetSigner = env.signers.find(s => s.id === signerId);
       if (!targetSigner) return env;
 
-      const generatedHash = Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join('');
+      // Liga o signatario ao documento e ao momento. Qualquer alteracao em
+      // quem assinou, quando, ou em que documento, muda o valor.
+      const generatedHash = hashDaAssinatura({
+        documentoHash: env.document_sha256,
+        signerName: targetSigner.name,
+        signerDocument: targetSigner.cpf,
+        signerEmail: targetSigner.email,
+        signedAt: now,
+      });
       const updatedSigners = env.signers.map(s => {
         if (s.id !== signerId) return s;
         return {
@@ -6368,7 +6561,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
   const addCipaProcess = useCallback((data: Omit<CipaManagementProcess, 'id'>): CipaManagementProcess => {
     const newProcess: CipaManagementProcess = {
       ...data,
-      id: `cipa-proc-${Date.now()}`
+      id: novoId('cipa-proc')
     };
 
     setCipaProcesses(prev => [newProcess, ...prev]);
@@ -6638,6 +6831,14 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     }));
   }, []);
 
+  /**
+   * Apaga TODOS os registros da organizacao - neste dispositivo E no servidor.
+   *
+   * O aviso na interface dizia "apagados deste navegador", mas a funcao chama
+   * purgeOrganizationRecords e zera a organizacao inteira no Supabase. O texto
+   * da confirmacao foi corrigido em Navbar.tsx e AuditLogsView.tsx para dizer o
+   * que realmente acontece.
+   */
   const resetDatabaseToSeed = useCallback(() => {
     setOrganization(INITIAL_ORGANIZATION);
     setProfiles(INITIAL_PROFILES);

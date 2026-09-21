@@ -967,7 +967,7 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
 
                           <div className="flex items-center space-x-2">
                             <button
-                              onClick={() => alert(`Iniciando download do laudo "${doc.name}" com assinatura digital ICP-Brasil.`)}
+                              onClick={() => alert(`O download em PDF do laudo "${doc.name}" ainda não está disponível nesta versão do sistema.`)}
                               className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-semibold rounded-xl transition"
                             >
                               Download PDF

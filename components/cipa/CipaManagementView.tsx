@@ -14,6 +14,7 @@ import {
 import { CIPA_NORMS_CATALOG, calculateCipaDimensioning, generateLegalCipaTimeline } from '@/lib/cipaService';
 import { printOrExportCipaDocument, CipaDocumentType } from '@/lib/cipaPdfExportService';
 import { CipaVotingModal } from './CipaVotingModal';
+import { dataDeHoje } from '@/lib/datas';
 import { 
   ShieldCheck, 
   Calendar, 
@@ -106,7 +107,7 @@ export const CipaManagementView: React.FC = () => {
 
   // New Meeting Form State
   const [meetTitle, setMeetTitle] = useState('');
-  const [meetDate, setMeetDate] = useState(new Date().toISOString().split('T')[0]);
+  const [meetDate, setMeetDate] = useState(dataDeHoje());
   const [meetType, setMeetType] = useState<'ORDINARY' | 'EXTRAORDINARY'>('ORDINARY');
   const [meetAgenda, setMeetAgenda] = useState('');
 
@@ -139,7 +140,7 @@ export const CipaManagementView: React.FC = () => {
     e.preventDefault();
     const client = (clients || []).find(c => c.id === newProcClientId) || clients?.[0];
     const dim = calculateCipaDimensioning(newProcRisk, newProcTotalEmp, newProcNorm);
-    const today = new Date().toISOString().split('T')[0];
+    const today = dataDeHoje();
     const timeline = generateLegalCipaTimeline(today, newProcNorm);
     const clientName = client?.trade_name || client?.legal_name || 'Empresa Parceira';
 
@@ -181,7 +182,7 @@ export const CipaManagementView: React.FC = () => {
       job_title: candJob,
       candidacy_number: candNumber || `${(currentProcess.candidates?.length || 0) + 10}`,
       proposals: candProposal,
-      registration_date: new Date().toISOString().split('T')[0],
+      registration_date: dataDeHoje(),
       is_eligible: true,
       has_stability_protection: true,
       tiebreaker_seniority_months: Number(candSeniority),
