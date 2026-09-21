@@ -5,6 +5,7 @@ import { usePrevSafe } from '@/context/PrevSafeContext';
 import { Contract } from '@/types';
 import { formatDate, formatDateTime, formatCurrency } from '@/lib/utils';
 import { montarTermosDoContrato, resumirServicos } from '@/lib/contratoTermos';
+import { exportContractPdf } from '@/lib/pdfExportService';
 import { 
   FileSignature, 
   CheckCircle2, 
@@ -441,12 +442,32 @@ export const ContractsView: React.FC<{ onNavigate: (view: string) => void }> = (
 
             {/* Action Buttons */}
             <div className="pt-4 border-t border-slate-800/80 flex justify-between items-center">
-              <button 
-                onClick={() => alert('Download do contrato em PDF com carimbo digital ICP-Brasil.')}
+              <button
+                onClick={() => {
+                  try {
+                    exportContractPdf({
+                      contract: selectedContract,
+                      client: clients.find(c => c.id === selectedContract.client_id) || null,
+                      organization,
+                      proposal: proposals.find(pr => pr.id === selectedContract.proposal_id) || null,
+                    });
+                  } catch (err: any) {
+                    alert(`Nao foi possivel gerar o PDF.\n\n${err?.message || 'Erro desconhecido'}`);
+                  }
+                }}
                 className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-xl transition flex items-center space-x-1.5 border border-slate-700"
+                title={
+                  (selectedContract.status === 'ACTIVE' || selectedContract.status === 'SIGNED')
+                    ? 'Baixar o contrato assinado, com os dados e o hash da assinatura'
+                    : 'Baixar a minuta para revisao e assinatura'
+                }
               >
                 <Download className="w-3.5 h-3.5" />
-                <span>Baixar Minuta PDF</span>
+                <span>
+                  {(selectedContract.status === 'ACTIVE' || selectedContract.status === 'SIGNED')
+                    ? 'Baixar contrato assinado (PDF)'
+                    : 'Baixar minuta (PDF)'}
+                </span>
               </button>
 
               {!(selectedContract.status === 'ACTIVE' || selectedContract.status === 'SIGNED') ? (

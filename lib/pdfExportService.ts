@@ -13,7 +13,9 @@ import {
   EPIDeliveryRecord,
   EPICatalogItem,
   SSTIntegrationTraining,
-  TrainingAttendee
+  TrainingAttendee,
+  Contract,
+  Proposal
 } from '@/types';
 import * as XLSX from 'xlsx';
 import { formatDate } from '@/lib/utils';
@@ -144,6 +146,18 @@ function technicalResponsibleLine(organization: Organization): string {
 
 function technicalResponsibleName(organization: Organization): string {
   return organization?.technical_responsible_name?.trim() || RT_NAO_INFORMADO;
+}
+
+/** CNAE do cliente, ou aviso de pendencia. Nunca um CNAE de exemplo. */
+function cnaeLine(client: Client): string {
+  return client?.main_cnae?.trim() || 'CNAE NAO INFORMADO';
+}
+
+/** Grau de risco do Anexo I da NR-04, ou aviso de pendencia. Nunca estimado. */
+function riskDegreeLine(client: Client): string {
+  return client?.risk_degree
+    ? `Grau ${client.risk_degree} (NR-04)`
+    : 'GRAU DE RISCO NAO CLASSIFICADO';
 }
 
 function pcmsoPhysicianLine(organization: Organization): string {
@@ -2390,7 +2404,7 @@ export function exportPGRDocumentPdf({
         { content: 'CNPJ:', styles: { fontStyle: 'bold' } },
         { content: client.document_number || 'N/A' },
         { content: 'CNAE Principal:', styles: { fontStyle: 'bold' } },
-        { content: `${client.main_cnae || '41.20-4-00'} (Grau de Risco: ${client.risk_degree || 3} - NR-04)` }
+        { content: `${cnaeLine(client)} (${riskDegreeLine(client)})` }
       ],
       [
         { content: 'Endereço:', styles: { fontStyle: 'bold' } },
@@ -2544,7 +2558,7 @@ export function exportPGRTRDocumentPdf({
       ],
       [
         { content: 'Atividade Rural:', styles: { fontStyle: 'bold' } },
-        { content: `${client.main_cnae || '01.11-3-01'} - Cultivo e Manejo Agropecuário / Rural` },
+        { content: `${cnaeLine(client)} - Atividade rural (NR-31)` },
         { content: 'Trabalhadores Rurais:', styles: { fontStyle: 'bold' } },
         { content: `${employees.length} trabalhadores no campo` }
       ],
@@ -2648,7 +2662,7 @@ export function exportPCMSODocumentPdf({
         { content: 'Médico Coordenador:', styles: { fontStyle: 'bold' } },
         { content: pcmsoPhysicianLine(organization) },
         { content: 'Grau de Risco:', styles: { fontStyle: 'bold' } },
-        { content: `Grau ${client.risk_degree || 3} (NR-04) - CNAE ${client.main_cnae || '41.20-4-00'}` }
+        { content: `${riskDegreeLine(client)} - CNAE ${cnaeLine(client)}` }
       ]
     ],
     styles: { fontSize: 7.2, cellPadding: 2 }
@@ -2988,3 +3002,302 @@ export function exportPericulosidadeLaudoPdf({
 }
 
 
+
+/**
+ * Exporta o contrato em PDF, com a minuta gravada no proprio contrato.
+ *
+ * O botao "Download" era um alert. Este exportador fecha o fluxo: proposta
+ * aceita -> contrato gerado -> documento para enviar ao cliente.
+ *
+ * O texto impresso e SEMPRE `contract.terms`, o mesmo que esta na tela. Se
+ * fosse remontado aqui, o PDF poderia divergir do que foi revisado e aprovado -
+ * e o documento assinado tem que ser o documento lido.
+ */
+export function exportContractPdf({
+  contract,
+  client,
+  organization,
+  proposal
+}: {
+  contract: Contract;
+  client?: Client | null;
+  organization: Organization;
+  proposal?: Proposal | null;
+}) {
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
+  const margin = 14;
+  const larguraUtil = pageWidth - margin * 2;
+
+  const assinado = contract.status === 'ACTIVE' || contract.status === 'SIGNED';
+  const nomeCliente = client?.legal_name || client?.trade_name || 'Contratante';
+
+  // ----- Cabecalho -----
+  doc.setFillColor(15, 23, 42);
+  doc.rect(0, 0, pageWidth, 28, 'F');
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(13);
+  doc.setFont('helvetica', 'bold');
+  doc.text(organization.name || organization.legal_name || 'PREVSAFE SST', margin, 12);
+  doc.setFontSize(8.5);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(148, 163, 184);
+  doc.text('CONTRATO DE PRESTAÇÃO DE SERVIÇOS DE SST', margin, 18);
+  doc.setTextColor(255, 255, 255);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(10);
+  doc.text(contract.contract_number, pageWidth - margin, 12, { align: 'right' });
+  doc.setFontSize(8);
+  doc.setFont('helvetica', 'normal');
+  doc.text(assinado ? 'ASSINADO' : 'AGUARDANDO ASSINATURA', pageWidth - margin, 18, { align: 'right' });
+  doc.setFillColor(79, 70, 229);
+  doc.rect(0, 28, pageWidth, 2, 'F');
+
+  // ----- Identificacao -----
+  autoTable(doc, {
+    startY: 36,
+    margin: { left: margin, right: margin },
+    theme: 'grid',
+    head: [[
+      { content: 'IDENTIFICAÇÃO DAS PARTES E DO INSTRUMENTO', colSpan: 4, styles: { fillColor: [30, 41, 59], textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 8 } }
+    ]],
+    body: [
+      [
+        { content: 'CONTRATADA:', styles: { fontStyle: 'bold', cellWidth: 28 } },
+        { content: organization.legal_name || organization.name || '-' },
+        { content: 'CNPJ:', styles: { fontStyle: 'bold', cellWidth: 20 } },
+        { content: organization.document_number || '-' }
+      ],
+      [
+        { content: 'CONTRATANTE:', styles: { fontStyle: 'bold' } },
+        { content: nomeCliente },
+        { content: 'CNPJ:', styles: { fontStyle: 'bold' } },
+        { content: client?.document_number || '-' }
+      ],
+      [
+        { content: 'CNAE / Grau:', styles: { fontStyle: 'bold' } },
+        {
+          // Sem inventar: cliente sem CNAE ou sem grau aparece como pendente, e
+          // nao com um valor plausivel que ninguem conferiu.
+          content: `${client?.main_cnae || 'CNAE não informado'} — ${
+            client?.risk_degree ? `Grau de Risco ${client.risk_degree} (NR-04)` : 'grau de risco não classificado'
+          }`
+        },
+        { content: 'Vigência:', styles: { fontStyle: 'bold' } },
+        { content: `${formatDate(contract.start_date)} a ${formatDate(contract.end_date)}` }
+      ],
+      [
+        { content: 'Objeto:', styles: { fontStyle: 'bold' } },
+        { content: contract.title || '-' },
+        { content: 'Valor:', styles: { fontStyle: 'bold' } },
+        { content: formatCurrency(contract.total_value || 0) }
+      ],
+      [
+        { content: 'Proposta:', styles: { fontStyle: 'bold' } },
+        { content: proposal ? `${proposal.proposal_number} — aceita em ${proposal.approved_at ? formatDate(proposal.approved_at) : 'data não registrada'}` : 'Contrato sem proposta vinculada' },
+        { content: 'Resp. Técnico:', styles: { fontStyle: 'bold' } },
+        { content: technicalResponsibleLine(organization) }
+      ]
+    ],
+    styles: { fontSize: 7.5, cellPadding: 2 },
+    columnStyles: { 1: { cellWidth: 62 }, 3: { cellWidth: 'auto' } }
+  });
+
+  let curY = (doc as any).lastAutoTable.finalY + 6;
+
+  // ----- Servicos contratados -----
+  const itens = proposal?.items || [];
+  if (itens.length > 0) {
+    autoTable(doc, {
+      startY: curY,
+      margin: { left: margin, right: margin },
+      theme: 'grid',
+      head: [[
+        { content: 'SERVIÇOS CONTRATADOS', colSpan: 4, styles: { fillColor: [30, 41, 59], textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 8 } }
+      ], ['Serviço', 'Qtd.', 'Valor unitário', 'Total']],
+      body: itens.map(it => [
+        it.service_name || '-',
+        String(it.quantity ?? 1),
+        formatCurrency(it.unit_price || 0),
+        formatCurrency(it.total || 0)
+      ]),
+      foot: [['', '', 'TOTAL', formatCurrency(contract.total_value || 0)]],
+      styles: { fontSize: 7.5, cellPadding: 2 },
+      headStyles: { fillColor: [51, 65, 85], textColor: [255, 255, 255], fontStyle: 'bold' },
+      footStyles: { fillColor: [241, 245, 249], textColor: [15, 23, 42], fontStyle: 'bold' },
+      columnStyles: { 1: { halign: 'center', cellWidth: 14 }, 2: { halign: 'right', cellWidth: 30 }, 3: { halign: 'right', cellWidth: 30 } }
+    });
+    curY = (doc as any).lastAutoTable.finalY + 6;
+  }
+
+  // ----- Minuta -----
+  const minuta = (contract.terms || '').trim();
+
+  doc.addPage();
+  curY = 20;
+
+  if (!minuta) {
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'italic');
+    doc.setTextColor(180, 83, 9);
+    doc.text(
+      doc.splitTextToSize(
+        'Este contrato nao possui cláusulas registradas. Abra o contrato no sistema, ' +
+        'clique em Editar e gere a minuta padrão antes de enviar para assinatura.',
+        larguraUtil
+      ),
+      margin,
+      curY
+    );
+    curY += 16;
+  } else {
+    doc.setTextColor(15, 23, 42);
+
+    for (const linha of minuta.split('\n')) {
+      const texto = linha.trimEnd();
+
+      // Titulo do contrato e cabecalhos de clausula em negrito, com respiro.
+      const ehTitulo = /^CONTRATO DE /.test(texto);
+      const ehClausula = /^CLÁUSULA /.test(texto);
+      const ehRodape = /^MINUTA PADRÃO/.test(texto);
+
+      if (texto === '---') {
+        curY += 2;
+        doc.setDrawColor(226, 232, 240);
+        doc.line(margin, curY, pageWidth - margin, curY);
+        curY += 4;
+        continue;
+      }
+
+      if (texto === '') {
+        curY += 3;
+        continue;
+      }
+
+      if (ehTitulo) {
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(11);
+      } else if (ehClausula) {
+        // Titulo de clausula sozinho no pe da pagina fica orfao do proprio
+        // texto. Exige espaco para o titulo e pelo menos tres linhas de corpo.
+        if (curY > pageHeight - 45) {
+          doc.addPage();
+          curY = 20;
+        }
+        curY += 2;
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(9);
+      } else if (ehRodape) {
+        doc.setFont('helvetica', 'italic');
+        doc.setFontSize(7.5);
+        doc.setTextColor(100, 116, 139);
+      } else {
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(8.5);
+      }
+
+      const pedacos = doc.splitTextToSize(texto, larguraUtil);
+      const alturaLinha = ehTitulo ? 6 : 4.4;
+
+      for (const pedaco of pedacos) {
+        // Quebra de pagina antes de escrever, nunca depois: escrever primeiro
+        // deixaria a ultima linha fora da area util.
+        if (curY > pageHeight - 24) {
+          doc.addPage();
+          curY = 20;
+        }
+        doc.text(pedaco, margin, curY);
+        curY += alturaLinha;
+      }
+
+      if (ehTitulo || ehClausula) curY += 1;
+      doc.setTextColor(15, 23, 42);
+    }
+  }
+
+  // ----- Assinaturas -----
+  if (curY > pageHeight - 70) {
+    doc.addPage();
+    curY = 20;
+  } else {
+    curY += 10;
+  }
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(9);
+  doc.setTextColor(15, 23, 42);
+  doc.text('ASSINATURAS', margin, curY);
+  curY += 6;
+
+  const assinaturas = contract.signatures || [];
+
+  if (assinado && assinaturas.length > 0) {
+    autoTable(doc, {
+      startY: curY,
+      margin: { left: margin, right: margin },
+      theme: 'grid',
+      head: [['Signatário', 'Documento', 'Data e hora', 'Hash de integridade']],
+      body: assinaturas.map(a => [
+        `${a.signer_name || '-'}\n${a.signer_email || ''}`,
+        a.signer_document || '-',
+        a.signed_at ? formatDateTimeBR(a.signed_at) : '-',
+        a.signature_hash || '-'
+      ]),
+      styles: { fontSize: 6.5, cellPadding: 2, overflow: 'linebreak' },
+      headStyles: { fillColor: [5, 150, 105], textColor: [255, 255, 255], fontStyle: 'bold' },
+      columnStyles: { 3: { cellWidth: 58, font: 'courier' } }
+    });
+    curY = (doc as any).lastAutoTable.finalY + 5;
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(7);
+    doc.setTextColor(100, 116, 139);
+    doc.text(
+      doc.splitTextToSize(
+        'Assinatura eletrônica nos termos do art. 10, § 2º, da MP 2.200-2/2001 e da Lei 14.063/2020. ' +
+        'A integridade do documento é verificável pelo hash acima.',
+        larguraUtil
+      ),
+      margin,
+      curY
+    );
+  } else {
+    // Contrato ainda nao assinado: linhas para assinatura fisica, sem simular
+    // uma assinatura eletronica que nao existe.
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(7.5);
+    doc.setTextColor(100, 116, 139);
+    doc.text('Documento ainda não assinado no sistema.', margin, curY);
+    curY += 14;
+
+    const larguraLinha = (larguraUtil - 10) / 2;
+    doc.setDrawColor(100, 116, 139);
+    doc.line(margin, curY, margin + larguraLinha, curY);
+    doc.line(margin + larguraLinha + 10, curY, pageWidth - margin, curY);
+    curY += 4;
+
+    doc.setFontSize(7);
+    doc.setTextColor(15, 23, 42);
+    doc.text(organization.legal_name || organization.name || 'CONTRATADA', margin, curY);
+    doc.text(nomeCliente, margin + larguraLinha + 10, curY);
+    curY += 3.5;
+    doc.setTextColor(100, 116, 139);
+    doc.text('CONTRATADA', margin, curY);
+    doc.text('CONTRATANTE', margin + larguraLinha + 10, curY);
+  }
+
+  applyPageNumbers(doc);
+
+  const nomeArquivo = `contrato-${contract.contract_number}-${(client?.trade_name || client?.legal_name || 'cliente')
+    .replace(/\s+/g, '_')
+    .toLowerCase()}.pdf`;
+  doc.save(nomeArquivo);
+}
+
+/** Data e hora no formato brasileiro, para o quadro de assinaturas. */
+function formatDateTimeBR(iso: string): string {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '-';
+  return `${d.toLocaleDateString('pt-BR')} ${d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
+}
