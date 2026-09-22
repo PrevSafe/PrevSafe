@@ -152,6 +152,9 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
   // Extraction State
   const [selectedExtractionOS, setSelectedExtractionOS] = useState<string>(serviceOrders[0]?.id || '');
   const [extractionType, setExtractionType] = useState<'S-2240' | 'S-2220'>('S-2240');
+  // O que falta no cadastro para o evento poder ser transmitido. Fica visivel
+  // no modal em vez de sumir num toast: e a lista de tarefas do usuario.
+  const [extractionPendencias, setExtractionPendencias] = useState<string[]>([]);
 
   // Toast / Feedback message
   const [toastMessage, setToastMessage] = useState<{ type: 'success' | 'error' | 'info'; message: string } | null>(null);
@@ -337,13 +340,28 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
   // Handle Extraction from Service Order
   const handleExecuteExtraction = () => {
     if (!selectedExtractionOS) return;
-    const newEvt = generateESocialFromServiceOrder(selectedExtractionOS, extractionType);
-    if (newEvt) {
-      setIsExtractModalOpen(false);
-      showToast(`Evento ${newEvt.event_number} (${newEvt.event_type}) gerado automaticamente a partir do PGR/PCMSO da OS!`, 'success');
-    } else {
-      showToast('Não foi possível extrair dados da OS selecionada.', 'error');
+    const { eventos, pendencias } = generateESocialFromServiceOrder(selectedExtractionOS, extractionType);
+
+    // As pendências ficam na tela até o usuário fechar: são a lista do que
+    // falta cadastrar para o evento poder ser transmitido. Antes esses campos
+    // eram preenchidos com dados de exemplo e o evento saía "pronto".
+    setExtractionPendencias(pendencias);
+
+    if (eventos.length === 0) {
+      showToast(
+        pendencias.length > 0
+          ? `Nenhum evento gerado: ${pendencias.length} pendência(s) no cadastro.`
+          : 'Nenhum evento a gerar: os colaboradores desta OS já possuem evento deste tipo.',
+        'error'
+      );
+      return;
     }
+
+    showToast(
+      `${eventos.length} evento(s) ${extractionType} gerado(s) como rascunho a partir do cadastro` +
+        (pendencias.length > 0 ? `, com ${pendencias.length} pendência(s) a resolver.` : '. Valide antes de transmitir.'),
+      pendencias.length > 0 ? 'error' : 'success'
+    );
   };
 
   // Handle Copy XML / Recibo
@@ -1897,20 +1915,43 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
               </div>
             </div>
 
+            {extractionPendencias.length > 0 && (
+              <div className="rounded-xl border border-amber-800/60 bg-amber-950/30 p-3 space-y-1.5 max-h-56 overflow-y-auto">
+                <p className="text-xs font-bold text-amber-300">
+                  {extractionPendencias.length} pendência(s) no cadastro
+                </p>
+                <p className="text-[10px] text-amber-200/70">
+                  Os eventos foram criados como rascunho com o que existe. Estes campos precisam
+                  ser preenchidos antes da transmissão — o eSocial recusa o evento sem eles.
+                </p>
+                <ul className="space-y-1 pt-1">
+                  {extractionPendencias.map((p, i) => (
+                    <li key={i} className="text-[11px] text-amber-100/90 flex gap-1.5">
+                      <span className="text-amber-500 shrink-0">•</span>
+                      <span>{p}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
             <div className="pt-3 flex justify-end space-x-2">
               <button
                 type="button"
-                onClick={() => setIsExtractModalOpen(false)}
+                onClick={() => {
+                  setIsExtractModalOpen(false);
+                  setExtractionPendencias([]);
+                }}
                 className="px-3 py-1.5 bg-slate-800 text-slate-300 text-xs rounded-xl"
               >
-                Cancelar
+                Fechar
               </button>
               <button
                 type="button"
                 onClick={handleExecuteExtraction}
                 className="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold rounded-xl"
               >
-                Gerar Evento
+                Gerar Eventos
               </button>
             </div>
           </div>

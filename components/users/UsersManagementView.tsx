@@ -8,6 +8,7 @@ import { formatDateTime } from '@/lib/utils';
 import { getSupabaseClient } from '@/lib/supabase';
 import { getAppUrl } from '@/lib/appUrl';
 import { shareViaChannel } from '@/lib/shareLinks';
+import { conferirDocumento } from '@/lib/validacoesBr';
 import { 
   Users, 
   UserPlus, 
@@ -331,7 +332,9 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
     role: RoleType;
     department: string;
     job_title: string;
+    cpf: string;
     professional_register: string;
+    professional_register_uf: string;
     client_id: string;
     status: 'ACTIVE' | 'INACTIVE';
     two_factor_enabled: boolean;
@@ -345,7 +348,9 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
     role: 'TÉCNICO',
     department: '',
     job_title: '',
+    cpf: '',
     professional_register: '',
+    professional_register_uf: '',
     client_id: '',
     status: 'ACTIVE',
     two_factor_enabled: false,
@@ -412,7 +417,9 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
       role: 'TÉCNICO',
       department: '',
       job_title: '',
+      cpf: '',
       professional_register: '',
+      professional_register_uf: '',
       client_id: '',
       status: 'ACTIVE',
       two_factor_enabled: false,
@@ -432,7 +439,9 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
       role: profile.role,
       department: profile.department || '',
       job_title: profile.job_title || '',
+      cpf: profile.cpf || '',
       professional_register: profile.professional_register || '',
+      professional_register_uf: profile.professional_register_uf || '',
       client_id: profile.client_id || '',
       status: profile.status,
       two_factor_enabled: profile.two_factor_enabled ?? false,
@@ -448,6 +457,16 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
     if (!formData.full_name.trim() || !formData.email.trim()) {
       showToast('Preencha o nome completo e o e-mail corporativo.', 'error');
       return;
+    }
+
+    // CPF invalido gravado aqui reaparece como cpfResp de um S-2240 recusado
+    // pelo governo. Barra na origem.
+    if (formData.cpf.trim()) {
+      const conf = conferirDocumento(formData.cpf, 'CPF');
+      if (!conf.valido) {
+        showToast(conf.motivo || 'CPF inválido.', 'error');
+        return;
+      }
     }
 
     // Check duplicate email
@@ -469,7 +488,9 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
         role: formData.role,
         department: formData.department.trim(),
         job_title: formData.job_title.trim(),
+        cpf: formData.cpf.trim() || undefined,
         professional_register: formData.professional_register.trim() || undefined,
+        professional_register_uf: formData.professional_register_uf.trim().toUpperCase() || undefined,
         client_id: formData.role.startsWith('CLIENTE_') ? (formData.client_id || undefined) : undefined,
         status: formData.status,
         two_factor_enabled: formData.two_factor_enabled
@@ -530,7 +551,9 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
         role: formData.role,
         department: formData.department.trim(),
         job_title: formData.job_title.trim(),
+        cpf: formData.cpf.trim() || undefined,
         professional_register: formData.professional_register.trim() || undefined,
+        professional_register_uf: formData.professional_register_uf.trim().toUpperCase() || undefined,
         client_id: formData.role.startsWith('CLIENTE_') ? (formData.client_id || undefined) : undefined,
         status: formData.status,
         two_factor_enabled: formData.two_factor_enabled,
@@ -1532,6 +1555,45 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
                     onChange={(e) => setFormData({ ...formData, department: e.target.value })}
                     className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-teal-500"
                   />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-slate-300">CPF</label>
+                  <input
+                    type="text"
+                    placeholder="Somente números"
+                    value={formData.cpf}
+                    onChange={(e) => setFormData({ ...formData, cpf: e.target.value })}
+                    className={`w-full px-3.5 py-2.5 bg-slate-950 border rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-teal-500 ${
+                      formData.cpf.trim() && !conferirDocumento(formData.cpf, 'CPF').valido
+                        ? 'border-rose-500'
+                        : 'border-slate-800'
+                    }`}
+                  />
+                  {formData.cpf.trim() && !conferirDocumento(formData.cpf, 'CPF').valido ? (
+                    <p className="text-[10px] text-rose-400">
+                      {conferirDocumento(formData.cpf, 'CPF').motivo}
+                    </p>
+                  ) : (
+                    <p className="text-[10px] text-slate-500">
+                      Exigido pelo eSocial no S-2240 (cpfResp) e no S-2220.
+                    </p>
+                  )}
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-slate-300">UF do Registro</label>
+                  <input
+                    type="text"
+                    maxLength={2}
+                    placeholder="Ex: SP"
+                    value={formData.professional_register_uf}
+                    onChange={(e) =>
+                      setFormData({ ...formData, professional_register_uf: e.target.value.toUpperCase() })
+                    }
+                    className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-teal-500 uppercase"
+                  />
+                  <p className="text-[10px] text-slate-500">UF do CREA/CRM, exigida junto do registro.</p>
                 </div>
 
                 <div className="space-y-1 sm:col-span-2">

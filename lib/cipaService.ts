@@ -14,6 +14,7 @@ import {
   NR22_CARGA_HORARIA_CIPAMIN,
   NR31_CARGA_HORARIA_CIPATR,
 } from '@/lib/cipaQuadrosSetoriais';
+import { sha256Hex } from '@/lib/documentoHash';
 import {
   CipaRegulatoryNorm,
   CipaProcessStatus,
@@ -566,6 +567,23 @@ export function processCipaElectionResults(
 // 5. CRYPTOGRAPHIC LGPD VOTE HASHER & RECEIPT GENERATOR
 // ============================================================================
 
+/**
+ * Identificador anonimo do votante.
+ *
+ * O QUE HAVIA: um hash de 32 bits no estilo djb2, devolvido como 8 digitos
+ * hexadecimais, sob um cabecalho que o chamava de "CRYPTOGRAPHIC LGPD VOTE
+ * HASHER". Trinta e dois bits colidem na pratica - numa eleicao de algumas
+ * centenas de votantes a chance de dois votos receberem o mesmo identificador
+ * nao e desprezivel, e um identificador repetido quebra a apuracao por voto.
+ *
+ * Agora e SHA-256 (lib/documentoHash.ts, conferido contra os vetores do NIST).
+ *
+ * O QUE ISTO PROTEGE, E O QUE NAO PROTEGE: o CPF nao fica legivel no registro
+ * do voto. Mas o sal esta no codigo-fonte, entao quem tiver o codigo, o id do
+ * processo e o instante exato do voto consegue testar CPFs ate achar o que
+ * bate. O sigilo do voto se apoia tambem no controle de acesso ao registro -
+ * nao so neste hash.
+ */
 export function generateAnonymousVoteHash(
   cpfOrClient?: string,
   processIdOrCpf?: string,
@@ -574,24 +592,38 @@ export function generateAnonymousVoteHash(
   const c1 = cpfOrClient || 'ANON_VOTER';
   const c2 = processIdOrCpf || 'PROCESS';
   const c3 = timestampOrYear || new Date().toISOString();
-  const raw = `${c1}::${c2}::${c3}::PREVSAFE_SECRET_SALT_2026`;
-  
-  let hash = 0;
-  for (let i = 0; i < raw.length; i++) {
-    const char = raw.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
-    hash |= 0;
-  }
-  const hex = Math.abs(hash).toString(16).padStart(8, '0');
-  return `VOTER_HASH_${hex}_${(raw.length * 13) % 997}`;
+  const digest = sha256Hex(`${c1}::${c2}::${c3}::PREVSAFE_CIPA_VOTO`);
+  return `VOTER_HASH_${digest}`;
 }
 
+/**
+ * Comprovante que o votante leva da urna.
+ *
+ * O QUE HAVIA: oito caracteres sorteados. A funcao recebia o hash do voto e o
+ * horario e DESCARTAVA os dois - o comprovante nao tinha relacao nenhuma com o
+ * voto que dizia comprovar. Dois votantes podiam sair com o mesmo codigo, e
+ * conferir um comprovante contra o registro era impossivel.
+ *
+ * Agora o codigo e derivado do hash do voto e do instante: o mesmo voto sempre
+ * produz o mesmo comprovante, e votos diferentes produzem comprovantes
+ * diferentes. Da para conferir um comprovante recalculando-o a partir do
+ * registro de auditoria.
+ *
+ * Sao 8 caracteres de um alfabeto de 32 (sem I, O, 0 e 1, que se confundem a
+ * mao) = 40 bits. Bastante para distinguir os votos de uma eleicao de CIPA sem
+ * virar um codigo longo demais para o votante anotar.
+ */
 export function generateAuditProofReceipt(hash?: string, time?: string): string {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  const digest = sha256Hex(`${hash || ''}::${time || ''}::COMPROVANTE_CIPA`);
+
   let code = 'CIPAVOTE-';
-  for (let i = 0; i < 4; i++) code += chars.charAt(Math.floor(Math.random() * chars.length));
-  code += '-';
-  for (let i = 0; i < 4; i++) code += chars.charAt(Math.floor(Math.random() * chars.length));
+  for (let i = 0; i < 8; i++) {
+    // 2 digitos hex = 1 byte; reduzido ao alfabeto de 32 caracteres.
+    const byte = parseInt(digest.substring(i * 2, i * 2 + 2), 16);
+    code += chars.charAt(byte % chars.length);
+    if (i === 3) code += '-';
+  }
   return code;
 }
 

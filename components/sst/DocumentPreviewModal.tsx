@@ -41,6 +41,7 @@ import {
 } from '@/lib/pdfExportService';
 import { SSTElectronicSignatureModal } from './SSTElectronicSignatureModal';
 import { SSTDocumentSignature } from '@/types';
+import { DECLARACAO_DE_INTEGRIDADE } from '@/lib/documentoHash';
 
 export type PreviewDocType = 
   | 'PGR' 
@@ -111,10 +112,22 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
   const clientRiskDegree = client?.risk_degree || 3;
   const issueDate = new Date().toLocaleDateString('pt-BR');
   const validityYear = `${new Date().getFullYear()} / ${new Date().getFullYear() + 1}`;
-  const digitalHash = `SHA256: 7f8a9e2d4c6b1a0f5e3d7c9b2a4f6e8d1c3b5a7f9e1d3c5b7a9f1e3d5c7b9a1`;
+  // Este numero era fixo no codigo: o MESMO "SHA256: 7f8a9e2d..." em todo
+  // documento, de todo cliente, exibido sob o texto "Autenticidade e Integridade
+  // Criptografica Garantida" e com um botao de copiar. Nao era hash de nada.
+  //
+  // Agora so aparece o hash que existe de verdade: o document_sha256 gravado no
+  // envelope de assinatura. Enquanto o documento nao for assinado nao ha codigo
+  // de verificacao, e a tela diz isso em vez de mostrar um numero.
 
   // Find signature envelope matching this document
-  const existingEnvelope = sstSignatures.find(s => s.client_id === client?.id && (s.document_type as string) === docType) || sstSignatures[0];
+  // Sem `|| sstSignatures[0]`: aquele fallback pegava o envelope de OUTRO
+  // documento quando este nao tinha assinatura, e a tela exibia o hash e os
+  // signatarios de um documento diferente.
+  const existingEnvelope = sstSignatures.find(
+    s => s.client_id === client?.id && (s.document_type as string) === docType
+  );
+  const digitalHash = existingEnvelope?.document_sha256 || null;
 
   const handleOpenSignature = () => {
     setIsSignatureModalOpen(true);
@@ -187,6 +200,7 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
   };
 
   const handleCopyDigitalHash = () => {
+    if (!digitalHash) return;
     navigator.clipboard.writeText(digitalHash);
     setCopiedHash(true);
     setTimeout(() => setCopiedHash(false), 2000);
@@ -749,21 +763,33 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
 
                 {/* Digital Audit Barcode / Hash Footer */}
                 <div className="bg-slate-100 p-3 rounded-lg border border-slate-300 flex flex-col sm:flex-row items-center justify-between gap-3 text-[10px] text-slate-600">
-                  <div className="flex items-center gap-2">
-                    <Lock className="w-3.5 h-3.5 text-teal-700" />
-                    <span>Autenticidade e Integridade Criptográfica Garantida</span>
-                  </div>
-                  <div className="flex items-center gap-2 font-mono">
-                    <span className="truncate max-w-xs">{digitalHash}</span>
-                    <button
-                      type="button"
-                      onClick={handleCopyDigitalHash}
-                      className="p-1 hover:bg-slate-200 rounded text-slate-700"
-                      title="Copiar Hash SHA-256"
-                    >
-                      {copiedHash ? <Check className="w-3 h-3 text-teal-700" /> : <Copy className="w-3 h-3" />}
-                    </button>
-                  </div>
+                  {digitalHash ? (
+                    <>
+                      <div className="flex items-center gap-2">
+                        <Lock className="w-3.5 h-3.5 text-teal-700" />
+                        <span>{DECLARACAO_DE_INTEGRIDADE}</span>
+                      </div>
+                      <div className="flex items-center gap-2 font-mono">
+                        <span className="truncate max-w-[16rem]">SHA-256: {digitalHash}</span>
+                        <button
+                          type="button"
+                          onClick={handleCopyDigitalHash}
+                          className="p-1 hover:bg-slate-200 rounded text-slate-700"
+                          title="Copiar hash SHA-256"
+                        >
+                          {copiedHash ? <Check className="w-3 h-3 text-teal-700" /> : <Copy className="w-3 h-3" />}
+                        </button>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <Lock className="w-3.5 h-3.5 text-slate-400" />
+                      <span>
+                        Pré-visualização não assinada: ainda não há código de verificação.
+                        O hash é gerado no momento da assinatura.
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
 

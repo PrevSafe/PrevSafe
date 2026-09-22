@@ -146,7 +146,16 @@ export interface Profile {
   client_id?: string; // If client user
   department?: string;
   job_title?: string;
+  /**
+   * CPF do profissional. Exigido pelo eSocial no S-2240 (cpfResp - responsavel
+   * pelos registros ambientais) e no S-2220. Sem ele o evento e recusado pelo
+   * governo, entao nao ha como gerar um S-2240 valido para um responsavel
+   * tecnico que nao tenha este campo preenchido.
+   */
+  cpf?: string;
   professional_register?: string; // e.g. "MTE 0048192/SP", "CREA 5061928371", "CRM 149202"
+  /** UF do registro profissional (CREA/CRM), exigida pelo eSocial. */
+  professional_register_uf?: string;
   status: 'ACTIVE' | 'INACTIVE';
   two_factor_enabled?: boolean;
   last_login_at?: string;

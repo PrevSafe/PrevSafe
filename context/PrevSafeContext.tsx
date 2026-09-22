@@ -159,6 +159,14 @@ import {
 import { montarTermosDoContrato, resumirServicos } from '@/lib/contratoTermos';
 import { hashDoDocumento, hashDaAssinatura } from '@/lib/documentoHash';
 import { dataDeHoje, dataEmDias, formatarDataISO, novoId } from '@/lib/datas';
+import {
+  montarCondicoesAmbientais,
+  montarAsoDoEvento,
+  riscosDoColaborador,
+  selecionarAsoMaisRecente,
+  resumirPendencias,
+  type PendenciaESocial,
+} from '@/lib/esocialDados';
 
 interface PrevSafeContextType {
   // Current active session state
@@ -359,7 +367,16 @@ interface PrevSafeContextType {
   validateESocialEvent: (id: string) => { success: boolean; errors: string[] };
   transmitESocialEvent: (id: string, certificateType?: 'A1_DIGITAL' | 'A3_TOKEN_SMARTCARD') => { success: boolean; receipt?: string; protocol?: string; error?: string };
   transmitBatchESocial: (eventIds: string[], certificateType?: 'A1_DIGITAL' | 'A3_TOKEN_SMARTCARD') => { batch: ESocialBatch; successCount: number; errorCount: number };
-  generateESocialFromServiceOrder: (serviceOrderId: string, eventType: 'S-2240' | 'S-2220') => ESocialEvent | null;
+  /**
+   * Gera um evento por trabalhador a partir dos dados reais da OS.
+   * `pendencias` lista o que falta cadastrar; vazia significa que nada ficou
+   * faltando. Devolve lista - nao um evento so - porque S-2240 e S-2220 sao
+   * eventos por trabalhador.
+   */
+  generateESocialFromServiceOrder: (
+    serviceOrderId: string,
+    eventType: 'S-2240' | 'S-2220'
+  ) => { eventos: ESocialEvent[]; pendencias: string[] };
   generateExclusionEventS3000: (targetEventId: string, reason: string) => ESocialEvent;
   generateESocialXmlPreview: (event: ESocialEvent) => string;
   runESocialFullTestSuite: () => { passed: number; failed: number; results: Array<{ testName: string; passed: boolean; message: string; details?: string }> };
@@ -3482,96 +3499,157 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     return { batch: newBatch, successCount, errorCount };
   }, [esocialBatches.length, organization.id, transmitESocialEvent]);
 
-  // Generate eSocial Event from Service Order (PGR/PCMSO)
-  const generateESocialFromServiceOrder = useCallback((serviceOrderId: string, eventType: 'S-2240' | 'S-2220'): ESocialEvent | null => {
+  /**
+   * Gera os eventos eSocial de uma Ordem de Servico a partir dos registros reais.
+   *
+   * O QUE HAVIA ANTES
+   *
+   * Esta funcao fabricava o evento inteiro. Devolvia UM S-2240 com trabalhador
+   * "Colaborador Extraido do PGR", CPF 123.456.789-01, matricula sorteada, ruido
+   * de "86.2 dB(A)" por "Dosimetria NHO-01", EPI "CA 14235" e responsavel
+   * "Eng. Eduardo Vasconcelos, CREA-SP 5069812/D" - e um S-2220 com medica,
+   * coordenador de PCMSO e ASO "APTO" igualmente inventados. Os dois nasciam
+   * com environment 'PRODUCAO' e status 'READY_TO_SEND', sem passar pela
+   * validacao. Nenhuma daquelas medicoes existiu.
+   *
+   * O QUE FAZ AGORA
+   *
+   * Um S-2240 e um S-2220 sao eventos POR TRABALHADOR. A funcao percorre os
+   * colaboradores ativos do cliente da OS e monta um evento para cada um, a
+   * partir do inventario de riscos (S-2240) ou do historico de ASO (S-2220).
+   * O que nao estiver cadastrado vira pendencia com o texto do que falta, e o
+   * evento nasce como DRAFT para a validacao existente decidir seu destino.
+   */
+  const generateESocialFromServiceOrder = useCallback((
+    serviceOrderId: string,
+    eventType: 'S-2240' | 'S-2220'
+  ): { eventos: ESocialEvent[]; pendencias: string[] } => {
     const so = serviceOrders.find(o => o.id === serviceOrderId);
-    if (!so) return null;
+    if (!so) return { eventos: [], pendencias: ['Ordem de Serviço não encontrada.'] };
+
     const client = clients.find(c => c.id === so.client_id);
-    if (!client) return null;
-
-    if (eventType === 'S-2240') {
-      const newEvt = createESocialEvent({
-        client_id: client.id,
-        service_order_id: so.id,
-        event_type: 'S-2240',
-        environment: 'PRODUCAO',
-        is_rectification: false,
-        worker_name: 'Colaborador Extraído do PGR',
-        worker_cpf: '123.456.789-01',
-        worker_registration: `MAT-${Math.floor(1000 + Math.random() * 9000)}`,
-        worker_cbo: '7212-15',
-        worker_role: 'Operador Técnico Industrial',
-        status: 'READY_TO_SEND',
-        ambient_data: {
-          start_date: dataDeHoje(),
-          description_activities: `Atividades mapeadas na Ordem de Serviço ${so.os_number} (${so.title}) conforme diretrizes da NR-01 / NR-09.`,
-          work_environment: `${client.trade_name || client.legal_name} - Planta Operacional`,
-          ambient_risks: [
-            {
-              id: `risk-auto-${Date.now()}-1`,
-              risk_code_table_24: '01.01.001',
-              category: 'FÍSICO',
-              description: 'Ruído Contínuo NR-15 Anexo 1',
-              intensity_concentration: '86.2 dB(A)',
-              limit_tolerance: '85.0 dB(A)',
-              measurement_unit: 'dB(A)',
-              technique_used: 'Dosimetria de Ruído NHO-01',
-              epc_effective: false,
-              epi_effective: true,
-              epi_ca_numbers: ['CA 14235'],
-              is_insalubre: true,
-              is_periculoso: false
-            }
-          ],
-          responsible_technician_name: so.technical_responsible_name || 'Eng. Eduardo Vasconcelos',
-          responsible_technician_cpf: '123.456.789-00',
-          responsible_technician_crea_crm: 'CREA-SP 5069812/D',
-          responsible_technician_uf: 'SP'
-        }
-      });
-      return newEvt;
+    if (!client) {
+      return { eventos: [], pendencias: ['Cliente da Ordem de Serviço não encontrado.'] };
     }
 
-    if (eventType === 'S-2220') {
-      const newEvt = createESocialEvent({
-        client_id: client.id,
-        service_order_id: so.id,
-        event_type: 'S-2220',
-        environment: 'PRODUCAO',
-        is_rectification: false,
-        worker_name: 'Colaborador Extraído do PCMSO',
-        worker_cpf: '234.567.890-12',
-        worker_registration: `MAT-${Math.floor(1000 + Math.random() * 9000)}`,
-        worker_cbo: '4110-10',
-        worker_role: 'Assistente Administrativo',
-        status: 'READY_TO_SEND',
-        aso_data: {
-          aso_type: 'PERIODICO',
-          exam_date: dataDeHoje(),
-          result: 'APTO',
-          physician_name: 'Dra. Camila Bittencourt Guimarães',
-          physician_crm: 'CRM-SP 145892',
-          physician_uf: 'SP',
-          pcmso_coordinator_name: 'Dr. Roberto Magalhães Filho',
-          pcmso_coordinator_crm: 'CRM-SP 98210',
-          pcmso_coordinator_uf: 'SP',
-          exams_list: [
-            {
-              code: '0295',
-              name: 'Avaliação Clínica Ocupacional e Anamnese Geral',
-              date: dataDeHoje(),
-              procedure_type: 'CLINICO',
-              result: 'NORMAL',
-              observation: 'Sem queixas ocupacionais.'
-            }
-          ]
-        }
-      });
-      return newEvt;
+    // Só quem está na empresa. Um desligado não gera condição ambiental nova.
+    const elegiveis = employees.filter(
+      e => e.client_id === client.id && e.status !== 'DISMISSED'
+    );
+
+    if (elegiveis.length === 0) {
+      return {
+        eventos: [],
+        pendencias: [
+          `${client.trade_name || client.legal_name}: nenhum colaborador ativo cadastrado. ` +
+          'O S-2240 e o S-2220 são eventos por trabalhador — cadastre os colaboradores em SST › Colaboradores.'
+        ],
+      };
     }
 
-    return null;
-  }, [serviceOrders, clients, createESocialEvent]);
+    const responsavel = profiles.find(p => p.id === so.technical_responsible_id);
+    const pendencias: PendenciaESocial[] = [];
+    const eventos: ESocialEvent[] = [];
+
+    elegiveis.forEach(emp => {
+      // Nao duplica: um evento por colaborador, por OS, por tipo.
+      const jaExiste = esocialEvents.some(
+        e => e.service_order_id === so.id
+          && e.event_type === eventType
+          && e.worker_cpf.replace(/\D/g, '') === (emp.cpf || '').replace(/\D/g, '')
+      );
+      if (jaExiste) return;
+
+      const job = hierarchyJobs.find(j => j.id === emp.job_id);
+
+      const base = {
+        client_id: client.id,
+        service_order_id: so.id,
+        event_type: eventType,
+        environment: 'PRODUCAO' as const,
+        is_rectification: false,
+        worker_name: emp.name,
+        worker_cpf: emp.cpf || '',
+        worker_nis: emp.nis_pis,
+        worker_registration: emp.registration_number || '',
+        worker_cbo: emp.cbo || job?.cbo || '',
+        worker_role: emp.job_title || job?.name || '',
+        workplace_unit_id: emp.client_unit_id,
+        // DRAFT, nao READY_TO_SEND: quem decide se esta pronto e a validacao,
+        // conferindo os campos. Nascer "pronto para enviar" sem conferencia foi
+        // o que permitiu o evento inventado chegar ao lote de transmissao.
+        status: 'DRAFT' as ESocialEventStatus,
+      };
+
+      if (!emp.cpf) {
+        pendencias.push({ motivo: 'Colaborador sem CPF cadastrado.', onde: emp.name });
+      }
+      if (!emp.registration_number) {
+        pendencias.push({ motivo: 'Colaborador sem matrícula cadastrada.', onde: emp.name });
+      }
+      if (!base.worker_cbo) {
+        pendencias.push({ motivo: 'Colaborador sem CBO no cadastro nem no cargo.', onde: emp.name });
+      }
+
+      if (eventType === 'S-2240') {
+        const riscos = riscosDoColaborador(emp, environmentalRisks);
+        const unidade = units.find(u => u.id === emp.client_unit_id);
+
+        const montagem = montarCondicoesAmbientais({
+          colaborador: emp,
+          riscos,
+          responsavelNome: responsavel?.full_name || so.technical_responsible_name,
+          responsavelCpf: responsavel?.cpf,
+          responsavelRegistro: responsavel?.professional_register,
+          responsavelUf: responsavel?.professional_register_uf,
+          ambiente: unidade?.name
+            ? `${client.trade_name || client.legal_name} - ${unidade.name}`
+            : (emp.unit_name || client.trade_name || client.legal_name),
+          atividades: job?.activities_description || emp.job_title || '',
+          // A condicao ambiental vigora desde a admissao do trabalhador naquele
+          // ambiente. Nao e a data de hoje.
+          dataInicio: emp.admission_date || dataDeHoje(),
+        });
+
+        pendencias.push(...montagem.pendencias);
+        if (!job?.activities_description) {
+          pendencias.push({
+            motivo: 'Cargo sem descrição pormenorizada das atividades (exigida pelo MOS do eSocial).',
+            onde: emp.job_title || emp.name,
+          });
+        }
+
+        eventos.push(createESocialEvent({ ...base, ambient_data: montagem.dados }));
+        return;
+      }
+
+      // S-2220
+      const aso = selecionarAsoMaisRecente(emp);
+      if (!aso) {
+        pendencias.push({
+          motivo: 'Sem ASO no histórico. Não há o que declarar no S-2220 enquanto nenhum exame for registrado.',
+          onde: emp.name,
+        });
+        return;
+      }
+
+      const montagem = montarAsoDoEvento(emp, aso);
+      pendencias.push(...montagem.pendencias);
+      eventos.push(createESocialEvent({ ...base, aso_data: montagem.dados }));
+    });
+
+    return { eventos, pendencias: resumirPendencias(pendencias) };
+  }, [
+    serviceOrders,
+    clients,
+    employees,
+    profiles,
+    hierarchyJobs,
+    environmentalRisks,
+    units,
+    esocialEvents,
+    createESocialEvent,
+  ]);
 
   // Generate Exclusion Event S-3000
   const generateExclusionEventS3000 = useCallback((targetEventId: string, reason: string): ESocialEvent => {
@@ -3659,13 +3737,18 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
       results.push({ testName: '4. Detecção de Inconsistências & Rejeições', passed: true, message: 'Mecanismo de validação de regras ativado.' });
     }
 
-    // Test 5: Transmissão WebService e Emissão de Recibo Oficial
-    const transmitted = esocialEvents.find(e => e.status === 'SUCCESS' && e.receipt_number);
-    if (transmitted) {
-      results.push({ testName: '5. Transmissão WebService Serpro & Homologação de Recibo', passed: true, message: `Recibo oficial emitido com padrão eSocial (${transmitted.receipt_number}). Protocolo: ${transmitted.protocol_number}` });
-    } else {
-      results.push({ testName: '5. Transmissão WebService Serpro', passed: true, message: 'Módulo de transmissão pronto para lote.' });
-    }
+    // Test 5: Preparo do lote para envio
+    //
+    // Este teste dizia "Transmissão WebService Serpro & Homologação de Recibo"
+    // e anunciava "Recibo oficial emitido". O sistema nao envia nada ao
+    // governo: ele monta e valida o XML. Um autoteste que afirma o contrario
+    // nao verifica nada - so confirma a crenca errada de quem o le.
+    const prontos = esocialEvents.filter(e => e.status === 'READY_TO_SEND').length;
+    results.push({
+      testName: '5. Preparo do lote (o envio ao eSocial é externo ao sistema)',
+      passed: true,
+      message: `${prontos} evento(s) validados e prontos para envio. O PrevSafe monta e valida o XML; a transmissão ao WebService do eSocial não é feita por ele.`
+    });
 
     // Test 6: Evento de Exclusão S-3000
     const exclusion = esocialEvents.find(e => e.event_type === 'S-3000');
@@ -3719,12 +3802,17 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
       );
 
       pendingAsoOrders.forEach(so => {
-        const evt = generateESocialFromServiceOrder(so.id, 'S-2220');
-        if (evt) {
-          extractedCount++;
-          newEventIds.push(evt.id);
-          logs.push(`[${new Date().toLocaleTimeString('pt-BR')}] 🩺 S-2220 extraído automaticamente da OS ${so.os_number} (${so.title}) para ${evt.worker_name}.`);
+        const { eventos, pendencias } = generateESocialFromServiceOrder(so.id, 'S-2220');
+        extractedCount += eventos.length;
+        eventos.forEach(evt => newEventIds.push(evt.id));
+        if (eventos.length > 0) {
+          logs.push(`[${new Date().toLocaleTimeString('pt-BR')}] 🩺 ${eventos.length} evento(s) S-2220 montados da OS ${so.os_number} (${so.title}) a partir do cadastro de ASO.`);
         }
+        // As pendencias entram no log porque sao o motivo de o evento nao sair
+        // completo. Antes o robo preenchia o buraco com dado inventado.
+        pendencias.forEach(p => {
+          logs.push(`[${new Date().toLocaleTimeString('pt-BR')}] ⚠️ Pendência (OS ${so.os_number}): ${p}`);
+        });
       });
     }
 
@@ -3736,12 +3824,17 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
       );
 
       pendingPgrOrders.forEach(so => {
-        const evt = generateESocialFromServiceOrder(so.id, 'S-2240');
-        if (evt) {
-          extractedCount++;
-          newEventIds.push(evt.id);
-          logs.push(`[${new Date().toLocaleTimeString('pt-BR')}] 🏭 S-2240 gerado automaticamente da OS ${so.os_number} (${so.title}) com Tabela 24 e EPIs vinculados.`);
+        const { eventos, pendencias } = generateESocialFromServiceOrder(so.id, 'S-2240');
+        extractedCount += eventos.length;
+        eventos.forEach(evt => newEventIds.push(evt.id));
+        if (eventos.length > 0) {
+          logs.push(`[${new Date().toLocaleTimeString('pt-BR')}] 🏭 ${eventos.length} evento(s) S-2240 montados da OS ${so.os_number} (${so.title}) a partir do cadastro de riscos ambientais.`);
         }
+        // As pendencias entram no log porque sao o motivo de o evento nao sair
+        // completo. Antes o robo preenchia o buraco com dado inventado.
+        pendencias.forEach(p => {
+          logs.push(`[${new Date().toLocaleTimeString('pt-BR')}] ⚠️ Pendência (OS ${so.os_number}): ${p}`);
+        });
       });
     }
 
@@ -3759,18 +3852,23 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
       const targetIds = Array.from(new Set([...eventsToSend.map(e => e.id), ...newEventIds]));
 
       if (targetIds.length > 0) {
-        logs.push(`[${new Date().toLocaleTimeString('pt-BR')}] 🔐 Validando schemas XSD e assinando ${targetIds.length} eventos com Certificado Digital ${certificateType}...`);
-        
+        logs.push(`[${new Date().toLocaleTimeString('pt-BR')}] 🔐 Validando ${targetIds.length} evento(s) contra as regras do leiaute...`);
+
         const batchResult = transmitBatchESocial(targetIds, certificateType);
         transmittedCount = batchResult.successCount;
         errorsCount = batchResult.errorCount;
         createdBatchNumber = batchResult.batch.batch_number;
 
-        logs.push(`[${new Date().toLocaleTimeString('pt-BR')}] 🚀 Lote ${batchResult.batch.batch_number} transmitido ao WebService Serpro/eSocial. Protocolo: ${batchResult.batch.protocol_number}.`);
-        logs.push(`[${new Date().toLocaleTimeString('pt-BR')}] ✅ ${transmittedCount} eventos homologados com emissão de recibo oficial.`);
+        // Nao ha envio ao governo: o sistema nao fala com o WebService do
+        // eSocial. O log dizia "transmitido ao WebService Serpro/eSocial" e
+        // "homologados com emissão de recibo oficial", e imprimia um protocolo
+        // que nao existe (`protocol_number` e undefined). O lote apenas reune
+        // os eventos validados e prontos para envio.
+        logs.push(`[${new Date().toLocaleTimeString('pt-BR')}] 📦 Lote ${batchResult.batch.batch_number} montado com os eventos validados. Nenhum dado foi enviado ao eSocial.`);
+        logs.push(`[${new Date().toLocaleTimeString('pt-BR')}] ✅ ${transmittedCount} evento(s) prontos para envio.`);
 
         if (errorsCount > 0) {
-          logs.push(`[${new Date().toLocaleTimeString('pt-BR')}] ⚠️ ${errorsCount} eventos com apontamento retornados para fila de correção.`);
+          logs.push(`[${new Date().toLocaleTimeString('pt-BR')}] ⚠️ ${errorsCount} evento(s) reprovados na validação. Abra cada um para ver o que falta.`);
         }
 
         // 4. Automated Notifications to Clients
