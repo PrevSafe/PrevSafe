@@ -554,7 +554,7 @@ interface PrevSafeContextType {
   updateEmployee: (id: string, updates: Partial<Employee>) => void;
   deleteEmployee: (id: string) => void;
   addEmployeeEpi: (employeeId: string, epi: Omit<EmployeeEPI, 'id'>) => void;
-  addEmployeeAso: (employeeId: string, aso: Omit<EmployeeASO, 'id'>) => void;
+  addEmployeeAso: (employeeId: string, aso: Omit<EmployeeASO, 'id'> & { id?: string }) => EmployeeASO;
 
   addCatRecord: (data: Omit<SSTCATRecord, 'id' | 'organization_id' | 'created_at'>) => SSTCATRecord;
   updateCatRecord: (id: string, updates: Partial<SSTCATRecord>) => void;
@@ -565,7 +565,11 @@ interface PrevSafeContextType {
   transmitWorkAbsence: (id: string) => { success: boolean; receipt?: string; protocol?: string; error?: string };
 
   generateS2240FromGhe: (gheId: string) => ESocialEvent | null;
-  generateS2220FromEmployeeAso: (employeeId: string, asoId: string) => ESocialEvent | null;
+  /**
+   * `asoRecemCriado` evita ler o estado anterior quando o ASO acabou de ser
+   * registrado na mesma acao.
+   */
+  generateS2220FromEmployeeAso: (employeeId: string, asoId: string, asoRecemCriado?: EmployeeASO) => ESocialEvent | null;
   generateS2210FromCat: (catId: string) => ESocialEvent | null;
   generateS2230FromAbsence: (absenceId: string) => ESocialEvent | null;
 
@@ -5363,10 +5367,21 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     logAudit('DELIVER_EPI' as any, 'CLIENT' as any, employeeId, `EPI entregue CA ${newEpi.ca_number}`, { epi_name: newEpi.epi_name });
   }, [logAudit]);
 
-  const addEmployeeAso = useCallback((employeeId: string, asoData: Omit<EmployeeASO, 'id'>) => {
+  /**
+   * Registra um ASO e DEVOLVE o registro criado.
+   *
+   * Devolver importa: quem chama precisa do ASO para gerar o S-2220 na mesma
+   * acao, e ler `employees` logo depois de setEmployees entrega o estado
+   * ANTERIOR - o evento sairia do ASO anterior, ou de nenhum.
+   *
+   * O id informado pelo chamador e respeitado. Antes o spread vinha primeiro e
+   * o id gerado aqui sobrescrevia o recebido, entao quem passava um id nao
+   * conseguia reencontrar o registro.
+   */
+  const addEmployeeAso = useCallback((employeeId: string, asoData: Omit<EmployeeASO, 'id'> & { id?: string }): EmployeeASO => {
     const newAso: EmployeeASO = {
       ...asoData,
-      id: `aso-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`
+      id: asoData.id || novoId('aso')
     };
     setEmployees(prev => prev.map(e => {
       if (e.id === employeeId) {
@@ -5381,7 +5396,11 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
       }
       return e;
     }));
-    logAudit('EMIT_ASO' as any, 'CLIENT' as any, employeeId, `ASO ${newAso.aso_type} emitido: ${newAso.result}`, { doctor: newAso.physician_name });
+    logAudit('EMIT_ASO' as any, 'CLIENT' as any, employeeId, `ASO ${newAso.aso_type} emitido: ${newAso.result}`, {
+      doctor: newAso.physician_name,
+      exames: newAso.exams?.length || 0
+    });
+    return newAso;
   }, [logAudit]);
 
   const addCatRecord = useCallback((data: Omit<SSTCATRecord, 'id' | 'organization_id' | 'created_at'>): SSTCATRecord => {
@@ -5597,11 +5616,32 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     return newEvt;
   }, [ghes, environmentalRisks, clients, employees, organization.id]);
 
-  const generateS2220FromEmployeeAso = useCallback((employeeId: string, asoId: string): ESocialEvent | null => {
+  /**
+   * Monta o S-2220 a partir de um ASO registrado.
+   *
+   * O QUE MUDOU: o evento saia sem `aso_data` - portanto sem a lista de
+   * procedimentos realizados, que o S-2220 exige - e com status
+   * 'READY_TO_SEND', sem nunca passar pela validacao. O XML tambem nao trazia
+   * o bloco <exameMedico>. Agora o ASO carrega os exames lancados, eles vao
+   * para o payload e para o XML, e o evento nasce DRAFT.
+   */
+  const generateS2220FromEmployeeAso = useCallback((
+    employeeId: string,
+    asoId: string,
+    asoRecemCriado?: EmployeeASO
+  ): ESocialEvent | null => {
     const emp = employees.find(e => e.id === employeeId);
     if (!emp) return null;
-    const aso = emp.aso_history.find(a => a.id === asoId) || emp.aso_history[0];
+
+    // `asoRecemCriado` existe porque quem acabou de registrar o ASO nao
+    // consegue encontra-lo em `employees`: o estado ainda e o anterior. Sem
+    // isso o evento saia do ASO ANTERIOR do trabalhador - ou de nenhum, no
+    // primeiro ASO, quando o historico estava vazio.
+    const aso = asoRecemCriado || emp.aso_history.find(a => a.id === asoId);
     if (!aso) return null;
+
+    const montagem = montarAsoDoEvento(emp, aso);
+    const exames = montagem.dados.exams_list;
 
     // Empregador vem do cadastro do cliente. Sem CNPJ/CPF valido nao ha evento.
     const empregador = identificacaoDoEmpregador(emp.client_id);
@@ -5629,6 +5669,13 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
           <ufCRM>${aso.physician_uf}</ufCRM>
         </medico>
       </aso>
+${exames.map(ex => `      <exameMedico>
+        <dtExm>${ex.date}</dtExm>
+        <procRealizado>${ex.code}</procRealizado>
+        <obsProc>${ex.observation || ex.name}</obsProc>
+        <ordExame>${ex.procedure_type === 'CLINICO' ? 1 : 2}</ordExame>
+        <indResult>${ex.result === 'NORMAL' ? 1 : ex.result === 'ALTERADO' ? 2 : ex.result === 'ESTAVEL' ? 3 : 4}</indResult>
+      </exameMedico>`).join('\n')}
     </exMedOcup>
   </evtMonit>
 </eSocial>`;
@@ -5639,14 +5686,17 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
       client_id: emp.client_id,
       event_type: 'S-2220',
       event_number: `S2220-${emp.registration_number}-${Date.now().toString().slice(-4)}`,
-      status: 'READY_TO_SEND',
+      // DRAFT: quem decide se esta pronto e a validacao, conferindo os campos.
+      status: 'DRAFT',
       environment: 'PRODUCAO',
       is_rectification: false,
       worker_name: emp.name,
       worker_cpf: emp.cpf,
       worker_registration: emp.registration_number,
       worker_cbo: emp.cbo || undefined,
-      worker_role: emp.job_title || 'Operador',
+      // Sem 'Operador' como padrao: a funcao do trabalhador vem do cadastro.
+      worker_role: emp.job_title || '',
+      aso_data: montagem.dados,
       xml_content: xml,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()

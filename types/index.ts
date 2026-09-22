@@ -1108,6 +1108,37 @@ export interface EmployeeEPIItem {
 
 export type EmployeeEPI = EmployeeEPIItem;
 
+/**
+ * Um exame efetivamente REALIZADO, com o resultado que o médico anotou.
+ *
+ * Nao confundir com SSTExamProtocol: aquele e o planejamento do PCMSO (quais
+ * exames o GHE exige e com que periodicidade). Este e o registro do que foi
+ * feito. O sistema so tinha o planejamento, e por isso o S-2220 saia sem a
+ * lista de procedimentos - que o eSocial exige.
+ */
+export interface EmployeeExamResult {
+  id: string;
+  /** Codigo da Tabela 27 do eSocial, como cadastrado no protocolo do PCMSO. */
+  exam_code_table_27: string;
+  exam_name: string;
+  /** Data em que o exame foi realizado. Pode diferir da data do ASO. */
+  exam_date: string;
+  procedure_type:
+    | 'CLINICO'
+    | 'AUDIOMETRIA'
+    | 'ESPIROMETRIA'
+    | 'RX_TORAX_OIT'
+    | 'HEMOGRAMA'
+    | 'GLICEMIA'
+    | 'ACUIDADE_VISUAL'
+    | 'OUTRO';
+  /** Resultado conforme a Tabela do eSocial: normal, alterado, estavel, agravamento. */
+  result: 'NORMAL' | 'ALTERADO' | 'ESTAVEL' | 'AGRAVAMENTO';
+  observation?: string;
+  /** Protocolo do PCMSO que originou a linha, quando veio de um. */
+  protocol_id?: string;
+}
+
 export interface EmployeeASOHistory {
   id: string;
   aso_type: 'ADMISSIONAL' | 'PERIODICO' | 'RETORNO_TRABALHO' | 'MUDANCA_RISCO' | 'DEMISSIONAL';
@@ -1118,6 +1149,12 @@ export interface EmployeeASOHistory {
   physician_name: string;
   physician_crm: string;
   physician_uf: string;
+  /**
+   * Exames realizados neste ASO. Opcional porque os ASOs gravados antes deste
+   * campo existir nao os tem - e nesses casos o S-2220 continua apontando a
+   * pendencia, em vez de a lista ser preenchida por suposicao.
+   */
+  exams?: EmployeeExamResult[];
   document_url?: string;
   esocial_event_id?: string;
 }

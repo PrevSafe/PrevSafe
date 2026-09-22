@@ -4,6 +4,9 @@ import React, { useState } from 'react';
 import { usePrevSafe } from '@/context/PrevSafeContext';
 import { SSTExamProtocol, Employee } from '@/types';
 import { dataDeHoje } from '@/lib/datas';
+import { exameSugeridosParaAso, sugerirTipoDeProcedimento } from '@/lib/esocialDados';
+import { novoId } from '@/lib/datas';
+import type { EmployeeExamResult } from '@/types';
 import { 
   Stethoscope, 
   Plus, 
@@ -89,6 +92,15 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
     restrictions_description: ''
   });
 
+  /**
+   * Exames REALIZADOS neste ASO, com o resultado que o medico anotou.
+   *
+   * O sistema so tinha o protocolo do PCMSO - o planejamento de quais exames o
+   * GHE exige. Nao havia onde lancar o que foi de fato realizado, e por isso o
+   * S-2220 saia sem a lista de procedimentos, que o eSocial exige.
+   */
+  const [examesDoAso, setExamesDoAso] = useState<EmployeeExamResult[]>([]);
+
   const [generatedS2220Success, setGeneratedS2220Success] = useState<string | null>(null);
 
   const clientExams = examProtocols.filter(e => {
@@ -159,11 +171,92 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
     setIsProtocolModalOpen(false);
   };
 
+  /**
+   * Carrega as linhas sugeridas pelo protocolo do PCMSO do GHE do colaborador.
+   *
+   * O protocolo diz o que DEVERIA ter sido feito. Data e resultado saem em
+   * branco de proposito: e o que o planejamento nao sabe, e preenche-los seria
+   * declarar ao eSocial exame que ninguem realizou.
+   */
+  const carregarExamesSugeridos = (
+    employeeId: string,
+    tipo: typeof asoForm.aso_type
+  ) => {
+    const emp = employees.find(x => x.id === employeeId);
+    if (!emp) {
+      setExamesDoAso([]);
+      return;
+    }
+    const sugeridos = exameSugeridosParaAso(emp, examProtocols, tipo);
+    setExamesDoAso(
+      sugeridos.map(su => ({
+        ...su,
+        id: novoId('exm'),
+        exam_date: '',
+        result: '' as any,
+      }))
+    );
+  };
+
+  const adicionarExameAvulso = () => {
+    setExamesDoAso(prev => [
+      ...prev,
+      {
+        id: novoId('exm'),
+        exam_code_table_27: '',
+        exam_name: '',
+        exam_date: asoForm.issue_date,
+        procedure_type: 'OUTRO',
+        result: '' as any,
+      },
+    ]);
+  };
+
+  const alterarExame = (id: string, campo: keyof EmployeeExamResult, valor: string) => {
+    setExamesDoAso(prev =>
+      prev.map(ex => {
+        if (ex.id !== id) return ex;
+        const atualizado = { ...ex, [campo]: valor } as EmployeeExamResult;
+        // Ao digitar o nome de um exame avulso, sugere o tipo de procedimento.
+        if (campo === 'exam_name' && !ex.protocol_id) {
+          atualizado.procedure_type = sugerirTipoDeProcedimento(valor);
+        }
+        return atualizado;
+      })
+    );
+  };
+
+  const removerExame = (id: string) => {
+    setExamesDoAso(prev => prev.filter(ex => ex.id !== id));
+  };
+
   const handleApplyAso = (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedEmployeeId) return;
 
-    addEmployeeAso(selectedEmployeeId, {
+    // Um ASO sem exame nao e um ASO, e o S-2220 exige a lista de procedimentos
+    // realizados. Antes o ASO era gravado sem nada disso e o evento nascia
+    // incompleto.
+    if (examesDoAso.length === 0) {
+      alert(
+        'Registre ao menos um exame realizado. O S-2220 exige a lista de procedimentos ' +
+        '(Tabela 27) com o resultado de cada um.'
+      );
+      return;
+    }
+    const incompletos = examesDoAso.filter(ex => !ex.exam_name || !ex.result || !ex.exam_date);
+    if (incompletos.length > 0) {
+      alert(
+        `${incompletos.length} exame(s) sem nome, data ou resultado. Preencha os três campos, ` +
+        'ou remova a linha do exame que não foi realizado.'
+      );
+      return;
+    }
+
+    const asoId = novoId('aso');
+
+    const asoCriado = addEmployeeAso(selectedEmployeeId, {
+      id: asoId,
       aso_type: asoForm.aso_type,
       exam_date: asoForm.issue_date,
       valid_until: asoForm.validity_date,
@@ -171,16 +264,24 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
       physician_crm: asoForm.doctor_crm,
       physician_uf: asoForm.doctor_crm_state,
       result: asoForm.result,
-      restrictions_notes: asoForm.restrictions_description || undefined
-    });
+      restrictions_notes: asoForm.restrictions_description || undefined,
+      exams: examesDoAso
+    } as any);
     
-    // Auto-generate S-2220
-    const evt = generateS2220FromEmployeeAso(selectedEmployeeId, `aso-${Date.now()}`);
+    // Passa o ASO recem-criado: `employees` ainda tem o estado anterior aqui,
+    // entao buscar pelo id encontraria o ASO ANTERIOR do trabalhador - ou
+    // nenhum, no primeiro ASO. O id ia como `aso-${Date.now()}`, que tambem
+    // nunca casava com o id real.
+    const evt = generateS2220FromEmployeeAso(selectedEmployeeId, asoId, asoCriado);
     if (evt) {
-      setGeneratedS2220Success(`ASO emitido com sucesso! Evento eSocial S-2220 (${evt.event_number}) pronto para assinatura A1.`);
-      setTimeout(() => setGeneratedS2220Success(null), 5000);
+      setGeneratedS2220Success(
+        `ASO registrado com ${examesDoAso.length} exame(s). Evento S-2220 (${evt.event_number}) ` +
+        'criado como rascunho — valide antes de transmitir.'
+      );
+      setTimeout(() => setGeneratedS2220Success(null), 6000);
     }
 
+    setExamesDoAso([]);
     setIsAsoModalOpen(false);
   };
 
@@ -255,7 +356,10 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
             <button
               type="button"
               id="apply-aso-btn"
-              onClick={() => setIsAsoModalOpen(true)}
+              onClick={() => {
+                carregarExamesSugeridos(selectedEmployeeId, asoForm.aso_type);
+                setIsAsoModalOpen(true);
+              }}
               className="px-3.5 py-1.5 bg-teal-500 hover:bg-teal-400 text-slate-950 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 shadow-sm"
             >
               <Plus className="w-4 h-4" />
@@ -399,7 +503,11 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
                       <td className="py-3 px-4 text-right">
                         <button
                           type="button"
-                          onClick={() => { setSelectedEmployeeId(emp.id); setIsAsoModalOpen(true); }}
+                          onClick={() => {
+                            setSelectedEmployeeId(emp.id);
+                            carregarExamesSugeridos(emp.id, asoForm.aso_type);
+                            setIsAsoModalOpen(true);
+                          }}
                           className="px-2.5 py-1 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold rounded text-[11px] transition-colors"
                         >
                           Novo ASO S-2220
@@ -553,7 +661,12 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
                 <label className="block text-slate-400 font-semibold mb-1">Colaborador / Trabalhador</label>
                 <select
                   value={selectedEmployeeId}
-                  onChange={(e) => setSelectedEmployeeId(e.target.value)}
+                  onChange={(e) => {
+                    setSelectedEmployeeId(e.target.value);
+                    // O protocolo do PCMSO e por GHE: trocar de colaborador
+                    // pode mudar quais exames sao devidos.
+                    carregarExamesSugeridos(e.target.value, asoForm.aso_type);
+                  }}
                   className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 focus:outline-none focus:border-teal-500 font-semibold"
                 >
                   {clientEmployees.map(emp => (
@@ -567,7 +680,13 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
                   <label className="block text-slate-400 font-semibold mb-1">Tipo de ASO (eSocial)</label>
                   <select
                     value={asoForm.aso_type}
-                    onChange={(e) => setAsoForm({ ...asoForm, aso_type: e.target.value as any })}
+                    onChange={(e) => {
+                      const tipo = e.target.value as typeof asoForm.aso_type;
+                      setAsoForm({ ...asoForm, aso_type: tipo });
+                      // Cada tipo de ASO dispara um conjunto de exames
+                      // diferente (o `triggers` do protocolo).
+                      carregarExamesSugeridos(selectedEmployeeId, tipo);
+                    }}
                     className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 focus:outline-none focus:border-teal-500"
                   >
                     <option value="ADMISSIONAL">1 - Admissional</option>
@@ -647,6 +766,113 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
                     />
                   </div>
                 </div>
+              </div>
+
+              {/* Exames realizados — a lista que o S-2220 exige (Tabela 27) */}
+              <div className="bg-slate-950 rounded-lg border border-slate-800 p-3 space-y-2.5">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <h4 className="font-bold text-slate-200 flex items-center gap-1.5">
+                      <FileCheck2 className="w-3.5 h-3.5 text-teal-400" />
+                      Exames realizados ({examesDoAso.length})
+                    </h4>
+                    <p className="text-[10px] text-slate-500 mt-0.5">
+                      As linhas vêm do protocolo do PCMSO do GHE — o que <em>deveria</em> ser feito.
+                      Data e resultado são de quem realizou. Remova o que não foi feito.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={adicionarExameAvulso}
+                    className="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-[11px] font-semibold rounded-lg flex items-center gap-1 shrink-0"
+                  >
+                    <Plus className="w-3 h-3" /> Exame avulso
+                  </button>
+                </div>
+
+                {examesDoAso.length === 0 ? (
+                  <p className="text-[11px] text-amber-400 py-2">
+                    Nenhum exame lançado. O S-2220 exige ao menos um procedimento com resultado —
+                    cadastre o protocolo do PCMSO deste GHE ou adicione um exame avulso.
+                  </p>
+                ) : (
+                  <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
+                    {examesDoAso.map(ex => (
+                      <div
+                        key={ex.id}
+                        className="grid grid-cols-12 gap-1.5 items-center bg-slate-900 rounded-lg p-2 border border-slate-800"
+                      >
+                        <input
+                          type="text"
+                          placeholder="Código Tab. 27"
+                          value={ex.exam_code_table_27}
+                          onChange={e => alterarExame(ex.id, 'exam_code_table_27', e.target.value)}
+                          className="col-span-2 bg-slate-950 border border-slate-700 rounded px-2 py-1.5 text-slate-100 font-mono text-[11px]"
+                        />
+                        <input
+                          type="text"
+                          placeholder="Nome do exame"
+                          value={ex.exam_name}
+                          onChange={e => alterarExame(ex.id, 'exam_name', e.target.value)}
+                          className="col-span-3 bg-slate-950 border border-slate-700 rounded px-2 py-1.5 text-slate-100 text-[11px]"
+                        />
+                        <input
+                          type="date"
+                          value={ex.exam_date}
+                          onChange={e => alterarExame(ex.id, 'exam_date', e.target.value)}
+                          className={`col-span-2 bg-slate-950 border rounded px-1.5 py-1.5 text-slate-100 text-[11px] ${
+                            ex.exam_date ? 'border-slate-700' : 'border-amber-600/70'
+                          }`}
+                        />
+                        <select
+                          value={ex.procedure_type}
+                          onChange={e => alterarExame(ex.id, 'procedure_type', e.target.value)}
+                          className="col-span-2 bg-slate-950 border border-slate-700 rounded px-1.5 py-1.5 text-slate-100 text-[11px]"
+                        >
+                          <option value="CLINICO">Clínico</option>
+                          <option value="AUDIOMETRIA">Audiometria</option>
+                          <option value="ESPIROMETRIA">Espirometria</option>
+                          <option value="RX_TORAX_OIT">RX Tórax OIT</option>
+                          <option value="HEMOGRAMA">Hemograma</option>
+                          <option value="GLICEMIA">Glicemia</option>
+                          <option value="ACUIDADE_VISUAL">Acuidade Visual</option>
+                          <option value="OUTRO">Outro</option>
+                        </select>
+                        <select
+                          value={ex.result || ''}
+                          onChange={e => alterarExame(ex.id, 'result', e.target.value)}
+                          className={`col-span-2 bg-slate-950 border rounded px-1.5 py-1.5 text-[11px] ${
+                            ex.result ? 'border-slate-700 text-slate-100' : 'border-amber-600/70 text-amber-400'
+                          }`}
+                        >
+                          <option value="">Resultado…</option>
+                          <option value="NORMAL">Normal</option>
+                          <option value="ALTERADO">Alterado</option>
+                          <option value="ESTAVEL">Estável</option>
+                          <option value="AGRAVAMENTO">Agravamento</option>
+                        </select>
+                        <button
+                          type="button"
+                          onClick={() => removerExame(ex.id)}
+                          title="Remover — exame não realizado"
+                          className="col-span-1 flex justify-center text-slate-500 hover:text-rose-400"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+
+                        {(ex.result === 'ALTERADO' || ex.result === 'AGRAVAMENTO') && (
+                          <input
+                            type="text"
+                            placeholder="Observação do achado (vai no S-2220)"
+                            value={ex.observation || ''}
+                            onChange={e => alterarExame(ex.id, 'observation', e.target.value)}
+                            className="col-span-12 bg-slate-950 border border-slate-700 rounded px-2 py-1.5 text-slate-100 text-[11px] mt-0.5"
+                          />
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
               <div className="flex justify-end gap-2 pt-3 border-t border-slate-800">

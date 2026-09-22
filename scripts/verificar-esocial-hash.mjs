@@ -95,6 +95,8 @@ const {
   riscosDoColaborador,
   extrairCodigoTabela24,
   normalizarCategoriaRisco,
+  exameSugeridosParaAso,
+  sugerirTipoDeProcedimento,
 } = esocial;
 
 if (typeof montarCondicoesAmbientais !== 'function') {
@@ -312,11 +314,173 @@ console.log('\n--- S-2220: sem ASO registrado não há evento ---');
   check(dados.exam_date === '2026-03-02', 'data do exame vem do ASO, não é a data de hoje');
   check(
     dados.exams_list.length === 0,
-    'lista de exames sai VAZIA: o sistema não registra resultado de exame'
+    'ASO sem exames lançados não inventa a lista'
   );
   check(
     pendencias.some((p) => /exame com resultado/i.test(p.motivo)),
     'a falta dos exames é reportada como pendência, não preenchida com o protocolo'
+  );
+}
+
+console.log('\n--- lançamento de exames realizados ---');
+{
+  const protocolos = [
+    {
+      id: 'prot-1',
+      client_id: 'cli-1',
+      ghe_id: 'ghe-1',
+      exam_code_table_27: '0295 - Audiometria Tonal e Vocal',
+      exam_name: 'Audiometria Tonal e Vocal',
+      triggers: ['ADMISSIONAL', 'PERIODICO'],
+      status: 'ACTIVE',
+    },
+    {
+      id: 'prot-2',
+      client_id: 'cli-1',
+      ghe_id: 'ghe-1',
+      exam_code_table_27: '0362',
+      exam_name: 'Avaliação Clínica Ocupacional',
+      triggers: ['ADMISSIONAL', 'PERIODICO', 'DEMISSIONAL'],
+      status: 'ACTIVE',
+    },
+    {
+      id: 'prot-3',
+      client_id: 'cli-1',
+      ghe_id: 'ghe-1',
+      exam_code_table_27: '0999',
+      exam_name: 'Espirometria',
+      triggers: ['DEMISSIONAL'],
+      status: 'ACTIVE',
+    },
+    {
+      id: 'prot-4',
+      client_id: 'cli-OUTRO',
+      ghe_id: 'ghe-9',
+      exam_code_table_27: '0111',
+      exam_name: 'Hemograma',
+      triggers: ['PERIODICO'],
+      status: 'ACTIVE',
+    },
+    {
+      id: 'prot-5',
+      client_id: 'cli-1',
+      ghe_id: 'ghe-1',
+      exam_code_table_27: '0222',
+      exam_name: 'Exame desativado',
+      triggers: ['PERIODICO'],
+      status: 'INACTIVE',
+    },
+  ];
+
+  const sugeridos = exameSugeridosParaAso(colaborador, protocolos, 'PERIODICO');
+  check(
+    sugeridos.length === 2,
+    `sugere só os exames devidos no PERIÓDICO deste GHE: ${sugeridos.length} (audiometria e clínico)`
+  );
+  check(
+    !sugeridos.some((s) => s.exam_name === 'Espirometria'),
+    'não sugere exame cujo gatilho é só DEMISSIONAL'
+  );
+  check(
+    !sugeridos.some((s) => s.exam_name === 'Hemograma'),
+    'não sugere protocolo de outro cliente'
+  );
+  check(
+    !sugeridos.some((s) => s.exam_name === 'Exame desativado'),
+    'não sugere protocolo inativo'
+  );
+  check(
+    sugeridos[0].exam_code_table_27 === '0295',
+    `extrai o código da Tabela 27 sem a descrição: ${sugeridos[0].exam_code_table_27}`
+  );
+  check(
+    !('result' in sugeridos[0]) && !('exam_date' in sugeridos[0]),
+    'a sugestão NÃO traz resultado nem data: o planejamento não sabe o que foi encontrado'
+  );
+
+  check(
+    sugerirTipoDeProcedimento('Audiometria Tonal e Vocal') === 'AUDIOMETRIA',
+    'sugere o tipo de procedimento pelo nome'
+  );
+  check(
+    sugerirTipoDeProcedimento('Dosagem de chumbo no sangue') === 'OUTRO',
+    'nome não reconhecido vira OUTRO, não cai numa categoria por aproximação'
+  );
+
+  // Com exames lançados, o S-2220 sai completo.
+  const comExames = {
+    ...colaborador,
+    aso_history: [
+      {
+        id: 'a3',
+        aso_type: 'PERIODICO',
+        exam_date: '2026-03-02',
+        result: 'APTO',
+        physician_name: 'Dr. Paulo Nunes',
+        physician_crm: 'CRM-BA 77901',
+        physician_uf: 'BA',
+        exams: [
+          {
+            id: 'exm-1',
+            exam_code_table_27: '0295',
+            exam_name: 'Audiometria Tonal e Vocal',
+            exam_date: '2026-03-01',
+            procedure_type: 'AUDIOMETRIA',
+            result: 'ALTERADO',
+            observation: 'Perda leve bilateral em 4kHz.',
+          },
+          {
+            id: 'exm-2',
+            exam_code_table_27: '0362',
+            exam_name: 'Avaliação Clínica Ocupacional',
+            exam_date: '2026-03-02',
+            procedure_type: 'CLINICO',
+            result: 'NORMAL',
+          },
+        ],
+      },
+    ],
+  };
+
+  const aso3 = selecionarAsoMaisRecente(comExames);
+  const m = montarAsoDoEvento(comExames, aso3);
+
+  check(m.dados.exams_list.length === 2, `os 2 exames lançados vão para o evento (${m.dados.exams_list.length})`);
+  check(
+    m.dados.exams_list[0].code === '0295' && m.dados.exams_list[0].result === 'ALTERADO',
+    'código e resultado vêm do que foi lançado'
+  );
+  check(
+    m.dados.exams_list[0].date === '2026-03-01',
+    'a data do exame é a dele, não a do ASO (2026-03-02)'
+  );
+  check(
+    m.dados.exams_list[0].observation === 'Perda leve bilateral em 4kHz.',
+    'a observação do achado acompanha o exame'
+  );
+  check(
+    !m.pendencias.some((p) => /exame com resultado/i.test(p.motivo)),
+    'com exames lançados, a pendência de exames desaparece'
+  );
+
+  // Exame incompleto continua sendo reportado.
+  const semCodigo = {
+    ...comExames,
+    aso_history: [
+      {
+        ...comExames.aso_history[0],
+        exams: [{ ...comExames.aso_history[0].exams[0], exam_code_table_27: '', exam_date: '' }],
+      },
+    ],
+  };
+  const m2 = montarAsoDoEvento(semCodigo, selecionarAsoMaisRecente(semCodigo));
+  check(
+    m2.pendencias.some((p) => /Tabela 27/i.test(p.motivo)),
+    'exame sem código da Tabela 27 é reportado'
+  );
+  check(
+    m2.pendencias.some((p) => /sem data de realização/i.test(p.motivo)),
+    'exame sem data de realização é reportado'
   );
 }
 

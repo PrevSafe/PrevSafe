@@ -949,14 +949,50 @@ export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) 
                 {viewingEmpDossier.aso_history && viewingEmpDossier.aso_history.length > 0 ? (
                   <div className="space-y-1.5">
                     {viewingEmpDossier.aso_history.map((aso, idx) => (
-                      <div key={idx} className="p-2.5 bg-slate-950 rounded-lg border border-slate-800/80 flex justify-between items-center text-[11px]">
-                        <div>
-                          <span className="font-bold text-slate-200">ASO {aso.aso_type}</span>
-                          <span className="ml-2 text-slate-400">Médico: {aso.physician_name} (CRM {aso.physician_crm}/{aso.physician_uf})</span>
+                      <div key={idx} className="p-2.5 bg-slate-950 rounded-lg border border-slate-800/80 text-[11px] space-y-1.5">
+                        <div className="flex justify-between items-center gap-2">
+                          <div className="min-w-0">
+                            <span className="font-bold text-slate-200">ASO {aso.aso_type}</span>
+                            <span className="ml-2 text-slate-400">Médico: {aso.physician_name} (CRM {aso.physician_crm}/{aso.physician_uf})</span>
+                          </div>
+                          <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 font-bold rounded shrink-0">
+                            {aso.result} ({aso.exam_date})
+                          </span>
                         </div>
-                        <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 font-bold rounded">
-                          {aso.result} ({aso.exam_date})
-                        </span>
+
+                        {/* Exames realizados. ASOs gravados antes deste campo
+                            existir nao os tem, e a ficha diz isso em vez de
+                            deixar a impressao de que nenhum exame foi feito. */}
+                        {aso.exams && aso.exams.length > 0 ? (
+                          <ul className="pl-3 border-l border-slate-800 space-y-0.5">
+                            {aso.exams.map(ex => (
+                              <li key={ex.id} className="flex justify-between gap-2 text-slate-400">
+                                <span className="truncate">
+                                  <span className="font-mono text-slate-500">{ex.exam_code_table_27}</span>{' '}
+                                  {ex.exam_name}
+                                  {ex.observation && (
+                                    <span className="text-slate-500"> — {ex.observation}</span>
+                                  )}
+                                </span>
+                                <span
+                                  className={`shrink-0 font-semibold ${
+                                    ex.result === 'NORMAL'
+                                      ? 'text-emerald-400'
+                                      : ex.result === 'ESTAVEL'
+                                        ? 'text-slate-300'
+                                        : 'text-amber-400'
+                                  }`}
+                                >
+                                  {ex.result} ({ex.exam_date})
+                                </span>
+                              </li>
+                            ))}
+                          </ul>
+                        ) : (
+                          <p className="pl-3 border-l border-slate-800 text-amber-500/80">
+                            Sem exames lançados — o S-2220 deste ASO fica retido até serem registrados.
+                          </p>
+                        )}
                       </div>
                     ))}
                   </div>

@@ -23,15 +23,17 @@
  *
  * SOBRE O S-2220 E A LISTA DE EXAMES
  *
- * O sistema registra o ASO (tipo, data, resultado, medico) no historico do
- * colaborador, mas NAO registra quais exames foram realizados nem o resultado
- * de cada um. `SSTExamProtocol` e o planejamento do PCMSO - quais exames o GHE
- * exige e com que periodicidade -, nao o registro do que foi feito.
+ * O S-2220 exige a lista de procedimentos realizados (Tabela 27) com o
+ * resultado de cada um. Ate a versao anterior o sistema so guardava o ASO
+ * (tipo, data, resultado, medico), e nao havia onde lancar exame: a lista saia
+ * vazia e o evento ficava retido apontando a falta.
  *
- * Por isso `exams_list` sai vazia, e nao preenchida com o protocolo como se
- * fosse resultado. A validacao entao recusa o evento dizendo que falta exame -
- * que e exatamente a lacuna real. Preencher com o planejamento faria o sistema
- * declarar ao eSocial um exame cujo resultado ninguem anotou.
+ * Agora o ASO carrega `exams`, preenchido no lancamento. A distincao que
+ * importa: `SSTExamProtocol` e o PLANEJAMENTO do PCMSO - quais exames o GHE
+ * exige e com que periodicidade. `EmployeeExamResult` e o que foi FEITO. O
+ * planejamento serve para sugerir as linhas do formulario; o resultado de cada
+ * uma vem de quem lancou. Copiar o planejamento como se fosse resultado seria
+ * declarar ao eSocial exame que ninguem realizou.
  */
 
 import type {
@@ -40,6 +42,8 @@ import type {
   ESocialAmbientRiskData,
   ESocialAmbientRiskFactor,
   ESocialASOData,
+  ESocialComplementaryExam,
+  EmployeeExamResult,
   RiskCategoryType,
   SSTEnvironmentalRisk,
 } from '@/types';
@@ -312,13 +316,39 @@ export function montarAsoDoEvento(
     pendencias.push({ motivo: 'ASO sem CRM e UF do médico examinador.', onde });
   }
 
-  // O sistema nao registra quais exames foram feitos nem seus resultados, so o
-  // ASO em si. A lista sai vazia de proposito - ver o cabecalho deste arquivo.
-  pendencias.push({
-    motivo:
-      'Nenhum exame com resultado registrado para este ASO. O S-2220 exige a lista de ' +
-      'procedimentos realizados (Tabela 27) com o resultado de cada um.',
-    onde,
+  const realizados = Array.isArray(aso.exams) ? aso.exams : [];
+
+  if (realizados.length === 0) {
+    pendencias.push({
+      motivo:
+        'Nenhum exame com resultado registrado para este ASO. O S-2220 exige a lista de ' +
+        'procedimentos realizados (Tabela 27) com o resultado de cada um. ' +
+        'Lance os exames em SST › PCMSO › Emitir ASO.',
+      onde,
+    });
+  }
+
+  const exams_list: ESocialComplementaryExam[] = realizados.map((e) => {
+    if (!e.exam_code_table_27) {
+      pendencias.push({
+        motivo: `Exame "${e.exam_name || 'sem nome'}" sem código da Tabela 27 do eSocial.`,
+        onde,
+      });
+    }
+    if (!e.exam_date) {
+      pendencias.push({
+        motivo: `Exame "${e.exam_name || 'sem nome'}" sem data de realização.`,
+        onde,
+      });
+    }
+    return {
+      code: e.exam_code_table_27 || '',
+      name: e.exam_name || '',
+      date: e.exam_date || '',
+      procedure_type: e.procedure_type,
+      result: e.result,
+      observation: e.observation || undefined,
+    };
   });
 
   const dados: ESocialASOData = {
@@ -328,7 +358,7 @@ export function montarAsoDoEvento(
     physician_name: aso.physician_name || '',
     physician_crm: aso.physician_crm || '',
     physician_uf: aso.physician_uf || '',
-    exams_list: [],
+    exams_list,
   };
 
   return { dados, pendencias };
@@ -359,6 +389,60 @@ export function riscosDoColaborador(
   }
 
   return [];
+}
+
+/**
+ * Tipo de procedimento sugerido a partir do nome do exame.
+ *
+ * E SUGESTAO para o campo vir pre-selecionado, nao classificacao automatica: o
+ * usuario troca quando quiser. O que nao for reconhecido vira 'OUTRO' em vez
+ * de cair em alguma categoria por aproximacao.
+ */
+export function sugerirTipoDeProcedimento(
+  nomeDoExame: string
+): EmployeeExamResult['procedure_type'] {
+  const n = (nomeDoExame || '').toLowerCase();
+
+  if (/audiometr/.test(n)) return 'AUDIOMETRIA';
+  if (/espirometr/.test(n)) return 'ESPIROMETRIA';
+  if (/rx|raio.?x|t[óo]rax/.test(n)) return 'RX_TORAX_OIT';
+  if (/hemograma/.test(n)) return 'HEMOGRAMA';
+  if (/glicemia|glicose/.test(n)) return 'GLICEMIA';
+  if (/acuidade|oftalmol/.test(n)) return 'ACUIDADE_VISUAL';
+  if (/cl[íi]nic|anamnese/.test(n)) return 'CLINICO';
+  return 'OUTRO';
+}
+
+/**
+ * Linhas sugeridas para o lancamento de exames de um ASO.
+ *
+ * Vem dos protocolos do PCMSO do GHE do colaborador, filtrados pelo tipo de
+ * ASO (o `triggers` do protocolo diz em quais ocasioes aquele exame e devido).
+ *
+ * Sugestao e o limite do que o planejamento pode dar: ele diz o que DEVERIA ter
+ * sido feito. Quais foram realizados de fato, em que data e com que resultado,
+ * quem preenche e quem lancou - por isso a data e o resultado saem em branco.
+ */
+export function exameSugeridosParaAso(
+  colaborador: Employee,
+  protocolos: any[],
+  tipoDeAso: EmployeeASOHistory['aso_type']
+): Array<Omit<EmployeeExamResult, 'id' | 'result' | 'exam_date'>> {
+  const lista = Array.isArray(protocolos) ? protocolos : [];
+
+  return lista
+    .filter((p) => p?.status !== 'INACTIVE')
+    .filter((p) => p?.client_id === colaborador.client_id)
+    .filter((p) => !colaborador.ghe_id || !p?.ghe_id || p.ghe_id === colaborador.ghe_id)
+    .filter((p) => !Array.isArray(p?.triggers) || p.triggers.length === 0 || p.triggers.includes(tipoDeAso))
+    .map((p) => ({
+      // O codigo vem do protocolo cadastrado pelo usuario, e costuma estar
+      // gravado como "0295 - Audiometria": o eSocial quer so o codigo.
+      exam_code_table_27: extrairCodigoTabela24(p.exam_code_table_27),
+      exam_name: p.exam_name || '',
+      procedure_type: sugerirTipoDeProcedimento(p.exam_name || ''),
+      protocol_id: p.id,
+    }));
 }
 
 /** Junta pendencias iguais, para a tela nao repetir a mesma frase N vezes. */
