@@ -129,6 +129,10 @@ export const ESocialConfigView: React.FC<ESocialConfigViewProps> = ({ onBack }) 
 
   const cert = esocialConfig.certificate;
   const isCertValid = cert.status === 'VALID';
+  // O sistema nao le o .pfx. 'NAO_VERIFICADO' significa arquivo anexado e
+  // conteudo nao conferido - diferente de invalido, e diferente de valido.
+  const certAnexado = Boolean(cert.file_name);
+  const certNaoVerificado = cert.status === 'NAO_VERIFICADO';
 
   return (
     <div className="space-y-6 pb-16">
@@ -205,49 +209,75 @@ export const ESocialConfigView: React.FC<ESocialConfigViewProps> = ({ onBack }) 
               </div>
 
               <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border ${
-                isCertValid 
-                  ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' 
-                  : 'bg-rose-500/10 text-rose-400 border-rose-500/30'
+                isCertValid
+                  ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
+                  : certNaoVerificado
+                    ? 'bg-amber-500/10 text-amber-400 border-amber-500/30'
+                    : 'bg-rose-500/10 text-rose-400 border-rose-500/30'
               }`}>
-                {isCertValid ? '✅ Ativo e Válido' : '⚠️ Inválido ou Expirado'}
+                {isCertValid
+                  ? '✅ Ativo e Válido'
+                  : certNaoVerificado
+                    ? '📎 Anexado — conteúdo não verificado'
+                    : certAnexado ? '⚠️ Inválido ou Expirado' : '⚠️ Não configurado'}
               </span>
             </div>
 
             {/* Certificate Details Info Box */}
             <div className="bg-slate-950/70 border border-slate-800/80 rounded-2xl p-4 space-y-3">
               <div className="flex items-start justify-between">
-                <div>
-                  <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Titular / Subject</span>
-                  <div className="text-sm font-bold text-white mt-0.5">{cert.subject_name}</div>
-                  <div className="text-xs text-indigo-300 font-mono mt-0.5">CNPJ: {cert.subject_cnpj}</div>
+                <div className="min-w-0">
+                  <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Arquivo anexado</span>
+                  <div className="text-sm font-bold text-white mt-0.5 flex items-center break-all">
+                    <FileCode2 className="w-3.5 h-3.5 mr-1.5 shrink-0" />
+                    {cert.file_name || 'Nenhum arquivo anexado'}
+                  </div>
                 </div>
-                <span className="text-xs px-2.5 py-1 bg-slate-800 text-slate-300 rounded-lg border border-slate-700 font-mono">
+                <span className="text-xs px-2.5 py-1 bg-slate-800 text-slate-300 rounded-lg border border-slate-700 font-mono shrink-0">
                   {cert.certificate_type}
                 </span>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-slate-800/60 text-xs">
-                <div>
-                  <span className="text-slate-500">Autoridade Certificadora:</span>
-                  <div className="text-slate-200 font-medium">{cert.issuer_name}</div>
+              {/* Titular, emissor, serie e validade so aparecem se tiverem sido
+                  LIDOS do certificado. Antes eram preenchidos no upload sem
+                  abrir o arquivo, e a tela os exibia como fato. */}
+              {certNaoVerificado ? (
+                <div className="pt-2 border-t border-slate-800/60 text-xs text-amber-200/90 space-y-1">
+                  <p className="font-semibold text-amber-300">Conteúdo do certificado não verificado</p>
+                  <p>
+                    O PrevSafe guarda o arquivo, mas não abre o .PFX/.P12: titular, autoridade
+                    certificadora, número de série e validade não são lidos aqui, e o sistema não
+                    assina eventos com este certificado.
+                  </p>
+                  <p>
+                    Confira esses dados junto à sua Autoridade Certificadora ou no portal do eSocial
+                    antes da transmissão.
+                  </p>
                 </div>
-                <div>
-                  <span className="text-slate-500">Número de Série:</span>
-                  <div className="text-slate-200 font-mono">{cert.serial_number}</div>
-                </div>
-                <div>
-                  <span className="text-slate-500">Validade Até:</span>
-                  <div className="text-slate-200 font-medium">
-                    {new Date(cert.valid_until).toLocaleDateString('pt-BR')} ({cert.days_remaining} dias restantes)
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-slate-800/60 text-xs">
+                  <div>
+                    <span className="text-slate-500">Titular / Subject:</span>
+                    <div className="text-slate-200 font-medium">{cert.subject_name || '—'}</div>
+                  </div>
+                  <div>
+                    <span className="text-slate-500">Autoridade Certificadora:</span>
+                    <div className="text-slate-200 font-medium">{cert.issuer_name || '—'}</div>
+                  </div>
+                  <div>
+                    <span className="text-slate-500">Número de Série:</span>
+                    <div className="text-slate-200 font-mono">{cert.serial_number || '—'}</div>
+                  </div>
+                  <div>
+                    <span className="text-slate-500">Validade Até:</span>
+                    <div className="text-slate-200 font-medium">
+                      {cert.valid_until
+                        ? `${new Date(cert.valid_until).toLocaleDateString('pt-BR')} (${cert.days_remaining} dias restantes)`
+                        : '—'}
+                    </div>
                   </div>
                 </div>
-                <div>
-                  <span className="text-slate-500">Arquivo Carregado:</span>
-                  <div className="text-emerald-400 font-mono flex items-center">
-                    <FileCode2 className="w-3.5 h-3.5 mr-1" /> {cert.file_name}
-                  </div>
-                </div>
-              </div>
+              )}
             </div>
 
             {/* Upload PFX Drag & Drop */}
@@ -328,7 +358,7 @@ export const ESocialConfigView: React.FC<ESocialConfigViewProps> = ({ onBack }) 
                   className="px-4 py-2.5 bg-indigo-600/80 hover:bg-indigo-600 text-white rounded-xl text-xs font-semibold transition flex items-center space-x-1.5 disabled:opacity-50"
                 >
                   <RefreshCw className={`w-3.5 h-3.5 ${isTestingCert ? 'animate-spin' : ''}`} />
-                  <span>{isTestingCert ? 'Validando...' : 'Testar Senha & Validade'}</span>
+                  <span>{isTestingCert ? 'Verificando...' : 'Verificar certificado'}</span>
                 </button>
               </div>
 
@@ -345,7 +375,7 @@ export const ESocialConfigView: React.FC<ESocialConfigViewProps> = ({ onBack }) 
                   )}
                   <div>
                     <div className="font-semibold">{certTestResult.message}</div>
-                    {certTestResult.details && (
+                    {certTestResult.details?.serial_number && (
                       <div className="text-[11px] text-slate-300 mt-1 space-y-0.5">
                         <div>Série: {certTestResult.details.serial_number}</div>
                         <div>Emissor: {certTestResult.details.issuer_name}</div>

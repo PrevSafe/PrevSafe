@@ -124,7 +124,10 @@ export async function lookupCompanyData(
   // 1. Verifica no Mock Local Verificado (resposta imediata)
   if (VERIFIED_ENTITIES_MOCK[cleanDigits]) {
     const mock = VERIFIED_ENTITIES_MOCK[cleanDigits];
-    const cnae = mock.main_cnae || '25.11-0-00';
+    // Sem CNAE no registro, a consulta NAO inventa um: '25.11-0-00' faria a
+    // busca por CNPJ devolver o grau de risco de uma metalurgica para uma
+    // empresa qualquer - a falha que apareceu com o CNAE 86.50-0-04.
+    const cnae = mock.main_cnae || '';
     const nr4 = lookupRiskDegreeByCnae(cnae);
 
     return {

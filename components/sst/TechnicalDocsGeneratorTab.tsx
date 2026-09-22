@@ -34,6 +34,7 @@ import {
   exportPericulosidadeLaudoPdf
 } from '@/lib/pdfExportService';
 import { DocumentPreviewModal, PreviewDocType } from '@/lib/../components/sst/DocumentPreviewModal';
+import { montarCorpoInsalubridade, montarCorpoPericulosidade } from '@/lib/laudoDados';
 
 interface TechnicalDocsGeneratorTabProps {
   selectedClientId: string;
@@ -71,6 +72,13 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
   const clientJobs = hierarchyJobs.filter(j => !selectedClientId || j.client_id === selectedClientId);
   const clientGhes = ghes.filter(g => !selectedClientId || g.client_id === selectedClientId);
   const clientRisks = environmentalRisks.filter(r => clientGhes.some(g => g.id === r.ghe_id));
+
+  // As tabelas de enquadramento dos laudos vinham escritas no codigo, com
+  // medicoes ("Encontrado: 83.5 dBA") e conclusoes periciais
+  // ("INSALUBRE GRAU MÁXIMO (40% - Súmula 448 TST)") que nao saiam de
+  // avaliacao nenhuma. Agora vem do inventario, pela mesma funcao do PDF.
+  const corpoInsalubridade = montarCorpoInsalubridade(clientRisks, clientGhes);
+  const corpoPericulosidade = montarCorpoPericulosidade(clientRisks, clientGhes);
   const clientEmployees = employees.filter(e => !selectedClientId || e.client_id === selectedClientId);
 
   // Mesma fonte de verdade do preview/PDF: Configurações > Responsabilidade Técnica.
@@ -394,8 +402,10 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
             </div>
             <div className="text-right text-xs text-slate-400 space-y-1">
               <div>Vigência: <span className="text-teal-400 font-semibold">2026 / 2027</span></div>
-              <div>Grau de Risco: <span className="text-slate-200 font-bold">{clientObj?.risk_degree || 3} (NR-04)</span></div>
-              <div>CNAE: <span className="text-slate-200 font-mono">{clientObj?.main_cnae || '41.20-4-00'}</span></div>
+              <div>Grau de Risco: <span className="text-slate-200 font-bold">
+                {clientObj?.risk_degree ? `${clientObj.risk_degree} (NR-04)` : 'não classificado'}
+              </span></div>
+              <div>CNAE: <span className="text-slate-200 font-mono">{clientObj?.main_cnae || 'não informado'}</span></div>
             </div>
           </div>
 
@@ -753,27 +763,23 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/60">
-                <tr className="hover:bg-slate-900/40">
-                  <td className="py-3 px-4 font-bold text-slate-100">GHE Operacional</td>
-                  <td className="py-3 px-4 text-slate-300">Ruído Contínuo ou Intermitente</td>
-                  <td className="py-3 px-4 font-mono text-amber-400">Anexo nº 01</td>
-                  <td className="py-3 px-4">LT: 85 dBA (Encontrado: 83.5 dBA)</td>
-                  <td className="py-3 px-4 text-emerald-400 font-semibold">NÃO INSALUBRE (EPI CA 14235 Eficaz)</td>
-                </tr>
-                <tr className="hover:bg-slate-900/40">
-                  <td className="py-3 px-4 font-bold text-slate-100">GHE Soldagem / Manutenção</td>
-                  <td className="py-3 px-4 text-slate-300">Fumos Metálicos e Radiação Não-Ionizante</td>
-                  <td className="py-3 px-4 font-mono text-amber-400">Anexo nº 11 e 13</td>
-                  <td className="py-3 px-4">LT: 5.0 mg/m³ (Encontrado: 2.1 mg/m³)</td>
-                  <td className="py-3 px-4 text-emerald-400 font-semibold">NÃO INSALUBRE (EPC Exaustor + Máscara PFF2)</td>
-                </tr>
-                <tr className="hover:bg-slate-900/40">
-                  <td className="py-3 px-4 font-bold text-slate-100">GHE Higienização e Limpeza</td>
-                  <td className="py-3 px-4 text-slate-300">Agentes Biológicos (Instalações Sanitárias de Uso Público)</td>
-                  <td className="py-3 px-4 font-mono text-amber-400">Anexo nº 14</td>
-                  <td className="py-3 px-4">Avaliação Qualitativa</td>
-                  <td className="py-3 px-4 text-rose-400 font-bold">INSALUBRE GRAU MÁXIMO (40% - Súmula 448 TST)</td>
-                </tr>
+                {corpoInsalubridade.linhas.length ? (
+                  corpoInsalubridade.linhas.map((linha, i) => (
+                    <tr key={i} className="hover:bg-slate-900/40">
+                      <td className="py-3 px-4 font-bold text-slate-100">{linha[0]}</td>
+                      <td className="py-3 px-4 text-slate-300">{linha[1]}</td>
+                      <td className="py-3 px-4 font-mono text-amber-400">{linha[2]}</td>
+                      <td className="py-3 px-4">{linha[3]}</td>
+                      <td className="py-3 px-4 font-semibold">{linha[4]}</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={5} className="py-6 px-4 text-center text-slate-500">
+                      Inventário de riscos vazio — nenhum agente foi periciado.
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
@@ -813,27 +819,23 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/60">
-                <tr className="hover:bg-slate-900/40">
-                  <td className="py-3 px-4 font-bold text-slate-100">GHE Eletricista de Manutenção</td>
-                  <td className="py-3 px-4 text-slate-300">Intervenção em Sistema Elétrico de Potência (SEP) e Baixa Tensão Desenergizada com risco acidental</td>
-                  <td className="py-3 px-4 font-mono text-rose-400">Anexo nº 04</td>
-                  <td className="py-3 px-4">Subestação, transformadores e quadros gerais</td>
-                  <td className="py-3 px-4 text-rose-400 font-bold">FAZ JUS AO ADICIONAL DE 30% (PERICULOSO)</td>
-                </tr>
-                <tr className="hover:bg-slate-900/40">
-                  <td className="py-3 px-4 font-bold text-slate-100">GHE Almoxarifado de Inflamáveis</td>
-                  <td className="py-3 px-4 text-slate-300">Armazenamento e abastecimento de líquidos inflamáveis &gt; 200L</td>
-                  <td className="py-3 px-4 font-mono text-rose-400">Anexo nº 02</td>
-                  <td className="py-3 px-4">Bacia de contenção e raio de 7,5 metros dos pontos de descarga</td>
-                  <td className="py-3 px-4 text-rose-400 font-bold">FAZ JUS AO ADICIONAL DE 30% (PERICULOSO)</td>
-                </tr>
-                <tr className="hover:bg-slate-900/40">
-                  <td className="py-3 px-4 font-bold text-slate-100">GHE Linha de Montagem Industrial</td>
-                  <td className="py-3 px-4 text-slate-300">Montagem mecânica manual sem inflamáveis ou energia de risco</td>
-                  <td className="py-3 px-4 text-slate-500">Sem enquadramento</td>
-                  <td className="py-3 px-4 text-slate-400">Fora de área de risco classificada</td>
-                  <td className="py-3 px-4 text-emerald-400 font-semibold">NÃO PERICULOSO (Sem adicional)</td>
-                </tr>
+                {corpoPericulosidade.linhas.length ? (
+                  corpoPericulosidade.linhas.map((linha, i) => (
+                    <tr key={i} className="hover:bg-slate-900/40">
+                      <td className="py-3 px-4 font-bold text-slate-100">{linha[0]}</td>
+                      <td className="py-3 px-4 text-slate-300">{linha[1]}</td>
+                      <td className="py-3 px-4 font-mono text-rose-400">{linha[2]}</td>
+                      <td className="py-3 px-4">{linha[3]}</td>
+                      <td className="py-3 px-4 font-semibold">{linha[4]}</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={5} className="py-6 px-4 text-center text-slate-500">
+                      Inventário de riscos vazio — nenhuma atividade foi periciada.
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>

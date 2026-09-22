@@ -354,7 +354,7 @@ export const GlobalCommandPalette: React.FC<GlobalCommandPaletteProps> = ({
     return clients.slice(0, 8).map(client => ({
       id: `client-${client.id}`,
       title: client.trade_name || client.legal_name,
-      subtitle: `CNPJ: ${client.document_number || 'Não informado'} • Grau de Risco: ${client.risk_degree || 2} • ${client.cnae_description || 'Indústria'}`,
+      subtitle: `CNPJ: ${client.document_number || 'Não informado'} • Grau de Risco: ${client.risk_degree || 'não classificado'} • ${client.cnae_description || 'atividade não informada'}`,
       category: 'CLIENTS' as const,
       icon: Building2,
       badge: 'Empresa',

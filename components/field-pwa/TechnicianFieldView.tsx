@@ -43,6 +43,7 @@ import {
   Zap
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { novoId } from '@/lib/datas';
 import {
   obterLocalizacao,
   consultarPermissaoLocalizacao,
@@ -403,7 +404,7 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
     if (!newHazard.trim()) return;
 
     const newItem: HazardCheckItem = {
-      id: `chk-${Date.now()}`,
+      id: novoId('chk'),
       category: newCategory,
       hazard: newHazard,
       nr: newNr,

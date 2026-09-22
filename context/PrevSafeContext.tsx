@@ -2182,7 +2182,9 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     const osNumber = `OS-${new Date().getFullYear()}-${String(count).padStart(6, '0')}`;
     const startDate = dataDeHoje();
     const newOsId = `os-${Date.now()}`;
-    const techName = data.technical_responsible_name || 'Eng. Eduardo Vasconcelos';
+    // Sem responsavel informado, fica o da organizacao; sem ele, vazio. O
+    // padrao era um nome inventado, que ia parar no S-2240 e nos laudos.
+    const techName = data.technical_responsible_name || organization.technical_responsible_name || '';
 
     const stages: ServiceStage[] = template.stages.map((stg, stgIdx) => {
       const stageId = `stg-${newOsId}-${stgIdx + 1}`;
@@ -3929,50 +3931,43 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
+  /**
+   * Confere o que da para conferir no certificado anexado.
+   *
+   * O QUE HAVIA: a funcao comparava `valid_until` com a data de hoje e
+   * respondia "Certificado Digital ICP-Brasil A1 autenticado com sucesso!".
+   * Mas `valid_until` era um valor que o proprio sistema tinha escrito no
+   * upload (hoje + 1 ano), e o emissor, o titular e o numero de serie tambem.
+   * O comentario no codigo dizia "Simulate real ICP-Brasil X.509 PFX
+   * extraction". A senha era exigida e nunca usada para abrir o arquivo.
+   *
+   * O sistema nao le PKCS#12 e nao assina nada com este certificado. Entao ele
+   * nao tem como afirmar titularidade, cadeia ICP-Brasil nem validade - e
+   * dizer que "autenticou" e afirmar justamente o que nao foi feito.
+   */
   const testCertificateValidation = useCallback((password: string): { success: boolean; message: string; details?: any } => {
     if (!password || password.trim().length === 0) {
       return { success: false, message: 'Senha do certificado digital .PFX/.P12 não informada.' };
     }
-    // Simulate real ICP-Brasil X.509 PFX extraction
-    const now = new Date();
-    const certValidUntil = new Date(esocialConfig.certificate.valid_until);
-    const diffDays = Math.ceil((certValidUntil.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-    const isValid = diffDays > 0;
 
-    const details = {
-      subject_name: esocialConfig.certificate.subject_name,
-      subject_cnpj: esocialConfig.certificate.subject_cnpj,
-      issuer_name: esocialConfig.certificate.issuer_name,
-      serial_number: esocialConfig.certificate.serial_number,
-      valid_from: esocialConfig.certificate.valid_from,
-      valid_until: esocialConfig.certificate.valid_until,
-      days_remaining: diffDays,
-      status: diffDays <= 0 ? 'EXPIRED' : diffDays <= 30 ? 'EXPIRING' : 'VALID'
-    };
+    const cert = esocialConfig.certificate;
+    if (!cert?.file_name) {
+      return { success: false, message: 'Nenhum certificado anexado. Anexe o arquivo .PFX ou .P12 antes de testar.' };
+    }
 
     setEsocialConfig(prev => ({
       ...prev,
-      certificate: {
-        ...prev.certificate,
-        has_password: true,
-        last_tested_at: new Date().toISOString(),
-        status: details.status as any,
-        days_remaining: diffDays
-      }
+      certificate: { ...prev.certificate, has_password: true, last_tested_at: new Date().toISOString() }
     }));
 
-    if (!isValid) {
-      return {
-        success: false,
-        message: `Certificado digital expirou em ${certValidUntil.toLocaleDateString('pt-BR')}. Renove com a Autoridade Certificadora.`,
-        details
-      };
-    }
-
     return {
-      success: true,
-      message: `Certificado Digital ICP-Brasil A1 autenticado com sucesso! Titular: ${details.subject_name} (CNPJ ${details.subject_cnpj}). Validade: ${diffDays} dias restantes.`,
-      details
+      success: false,
+      message:
+        `O arquivo "${cert.file_name}" está anexado, mas o PrevSafe não lê o conteúdo do certificado: ` +
+        'ele não extrai titular, emissor, número de série nem validade, e não assina eventos com ele. ' +
+        'Confira a validade e a titularidade junto à sua Autoridade Certificadora, ou no ' +
+        'próprio portal do eSocial, antes de contar com ele para a transmissão.',
+      details: { file_name: cert.file_name, status: 'NAO_VERIFICADO' }
     };
   }, [esocialConfig.certificate]);
 
@@ -3982,24 +3977,20 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
       return { success: false, message: 'Formato inválido. O arquivo do Certificado Digital A1 deve possuir extensão .PFX ou .P12.' };
     }
 
-    const today = new Date();
-    const validUntil = new Date(today.getFullYear() + 1, today.getMonth(), today.getDate()).toISOString();
-
+    // So o que realmente se sabe: o nome do arquivo, se veio senha e quando foi
+    // anexado. Os demais campos vinham do nada - emissor "AC CERTISIGN MULTIPLA
+    // G7 - ICP-BRASIL v5" escrito no codigo, numero de serie tirado do relogio,
+    // titular montado com o CNPJ da organizacao e validade de hoje + 1 ano, com
+    // status 'VALID'. O arquivo nunca foi aberto: renomear um .txt para .pfx
+    // produzia um "certificado ICP-Brasil valido por 365 dias".
     setEsocialConfig(prev => ({
       ...prev,
       certificate: {
         file_name: fileName,
         certificate_type: 'A1_PFX',
-        subject_name: `${organization.name || organization.legal_name}:${organization.document_number.replace(/\D/g, '')}`,
-        subject_cnpj: organization.document_number,
-        issuer_name: 'AC CERTISIGN MULTIPLA G7 - ICP-BRASIL v5',
-        serial_number: `CERT-${Date.now().toString(16).toUpperCase()}`,
-        valid_from: today.toISOString(),
-        valid_until: validUntil,
-        days_remaining: 365,
-        status: 'VALID',
+        status: 'NAO_VERIFICADO',
         has_password: Boolean(password),
-        last_tested_at: new Date().toISOString()
+        uploaded_at: new Date().toISOString()
       },
       last_sync_at: new Date().toISOString()
     }));
@@ -4008,7 +3999,9 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
 
     return {
       success: true,
-      message: `Certificado A1 "${fileName}" carregado e associado à organização com sucesso.`
+      message:
+        `Arquivo "${fileName}" anexado à organização. O PrevSafe guarda o arquivo, mas não lê ` +
+        'o certificado: titular, emissor e validade não são verificados aqui.'
     };
   }, [organization, logAudit]);
 
@@ -6001,9 +5994,13 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
       issue_date: todayStr,
       validity_start_date: todayStr,
       employer_name: client?.legal_name || 'Razão Social da Empresa',
-      employer_document: client?.document_number || '00.000.000/0001-00',
-      employer_cnae: client?.main_cnae || 'CNAE Principal',
-      employer_risk_grade: client?.risk_degree || 2,
+      // A OS e assinada pelo trabalhador e vale como prova de que ele foi
+      // cientificado dos riscos. Os fallbacks eram CNPJ 00.000.000/0001-00 e
+      // grau 2 - um documento assinado declarando um CNPJ que nao existe e um
+      // grau de risco que ninguem apurou.
+      employer_document: client?.document_number || 'Não informado',
+      employer_cnae: client?.main_cnae || 'Não informado',
+      employer_risk_grade: client?.risk_degree || null,
       establishment_address: unit?.address ? `${unit.address}, ${unit.city}/${unit.state}` : (client?.address ? `${client.address}, ${client.city}/${client.state}` : 'Endereço da Unidade'),
       employee_name: emp.name,
       employee_cpf: emp.cpf,
@@ -6054,8 +6051,11 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
       legal_framework: 'NR-01 (Portaria MTP nº 4.219/2022, subitem 1.4.1 e 1.4.2), NR-06, NR-07, NR-09, NR-12 e Artigo 157, inciso II c/c Artigo 158 da Consolidação das Leis do Trabalho (CLT).',
       employee_signed: false,
       signature_method: 'PHYSICAL_MANUAL',
-      responsible_engineer_name: 'Eng. Eduardo Vasconcelos',
-      responsible_engineer_registration: 'CREA-RJ 201812345-D / Reg. MTE Especialista SST',
+      // A OS e assinada pelo trabalhador e nomeia quem responde tecnicamente
+      // por ela. O nome e o CREA vinham escritos no codigo: toda OS de todo
+      // cliente saia assinada por um engenheiro que nao existe.
+      responsible_engineer_name: organization.technical_responsible_name || '',
+      responsible_engineer_registration: organization.technical_responsible_council || '',
       status: 'ACTIVE',
       notes: 'Ordem de Serviço gerada automaticamente pelo motor de conformidade NR-01 PrevSafe.',
       ...customOptions
@@ -6205,12 +6205,16 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
       start_date: today,
       end_date: today,
       location_or_platform: targetClient?.address ? `Sala de Integração SESMT - ${targetClient.trade_name}` : 'Auditório Central SST',
-      instructor_name: 'Carlos Alberto Ferreira',
-      instructor_qualification: 'Técnico em Segurança do Trabalho (MTE/RJ 0019842)',
-      instructor_registration_number: 'Reg. MTE nº 0019842',
-      technical_supervisor_name: 'Eng. Eduardo Vasconcelos',
-      technical_supervisor_qualification: 'Engenheiro de Segurança do Trabalho',
-      technical_supervisor_registration: 'CREA-RJ 201812345-D',
+      // Instrutor e supervisor tecnico vinham escritos no codigo, com registro
+      // MTE e CREA inventados. Um certificado de treinamento e prova de
+      // capacitacao perante a fiscalizacao: quem ministrou precisa ser quem
+      // ministrou. Ficam em branco ate serem preenchidos.
+      instructor_name: '',
+      instructor_qualification: '',
+      instructor_registration_number: '',
+      technical_supervisor_name: organization.technical_responsible_name || '',
+      technical_supervisor_qualification: organization.technical_responsible_title || '',
+      technical_supervisor_registration: organization.technical_responsible_council || '',
       nr_framework: 'NR-01 item 1.7, NR-06, NR-12, NR-17 e Artigo 157 da CLT.',
       program_content_syllabus: [
         '1. Apresentação da empresa e Políticas de Segurança e Saúde Ocupacional',

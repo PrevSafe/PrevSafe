@@ -80,8 +80,8 @@ export const LeadsOpportunitiesView: React.FC<{ onNavigate: (view: string) => vo
       phone: '',
       source: 'INDICAÇÃO',
       status: 'QUALIFIED',
-      cnae: '25.11-0-00',
-      estimated_employees: 25,
+      cnae: '',
+      estimated_employees: 0,
       notes: ''
     });
     setShowNewLeadModal(true);

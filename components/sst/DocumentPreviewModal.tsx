@@ -42,6 +42,7 @@ import {
 import { SSTElectronicSignatureModal } from './SSTElectronicSignatureModal';
 import { SSTDocumentSignature } from '@/types';
 import { DECLARACAO_DE_INTEGRIDADE } from '@/lib/documentoHash';
+import { montarCorpoInsalubridade, montarCorpoPericulosidade } from '@/lib/laudoDados';
 
 export type PreviewDocType = 
   | 'PGR' 
@@ -108,8 +109,12 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
 
   const clientName = client?.trade_name || client?.legal_name || 'Empresa Cliente';
   const clientDoc = client?.document_number || 'Não informado';
-  const clientCnae = client?.main_cnae || '41.20-4-00';
-  const clientRiskDegree = client?.risk_degree || 3;
+  // O fallback era CNAE 41.20-4-00 (construcao de edificios) e grau 3: um
+  // documento tecnico de um cliente sem cadastro saia afirmando a atividade e o
+  // grau de risco de OUTRA empresa. O grau de risco define dimensionamento de
+  // SESMT e de CIPA - nao e um rotulo cosmetico.
+  const clientCnae = client?.main_cnae || 'Não informado';
+  const clientRiskDegree = client?.risk_degree || null;
   const issueDate = new Date().toLocaleDateString('pt-BR');
   const validityYear = `${new Date().getFullYear()} / ${new Date().getFullYear() + 1}`;
   // Este numero era fixo no codigo: o MESMO "SHA256: 7f8a9e2d..." em todo
@@ -128,6 +133,19 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
     s => s.client_id === client?.id && (s.document_type as string) === docType
   );
   const digitalHash = existingEnvelope?.document_sha256 || null;
+
+  // O corpo dos laudos periciais vem do inventario de riscos real - a mesma
+  // fonte que o PDF usa. As tabelas abaixo eram escritas no codigo, com
+  // medicoes ("Encontrado: 83.5 dBA"), anexos da NR-15 e conclusoes periciais
+  // ("INSALUBRE GRAU MÁXIMO (40% CLT)", "FAZ JUS A 30%") que nao vinham de
+  // avaliacao nenhuma. A pre-visualizacao e o que o cliente ve antes de
+  // aprovar o laudo.
+  const corpoLaudo =
+    docType === 'INSALUBRIDADE'
+      ? montarCorpoInsalubridade(risks, ghes)
+      : docType === 'PERICULOSIDADE'
+        ? montarCorpoPericulosidade(risks, ghes)
+        : null;
 
   const handleOpenSignature = () => {
     setIsSignatureModalOpen(true);
@@ -389,7 +407,10 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
                     <div><strong>Razão Social:</strong> {client?.legal_name || clientName}</div>
                     <div><strong>Nome Fantasia:</strong> {clientName}</div>
                     <div><strong>CNPJ / CAEPF:</strong> <span className="font-mono">{clientDoc}</span></div>
-                    <div><strong>CNAE Principal:</strong> {clientCnae} • <strong>Grau de Risco:</strong> {clientRiskDegree} (NR-04)</div>
+                    <div>
+                      <strong>CNAE Principal:</strong> {clientCnae} • <strong>Grau de Risco:</strong>{' '}
+                      {clientRiskDegree ? `${clientRiskDegree} (NR-04)` : 'não classificado (NR-04)'}
+                    </div>
                     <div><strong>Endereço:</strong> {client?.address || 'Av. Industrial'}, {client?.city || 'São Paulo'}/{client?.state || 'SP'}</div>
                   </div>
                 </div>
@@ -662,27 +683,23 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-200 text-slate-800">
-                          <tr className="hover:bg-slate-50">
-                            <td className="p-2.5 font-bold border-r border-slate-200">GHE Operacional</td>
-                            <td className="p-2.5 border-r border-slate-200">Ruído Contínuo</td>
-                            <td className="p-2.5 font-mono text-amber-800 border-r border-slate-200">Anexo 1</td>
-                            <td className="p-2.5 border-r border-slate-200">LT: 85 dBA (Encontrado: 83.5 dBA)</td>
-                            <td className="p-2.5 text-emerald-700 font-bold">NÃO INSALUBRE (EPI CA 14235 Eficaz)</td>
-                          </tr>
-                          <tr className="hover:bg-slate-50">
-                            <td className="p-2.5 font-bold border-r border-slate-200">GHE Soldagem / Manutenção</td>
-                            <td className="p-2.5 border-r border-slate-200">Fumos Metálicos e Radiação UV</td>
-                            <td className="p-2.5 font-mono text-amber-800 border-r border-slate-200">Anexo 11/13</td>
-                            <td className="p-2.5 border-r border-slate-200">LT: 5.0 mg/m³ (Encontrado: 2.1 mg/m³)</td>
-                            <td className="p-2.5 text-emerald-700 font-bold">NÃO INSALUBRE (EPC Exaustão + PFF2)</td>
-                          </tr>
-                          <tr className="hover:bg-slate-50">
-                            <td className="p-2.5 font-bold border-r border-slate-200">GHE Limpeza Sanitária</td>
-                            <td className="p-2.5 border-r border-slate-200">Agentes Biológicos (Uso Público)</td>
-                            <td className="p-2.5 font-mono text-amber-800 border-r border-slate-200">Anexo 14</td>
-                            <td className="p-2.5 border-r border-slate-200">Qualitativa</td>
-                            <td className="p-2.5 text-rose-700 font-bold">INSALUBRE GRAU MÁXIMO (40% CLT)</td>
-                          </tr>
+                          {corpoLaudo?.linhas.length ? (
+                            corpoLaudo.linhas.map((linha, i) => (
+                              <tr key={i} className="hover:bg-slate-50">
+                                <td className="p-2.5 font-bold border-r border-slate-200">{linha[0]}</td>
+                                <td className="p-2.5 border-r border-slate-200">{linha[1]}</td>
+                                <td className="p-2.5 font-mono text-amber-800 border-r border-slate-200">{linha[2]}</td>
+                                <td className="p-2.5 border-r border-slate-200">{linha[3]}</td>
+                                <td className="p-2.5 font-bold">{linha[4]}</td>
+                              </tr>
+                            ))
+                          ) : (
+                            <tr>
+                              <td colSpan={5} className="p-4 text-center text-slate-500">
+                                Inventário de riscos vazio — nenhum agente foi periciado.
+                              </td>
+                            </tr>
+                          )}
                         </tbody>
                       </table>
                     </div>
@@ -713,27 +730,23 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-200 text-slate-800">
-                          <tr className="hover:bg-slate-50">
-                            <td className="p-2.5 font-bold border-r border-slate-200">GHE Eletricista</td>
-                            <td className="p-2.5 border-r border-slate-200">Intervenção em Sistema Elétrico de Potência (SEP)</td>
-                            <td className="p-2.5 font-mono text-rose-800 border-r border-slate-200">Anexo 4</td>
-                            <td className="p-2.5 border-r border-slate-200">Subestações e painéis de força</td>
-                            <td className="p-2.5 text-rose-700 font-bold">FAZ JUS A 30% (PERICULOSO)</td>
-                          </tr>
-                          <tr className="hover:bg-slate-50">
-                            <td className="p-2.5 font-bold border-r border-slate-200">GHE Almoxarifado Inflamáveis</td>
-                            <td className="p-2.5 border-r border-slate-200">Armazenamento líquidos inflamáveis &gt; 200L</td>
-                            <td className="p-2.5 font-mono text-rose-800 border-r border-slate-200">Anexo 2</td>
-                            <td className="p-2.5 border-r border-slate-200">Bacia de contenção e raio de 7,5m</td>
-                            <td className="p-2.5 text-rose-700 font-bold">FAZ JUS A 30% (PERICULOSO)</td>
-                          </tr>
-                          <tr className="hover:bg-slate-50">
-                            <td className="p-2.5 font-bold border-r border-slate-200">GHE Linha de Produção</td>
-                            <td className="p-2.5 border-r border-slate-200">Operação mecânica contínua</td>
-                            <td className="p-2.5 text-slate-500 border-r border-slate-200">Sem enquadramento</td>
-                            <td className="p-2.5 border-r border-slate-200">Fora de área de risco</td>
-                            <td className="p-2.5 text-emerald-700 font-bold">NÃO PERICULOSO</td>
-                          </tr>
+                          {corpoLaudo?.linhas.length ? (
+                            corpoLaudo.linhas.map((linha, i) => (
+                              <tr key={i} className="hover:bg-slate-50">
+                                <td className="p-2.5 font-bold border-r border-slate-200">{linha[0]}</td>
+                                <td className="p-2.5 border-r border-slate-200">{linha[1]}</td>
+                                <td className="p-2.5 font-mono text-rose-800 border-r border-slate-200">{linha[2]}</td>
+                                <td className="p-2.5 border-r border-slate-200">{linha[3]}</td>
+                                <td className="p-2.5 font-bold">{linha[4]}</td>
+                              </tr>
+                            ))
+                          ) : (
+                            <tr>
+                              <td colSpan={5} className="p-4 text-center text-slate-500">
+                                Inventário de riscos vazio — nenhuma atividade foi periciada.
+                              </td>
+                            </tr>
+                          )}
                         </tbody>
                       </table>
                     </div>

@@ -61,7 +61,9 @@ import { ESocialPdfReportModal } from './ESocialPdfReportModal';
 import { ESocialConfigView } from './ESocialConfigView';
 import { SSTDeadlineAlertBanner } from './SSTDeadlineAlertBanner';
 import { exportESocialEventLogsPdf } from '@/lib/pdfExportService';
-import { dataDeHoje } from '@/lib/datas';
+import { dataDeHoje, novoId } from '@/lib/datas';
+import { conferirDocumento } from '@/lib/validacoesBr';
+import { riscosDoColaborador, montarFatorDeRisco } from '@/lib/esocialDados';
 
 interface ESocialEventsViewProps {
   onNavigate?: (view: string) => void;
@@ -1990,18 +1992,22 @@ const CreateEditEventModal: React.FC<CreateEditEventModalProps> = ({
   onClose,
   onSave
 }) => {
+  const { employees, environmentalRisks } = usePrevSafe();
+
   const [eventType, setEventType] = useState<ESocialEventType>(initialEvent?.event_type || 'S-2240');
   const [clientId, setClientId] = useState<string>(initialEvent?.client_id || clients[0]?.id || '');
   const [workerName, setWorkerName] = useState<string>(initialEvent?.worker_name || '');
   const [workerCpf, setWorkerCpf] = useState<string>(initialEvent?.worker_cpf || '');
   const [workerRegistration, setWorkerRegistration] = useState<string>(initialEvent?.worker_registration || '');
-  const [workerCbo, setWorkerCbo] = useState<string>(initialEvent?.worker_cbo || '7212-15');
-  const [workerRole, setWorkerRole] = useState<string>(initialEvent?.worker_role || 'Operador Industrial');
+  // Vazios. Vinham preenchidos com CBO 7212-15 e "Operador Industrial": quem
+  // nao reparasse gravava o evento com a funcao de outra pessoa.
+  const [workerCbo, setWorkerCbo] = useState<string>(initialEvent?.worker_cbo || '');
+  const [workerRole, setWorkerRole] = useState<string>(initialEvent?.worker_role || '');
 
   // S-2240 State
   const [s2240StartDate, setS2240StartDate] = useState<string>(initialEvent?.ambient_data?.start_date || dataDeHoje());
-  const [s2240Description, setS2240Description] = useState<string>(initialEvent?.ambient_data?.description_activities || 'Atividades operacionais e de manutenção.');
-  const [s2240Environment, setS2240Environment] = useState<string>(initialEvent?.ambient_data?.work_environment || 'Planta Operacional');
+  const [s2240Description, setS2240Description] = useState<string>(initialEvent?.ambient_data?.description_activities || '');
+  const [s2240Environment, setS2240Environment] = useState<string>(initialEvent?.ambient_data?.work_environment || '');
   const [s2240TechName, setS2240TechName] = useState<string>(initialEvent?.ambient_data?.responsible_technician_name || '');
   const [s2240TechCpf, setS2240TechCpf] = useState<string>(initialEvent?.ambient_data?.responsible_technician_cpf || '');
   const [s2240TechCrea, setS2240TechCrea] = useState<string>(initialEvent?.ambient_data?.responsible_technician_crea_crm || '');
@@ -2011,12 +2017,25 @@ const CreateEditEventModal: React.FC<CreateEditEventModalProps> = ({
   const [s2220ExamDate, setS2220ExamDate] = useState<string>(initialEvent?.aso_data?.exam_date || dataDeHoje());
   const [s2220Result, setS2220Result] = useState<'APTO' | 'INAPTO'>(initialEvent?.aso_data?.result || 'APTO');
   const [s2220DocName, setS2220DocName] = useState<string>(initialEvent?.aso_data?.physician_name || '');
-  const [s2220DocCrm, setS2220DocCrm] = useState<string>(initialEvent?.aso_data?.physician_crm || 'CRM-SP 145892');
+  // O CRM identifica o medico que assinou o ASO. Vinha 'CRM-SP 145892'.
+  const [s2220DocCrm, setS2220DocCrm] = useState<string>(initialEvent?.aso_data?.physician_crm || '');
+
+  // Riscos reais do trabalhador, localizados pelo CPF digitado.
+  const fatoresDeRisco = useMemo(() => {
+    const digitos = (workerCpf || '').replace(/\D/g, '');
+    if (digitos.length !== 11) return [];
+
+    const colaborador = employees.find(e => (e.cpf || '').replace(/\D/g, '') === digitos);
+    if (!colaborador) return [];
+
+    return riscosDoColaborador(colaborador, environmentalRisks).map(r => montarFatorDeRisco(r).fator);
+  }, [workerCpf, employees, environmentalRisks]);
 
   // S-2210 State
   const [s2210CatType, setS2210CatType] = useState<any>(initialEvent?.cat_data?.cat_type || 'INICIAL');
   const [s2210AccidentDate, setS2210AccidentDate] = useState<string>(initialEvent?.cat_data?.accident_date || dataDeHoje());
-  const [s2210AccidentTime, setS2210AccidentTime] = useState<string>(initialEvent?.cat_data?.accident_time || '10:00');
+  // A hora do acidente entra na CAT. Vinha '10:00' por padrao.
+  const [s2210AccidentTime, setS2210AccidentTime] = useState<string>(initialEvent?.cat_data?.accident_time || '');
   const [s2210BodyPart, setS2210BodyPart] = useState<string>(initialEvent?.cat_data?.body_part || 'Mão e Dedos');
   const [s2210Agent, setS2210Agent] = useState<string>(initialEvent?.cat_data?.accident_agent || 'Ferramenta manual ou máquina operatriz');
   const [s2210Cid, setS2210Cid] = useState<string>(initialEvent?.cat_data?.cid_code || 'S61 - Ferimento do punho e da mão');
@@ -2024,11 +2043,31 @@ const CreateEditEventModal: React.FC<CreateEditEventModalProps> = ({
 
   // S-3000 State
   const [s3000TargetType, setS3000TargetType] = useState<'S-2210' | 'S-2220' | 'S-2230' | 'S-2240'>(initialEvent?.exclusion_data?.target_event_type || 'S-2240');
-  const [s3000Receipt, setS3000Receipt] = useState<string>(initialEvent?.exclusion_data?.target_receipt_number || '1.2.202608.0000000000000000000-01');
-  const [s3000Reason, setS3000Reason] = useState<string>(initialEvent?.exclusion_data?.exclusion_reason || 'Exclusão de evento enviado com erro no vínculo empregatício.');
+  // O recibo identifica QUAL evento sera excluido no eSocial. Vinha um numero
+  // de recibo pronto no campo: excluir o evento errado e um estrago dificil de
+  // desfazer.
+  const [s3000Receipt, setS3000Receipt] = useState<string>(initialEvent?.exclusion_data?.target_receipt_number || '');
+  const [s3000Reason, setS3000Reason] = useState<string>(initialEvent?.exclusion_data?.exclusion_reason || '');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    // O eSocial recusa o evento com CPF invalido. Conferir aqui poupa a ida e
+    // volta e evita gravar um vinculo em nome de um CPF que nao existe.
+    const confTrab = conferirDocumento(workerCpf, 'CPF');
+    if (!confTrab.valido) {
+      alert(`CPF do trabalhador: ${confTrab.motivo}`);
+      return;
+    }
+
+    if (eventType === 'S-2240' && fatoresDeRisco.length === 0) {
+      alert(
+        'Nenhum risco inventariado foi encontrado para este CPF. O S-2240 declara a exposição ' +
+        'do trabalhador: cadastre o colaborador e o inventário de riscos do GHE dele em SST › ' +
+        'Riscos Ambientais antes de emitir o evento.'
+      );
+      return;
+    }
 
     const payload: any = {
       client_id: clientId,
@@ -2048,23 +2087,12 @@ const CreateEditEventModal: React.FC<CreateEditEventModalProps> = ({
         start_date: s2240StartDate,
         description_activities: s2240Description,
         work_environment: s2240Environment,
-        ambient_risks: [
-          {
-            id: `risk-${Date.now()}`,
-            risk_code_table_24: '01.01.001',
-            category: 'FÍSICO',
-            description: 'Ruído Contínuo NR-15 Anexo 1',
-            intensity_concentration: '86.5 dB(A)',
-            limit_tolerance: '85.0 dB(A)',
-            measurement_unit: 'dB(A)',
-            technique_used: 'Dosimetria NHO-01',
-            epc_effective: false,
-            epi_effective: true,
-            epi_ca_numbers: ['CA 14235'],
-            is_insalubre: true,
-            is_periculoso: false
-          }
-        ],
+        // Os fatores de risco vem do inventario do colaborador, localizado pelo
+        // CPF. Antes esta lista era FIXA: todo S-2240 criado por este
+        // formulario saia declarando ruido de 86,5 dB(A) medido por dosimetria
+        // NHO-01, com EPI CA 14235, insalubre - independentemente do que o
+        // usuario tivesse digitado, e sem que medicao alguma tivesse ocorrido.
+        ambient_risks: fatoresDeRisco,
         responsible_technician_name: s2240TechName,
         responsible_technician_cpf: s2240TechCpf,
         responsible_technician_crea_crm: s2240TechCrea,

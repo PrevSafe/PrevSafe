@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { getClientIp } from '@/lib/clientIp';
+import { conferirDocumento } from '@/lib/validacoesBr';
 import { 
   CipaManagementProcess, 
   CipaCandidate, 
@@ -53,8 +54,11 @@ export const CipaVotingModal: React.FC<CipaVotingModalProps> = ({
   if (!isOpen) return null;
 
   const handleSimulateBiometricCapture = () => {
-    if (!voterCpf.trim() || voterCpf.trim().length < 11) {
-      setErrorMessage('Por favor, informe seu CPF completo para validação do cadastro eleitoral.');
+    // Conferia so o comprimento: 11 digitos quaisquer passavam. O CPF
+    // identifica o eleitor e e o que impede o voto duplicado.
+    const confBio = conferirDocumento(voterCpf, 'CPF');
+    if (!confBio.valido) {
+      setErrorMessage(confBio.motivo || 'Informe um CPF válido.');
       return;
     }
     setErrorMessage(null);
@@ -72,8 +76,9 @@ export const CipaVotingModal: React.FC<CipaVotingModalProps> = ({
       setErrorMessage('Selecione um candidato ou a opção de voto em branco/nulo.');
       return;
     }
-    if (!voterCpf.trim()) {
-      setErrorMessage('Informe seu CPF para validação do direito a 1 voto único.');
+    const confVoto = conferirDocumento(voterCpf, 'CPF');
+    if (!confVoto.valido) {
+      setErrorMessage(confVoto.motivo || 'Informe um CPF válido para validação do direito a 1 voto único.');
       return;
     }
     if (!biometricValidated && verificationMethod === 'FACIAL_BIOMETRICS') {

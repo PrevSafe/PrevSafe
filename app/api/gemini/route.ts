@@ -1,5 +1,6 @@
 import { GoogleGenAI } from "@google/genai";
 import { NextRequest, NextResponse } from "next/server";
+import { consultarGrauDeRisco } from "@/lib/nr4AnexoI";
 
 export const dynamic = 'force-dynamic';
 
@@ -12,36 +13,42 @@ function generateSSTExpertReport(data: {
   serviceType?: string;
   fieldNotes?: string;
 }) {
-  const { action, cnae = '25.11-0-00', companyName = 'Empresa Cliente', employeeCount = 45, serviceType = 'PGR + PCMSO + LTCAT', fieldNotes } = data;
+  // Sem CNAE de fachada: o default era '25.11-0-00' (fabricacao de estruturas
+  // metalicas), entao um parecer pedido sem CNAE saia analisando uma metalurgica.
+  const { action, cnae = '', companyName = 'Empresa não informada', employeeCount = 0, serviceType = 'PGR + PCMSO + LTCAT', fieldNotes } = data;
 
   const cnaeClean = (cnae || '').trim();
-  let grauRisco = 3;
+
+  // O grau de risco vem do Anexo I da NR-04, nao de palpite pelo prefixo do
+  // CNAE. O codigo anterior fazia `startsWith('41') -> grau 3`,
+  // `startsWith('86') -> grau 3` e assim por diante, com grau 3 como padrao
+  // para todo o resto. Essa era exatamente a estimativa que foi retirada do
+  // sistema: CNAE 86.50-0-04 e grau 2 no Anexo I, e a regra do prefixo '86'
+  // devolvia 3. Quando a classe nao consta, nao ha numero a informar.
+  const consultaNr4 = consultarGrauDeRisco(cnaeClean);
+  const grauRisco = consultaNr4.grau;
+
   let setor = 'Indústria de Transformação / Metalmecânica';
   let riscosPredominantes = 'Físicos (Ruído Contínuo e Vibração), Químicos (Fumos de Solda e Vapores), Mecânicos/Acidentes (Prensas e Ferramentas) e Ergonômicos (Postura e Movimentação de Cargas).';
   let examesObrigatorios = 'Audiometria Ocupacional (admissional, semestral e periódico), Espirometria, Avaliação Clínica Completa e Acuidade Visual.';
 
   if (cnaeClean.startsWith('41') || cnaeClean.startsWith('42') || cnaeClean.startsWith('43')) {
-    grauRisco = 3;
     setor = 'Construção Civil e Obras de Infraestrutura (NR-18)';
     riscosPredominantes = 'Acidentes (Queda em Altura, Soterramento, Eletricidade), Físicos (Ruído e Poeira Mineral/Sílica) e Ergonômicos (Esforço Físico Intenso).';
     examesObrigatorios = 'Hemograma Completo, Eletrocardiograma (ECG), Eletroencefalograma (EEG), Glicemia, Avaliação Psicossocial e Audiometria.';
   } else if (cnaeClean.startsWith('47') || cnaeClean.startsWith('46')) {
-    grauRisco = 2;
     setor = 'Comércio Atacadista e Varejista (NR-01 e NR-17)';
     riscosPredominantes = 'Ergonômicos (Postura em Pé Prolongada, Movimentação Manual de Mercadorias) e Acidentes (Queda de Mesmo Nível e Cortes).';
     examesObrigatorios = 'Exame Clínico Ocupacional Periódico e Avaliação Osteomuscular.';
   } else if (cnaeClean.startsWith('86') || cnaeClean.startsWith('87')) {
-    grauRisco = 3;
     setor = 'Saúde e Serviços Hospitalares (NR-32)';
     riscosPredominantes = 'Biológicos (Material Perfurocortante, Patógenos, Bactérias, Vírus), Químicos (Medicamentos e Desinfetantes) e Ergonômicos.';
     examesObrigatorios = 'Hemograma, Sorologias, Títulos Vacinais (Hepatite B, Tétano, Tríplice Viral), Toxicológico Ocupacional e Exame Clínico.';
   } else if (cnaeClean.startsWith('10') || cnaeClean.startsWith('11')) {
-    grauRisco = 3;
     setor = 'Indústria Alimentícia e Frigoríficos (NR-36)';
     riscosPredominantes = 'Físicos (Frio e Ruído), Ergonômicos (Movimentos Repetitivos e Ritmo Acelerado) e Acidentes (Facas e Serras).';
     examesObrigatorios = 'Audiometria, Avaliação Músculo-Esquelética Detalhada, Espirometria e Clínico Periódico.';
   } else if (cnaeClean.startsWith('49') || cnaeClean.startsWith('52')) {
-    grauRisco = 3;
     setor = 'Transporte Rodoviário de Cargas e Logística (NR-11 e NR-16)';
     riscosPredominantes = 'Acidentes de Trânsito, Periculosidade (Inflamáveis/Combustíveis), Ergonômicos (Direção Prolongada) e Ruído.';
     examesObrigatorios = 'Exame Toxicológico de Larga Janela (CAGED/eSocial), ECG, EEG, Glicemia, Avaliação Oftalmológica e ASO.';
@@ -54,8 +61,10 @@ function generateSSTExpertReport(data: {
 ---
 
 #### 1. Classificação e Enquadramento Legal (NR-04 / NR-05)
-* **Grau de Risco (NR-04 Quadro I):** **Grau de Risco ${grauRisco}**
-* **Setor de Atividade:** ${setor}
+* **Grau de Risco (Anexo I da NR-04):** ${grauRisco
+    ? `**Grau ${grauRisco}** — ${consultaNr4.denominacao} (${consultaNr4.fundamentacao})`
+    : `**Não classificado.** ${consultaNr4.fundamentacao}`}
+* **Setor de Atividade (perfil típico, não é enquadramento):** ${setor}
 * **Dimensionamento CIPA (NR-05):** ${employeeCount > 20 ? 'Comissão Interna de Prevenção de Acidentes e Assédio (CIPA) obrigatória com membros eleitos e designados.' : 'Designado de CIPA com treinamento anual obrigatório (20h).' }
 * **Serviço Especializado (SESMT - NR-04):** ${employeeCount >= 50 ? 'Exige contratação ou consultoria contínua de Técnico em Segurança do Trabalho e Médico do Trabalho coordenador.' : 'Atendimento por Consultoria Externa de SST.'}
 
@@ -194,6 +203,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ text: generatedText });
     }
 
+    // O grau de risco vai PRONTO para o modelo, consultado no Anexo I. Pedir
+    // que um modelo de linguagem "estime" o grau de risco de um CNAE e pedir um
+    // palpite plausivel: o numero define dimensionamento de SESMT e de CIPA.
+    const consultaNr4 = consultarGrauDeRisco((cnae || '').trim());
+    const grauRisco = consultaNr4.grau;
+
     // If key is configured, invoke Gemini model
     try {
       const ai = new GoogleGenAI({ apiKey });
@@ -202,12 +217,13 @@ export async function POST(req: NextRequest) {
       if (action === 'analyze_cnae') {
         prompt = `Você é um Engenheiro de Segurança do Trabalho e Médico do Trabalho sênior especialista em SST brasileira.
 Analise a empresa:
-- Nome: ${companyName || 'Empresa Cliente'}
-- CNAE: ${cnae || '25.11-0-00'}
-- Número de Empregados: ${employeeCount || 50}
+- Nome: ${companyName || 'não informado'}
+- CNAE: ${cnae || 'não informado'}
+- Número de Empregados: ${employeeCount || 'não informado'}
+- Grau de Risco oficial (Anexo I da NR-04, já consultado na tabela): ${grauRisco || 'a classe não consta no Anexo I — não estime um grau'}
 
 Forneça um parecer técnico estruturado em formato Markdown contendo:
-1. Grau de Risco estimado (conforme NR-04 Quadro I).
+1. Repita o Grau de Risco oficial informado acima. NÃO estime nem calcule um grau próprio: se acima constar que a classe não consta no Anexo I, diga isso e oriente a consultar a tabela oficial.
 2. Principais Normas Regulamentadoras (NRs) obrigatórias aplicáveis (NR-01 PGR, NR-07 PCMSO, NR-09, NR-12, NR-15, NR-17, NR-35).
 3. Principais Riscos Ocupacionais esperados para essa atividade (Físicos, Químicos, Biológicos, Ergonômicos e Acidentes).
 4. Mapeamento detalhado dos eventos eSocial (S-2210 CAT, S-2220 ASO e S-2240 Agentes Nocivos).

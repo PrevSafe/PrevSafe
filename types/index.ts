@@ -856,15 +856,26 @@ export type ESocialCertificateType = 'A1_PFX' | 'A3_TOKEN' | 'CLOUD_NEOID' | 'A1
 export interface DigitalCertificateInfo {
   file_name: string;
   certificate_type: 'A1_PFX' | 'A3_TOKEN' | 'CLOUD_NEOID' | 'A1_DIGITAL' | 'A3_TOKEN_SMARTCARD';
-  subject_name: string;
-  subject_cnpj: string;
-  issuer_name: string;
-  serial_number: string;
-  valid_from: string;
-  valid_until: string;
-  days_remaining: number;
-  status: 'VALID' | 'EXPIRING' | 'EXPIRED' | 'NOT_CONFIGURED';
+  /**
+   * Os campos abaixo so existem quando o certificado for efetivamente LIDO.
+   * O sistema nao abre o .pfx (nao ha biblioteca de leitura de PKCS#12 aqui, e
+   * ele nao assina nada), entao eles ficam ausentes. Antes eram preenchidos
+   * sem leitura nenhuma: emissor "AC CERTISIGN MULTIPLA G7 - ICP-BRASIL v5",
+   * numero de serie tirado do relogio, validade de hoje + 1 ano e status
+   * 'VALID'. Renomear um arquivo de texto para .pfx produzia um "certificado
+   * ICP-Brasil autenticado".
+   */
+  subject_name?: string;
+  subject_cnpj?: string;
+  issuer_name?: string;
+  serial_number?: string;
+  valid_from?: string;
+  valid_until?: string;
+  days_remaining?: number;
+  status: 'VALID' | 'EXPIRING' | 'EXPIRED' | 'NOT_CONFIGURED' | 'NAO_VERIFICADO';
   has_password: boolean;
+  /** Quando o arquivo foi anexado. Nao e um teste de validade. */
+  uploaded_at?: string;
   last_tested_at?: string;
   // A chave privada do certificado A1 NAO e persistida. O arquivo .pfx nunca
   // foi usado para assinar nada aqui, e guarda-lo no banco deixaria a chave

@@ -15,6 +15,7 @@ import { CIPA_NORMS_CATALOG, calculateCipaDimensioning, generateLegalCipaTimelin
 import { printOrExportCipaDocument, CipaDocumentType } from '@/lib/cipaPdfExportService';
 import { CipaVotingModal } from './CipaVotingModal';
 import { dataDeHoje } from '@/lib/datas';
+import { conferirDocumento } from '@/lib/validacoesBr';
 import { 
   ShieldCheck, 
   Calendar, 
@@ -175,6 +176,14 @@ export const CipaManagementView: React.FC = () => {
   const handleAddCandidate = (e: React.FormEvent) => {
     e.preventDefault();
     if (!currentProcess) return;
+
+    // Um CPF errado na ata da eleicao da CIPA e um mandato registrado em nome
+    // de quem nao existe. O campo era gravado sem nenhuma conferencia.
+    const confCand = conferirDocumento(candCpf, 'CPF');
+    if (!confCand.valido) {
+      alert(`CPF do candidato: ${confCand.motivo}`);
+      return;
+    }
     registerCipaCandidate(currentProcess.id, {
       name: candName,
       cpf: candCpf,
@@ -201,6 +210,14 @@ export const CipaManagementView: React.FC = () => {
   const handleAddCommissionMember = (e: React.FormEvent) => {
     e.preventDefault();
     if (!currentProcess) return;
+
+    // Um CPF errado na ata da eleicao da CIPA e um mandato registrado em nome
+    // de quem nao existe. O campo era gravado sem nenhuma conferencia.
+    const confComm = conferirDocumento(commCpf, 'CPF');
+    if (!confComm.valido) {
+      alert(`CPF do membro da comissão: ${confComm.motivo}`);
+      return;
+    }
     addElectoralCommissionMember(currentProcess.id, {
       name: commName,
       cpf: commCpf,
@@ -217,6 +234,14 @@ export const CipaManagementView: React.FC = () => {
   const handleAddAppointee = (e: React.FormEvent) => {
     e.preventDefault();
     if (!currentProcess) return;
+
+    // Um CPF errado na ata da eleicao da CIPA e um mandato registrado em nome
+    // de quem nao existe. O campo era gravado sem nenhuma conferencia.
+    const confAppo = conferirDocumento(appoCpf, 'CPF');
+    if (!confAppo.valido) {
+      alert(`CPF do indicado: ${confAppo.motivo}`);
+      return;
+    }
     addEmployerAppointee(currentProcess.id, {
       name: appoName,
       cpf: appoCpf,
@@ -1075,7 +1100,7 @@ export const CipaManagementView: React.FC = () => {
                 >
                   {clients.map(c => (
                     <option key={c.id} value={c.id}>
-                      {c.trade_name || c.legal_name} (CNAE: {c.main_cnae || 'Geral'} • Grau {c.risk_degree || 3} • {c.employee_count || 50} func.)
+                      {c.trade_name || c.legal_name} (CNAE: {c.main_cnae || 'não informado'} • {c.risk_degree ? `Grau ${c.risk_degree}` : 'grau não classificado'} • {c.employee_count ? `${c.employee_count} func.` : 'sem nº de funcionários'})
                     </option>
                   ))}
                 </select>

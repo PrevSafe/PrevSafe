@@ -78,21 +78,24 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
     suggested_exams_text: string;
     description?: string;
   }>({
+    // Vazio. Vinha pre-preenchido com um agente de ruido completo: limite de
+    // 85 dB(A), medicao sugerida de 84,0 e os CAs 14235 e 29745 - numeros que
+    // seriam copiados para dentro de riscos reais de clientes.
     risk_code_table_24: '',
     agent_name: '',
     group: 'FÍSICO',
     evaluation_type_standard: 'QUANTITATIVA',
-    measurement_unit_standard: 'dB(A)',
-    tolerance_limit_nr15: '85.0 dB(A)',
-    action_level_nr09: '80.0 dB(A)',
-    harmful_effects: 'Perda auditiva induzida por ruído (PAIR), zumbido, estresse ocupacional.',
-    regulatory_norm_reference: 'NR-09 / NR-15 Anexo 1',
+    measurement_unit_standard: '',
+    tolerance_limit_nr15: '',
+    action_level_nr09: '',
+    harmful_effects: '',
+    regulatory_norm_reference: '',
     suggested_medium: 'AR',
-    suggested_source: 'Maquinários rotativos, compressores e ferramentas pneumáticas',
-    suggested_controls_summary: 'Enclausuramento acústico e fornecimento de protetor auditivo CA.',
-    suggested_measured_value: 84.0,
-    suggested_epis_text: 'Protetor Auditivo tipo Plug de Silicone 16dB (CA 14235), Abafador tipo Concha 22dB (CA 29745)',
-    suggested_exams_text: 'Audiometria Tonal Ocupacional [0295] - 12m',
+    suggested_source: '',
+    suggested_controls_summary: '',
+    suggested_measured_value: 0,
+    suggested_epis_text: '',
+    suggested_exams_text: '',
     description: ''
   });
 

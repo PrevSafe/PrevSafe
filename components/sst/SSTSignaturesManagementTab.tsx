@@ -44,6 +44,8 @@ import {
   X
 } from 'lucide-react';
 import { SSTElectronicSignatureModal } from './SSTElectronicSignatureModal';
+import { conferirDocumento } from '@/lib/validacoesBr';
+import { novoId } from '@/lib/datas';
 
 interface SSTSignaturesManagementTabProps {
   selectedClientId?: string;
@@ -116,15 +118,24 @@ export const SSTSignaturesManagementTab: React.FC<SSTSignaturesManagementTabProp
   };
 
   const handleAddSignerToForm = () => {
-    if (!newSignerName || !newSignerCpf) {
-      alert('Preencha ao menos Nome e CPF do signatário.');
+    if (!newSignerName) {
+      alert('Informe o nome do signatário.');
+      return;
+    }
+    // O CPF do signatario vai para o documento assinado e para a trilha de
+    // auditoria. So se conferia se o campo estava preenchido.
+    const confSig = conferirDocumento(newSignerCpf, 'CPF');
+    if (!confSig.valido) {
+      alert(`CPF do signatário: ${confSig.motivo}`);
       return;
     }
 
     const newSigner: DocumentSigner = {
-      id: `sig-custom-${Date.now()}`,
+      id: novoId('sig-custom'),
       name: newSignerName,
-      email: newSignerEmail || 'contato@cliente.com.br',
+      // Sem e-mail de fachada: 'contato@cliente.com.br' viraria o endereco
+      // registrado para onde o convite de assinatura foi enviado.
+      email: newSignerEmail || '',
       cpf: newSignerCpf,
       signer_role: newSignerRole,
       role_type: newSignerRole,

@@ -550,7 +550,7 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
                   <td className="py-3 px-4 font-mono text-slate-400">{u.cnae}</td>
                   <td className="py-3 px-4 text-center">
                     <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-teal-500/10 text-teal-400 border border-teal-500/30">
-                      Grau {u.risk_degree || 3}
+                      {u.risk_degree ? `Grau ${u.risk_degree}` : 'Grau n/c'}
                     </span>
                   </td>
                 </tr>

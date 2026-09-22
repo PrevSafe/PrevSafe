@@ -89,7 +89,9 @@ export const EPIManagementView: React.FC<EPIManagementViewProps> = ({ onNavigate
                   {selectedClient.trade_name || selectedClient.legal_name}
                 </span>
                 <span className="text-slate-500">•</span>
-                <span className="text-amber-400 font-mono">Grau {selectedClient.risk_degree || 2}</span>
+                <span className="text-amber-400 font-mono">
+                  {selectedClient.risk_degree ? `Grau ${selectedClient.risk_degree}` : 'Grau não classificado'}
+                </span>
               </div>
             )}
           </div>

@@ -19,8 +19,11 @@ export const AICopilotModal: React.FC<{ isOpen: boolean; onClose: () => void }> 
 
   const [activeAction, setActiveAction] = useState<'ANALYZE_CNAE' | 'DRAFT_PROPOSAL' | 'REVIEW_FIELD'>('ANALYZE_CNAE');
   const [selectedClient, setSelectedClient] = useState(clients?.[0] || null);
-  const [cnaeInput, setCnaeInput] = useState(clients?.[0]?.main_cnae || '25.11-0-00');
-  const [employeeCount, setEmployeeCount] = useState(clients?.[0]?.employee_count || 85);
+  // Vazio quando o cliente nao tem CNAE. O padrao era '25.11-0-00' (estruturas
+  // metalicas): quem abrisse o copiloto sem escolher cliente recebia um parecer
+  // sobre uma metalurgica, com o grau de risco dela.
+  const [cnaeInput, setCnaeInput] = useState(clients?.[0]?.main_cnae || '');
+  const [employeeCount, setEmployeeCount] = useState(clients?.[0]?.employee_count || 0);
   const [fieldNotes, setFieldNotes] = useState('');
 
   const [isLoading, setIsLoading] = useState(false);
