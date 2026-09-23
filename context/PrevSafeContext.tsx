@@ -6011,21 +6011,30 @@ ${exames.map(ex => `      <exameMedico>
       else if (r.risk_category === 'ACIDENTES') accidentRisks.push(riskDesc);
     });
 
-    if (physicalRisks.length === 0) physicalRisks.push('Ruído de fundo operacional e iluminação de área de trabalho');
-    if (chemicalRisks.length === 0) chemicalRisks.push('Ausência de exposição habitual a agentes químicos agressivos');
-    if (biologicalRisks.length === 0) biologicalRisks.push('Ausência de exposição a micro-organismos patogênicos');
-    if (ergonomicRisks.length === 0) ergonomicRisks.push('Postura de trabalho com exigência de atenção contínua e esforço visual');
-    if (accidentRisks.length === 0) accidentRisks.push('Queda em mesmo nível, tropeços e contato com quinas de móveis/máquinas');
+    // AQUI NASCIA A OS COM RISCOS INVENTADOS.
+    //
+    // Quando o GHE nao tinha inventario, as cinco categorias eram preenchidas
+    // com um texto fixo - "Ruido de fundo operacional e iluminacao de area de
+    // trabalho", "Queda em mesmo nivel, tropecos e contato com quinas de
+    // moveis" - e o trabalhador assinava a OS dando ciencia de riscos que
+    // ninguem levantou. A OS e prova de cumprimento do Art. 157 da CLT: o que
+    // ela afirma tem que vir do inventario (NR-01 item 1.5.4).
+    if (risksForGhe.length === 0) {
+      const semInventario = 'Inventário de riscos não elaborado para este GHE — pendente (NR-01 item 1.5.4)';
+      physicalRisks.push(semInventario);
+      chemicalRisks.push(semInventario);
+      biologicalRisks.push(semInventario);
+      ergonomicRisks.push(semInventario);
+      accidentRisks.push(semInventario);
+    }
 
-    // Collective protections EPC
-    const collectiveProtections: string[] = [
-      'Iluminação natural e artificial dimensionada conforme NHO-11',
-      'Sinalização de segurança, faixas de pedestres e rotas de fuga desobstruídas',
-      'Sistema de combate a incêndio com extintores e hidrantes inspecionados',
-      'Aterramento elétrico de tomadas e quadros protegidos por disjuntores DR'
-    ];
+    // Protecoes coletivas: eram quatro afirmacoes fixas sobre o local de
+    // trabalho - extintores e hidrantes em dia, protecao diferencial nos
+    // quadros, iluminacao conforme a NHO-11 - declaradas para todo cliente
+    // sem que ninguem tivesse ido ao local conferir.
+    const collectiveProtections: string[] = [];
     if (ghe?.environment_description) {
-      collectiveProtections.unshift(ghe.environment_description);
+      collectiveProtections.push(ghe.environment_description);
     }
 
     // Mandatory EPIs with CA
@@ -6039,18 +6048,19 @@ ${exames.map(ex => `      <exameMedico>
           usage_recommendation: 'Uso obrigatório contínuo durante a jornada'
         });
       });
-    } else if (epiCatalog.length > 0) {
-      mandatoryEpisList.push({
-        epi_name: epiCatalog[0].name,
-        ca_number: epiCatalog[0].ca_number,
-        protection_type: epiCatalog[0].protection_type,
-        usage_recommendation: 'Uso obrigatório nas dependências operacionais'
-      });
     }
+    // Nao havendo EPI no cadastro do colaborador, a versao anterior pegava o
+    // PRIMEIRO ITEM DO CATALOGO e o declarava obrigatorio. Era dai que vinha o
+    // "Protetor Auditivo tipo Plug (CA 14235)" na OS de uma recepcionista, com
+    // zero entregas registradas na mesma pagina. Lista vazia e a resposta
+    // correta: a OS entao diz que nenhum EPI foi definido.
 
-    const routineActivities: string[] = job?.activities_description 
-      ? [job.activities_description, 'Manutenção da ordem e limpeza do posto de trabalho 5S', 'Inspeção visual preliminar de máquinas e ferramentas de uso']
-      : ['Executar as atribuições inerentes à função contratada conforme orientações da liderança', 'Participar dos DDS (Diálogos Diários de Segurança)', 'Conservar os materiais e equipamentos sob sua responsabilidade'];
+    // Acrescentava "5S", "inspecao visual de maquinas" e "DDS" a rotina de
+    // qualquer cargo - inclusive administrativo -, e a OS descreve o que a
+    // pessoa faz de fato. Fica so o que o cadastro do cargo informa.
+    const routineActivities: string[] = job?.activities_description
+      ? [job.activities_description]
+      : [];
 
     const osNumberCount = workOrdersOS.length + 1;
     const osCode = `OS-NR01-${new Date().getFullYear()}-${String(osNumberCount).padStart(4, '0')}`;
@@ -6058,13 +6068,13 @@ ${exames.map(ex => `      <exameMedico>
 
     const newOSData: Omit<SSTWorkOrderOS, 'id' | 'organization_id' | 'created_at' | 'updated_at'> = {
       client_id: emp.client_id,
-      client_name: client?.trade_name || client?.legal_name || 'Empresa Cliente',
+      client_name: client?.trade_name || client?.legal_name || 'Não informado',
       employee_id: emp.id,
       os_code: osCode,
       revision: 1,
       issue_date: todayStr,
       validity_start_date: todayStr,
-      employer_name: client?.legal_name || 'Razão Social da Empresa',
+      employer_name: client?.legal_name || client?.trade_name || 'Não informado',
       // A OS e assinada pelo trabalhador e vale como prova de que ele foi
       // cientificado dos riscos. Os fallbacks eram CNPJ 00.000.000/0001-00 e
       // grau 2 - um documento assinado declarando um CNPJ que nao existe e um
@@ -6072,17 +6082,19 @@ ${exames.map(ex => `      <exameMedico>
       employer_document: client?.document_number || 'Não informado',
       employer_cnae: client?.main_cnae || 'Não informado',
       employer_risk_grade: client?.risk_degree || null,
-      establishment_address: unit?.address ? `${unit.address}, ${unit.city}/${unit.state}` : (client?.address ? `${client.address}, ${client.city}/${client.state}` : 'Endereço da Unidade'),
+      establishment_address: unit?.address ? `${unit.address}, ${unit.city}/${unit.state}` : (client?.address ? `${client.address}, ${client.city}/${client.state}` : 'Não informado'),
       employee_name: emp.name,
       employee_cpf: emp.cpf,
       employee_registration: emp.registration_number,
       employee_job_title: emp.job_title,
-      employee_cbo: emp.cbo || job?.cbo || '0000-00',
+      // O fallback era um CBO de zeros, que nao existe na tabela; vazio
+      // mostra a pendencia em vez de fabricar um codigo.
+      employee_cbo: emp.cbo || job?.cbo || '',
       employee_sector: emp.sector_name,
-      employee_unit: unit?.name || 'Unidade Operacional Matriz',
+      employee_unit: unit?.name || 'Não informado',
       employee_admission_date: emp.admission_date,
       employee_ghe_id: emp.ghe_id,
-      employee_ghe_name: ghe?.name || 'GHE Padrão Operacional',
+      employee_ghe_name: ghe?.name || 'GHE não atribuído',
       job_description: job?.activities_description || `Atividades desempenhadas no cargo de ${emp.job_title} conforme especificações da empresa e CBO.`,
       routine_activities: routineActivities,
       physical_risks: physicalRisks,
@@ -6266,7 +6278,7 @@ ${exames.map(ex => `      <exameMedico>
 
     const newTraining: Omit<SSTIntegrationTraining, 'id' | 'organization_id' | 'created_at' | 'updated_at'> = {
       client_id: clientId,
-      client_name: targetClient?.trade_name || targetClient?.legal_name || 'Empresa Cliente',
+      client_name: targetClient?.trade_name || targetClient?.legal_name || 'Não informado',
       training_code: trainingCode,
       training_title: 'Treinamento de Integração em Segurança e Saúde do Trabalho (NR-01 item 1.7)',
       training_type: 'ADMISSION_INTEGRATION',
@@ -6275,7 +6287,8 @@ ${exames.map(ex => `      <exameMedico>
       validity_months: 12,
       start_date: today,
       end_date: today,
-      location_or_platform: targetClient?.address ? `Sala de Integração SESMT - ${targetClient.trade_name}` : 'Auditório Central SST',
+      // 'Auditorio Central SST' era um local que podia nao existir.
+      location_or_platform: '',
       // Instrutor e supervisor tecnico vinham escritos no codigo, com registro
       // MTE e CREA inventados. Um certificado de treinamento e prova de
       // capacitacao perante a fiscalizacao: quem ministrou precisa ser quem
@@ -6297,8 +6310,12 @@ ${exames.map(ex => `      <exameMedico>
         '7. Primeiros socorros e fluxo obrigatório de comunicação imediata de acidentes e CAT'
       ],
       training_evaluation_method: 'THEORETICAL_PRACTICAL_EXAM',
-      status: 'COMPLETED',
-      certificate_validity_legal_statement: 'Certificamos que o trabalhador cumpriu com êxito a carga horária e conteúdo programático do Treinamento de Integração em SST, atendendo integralmente as exigências legais da Norma Regulamentadora nº 01.',
+      // Nascia 'COMPLETED' e ja certificando que o trabalhador "cumpriu com
+      // exito a carga horaria e o conteudo programatico" - antes da aula. O
+      // registro comeca agendado e a certificacao so e escrita quando o
+      // treinamento e concluido de fato.
+      status: 'SCHEDULED',
+      certificate_validity_legal_statement: '',
       notes: 'Treinamento de integração emitido para inclusão obrigatória no Kit de Admissão (NR-01 item 1.7).',
       attendees
     };
@@ -6449,7 +6466,7 @@ ${exames.map(ex => `      <exameMedico>
       linked_cat_id: targetCat.id,
       linked_cat_number: targetCat.receipt_number || targetCat.id,
       client_id: targetCat.client_id,
-      client_name: client?.trade_name || client?.legal_name || 'Empresa Cliente',
+      client_name: client?.trade_name || client?.legal_name || 'Não informado',
       employee_id: targetCat.employee_id,
       employee_name: targetCat.employee_name,
       employee_cpf: emp?.cpf || '',

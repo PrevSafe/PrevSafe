@@ -490,7 +490,7 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
                                   </span>
                                 </td>
                                 <td className="p-2.5 text-slate-700">
-                                  {r.epi_required && <div className="font-semibold text-teal-900">• EPI Eficaz (CA {r.epi_ca_number || '14235'})</div>}
+                                  {r.epi_required && <div className="font-semibold text-teal-900">• EPI Eficaz (CA {r.epi_ca_number || 'não informado'})</div>}
                                   {r.epc_implemented && <div>• EPC Instalado no ambiente</div>}
                                   <div className="text-[10px] text-slate-500">{r.ltcat_technical_conclusion || 'Plano PrevSafe em vigor'}</div>
                                 </td>

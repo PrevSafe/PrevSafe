@@ -18,3 +18,13 @@ supabase/.temp/
 
 # Saida temporaria do verificador da NR-04
 .tmp-nr4-verificacao/
+
+# Documentos gerados pelo sistema com dados reais de trabalhador (CPF, ASO).
+# Ficam na maquina de quem gerou; nunca no repositorio.
+kit-admissao-*.pdf
+ficha-epi-*.pdf
+os-nr01-*.pdf
+certificado-treinamento-*.pdf
+aso-*.pdf
+.tmp-fluxo-verificacao/
+.tmp-kit-verificacao/

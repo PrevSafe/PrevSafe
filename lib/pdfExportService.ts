@@ -23,6 +23,26 @@ import { DECLARACAO_DE_INTEGRIDADE } from '@/lib/documentoHash';
 import { ANEXOS_NR16, montarCorpoInsalubridade, montarCorpoPericulosidade } from '@/lib/laudoDados';
 import type { CorpoLaudo } from '@/lib/laudoDados';
 import { dataDeHoje } from '@/lib/datas';
+import { formatarCPF } from '@/lib/validacoesBr';
+
+/**
+ * POR QUE NAO HA SINAL DE CONFERIDO EM NENHUM TEXTO DESTE ARQUIVO
+ *
+ * O jsPDF escreve a string em WinAnsi. Quando ela traz UM caractere de fora
+ * dessa tabela, ele troca a CODIFICACAO DA STRING INTEIRA para UTF-16BE sem
+ * marcar isso no PDF - e o leitor entao desenha cada byte como um caractere.
+ * "Regular" com o sinal de conferido no fim saia impresso "R e g u l a r '",
+ * letra por letra, e foi assim que o Kit Admissional chegou ao cliente.
+ *
+ * FORA da tabela (nao usar): U+2713 e U+2714 conferido, U+2715 a U+2718 cruz,
+ * U+2192 seta, U+25A0 quadrado, U+26A0 aviso, U+2514 canto de arvore, e os
+ * demais simbolos acima de U+2026.
+ *
+ * DENTRO da tabela (pode usar): acentos, °, º, • bullet, – e — travessoes,
+ * … reticencias, « » › chevrons.
+ *
+ * scripts/verificar-kit-admissional.mjs falha se algum dos proibidos voltar.
+ */
 
 // Helper to format currency
 const formatCurrency = (val: number) => {
@@ -135,7 +155,10 @@ function applyPageNumbers(doc: jsPDF) {
  */
 // Responsabilidade tecnica dos laudos: vem sempre das Configuracoes da empresa.
 // Um PDF entregue ao cliente nunca pode sair com nome/CREA/CRM inventados.
-const RT_NAO_INFORMADO = 'Nao informado (preencha em Configuracoes > Responsabilidade Tecnica)';
+const RT_NAO_INFORMADO = 'Não informado (preencha em Configurações > Responsabilidade Técnica)';
+const NAO_INFORMADO = 'Não informado';
+const LINHA_PARA_PREENCHER = '____________________';
+const SEM_RISCO_NO_INVENTARIO = 'Nenhum agente desta natureza no inventário de riscos (PGR)';
 
 function technicalResponsibleLine(organization: Organization): string {
   const name = organization?.technical_responsible_name?.trim();
@@ -154,14 +177,14 @@ function technicalResponsibleName(organization: Organization): string {
 
 /** CNAE do cliente, ou aviso de pendencia. Nunca um CNAE de exemplo. */
 function cnaeLine(client: Client): string {
-  return client?.main_cnae?.trim() || 'CNAE NAO INFORMADO';
+  return client?.main_cnae?.trim() || 'CNAE NÃO INFORMADO';
 }
 
 /** Grau de risco do Anexo I da NR-04, ou aviso de pendencia. Nunca estimado. */
 function riskDegreeLine(client: Client): string {
   return client?.risk_degree
     ? `Grau ${client.risk_degree} (NR-04)`
-    : 'GRAU DE RISCO NAO CLASSIFICADO';
+    : 'GRAU DE RISCO NÃO CLASSIFICADO';
 }
 
 /**
@@ -172,12 +195,12 @@ function riskDegreeLine(client: Client): string {
  * pior que um campo declaradamente vazio.
  */
 function clientDocumentLine(client?: Client | null): string {
-  return client?.document_number?.trim() || 'DOCUMENTO NAO INFORMADO';
+  return client?.document_number?.trim() || 'DOCUMENTO NÃO INFORMADO';
 }
 
 /** Documento da organizacao emitente, ou aviso de pendencia. */
 function organizationDocumentLine(organization?: Organization | null): string {
-  return organization?.document_number?.trim() || 'CNPJ NAO INFORMADO';
+  return organization?.document_number?.trim() || 'CNPJ NÃO INFORMADO';
 }
 
 function pcmsoPhysicianLine(organization: Organization): string {
@@ -393,7 +416,7 @@ export function exportSingleServiceOrderPdf({
     // Add sub-tasks if any
     stage.tasks.forEach((t, tIdx) => {
       stagesData.push([
-        `   └ Tarefa ${sIdx + 1}.${tIdx + 1}`,
+        `   » Tarefa ${sIdx + 1}.${tIdx + 1}`,
         `   ${t.name}`,
         t.status === 'COMPLETED' ? 'OK' : 'PENDENTE',
         `-`,
@@ -432,7 +455,7 @@ export function exportSingleServiceOrderPdf({
     didParseCell: (data) => {
       if (data.section === 'body') {
         const itemText = String(data.row.raw[0] || '');
-        if (itemText.includes('└')) {
+        if (itemText.includes('»')) {
           data.cell.styles.fillColor = [248, 250, 252];
           data.cell.styles.textColor = [100, 116, 139];
           data.cell.styles.fontSize = 7.5;
@@ -824,7 +847,7 @@ export function exportWorkOrderOSPDF(
   // 5. PROCEDIMENTOS DE SEGURANÇA E OBRIGAÇÕES DO EMPREGADO
   const proceduresText = (os.safe_work_procedures || []).map((p, i) => `${i + 1}. ${p}`).join('\n');
   const obligationsText = (os.mandatory_employee_obligations || []).map((o, i) => `• ${o}`).join('\n');
-  const prohibitionsText = (os.prohibitions_unsafe_acts || []).map((pr, i) => `✕ ${pr}`).join('\n');
+  const prohibitionsText = (os.prohibitions_unsafe_acts || []).map((pr, i) => `• ${pr}`).join('\n');
   const emergencyText = (os.emergency_accident_conduct || []).map((em, i) => `! ${em}`).join('\n');
 
   autoTable(doc, {
@@ -930,7 +953,7 @@ export function exportWorkOrderOSPDF(
   if (os.employee_signed) {
     doc.setTextColor(22, 163, 74);
     doc.setFont('helvetica', 'bold');
-    doc.text(`[✓ Assinado Eletronicamente / Biometria Facial - ${formatDate(os.signed_at || os.issue_date)}]`, margin + (colWidth / 2), currentY + 8, { align: 'center' });
+    doc.text(`[Assinado Eletronicamente / Biometria Facial - ${formatDate(os.signed_at || os.issue_date)}]`, margin + (colWidth / 2), currentY + 8, { align: 'center' });
     if (os.signature_hash) {
       doc.setFontSize(5.5);
       doc.setFont('helvetica', 'normal');
@@ -1225,7 +1248,7 @@ export function exportEPIDeliveryFichaPDF(
     del.epi_name,
     del.quantity.toString(),
     del.delivery_reason === 'ADMISSAO' ? 'Admissional' : (del.delivery_reason === 'PERIODICA_SUBSTITUICAO' ? 'Periódica' : 'Substituição'),
-    del.biometric_face_matched ? `Biometria Facial ✓ (${(del.biometric_confidence! * 100).toFixed(0)}%)` : (del.term_receipt_accepted ? 'Assinatura Manual' : 'Pendente'),
+    del.biometric_face_matched ? `Biometria Facial (${(del.biometric_confidence! * 100).toFixed(0)}%)` : (del.term_receipt_accepted ? 'Assinatura Manual' : 'Pendente'),
     del.delivered_by_user_name || 'SESMT'
   ]);
 
@@ -1358,7 +1381,7 @@ export function exportBatchEPIDeliveryFichasPDF(
       d.ca_number,
       d.epi_name,
       d.quantity.toString(),
-      d.biometric_face_matched ? 'Biometria Facial ✓' : (d.term_receipt_accepted ? 'Assinatura' : 'Pendente')
+      d.biometric_face_matched ? 'Biometria Facial' : (d.term_receipt_accepted ? 'Assinatura' : 'Pendente')
     ]);
 
     if (dRows.length === 0) {
@@ -1632,7 +1655,7 @@ export function exportTrainingAttendanceListPDF(
     att.employee_job_title,
     att.employee_sector,
     att.present ? 'PRESENTE' : 'AUSENTE',
-    att.present ? (att.signature_type === 'DIGITAL_BIOMETRIC' ? 'Biometria Facial ✓' : 'Assinado') : 'Pendente'
+    att.present ? (att.signature_type === 'DIGITAL_BIOMETRIC' ? 'Biometria Facial' : 'Assinado') : 'Pendente'
   ]);
 
   if (attendeeRows.length === 0) {
@@ -1843,6 +1866,65 @@ export function exportAdmissionKitPDF(
   const pageWidth = doc.internal.pageSize.getWidth();
   const margin = 14;
 
+  // ------------------------------------------------------------------
+  // O QUE EXISTE DE FATO
+  //
+  // Este kit e assinado pelo trabalhador. Cada linha dele e uma afirmacao
+  // perante a fiscalizacao, entao nenhuma pode vir de um valor padrao: a
+  // versao anterior imprimia "Regular", "Presenca Confirmada" e "Apto"
+  // fixos no codigo - o "Apto" do ASO saia de employee.status === 'ACTIVE',
+  // ou seja, de o cadastro estar ativo, nao de exame medico nenhum.
+  // ------------------------------------------------------------------
+  const entregasDoColaborador = deliveries.filter(d => d.employee_id === employee.id);
+
+  const participante = training?.attendees?.find(a => a.employee_id === employee.id) || null;
+  const presencaConfirmada = !!participante && (
+    participante.present === true ||
+    participante.completed === true ||
+    (participante.attendance_rate_percent ?? 0) > 0
+  );
+
+  const asoDoKit = [...(employee.aso_history || [])]
+    .sort((a, b) => String(b.exam_date || '').localeCompare(String(a.exam_date || '')))[0] || null;
+  const RESULTADO_ASO: Record<string, string> = {
+    APTO: 'Apto',
+    INAPTO: 'Inapto',
+    APTO_COM_RESTRICAO: 'Apto com restrição'
+  };
+
+  const MODALIDADE: Record<string, string> = {
+    PRESENCIAL: 'Presencial',
+    PRESENTIAL: 'Presencial',
+    SEMIPRESENCIAL: 'Semipresencial',
+    HYBRID: 'Semipresencial',
+    EAD: 'EaD',
+    EAD_DISTANCE: 'EaD'
+  };
+  const modalidadeTreinamento = training ? (MODALIDADE[training.modality] || training.modality) : '';
+
+  // O que falta. Alimenta o quadro de pendencias e o termo do Art. 158 - uma
+  // clausula so entra no termo se houver registro que a sustente.
+  const pendenciasDoKit: string[] = [];
+  if (!workOrder) {
+    pendenciasDoKit.push('Ordem de Serviço (NR-01) ainda não gerada para esta função.');
+  } else if (!workOrder.employee_signed) {
+    pendenciasDoKit.push('Ordem de Serviço emitida, mas sem a ciência assinada pelo trabalhador (Art. 157 da CLT).');
+  }
+  if (entregasDoColaborador.length === 0) {
+    pendenciasDoKit.push('Nenhuma entrega de EPI registrada com número de C.A. (NR-06).');
+  }
+  if (!training) {
+    pendenciasDoKit.push('Treinamento de integração não registrado no sistema (NR-01 item 1.7).');
+  } else if (!presencaConfirmada) {
+    pendenciasDoKit.push('Treinamento de integração registrado, mas sem presença confirmada deste trabalhador.');
+  }
+  if (!asoDoKit) {
+    pendenciasDoKit.push('ASO admissional não registrado (NR-07 item 7.5.2).');
+  }
+  if (!organization?.technical_responsible_name?.trim()) {
+    pendenciasDoKit.push('Responsável técnico não preenchido em Configurações > Responsabilidade Técnica.');
+  }
+
   // ================= PAGE 1: COVER & SUMMARY OF ADMISSION KIT =================
   doc.setFillColor(15, 23, 42); // slate-900
   doc.rect(0, 0, pageWidth, 28, 'F');
@@ -1883,7 +1965,7 @@ export function exportAdmissionKitPDF(
     body: [
       [
         { content: 'Colaborador:', styles: { fontStyle: 'bold', cellWidth: 26 } },
-        { content: `${employee.name} (CPF: ${employee.cpf})`, styles: { cellWidth: 64, fontStyle: 'bold' } },
+        { content: `${employee.name} (CPF: ${formatarCPF(employee.cpf)})`, styles: { cellWidth: 64, fontStyle: 'bold' } },
         { content: 'Data Admissão:', styles: { fontStyle: 'bold', cellWidth: 26 } },
         { content: formatDate(employee.admission_date), styles: { cellWidth: 66 } }
       ],
@@ -1891,7 +1973,13 @@ export function exportAdmissionKitPDF(
         { content: 'Cargo / Função:', styles: { fontStyle: 'bold' } },
         { content: `${employee.job_title} (CBO: ${employee.cbo || 'não informado'})` },
         { content: 'Setor / GHE:', styles: { fontStyle: 'bold' } },
-        { content: `${employee.sector_name} | ${employee.ghe_name || 'GHE'}` }
+        { content: employee.ghe_name
+            ? (employee.ghe_name === employee.sector_name
+                ? employee.sector_name
+                : `${employee.sector_name} | ${employee.ghe_name}`)
+            // Era `|| 'GHE'`, que imprimia a sigla como se fosse o nome de um
+            // grupo. Sem GHE atribuido o PCMSO e o PGR nao se ligam ao cargo.
+            : `${employee.sector_name} | GHE não atribuído` }
       ],
       [
         { content: 'Empresa:', styles: { fontStyle: 'bold' } },
@@ -1916,23 +2004,39 @@ export function exportAdmissionKitPDF(
     body: [
       [
         { content: '1. Ordem de Serviço (NR-01)', styles: { fontStyle: 'bold', cellWidth: 60 } },
-        { content: workOrder ? `Gerada (${workOrder.os_code}) - Vigência ${formatDate(workOrder.issue_date)}` : 'Pendente de Geração', styles: { cellWidth: 80 } },
-        { content: workOrder?.employee_signed ? 'Assinado ✓' : 'Pendente Coleta', styles: { halign: 'center' } }
+        // Dizia "Vigência <data>" mostrando a data de EMISSÃO. A OS saia
+        // emitida hoje e o kit anunciava essa data como vigência.
+        { content: workOrder
+            ? `${workOrder.os_code} — emitida em ${formatDate(workOrder.issue_date)}`
+            : 'Não gerada', styles: { cellWidth: 80 } },
+        { content: workOrder?.employee_signed
+            ? `Assinada em ${formatDate(workOrder.signed_at || workOrder.issue_date)}`
+            : 'Pendente de assinatura', styles: { halign: 'center' } }
       ],
       [
         { content: '2. Ficha de Entrega de EPI (NR-06)', styles: { fontStyle: 'bold' } },
-        { content: `${deliveries.filter(d => d.employee_id === employee.id).length} EPI(s) Registrado(s) com C.A.` },
-        { content: 'Regular ✓', styles: { halign: 'center' } }
+        { content: entregasDoColaborador.length > 0
+            ? `${entregasDoColaborador.length} EPI(s) registrado(s) com C.A.`
+            : 'Nenhuma entrega registrada' },
+        // Era 'Regular' fixo - impresso também com ZERO EPIs entregues.
+        { content: entregasDoColaborador.length > 0 ? 'Registrada' : 'Pendente', styles: { halign: 'center' } }
       ],
       [
-        { content: '3. Treinamento de Integração (NR-01)', styles: { fontStyle: 'bold' } },
-        { content: training ? `${training.training_title || training.title || 'Treinamento de Integração em SST'} (${training.workload_hours}h) - ${training.modality}` : 'Treinamento Registrado no SESMT' },
-        { content: 'Presença Confirmada ✓', styles: { halign: 'center' } }
+        { content: '3. Treinamento de Integração (NR-01 item 1.7)', styles: { fontStyle: 'bold' } },
+        { content: training
+            ? `${training.training_title || training.title || 'Treinamento de Integração em SST'} (${training.workload_hours}h)${modalidadeTreinamento ? ` — ${modalidadeTreinamento}` : ''}`
+            : 'Não registrado no sistema' },
+        // Era 'Presença Confirmada' fixo, inclusive sem treinamento nenhum.
+        { content: presencaConfirmada ? 'Presença confirmada' : 'Pendente', styles: { halign: 'center' } }
       ],
       [
         { content: '4. ASO Admissional (NR-07)', styles: { fontStyle: 'bold' } },
-        { content: employee.aso_history && employee.aso_history.length > 0 ? `ASO Admissional Apto em ${formatDate(employee.aso_history[0].exam_date)}` : 'Atestado de Saúde Ocupacional' },
-        { content: employee.status === 'ACTIVE' ? 'Apto ✓' : 'Aguardando', styles: { halign: 'center' } }
+        { content: asoDoKit
+            ? `Realizado em ${formatDate(asoDoKit.exam_date)}${asoDoKit.physician_name ? ` — ${asoDoKit.physician_name}${asoDoKit.physician_crm ? ` (CRM ${asoDoKit.physician_crm}${asoDoKit.physician_uf ? '/' + asoDoKit.physician_uf : ''})` : ''}` : ''}`
+            : 'Não registrado' },
+        // O 'Apto' vinha de employee.status === 'ACTIVE': cadastro ativo virava
+        // aptidão médica. Agora só o resultado do ASO responde por isso.
+        { content: asoDoKit ? (RESULTADO_ASO[asoDoKit.result] || asoDoKit.result) : 'Pendente', styles: { halign: 'center' } }
       ]
     ],
     styles: { fontSize: 7.5, cellPadding: 2.5 }
@@ -1940,7 +2044,48 @@ export function exportAdmissionKitPDF(
 
   curY = (doc as any).lastAutoTable.finalY + 4;
 
+  // Pendencias. Sem este quadro o kit parecia completo quando nao estava.
+  if (pendenciasDoKit.length > 0) {
+    autoTable(doc, {
+      startY: curY,
+      margin: { left: margin, right: margin },
+      theme: 'grid',
+      head: [[
+        { content: 'PENDÊNCIAS — NÃO ASSINAR ESTE KIT ANTES DE RESOLVER', styles: { fillColor: [180, 83, 9], textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 7.5 } }
+      ]],
+      body: [[
+        { content: pendenciasDoKit.map(p => `• ${p}`).join('\n') }
+      ]],
+      styles: { fontSize: 7, cellPadding: 2.5, fillColor: [255, 251, 235], textColor: [120, 53, 15] }
+    });
+    curY = (doc as any).lastAutoTable.finalY + 4;
+  }
+
   // Legal Term & Consolidated Declaration
+  //
+  // As quatro clausulas eram impressas SEMPRE. A de numero 3 declarava que o
+  // trabalhador recebeu os EPIs - e era posta na frente dele para assinar
+  // mesmo com zero entregas registradas. Cada clausula agora depende do
+  // registro que a sustenta.
+  const clausulasDoTermo: string[] = [];
+  if (presencaConfirmada) {
+    clausulasDoTermo.push('Participou do Treinamento de Integração de Segurança do Trabalho (NR-01 item 1.7), recebendo orientações sobre os riscos ocupacionais, as medidas preventivas e os procedimentos em caso de emergência e primeiros socorros;');
+  }
+  if (workOrder) {
+    clausulasDoTermo.push('Recebeu e tomou conhecimento formal da Ordem de Serviço de Segurança e Saúde no Trabalho específica de sua função (NR-01 e Art. 157 da CLT);');
+  }
+  if (entregasDoColaborador.length > 0) {
+    clausulasDoTermo.push('Recebeu gratuitamente os Equipamentos de Proteção Individual (EPIs) adequados ao risco, com C.A. válido (NR-06), comprometendo-se ao uso, guarda e conservação;');
+  }
+  clausulasDoTermo.push('Foi orientado(a) de que o descumprimento das normas de segurança constitui ato faltoso passível de sanções disciplinares (Art. 158 da CLT c/c Art. 482 da CLT).');
+
+  const corpoDoTermo =
+    `O(A) empregado(a) acima qualificado(a) declara que, por ocasião de sua admissão na empresa ${client?.legal_name || client?.trade_name || 'EMPRESA CONTRATANTE'}:\n` +
+    clausulasDoTermo.map((c, i) => `${i + 1}. ${c}`).join('\n') +
+    (pendenciasDoKit.length > 0
+      ? '\n\nOs documentos listados no quadro de pendências ainda não têm registro no sistema e, por isso, não são declarados neste termo.'
+      : '');
+
   autoTable(doc, {
     startY: curY,
     margin: { left: margin, right: margin },
@@ -1949,7 +2094,7 @@ export function exportAdmissionKitPDF(
       { content: 'TERMO CONSOLIDADO DE INTEGRAÇÃO E CONFORMIDADE SST (CLT ART. 158)', styles: { fillColor: [30, 41, 59], textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 7.5 } }
     ]],
     body: [[
-      { content: `O(A) empregado(a) acima qualificado(a) declara que, por ocasião de sua admissão na empresa ${client?.legal_name || 'EMPRESA CONTRATANTE'}:\n1. Participou ativamente do Treinamento de Integração de Segurança do Trabalho (NR-01 item 1.7), recebendo orientações detalhadas sobre os riscos ocupacionais, medidas preventivas e procedimentos em caso de emergência e primeiros socorros;\n2. Recebeu e tomou conhecimento formal da Ordem de Serviço de Segurança e Saúde no Trabalho específica de sua função (NR-01 e Art. 157 da CLT);\n3. Recebeu gratuitamente os Equipamentos de Proteção Individual (EPIs) adequados ao risco com C.A. válido (NR-06), comprometendo-se ao uso, guarda e conservação;\n4. Foi orientado(a) de que o descumprimento das normas de segurança constitui ato faltoso passível de sanções disciplinares (Art. 158 da CLT c/c Art. 482 da CLT).` }
+      { content: corpoDoTermo }
     ]],
     styles: { fontSize: 7, cellPadding: 2.5, fillColor: [248, 250, 252] }
   });
@@ -1968,7 +2113,7 @@ export function exportAdmissionKitPDF(
   doc.setFontSize(6.5);
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(100, 116, 139);
-  doc.text(`Assinatura do Empregado (CPF: ${employee.cpf})`, margin + (cW / 2), curY + 18, { align: 'center' });
+  doc.text(`Assinatura do Empregado (CPF: ${formatarCPF(employee.cpf)})`, margin + (cW / 2), curY + 18, { align: 'center' });
 
   doc.line(margin + cW + 10, curY + 10, margin + (cW * 2) + 10, curY + 10);
   doc.setFontSize(7.5);
@@ -2013,19 +2158,30 @@ export function exportAdmissionKitPDF(
         ],
         [
           { content: 'Riscos Ocupacionais (PGR):', styles: { fontStyle: 'bold' } },
-          { content: `Físicos: ${workOrder.physical_risks?.join('; ') || 'Nenhum'}\nQuímicos: ${workOrder.chemical_risks?.join('; ') || 'Nenhum'}\nBiológicos: ${workOrder.biological_risks?.join('; ') || 'Nenhum'}\nErgonômicos: ${workOrder.ergonomic_risks?.join('; ') || 'Postural'}\nAcidentes: ${workOrder.accident_mechanical_risks?.join('; ') || 'Gerais'}` }
+          // Os vazios caiam em 'Postural' e 'Gerais': a OS assinada pelo
+          // trabalhador afirmava riscos que ninguém levantou.
+          { content: [
+              `Físicos: ${workOrder.physical_risks?.join('; ') || SEM_RISCO_NO_INVENTARIO}`,
+              `Químicos: ${workOrder.chemical_risks?.join('; ') || SEM_RISCO_NO_INVENTARIO}`,
+              `Biológicos: ${workOrder.biological_risks?.join('; ') || SEM_RISCO_NO_INVENTARIO}`,
+              `Ergonômicos: ${workOrder.ergonomic_risks?.join('; ') || SEM_RISCO_NO_INVENTARIO}`,
+              `Acidentes: ${workOrder.accident_mechanical_risks?.join('; ') || SEM_RISCO_NO_INVENTARIO}`
+            ].join('\n') }
         ],
         [
           { content: 'EPIs de Uso Obrigatório:', styles: { fontStyle: 'bold' } },
-          { content: workOrder.mandatory_epis?.map(e => `• ${e.epi_name} (CA ${e.ca_number}) - ${e.usage_recommendation}`).join('\n') || 'Conforme NR-06' }
+          // 'Conforme NR-06' dizia que havia EPI obrigatório sem dizer qual.
+          { content: workOrder.mandatory_epis && workOrder.mandatory_epis.length > 0
+              ? workOrder.mandatory_epis.map(e => `• ${e.epi_name}${e.ca_number ? ` (CA ${e.ca_number})` : ' (C.A. não informado)'}${e.usage_recommendation ? ` - ${e.usage_recommendation}` : ''}`).join('\n')
+              : 'Nenhum EPI obrigatório definido para a função no inventário de riscos.' }
         ],
         [
           { content: 'Procedimentos de Segurança:', styles: { fontStyle: 'bold' } },
-          { content: workOrder.safe_work_procedures?.map(p => `• ${p}`).join('\n') || 'Cumprir normas internas' }
+          { content: workOrder.safe_work_procedures?.map(p => `• ${p}`).join('\n') || 'Não informado' }
         ],
         [
           { content: 'Obrigações do Trabalhador:', styles: { fontStyle: 'bold' } },
-          { content: workOrder.mandatory_employee_obligations?.slice(0, 4).map(o => `• ${o}`).join('\n') || 'Cumprir a NR-01' }
+          { content: workOrder.mandatory_employee_obligations?.slice(0, 4).map(o => `• ${o}`).join('\n') || 'Não informado' }
         ]
       ],
       styles: { fontSize: 7, cellPadding: 2 }
@@ -2038,15 +2194,50 @@ export function exportAdmissionKitPDF(
     doc.text(employee.name, margin + (cW / 2), osY + 12, { align: 'center' });
     doc.setFontSize(6);
     doc.setFont('helvetica', 'normal');
-    doc.text(`CPF: ${employee.cpf}`, margin + (cW / 2), osY + 15, { align: 'center' });
+    doc.text(`CPF: ${formatarCPF(employee.cpf)}`, margin + (cW / 2), osY + 15, { align: 'center' });
 
     doc.line(margin + cW + 10, osY + 8, margin + (cW * 2) + 10, osY + 8);
     doc.setFontSize(7);
     doc.setFont('helvetica', 'bold');
-    doc.text(workOrder.responsible_engineer_name || 'Engenharia de Segurança', margin + cW + 10 + (cW / 2), osY + 12, { align: 'center' });
+    doc.text(workOrder.responsible_engineer_name || 'Responsável Técnico (não informado)', margin + cW + 10 + (cW / 2), osY + 12, { align: 'center' });
     doc.setFontSize(6);
     doc.setFont('helvetica', 'normal');
-    doc.text(workOrder.responsible_engineer_registration || 'SESMT', margin + cW + 10 + (cW / 2), osY + 15, { align: 'center' });
+    doc.text(workOrder.responsible_engineer_registration || 'Registro profissional não informado', margin + cW + 10 + (cW / 2), osY + 15, { align: 'center' });
+  } else {
+    // Sem OS, esta pagina saia COMPLETAMENTE EM BRANCO no meio do kit, sem
+    // dizer o que era nem por que estava vazia.
+    doc.setFillColor(15, 23, 42);
+    doc.rect(0, 0, pageWidth, 24, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'bold');
+    doc.text(organization.name || 'PREVSAFE SST', margin, 10);
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(148, 163, 184);
+    doc.text('ANEXO 1: ORDEM DE SERVIÇO NR-01 & ART. 157 CLT', margin, 16);
+    doc.setTextColor(255, 255, 255);
+    doc.setFont('helvetica', 'bold');
+    doc.text(employee.name, pageWidth - margin, 10, { align: 'right' });
+    doc.setFillColor(79, 70, 229);
+    doc.rect(0, 24, pageWidth, 1.5, 'F');
+
+    autoTable(doc, {
+      startY: 28,
+      margin: { left: margin, right: margin },
+      theme: 'grid',
+      head: [[
+        { content: 'ORDEM DE SERVIÇO NÃO GERADA', styles: { fillColor: [180, 83, 9], textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 8 } }
+      ]],
+      body: [[
+        { content:
+            `Não há Ordem de Serviço emitida para ${employee.name} (${employee.job_title}).\n\n` +
+            'A OS é o documento pelo qual o trabalhador dá ciência dos riscos da função ' +
+            '(NR-01 item 1.4.1 e Art. 157, II, da CLT) e não pode ser substituída por este aviso.\n\n' +
+            'Gere a OS em Engenharia SST > Ordens de Serviço (NR-01) e emita o kit novamente.' }
+      ]],
+      styles: { fontSize: 8, cellPadding: 3, fillColor: [255, 251, 235], textColor: [120, 53, 15] }
+    });
   }
 
   // ================= PAGE 3: FICHA DE ENTREGA DE EPI NR-06 =================
@@ -2067,20 +2258,22 @@ export function exportAdmissionKitPDF(
   doc.setFillColor(79, 70, 229);
   doc.rect(0, 24, pageWidth, 1.5, 'F');
 
-  const empDeliveries = deliveries.filter(d => d.employee_id === employee.id);
+  const empDeliveries = entregasDoColaborador;
   const epiRows = empDeliveries.map(d => [
     formatDate(d.delivery_date),
     d.ca_number,
     d.epi_name,
     d.quantity.toString(),
     'Admissional',
-    d.biometric_face_matched ? 'Biometria Facial ✓' : 'Assinatura',
+    d.biometric_face_matched ? 'Biometria Facial' : 'Assinatura',
     d.delivered_by_user_name || 'SESMT'
   ]);
 
   if (epiRows.length === 0) {
     for (let i = 1; i <= 6; i++) {
-      epiRows.push(['___/___/______', '_______', '___________________________________', '____', 'Admissional', '___________________________', '______________']);
+      // Cada campo cabe na largura da sua coluna. Os tamanhos anteriores
+      // estouravam e quebravam em duas linhas dentro da celula.
+      epiRows.push(['__/__/____', '________', '___________________________________', '____', 'Admissional', '____________________', '_________']);
     }
   }
 
@@ -2133,7 +2326,9 @@ export function exportAdmissionKitPDF(
   doc.text('ANEXO 3: LISTA DE PRESENÇA DO TREINAMENTO DE INTEGRAÇÃO (NR-01 ITEM 1.7)', margin, 16);
   doc.setTextColor(255, 255, 255);
   doc.setFont('helvetica', 'bold');
-  const tCode = training?.training_code || (training as any)?.code || 'CAP-INT-001';
+  // Era 'CAP-INT-001' fixo: sem treinamento, o anexo saia com um código
+  // de registro que não correspondia a nada.
+  const tCode = training?.training_code || (training as any)?.code || '';
   const tTitle = training?.training_title || (training as any)?.title || 'Treinamento Admissional de Integração em Segurança e Saúde no Trabalho (NR-01)';
   const tLocation = training?.location_or_platform || (training as any)?.location || '';
   const tInstructorName = training?.instructor_name || '';
@@ -2150,7 +2345,7 @@ export function exportAdmissionKitPDF(
     'Direitos e Deveres do Trabalhador (Art. 158 da CLT)'
   ];
 
-  doc.text(`Cód: ${tCode}`, pageWidth - margin, 10, { align: 'right' });
+  doc.text(tCode ? `Cód: ${tCode}` : 'Sem registro de treinamento', pageWidth - margin, 10, { align: 'right' });
   doc.setFillColor(79, 70, 229);
   doc.rect(0, 24, pageWidth, 1.5, 'F');
 
@@ -2166,25 +2361,40 @@ export function exportAdmissionKitPDF(
         { content: 'Treinamento:', styles: { fontStyle: 'bold', cellWidth: 28 } },
         { content: tTitle },
         { content: 'Carga Horária:', styles: { fontStyle: 'bold', cellWidth: 26 } },
-        { content: `${training?.workload_hours || 6} Horas (${training?.modality === 'PRESENTIAL' ? 'Presencial' : 'Híbrido'})` }
+        // Sem treinamento registrado saia "6 Horas (Híbrido)" - carga e
+        // modalidade de um curso que ninguém marcou.
+        { content: training
+            ? `${training.workload_hours} horas${modalidadeTreinamento ? ` (${modalidadeTreinamento})` : ''}`
+            : LINHA_PARA_PREENCHER }
       ],
       [
         { content: 'Data / Horário:', styles: { fontStyle: 'bold' } },
-        { content: `${formatDate(training?.start_date || employee.admission_date)} (Integral)` },
+        // A data vinha da ADMISSÃO quando nao havia treinamento, e o "(Integral)"
+        // era um horário inventado.
+        { content: training
+            ? `${formatDate(training.start_date)}${training.schedule_time ? ` — ${training.schedule_time}` : ''}`
+            : LINHA_PARA_PREENCHER },
         { content: 'Local:', styles: { fontStyle: 'bold' } },
-        { content: tLocation }
+        { content: tLocation || (training ? NAO_INFORMADO : LINHA_PARA_PREENCHER) }
       ],
       [
         { content: 'Instrutor:', styles: { fontStyle: 'bold' } },
-        { content: `${tInstructorName} (${tInstructorQualif})` },
+        // Saia "()" quando o nome e a qualificação estavam vazios.
+        { content: tInstructorName
+            ? `${tInstructorName}${tInstructorQualif ? ` (${tInstructorQualif})` : ''}`
+            : (training ? NAO_INFORMADO : LINHA_PARA_PREENCHER) },
         { content: 'Registro Instrutor:', styles: { fontStyle: 'bold' } },
-        { content: tInstructorReg }
+        { content: tInstructorReg || (training ? NAO_INFORMADO : LINHA_PARA_PREENCHER) }
       ],
       [
         { content: 'Responsável Técnico:', styles: { fontStyle: 'bold' } },
-        { content: `${tSupervisorName} (${training?.technical_supervisor_qualification || 'Engenheiro de Seg. Trabalho'})` },
+        // A qualificação caia em 'Engenheiro de Seg. Trabalho': o documento
+        // atribuía uma formação a quem quer que estivesse no campo.
+        { content: tSupervisorName
+            ? `${tSupervisorName}${training?.technical_supervisor_qualification ? ` (${training.technical_supervisor_qualification})` : ''}`
+            : RT_NAO_INFORMADO },
         { content: 'Registro Prof. RT:', styles: { fontStyle: 'bold' } },
-        { content: tSupervisorReg }
+        { content: tSupervisorReg || NAO_INFORMADO }
       ]
     ],
     styles: { fontSize: 7, cellPadding: 2 }
@@ -2201,7 +2411,11 @@ export function exportAdmissionKitPDF(
     margin: { left: margin, right: margin },
     theme: 'grid',
     head: [[
-      { content: 'CONTEÚDO PROGRAMÁTICO MINISTRADO (NR-01 SUBITEM 1.7.1)', styles: { fillColor: [51, 65, 85], textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 7.5 } }
+      // "MINISTRADO" so quando ha presenca confirmada; caso contrário o
+      // análogo correto e o conteúdo PREVISTO.
+      { content: presencaConfirmada
+          ? 'CONTEÚDO PROGRAMÁTICO MINISTRADO (NR-01 SUBITEM 1.7.1)'
+          : 'CONTEÚDO PROGRAMÁTICO PREVISTO (NR-01 SUBITEM 1.7.1)', styles: { fillColor: [51, 65, 85], textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 7.5 } }
     ]],
     body: [[
       { content: syllabusText }
@@ -2225,7 +2439,21 @@ export function exportAdmissionKitPDF(
       { content: 'Assinatura / Biometria', styles: { cellWidth: 34, halign: 'center' } }
     ]],
     body: [
-      ['1', employee.name, employee.cpf, employee.job_title, 'PRESENTE (100%)', 'Biometria Facial / Assinado']
+      // Era literal: 'PRESENTE (100%)' e 'Biometria Facial / Assinado' saiam
+      // impressos para todo mundo, inclusive sem treinamento registrado. Sem
+      // registro a linha fica em branco, para assinar na hora da aula.
+      [
+        '1',
+        employee.name,
+        formatarCPF(employee.cpf),
+        employee.job_title,
+        presencaConfirmada
+          ? `PRESENTE${participante?.attendance_rate_percent ? ` (${participante.attendance_rate_percent}%)` : ''}`
+          : '____________',
+        participante?.signed
+          ? (participante.signature_type === 'DIGITAL_BIOMETRIC' ? 'Biometria facial' : 'Assinado')
+          : '____________________'
+      ]
     ],
     styles: { fontSize: 7.2, cellPadding: 2.2 },
     headStyles: { fillColor: [30, 41, 59], textColor: [255, 255, 255] }
@@ -2237,18 +2465,23 @@ export function exportAdmissionKitPDF(
   doc.line(margin, trY + 8, margin + cW, trY + 8);
   doc.setFontSize(7);
   doc.setFont('helvetica', 'bold');
-  doc.text(tInstructorName, margin + (cW / 2), trY + 12, { align: 'center' });
+  doc.text(tInstructorName || 'Instrutor', margin + (cW / 2), trY + 12, { align: 'center' });
   doc.setFontSize(6);
   doc.setFont('helvetica', 'normal');
-  doc.text(tInstructorReg, margin + (cW / 2), trY + 15, { align: 'center' });
+  doc.text(tInstructorReg || 'Registro profissional', margin + (cW / 2), trY + 15, { align: 'center' });
 
   doc.line(margin + cW + 10, trY + 8, margin + (cW * 2) + 10, trY + 8);
   doc.setFontSize(7);
   doc.setFont('helvetica', 'bold');
-  doc.text(tSupervisorName, margin + cW + 10 + (cW / 2), trY + 12, { align: 'center' });
+  // O nome aqui era o RT_NAO_INFORMADO inteiro, com a instrução de
+  // configuração impressa embaixo da linha de assinatura.
+  doc.text(
+    organization?.technical_responsible_name?.trim() || 'Responsável Técnico SST',
+    margin + cW + 10 + (cW / 2), trY + 12, { align: 'center' }
+  );
   doc.setFontSize(6);
   doc.setFont('helvetica', 'normal');
-  doc.text(tSupervisorReg, margin + cW + 10 + (cW / 2), trY + 15, { align: 'center' });
+  doc.text(tSupervisorReg || 'Registro profissional', margin + cW + 10 + (cW / 2), trY + 15, { align: 'center' });
 
   applyPageNumbers(doc);
 
