@@ -41,6 +41,12 @@ import {
   normalizarCodigoTabela27,
   codigoExisteNaTabela27,
 } from '@/lib/tabela27';
+import {
+  consultarAgente,
+  codigoExisteNaTabela24,
+  formatoDoCodigoTabela24,
+  CODIGO_AUSENCIA_DE_RISCO,
+} from '@/lib/tabela24';
 import type {
   Employee,
   EmployeeASOHistory,
@@ -124,10 +130,14 @@ export function montarFatorDeRisco(risco: SSTEnvironmentalRisk): {
   const pendencias: PendenciaESocial[] = [];
   const onde = `Risco "${risco.agent_name || risco.id}"`;
 
-  const codigo = extrairCodigoTabela24(risco.risk_code_table_24);
-  if (!codigo) {
+  const codigo = formatoDoCodigoTabela24(risco.risk_code_table_24).codigo;
+  const agente = consultarAgente(codigo);
+
+  if (codigo && !agente) {
+    // Codigo preenchido que nao existe: era assim que "Ruido" carregava
+    // 01.01.001, que e Arsenio.
     pendencias.push({
-      motivo: 'Código da Tabela 24 do eSocial não informado no inventário de riscos.',
+      motivo: `O código ${codigo} não consta na Tabela 24 do eSocial.`,
       onde,
     });
   }
@@ -174,7 +184,9 @@ export function montarFatorDeRisco(risco: SSTEnvironmentalRisk): {
     id: risco.id,
     risk_code_table_24: codigo,
     category: categoria,
-    description: risco.agent_name || risco.risk_code_table_24 || 'Agente não descrito',
+    // A denominacao oficial do agente, quando o codigo existe: e ela que vale
+    // perante o governo, nao o nome interno do inventario.
+    description: agente?.nome || risco.agent_name || 'Agente não descrito',
     intensity_concentration: temMedicao
       ? `${risco.measured_value}${risco.measurement_unit ? ` ${risco.measurement_unit}` : ''}`
       : undefined,
@@ -222,18 +234,59 @@ export function montarCondicoesAmbientais(entrada: EntradaAmbiental): MontagemAm
   const pendencias: PendenciaESocial[] = [];
   const onde = `Colaborador ${entrada.colaborador.name}`;
 
+  // O S-2240 declara AGENTES NOCIVOS do Anexo IV do Decreto 3.048/1999, nao o
+  // inventario do PGR inteiro. Risco ergonomico e de acidente entram no PGR
+  // pela NR-01 e NAO tem codigo na Tabela 24 - manda-los para o evento seria
+  // declarar ao governo agente nocivo que a norma nao preve.
+  const comAgente = entrada.riscos.filter((r) => codigoExisteNaTabela24(r?.risk_code_table_24));
+  const semAgente = entrada.riscos.filter((r) => !codigoExisteNaTabela24(r?.risk_code_table_24));
+
   const fatores: ESocialAmbientRiskFactor[] = [];
-  entrada.riscos.forEach((r) => {
+  comAgente.forEach((r) => {
     const { fator, pendencias: p } = montarFatorDeRisco(r);
     fatores.push(fator);
     pendencias.push(...p);
   });
 
+  // Codigo PREENCHIDO que nao existe na tabela e erro e precisa aparecer.
+  // Codigo vazio e o estado normal de um risco ergonomico ou de acidente.
+  semAgente
+    .filter((r) => !!(r?.risk_code_table_24 || '').trim())
+    .forEach((r) => {
+      pendencias.push({
+        motivo:
+          `O risco "${r?.agent_name || r?.id}" tem o código ${r?.risk_code_table_24}, que não ` +
+          'consta na Tabela 24. Ele ficou de fora do evento.',
+        onde,
+      });
+    });
+
   if (fatores.length === 0) {
+    // Sem nenhum agente do Anexo IV, o que se declara e a AUSENCIA de agente
+    // nocivo - inclusive quando o PGR do colaborador tem riscos, desde que
+    // nenhum deles seja do Anexo IV.
+    fatores.push({
+      id: `ausencia-${entrada.colaborador.id}`,
+      risk_code_table_24: CODIGO_AUSENCIA_DE_RISCO,
+      category: 'AUSÊNCIA_RISCO',
+      description:
+        consultarAgente(CODIGO_AUSENCIA_DE_RISCO)?.nome || 'Ausência de agente nocivo',
+      epc_effective: false,
+      epi_effective: false,
+      is_insalubre: false,
+      is_periculoso: false,
+    });
+
     pendencias.push({
       motivo:
-        'Nenhum risco inventariado alcança este colaborador. O S-2240 exige ao menos um fator ' +
-        '(ou o código 09.01.001 - Ausência de Risco, que precisa ser declarado explicitamente no inventário).',
+        entrada.riscos.length === 0
+          ? 'Nenhum risco inventariado alcança este colaborador. O evento foi montado com ' +
+            `${CODIGO_AUSENCIA_DE_RISCO} (ausência de agente nocivo) — confirme se o inventário ` +
+            'do PGR está completo antes de transmitir.'
+          : `Os ${entrada.riscos.length} risco(s) deste colaborador não constam do Anexo IV do ` +
+            'Decreto 3.048/1999 (é o caso de riscos ergonômicos e de acidente). O evento foi ' +
+            `montado com ${CODIGO_AUSENCIA_DE_RISCO} (ausência de agente nocivo), que é o ` +
+            'correto — eles permanecem no PGR.',
       onde,
     });
   }

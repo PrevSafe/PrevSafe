@@ -1296,7 +1296,20 @@ export interface OccupationalRiskExamSuggestion {
 export interface OccupationalRiskCatalogItem {
   id: string;
   organization_id?: string;
-  code_table_24: string; // ex: "01.01.001", "02.01.014"
+  /**
+   * Codigo da Tabela 24 do eSocial - Agentes Nocivos (Anexo IV do Decreto
+   * 3.048/1999). OPCIONAL, e vazio e o estado NORMAL para boa parte dos
+   * riscos: ergonomicos, de acidente, frio e radiacao nao-ionizante integram o
+   * inventario do PGR pela NR-01 mas nao constam do Anexo IV, entao nao
+   * ensejam aposentadoria especial e nao sao declarados como agente nocivo no
+   * S-2240.
+   *
+   * Era obrigatorio, e por isso todos os 25 agentes do catalogo tinham um
+   * codigo - inclusive os que nao deveriam ter nenhum.
+   */
+  code_table_24?: string; // ex: "02.01.001" (Ruído), "01.18.001" (Sílica livre)
+  /** Por que nao ha codigo, ou qual escolher quando ha mais de um candidato. */
+  esocial_enquadramento_nota?: string;
   name: string;
   group: RiskCategoryType;
   category_color?: string;

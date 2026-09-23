@@ -138,7 +138,9 @@ const riscoMedido = {
   ghe_id: 'ghe-1',
   job_id: 'job-1',
   risk_category: 'FÍSICO',
-  risk_code_table_24: '01.01.001 - Ruído Contínuo ou Intermitente',
+  // 02.01.001 e o codigo do Ruido na Tabela 24. A fixture usava 01.01.001,
+  // que e Arsenio - o mesmo engano que o catalogo do sistema tinha.
+  risk_code_table_24: '02.01.001 - Ruído Contínuo ou Intermitente',
   agent_name: 'Ruído contínuo',
   evaluation_type: 'QUANTITATIVA',
   measured_value: '91.4',
@@ -161,8 +163,12 @@ const riscoMedido = {
     `intensidade vem do inventário: ${fator.intensity_concentration} (não "86.2 dB(A)" do código antigo)`
   );
   check(
-    fator.risk_code_table_24 === '01.01.001',
+    fator.risk_code_table_24 === '02.01.001',
     `código da Tabela 24 extraído sem a descrição: ${fator.risk_code_table_24}`
+  );
+  check(
+    fator.description === 'Ruído',
+    `a descrição é a denominação oficial da Tabela 24: "${fator.description}"`
   );
   check(
     fator.technique_used === 'NHO-01 Fundacentro, dosímetro classe 1',
@@ -254,8 +260,15 @@ console.log('\n--- responsável técnico ---');
   );
 }
 
-console.log('\n--- inventário vazio não vira "ausência de risco" silenciosa ---');
+console.log('\n--- sem agente do Anexo IV, declara ausência ---');
 {
+  // EXPECTATIVA CORRIGIDA. A versão anterior deste teste exigia
+  // `ambient_risks.length === 0` com inventário vazio, e eu a escrevi antes de
+  // ter a Tabela 24 em mãos. Com a tabela, o certo é outro: o S-2240 declara
+  // agentes do Anexo IV, e a AUSÊNCIA de agente tem código próprio
+  // (09.01.001). Uma lista vazia seria recusada pelo governo; 09.01.001 é a
+  // declaração correta. O que não pode é isso acontecer em silêncio — daí a
+  // pendência obrigatória.
   const semRisco = montarCondicoesAmbientais({
     colaborador,
     riscos: [],
@@ -263,10 +276,60 @@ console.log('\n--- inventário vazio não vira "ausência de risco" silenciosa -
     atividades: 'x',
     dataInicio: '2023-04-17',
   });
-  check(semRisco.dados.ambient_risks.length === 0, 'não inventa um fator de risco');
+  check(
+    semRisco.dados.ambient_risks.length === 1 &&
+      semRisco.dados.ambient_risks[0].risk_code_table_24 === '09.01.001',
+    'inventário vazio declara 09.01.001 (ausência de agente nocivo)'
+  );
+  check(
+    semRisco.dados.ambient_risks[0].category === 'AUSÊNCIA_RISCO',
+    'e no grupo de ausência de risco'
+  );
   check(
     semRisco.pendencias.some((p) => /nenhum risco inventariado/i.test(p.motivo)),
-    'a ausência de inventário é reportada como pendência'
+    'a ausência de inventário é reportada como pendência, não passa em silêncio'
+  );
+
+  // Riscos que existem mas NÃO são do Anexo IV: ergonômico e de acidente.
+  const soErgonomico = montarCondicoesAmbientais({
+    colaborador,
+    riscos: [
+      {
+        id: 'r-ergo',
+        client_id: 'cli-1',
+        ghe_id: 'ghe-1',
+        risk_category: 'ERGONÔMICO',
+        risk_code_table_24: '',
+        agent_name: 'Movimentos repetitivos',
+        evaluation_type: 'QUALITATIVA',
+        epis: [],
+      },
+    ],
+    ambiente: 'Planta 1',
+    atividades: 'x',
+    dataInicio: '2023-04-17',
+  });
+  check(
+    soErgonomico.dados.ambient_risks.length === 1 &&
+      soErgonomico.dados.ambient_risks[0].risk_code_table_24 === '09.01.001',
+    'risco ergonômico NÃO vira agente nocivo — declara 09.01.001'
+  );
+  check(
+    soErgonomico.pendencias.some((p) => /não constam do Anexo IV/i.test(p.motivo)),
+    'e explica que eles permanecem no PGR'
+  );
+
+  // Código PREENCHIDO que não existe na tabela continua sendo erro.
+  const codigoRuim = montarCondicoesAmbientais({
+    colaborador,
+    riscos: [{ ...riscoMedido, id: 'r-ruim', risk_code_table_24: '77.77.777' }],
+    ambiente: 'Planta 1',
+    atividades: 'x',
+    dataInicio: '2023-04-17',
+  });
+  check(
+    codigoRuim.pendencias.some((p) => /77\.77\.777/.test(p.motivo)),
+    'código preenchido que não existe na Tabela 24 é reportado'
   );
 }
 

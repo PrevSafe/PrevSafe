@@ -35,7 +35,7 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
   // =========================================================================
   {
     id: 'risk-cat-01',
-    code_table_24: '01.01.001',
+    code_table_24: '02.01.001',
     name: 'Ruído Contínuo ou Intermitente',
     group: 'FÍSICO',
     category_color: 'amber',
@@ -73,8 +73,9 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
   },
   {
     id: 'risk-cat-02',
-    code_table_24: '01.01.002',
+    code_table_24: '02.01.001',
     name: 'Ruído de Impacto',
+    esocial_enquadramento_nota: 'A Tabela 24 tem um único código para ruído (02.01.001). A distinção entre contínuo e de impacto é do PGR e da NR-15, não do enquadramento para aposentadoria especial.',
     group: 'FÍSICO',
     category_color: 'amber',
     generating_sources: 'Prensas de estampagem pesada, marteletes pneumáticos, forjarias, detonações de rochas e guilhotinas industriais.',
@@ -108,7 +109,7 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
   },
   {
     id: 'risk-cat-03',
-    code_table_24: '01.01.003',
+    code_table_24: '02.01.014',
     name: 'Calor e Sobrecarga Térmica (IBUTG)',
     group: 'FÍSICO',
     category_color: 'amber',
@@ -148,8 +149,9 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
   },
   {
     id: 'risk-cat-04',
-    code_table_24: '01.01.006',
+    code_table_24: '02.01.003',
     name: 'Vibrações de Corpo Inteiro (VCI)',
+    esocial_enquadramento_nota: 'A Tabela 24 separa a vibração de corpo inteiro por critério de medição: 02.01.003 usa a aceleração resultante de exposição normalizada (aren) e 02.01.004 usa o Valor da Dose de Vibração Resultante (VDVR). Confirme qual critério foi usado na avaliação.',
     group: 'FÍSICO',
     category_color: 'amber',
     generating_sources: 'Operação de tratores, caminhões fora-de-estrada, retroescavadeiras, empilhadeiras em pisos irregulares e trens.',
@@ -183,7 +185,7 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
   },
   {
     id: 'risk-cat-05',
-    code_table_24: '01.01.007',
+    code_table_24: '02.01.002',
     name: 'Vibrações de Mãos e Braços (VMB)',
     group: 'FÍSICO',
     category_color: 'amber',
@@ -217,8 +219,9 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
   },
   {
     id: 'risk-cat-06',
-    code_table_24: '01.01.004',
+    code_table_24: '',
     name: 'Radiações Não-Ionizantes (UV / Infravermelho de Solda e Laser)',
+    esocial_enquadramento_nota: 'Sem código na Tabela 24: o Anexo IV do Decreto 3.048/1999 prevê apenas radiações IONIZANTES (02.01.006). Radiação não-ionizante é risco do PGR pela NR-01, mas não enseja aposentadoria especial e não é declarada como agente nocivo no S-2240.',
     group: 'FÍSICO',
     category_color: 'amber',
     generating_sources: 'Processos de soldagem a arco elétrico (MIG/MAG, TIG, Eletrodo Revestido), corte a plasma, fornos de fusão e lasers industriais.',
@@ -253,8 +256,9 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
   },
   {
     id: 'risk-cat-07',
-    code_table_24: '01.01.008',
+    code_table_24: '',
     name: 'Frio e Câmaras Frigoríficas',
+    esocial_enquadramento_nota: 'Sem código na Tabela 24: o Anexo IV prevê apenas exposição ao CALOR (02.01.014). O frio é risco do PGR e pode gerar insalubridade pela NR-15 Anexo 9, mas não enseja aposentadoria especial.',
     group: 'FÍSICO',
     category_color: 'amber',
     generating_sources: 'Câmaras de congelamento e resfriamento, túneis de congelamento rápido, abate e desossa em frigoríficos.',
@@ -291,8 +295,9 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
   // =========================================================================
   {
     id: 'risk-cat-08',
-    code_table_24: '02.01.014',
+    code_table_24: '',
     name: 'Fumos Metálicos (Manganês, Ferro, Cromo, Níquel)',
+    esocial_enquadramento_nota: 'Enquadramento a definir pelo responsável técnico: o fumo é uma mistura, e a Tabela 24 traz um código por metal — manganês 01.14.001, cromo 01.10.001, níquel 01.16.001. Qual se aplica depende da composição levantada na avaliação. O ferro não consta do Anexo IV.',
     group: 'QUÍMICO',
     category_color: 'purple',
     generating_sources: 'Soldagem a arco elétrico (MIG/MAG, TIG, Eletrodo Revestido), corte térmico a maçarico oxicorte/plasma e goivagem.',
@@ -329,7 +334,7 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
   },
   {
     id: 'risk-cat-09',
-    code_table_24: '02.01.001',
+    code_table_24: '01.18.001',
     name: 'Poeiras Minerais / Sílica Livre Cristalizada (Quartzo)',
     group: 'QUÍMICO',
     category_color: 'purple',
@@ -364,8 +369,9 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
   },
   {
     id: 'risk-cat-10',
-    code_table_24: '02.01.025',
+    code_table_24: '',
     name: 'Vapores Orgânicos e Hidrocarbonetos Aromáticos (Tolueno, Xileno, Thinner)',
+    esocial_enquadramento_nota: 'Enquadramento a definir pelo responsável técnico: tolueno e xileno não constam nominalmente do Anexo IV. Conforme o produto e a composição, pode caber 01.17.001 (derivados de petróleo) ou 01.03.001 (benzeno e seus compostos tóxicos, se houver benzeno). A escolha depende da FISPQ e da avaliação.',
     group: 'QUÍMICO',
     category_color: 'purple',
     generating_sources: 'Pintura a pistola em cabines e campo, desengraxe de peças mecânicas, aplicação de resinas epóxi, vernizes e solventes de limpeza.',
@@ -404,8 +410,9 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
   },
   {
     id: 'risk-cat-11',
-    code_table_24: '02.01.040',
+    code_table_24: '',
     name: 'Ácidos e Álcalis Cáusticos (Ácido Sulfúrico, Clorídrico, Soda Cáustica)',
+    esocial_enquadramento_nota: 'Sem código na Tabela 24: ácidos e álcalis cáusticos não constam do Anexo IV do Decreto 3.048/1999. São risco químico do PGR e podem gerar insalubridade pela NR-15, mas não ensejam aposentadoria especial.',
     group: 'QUÍMICO',
     category_color: 'purple',
     generating_sources: 'Banhos de decapagem galvânica, estações de tratamento de efluentes (ETE), recarga e manutenção de baterias chumbo-ácido.',
@@ -440,7 +447,7 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
   },
   {
     id: 'risk-cat-12',
-    code_table_24: '02.01.060',
+    code_table_24: '01.17.001',
     name: 'Óleos Minerais e Graxas Derivadas de Petróleo',
     group: 'QUÍMICO',
     category_color: 'purple',
@@ -517,8 +524,9 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
   },
   {
     id: 'risk-cat-14',
-    code_table_24: '03.01.002',
+    code_table_24: '03.01.005',
     name: 'Contato com Esgotos, Galerias e Resíduos Urbanos',
+    esocial_enquadramento_nota: 'A Tabela 24 separa as atividades: 03.01.005 cobre galerias, fossas e tanques de esgoto; 03.01.007 cobre coleta e industrialização do lixo. Se a atividade for de resíduos urbanos, use 03.01.007.',
     group: 'BIOLÓGICO',
     category_color: 'emerald',
     generating_sources: 'Coleta de lixo domiciliar/urbano, limpeza e desobstrução de galerias de esgoto sanitário, estações de tratamento e tanques sépticos.',
@@ -556,8 +564,9 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
   // =========================================================================
   {
     id: 'risk-cat-15',
-    code_table_24: '04.01.001',
+    code_table_24: '',
     name: 'Levantamento, Transporte e Descarga Manual de Cargas Pesadas',
+    esocial_enquadramento_nota: 'Sem código na Tabela 24: riscos ergonômicos não constam do Anexo IV do Decreto 3.048/1999. Integram o inventário do PGR pela NR-01 e a AET pela NR-17, mas não ensejam aposentadoria especial e não são declarados como agente nocivo no S-2240.',
     group: 'ERGONÔMICO',
     category_color: 'blue',
     generating_sources: 'Carregamento manual de sacarias de 25kg/50kg, caixas, lingotes metálicos, tambores e peças de reposição pesadas.',
@@ -589,8 +598,9 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
   },
   {
     id: 'risk-cat-16',
-    code_table_24: '04.01.002',
+    code_table_24: '',
     name: 'Exigência de Posturas Incômodas, Estáticas ou Forçadas por Longos Períodos',
+    esocial_enquadramento_nota: 'Sem código na Tabela 24: riscos ergonômicos não constam do Anexo IV do Decreto 3.048/1999. Integram o inventário do PGR pela NR-01 e a AET pela NR-17.',
     group: 'ERGONÔMICO',
     category_color: 'blue',
     generating_sources: 'Trabalho contínuo em pé sem pausas, agachado em manutenção veicular, braços elevados acima do ombro ou tronco flexionado.',
@@ -618,8 +628,9 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
   },
   {
     id: 'risk-cat-17',
-    code_table_24: '04.01.003',
+    code_table_24: '',
     name: 'Movimentos Repetitivos de Membros Superiores (Digitação, Montagem)',
+    esocial_enquadramento_nota: 'Sem código na Tabela 24: riscos ergonômicos não constam do Anexo IV do Decreto 3.048/1999. Integram o inventário do PGR pela NR-01 e a AET pela NR-17.',
     group: 'ERGONÔMICO',
     category_color: 'blue',
     generating_sources: 'Linhas de montagem rápida industrial, corte e desossa em frigoríficos, digitação contínua e operação de caixas de supermercado.',
@@ -652,8 +663,9 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
   // =========================================================================
   {
     id: 'risk-cat-18',
-    code_table_24: '05.01.001',
+    code_table_24: '',
     name: 'Risco de Queda com Diferença de Nível / Trabalho em Altura (NR-35)',
+    esocial_enquadramento_nota: 'Sem código na Tabela 24: riscos de acidente não constam do Anexo IV do Decreto 3.048/1999. Integram o inventário do PGR pela NR-01 e são tratados pela NR-35, mas não ensejam aposentadoria especial.',
     group: 'ACIDENTES',
     category_color: 'rose',
     generating_sources: 'Atividades executadas acima de 2,00m do nível inferior com risco de queda: andaimes, telhados, escadas móveis, torres de transmissão e plataformas elevatórias.',
@@ -688,8 +700,9 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
   },
   {
     id: 'risk-cat-19',
-    code_table_24: '05.01.002',
+    code_table_24: '',
     name: 'Máquinas e Equipamentos sem Proteção Móvel ou Fixa (NR-12)',
+    esocial_enquadramento_nota: 'Sem código na Tabela 24: riscos de acidente não constam do Anexo IV. Integram o PGR pela NR-01 e são tratados pela NR-12.',
     group: 'ACIDENTES',
     category_color: 'rose',
     generating_sources: 'Prensas mecânicas excêntricas, guilhotinas, calandras, esteiras transportadoras sem cabo de emergência, eixos cardans e correias sem proteção.',
@@ -721,8 +734,9 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
   },
   {
     id: 'risk-cat-20',
-    code_table_24: '05.01.003',
+    code_table_24: '',
     name: 'Eletricidade / Choque Elétrico e Arco Voltaico (NR-10)',
+    esocial_enquadramento_nota: 'Sem código na Tabela 24: a eletricidade não consta do Anexo IV do Decreto 3.048/1999. Integra o PGR pela NR-01 e é tratada pela NR-10; a periculosidade vem da NR-16 Anexo 4, que é adicional de 30%, não aposentadoria especial.',
     group: 'ACIDENTES',
     category_color: 'rose',
     generating_sources: 'Manutenção em subestações, painéis de baixa/média tensão (QGBT), barramentos energizados, troca de disjuntores e fiações aéreas.',
@@ -758,8 +772,9 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
   },
   {
     id: 'risk-cat-21',
-    code_table_24: '05.01.004',
+    code_table_24: '',
     name: 'Espaço Confinado / Asfixia e Atmosferas Perigosas (NR-33)',
+    esocial_enquadramento_nota: 'Sem código na Tabela 24: o espaço confinado em si não consta do Anexo IV. Integra o PGR pela NR-01 e é tratado pela NR-33. O agente presente na atmosfera pode ter código próprio — se houver, cadastre-o como agente separado.',
     group: 'ACIDENTES',
     category_color: 'rose',
     generating_sources: 'Trabalhos no interior de silos, tanques de combustível, galerias subterrâneas, caldeiras desativadas, esgotos e reatores químicos.',
@@ -793,8 +808,9 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
   },
   {
     id: 'risk-cat-22',
-    code_table_24: '05.01.005',
+    code_table_24: '',
     name: 'Incêndio e Explosão / Inflamáveis e Combustíveis (NR-20)',
+    esocial_enquadramento_nota: 'Sem código na Tabela 24: risco de incêndio e explosão não consta do Anexo IV. Integra o PGR pela NR-01 e é tratado pela NR-20; a periculosidade vem da NR-16 Anexo 2.',
     group: 'ACIDENTES',
     category_color: 'rose',
     generating_sources: 'Armazenamento e trasfega de combustíveis líquidos (gasolina, diesel, etanol), depósitos de GLP, pintura industrial e atmosferas com poeiras combustíveis.',
@@ -826,8 +842,9 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
   },
   {
     id: 'risk-cat-23',
-    code_table_24: '05.01.006',
+    code_table_24: '',
     name: 'Projeção de Fragmentos, Partículas Volantes e Respingo de Líquidos',
+    esocial_enquadramento_nota: 'Sem código na Tabela 24: riscos de acidente não constam do Anexo IV. Integram o PGR pela NR-01.',
     group: 'ACIDENTES',
     category_color: 'rose',
     generating_sources: 'Esmerilhamento de soldas, lixamento mecânico, torneamento e fresamento de metais, corte com serra rápida e sopro com ar comprimido.',
@@ -859,8 +876,9 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
   },
   {
     id: 'risk-cat-24',
-    code_table_24: '05.01.007',
+    code_table_24: '',
     name: 'Atropelamento e Colisão por Empilhadeiras e Veículos Industriais (NR-11)',
+    esocial_enquadramento_nota: 'Sem código na Tabela 24: riscos de acidente não constam do Anexo IV. Integram o PGR pela NR-01 e são tratados pela NR-11.',
     group: 'ACIDENTES',
     category_color: 'rose',
     generating_sources: 'Operação de empilhadeiras a gás/elétricas, transpaleteiras elétricas, rebocadores e caminhões em centros de distribuição e galpões.',

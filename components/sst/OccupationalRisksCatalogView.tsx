@@ -5,7 +5,8 @@ import { usePrevSafe } from '@/context/PrevSafeContext';
 import { OccupationalRiskCatalogItem, RiskCategoryType } from '@/types';
 import { SeletorTabela27 } from './SeletorTabela27';
 import { consultarProcedimento, codigoExisteNaTabela27 } from '@/lib/tabela27';
-import { formatoDoCodigoTabela24, codigosDuplicados } from '@/lib/tabela24';
+import { formatoDoCodigoTabela24, codigosDuplicados, consultarAgente, codigoExisteNaTabela24 } from '@/lib/tabela24';
+import { SeletorTabela24 } from './SeletorTabela24';
 import { 
   ShieldAlert, 
   Plus, 
@@ -220,22 +221,33 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
       alert('Informe o nome do agente de risco.');
       return;
     }
-    const formato = formatoDoCodigoTabela24(form.risk_code_table_24);
-    if (!formato.valido) {
-      alert(formato.motivo);
-      return;
-    }
-    // O mesmo codigo em dois agentes diferentes torna impossivel saber qual
-    // deles o S-2240 esta declarando.
-    const jaUsado = occupationalRisksCatalog.find(
-      r => r.code_table_24 === formato.codigo && r.id !== editingItem?.id
-    );
-    if (jaUsado) {
+    // Codigo VAZIO e valido: o risco entra no PGR sem ser agente nocivo do
+    // Anexo IV. So se confere o que foi preenchido.
+    const codigoInformado = (form.risk_code_table_24 || '').trim();
+    if (codigoInformado && !codigoExisteNaTabela24(codigoInformado)) {
       alert(
-        `O código ${formato.codigo} já está cadastrado em "${jaUsado.name}". ` +
-        'Cada código da Tabela 24 identifica um agente — use o código correto deste.'
+        formatoDoCodigoTabela24(codigoInformado).motivo ||
+        `O código ${codigoInformado} não consta na Tabela 24. Escolha o agente na lista, ou ` +
+        'deixe vazio se este risco não enseja aposentadoria especial.'
       );
       return;
+    }
+
+    // Repetir um codigo nao e necessariamente erro - "Ruido continuo" e "Ruido
+    // de impacto" sao dois agentes do PGR e um unico codigo (02.01.001). Por
+    // isso avisa e deixa decidir, em vez de bloquear.
+    if (codigoInformado) {
+      const jaUsado = occupationalRisksCatalog.find(
+        r => r.code_table_24 === codigoInformado && r.id !== editingItem?.id
+      );
+      if (jaUsado) {
+        const segue = confirm(
+          `O código ${codigoInformado} já está em "${jaUsado.name}".\n\n` +
+          'Isso é correto quando dois agentes do PGR têm o mesmo enquadramento no Anexo IV ' +
+          '(por exemplo ruído contínuo e ruído de impacto, ambos 02.01.001).\n\nDeseja continuar?'
+        );
+        if (!segue) return;
+      }
     }
     const examesInvalidos = form.suggested_exams.filter(ex => !codigoExisteNaTabela27(ex.codigo));
     if (examesInvalidos.length > 0) {
@@ -275,7 +287,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
     }));
 
     const payload = {
-      code_table_24: formatoDoCodigoTabela24(form.risk_code_table_24).codigo,
+      code_table_24: (form.risk_code_table_24 || '').trim() || undefined,
       name: form.agent_name,
       group: form.group,
       evaluation_type: form.evaluation_type_standard,
@@ -664,27 +676,42 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                           <span className={`px-2 py-0.5 rounded text-xs font-bold border ${getGroupBadgeColor(item.group)}`}>
                             {item.group}
                           </span>
-                          <span className="font-mono text-xs font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200">
-                            eSocial {item.code_table_24}
-                          </span>
-                          {/* Codigo fora do formato, ou repetido em outro
-                              agente, fica VISIVEL: o catalogo tinha 05.01.001
-                              em dois itens opostos - queda em altura e
-                              ausencia de risco - e ninguem notou. */}
-                          {!formatoDoCodigoTabela24(item.code_table_24).valido && (
+                          {/* Sem codigo e o estado NORMAL para risco
+                              ergonomico e de acidente: eles entram no PGR mas
+                              nao constam do Anexo IV. Por isso o selo e neutro,
+                              nao um alerta. */}
+                          {item.code_table_24 ? (
                             <span
-                              className="text-xs font-bold px-2 py-0.5 rounded bg-rose-50 text-rose-700 border border-rose-200"
-                              title={formatoDoCodigoTabela24(item.code_table_24).motivo}
+                              className="font-mono text-xs font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200"
+                              title={consultarAgente(item.code_table_24)?.nome}
                             >
-                              código fora do formato
+                              eSocial {item.code_table_24}
+                            </span>
+                          ) : (
+                            <span
+                              className="text-xs font-semibold px-2 py-0.5 rounded bg-slate-50 text-slate-500 border border-slate-200"
+                              title="Risco do PGR sem agente nocivo correspondente no Anexo IV do Decreto 3.048/1999. Não é declarado no S-2240."
+                            >
+                              sem agente do Anexo IV
                             </span>
                           )}
-                          {codigosRepetidos.has(item.code_table_24) && (
+                          {/* Codigo preenchido que NAO existe na tabela e erro
+                              de verdade: era assim que "Ruído" carregava
+                              01.01.001, que é Arsênio. */}
+                          {!!item.code_table_24 && !codigoExisteNaTabela24(item.code_table_24) && (
                             <span
-                              className="text-xs font-bold px-2 py-0.5 rounded bg-amber-50 text-amber-700 border border-amber-200"
-                              title={`Este código também está em: ${codigosRepetidos.get(item.code_table_24)?.join('; ')}`}
+                              className="text-xs font-bold px-2 py-0.5 rounded bg-rose-50 text-rose-700 border border-rose-200"
+                              title={formatoDoCodigoTabela24(item.code_table_24).motivo || 'Este código não consta na Tabela 24.'}
                             >
-                              código repetido
+                              código inexistente
+                            </span>
+                          )}
+                          {!!item.code_table_24 && codigosRepetidos.has(item.code_table_24) && (
+                            <span
+                              className="text-xs font-semibold px-2 py-0.5 rounded bg-amber-50 text-amber-700 border border-amber-200"
+                              title={`Mesmo enquadramento de: ${codigosRepetidos.get(item.code_table_24)?.join('; ')}`}
+                            >
+                              enquadramento compartilhado
                             </span>
                           )}
                           <span className="text-xs font-semibold text-slate-600">
@@ -702,6 +729,26 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                         <h3 className="text-base font-bold text-slate-900">
                           {item.name}
                         </h3>
+
+                        {/* Denominação oficial do agente, quando difere do nome
+                            usado no catálogo: é ela que vale no S-2240. */}
+                        {!!item.code_table_24 && consultarAgente(item.code_table_24)?.nome !== item.name && (
+                          <p className="text-xs text-slate-500">
+                            Agente no eSocial:{' '}
+                            <span className="text-slate-700">
+                              {consultarAgente(item.code_table_24)?.nome}
+                            </span>
+                          </p>
+                        )}
+
+                        {/* Por que não há código, ou qual escolher quando há
+                            mais de um candidato. */}
+                        {item.esocial_enquadramento_nota && (
+                          <p className="text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded p-2">
+                            <span className="font-semibold">Enquadramento no eSocial:</span>{' '}
+                            {item.esocial_enquadramento_nota}
+                          </p>
+                        )}
 
                         <p className="text-sm text-slate-600">
                           <span className="font-semibold text-slate-700">Danos Prováveis à Saúde:</span> {item.health_effects}
@@ -831,17 +878,17 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
 
             <form onSubmit={handleSaveRisk} className="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
+                {/* Era texto livre e obrigatorio. Os dois estavam errados: o
+                    codigo precisa vir da tabela, e VAZIO e resposta valida -
+                    risco ergonomico e de acidente nao constam do Anexo IV. */}
+                <div className="md:col-span-2">
                   <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
-                    Código eSocial (Tabela 24) *
+                    Agente nocivo (Tabela 24 do eSocial)
                   </label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="Ex: 01.01.001"
-                    value={form.risk_code_table_24}
-                    onChange={(e) => setForm({ ...form, risk_code_table_24: e.target.value })}
-                    className="w-full px-3 py-2 text-sm font-mono border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  <SeletorTabela24
+                    codigo={form.risk_code_table_24}
+                    onSelecionar={(a) => setForm({ ...form, risk_code_table_24: a.codigo })}
+                    onLimpar={() => setForm({ ...form, risk_code_table_24: '' })}
                   />
                 </div>
 
