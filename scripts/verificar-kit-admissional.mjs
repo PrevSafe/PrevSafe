@@ -59,7 +59,10 @@ fs.writeFileSync(
       baseUrl: RAIZ,
       paths: { '@/*': ['./*'] },
     },
-    files: [path.join(RAIZ, 'lib/pdfExportService.ts')],
+    files: [
+      path.join(RAIZ, 'lib/pdfExportService.ts'),
+      path.join(RAIZ, 'lib/limpezaDeOrdensDeServico.ts'),
+    ],
   })
 );
 
@@ -204,6 +207,7 @@ const recepcionistaSemNada = {
   job_title: 'Recepcionista',
   cbo: '4221-05',
   sector_name: 'Atendimento',
+  ghe_id: 'ghe-atendimento',
   ghe_name: 'Atendimento',
   status: 'ACTIVE',
   aso_history: [],
@@ -222,6 +226,26 @@ const recepcionistaCompleta = {
       physician_name: 'Dra. Helena Rocha',
       physician_crm: '54321',
       physician_uf: 'BA',
+      exams: [
+        {
+          id: 'ex-1',
+          exam_code_table_27: '0295',
+          exam_name: 'Avaliação clínica ocupacional (anamnese e exame físico)',
+          exam_date: '2026-08-10',
+          procedure_type: 'CLINICO',
+          result: 'NORMAL',
+          protocol_id: 'prot-1',
+        },
+        {
+          id: 'ex-2',
+          exam_code_table_27: '0281',
+          exam_name: 'Audiometria tonal ocupacional',
+          exam_date: '2026-08-10',
+          procedure_type: 'AUDIOMETRIA',
+          result: 'ALTERADO',
+          protocol_id: 'prot-2',
+        },
+      ],
     },
   ],
 };
@@ -311,16 +335,58 @@ const ENTREGA_DE_EPI = {
   delivered_by_user_name: 'Almoxarifado',
 };
 
+/**
+ * Protocolos do PCMSO aplicados ao GHE. Sem eles o kit nao tinha como mostrar
+ * "o exame que foi aplicado" - era a segunda queixa do usuario.
+ */
+const PROTOCOLOS = [
+  {
+    id: 'prot-1',
+    client_id: 'cli-1',
+    ghe_id: 'ghe-atendimento',
+    exam_code_table_27: '0295',
+    exam_name: 'Avaliação clínica ocupacional',
+    periodicity_months: 12,
+    triggers: ['ADMISSIONAL', 'PERIODICO', 'DEMISSIONAL'],
+    mandatory_by_standard: 'NR-07',
+    status: 'ACTIVE',
+  },
+  {
+    id: 'prot-2',
+    client_id: 'cli-1',
+    ghe_id: 'ghe-atendimento',
+    exam_code_table_27: '0281',
+    exam_name: 'Audiometria tonal ocupacional',
+    periodicity_months: 12,
+    triggers: ['ADMISSIONAL', 'PERIODICO'],
+    mandatory_by_standard: 'NR-07',
+    status: 'ACTIVE',
+  },
+  {
+    // Protocolo de OUTRO cliente: nao pode aparecer neste kit.
+    id: 'prot-outro',
+    client_id: 'cli-9',
+    ghe_id: 'ghe-de-outra-empresa',
+    exam_code_table_27: '1057',
+    exam_name: 'Prova de função pulmonar completa',
+    periodicity_months: 12,
+    triggers: ['ADMISSIONAL'],
+    mandatory_by_standard: 'NR-07',
+    status: 'ACTIVE',
+  },
+];
+
 // ===========================================================================
 // 1. RENDERIZACAO — nenhuma string pode cair em UTF-16BE
 // ===========================================================================
 console.log('\n--- 1. Renderização (o "R e g u l a r" do relatório) ---');
 
 const cenarios = [
-  ['sem nada registrado', [recepcionistaSemNada, null, [], null, ORGANIZACAO_SEM_RT, CLIENTE]],
-  ['tudo registrado', [recepcionistaCompleta, ORDEM_DE_SERVICO, [ENTREGA_DE_EPI], TREINAMENTO_FEITO, ORGANIZACAO, CLIENTE]],
-  ['ASO inapto', [recepcionistaInapta, ORDEM_DE_SERVICO, [ENTREGA_DE_EPI], TREINAMENTO_FEITO, ORGANIZACAO, CLIENTE]],
-  ['treinamento agendado', [recepcionistaSemNada, ORDEM_DE_SERVICO, [], TREINAMENTO_AGENDADO, ORGANIZACAO, CLIENTE]],
+  // Sem nada: nem protocolo de exame aplicado ao GHE.
+  ['sem nada registrado', [recepcionistaSemNada, null, [], null, ORGANIZACAO_SEM_RT, CLIENTE, []]],
+  ['tudo registrado', [recepcionistaCompleta, ORDEM_DE_SERVICO, [ENTREGA_DE_EPI], TREINAMENTO_FEITO, ORGANIZACAO, CLIENTE, PROTOCOLOS]],
+  ['ASO inapto', [recepcionistaInapta, ORDEM_DE_SERVICO, [ENTREGA_DE_EPI], TREINAMENTO_FEITO, ORGANIZACAO, CLIENTE, PROTOCOLOS]],
+  ['treinamento agendado', [recepcionistaSemNada, ORDEM_DE_SERVICO, [], TREINAMENTO_AGENDADO, ORGANIZACAO, CLIENTE, PROTOCOLOS]],
 ];
 
 const pdfs = {};
@@ -342,8 +408,8 @@ const agendado = textoDoPdf(pdfs['treinamento agendado']);
 const completoCorrido = textoCorrido(pdfs['tudo registrado']);
 
 if (process.env.LER) {
-  console.log('===== KIT SEM NADA REGISTRADO =====');
-  console.log(semNada);
+  console.log('===== ' + (process.env.LER === 'cheio' ? 'KIT COMPLETO' : 'KIT SEM NADA') + ' =====');
+  console.log(process.env.LER === 'cheio' ? completo : semNada);
   process.exit(0);
 }
 
@@ -457,6 +523,165 @@ check(!agendado.includes('PRESENTE'), 'não marca presença de quem ainda não a
 check(agendado.includes('CONTEÚDO PROGRAMÁTICO PREVISTO'), 'conteúdo previsto enquanto a aula não ocorre');
 
 // ===========================================================================
+// 5b. O EXAME APLICADO AO GHE CHEGA AO KIT
+// ===========================================================================
+// "nao trouxe o exame que foi aplicado": o kit tinha quatro paginas e nenhuma
+// delas mostrava exame nenhum.
+console.log('\n--- 5b. Anexo de exames (PCMSO / ASO) ---');
+
+check(completo.includes('ANEXO 4: EXAMES OCUPACIONAIS DO PCMSO'), 'o kit traz o anexo de exames');
+check(completo.includes('0295'), 'traz o código do exame aplicado ao GHE');
+check(completo.includes('0281'), 'traz o segundo exame aplicado ao GHE');
+check(
+  completoCorrido.includes('Audiometria tonal ocupacional'),
+  'traz a denominação oficial da Tabela 27'
+);
+check(!completo.includes('1057'), 'NÃO traz o exame do protocolo de outro cliente');
+check(completo.includes('Alterado'), 'traz o resultado lançado do exame');
+check(completo.includes('Dra. Helena Rocha'), 'o anexo nomeia o médico examinador');
+check(completoCorrido.includes('Válido até'), 'o anexo traz a validade do ASO');
+
+// Sem protocolo aplicado, o anexo diz onde resolver em vez de sair vazio.
+check(
+  semNada.includes('NENHUM EXAME APLICADO AO GHE DESTA FUNÇÃO'),
+  'sem protocolo, o anexo avisa em vez de sair em branco'
+);
+check(
+  semNada.includes('2. GHE & Inventário de Riscos > botão "Aplicar Exame"'),
+  'o aviso diz onde aplicar o exame'
+);
+check(
+  semNada.includes('Nenhum exame do PCMSO aplicado ao GHE desta função'),
+  'a falta de exame entra no quadro de pendências'
+);
+
+// ASO registrado sem os exames lancados: o S-2220 sai incompleto.
+const semExamesLancados = { ...recepcionistaCompleta, id: 'emp-4' };
+semExamesLancados.aso_history = [{ ...recepcionistaCompleta.aso_history[0], exams: [] }];
+const pdfSemLancamento = textoDoPdf(
+  gerar([semExamesLancados, ORDEM_DE_SERVICO, [ENTREGA_DE_EPI], TREINAMENTO_FEITO, ORGANIZACAO, CLIENTE, PROTOCOLOS])
+);
+check(
+  pdfSemLancamento.includes('ASO registrado sem o lançamento dos 2 exame(s)'),
+  'ASO sem exames lançados vira pendência, com a contagem certa'
+);
+
+// ===========================================================================
+// 5c. O CARIMBO DE VERSAO
+// ===========================================================================
+// O usuario gerou o kit depois da correcao e recebeu o PDF antigo: o
+// navegador rodou um bundle em cache. Do PDF nao dava para saber. Agora da.
+console.log('\n--- 5c. Carimbo da versão no rodapé ---');
+
+const VERSAO_ESPERADA = fs
+  .readFileSync(path.join(RAIZ, 'lib/versaoDoDocumento.ts'), 'utf8')
+  .match(/VERSAO_PUBLICADA = '([^']+)'/)?.[1];
+check(!!VERSAO_ESPERADA, 'lib/versaoDoDocumento.ts declara a versão publicada');
+check(
+  completoCorrido.includes(`v${VERSAO_ESPERADA}`),
+  `todo PDF sai carimbado com a versão (v${VERSAO_ESPERADA})`
+);
+
+// ===========================================================================
+// 5d. A OS JA GRAVADA COM DADOS INVENTADOS
+// ===========================================================================
+// Corrigir o gerador nao alcanca as OS que ja estao no banco: elas continuam
+// sendo impressas no kit exatamente como foram criadas.
+console.log('\n--- 5d. Limpeza das Ordens de Serviço já gravadas ---');
+
+const CAMINHO_LIMPEZA = achar('limpezaDeOrdensDeServico.js');
+let limpeza = null;
+if (CAMINHO_LIMPEZA) {
+  try {
+    limpeza = require_(CAMINHO_LIMPEZA);
+  } catch (e) {
+    console.log('     (não foi possível carregar a limpeza: ' + e.message + ')');
+  }
+}
+check(!!limpeza?.limparOrdemDeServico, 'limparOrdemDeServico está disponível');
+
+if (limpeza?.limparOrdemDeServico) {
+  // A OS real da recepcionista, como o gerador antigo a gravou.
+  const osPoluida = {
+    id: 'os-velha',
+    employee_id: 'emp-1',
+    os_code: 'OS-NR01-2026-0002',
+    physical_risks: ['Ruído de fundo operacional e iluminação de área de trabalho'],
+    chemical_risks: ['Ausência de exposição habitual a agentes químicos agressivos'],
+    biological_risks: ['Ausência de exposição a micro-organismos patogênicos'],
+    ergonomic_risks: ['Postura de trabalho com exigência de atenção contínua e esforço visual'],
+    accident_mechanical_risks: ['Queda em mesmo nível, tropeços e contato com quinas de móveis/máquinas'],
+    collective_protections_epc: [
+      'Iluminação natural e artificial dimensionada conforme NHO-11',
+      'Sistema de combate a incêndio com extintores e hidrantes inspecionados',
+    ],
+    routine_activities: [
+      'Executa rotinas administrativas na recepção.',
+      'Manutenção da ordem e limpeza do posto de trabalho 5S',
+      'Participar dos DDS (Diálogos Diários de Segurança)',
+    ],
+    mandatory_epis: [
+      {
+        epi_name: 'Protetor Auditivo de Inserção tipo Plug Silicone',
+        ca_number: '14235',
+        usage_recommendation: 'Uso obrigatório nas dependências operacionais',
+      },
+    ],
+  };
+
+  const limpa = limpeza.limparOrdemDeServico(osPoluida);
+
+  check(
+    !JSON.stringify(limpa).includes('Ruído de fundo operacional'),
+    'remove o risco físico inventado da OS gravada'
+  );
+  check(
+    !JSON.stringify(limpa).includes('quinas de móveis'),
+    'remove o risco de acidente inventado da OS gravada'
+  );
+  check(limpa.mandatory_epis.length === 0, 'remove o EPI pescado do catálogo (CA 14235)');
+  check(
+    limpa.collective_protections_epc.length === 0,
+    'remove as proteções coletivas afirmadas sem visita'
+  );
+  check(
+    limpa.routine_activities.length === 1 &&
+      limpa.routine_activities[0].includes('rotinas administrativas'),
+    'mantém a rotina real do cargo e remove 5S/DDS'
+  );
+  check(
+    limpa.physical_risks[0]?.includes('Inventário de riscos não elaborado'),
+    'esvaziadas as cinco categorias, a OS passa a declarar a pendência'
+  );
+
+  // O que NAO pode acontecer: apagar risco que alguem levantou de verdade.
+  const osReal = {
+    id: 'os-real',
+    physical_risks: ['Ruído contínuo 87,3 dB(A) - Dosimetria NHO-01 - Fonte: compressor'],
+    chemical_risks: [],
+    biological_risks: [],
+    ergonomic_risks: [],
+    accident_mechanical_risks: [],
+    collective_protections_epc: ['Enclausuramento acústico do compressor'],
+    routine_activities: ['Operação de prensa hidráulica'],
+    mandatory_epis: [
+      {
+        epi_name: 'Protetor auricular tipo concha',
+        ca_number: '31469',
+        usage_recommendation: 'Uso obrigatório contínuo durante a jornada',
+      },
+    ],
+  };
+  const intacta = limpeza.limparOrdemDeServico(osReal);
+  check(intacta === osReal, 'OS sem conteúdo inventado volta intacta (mesma referência)');
+  check(intacta.mandatory_epis.length === 1, 'o EPI realmente atribuído NÃO é removido');
+  check(
+    intacta.physical_risks[0].includes('87,3 dB(A)'),
+    'o risco realmente medido NÃO é removido'
+  );
+}
+
+// ===========================================================================
 // 6. A FONTE DOS RISCOS INVENTADOS (conferência no código)
 // ===========================================================================
 // generateWorkOrderOSForEmployee vive num componente React e nao roda aqui.
@@ -484,8 +709,15 @@ const proibidos = [
 for (const [agulha, oque] of proibidos) {
   check(!contexto.includes(agulha), `a OS não volta a trazer: ${oque}`);
 }
+// A frase vive numa constante so, importada pelos dois caminhos que a
+// escrevem: o gerador (OS nova) e a limpeza (OS antiga esvaziada).
+const limpezaFonte = fs.readFileSync(path.join(RAIZ, 'lib/limpezaDeOrdensDeServico.ts'), 'utf8');
 check(
-  contexto.includes('Inventário de riscos não elaborado para este GHE'),
+  limpezaFonte.includes('Inventário de riscos não elaborado para este GHE'),
+  'a frase de inventário pendente está acentuada e numa fonte única'
+);
+check(
+  contexto.includes('const semInventario = AVISO_SEM_INVENTARIO;'),
   'sem inventário, a OS declara a pendência em vez de inventar risco'
 );
 

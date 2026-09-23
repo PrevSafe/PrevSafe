@@ -51,6 +51,7 @@ export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) 
     workOrdersOS,
     epiDeliveries,
     integrationTrainings,
+    examProtocols,
     addEmployee,
     updateEmployee,
     deleteEmployee,
@@ -326,7 +327,7 @@ export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) 
     }
 
     const clientObj = clients.find(c => c.id === selectedClientId) || clients[0];
-    exportBatchAdmissionKitsPDF(targetEmps, workOrdersOS, epiDeliveries, integrationTrainings, organization, clientObj);
+    exportBatchAdmissionKitsPDF(targetEmps, workOrdersOS, epiDeliveries, integrationTrainings, organization, clientObj, examProtocols);
   };
 
   const handleIndividualPrintKitAdmissional = (emp: Employee) => {
@@ -339,7 +340,8 @@ export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) 
       training = createDefaultAdmissionTrainingForClient(emp.client_id, [emp.id]);
     }
     const clientObj = clients.find(c => c.id === emp.client_id) || clients[0];
-    exportAdmissionKitPDF(emp, os || null, epiDeliveries, training || null, organization, clientObj);
+    // examProtocols: sem eles o anexo de exames do kit sai vazio.
+    exportAdmissionKitPDF(emp, os || null, epiDeliveries, training || null, organization, clientObj, examProtocols);
   };
 
   const handleIndividualPrintOS = (emp: Employee) => {

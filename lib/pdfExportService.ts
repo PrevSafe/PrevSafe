@@ -13,6 +13,7 @@ import {
   EPIDeliveryRecord,
   EPICatalogItem,
   SSTIntegrationTraining,
+  SSTExamProtocol,
   TrainingAttendee,
   Contract,
   Proposal
@@ -24,6 +25,8 @@ import { ANEXOS_NR16, montarCorpoInsalubridade, montarCorpoPericulosidade } from
 import type { CorpoLaudo } from '@/lib/laudoDados';
 import { dataDeHoje } from '@/lib/datas';
 import { formatarCPF } from '@/lib/validacoesBr';
+import { exameSugeridosParaAso } from '@/lib/esocialDados';
+import { VERSAO_DO_DOCUMENTO } from '@/lib/versaoDoDocumento';
 
 /**
  * POR QUE NAO HA SINAL DE CONFERIDO EM NENHUM TEXTO DESTE ARQUIVO
@@ -145,7 +148,14 @@ function applyPageNumbers(doc: jsPDF) {
     doc.setDrawColor(226, 232, 240);
     doc.line(14, pageHeight - 12, pageWidth - 14, pageHeight - 12);
 
-    doc.text(`PrevSafe SST - Plataforma Integrada de Saúde e Segurança do Trabalho`, 14, pageHeight - 7);
+    // Carimbo da versao que gerou o documento. Sem ele nao ha como saber, do
+    // PDF na mao, se ele saiu de um build antigo guardado no cache do
+    // navegador - foi exatamente o que aconteceu depois da primeira correcao.
+    // Vai junto do texto da esquerda: centralizado colidiria com ele.
+    doc.text(
+      `PrevSafe SST - Plataforma Integrada de Saúde e Segurança do Trabalho  |  ${VERSAO_DO_DOCUMENTO}`,
+      14, pageHeight - 7
+    );
     doc.text(`Página ${i} de ${pageCount}`, pageWidth - 14, pageHeight - 7, { align: 'right' });
   }
 }
@@ -159,6 +169,25 @@ const RT_NAO_INFORMADO = 'Não informado (preencha em Configurações > Responsa
 const NAO_INFORMADO = 'Não informado';
 const LINHA_PARA_PREENCHER = '____________________';
 const SEM_RISCO_NO_INVENTARIO = 'Nenhum agente desta natureza no inventário de riscos (PGR)';
+const LINHA_CURTA = '________';
+const RESULTADO_ASO: Record<string, string> = {
+  APTO: 'Apto',
+  INAPTO: 'Inapto',
+  APTO_COM_RESTRICAO: 'Apto com restrição'
+};
+const TIPO_DE_ASO: Record<string, string> = {
+  ADMISSIONAL: 'Admissional',
+  PERIODICO: 'Periódico',
+  RETORNO_TRABALHO: 'Retorno ao trabalho',
+  MUDANCA_RISCO: 'Mudança de risco ocupacional',
+  DEMISSIONAL: 'Demissional'
+};
+const RESULTADO_EXAME: Record<string, string> = {
+  NORMAL: 'Normal',
+  ALTERADO: 'Alterado',
+  ESTAVEL: 'Estável',
+  AGRAVAMENTO: 'Agravamento'
+};
 
 function technicalResponsibleLine(organization: Organization): string {
   const name = organization?.technical_responsible_name?.trim();
@@ -1860,7 +1889,13 @@ export function exportAdmissionKitPDF(
   deliveries: EPIDeliveryRecord[],
   training: SSTIntegrationTraining | null,
   organization: Organization,
-  client?: Client
+  client?: Client,
+  /**
+   * Protocolos de exame do PCMSO. Sem eles o kit nao tinha como mostrar os
+   * exames aplicados ao GHE - era a queixa "nao trouxe o exame que foi
+   * aplicado". Opcional para nao quebrar quem ainda chama com 6 argumentos.
+   */
+  examProtocols: SSTExamProtocol[] = []
 ): void {
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
   const pageWidth = doc.internal.pageSize.getWidth();
@@ -1886,12 +1921,12 @@ export function exportAdmissionKitPDF(
 
   const asoDoKit = [...(employee.aso_history || [])]
     .sort((a, b) => String(b.exam_date || '').localeCompare(String(a.exam_date || '')))[0] || null;
-  const RESULTADO_ASO: Record<string, string> = {
-    APTO: 'Apto',
-    INAPTO: 'Inapto',
-    APTO_COM_RESTRICAO: 'Apto com restrição'
-  };
 
+  // Exames que o PCMSO exige desta pessoa, vindos dos protocolos aplicados ao
+  // GHE dela. E a mesma funcao que a tela usa para montar o ASO, entao o kit
+  // nao pode divergir do que o sistema mostra.
+  const examesPrevistos = exameSugeridosParaAso(employee, examProtocols, 'ADMISSIONAL');
+  const examesRealizados = asoDoKit?.exams || [];
   const MODALIDADE: Record<string, string> = {
     PRESENCIAL: 'Presencial',
     PRESENTIAL: 'Presencial',
@@ -1920,6 +1955,15 @@ export function exportAdmissionKitPDF(
   }
   if (!asoDoKit) {
     pendenciasDoKit.push('ASO admissional não registrado (NR-07 item 7.5.2).');
+  }
+  if (examesPrevistos.length === 0) {
+    pendenciasDoKit.push(
+      'Nenhum exame do PCMSO aplicado ao GHE desta função — aplique em Engenharia SST > GHE & Inventário de Riscos > "Aplicar Exame".'
+    );
+  } else if (asoDoKit && examesRealizados.length === 0) {
+    pendenciasDoKit.push(
+      `ASO registrado sem o lançamento dos ${examesPrevistos.length} exame(s) previstos no PCMSO — o S-2220 sai incompleto.`
+    );
   }
   if (!organization?.technical_responsible_name?.trim()) {
     pendenciasDoKit.push('Responsável técnico não preenchido em Configurações > Responsabilidade Técnica.');
@@ -2483,6 +2527,140 @@ export function exportAdmissionKitPDF(
   doc.setFont('helvetica', 'normal');
   doc.text(tSupervisorReg || 'Registro profissional', margin + cW + 10 + (cW / 2), trY + 15, { align: 'center' });
 
+  // ================= PAGE 5: EXAMES OCUPACIONAIS (PCMSO / ASO) =================
+  //
+  // O kit tinha quatro paginas e nenhuma delas mostrava exame. O usuario
+  // aplicava o exame ao GHE e ele nao aparecia em lugar nenhum do dossie.
+  doc.addPage();
+  doc.setFillColor(15, 23, 42);
+  doc.rect(0, 0, pageWidth, 24, 'F');
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(11);
+  doc.setFont('helvetica', 'bold');
+  doc.text(organization.name || 'PREVSAFE SST', margin, 10);
+  doc.setFontSize(8);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(148, 163, 184);
+  doc.text('ANEXO 4: EXAMES OCUPACIONAIS DO PCMSO (NR-07) E ASO', margin, 16);
+  doc.setTextColor(255, 255, 255);
+  doc.setFont('helvetica', 'bold');
+  doc.text(employee.name, pageWidth - margin, 10, { align: 'right' });
+  doc.setFillColor(79, 70, 229);
+  doc.rect(0, 24, pageWidth, 1.5, 'F');
+
+  autoTable(doc, {
+    startY: 28,
+    margin: { left: margin, right: margin },
+    theme: 'grid',
+    head: [[
+      { content: 'ATESTADO DE SAÚDE OCUPACIONAL (ASO)', colSpan: 4, styles: { fillColor: [30, 41, 59], textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 8 } }
+    ]],
+    body: [
+      [
+        { content: 'Tipo de ASO:', styles: { fontStyle: 'bold', cellWidth: 30 } },
+        { content: asoDoKit ? (TIPO_DE_ASO[asoDoKit.aso_type] || asoDoKit.aso_type) : 'Admissional (a realizar)' },
+        { content: 'Data do exame:', styles: { fontStyle: 'bold', cellWidth: 26 } },
+        { content: asoDoKit ? formatDate(asoDoKit.exam_date) : LINHA_PARA_PREENCHER }
+      ],
+      [
+        { content: 'Resultado:', styles: { fontStyle: 'bold' } },
+        { content: asoDoKit ? (RESULTADO_ASO[asoDoKit.result] || asoDoKit.result) : LINHA_PARA_PREENCHER },
+        { content: 'Válido até:', styles: { fontStyle: 'bold' } },
+        { content: asoDoKit?.valid_until ? formatDate(asoDoKit.valid_until) : LINHA_PARA_PREENCHER }
+      ],
+      [
+        { content: 'Médico examinador:', styles: { fontStyle: 'bold' } },
+        { content: asoDoKit?.physician_name
+            ? `${asoDoKit.physician_name}${asoDoKit.physician_crm ? ` — CRM ${asoDoKit.physician_crm}${asoDoKit.physician_uf ? '/' + asoDoKit.physician_uf : ''}` : ''}`
+            : LINHA_PARA_PREENCHER },
+        { content: 'Restrições:', styles: { fontStyle: 'bold' } },
+        { content: asoDoKit?.restrictions_notes || (asoDoKit ? 'Nenhuma' : LINHA_PARA_PREENCHER) }
+      ]
+    ],
+    styles: { fontSize: 7.5, cellPadding: 2.2 }
+  });
+
+  let exY = (doc as any).lastAutoTable.finalY + 4;
+
+  // Uma linha por exame previsto no PCMSO, com o resultado quando ja lancado.
+  const linhasDeExame = examesPrevistos.map((prev, i) => {
+    const realizado = examesRealizados.find(
+      (r: any) => r.protocol_id === prev.protocol_id || r.exam_code_table_27 === prev.exam_code_table_27
+    );
+    const protocolo = examProtocols.find(p => p.id === prev.protocol_id);
+    return [
+      String(i + 1),
+      prev.exam_code_table_27,
+      prev.exam_name,
+      protocolo?.mandatory_by_standard || '',
+      protocolo?.periodicity_months ? `${protocolo.periodicity_months} meses` : '',
+      realizado ? (RESULTADO_EXAME[realizado.result] || realizado.result) : LINHA_CURTA,
+      realizado?.exam_date ? formatDate(realizado.exam_date) : LINHA_CURTA
+    ];
+  });
+
+  if (linhasDeExame.length > 0) {
+    autoTable(doc, {
+      startY: exY,
+      margin: { left: margin, right: margin },
+      theme: 'grid',
+      head: [[
+        { content: '#', styles: { cellWidth: 8, halign: 'center' } },
+        { content: 'Cód. Tab. 27', styles: { cellWidth: 20, halign: 'center' } },
+        { content: 'Procedimento diagnóstico (denominação oficial do eSocial)', styles: { cellWidth: 74 } },
+        { content: 'Norma', styles: { cellWidth: 18, halign: 'center' } },
+        { content: 'Periodic.', styles: { cellWidth: 18, halign: 'center' } },
+        { content: 'Resultado', styles: { cellWidth: 24, halign: 'center' } },
+        { content: 'Data', styles: { cellWidth: 20, halign: 'center' } }
+      ]],
+      body: linhasDeExame,
+      styles: { fontSize: 6.8, cellPadding: 1.8 },
+      headStyles: { fillColor: [30, 41, 59], textColor: [255, 255, 255] }
+    });
+  } else {
+    autoTable(doc, {
+      startY: exY,
+      margin: { left: margin, right: margin },
+      theme: 'grid',
+      head: [[
+        { content: 'NENHUM EXAME APLICADO AO GHE DESTA FUNÇÃO', styles: { fillColor: [180, 83, 9], textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 8 } }
+      ]],
+      body: [[
+        { content:
+            `Não há protocolo de exame do PCMSO aplicado ao GHE de ${employee.name} (${employee.job_title}).\n\n` +
+            'Sem isso o ASO não tem o que listar e o evento S-2220 do eSocial sai sem os procedimentos realizados.\n\n' +
+            'Aplique em: Engenharia SST > 2. GHE & Inventário de Riscos > botão "Aplicar Exame".' }
+      ]],
+      styles: { fontSize: 8, cellPadding: 3, fillColor: [255, 251, 235], textColor: [120, 53, 15] }
+    });
+  }
+
+  exY = (doc as any).lastAutoTable.finalY + 14;
+
+  doc.setDrawColor(100, 116, 139);
+  doc.line(margin, exY + 8, margin + cW, exY + 8);
+  doc.setFontSize(7);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(15, 23, 42);
+  doc.text(employee.name, margin + (cW / 2), exY + 12, { align: 'center' });
+  doc.setFontSize(6);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(100, 116, 139);
+  doc.text('Ciência do trabalhador quanto ao resultado', margin + (cW / 2), exY + 15, { align: 'center' });
+
+  doc.line(margin + cW + 10, exY + 8, margin + (cW * 2) + 10, exY + 8);
+  doc.setFontSize(7);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(15, 23, 42);
+  doc.text(asoDoKit?.physician_name || 'Médico examinador', margin + cW + 10 + (cW / 2), exY + 12, { align: 'center' });
+  doc.setFontSize(6);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(100, 116, 139);
+  doc.text(
+    asoDoKit?.physician_crm ? `CRM ${asoDoKit.physician_crm}${asoDoKit.physician_uf ? '/' + asoDoKit.physician_uf : ''}` : 'CRM',
+    margin + cW + 10 + (cW / 2), exY + 15, { align: 'center' }
+  );
+
   applyPageNumbers(doc);
 
   const cleanName = employee.name.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase();
@@ -2498,14 +2676,17 @@ export function exportBatchAdmissionKitsPDF(
   deliveries: EPIDeliveryRecord[],
   trainings: SSTIntegrationTraining[],
   organization: Organization,
-  client?: Client
+  client?: Client,
+  examProtocols: SSTExamProtocol[] = []
 ): void {
   if (!employees || employees.length === 0) return;
 
   employees.forEach(emp => {
     const empOs = workOrders.find(o => o.employee_id === emp.id) || null;
-    const empTraining = trainings.find(t => t.client_id === emp.client_id) || trainings[0] || null;
-    exportAdmissionKitPDF(emp, empOs, deliveries, empTraining, organization, client);
+    // Era `|| trainings[0]`: sem treinamento do cliente, o kit saia com o
+    // treinamento de OUTRA empresa, com instrutor e codigo de la.
+    const empTraining = trainings.find(t => t.client_id === emp.client_id) || null;
+    exportAdmissionKitPDF(emp, empOs, deliveries, empTraining, organization, client, examProtocols);
   });
 }
 

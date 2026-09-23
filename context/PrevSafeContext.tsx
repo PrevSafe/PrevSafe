@@ -159,6 +159,7 @@ import {
 import { montarTermosDoContrato, resumirServicos } from '@/lib/contratoTermos';
 import { hashDoDocumento, hashDaAssinatura } from '@/lib/documentoHash';
 import { dataDeHoje, dataEmDias, formatarDataISO, novoId } from '@/lib/datas';
+import { limparOrdensDeServico, AVISO_SEM_INVENTARIO } from '@/lib/limpezaDeOrdensDeServico';
 import {
   montarCondicoesAmbientais,
   montarAsoDoEvento,
@@ -844,7 +845,11 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     apply(setWorkAbsences, list(parsed.workAbsences, []));
     apply(setEpiCatalog, list(parsed.epiCatalog, INITIAL_EPI_CATALOG, 'epiCatalog'));
     apply(setEpiDeliveries, list(parsed.epiDeliveries, []));
-    apply(setWorkOrdersOS, list(parsed.workOrdersOS, []));
+    // A OS fica gravada com o conteudo que o gerador escreveu na hora de
+    // cria-la. Corrigir o gerador nao alcanca as que ja existem, e elas
+    // continuariam sendo impressas no kit com risco e EPI inventados.
+    const ordensCarregadas = list(parsed.workOrdersOS, []);
+    apply(setWorkOrdersOS, ordensCarregadas && limparOrdensDeServico(ordensCarregadas as any));
     apply(setIntegrationTrainings, list(parsed.integrationTrainings, []));
     apply(setAccidentsIncidents, list(parsed.accidentsIncidents, []));
     apply(setSstSignatures, list(parsed.sstSignatures, []));
@@ -6020,7 +6025,7 @@ ${exames.map(ex => `      <exameMedico>
     // ninguem levantou. A OS e prova de cumprimento do Art. 157 da CLT: o que
     // ela afirma tem que vir do inventario (NR-01 item 1.5.4).
     if (risksForGhe.length === 0) {
-      const semInventario = 'Inventário de riscos não elaborado para este GHE — pendente (NR-01 item 1.5.4)';
+      const semInventario = AVISO_SEM_INVENTARIO;
       physicalRisks.push(semInventario);
       chemicalRisks.push(semInventario);
       biologicalRisks.push(semInventario);
