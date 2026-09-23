@@ -36,6 +36,11 @@
  * declarar ao eSocial exame que ninguem realizou.
  */
 
+import {
+  consultarProcedimento,
+  normalizarCodigoTabela27,
+  codigoExisteNaTabela27,
+} from '@/lib/tabela27';
 import type {
   Employee,
   EmployeeASOHistory,
@@ -334,6 +339,16 @@ export function montarAsoDoEvento(
         motivo: `Exame "${e.exam_name || 'sem nome'}" sem código da Tabela 27 do eSocial.`,
         onde,
       });
+    } else if (!codigoExisteNaTabela27(e.exam_code_table_27)) {
+      // Codigo que nao existe na tabela e recusado pelo governo. Vale apontar
+      // aqui: foi assim que os seis protocolos de exemplo carregaram por
+      // meses codigos de agentes quimicos no lugar de exames.
+      pendencias.push({
+        motivo:
+          `Exame "${e.exam_name || 'sem nome'}": o código ${e.exam_code_table_27} não consta ` +
+          'na Tabela 27 do eSocial.',
+        onde,
+      });
     }
     if (!e.exam_date) {
       pendencias.push({
@@ -432,17 +447,27 @@ export function exameSugeridosParaAso(
 
   return lista
     .filter((p) => p?.status !== 'INACTIVE')
-    .filter((p) => p?.client_id === colaborador.client_id)
+    // `client_id` vazio = protocolo MODELO, vale para qualquer cliente. Os
+    // protocolos que acompanham o sistema nascem assim, e o filtro por
+    // igualdade estrita os descartava: a lista de exames sugeridos vinha
+    // sempre vazia e nao havia o que selecionar na tela.
+    .filter((p) => !p?.client_id || p.client_id === colaborador.client_id)
     .filter((p) => !colaborador.ghe_id || !p?.ghe_id || p.ghe_id === colaborador.ghe_id)
     .filter((p) => !Array.isArray(p?.triggers) || p.triggers.length === 0 || p.triggers.includes(tipoDeAso))
-    .map((p) => ({
-      // O codigo vem do protocolo cadastrado pelo usuario, e costuma estar
-      // gravado como "0295 - Audiometria": o eSocial quer so o codigo.
-      exam_code_table_27: extrairCodigoTabela24(p.exam_code_table_27),
-      exam_name: p.exam_name || '',
-      procedure_type: sugerirTipoDeProcedimento(p.exam_name || ''),
-      protocol_id: p.id,
-    }));
+    .map((p) => {
+      // O codigo e normalizado pela Tabela 27 (aceita "295", "0295" e
+      // "0295 - Avaliacao clinica"). Quando ele consta na tabela, o NOME vem
+      // de la: o nome digitado no protocolo pode estar trocado, e quem vale
+      // perante o governo e a denominacao publicada.
+      const oficial = consultarProcedimento(p.exam_code_table_27);
+      const nome = oficial?.nome || p.exam_name || '';
+      return {
+        exam_code_table_27: oficial?.codigo || normalizarCodigoTabela27(p.exam_code_table_27),
+        exam_name: nome,
+        procedure_type: sugerirTipoDeProcedimento(nome),
+        protocol_id: p.id,
+      };
+    });
 }
 
 /** Junta pendencias iguais, para a tela nao repetir a mesma frase N vezes. */

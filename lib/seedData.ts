@@ -701,14 +701,28 @@ export const INITIAL_ENVIRONMENTAL_RISKS: SSTEnvironmentalRisk[] = [];
 // ==========================================
 // 31. Occupational Exam Protocols (PCMSO / NR-07 / eSocial S-2220)
 // ==========================================
+/**
+ * Protocolos de exame que acompanham o sistema, como modelo.
+ *
+ * TODOS os seis codigos estavam errados: 0295 rotulado como Audiometria (0295
+ * e Avaliacao clinica ocupacional), 0411 como Radiografia OIT (0411 e
+ * Clorofenol), 0281 como Espirometria (0281 e Audiometria tonal), 0040 como
+ * Hemograma (0040 e 2-naftilamina), 0210 como ECG (0210 e Anticoagulante
+ * lupico) e 0008 como Avaliacao Clinica (0008 e 1,2-gliceril dinitrato).
+ * Conferidos um a um contra a Tabela 27 em lib/tabela27.ts; os nomes agora sao
+ * os da publicacao oficial.
+ *
+ * `client_id` e `ghe_id` vazios significam MODELO: valem para qualquer cliente
+ * e qualquer GHE ate serem copiados e ajustados.
+ */
 export const INITIAL_EXAM_PROTOCOLS: SSTExamProtocol[] = [
   {
     id: 'proto-modelo-01',
     organization_id: 'org-prevsafe-01',
     client_id: '',
     ghe_id: '',
-    exam_code_table_27: '0295',
-    exam_name: 'Audiometria Tonal por Via Aérea e Via Óssea + Logoaudiometria',
+    exam_code_table_27: '0281',
+    exam_name: 'Audiometria tonal ocupacional',
     periodicity_months: 6,
     triggers: ['ADMISSIONAL', 'PERIODICO', 'RETORNO_TRABALHO', 'MUDANCA_RISCO', 'DEMISSIONAL'],
     mandatory_by_standard: 'NR-07',
@@ -721,8 +735,8 @@ export const INITIAL_EXAM_PROTOCOLS: SSTExamProtocol[] = [
     organization_id: 'org-prevsafe-01',
     client_id: '',
     ghe_id: '',
-    exam_code_table_27: '0411',
-    exam_name: 'Radiografia de Tórax em PA no Padrão OIT (Organização Internacional do Trabalho)',
+    exam_code_table_27: '1078',
+    exam_name: 'Radiografia de tórax (PA) Padrão OIT (o mais recente), com dois leitores habilitados',
     periodicity_months: 12,
     triggers: ['ADMISSIONAL', 'PERIODICO', 'DEMISSIONAL'],
     mandatory_by_standard: 'NR-07',
@@ -735,8 +749,8 @@ export const INITIAL_EXAM_PROTOCOLS: SSTExamProtocol[] = [
     organization_id: 'org-prevsafe-01',
     client_id: '',
     ghe_id: '',
-    exam_code_table_27: '0281',
-    exam_name: 'Espirometria Ocupacional com Prova Broncodilatadora',
+    exam_code_table_27: '1057',
+    exam_name: 'Prova de função pulmonar completa (ou espirometria)',
     periodicity_months: 12,
     triggers: ['ADMISSIONAL', 'PERIODICO', 'DEMISSIONAL'],
     mandatory_by_standard: 'NR-07',
@@ -749,8 +763,8 @@ export const INITIAL_EXAM_PROTOCOLS: SSTExamProtocol[] = [
     organization_id: 'org-prevsafe-01',
     client_id: '',
     ghe_id: '',
-    exam_code_table_27: '0040',
-    exam_name: 'Hemograma Completo com Contagem de Plaquetas e Leucograma',
+    exam_code_table_27: '0693',
+    exam_name: 'Hemograma com contagem de plaquetas ou frações (eritrograma, leucograma, plaquetas)',
     periodicity_months: 12,
     triggers: ['ADMISSIONAL', 'PERIODICO', 'DEMISSIONAL'],
     mandatory_by_standard: 'NR-07',
@@ -763,8 +777,8 @@ export const INITIAL_EXAM_PROTOCOLS: SSTExamProtocol[] = [
     organization_id: 'org-prevsafe-01',
     client_id: '',
     ghe_id: '',
-    exam_code_table_27: '0210',
-    exam_name: 'Eletrocardiograma de Repouso (ECG) de 12 Derivações',
+    exam_code_table_27: '0530',
+    exam_name: 'ECG (Eletrocardiograma) convencional de até 12 derivações',
     periodicity_months: 12,
     triggers: ['ADMISSIONAL', 'PERIODICO', 'RETORNO_TRABALHO', 'MUDANCA_RISCO', 'DEMISSIONAL'],
     mandatory_by_standard: 'NR-10',
@@ -777,8 +791,8 @@ export const INITIAL_EXAM_PROTOCOLS: SSTExamProtocol[] = [
     organization_id: 'org-prevsafe-01',
     client_id: '',
     ghe_id: '',
-    exam_code_table_27: '0008',
-    exam_name: 'Avaliação Clínica Ocupacional com Anamnese e Exame Físico',
+    exam_code_table_27: '0295',
+    exam_name: 'Avaliação clínica ocupacional (anamnese e exame físico)',
     periodicity_months: 24,
     triggers: ['ADMISSIONAL', 'PERIODICO', 'RETORNO_TRABALHO', 'MUDANCA_RISCO', 'DEMISSIONAL'],
     mandatory_by_standard: 'NR-07',

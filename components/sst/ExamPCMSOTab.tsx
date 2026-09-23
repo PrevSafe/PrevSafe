@@ -7,6 +7,8 @@ import { dataDeHoje } from '@/lib/datas';
 import { exameSugeridosParaAso, sugerirTipoDeProcedimento } from '@/lib/esocialDados';
 import { novoId } from '@/lib/datas';
 import type { EmployeeExamResult } from '@/types';
+import { SeletorTabela27 } from './SeletorTabela27';
+import { consultarProcedimento, codigoExisteNaTabela27 } from '@/lib/tabela27';
 import { 
   Stethoscope, 
   Plus, 
@@ -146,7 +148,20 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
 
   const handleSaveProtocol = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!protocolForm.exam_name || !protocolForm.exam_code_table_27) return;
+
+    // Antes esta funcao dava `return` em silencio: o usuario clicava em salvar,
+    // nada acontecia e nenhuma mensagem aparecia.
+    if (!protocolForm.exam_code_table_27) {
+      alert('Escolha o exame na Tabela 27 do eSocial.');
+      return;
+    }
+    if (!codigoExisteNaTabela27(protocolForm.exam_code_table_27)) {
+      alert(
+        `O código ${protocolForm.exam_code_table_27} não consta na Tabela 27. ` +
+        'Escolha o procedimento na lista — o eSocial recusa código inexistente.'
+      );
+      return;
+    }
 
     const selectedGhe = ghes.find(g => g.id === protocolForm.ghe_id);
 
@@ -226,6 +241,17 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
     );
   };
 
+  /** Grava codigo e nome juntos: os dois vem da Tabela 27, nunca digitados. */
+  const escolherProcedimento = (id: string, codigo: string, nome: string) => {
+    setExamesDoAso(prev =>
+      prev.map(ex =>
+        ex.id === id
+          ? { ...ex, exam_code_table_27: codigo, exam_name: nome, procedure_type: sugerirTipoDeProcedimento(nome) }
+          : ex
+      )
+    );
+  };
+
   const removerExame = (id: string) => {
     setExamesDoAso(prev => prev.filter(ex => ex.id !== id));
   };
@@ -244,6 +270,15 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
       );
       return;
     }
+    const semCodigoValido = examesDoAso.filter(ex => !codigoExisteNaTabela27(ex.exam_code_table_27));
+    if (semCodigoValido.length > 0) {
+      alert(
+        `${semCodigoValido.length} exame(s) sem código válido da Tabela 27. ` +
+        'Escolha o procedimento na lista — o eSocial recusa código inexistente.'
+      );
+      return;
+    }
+
     const incompletos = examesDoAso.filter(ex => !ex.exam_name || !ex.result || !ex.exam_date);
     if (incompletos.length > 0) {
       alert(
@@ -399,12 +434,34 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
                     <span className="px-2 py-0.5 bg-teal-500/10 border border-teal-500/30 text-teal-300 text-[10px] font-mono font-bold rounded">
                       Cód. Tab 27: {protocol.exam_code_table_27}
                     </span>
+                    {/* Codigo fora da Tabela 27 fica VISIVEL na lista: foi assim
+                        que os seis protocolos modelo carregaram codigos de
+                        agentes quimicos no lugar de exames sem ninguem notar. */}
+                    {!codigoExisteNaTabela27(protocol.exam_code_table_27) && (
+                      <span
+                        className="px-2 py-0.5 bg-rose-500/15 text-rose-400 text-[10px] rounded font-bold border border-rose-500/30"
+                        title="Este código não consta na Tabela 27 do eSocial. Edite o protocolo e escolha o procedimento correto."
+                      >
+                        código inválido
+                      </span>
+                    )}
                     <span className="px-2 py-0.5 bg-slate-800 text-slate-300 text-[10px] rounded font-semibold">
                       {protocol.mandatory_by_standard}
                     </span>
                   </div>
 
                   <h4 className="font-bold text-slate-100 text-sm mt-2">{protocol.exam_name}</h4>
+                  {(() => {
+                    // Quando o nome cadastrado diverge da denominacao oficial,
+                    // mostra a oficial: e ela que vale perante o governo.
+                    const oficial = consultarProcedimento(protocol.exam_code_table_27);
+                    if (!oficial || oficial.nome === protocol.exam_name) return null;
+                    return (
+                      <p className="text-[10px] text-amber-400/90 mt-0.5">
+                        Denominação oficial: {oficial.nome}
+                      </p>
+                    );
+                  })()}
                   
                   <div className="flex items-center gap-1.5 text-xs text-slate-400 mt-1">
                     <Building2 className="w-3.5 h-3.5 text-slate-500" />
@@ -554,29 +611,26 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
                 </select>
               </div>
 
-              <div className="grid grid-cols-3 gap-3">
-                <div className="col-span-2">
-                  <label className="block text-slate-400 font-semibold mb-1">Nome do Exame</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="Ex.: Audiometria Tonal Ocupacional"
-                    value={protocolForm.exam_name}
-                    onChange={(e) => setProtocolForm({ ...protocolForm, exam_name: e.target.value })}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 focus:outline-none focus:border-teal-500"
-                  />
-                </div>
-                <div className="col-span-1">
-                  <label className="block text-slate-400 font-semibold mb-1">Cód. Tabela 27</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="0295"
-                    value={protocolForm.exam_code_table_27}
-                    onChange={(e) => setProtocolForm({ ...protocolForm, exam_code_table_27: e.target.value })}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 font-mono focus:outline-none focus:border-teal-500"
-                  />
-                </div>
+              {/* Nome e codigo eram dois campos livres, digitados a mao. Agora
+                  sao um so: o exame e ESCOLHIDO da Tabela 27 e o codigo vem
+                  junto com a denominacao oficial. */}
+              <div>
+                <label className="block text-slate-400 font-semibold mb-1">
+                  Exame (Tabela 27 do eSocial)
+                </label>
+                <SeletorTabela27
+                  codigo={protocolForm.exam_code_table_27}
+                  onSelecionar={(p) =>
+                    setProtocolForm({
+                      ...protocolForm,
+                      exam_code_table_27: p.codigo,
+                      exam_name: p.nome,
+                    })
+                  }
+                  onLimpar={() =>
+                    setProtocolForm({ ...protocolForm, exam_code_table_27: '', exam_name: '' })
+                  }
+                />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
@@ -802,20 +856,16 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
                         key={ex.id}
                         className="grid grid-cols-12 gap-1.5 items-center bg-slate-900 rounded-lg p-2 border border-slate-800"
                       >
-                        <input
-                          type="text"
-                          placeholder="Código Tab. 27"
-                          value={ex.exam_code_table_27}
-                          onChange={e => alterarExame(ex.id, 'exam_code_table_27', e.target.value)}
-                          className="col-span-2 bg-slate-950 border border-slate-700 rounded px-2 py-1.5 text-slate-100 font-mono text-[11px]"
-                        />
-                        <input
-                          type="text"
-                          placeholder="Nome do exame"
-                          value={ex.exam_name}
-                          onChange={e => alterarExame(ex.id, 'exam_name', e.target.value)}
-                          className="col-span-3 bg-slate-950 border border-slate-700 rounded px-2 py-1.5 text-slate-100 text-[11px]"
-                        />
+                        {/* Um seletor no lugar de dois campos livres: o codigo
+                            vem da Tabela 27 com o nome oficial junto. */}
+                        <div className="col-span-5">
+                          <SeletorTabela27
+                            compacto
+                            codigo={ex.exam_code_table_27}
+                            placeholder="Busque o exame na Tabela 27..."
+                            onSelecionar={p => escolherProcedimento(ex.id, p.codigo, p.nome)}
+                          />
+                        </div>
                         <input
                           type="date"
                           value={ex.exam_date}
