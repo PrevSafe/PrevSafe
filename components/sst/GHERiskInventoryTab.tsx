@@ -3,6 +3,8 @@
 import React, { useState } from 'react';
 import { usePrevSafe } from '@/context/PrevSafeContext';
 import { SSTGroupHomogeneousExposure, SSTEnvironmentalRisk, RiskCategoryType, OccupationalRiskCatalogItem } from '@/types';
+import { SeletorTabela27 } from './SeletorTabela27';
+import { consultarProcedimento, codigoExisteNaTabela27 } from '@/lib/tabela27';
 import { 
   ShieldAlert, 
   Plus, 
@@ -51,7 +53,8 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
     deleteEnvironmentalRisk,
     generateS2240FromGhe,
     applyRisksToTargets,
-    applyExamsToTargets
+    applyExamsToTargets,
+    units
   } = usePrevSafe();
 
   const clientGhes = ghes.filter(g => !selectedClientId || g.client_id === selectedClientId);
@@ -221,19 +224,45 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
 
   const handleSaveGhe = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!gheForm.name || !gheForm.code) return;
+
+    // Antes dava `return` em silencio: o usuario clicava em salvar, o modal
+    // ficava aberto, nada acontecia e nenhuma mensagem aparecia.
+    if (!gheForm.name.trim()) {
+      alert('Informe o nome do GHE (ex.: "Produção — Soldagem").');
+      return;
+    }
+    if (!gheForm.code.trim()) {
+      alert('Informe o código do GHE (ex.: "GHE-01").');
+      return;
+    }
 
     if (editingGhe) {
       updateGhe(editingGhe.id, gheForm);
-    } else {
-      const created = addGhe({
-        client_id: selectedClientId,
-        client_unit_id: 'unit-01',
-        ...gheForm,
-        total_exposed_workers: employees.filter(emp => !selectedClientId || emp.client_id === selectedClientId).length || 5
-      });
-      setSelectedGheId(created.id);
+      setIsGheModalOpen(false);
+      return;
     }
+
+    // Sem cliente selecionado o GHE nascia com client_id vazio e sumia de
+    // todos os filtros por cliente - inclusive o da tela de exames, que e onde
+    // ele precisa aparecer.
+    if (!selectedClientId) {
+      alert('Selecione o cliente no topo da tela antes de criar o GHE.');
+      return;
+    }
+
+    const unidadeDoCliente = units.find(u => u.client_id === selectedClientId);
+    const expostos = employees.filter(emp => emp.client_id === selectedClientId).length;
+
+    const created = addGhe({
+      client_id: selectedClientId,
+      // Era 'unit-01' fixo, um id que pode nao existir para este cliente.
+      client_unit_id: unidadeDoCliente?.id || '',
+      ...gheForm,
+      // Era `|| 5`: um GHE sem colaborador cadastrado nascia dizendo que havia
+      // 5 expostos. Zero e a resposta correta.
+      total_exposed_workers: expostos
+    });
+    setSelectedGheId(created.id);
     setIsGheModalOpen(false);
   };
 
@@ -403,13 +432,16 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
   };
 
   const handleOpenMultiExamModal = () => {
+    // Vinha pre-preenchido com "Audiometria Tonal Ocupacional" e codigo 0295,
+    // que e Avaliacao clinica ocupacional. Quem nao trocasse aplicava
+    // audiometria com o codigo da consulta clinica.
     setMultiExamForm({
-      exam_name: 'Audiometria Tonal Ocupacional',
-      exam_code_table_27: '0295',
+      exam_name: '',
+      exam_code_table_27: '',
       periodicity_months: 12,
       triggers: ['ADMISSIONAL', 'PERIODICO', 'DEMISSIONAL'],
       mandatory_by_standard: 'NR-07',
-      preparation_instructions: 'Repouso auditivo de no mínimo 14 horas prévias ao exame.',
+      preparation_instructions: '',
       target_mode: 'MULTI_GHE',
       target_ghe_ids: clientGhes.map(g => g.id),
       target_job_ids: [],
@@ -421,7 +453,26 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
 
   const handleExecuteMultiExamApply = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!multiExamForm.exam_name || !multiExamForm.exam_code_table_27) return;
+
+    // Tambem dava `return` em silencio.
+    if (!multiExamForm.exam_code_table_27) {
+      alert('Escolha o exame na Tabela 27 do eSocial.');
+      return;
+    }
+    if (!codigoExisteNaTabela27(multiExamForm.exam_code_table_27)) {
+      alert(
+        `O código ${multiExamForm.exam_code_table_27} não consta na Tabela 27. ` +
+        'Escolha o procedimento na lista.'
+      );
+      return;
+    }
+    if (clientGhes.length === 0) {
+      alert(
+        'Este cliente ainda não tem nenhum GHE. Crie o GHE primeiro, no botão "Novo GHE" ' +
+        'desta mesma tela — o exame é aplicado a um GHE.'
+      );
+      return;
+    }
 
     const res = applyExamsToTargets({
       client_id: selectedClientId || activeGhe?.client_id,
@@ -1467,15 +1518,26 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
                   Exames Ocupacionais Frequentes (Tabela 27 do eSocial):
                 </label>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  {/* Os OITO atalhos tinham o código errado. Cada um apontava
+                      para outro procedimento, ou para um agente químico:
+                        0295 -> Avaliação clínica    (rotulado "Audiometria")
+                        0296 -> Acuidade visual      (rotulado "Espirometria")
+                        0297 -> Estereopsia          (rotulado "Acuidade Visual")
+                        0005 -> 1,2-ciclo-hexanediol (rotulado "ECG")
+                        0006 -> 1,2-dibromo-3-cloropropano (rotulado "EEG")
+                        0298 -> Visão de cores       (rotulado "Raio-X OIT")
+                        0501 -> Dietilditiofosfato   (rotulado "Psicossocial")
+                        0294 -> Ênfase urogenital    (rotulado "Clínico Geral")
+                      Conferidos contra lib/tabela27.ts. */}
                   {[
-                    { name: 'Audiometria Tonal Ocupacional', code: '0295', standard: 'NR-07' as const, months: 12 },
-                    { name: 'Espirometria Ocupacional', code: '0296', standard: 'NR-07' as const, months: 12 },
-                    { name: 'Acuidade Visual / Campimetria', code: '0297', standard: 'NR-35' as const, months: 12 },
-                    { name: 'Eletrocardiograma (ECG)', code: '0005', standard: 'NR-35' as const, months: 12 },
-                    { name: 'Eletroencefalograma (EEG)', code: '0006', standard: 'NR-33' as const, months: 12 },
-                    { name: 'Raio-X de Tórax Padrão OIT', code: '0298', standard: 'NR-15' as const, months: 12 },
-                    { name: 'Avaliação Psicossocial', code: '0501', standard: 'NR-35' as const, months: 12 },
-                    { name: 'Exame Clínico Geral (ASO)', code: '0294', standard: 'NR-07' as const, months: 12 }
+                    { name: 'Audiometria tonal ocupacional', code: '0281', standard: 'NR-07' as const, months: 12 },
+                    { name: 'Prova de função pulmonar completa (ou espirometria)', code: '1057', standard: 'NR-07' as const, months: 12 },
+                    { name: 'Avaliação da acuidade visual', code: '0296', standard: 'NR-35' as const, months: 12 },
+                    { name: 'ECG (Eletrocardiograma) convencional de até 12 derivações', code: '0530', standard: 'NR-35' as const, months: 12 },
+                    { name: 'EEG (Eletroencefalograma) de rotina', code: '0536', standard: 'NR-33' as const, months: 12 },
+                    { name: 'Radiografia de tórax (PA) Padrão OIT (o mais recente), com dois leitores habilitados', code: '1078', standard: 'NR-15' as const, months: 12 },
+                    { name: 'Avaliação psicossocial', code: '0300', standard: 'NR-35' as const, months: 12 },
+                    { name: 'Avaliação clínica ocupacional (anamnese e exame físico)', code: '0295', standard: 'NR-07' as const, months: 12 }
                   ].map((preset) => (
                     <button
                       key={preset.code}
@@ -1500,28 +1562,25 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
                 </div>
               </div>
 
-              {/* Form Fields */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                <div className="md:col-span-2">
-                  <label className="block text-slate-400 font-semibold mb-1">Nome do Exame *</label>
-                  <input
-                    type="text"
-                    required
-                    value={multiExamForm.exam_name}
-                    onChange={(e) => setMultiExamForm({ ...multiExamForm, exam_name: e.target.value })}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
-                  />
-                </div>
-                <div>
-                  <label className="block text-slate-400 font-semibold mb-1">Código Tabela 27 *</label>
-                  <input
-                    type="text"
-                    required
-                    value={multiExamForm.exam_code_table_27}
-                    onChange={(e) => setMultiExamForm({ ...multiExamForm, exam_code_table_27: e.target.value })}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 font-mono"
-                  />
-                </div>
+              {/* Nome e codigo eram dois campos livres. Agora sao um so, e o
+                  codigo vem da Tabela 27 junto da denominacao oficial. */}
+              <div>
+                <label className="block text-slate-400 font-semibold mb-1">
+                  Exame a aplicar (Tabela 27 do eSocial) *
+                </label>
+                <SeletorTabela27
+                  codigo={multiExamForm.exam_code_table_27}
+                  onSelecionar={(p) =>
+                    setMultiExamForm({
+                      ...multiExamForm,
+                      exam_code_table_27: p.codigo,
+                      exam_name: p.nome
+                    })
+                  }
+                  onLimpar={() =>
+                    setMultiExamForm({ ...multiExamForm, exam_code_table_27: '', exam_name: '' })
+                  }
+                />
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">

@@ -113,6 +113,10 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
 
   const clientEmployees = employees.filter(emp => !selectedClientId || emp.client_id === selectedClientId);
 
+  // O select de GHE listava TODOS os GHEs, de todos os clientes: dava para
+  // vincular um protocolo de exame ao GHE de outra empresa.
+  const clientGhes = ghes.filter(g => !selectedClientId || g.client_id === selectedClientId);
+
   const filteredProtocols = clientExams.filter(p => 
     p.exam_name.toLowerCase().includes(searchTerm.toLowerCase()) || 
     p.exam_code_table_27.includes(searchTerm) ||
@@ -134,7 +138,8 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
     } else {
       setEditingProtocol(null);
       setProtocolForm({
-        ghe_id: ghes[0]?.id || '',
+        // Era ghes[0], o primeiro GHE de qualquer cliente.
+        ghe_id: clientGhes[0]?.id || '',
         exam_name: '',
         exam_code_table_27: '',
         periodicity_months: 12,
@@ -159,6 +164,14 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
       alert(
         `O código ${protocolForm.exam_code_table_27} não consta na Tabela 27. ` +
         'Escolha o procedimento na lista — o eSocial recusa código inexistente.'
+      );
+      return;
+    }
+
+    if (!protocolForm.ghe_id) {
+      alert(
+        'Selecione o GHE. Se este cliente ainda não tem nenhum, crie-o na aba ' +
+        '"2. GHE & Inventário de Riscos".'
       );
       return;
     }
@@ -600,15 +613,29 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
             <form onSubmit={handleSaveProtocol} className="space-y-4 text-xs">
               <div>
                 <label className="block text-slate-400 font-semibold mb-1">GHE / Grupo de Exposição Aplicável</label>
-                <select
-                  value={protocolForm.ghe_id}
-                  onChange={(e) => setProtocolForm({ ...protocolForm, ghe_id: e.target.value })}
-                  className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 focus:outline-none focus:border-teal-500"
-                >
-                  {ghes.map(g => (
-                    <option key={g.id} value={g.id}>{g.name} ({g.code})</option>
-                  ))}
-                </select>
+                {clientGhes.length === 0 ? (
+                  /* Sem GHE nao ha onde aplicar o exame. Antes o select ficava
+                     vazio e o botao de salvar nao respondia - sem dizer por
+                     que, nem onde resolver. */
+                  <div className="rounded-lg border border-amber-700/60 bg-amber-950/30 p-3 text-[11px] text-amber-200 space-y-1">
+                    <p className="font-bold text-amber-300">Este cliente ainda não tem GHE.</p>
+                    <p>
+                      O protocolo de exame é vinculado a um Grupo Homogêneo de Exposição. Crie o GHE
+                      na aba <strong>2. GHE &amp; Inventário de Riscos</strong>, no botão
+                      &quot;Novo GHE&quot;, e volte aqui.
+                    </p>
+                  </div>
+                ) : (
+                  <select
+                    value={protocolForm.ghe_id}
+                    onChange={(e) => setProtocolForm({ ...protocolForm, ghe_id: e.target.value })}
+                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 focus:outline-none focus:border-teal-500"
+                  >
+                    {clientGhes.map(g => (
+                      <option key={g.id} value={g.id}>{g.name} ({g.code})</option>
+                    ))}
+                  </select>
+                )}
               </div>
 
               {/* Nome e codigo eram dois campos livres, digitados a mao. Agora
