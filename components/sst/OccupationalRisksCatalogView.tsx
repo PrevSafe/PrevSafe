@@ -3,6 +3,9 @@
 import React, { useState, useMemo } from 'react';
 import { usePrevSafe } from '@/context/PrevSafeContext';
 import { OccupationalRiskCatalogItem, RiskCategoryType } from '@/types';
+import { SeletorTabela27 } from './SeletorTabela27';
+import { consultarProcedimento, codigoExisteNaTabela27 } from '@/lib/tabela27';
+import { formatoDoCodigoTabela24, codigosDuplicados } from '@/lib/tabela24';
 import { 
   ShieldAlert, 
   Plus, 
@@ -75,7 +78,13 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
     suggested_controls_summary?: string;
     suggested_measured_value?: number;
     suggested_epis_text: string;
-    suggested_exams_text: string;
+    /**
+     * Exames sugeridos, escolhidos da Tabela 27. Era um campo de texto no
+     * formato "Nome [Codigo] - 12m", e o parser caia em '0295' sempre que o
+     * codigo nao vinha entre colchetes - 0295 e Avaliacao clinica, entao
+     * qualquer exame digitado sem codigo virava avaliacao clinica.
+     */
+    suggested_exams: Array<{ codigo: string; nome: string; periodicidade_meses: number }>;
     description?: string;
   }>({
     // Vazio. Vinha pre-preenchido com um agente de ruido completo: limite de
@@ -95,7 +104,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
     suggested_controls_summary: '',
     suggested_measured_value: 0,
     suggested_epis_text: '',
-    suggested_exams_text: '',
+    suggested_exams: [],
     description: ''
   });
 
@@ -159,7 +168,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
       suggested_controls_summary: '',
       suggested_measured_value: 0,
       suggested_epis_text: '',
-      suggested_exams_text: '',
+      suggested_exams: [],
       description: ''
     });
     setIsModalOpen(true);
@@ -185,15 +194,54 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
       suggested_controls_summary: item.suggested_controls_summary || '',
       suggested_measured_value: item.suggested_measured_value || 0,
       suggested_epis_text: episText,
-      suggested_exams_text: examsText,
+      suggested_exams: (item.suggested_exams_pcmso || []).map(ex => ({
+        codigo: ex.exam_code || '',
+        nome: consultarProcedimento(ex.exam_code)?.nome || ex.exam_name || '',
+        periodicidade_meses: ex.periodicity_months || 12,
+      })),
       description: item.description || ''
     });
     setIsModalOpen(true);
   };
 
+  /** Códigos da Tabela 24 usados por mais de um agente, com os nomes. */
+  const codigosRepetidos = useMemo(() => {
+    const mapa = new Map<string, string[]>();
+    codigosDuplicados(occupationalRisksCatalog).forEach(d => mapa.set(d.codigo, d.nomes));
+    return mapa;
+  }, [occupationalRisksCatalog]);
+
   const handleSaveRisk = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.agent_name || !form.risk_code_table_24) return;
+
+    // Antes: `return` em silencio. O usuario clicava em salvar, nada acontecia
+    // e nenhuma mensagem aparecia.
+    if (!form.agent_name.trim()) {
+      alert('Informe o nome do agente de risco.');
+      return;
+    }
+    const formato = formatoDoCodigoTabela24(form.risk_code_table_24);
+    if (!formato.valido) {
+      alert(formato.motivo);
+      return;
+    }
+    // O mesmo codigo em dois agentes diferentes torna impossivel saber qual
+    // deles o S-2240 esta declarando.
+    const jaUsado = occupationalRisksCatalog.find(
+      r => r.code_table_24 === formato.codigo && r.id !== editingItem?.id
+    );
+    if (jaUsado) {
+      alert(
+        `O código ${formato.codigo} já está cadastrado em "${jaUsado.name}". ` +
+        'Cada código da Tabela 24 identifica um agente — use o código correto deste.'
+      );
+      return;
+    }
+    const examesInvalidos = form.suggested_exams.filter(ex => !codigoExisteNaTabela27(ex.codigo));
+    if (examesInvalidos.length > 0) {
+      alert(`${examesInvalidos.length} exame(s) sugerido(s) com código fora da Tabela 27.`);
+      return;
+    }
 
     // Parse EPIs
     const episParsed = form.suggested_epis_text
@@ -205,30 +253,29 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
         const name = part.replace(/\(CA\s*\d+\)/i, '').trim();
         return {
           name: name || 'Equipamento de Proteção Individual',
-          ca_example: caMatch ? caMatch[1] : '12345',
+          // Sem CA de fachada: o padrao era '12345', um numero de CA que nao
+          // existe. Ele seria copiado para o risco real do cliente e de la
+          // para o campo epi_ca_numbers do S-2240.
+          ca_example: caMatch ? caMatch[1] : undefined,
           protection_type: 'Proteção Individual'
         };
       });
 
-    // Parse Exams
-    const examsParsed = form.suggested_exams_text
-      .split(',')
-      .map(part => part.trim())
-      .filter(Boolean)
-      .map(part => {
-        const codeMatch = part.match(/\[(\d+)\]/);
-        const name = part.replace(/\[\d+\]/g, '').replace(/-\s*\d+m/g, '').trim();
-        return {
-          exam_code: codeMatch ? codeMatch[1] : '0295',
-          exam_name: name || 'Exame Clínico Ocupacional',
-          periodicity_months: 12,
-          triggers: ['ADMISSIONAL', 'PERIODICO', 'DEMISSIONAL'] as Array<'ADMISSIONAL' | 'PERIODICO' | 'RETORNO_TRABALHO' | 'MUDANCA_RISCO' | 'DEMISSIONAL'>,
-          mandatory_standard: 'NR-07' as const
-        };
-      });
+    // Os exames vem escolhidos da Tabela 27: codigo e nome oficiais, sem
+    // parser de texto. O parser antigo caia em exam_code '0295' quando o
+    // codigo nao vinha entre colchetes - e 0295 e Avaliacao clinica
+    // ocupacional, entao "Audiometria" digitada sem codigo era gravada como
+    // avaliacao clinica.
+    const examsParsed = form.suggested_exams.map(ex => ({
+      exam_code: ex.codigo,
+      exam_name: consultarProcedimento(ex.codigo)?.nome || ex.nome,
+      periodicity_months: ex.periodicidade_meses || 12,
+      triggers: ['ADMISSIONAL', 'PERIODICO', 'DEMISSIONAL'] as Array<'ADMISSIONAL' | 'PERIODICO' | 'RETORNO_TRABALHO' | 'MUDANCA_RISCO' | 'DEMISSIONAL'>,
+      mandatory_standard: 'NR-07' as const
+    }));
 
     const payload = {
-      code_table_24: form.risk_code_table_24,
+      code_table_24: formatoDoCodigoTabela24(form.risk_code_table_24).codigo,
       name: form.agent_name,
       group: form.group,
       evaluation_type: form.evaluation_type_standard,
@@ -242,7 +289,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
       suggested_controls_summary: form.suggested_controls_summary,
       suggested_measured_value: form.suggested_measured_value,
       recommended_epis: episParsed.length > 0 ? episParsed : [
-        { name: 'EPI Adequado', ca_example: '12345', protection_type: 'Proteção Individual' }
+        { name: 'EPI Adequado', ca_example: undefined, protection_type: 'Proteção Individual' }
       ],
       suggested_exams_pcmso: examsParsed,
       description: form.description,
@@ -285,7 +332,10 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
   };
 
   const handleExecuteApply = () => {
-    if (selectedRiskIdsToApply.length === 0) return;
+    if (selectedRiskIdsToApply.length === 0) {
+      alert('Selecione ao menos um risco do catálogo para aplicar.');
+      return;
+    }
 
     const result = applyRisksToTargets({
       client_id: applyClientId,
@@ -617,6 +667,26 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                           <span className="font-mono text-xs font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200">
                             eSocial {item.code_table_24}
                           </span>
+                          {/* Codigo fora do formato, ou repetido em outro
+                              agente, fica VISIVEL: o catalogo tinha 05.01.001
+                              em dois itens opostos - queda em altura e
+                              ausencia de risco - e ninguem notou. */}
+                          {!formatoDoCodigoTabela24(item.code_table_24).valido && (
+                            <span
+                              className="text-xs font-bold px-2 py-0.5 rounded bg-rose-50 text-rose-700 border border-rose-200"
+                              title={formatoDoCodigoTabela24(item.code_table_24).motivo}
+                            >
+                              código fora do formato
+                            </span>
+                          )}
+                          {codigosRepetidos.has(item.code_table_24) && (
+                            <span
+                              className="text-xs font-bold px-2 py-0.5 rounded bg-amber-50 text-amber-700 border border-amber-200"
+                              title={`Este código também está em: ${codigosRepetidos.get(item.code_table_24)?.join('; ')}`}
+                            >
+                              código repetido
+                            </span>
+                          )}
                           <span className="text-xs font-semibold text-slate-600">
                             Ref: {item.regulatory_norm_reference}
                           </span>
@@ -931,17 +1001,89 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                 />
               </div>
 
-              <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
-                  Exames PCMSO Sugeridos (Tabela 27) - Formato: Nome [Código] - Periodicidade
-                </label>
-                <input
-                  type="text"
-                  placeholder="Ex: Audiometria Tonal Ocupacional [0295] - 12m, Espirometria [0296] - 12m"
-                  value={form.suggested_exams_text}
-                  onChange={(e) => setForm({ ...form, suggested_exams_text: e.target.value })}
-                  className="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                />
+              {/* Era um campo de texto no formato "Nome [Código] - 12m", e o
+                  próprio exemplo ensinava códigos errados: [0295] rotulado
+                  como Audiometria (0295 é Avaliação clínica) e [0296] como
+                  Espirometria (0296 é Acuidade visual). Agora o exame é
+                  escolhido da Tabela 27. */}
+              <div className="bg-slate-50 border border-slate-200 rounded-lg p-3 space-y-2">
+                <div className="flex items-center justify-between gap-3">
+                  <label className="block text-xs font-bold text-slate-700 uppercase">
+                    Exames PCMSO sugeridos ({form.suggested_exams.length})
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setForm({
+                        ...form,
+                        suggested_exams: [
+                          ...form.suggested_exams,
+                          { codigo: '', nome: '', periodicidade_meses: 12 },
+                        ],
+                      })
+                    }
+                    className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-semibold rounded-lg flex items-center gap-1"
+                  >
+                    <Plus className="w-3 h-3" /> Adicionar exame
+                  </button>
+                </div>
+
+                {form.suggested_exams.length === 0 ? (
+                  <p className="text-[11px] text-slate-500">
+                    Nenhum exame sugerido. São recomendações que acompanham o agente ao ser
+                    aplicado a um GHE — quais exames o trabalhador de fato realiza é decisão do
+                    médico coordenador do PCMSO.
+                  </p>
+                ) : (
+                  <div className="space-y-2">
+                    {form.suggested_exams.map((ex, i) => (
+                      <div key={i} className="flex items-center gap-2">
+                        <div className="flex-1 min-w-0">
+                          <SeletorTabela27
+                            compacto
+                            codigo={ex.codigo}
+                            placeholder="Busque o exame na Tabela 27..."
+                            onSelecionar={p => {
+                              const lista = [...form.suggested_exams];
+                              lista[i] = { ...lista[i], codigo: p.codigo, nome: p.nome };
+                              setForm({ ...form, suggested_exams: lista });
+                            }}
+                          />
+                        </div>
+                        <div className="flex items-center gap-1 shrink-0">
+                          <input
+                            type="number"
+                            min={1}
+                            value={ex.periodicidade_meses}
+                            onChange={e => {
+                              const lista = [...form.suggested_exams];
+                              lista[i] = {
+                                ...lista[i],
+                                periodicidade_meses: Number(e.target.value) || 12,
+                              };
+                              setForm({ ...form, suggested_exams: lista });
+                            }}
+                            className="w-14 px-2 py-1.5 text-[11px] border border-slate-300 rounded-lg text-center"
+                          />
+                          <span className="text-[10px] text-slate-500">meses</span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setForm({
+                              ...form,
+                              suggested_exams: form.suggested_exams.filter((_, j) => j !== i),
+                            })
+                          }
+                          className="text-slate-400 hover:text-rose-500 shrink-0"
+                          title="Remover exame"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
               <div>

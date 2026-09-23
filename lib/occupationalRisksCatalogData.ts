@@ -1,5 +1,34 @@
 import { OccupationalRiskCatalogItem } from '@/types';
 
+/**
+ * CODIGOS DE EXAME CORRIGIDOS CONTRA A TABELA 27.
+ *
+ * Os 13 codigos distintos que este catalogo usava estavam TODOS errados: cada
+ * um apontava para um agente quimico ou um anticorpo, nao para um exame.
+ *
+ *   0008 -> 1,2-gliceril dinitrato        (usado como "Avaliacao Clinica")
+ *   0040 -> 2-naftilamina                 (usado como "Hemograma")
+ *   0042 -> 3-alfa androstanediol         (usado como "Glicemia")
+ *   0112 -> Acido lactico                 (usado como "Acuidade Visual" e "Psicossocial")
+ *   0210 -> Anticoagulante lupico         (usado como "ECG")
+ *   0215 -> Anticorpo antimieloperoxidase (usado como "EEG")
+ *   0281 -> Audiometria tonal ocupacional (usado como "Espirometria")
+ *   0295 -> Avaliacao clinica ocupacional (usado como "Audiometria")
+ *   0310 -> Bartituratos                  (usado como "Sorologias")
+ *   0312 -> Benzeno urinario              (usado como "Leptospirose")
+ *   0411 -> Clorofenol                    (usado como "Radiografia OIT")
+ *   0415 -> Coagulograma                  (usado como "Radiografia de Coluna")
+ *   0514 -> Dimetiltiofosfato             (usado como "Acido Hipurico")
+ *
+ * Note 0281 e 0295: estavam TROCADOS entre si - a audiometria levava o codigo
+ * da avaliacao clinica e a espirometria levava o da audiometria.
+ *
+ * Entradas compostas viraram varios exames, cada um com seu codigo: um codigo
+ * so nao representa um painel, e escolher um deles perderia os demais.
+ *
+ * Os nomes sao agora os da Tabela 27 (lib/tabela27.ts), porque e a denominacao
+ * publicada que vale perante o governo.
+ */
 export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] = [
   // =========================================================================
   // GRUPO 1: RISCOS FÍSICOS (Código eSocial Grupo 01)
@@ -24,8 +53,10 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
       { ca_example: '29705', name: 'Protetor Auditivo tipo Concha / Abafador Supra-auricular', protection_type: 'AUDITIVA', attenuation: '22 dB NRRsf' }
     ],
     suggested_exams_pcmso: [
-      { exam_code: '0295', exam_name: 'Audiometria Tonal e Vocal por Via Aérea e Óssea', periodicity_months: 6, triggers: ['ADMISSIONAL', 'PERIODICO', 'MUDANCA_RISCO', 'DEMISSIONAL'], mandatory_standard: 'NR-07' },
-      { exam_code: '0008', exam_name: 'Avaliação Clínica Geral (Anamnese Ocupacional e Otoscopia)', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO', 'DEMISSIONAL'], mandatory_standard: 'NR-07' }
+      { exam_code: '0281', exam_name: 'Audiometria tonal ocupacional', periodicity_months: 6, triggers: ['ADMISSIONAL', 'PERIODICO', 'MUDANCA_RISCO', 'DEMISSIONAL'], mandatory_standard: 'NR-07' },
+      { exam_code: '0285', exam_name: 'Audiometria vocal - Pesquisa de limiar de inteligibilidade', periodicity_months: 6, triggers: ['ADMISSIONAL', 'PERIODICO', 'MUDANCA_RISCO', 'DEMISSIONAL'], mandatory_standard: 'NR-07' },
+      { exam_code: '0295', exam_name: 'Avaliação clínica ocupacional (anamnese e exame físico)', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO', 'DEMISSIONAL'], mandatory_standard: 'NR-07' },
+      { exam_code: '0291', exam_name: 'Avaliação clínica com ênfase neurossensorial (anamnese e exame físico)', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO', 'DEMISSIONAL'], mandatory_standard: 'NR-07' }
     ],
     default_severity: 3,
     default_probability: 3,
@@ -59,7 +90,8 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
       { ca_example: '32840', name: 'Dupla Proteção Auditiva: Abafador Concha + Plug de Espuma', protection_type: 'AUDITIVA', attenuation: '27 dB NRRsf combinada' }
     ],
     suggested_exams_pcmso: [
-      { exam_code: '0295', exam_name: 'Audiometria Tonal e Vocal com Repouso Prévio', periodicity_months: 6, triggers: ['ADMISSIONAL', 'PERIODICO', 'DEMISSIONAL'], mandatory_standard: 'NR-07' }
+      { exam_code: '0281', exam_name: 'Audiometria tonal ocupacional', periodicity_months: 6, triggers: ['ADMISSIONAL', 'PERIODICO', 'DEMISSIONAL'], mandatory_standard: 'NR-07' },
+      { exam_code: '0285', exam_name: 'Audiometria vocal - Pesquisa de limiar de inteligibilidade', periodicity_months: 6, triggers: ['ADMISSIONAL', 'PERIODICO', 'DEMISSIONAL'], mandatory_standard: 'NR-07' }
     ],
     default_severity: 4,
     default_probability: 2,
@@ -94,8 +126,12 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
       { ca_example: '28410', name: 'Luva de Grafite / Fibra de Kevlar resistente a alta temperatura', protection_type: 'MEMBROS_SUPERIORES' }
     ],
     suggested_exams_pcmso: [
-      { exam_code: '0210', exam_name: 'Eletrocardiograma de Repouso (ECG)', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], mandatory_standard: 'NR-07' },
-      { exam_code: '0040', exam_name: 'Hemograma Completo, Eletrólitos (Sódio/Potássio) e Ureia/Creatinina', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], mandatory_standard: 'NR-07' }
+      { exam_code: '0530', exam_name: 'ECG (Eletrocardiograma) convencional de até 12 derivações', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], mandatory_standard: 'NR-07' },
+      { exam_code: '0693', exam_name: 'Hemograma com contagem de plaquetas ou frações (eritrograma, leucograma, plaquetas)', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], mandatory_standard: 'NR-07' },
+      { exam_code: '1127', exam_name: 'Sódio', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], mandatory_standard: 'NR-07' },
+      { exam_code: '1022', exam_name: 'Potássio', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], mandatory_standard: 'NR-07' },
+      { exam_code: '1242', exam_name: 'Uréia', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], mandatory_standard: 'NR-07' },
+      { exam_code: '0456', exam_name: 'Creatinina', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], mandatory_standard: 'NR-07' }
     ],
     default_severity: 3,
     default_probability: 3,
@@ -129,7 +165,8 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
       { ca_example: '39410', name: 'Calçado com sistema de absorção de impacto no calcanhar', protection_type: 'MEMBROS_INFERIORES' }
     ],
     suggested_exams_pcmso: [
-      { exam_code: '0415', exam_name: 'Radiografia de Coluna Lombossacra e Torácica', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], mandatory_standard: 'NR-07' }
+      { exam_code: '1075', exam_name: 'Radiografia de coluna lombo-sacra', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], mandatory_standard: 'NR-07' },
+      { exam_code: '1074', exam_name: 'Radiografia de coluna dorsal', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], mandatory_standard: 'NR-07' }
     ],
     default_severity: 3,
     default_probability: 2,
@@ -163,7 +200,7 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
       { ca_example: '38140', name: 'Luva de Proteção Antivibração com gomos de polímero certificados ISO 10819', protection_type: 'MEMBROS_SUPERIORES' }
     ],
     suggested_exams_pcmso: [
-      { exam_code: '0008', exam_name: 'Exame Clínico com Teste de Allen e Manobra de Adson', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], mandatory_standard: 'NR-07' }
+      { exam_code: '0286', exam_name: 'Avaliação clínica com ênfase cardiocirculatória (anamnese e exame físico)', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], mandatory_standard: 'NR-07' }
     ],
     default_severity: 3,
     default_probability: 3,
@@ -198,7 +235,8 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
       { ca_example: '10786', name: 'Vestimenta de Raspa de Couro (Avental, Mangotes e Perneiras)', protection_type: 'TRONCO' }
     ],
     suggested_exams_pcmso: [
-      { exam_code: '0112', exam_name: 'Avaliação Oftalmológica com Biomicroscopia / Acuidade Visual', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], mandatory_standard: 'NR-07' }
+      { exam_code: '1432', exam_name: 'Exame oftalmológico com avaliação de retina e/ou cristalino', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], mandatory_standard: 'NR-07' },
+      { exam_code: '0296', exam_name: 'Avaliação da acuidade visual', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], mandatory_standard: 'NR-07' }
     ],
     default_severity: 3,
     default_probability: 3,
@@ -232,7 +270,7 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
       { ca_example: '28114', name: 'Bota Térmica de Poliuretano com Forração de Lã Sintética', protection_type: 'MEMBROS_INFERIORES' }
     ],
     suggested_exams_pcmso: [
-      { exam_code: '0281', exam_name: 'Espirometria Ocupacional', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], mandatory_standard: 'NR-07' }
+      { exam_code: '1057', exam_name: 'Prova de função pulmonar completa (ou espirometria)', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], mandatory_standard: 'NR-07' }
     ],
     default_severity: 3,
     default_probability: 3,
@@ -271,9 +309,10 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
       { ca_example: '41120', name: 'Respirador Semifacial Reutilizável com Filtro P3 para Vapores e Fumos', protection_type: 'RESPIRATORIA' }
     ],
     suggested_exams_pcmso: [
-      { exam_code: '0411', exam_name: 'Radiografia de Tórax Padrão OIT em PA', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO', 'DEMISSIONAL'], mandatory_standard: 'NR-07' },
-      { exam_code: '0281', exam_name: 'Espirometria Ocupacional com Prova Broncodilatadora', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO', 'DEMISSIONAL'], mandatory_standard: 'NR-07' },
-      { exam_code: '0040', exam_name: 'Hemograma Completo e Manganês Urinário', periodicity_months: 6, triggers: ['PERIODICO'], mandatory_standard: 'NR-07' }
+      { exam_code: '1078', exam_name: 'Radiografia de tórax (PA) Padrão OIT (o mais recente), com dois leitores habilitados', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO', 'DEMISSIONAL'], mandatory_standard: 'NR-07' },
+      { exam_code: '1057', exam_name: 'Prova de função pulmonar completa (ou espirometria)', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO', 'DEMISSIONAL'], mandatory_standard: 'NR-07' },
+      { exam_code: '0693', exam_name: 'Hemograma com contagem de plaquetas ou frações (eritrograma, leucograma, plaquetas)', periodicity_months: 6, triggers: ['PERIODICO'], mandatory_standard: 'NR-07' },
+      { exam_code: '0835', exam_name: 'Manganês urinário', periodicity_months: 6, triggers: ['PERIODICO'], mandatory_standard: 'NR-07' }
     ],
     default_severity: 4,
     default_probability: 3,
@@ -307,8 +346,8 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
       { ca_example: '41120', name: 'Respirador Semifacial com Filtro P100 / P3 de Alta Eficiência', protection_type: 'RESPIRATORIA' }
     ],
     suggested_exams_pcmso: [
-      { exam_code: '0411', exam_name: 'Radiografia de Tórax em PA Padrão OIT (Leitura bilingue OIT)', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO', 'DEMISSIONAL'], mandatory_standard: 'NR-07' },
-      { exam_code: '0281', exam_name: 'Espirometria Ocupacional Seriada', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO', 'DEMISSIONAL'], mandatory_standard: 'NR-07' }
+      { exam_code: '1078', exam_name: 'Radiografia de tórax (PA) Padrão OIT (o mais recente), com dois leitores habilitados', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO', 'DEMISSIONAL'], mandatory_standard: 'NR-07' },
+      { exam_code: '1057', exam_name: 'Prova de função pulmonar completa (ou espirometria)', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO', 'DEMISSIONAL'], mandatory_standard: 'NR-07' }
     ],
     default_severity: 5,
     default_probability: 2,
@@ -343,8 +382,12 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
       { ca_example: '32014', name: 'Luva de Proteção em Borracha Nitrílica Sol-Vex resistente a solventes', protection_type: 'MEMBROS_SUPERIORES' }
     ],
     suggested_exams_pcmso: [
-      { exam_code: '0514', exam_name: 'Ácido Hipúrico e Ácido Metil-Hipúrico Urinário (IBMP)', periodicity_months: 6, triggers: ['PERIODICO', 'RETORNO_TRABALHO'], mandatory_standard: 'NR-07' },
-      { exam_code: '0040', exam_name: 'Hemograma Completo e Enzimas Hepáticas (TGO/TGP/GGT)', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], mandatory_standard: 'NR-07' }
+      { exam_code: '0109', exam_name: 'Ácido hipúrico', periodicity_months: 6, triggers: ['PERIODICO', 'RETORNO_TRABALHO'], mandatory_standard: 'NR-07' },
+      { exam_code: '0116', exam_name: 'Ácido metilhipúrico', periodicity_months: 6, triggers: ['PERIODICO', 'RETORNO_TRABALHO'], mandatory_standard: 'NR-07' },
+      { exam_code: '0693', exam_name: 'Hemograma com contagem de plaquetas ou frações (eritrograma, leucograma, plaquetas)', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], mandatory_standard: 'NR-07' },
+      { exam_code: '1204', exam_name: 'Transaminase oxalacética (amino transferase aspartato)', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], mandatory_standard: 'NR-07' },
+      { exam_code: '1205', exam_name: 'Transaminase pirúvica (amino transferase de alanina)', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], mandatory_standard: 'NR-07' },
+      { exam_code: '0652', exam_name: 'Gama-glutamil transferase (gama-GT)', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], mandatory_standard: 'NR-07' }
     ],
     default_severity: 4,
     default_probability: 3,
@@ -379,7 +422,8 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
       { ca_example: '30412', name: 'Avental Impermeável de PVC / Trevira', protection_type: 'TRONCO' }
     ],
     suggested_exams_pcmso: [
-      { exam_code: '0112', exam_name: 'Exame Oftalmológico e Avaliação Dermatológica', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], mandatory_standard: 'NR-07' }
+      { exam_code: '1432', exam_name: 'Exame oftalmológico com avaliação de retina e/ou cristalino', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], mandatory_standard: 'NR-07' },
+      { exam_code: '0287', exam_name: 'Avaliação clínica com ênfase dermatológica (anamnese e exame físico)', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], mandatory_standard: 'NR-07' }
     ],
     default_severity: 4,
     default_probability: 2,
@@ -413,7 +457,7 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
       { ca_example: '24110', name: 'Creme Protetor de Segurança com CA contra óleos e solventes', protection_type: 'MEMBROS_SUPERIORES' }
     ],
     suggested_exams_pcmso: [
-      { exam_code: '0008', exam_name: 'Exame Clínico com foco em Exame Dermatológico', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], mandatory_standard: 'NR-07' }
+      { exam_code: '0287', exam_name: 'Avaliação clínica com ênfase dermatológica (anamnese e exame físico)', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], mandatory_standard: 'NR-07' }
     ],
     default_severity: 3,
     default_probability: 3,
@@ -452,8 +496,11 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
       { ca_example: '29792', name: 'Óculos de Segurança com Proteção Lateral e Protetor Facial', protection_type: 'OLHOS_FACE' }
     ],
     suggested_exams_pcmso: [
-      { exam_code: '0310', exam_name: 'Sorologias: Anti-HBs, Anti-HCV, Anti-HIV e VDRL', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO', 'DEMISSIONAL'], mandatory_standard: 'NR-07' },
-      { exam_code: '0411', exam_name: 'Radiografia de Tórax em PA (Triagem de Tuberculose)', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], mandatory_standard: 'NR-07' }
+      { exam_code: '0704', exam_name: 'Hepatite B - HBsAC (anti-HBs)', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO', 'DEMISSIONAL'], mandatory_standard: 'NR-07' },
+      { exam_code: '0705', exam_name: 'Hepatite C - Anti-HCV - IgG', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO', 'DEMISSIONAL'], mandatory_standard: 'NR-07' },
+      { exam_code: '0733', exam_name: 'HIV1 ou HIV2, pesquisa de anticorpos', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO', 'DEMISSIONAL'], mandatory_standard: 'NR-07' },
+      { exam_code: '1123', exam_name: 'Sífilis - VDRL', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO', 'DEMISSIONAL'], mandatory_standard: 'NR-07' },
+      { exam_code: '1430', exam_name: 'Radiografia de tórax em visão anteroposterior e de perfil', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], mandatory_standard: 'NR-07' }
     ],
     default_severity: 4,
     default_probability: 3,
@@ -488,7 +535,7 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
       { ca_example: '24190', name: 'Bota de Borracha PVC de Cano Longo e Biqueira de Aço', protection_type: 'MEMBROS_INFERIORES' }
     ],
     suggested_exams_pcmso: [
-      { exam_code: '0312', exam_name: 'Sorologia para Leptospirose e Titulação de Vacina Antitetânica', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], mandatory_standard: 'NR-07' }
+      { exam_code: '0800', exam_name: 'Leptospirose - IgG', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], mandatory_standard: 'NR-07' }
     ],
     default_severity: 4,
     default_probability: 3,
@@ -527,7 +574,7 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
       { ca_example: '41419', name: 'Calçado com solado antiderrapante e absorção de impacto', protection_type: 'MEMBROS_INFERIORES' }
     ],
     suggested_exams_pcmso: [
-      { exam_code: '0415', exam_name: 'Exame Físico Osteomuscular com Avaliação de Amplitude de Movimento da Coluna', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO', 'MUDANCA_RISCO', 'DEMISSIONAL'], mandatory_standard: 'NR-07' }
+      { exam_code: '0292', exam_name: 'Avaliação clínica com ênfase ortopédica (anamnese e exame físico)', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO', 'MUDANCA_RISCO', 'DEMISSIONAL'], mandatory_standard: 'NR-07' }
     ],
     default_severity: 3,
     default_probability: 3,
@@ -556,7 +603,7 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
     recommended_epcs: 'Tapetes antifadiga ergonômicos em postos em pé, bancadas com regulagem elétrica de altura, cadeiras ergonômicas NR-17 com suporte lombar e braços reguláveis.',
     recommended_epis: [],
     suggested_exams_pcmso: [
-      { exam_code: '0008', exam_name: 'Avaliação Clínica Osteomuscular e Teste de Neer/Jobe para Ombros', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], mandatory_standard: 'NR-07' }
+      { exam_code: '0292', exam_name: 'Avaliação clínica com ênfase ortopédica (anamnese e exame físico)', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], mandatory_standard: 'NR-07' }
     ],
     default_severity: 3,
     default_probability: 3,
@@ -586,7 +633,7 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
     recommended_epcs: 'Rodízio programado de tarefas, pausas psicofisiológicas obrigatórias de 10 minutos a cada 50 minutos de trabalho, ferramentas com empunhaduras neutras.',
     recommended_epis: [],
     suggested_exams_pcmso: [
-      { exam_code: '0008', exam_name: 'Exame Clínico com Manobra de Phalen e Teste de Tinel', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], mandatory_standard: 'NR-07' }
+      { exam_code: '0292', exam_name: 'Avaliação clínica com ênfase ortopédica (anamnese e exame físico)', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], mandatory_standard: 'NR-07' }
     ],
     default_severity: 3,
     default_probability: 3,
@@ -622,10 +669,11 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
       { ca_example: '31469', name: 'Capacete de Segurança Classe B com Tira Jugular de 3 pontas', protection_type: 'CABECA' }
     ],
     suggested_exams_pcmso: [
-      { exam_code: '0210', exam_name: 'Eletrocardiograma (ECG) de 12 Derivações', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], mandatory_standard: 'NR-35' },
-      { exam_code: '0215', exam_name: 'Eletroencefalograma (EEG) com Laudo Neurológico', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], mandatory_standard: 'NR-35' },
-      { exam_code: '0042', exam_name: 'Glicemia de Jejum e Hemograma Completo', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], mandatory_standard: 'NR-35' },
-      { exam_code: '0112', exam_name: 'Avaliação Psicossocial Ocupacional com Psicólogo do Trabalho', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], mandatory_standard: 'NR-35' }
+      { exam_code: '0530', exam_name: 'ECG (Eletrocardiograma) convencional de até 12 derivações', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], mandatory_standard: 'NR-35' },
+      { exam_code: '0536', exam_name: 'EEG (Eletroencefalograma) de rotina', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], mandatory_standard: 'NR-35' },
+      { exam_code: '0658', exam_name: 'Glicemia', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], mandatory_standard: 'NR-35' },
+      { exam_code: '0693', exam_name: 'Hemograma com contagem de plaquetas ou frações (eritrograma, leucograma, plaquetas)', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], mandatory_standard: 'NR-35' },
+      { exam_code: '0300', exam_name: 'Avaliação psicossocial', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], mandatory_standard: 'NR-35' }
     ],
     default_severity: 5,
     default_probability: 2,
@@ -657,7 +705,8 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
       { ca_example: '29792', name: 'Óculos de proteção com lente de policarbonato antirrisco', protection_type: 'OLHOS_FACE' }
     ],
     suggested_exams_pcmso: [
-      { exam_code: '0008', exam_name: 'Avaliação Clínica com teste de reflexos e acuidade visual', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], mandatory_standard: 'NR-07' }
+      { exam_code: '0290', exam_name: 'Avaliação clínica com ênfase neurológca (anamnese e exame físico)', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], mandatory_standard: 'NR-07' },
+      { exam_code: '0296', exam_name: 'Avaliação da acuidade visual', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], mandatory_standard: 'NR-07' }
     ],
     default_severity: 5,
     default_probability: 2,
@@ -691,9 +740,9 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
       { ca_example: '41419', name: 'Botina de Segurança Dielétrica sem componentes metálicos', protection_type: 'MEMBROS_INFERIORES' }
     ],
     suggested_exams_pcmso: [
-      { exam_code: '0210', exam_name: 'Eletrocardiograma (ECG) de Repouso', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], mandatory_standard: 'NR-10' },
-      { exam_code: '0215', exam_name: 'Eletroencefalograma (EEG) com mapeamento', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], mandatory_standard: 'NR-10' },
-      { exam_code: '0112', exam_name: 'Avaliação Psicossocial para Eletricistas', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], mandatory_standard: 'NR-10' }
+      { exam_code: '0530', exam_name: 'ECG (Eletrocardiograma) convencional de até 12 derivações', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], mandatory_standard: 'NR-10' },
+      { exam_code: '0536', exam_name: 'EEG (Eletroencefalograma) de rotina', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], mandatory_standard: 'NR-10' },
+      { exam_code: '0300', exam_name: 'Avaliação psicossocial', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], mandatory_standard: 'NR-10' }
     ],
     default_severity: 5,
     default_probability: 2,
@@ -726,10 +775,10 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
       { ca_example: '41120', name: 'Conjunto Autônomo de Ar Respirável de Pressão Positiva / Máscara de Fuga', protection_type: 'RESPIRATORIA' }
     ],
     suggested_exams_pcmso: [
-      { exam_code: '0210', exam_name: 'Eletrocardiograma (ECG)', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], mandatory_standard: 'NR-33' },
-      { exam_code: '0281', exam_name: 'Espirometria Ocupacional', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], mandatory_standard: 'NR-33' },
-      { exam_code: '0215', exam_name: 'Eletroencefalograma (EEG)', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], mandatory_standard: 'NR-33' },
-      { exam_code: '0112', exam_name: 'Avaliação Psicossocial (Claustrofobia, Ansiedade)', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], mandatory_standard: 'NR-33' }
+      { exam_code: '0530', exam_name: 'ECG (Eletrocardiograma) convencional de até 12 derivações', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], mandatory_standard: 'NR-33' },
+      { exam_code: '1057', exam_name: 'Prova de função pulmonar completa (ou espirometria)', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], mandatory_standard: 'NR-33' },
+      { exam_code: '0536', exam_name: 'EEG (Eletroencefalograma) de rotina', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], mandatory_standard: 'NR-33' },
+      { exam_code: '0300', exam_name: 'Avaliação psicossocial', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], mandatory_standard: 'NR-33' }
     ],
     default_severity: 5,
     default_probability: 2,
@@ -761,7 +810,7 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
       { ca_example: '41419', name: 'Calçado com solado condutivo / antiestático para dissipação de eletricidade estática', protection_type: 'MEMBROS_INFERIORES' }
     ],
     suggested_exams_pcmso: [
-      { exam_code: '0008', exam_name: 'Exame Clínico Ocupacional Periódico', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], mandatory_standard: 'NR-07' }
+      { exam_code: '0295', exam_name: 'Avaliação clínica ocupacional (anamnese e exame físico)', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], mandatory_standard: 'NR-07' }
     ],
     default_severity: 5,
     default_probability: 2,
@@ -795,7 +844,7 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
       { ca_example: '10786', name: 'Luva de Vaqueta Mista e Mangote de Raspa de Couro', protection_type: 'MEMBROS_SUPERIORES' }
     ],
     suggested_exams_pcmso: [
-      { exam_code: '0112', exam_name: 'Avaliação Oftalmológica com Acuidade Visual', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], mandatory_standard: 'NR-07' }
+      { exam_code: '0296', exam_name: 'Avaliação da acuidade visual', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], mandatory_standard: 'NR-07' }
     ],
     default_severity: 4,
     default_probability: 3,
@@ -827,9 +876,11 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
       { ca_example: '41419', name: 'Calçado de Segurança com Biqueira de Aço / Composite', protection_type: 'MEMBROS_INFERIORES' }
     ],
     suggested_exams_pcmso: [
-      { exam_code: '0112', exam_name: 'Acuidade Visual, Campimetria e Senso Cromático para Operadores', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], mandatory_standard: 'NR-11' },
-      { exam_code: '0295', exam_name: 'Audiometria Ocupacional', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], mandatory_standard: 'NR-11' },
-      { exam_code: '0112', exam_name: 'Avaliação Psicossocial para Operadores de Máquinas Autopropelidas', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], mandatory_standard: 'NR-11' }
+      { exam_code: '0296', exam_name: 'Avaliação da acuidade visual', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], mandatory_standard: 'NR-11' },
+      { exam_code: '0299', exam_name: 'Avaliação do campo visual', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], mandatory_standard: 'NR-11' },
+      { exam_code: '0298', exam_name: 'Avaliação da visão de cores', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], mandatory_standard: 'NR-11' },
+      { exam_code: '0281', exam_name: 'Audiometria tonal ocupacional', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], mandatory_standard: 'NR-11' },
+      { exam_code: '0300', exam_name: 'Avaliação psicossocial', periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], mandatory_standard: 'NR-11' }
     ],
     default_severity: 5,
     default_probability: 2,
@@ -844,11 +895,20 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
   },
 
   // =========================================================================
-  // GRUPO 6: AUSÊNCIA DE RISCOS (Código eSocial 05.01.001 / Padrão PGR/LTCAT)
+  // GRUPO 9: AUSÊNCIA DE FATOR DE RISCO
+  //
+  // O codigo aqui era 05.01.001 - o MESMO de "Risco de Queda em Altura", e do
+  // grupo 05 (acidentes). Dois riscos opostos com um codigo so, e a ausencia
+  // de risco cadastrada como risco de acidente.
+  //
+  // O prefixo 09 e o grupo de ausencia de fator de risco. Os tres ultimos
+  // digitos precisam ser conferidos na Tabela 24 oficial, que ainda nao entrou
+  // no projeto - por isso este item nasce INACTIVE: ele nao deve ser aplicado
+  // a um cliente nem declarado ao eSocial enquanto o codigo nao for conferido.
   // =========================================================================
   {
     id: 'risk-cat-25',
-    code_table_24: '05.01.001',
+    code_table_24: '09.01.001',
     name: 'Ausência de Fatores de Risco Físicos, Químicos ou Biológicos Nocivos',
     group: 'AUSÊNCIA_RISCO',
     category_color: 'slate',
@@ -862,7 +922,7 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
     recommended_epcs: 'Ar-condicionado regulado, iluminação adequada conforme NBR ISO/CIE 8995-1.',
     recommended_epis: [],
     suggested_exams_pcmso: [
-      { exam_code: '0008', exam_name: 'Avaliação Clínica Ocupacional (Anamnese e Exame Físico)', periodicity_months: 24, triggers: ['ADMISSIONAL', 'PERIODICO', 'MUDANCA_RISCO', 'DEMISSIONAL'], mandatory_standard: 'NR-07' }
+      { exam_code: '0295', exam_name: 'Avaliação clínica ocupacional (anamnese e exame físico)', periodicity_months: 24, triggers: ['ADMISSIONAL', 'PERIODICO', 'MUDANCA_RISCO', 'DEMISSIONAL'], mandatory_standard: 'NR-07' }
     ],
     default_severity: 1,
     default_probability: 1,
@@ -871,7 +931,9 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
     insalubridade_applicable: false,
     periculosidade_applicable: false,
     is_system_default: true,
-    status: 'ACTIVE',
+    // INACTIVE ate o codigo ser conferido na Tabela 24 oficial. Ver o
+    // comentario acima.
+    status: 'INACTIVE',
     created_at: '2026-01-01T00:00:00Z',
     updated_at: '2026-08-20T00:00:00Z'
   }

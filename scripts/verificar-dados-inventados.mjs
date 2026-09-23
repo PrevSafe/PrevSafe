@@ -50,6 +50,11 @@ const PROIBIDOS = [
   { padrao: /Trabalhador do GHE|Colaborador Extraído do (PGR|PCMSO)/, o_que: 'trabalhador inventado' },
   { padrao: /7f8a9e2d4c6b1a0f/, o_que: 'hash SHA-256 fixo' },
   { padrao: /AC CERTISIGN MULTIPLA G7/, o_que: 'emissor de certificado inventado' },
+  // Fallbacks que preenchiam um campo desconhecido com um valor plausivel.
+  { padrao: /ca_example:\s*\w+\s*\?[^:]*:\s*'/, o_que: 'número de CA usado como padrão' },
+  { padrao: /ca_example:\s*'12345'/, o_que: 'número de CA inventado' },
+  { padrao: /CA\s*12345/, o_que: 'número de CA inventado' },
+  { padrao: /exam_code:\s*\w+\s*\?[^:]*:\s*'/, o_que: 'código da Tabela 27 usado como padrão' },
   // Defaults de CNAE e grau de risco: o grau define dimensionamento de SESMT
   // e de CIPA, entao um padrao aqui vira documento com enquadramento errado.
   { padrao: /\|\|\s*'(25\.11-0-00|41\.20-4-00)'/, o_que: 'CNAE usado como padrão' },

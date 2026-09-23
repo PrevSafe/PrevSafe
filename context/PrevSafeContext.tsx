@@ -5171,7 +5171,14 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
           epc_effective: true,
           special_retirement_applies: catRisk.special_retirement_eligible,
           gfip_code: catRisk.gfip_code_suggested,
-          ltcat_technical_conclusion: `Exposição ao agente ${catRisk.name} caracterizada conforme critérios técnicos e legais aplicáveis (${catRisk.code_table_24}).`,
+          // Dizia "Exposicao ... CARACTERIZADA conforme criterios tecnicos e
+          // legais" no instante em que o risco era aplicado a partir do
+          // catalogo - antes de qualquer avaliacao. Caracterizar exposicao e a
+          // conclusao do LTCAT, nao o ponto de partida dele.
+          ltcat_technical_conclusion:
+            `Agente ${catRisk.name} (${catRisk.code_table_24}) incluído no inventário a partir do ` +
+            'catálogo. Avaliação de exposição pendente: a caracterização para fins de LTCAT e ' +
+            'aposentadoria especial depende da avaliação no local.',
           insalubridade_applies: catRisk.insalubridade_applicable,
           insalubridade_degree: catRisk.insalubridade_degree_suggested,
           insalubridade_legal_basis: catRisk.insalubridade_legal_basis,
@@ -5179,15 +5186,29 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
           periculosidade_legal_basis: catRisk.periculosidade_legal_basis,
           status: 'ACTIVE',
           epi_required: catRisk.recommended_epis.length > 0,
+          // O catalogo traz EPIs RECOMENDADOS, com CA de exemplo. Ao virar
+          // registro do cliente, nada disso esta verificado:
+          //
+          //   - ca_number caia em '12345' quando o catalogo nao tinha exemplo.
+          //     Esse numero ia para epi_ca_numbers do S-2240.
+          //   - is_effective, complies_with_nr06, uninterrupted_use,
+          //     periodic_replacement e hygienic_conditions eram gravados todos
+          //     como `true`. Sao exatamente as condicoes que o eSocial exige
+          //     que o empregador ATESTE para que o EPI neutralize a exposicao,
+          //     e delas depende o enquadramento de aposentadoria especial.
+          //     Nenhuma delas foi verificada no momento em que o risco e
+          //     copiado de um catalogo.
+          //
+          // Ficam em branco e em false ate alguem conferir no local.
           epis: catRisk.recommended_epis.map(epi => ({
             epi_name: epi.name,
-            ca_number: epi.ca_example || '12345',
+            ca_number: epi.ca_example || '',
             attenuation_factor: epi.attenuation,
-            is_effective: true,
-            complies_with_nr06: true,
-            uninterrupted_use: true,
-            periodic_replacement: true,
-            hygienic_conditions: true
+            is_effective: false,
+            complies_with_nr06: false,
+            uninterrupted_use: false,
+            periodic_replacement: false,
+            hygienic_conditions: false
           })),
           created_at: now,
           updated_at: now,
