@@ -46,6 +46,12 @@ const PROIBIDOS = [
   { padrao: /CREA-SP 5069812/, o_que: 'registro profissional inventado' },
   { padrao: /CRM-SP 145892|CRM-SP 98210/, o_que: 'CRM inventado' },
   { padrao: /86\.2 dB\(A\)/, o_que: 'medição de ruído inventada' },
+  // O formulario de Novo Risco abria com um risco inteiro ja preenchido. O
+  // inventario e a base do PGR, do LTCAT, do PPP e da insalubridade.
+  { padrao: /84\.5|84,5 dB/, o_que: 'medição de ruído pré-preenchida no formulário' },
+  { padrao: /Enclausuramento acústico de compressores/, o_que: 'medida de controle pré-preenchida' },
+  { padrao: /Dosímetro de ruído integrador classe 1/, o_que: 'metodologia de medição pré-preenchida' },
+  { padrao: /Exposição controlada com fornecimento e uso obrigatório de EPI eficaz/, o_que: 'conclusão de LTCAT pré-preenchida' },
   { padrao: /CA 14235/, o_que: 'número de CA inventado' },
   { padrao: /Trabalhador do GHE|Colaborador Extraído do (PGR|PCMSO)/, o_que: 'trabalhador inventado' },
   { padrao: /7f8a9e2d4c6b1a0f/, o_que: 'hash SHA-256 fixo' },

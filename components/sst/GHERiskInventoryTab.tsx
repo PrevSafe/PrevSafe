@@ -152,28 +152,32 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
     insalubridade_degree: '10%' | '20%' | '40%';
     periculosidade_applies: boolean;
   }>({
+    // Segunda copia do mesmo risco pre-preenchido, aqui no estado inicial.
+    // Ver o comentario em handleOpenRiskModal: o inventario e a base do PGR,
+    // do LTCAT, do PPP e do enquadramento de insalubridade, e nenhuma linha
+    // dele pode nascer preenchida por padrao.
     risk_category: 'FÍSICO',
-    agent_name: 'Ruído Contínuo ou Intermitente',
-    risk_code_table_24: '01.01.001',
-    generating_source: 'Operação simultânea de maquinários rotativos e prensas mecânicas',
-    propagation_path: 'Aérea',
-    health_effects: 'Perda auditiva induzida por ruído (PAIR), estresse, cefaleia',
-    evaluation_type: 'QUANTITATIVA',
-    measurement_unit: 'dB(A)',
-    measured_value: '84.5',
-    tolerance_limit: '85.0 dB(A) para 8h (NR-15 Anexo 1)',
-    action_level: '80.0 dB(A) (NR-09)',
-    measurement_methodology: 'Dosímetro de ruído integrador classe 1 conforme NHO-01 Fundacentro',
-    severity: 3,
-    probability: 3,
-    epc_implemented: true,
-    epc_description: 'Enclausuramento acústico de compressores e exaustores',
-    epi_required: true,
-    ca_number_input: '14235',
-    epi_name_input: 'Protetor Auditivo tipo Plug de Silicone 16dB',
+    agent_name: '',
+    risk_code_table_24: '',
+    generating_source: '',
+    propagation_path: '',
+    health_effects: '',
+    evaluation_type: 'QUALITATIVA',
+    measurement_unit: '',
+    measured_value: '',
+    tolerance_limit: '',
+    action_level: '',
+    measurement_methodology: '',
+    severity: 0 as any,
+    probability: 0 as any,
+    epc_implemented: false,
+    epc_description: '',
+    epi_required: false,
+    ca_number_input: '',
+    epi_name_input: '',
     special_retirement_applies: false,
     gfip_code: '00',
-    ltcat_technical_conclusion: 'Exposição abaixo do limite de tolerância após atenuação eficaz dos EPIs (NR-15 e Dec 3.048/99).',
+    ltcat_technical_conclusion: '',
     insalubridade_applies: false,
     insalubridade_degree: '20%',
     periculosidade_applies: false
@@ -298,29 +302,38 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
       });
     } else {
       setEditingRisk(null);
+      // O formulario de NOVO RISCO abria com um risco inteiro ja preenchido:
+      // ruido continuo de 84,5 dB(A) medido com dosimetro NHO-01, limite de
+      // tolerancia, nivel de acao, enclausuramento acustico de compressores e
+      // o EPI CA 14235. Quem clicasse em salvar sem trocar campo nenhum
+      // gravava, no inventario de riscos daquele cliente, uma medicao que
+      // ninguem fez - e o inventario e a base do PGR, do LTCAT, do PPP e do
+      // enquadramento de insalubridade. Nasce vazio.
       setRiskForm({
         risk_category: 'FÍSICO',
-        agent_name: 'Ruído Contínuo ou Intermitente',
-        risk_code_table_24: '01.01.001',
-        generating_source: 'Operação simultânea de maquinários rotativos e prensas mecânicas',
-        propagation_path: 'Aérea',
-        health_effects: 'Perda auditiva induzida por ruído (PAIR), estresse, cefaleia',
-        evaluation_type: 'QUANTITATIVA',
-        measurement_unit: 'dB(A)',
-        measured_value: '84.5',
-        tolerance_limit: '85.0 dB(A) para 8h (NR-15 Anexo 1)',
-        action_level: '80.0 dB(A) (NR-09)',
-        measurement_methodology: 'Dosímetro de ruído integrador classe 1 conforme NHO-01 Fundacentro',
-        severity: 3,
-        probability: 3,
-        epc_implemented: true,
-        epc_description: 'Enclausuramento acústico de compressores e exaustores',
-        epi_required: true,
-        ca_number_input: '14235',
-        epi_name_input: 'Protetor Auditivo tipo Plug de Silicone 16dB',
+        agent_name: '',
+        risk_code_table_24: '',
+        generating_source: '',
+        propagation_path: '',
+        health_effects: '',
+        evaluation_type: 'QUALITATIVA',
+        measurement_unit: '',
+        measured_value: '',
+        tolerance_limit: '',
+        action_level: '',
+        measurement_methodology: '',
+        // 0 = ainda nao classificado. Com 3 e 3 o risco ja nascia "MEDIO",
+        // uma classificacao que nenhum profissional tinha feito.
+        severity: 0 as any,
+        probability: 0 as any,
+        epc_implemented: false,
+        epc_description: '',
+        epi_required: false,
+        ca_number_input: '',
+        epi_name_input: '',
         special_retirement_applies: false,
         gfip_code: '00',
-        ltcat_technical_conclusion: 'Exposição controlada com fornecimento e uso obrigatório de EPI eficaz.',
+        ltcat_technical_conclusion: '',
         insalubridade_applies: false,
         insalubridade_degree: '20%',
         periculosidade_applies: false
@@ -331,10 +344,30 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
 
   const handleSaveRisk = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!activeGhe || !riskForm.agent_name || !riskForm.risk_code_table_24) return;
+
+    // Dava `return` em silencio: o modal ficava aberto e nada acontecia.
+    if (!activeGhe) {
+      alert('Selecione o GHE antes de cadastrar o risco.');
+      return;
+    }
+    if (!riskForm.agent_name.trim()) {
+      alert('Informe o perigo / agente de risco.');
+      return;
+    }
+    // A Tabela 24 so vale para os agentes do Anexo IV do Decreto 3.048/1999.
+    // Risco ergonomico e de acidente entram no inventario do PGR e NAO tem
+    // codigo - por isso o campo deixou de ser obrigatorio.
+    if (!riskForm.severity || !riskForm.probability) {
+      alert(
+        'Classifique a severidade e a probabilidade.\n\n' +
+        'A classificação do risco (severidade x probabilidade) define a ordem ' +
+        'de prioridade do Plano de Ação e não pode ser atribuída pelo sistema.'
+      );
+      return;
+    }
 
     const riskScore = riskForm.severity * riskForm.probability;
-    let risk_level: 'MUITO_BAIXO' | 'BAIXO' | 'MEDIO' | 'ALTO' | 'CRITICO' = 'MEDIO';
+    let risk_level: 'MUITO_BAIXO' | 'BAIXO' | 'MEDIO' | 'ALTO' | 'CRITICO';
     if (riskScore <= 3) risk_level = 'MUITO_BAIXO';
     else if (riskScore <= 8) risk_level = 'BAIXO';
     else if (riskScore <= 14) risk_level = 'MEDIO';
@@ -344,18 +377,30 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
     const epis = riskForm.epi_required && riskForm.ca_number_input ? [
       {
         ca_number: riskForm.ca_number_input,
-        epi_name: riskForm.epi_name_input || 'EPI Regulamentado com CA',
-        is_effective: true,
-        complies_with_nr06: true,
-        uninterrupted_use: true,
-        periodic_replacement: true,
-        hygienic_conditions: true
+        epi_name: riskForm.epi_name_input || '',
+        // AS CINCO CONDICOES VINHAM `true`, SEM CAMPO NENHUM NA TELA.
+        //
+        // Sao elas que decidem se a exposicao conta para APOSENTADORIA
+        // ESPECIAL: havendo EPI comprovadamente eficaz, o periodo deixa de
+        // contar. Afirma-las sem que ninguem tivesse verificado o uso
+        // ininterrupto, a troca periodica e as condicoes de higienizacao
+        // retirava o direito do trabalhador por preenchimento automatico.
+        //
+        // Comecam false: o responsavel tecnico declara cada uma quando
+        // verificar. Falso aqui significa "nao verificado", e a exposicao
+        // continua contando - que e o lado seguro do erro.
+        is_effective: false,
+        complies_with_nr06: false,
+        uninterrupted_use: false,
+        periodic_replacement: false,
+        hygienic_conditions: false
       }
     ] : [];
 
     const riskPayload = {
       client_id: activeGhe.client_id,
-      client_unit_id: activeGhe.client_unit_id || 'unit-01',
+      // 'unit-01' e um id que pode nao existir para este cliente.
+      client_unit_id: activeGhe.client_unit_id || '',
       ghe_id: activeGhe.id,
       risk_category: riskForm.risk_category,
       risk_code_table_24: riskForm.risk_code_table_24,
@@ -374,7 +419,10 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
       risk_level,
       epc_implemented: riskForm.epc_implemented,
       epc_description: riskForm.epc_description || undefined,
-      epc_effective: riskForm.epc_implemented,
+      // Implantado e eficaz sao coisas diferentes: a NR-01 exige o
+      // acompanhamento da EFICACIA das medidas (subitem 1.5.5.3). Copiar um
+      // no outro dava por aferida uma eficacia que ninguem mediu.
+      epc_effective: false,
       epi_required: riskForm.epi_required,
       epis,
       special_retirement_applies: riskForm.special_retirement_applies,
