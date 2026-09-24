@@ -27,6 +27,39 @@ import { dataDeHoje } from '@/lib/datas';
 import { formatarCPF } from '@/lib/validacoesBr';
 import { exameSugeridosParaAso } from '@/lib/esocialDados';
 import { VERSAO_DO_DOCUMENTO } from '@/lib/versaoDoDocumento';
+import {
+  classificarRisco,
+  matrizDoModelo,
+  FAIXAS_DO_MODELO,
+  DECISAO_POR_NIVEL
+} from '@/lib/classificacaoDeRisco';
+import {
+  PGR_NORMA_DE_REGENCIA,
+  PGR_OBJETIVO,
+  PGR_COMPOSICAO_DOCUMENTAL,
+  PGR_ABRANGENCIA,
+  PGR_BASE_LEGAL,
+  PGR_TERMOS,
+  PGR_RESPONSABILIDADES,
+  PGR_CATEGORIAS_DE_PERIGO,
+  PGR_SEVERIDADE_CABECALHO,
+  PGR_SEVERIDADE,
+  PGR_PROBABILIDADE_REGRAS,
+  PGR_PROBABILIDADE_FISICO_QUIMICO,
+  PGR_PROBABILIDADE_REFERENCIAS,
+  PGR_PROBABILIDADE_BIOLOGICO,
+  PGR_PROBABILIDADE_ACIDENTE,
+  PGR_PROBABILIDADE_ERGONOMICO,
+  PGR_REGRAS_DE_DECISAO,
+  PGR_CAMPOS_DO_INVENTARIO,
+  PGR_REGRAS_DO_PLANO,
+  PGR_STATUS_DO_PLANO,
+  PGR_HIPOTESES_DE_REVISAO,
+  PGR_GUARDA,
+  PGR_ANEXOS,
+  PGR_CHECKLIST,
+  PGR_ADVERTENCIAS
+} from '@/lib/pgrModelo';
 
 /**
  * POR QUE NAO HA SINAL DE CONFERIDO EM NENHUM TEXTO DESTE ARQUIVO
@@ -2743,7 +2776,23 @@ export function exportTrainingAttendanceExcel(
 }
 
 /**
- * Export full PGR (Programa de Gerenciamento de Riscos - NR-01)
+ * PGR — Programa de Gerenciamento de Riscos (NR-01, item 1.5).
+ *
+ * Segue o "Modelo de PGR" da PrevSafe: capa, ficha do documento, controle de
+ * revisoes, termo de responsabilidade e as secoes 1 a 10.
+ *
+ * A versao anterior tinha TRES secoes (identificacao, uma tabela de
+ * inventario e uma tabela de plano de acao) e saia com uma pagina. Faltavam a
+ * metodologia, os criterios de avaliacao exigidos pelo subitem 1.5.4.4.2.2, a
+ * caracterizacao dos processos, as definicoes e o checklist de conformidade.
+ *
+ * O QUE ESTE GERADOR NAO FAZ
+ *
+ * Nao inventa conteudo. Area construida, produtos quimicos, cenarios de
+ * emergencia, contratadas e capacitacao sao dados do estabelecimento que o
+ * sistema ainda nao coleta: cada um sai como PENDENCIA nomeada, e todas
+ * reaparecem no checklist da secao 10.2. Um PGR com lacuna declarada e
+ * auditavel; um PGR com lacuna preenchida por exemplo e um problema.
  */
 export function exportPGRDocumentPdf({
   client,
@@ -2764,193 +2813,908 @@ export function exportPGRDocumentPdf({
 }) {
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
   const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
   const margin = 14;
+  const util = pageWidth - margin * 2;
 
-  // Plano 5W2H montado sobre o inventario real de riscos do cliente.
-  const rtNameForPlan = technicalResponsibleName(organization);
-  const actionPlanRows = (risks || []).filter((r: any) =>
-    r?.risk_level === 'ALTO' || r?.risk_level === 'CRITICO' || !r?.epc_implemented || !r?.epc_effective
+  // ------------------------------------------------------------------
+  // Apuracao
+  // ------------------------------------------------------------------
+  const gheDoCliente = (ghes || []).filter((g: any) => !g?.client_id || g.client_id === client.id);
+  const idsDeGhe = new Set(gheDoCliente.map((g: any) => g?.id));
+
+  // `risks` chega com o inventario de TODOS os clientes: a tela passa
+  // environmentalRisks inteiro. O plano de acao da versao anterior nao
+  // filtrava, e o PGR de um cliente listava risco de outro.
+  const riscosDoCliente = (risks || []).filter(
+    (r: any) => idsDeGhe.has(r?.ghe_id) || r?.client_id === client.id
   );
-  const actionPlanBody = actionPlanRows.length > 0
-    ? actionPlanRows.map((r: any) => {
-        const ghe = (ghes || []).find((g: any) => g?.id === r?.ghe_id);
-        const critical = r?.risk_level === 'ALTO' || r?.risk_level === 'CRITICO';
-        const action = !r?.epc_implemented
-          ? `Implantar medida de controle coletivo para ${r?.agent_name || 'agente nao identificado'}`
-          : !r?.epc_effective
-            ? `Revisar eficacia do controle coletivo de ${r?.agent_name || 'agente nao identificado'}`
-            : `Reavaliar exposicao e controles de ${r?.agent_name || 'agente nao identificado'}`;
-        return [
-          action,
-          ghe?.name || 'GHE nao vinculado',
-          rtNameForPlan,
-          critical ? 'Imediato (risco alto/critico)' : 'Proximo ciclo anual',
-          r?.epc_implemented && r?.epc_effective ? 'Em monitoramento' : 'Pendente'
-        ];
-      })
-    : [['Nenhuma acao pendente no inventario de riscos deste cliente.', '-', '-', '-', '-']];
 
-  // Header Bar
+  const expostosDoGhe = (gheId: string) =>
+    (employees || []).filter((e: any) => e?.ghe_id === gheId).length;
+
+  const emissao = dataDeHoje();
+  const proximaRevisao = (() => {
+    const d = new Date(`${emissao}T00:00:00Z`);
+    d.setUTCMonth(d.getUTCMonth() + 24);
+    return d.toISOString().slice(0, 10);
+  })();
+
+  const codigoDoDocumento = `PGR-${(client.document_number || 'SEM-INSCRICAO').replace(/\D/g, '') || 'SEM-INSCRICAO'}-${emissao.slice(0, 4)}-REV00`;
+
+  // Pendencias: alimentam o checklist da secao 10.2 e o aviso da capa.
+  const pendencias: Array<{ secao: string; texto: string }> = [];
+  const pendente = (secao: string, texto: string) => {
+    pendencias.push({ secao, texto });
+    return `PENDENTE — ${texto}`;
+  };
+
+  // ------------------------------------------------------------------
+  // Auxiliares de desenho
+  // ------------------------------------------------------------------
+  let curY = 0;
+
+  const novaPagina = () => {
+    doc.addPage();
+    doc.setFillColor(15, 23, 42);
+    doc.rect(0, 0, pageWidth, 16, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'bold');
+    doc.text('PGR — PROGRAMA DE GERENCIAMENTO DE RISCOS', margin, 10);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(148, 163, 184);
+    doc.text(
+      `${client.trade_name || client.legal_name || ''} · ${codigoDoDocumento}`,
+      pageWidth - margin, 10, { align: 'right' }
+    );
+    doc.setFillColor(79, 70, 229);
+    doc.rect(0, 16, pageWidth, 1, 'F');
+    doc.setTextColor(15, 23, 42);
+    curY = 22;
+  };
+
+  const garantirEspaco = (mm: number) => {
+    if (pageHeight - 18 - curY < mm) novaPagina();
+  };
+
+  const tabela = (opcoes: any) => {
+    autoTable(doc, {
+      startY: curY,
+      margin: { left: margin, right: margin, top: 22 },
+      theme: 'grid',
+      styles: { fontSize: 7, cellPadding: 1.8, overflow: 'linebreak' },
+      headStyles: { fillColor: [51, 65, 85], textColor: [255, 255, 255], fontStyle: 'bold' },
+      ...opcoes
+    });
+    curY = (doc as any).lastAutoTable.finalY + 4;
+  };
+
+  /** Faixa de titulo de secao, como uma linha de cabecalho que ocupa a largura. */
+  const secao = (texto: string) => {
+    garantirEspaco(24);
+    tabela({
+      head: [[{
+        content: texto,
+        styles: { fillColor: [15, 23, 42], textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 8.5, cellPadding: 2.4 }
+      }]],
+      body: []
+    });
+  };
+
+  const paragrafo = (texto: string, tamanho = 7.2) => {
+    garantirEspaco(14);
+    tabela({
+      body: [[{ content: texto, styles: { fontSize: tamanho, cellPadding: 2.2, fillColor: [248, 250, 252] } }]]
+    });
+  };
+
+  const lista = (itens: string[], numerada = false) =>
+    paragrafo(itens.map((t, i) => `${numerada ? `${i + 1}. ` : '• '}${t}`).join('\n'));
+
+  const duasColunas = (titulo: string, linhas: Array<[string, string]>) => {
+    garantirEspaco(20);
+    tabela({
+      head: [[{ content: titulo, colSpan: 2, styles: { fillColor: [30, 41, 59], textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 8 } }]],
+      body: linhas.map(([a, b]) => [
+        { content: a, styles: { fontStyle: 'bold', cellWidth: util * 0.34 } },
+        { content: b }
+      ])
+    });
+  };
+
+  // ==================================================================
+  // CAPA
+  // ==================================================================
   doc.setFillColor(15, 23, 42);
-  doc.rect(0, 0, pageWidth, 28, 'F');
+  doc.rect(0, 0, pageWidth, 46, 'F');
   doc.setTextColor(255, 255, 255);
-  doc.setFontSize(13);
-  doc.setFont('helvetica', 'bold');
-  doc.text(organization.name || 'PREVSAFE SST', margin, 12);
-  doc.setFontSize(8.5);
+  doc.setFontSize(7);
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(148, 163, 184);
-  doc.text('PROGRAMA DE GERENCIAMENTO DE RISCOS (PGR - NR-01)', margin, 18);
+  doc.text('ELABORADO POR', margin, 13);
+  doc.setFontSize(14);
+  doc.setFont('helvetica', 'bold');
   doc.setTextColor(255, 255, 255);
-  doc.setFont('helvetica', 'bold');
-  doc.text(`VIGÊNCIA: ${new Date().getFullYear()} / ${new Date().getFullYear() + 1}`, pageWidth - margin, 12, { align: 'right' });
+  doc.text(organization.name || 'PREVSAFE SST', margin, 21);
+  doc.setFontSize(8);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(148, 163, 184);
+  if (organization.document_number) {
+    doc.text(`CNPJ ${organization.document_number}`, margin, 27);
+  }
+  doc.setFontSize(8);
+  doc.text(
+    `Emitido em ${formatDate(emissao)}`,
+    pageWidth - margin, 27, { align: 'right' }
+  );
   doc.setFillColor(79, 70, 229);
-  doc.rect(0, 28, pageWidth, 2, 'F');
+  doc.rect(0, 46, pageWidth, 3, 'F');
 
-  // Title Box
-  doc.setFillColor(241, 245, 249);
-  doc.roundedRect(margin, 34, pageWidth - (margin * 2), 14, 2, 2, 'F');
   doc.setTextColor(15, 23, 42);
-  doc.setFontSize(11);
   doc.setFont('helvetica', 'bold');
-  doc.text('DOCUMENTO BASE: INVENTÁRIO GERAL DE RISCOS & PLANO DE AÇÃO (GRO/PGR)', pageWidth / 2, 41, { align: 'center' });
-  doc.setFontSize(7.5);
+  doc.setFontSize(26);
+  doc.text('PROGRAMA DE', pageWidth / 2, 78, { align: 'center' });
+  doc.text('GERENCIAMENTO DE RISCOS', pageWidth / 2, 90, { align: 'center' });
+  doc.setFontSize(40);
+  doc.setTextColor(79, 70, 229);
+  doc.text('PGR', pageWidth / 2, 108, { align: 'center' });
+
+  doc.setFontSize(9);
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(71, 85, 105);
-  doc.text('Elaborado conforme Diretrizes da Norma Regulamentadora nº 01 (Portaria MTP nº 6.730/2020)', pageWidth / 2, 45.5, { align: 'center' });
+  doc.text('Gerenciamento de Riscos Ocupacionais — GRO', pageWidth / 2, 119, { align: 'center' });
+  doc.text(PGR_NORMA_DE_REGENCIA, pageWidth / 2, 124.5, { align: 'center', maxWidth: util });
 
-  // Identification Table
-  autoTable(doc, {
-    startY: 52,
-    margin: { left: margin, right: margin },
-    theme: 'grid',
-    head: [[
-      { content: '1. IDENTIFICAÇÃO DA EMPRESA E RESPONSABILIDADE TÉCNICA', colSpan: 4, styles: { fillColor: [30, 41, 59], textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 8 } }
+  curY = 134;
+  duasColunas('ORGANIZAÇÃO E ESTABELECIMENTO', [
+    ['Organização', client.legal_name || client.trade_name || NAO_INFORMADO],
+    ['Estabelecimento', client.trade_name || client.legal_name || NAO_INFORMADO],
+    ['Inscrição', clientDocumentLine(client)],
+    ['Endereço', [client.address, client.city && `${client.city}/${client.state || ''}`]
+      .filter(Boolean).join(' — ') || NAO_INFORMADO],
+    ['CNAE principal', cnaeLine(client)],
+    ['Grau de risco (NR-04, Anexo I)', riskDegreeLine(client)],
+    ['Trabalhadores abrangidos', `${(employees || []).length} próprios`]
+  ]);
+
+  duasColunas('IDENTIFICAÇÃO DO DOCUMENTO', [
+    ['Código do documento', codigoDoDocumento],
+    ['Revisão', '00'],
+    ['Data de emissão', formatDate(emissao)],
+    ['Próxima revisão periódica', `${formatDate(proximaRevisao)} (24 meses; 36 meses com certificação SGSST válida, subitem 1.5.4.4.6.1)`],
+    ['Composição (subitem 1.5.7.1)', `Inventário de riscos: ${riscosDoCliente.length} registro(s) · Plano de ação: seção 8`],
+    ['Responsável técnico pela elaboração', technicalResponsibleLine(organization)]
+  ]);
+
+  // ==================================================================
+  // VERSO DA CAPA — controle de revisoes e termo de responsabilidade
+  // ==================================================================
+  novaPagina();
+  secao('CONTROLE DE REVISÕES');
+  paragrafo(
+    'Toda revisão indica a hipótese do subitem 1.5.4.4.6 que a motivou (seção 9.9). ' +
+    'O histórico não pode ser apagado: é mantido por no mínimo 20 anos (subitem 1.5.7.3.3.1).'
+  );
+  tabela({
+    head: [['Rev.', 'Data', 'Motivo (subitem 1.5.4.4.6)', 'Itens alterados', 'Elaborado por', 'Aprovado por']],
+    body: [[
+      '00',
+      formatDate(emissao),
+      'Elaboração inicial',
+      'Documento integral',
+      technicalResponsibleName(organization),
+      LINHA_PARA_PREENCHER
     ]],
+    columnStyles: { 0: { cellWidth: 12 }, 1: { cellWidth: 20 } }
+  });
+
+  secao('TERMO DE RESPONSABILIDADE E APROVAÇÃO');
+  paragrafo(
+    `A organização declara que este PGR foi elaborado sob sua responsabilidade, nos termos do ` +
+    `subitem 1.5.7.2 da NR-01, que reflete as condições de trabalho existentes na data de emissão ` +
+    `e que se compromete a implementar o plano de ação, manter o inventário atualizado e ` +
+    `disponibilizar os documentos aos trabalhadores, aos sindicatos das categorias profissionais e ` +
+    `à Inspeção do Trabalho (subitem 1.5.7.2.1).`
+  );
+  tabela({
+    head: [['Função', 'Nome', 'Cargo / registro', 'Data', 'Assinatura']],
     body: [
-      [
-        { content: 'Razão Social:', styles: { fontStyle: 'bold', cellWidth: 26 } },
-        { content: client.legal_name || client.trade_name },
-        { content: 'Nome Fantasia:', styles: { fontStyle: 'bold', cellWidth: 26 } },
-        { content: client.trade_name || client.legal_name }
-      ],
-      [
-        { content: 'CNPJ:', styles: { fontStyle: 'bold' } },
-        { content: clientDocumentLine(client) },
-        { content: 'CNAE Principal:', styles: { fontStyle: 'bold' } },
-        { content: `${cnaeLine(client)} (${riskDegreeLine(client)})` }
-      ],
-      [
-        { content: 'Endereço:', styles: { fontStyle: 'bold' } },
-        { content: `${client.address || 'Logradouro Principal'}, ${client.city || 'São Paulo'}/${client.state || 'SP'}` },
-        { content: 'População Exposta:', styles: { fontStyle: 'bold' } },
-        { content: `${employees.length} trabalhadores ativos` }
-      ],
-      [
-        { content: 'Responsável Técnico:', styles: { fontStyle: 'bold' } },
-        { content: technicalResponsibleLine(organization) },
-        { content: 'Data Elaboração:', styles: { fontStyle: 'bold' } },
-        { content: formatDate(new Date().toISOString()) }
-      ]
+      ['Responsável legal da organização', LINHA_PARA_PREENCHER, LINHA_PARA_PREENCHER, LINHA_PARA_PREENCHER, ''],
+      ['Responsável técnico pela elaboração', technicalResponsibleName(organization),
+        organization?.technical_responsible_council?.trim() || LINHA_PARA_PREENCHER, formatDate(emissao), ''],
+      ['Responsável pela implementação do PGR', LINHA_PARA_PREENCHER, LINHA_PARA_PREENCHER, LINHA_PARA_PREENCHER, ''],
+      ['Ciência — CIPA ou nomeado NR-05', LINHA_PARA_PREENCHER, LINHA_PARA_PREENCHER, LINHA_PARA_PREENCHER, '']
     ],
-    styles: { fontSize: 7.2, cellPadding: 2 }
+    styles: { fontSize: 6.8, cellPadding: 3, overflow: 'linebreak' }
+  });
+  paragrafo(
+    'As NR não definem um profissional específico para elaborar o PGR; a responsabilidade é da ' +
+    'organização, que deve escolher profissional com competência técnica (Orientação Técnica SIT ' +
+    'nº 3/2023). Documento emitido só em meio digital deve ser assinado com certificado ' +
+    'ICP-Brasil (subitem 1.6.2).',
+    6.8
+  );
+
+  // ==================================================================
+  // 1. IDENTIFICACAO E ABRANGENCIA
+  // ==================================================================
+  novaPagina();
+  secao('1. IDENTIFICAÇÃO DA ORGANIZAÇÃO E ABRANGÊNCIA');
+
+  duasColunas('1.1 Organização e estabelecimento', [
+    ['Razão social', client.legal_name || NAO_INFORMADO],
+    ['Nome fantasia', client.trade_name || NAO_INFORMADO],
+    ['CNPJ / CAEPF / CNO', clientDocumentLine(client)],
+    ['Endereço completo', [client.address, client.city && `${client.city}/${client.state || ''}`]
+      .filter(Boolean).join(' — ') || NAO_INFORMADO],
+    ['CNAE principal', cnaeLine(client)],
+    ['Grau de risco (NR-04, Anexo I)', riskDegreeLine(client)],
+    ['Nº de trabalhadores próprios', String((employees || []).length)],
+    ['Nº de terceirizados no local', pendente('1.1', 'Número de trabalhadores terceirizados no local não cadastrado.')],
+    ['Jornada e turnos', pendente('1.1', 'Jornada e turnos do estabelecimento não cadastrados.')],
+    ['SESMT (NR-04)', pendente('1.1', 'Situação do SESMT não cadastrada.')],
+    ['CIPA (NR-05)', pendente('1.1', 'Situação da CIPA não cadastrada.')],
+    ['Certificação em SGSST', 'Não informada — o prazo de revisão adotado é o de 24 meses']
+  ]);
+
+  duasColunas('1.2 Responsáveis', [
+    ['Responsável legal', pendente('1.2', 'Responsável legal da organização não cadastrado.')],
+    ['Responsável técnico pela elaboração', technicalResponsibleLine(organization)],
+    ['Coordenador da implementação', pendente('1.2', 'Coordenador da implementação do PGR não cadastrado.')],
+    ['Médico responsável pelo PCMSO', pcmsoPhysicianLine(organization)]
+  ]);
+
+  secao('1.3 Abrangência');
+  paragrafo(PGR_ABRANGENCIA);
+  tabela({
+    head: [['Item', 'Preenchimento']],
+    body: [
+      ['Unidades / setores abrangidos',
+        (sectors || []).length > 0
+          ? (sectors || []).map((s: any) => s?.name).filter(Boolean).join('; ')
+          : pendente('1.3', 'Nenhum setor cadastrado na hierarquia do cliente.')],
+      ['Grupos de exposição (GES/GHE)',
+        gheDoCliente.length > 0
+          ? gheDoCliente.map((g: any) => `${g?.code || 's/ código'} — ${g?.name || 's/ nome'}`).join('; ')
+          : pendente('1.3', 'Nenhum GHE cadastrado: sem GES não há inventário por grupo de exposição.')],
+      ['Frentes de trabalho e locais externos', pendente('1.3', 'Frentes de trabalho e locais externos não cadastrados.')],
+      ['Contratadas que atuam no local', pendente('1.3', 'Relação de contratadas não cadastrada (seção 9.5).')],
+      ['Exclusões', 'Nenhuma']
+    ],
+    columnStyles: { 0: { cellWidth: util * 0.34, fontStyle: 'bold' } }
   });
 
-  let curY = (doc as any).lastAutoTable.finalY + 6;
+  // ==================================================================
+  // 2. OBJETIVO, CAMPO DE APLICACAO E BASE LEGAL
+  // ==================================================================
+  novaPagina();
+  secao('2. OBJETIVO, CAMPO DE APLICAÇÃO E BASE LEGAL');
+  secao('2.1 Objetivo');
+  paragrafo(PGR_OBJETIVO);
+  secao('2.2 Composição documental');
+  paragrafo(PGR_COMPOSICAO_DOCUMENTAL);
+  secao('2.3 Base legal e normativa');
+  tabela({
+    head: [['Referência', 'Aplicação neste PGR']],
+    body: PGR_BASE_LEGAL.map(([a, b]) => [a, b]),
+    columnStyles: { 0: { cellWidth: util * 0.4, fontStyle: 'bold' } }
+  });
+  paragrafo(
+    'Advertências de escopo deste modelo:\n' + PGR_ADVERTENCIAS.map((a) => `• ${a}`).join('\n'),
+    6.8
+  );
 
-  // GHE & Risk Inventory Table
-  // GHE sem risco cadastrado nao e GHE sem risco: e GHE nao avaliado. O texto
-  // antigo afirmava "Ausencia de riscos especificos" e ja recomendava NR-17 sem
-  // que ninguem tivesse olhado o posto de trabalho.
-  const tableRows: any[] = [];
-  ghes.forEach((ghe: any) => {
-    const gheRisks = risks.filter((r: any) => r.ghe_id === ghe.id);
-    const gheEmps = employees.filter(e => e.ghe_id === ghe.id);
-    const gheCode = ghe.code?.trim() || 'SEM CÓDIGO';
-    const gheName = ghe.name?.trim() || 'GHE sem identificação';
+  // ==================================================================
+  // 3. TERMOS E DEFINICOES
+  // ==================================================================
+  novaPagina();
+  secao('3. TERMOS E DEFINIÇÕES');
+  paragrafo(
+    'As definições abaixo reproduzem o sentido do Anexo I da NR-01 e das NR correlatas. ' +
+    'Nenhum termo deste PGR pode ter significado diferente do normativo.'
+  );
+  tabela({
+    head: [['Termo', 'Definição adotada', 'Fonte']],
+    body: PGR_TERMOS.map(([t, d, f]) => [t, d, f]),
+    columnStyles: {
+      0: { cellWidth: util * 0.24, fontStyle: 'bold' },
+      2: { cellWidth: util * 0.18 }
+    },
+    styles: { fontSize: 6.4, cellPadding: 1.5, overflow: 'linebreak' }
+  });
 
-    if (gheRisks.length === 0) {
-      tableRows.push([
-        gheCode,
-        gheName,
-        'NENHUM RISCO INVENTARIADO PARA ESTE GHE',
-        'Não avaliado',
-        'Pendente: realizar o levantamento de perigos deste GHE (subitem 1.5.4.3 da NR-01)',
-        `${gheEmps.length} trab.`
-      ]);
-    } else {
-      gheRisks.forEach((r: any) => {
-        const codigo = r.risk_code_table_24?.trim();
-        const medicao = r.measured_value
-          ? `${r.measured_value} ${r.measurement_unit || ''}`.trim()
-          : 'Sem medição registrada';
-        const controles = [
-          r.epi_required ? 'EPI exigido' : '',
-          r.epc_implemented ? 'EPC implantado' : '',
-          r.ltcat_technical_conclusion?.trim() || ''
-        ].filter(Boolean);
-        tableRows.push([
-          gheCode,
-          gheName,
-          `${r.agent_name || 'Agente não identificado'} (${codigo ? `Tab.24: ${codigo}` : 'Tab.24 não informada'})\nFonte: ${r.generating_source?.trim() || 'não informada'}`,
-          `${r.evaluation_type?.trim() || 'Tipo de avaliação não informado'}\n${medicao}`,
-          controles.length > 0 ? controles.join('\n') : 'Nenhuma medida de controle registrada',
-          `${gheEmps.length} trab.`
-        ]);
+  // ==================================================================
+  // 4. ESTRUTURA, RESPONSABILIDADES E INTEGRACAO
+  // ==================================================================
+  novaPagina();
+  secao('4. ESTRUTURA, RESPONSABILIDADES E INTEGRAÇÃO');
+  paragrafo(
+    'A responsabilidade pelo GRO e por todas as suas etapas é da organização (subitem 1.5.3.1). ' +
+    'As atribuições abaixo distribuem a execução, sem transferir essa responsabilidade.'
+  );
+  secao('4.1 Responsabilidades');
+  tabela({
+    head: [['Papel', 'Responsabilidades', 'Base']],
+    body: PGR_RESPONSABILIDADES.map(([a, b, c]) => [a, b, c]),
+    columnStyles: {
+      0: { cellWidth: util * 0.2, fontStyle: 'bold' },
+      2: { cellWidth: util * 0.18 }
+    },
+    styles: { fontSize: 6.4, cellPadding: 1.5, overflow: 'linebreak' }
+  });
+
+  secao('4.2 Integração com outros documentos');
+  tabela({
+    head: [['Documento', 'Relação com o PGR', 'Situação neste cliente']],
+    body: [
+      ['PCMSO (NR-07)', 'Recebe o inventário e a classificação de riscos; devolve dados de saúde',
+        'Emitido pelo mesmo sistema — conferir vigência'],
+      ['AEP e AET (NR-17)', 'AEP compõe o inventário; recomendações da AET entram no plano de ação',
+        pendente('4.2', 'AEP da NR-17 não registrada no sistema (seções 5.3 e 7.4).')],
+      ['Procedimentos de emergência e simulados', 'Parte do PGR (seção 9.4)',
+        pendente('4.2', 'Procedimentos de resposta a emergências não cadastrados (seção 9.4).')],
+      ['Controle de EPI e fichas de entrega (NR-06)', 'Evidência da última camada de proteção',
+        'Registrado no sistema (módulo de EPI)'],
+      ['Registros de treinamento (NR-01, 1.7)', 'Evidência das medidas administrativas',
+        'Registrado no sistema (módulo de treinamentos)'],
+      ['LTCAT e laudos de insalubridade/periculosidade', 'Fins previdenciários e de adicional; não substituem o PGR (subitem 1.5.2)',
+        'Emitidos pelo mesmo sistema'],
+      ['Eventos de SST do eSocial', 'Informações declaradas devem ser coerentes com o inventário',
+        'Emitidos pelo mesmo sistema'],
+      ['FDS dos produtos químicos (ABNT NBR 14725)', 'Base para identificar agentes químicos',
+        pendente('4.2', 'Inventário de produtos químicos e FDS não cadastrados (seção 6.4).')]
+    ],
+    columnStyles: { 0: { cellWidth: util * 0.26, fontStyle: 'bold' } },
+    styles: { fontSize: 6.6, cellPadding: 1.6, overflow: 'linebreak' }
+  });
+
+  // ==================================================================
+  // 5. METODOLOGIA
+  // ==================================================================
+  novaPagina();
+  secao('5. METODOLOGIA DO GERENCIAMENTO DE RISCOS (critérios do subitem 1.5.4.4.2.2)');
+  paragrafo(
+    'O nível de risco é o produto da severidade (S, 1 a 5) pela probabilidade (P, 1 a 5), com ' +
+    'critérios próprios por tipo de perigo, como exige o subitem 1.5.4.4.5. Esta seção é o ' +
+    'documento de critérios da organização: gradações de severidade e probabilidade, níveis de ' +
+    'risco, classificação e tomada de decisão.'
+  );
+
+  secao('5.1 Levantamento preliminar de perigos e riscos');
+  paragrafo(
+    'Realizado antes do início das atividades ou de novas instalações, para as atividades ' +
+    'existentes e em toda mudança ou introdução de processo (subitem 1.5.4.2.1). Serve para ' +
+    'evitar ou eliminar perigos já no projeto e para identificar riscos evidentes, que recebem ' +
+    'medida imediata. Risco evidente sem medida imediata possível é registrado no inventário e ' +
+    'levado ao plano de ação (subitem 1.5.4.2.1.3).'
+  );
+
+  secao('5.2 Identificação de perigos');
+  paragrafo(
+    'Para cada GES, a identificação registra a descrição do perigo e das possíveis lesões ou ' +
+    'agravos, as fontes ou circunstâncias e o grupo de trabalhadores sujeitos ao perigo (subitem ' +
+    '1.5.4.3.1). Considera o trabalho real, não apenas o prescrito, em três situações: rotineira ' +
+    '(R), não rotineira (NR) e emergência (E). Inclui perigos externos previsíveis (subitem ' +
+    '1.5.4.3.2).'
+  );
+  tabela({
+    head: [['Tipo', 'Exemplos de perigos', 'Critério de probabilidade (NR-01)']],
+    body: PGR_CATEGORIAS_DE_PERIGO.map(([a, b, c]) => [a, b, c]),
+    columnStyles: { 0: { cellWidth: util * 0.2, fontStyle: 'bold' } },
+    styles: { fontSize: 6.6, cellPadding: 1.6, overflow: 'linebreak' }
+  });
+
+  secao('5.3 Fatores de risco psicossociais relacionados ao trabalho');
+  paragrafo(
+    'A avaliação recai sobre as condições e a organização do trabalho, e não sobre o estado de ' +
+    'saúde mental dos trabalhadores. Não se usam sintomas individuais, testes de personalidade ou ' +
+    'sinais biológicos como critério de risco. Os resultados integram a AEP (item 17.3.1 da ' +
+    'NR-17) e o inventário.'
+  );
+  paragrafo(
+    pendente('5.3', 'Estratégia de avaliação dos fatores psicossociais não definida para este cliente (instrumento, anonimato, comunicação prévia e participação).'),
+    7
+  );
+
+  secao('5.4 Gradação da severidade');
+  paragrafo(PGR_SEVERIDADE_CABECALHO);
+  tabela({
+    head: [['S', 'Grau', 'Acidentes', 'Físicos, químicos e biológicos', 'Ergonômicos e psicossociais']],
+    body: PGR_SEVERIDADE.map((l) => [...l]),
+    columnStyles: { 0: { cellWidth: 8, halign: 'center', fontStyle: 'bold' }, 1: { cellWidth: util * 0.15 } },
+    styles: { fontSize: 6.2, cellPadding: 1.4, overflow: 'linebreak' }
+  });
+
+  secao('5.5 Gradação da probabilidade');
+  lista(PGR_PROBABILIDADE_REGRAS, true);
+
+  garantirEspaco(40);
+  tabela({
+    head: [[{ content: 'Agentes físicos e químicos (NA = nível de ação; LEO = limite de exposição)', colSpan: 3, styles: { fillColor: [30, 41, 59], textColor: [255, 255, 255], fontStyle: 'bold' } }],
+      ['P', 'Critério quantitativo', 'Critério qualitativo (item 9.4.1 da NR-09)']],
+    body: PGR_PROBABILIDADE_FISICO_QUIMICO.map((l) => [...l]),
+    columnStyles: { 0: { cellWidth: 8, halign: 'center', fontStyle: 'bold' } },
+    styles: { fontSize: 6.4, cellPadding: 1.4, overflow: 'linebreak' }
+  });
+  paragrafo(PGR_PROBABILIDADE_REFERENCIAS, 6.2);
+
+  garantirEspaco(36);
+  tabela({
+    head: [[{ content: 'Agentes biológicos', colSpan: 2, styles: { fillColor: [30, 41, 59], textColor: [255, 255, 255], fontStyle: 'bold' } }], ['P', 'Critério']],
+    body: PGR_PROBABILIDADE_BIOLOGICO.map((l) => [...l]),
+    columnStyles: { 0: { cellWidth: 8, halign: 'center', fontStyle: 'bold' } },
+    styles: { fontSize: 6.4, cellPadding: 1.4, overflow: 'linebreak' }
+  });
+
+  garantirEspaco(36);
+  tabela({
+    head: [[{ content: 'Acidentes (exposição ao perigo + eficácia, subitem 1.5.4.4.5.4)', colSpan: 3, styles: { fillColor: [30, 41, 59], textColor: [255, 255, 255], fontStyle: 'bold' } }],
+      ['P', 'Exposição', 'Medidas existentes']],
+    body: PGR_PROBABILIDADE_ACIDENTE.map((l) => [...l]),
+    columnStyles: { 0: { cellWidth: 8, halign: 'center', fontStyle: 'bold' } },
+    styles: { fontSize: 6.4, cellPadding: 1.4, overflow: 'linebreak' }
+  });
+
+  garantirEspaco(40);
+  tabela({
+    head: [[{ content: 'Fatores ergonômicos e psicossociais (exigências = duração x intensidade + eficácia, subitem 1.5.4.4.5.3)', colSpan: 4, styles: { fillColor: [30, 41, 59], textColor: [255, 255, 255], fontStyle: 'bold' } }],
+      ['P', 'Duração da exigência', 'Intensidade', 'Medidas existentes']],
+    body: PGR_PROBABILIDADE_ERGONOMICO.map((l) => [...l]),
+    columnStyles: { 0: { cellWidth: 8, halign: 'center', fontStyle: 'bold' } },
+    styles: { fontSize: 6.4, cellPadding: 1.4, overflow: 'linebreak' }
+  });
+  paragrafo(
+    'Quando a análise qualitativa não permitir decisão, realiza-se avaliação quantitativa (NR-09, ' +
+    'item 9.4.2 e NHO) ou AET (NR-17, item 17.3.2).',
+    6.6
+  );
+
+  // 5.6 Matriz
+  garantirEspaco(50);
+  secao('5.6 Matriz de risco e níveis');
+  const matriz = matrizDoModelo();
+  tabela({
+    head: [['S \\ P', 'P1', 'P2', 'P3', 'P4', 'P5']],
+    body: matriz.map((linha) => [
+      { content: `S${linha.severidade}`, styles: { fontStyle: 'bold', fillColor: [241, 245, 249] } },
+      ...linha.celulas.map((c) => ({
+        content: `${c.score} ${c.rotulo}`,
+        styles: { halign: 'center' as const }
+      }))
+    ]),
+    styles: { fontSize: 7, cellPadding: 2, overflow: 'linebreak' }
+  });
+  paragrafo(
+    'Faixas: ' + FAIXAS_DO_MODELO.map((f) => `${f.rotulo} ${f.de}–${f.ate}`).join('; ') + '.',
+    7
+  );
+
+  // 5.7 Decisao
+  garantirEspaco(50);
+  secao('5.7 Classificação e tomada de decisão');
+  tabela({
+    head: [['Nível', 'Classificação', 'Decisão', 'Prazo máximo']],
+    body: (['MUITO_ALTO', 'ALTO', 'MEDIO', 'BAIXO'] as const).map((n) => {
+      const d = DECISAO_POR_NIVEL[n];
+      return [d.rotulo, d.classificacao, d.decisao, d.prazo];
+    }),
+    columnStyles: { 0: { cellWidth: util * 0.13, fontStyle: 'bold' }, 3: { cellWidth: util * 0.2 } },
+    styles: { fontSize: 6.6, cellPadding: 1.6, overflow: 'linebreak' }
+  });
+  lista(PGR_REGRAS_DE_DECISAO);
+
+  // ==================================================================
+  // 6. CARACTERIZACAO
+  // ==================================================================
+  novaPagina();
+  secao('6. CARACTERIZAÇÃO DO ESTABELECIMENTO, PROCESSOS E GRUPOS EXPOSTOS');
+  paragrafo(
+    'Esta seção atende às alíneas "a", "b" e "e" do subitem 1.5.7.3.2 e é a base de todos os ' +
+    'registros do inventário.'
+  );
+
+  duasColunas('6.1 Estabelecimento', [
+    ['Área construída / área total', pendente('6.1', 'Área construída e área total do estabelecimento não cadastradas.')],
+    ['Edificações e pavimentos', pendente('6.1', 'Descrição das edificações não cadastrada.')],
+    ['Utilidades', pendente('6.1', 'Utilidades (energia, caldeira, compressores, GLP, geradores) não cadastradas.')],
+    ['Entorno e perigos externos', pendente('6.1', 'Entorno e perigos externos previsíveis não cadastrados (subitem 1.5.4.3.2).')],
+    ['Recursos de emergência', pendente('6.1', 'Recursos de emergência não cadastrados (extintores, hidrantes, rotas, hospital de referência).')]
+  ]);
+
+  secao('6.2 Processos e ambientes de trabalho');
+  tabela({
+    head: [['Setor / ambiente', 'Descrição física', 'Processo e etapas', 'Máquinas, equipamentos e produtos']],
+    body: (sectors || []).length > 0
+      ? (sectors || []).map((s: any) => [
+          s?.name || 'Setor sem nome',
+          pendente('6.2', `Descrição física do setor "${s?.name || 's/ nome'}" não cadastrada.`),
+          LINHA_PARA_PREENCHER,
+          LINHA_PARA_PREENCHER
+        ])
+      : [[{
+          content: pendente('6.2', 'Nenhum setor cadastrado: a caracterização dos processos e ambientes (alínea "a" do subitem 1.5.7.3.2) não pode ser emitida.'),
+          colSpan: 4,
+          styles: { textColor: [180, 83, 9], fontStyle: 'bold' }
+        }]],
+    styles: { fontSize: 6.6, cellPadding: 1.6, overflow: 'linebreak' }
+  });
+
+  secao('6.3 Grupos de exposição similar (GES) e atividades');
+  tabela({
+    head: [['GES', 'Setor', 'Funções / cargos', 'Nº expostos', 'Jornada e turno', 'Atividades reais']],
+    body: gheDoCliente.length > 0
+      ? gheDoCliente.map((g: any) => {
+          const doGhe = (employees || []).filter((e: any) => e?.ghe_id === g?.id);
+          const cargos = [...new Set(doGhe.map((e: any) => e?.job_title).filter(Boolean))];
+          return [
+            g?.code || 'sem código',
+            g?.sector_name || g?.name || '',
+            cargos.length > 0 ? cargos.join(', ') : pendente('6.3', `Nenhum trabalhador vinculado ao GHE "${g?.name || g?.code || ''}".`),
+            String(doGhe.length),
+            LINHA_PARA_PREENCHER,
+            g?.environment_description?.trim()
+              || pendente('6.3', `Atividades reais do GHE "${g?.name || g?.code || ''}" não descritas.`)
+          ];
+        })
+      : [[{
+          content: pendente('6.3', 'Nenhum GHE cadastrado: sem grupos de exposição não há inventário por GES.'),
+          colSpan: 6,
+          styles: { textColor: [180, 83, 9], fontStyle: 'bold' }
+        }]],
+    styles: { fontSize: 6.4, cellPadding: 1.5, overflow: 'linebreak' }
+  });
+
+  secao('6.4 Inventário de produtos químicos');
+  paragrafo(
+    pendente('6.4', 'Inventário de produtos químicos (componentes, CAS, classificação GHS, FDS) não cadastrado.'),
+    7
+  );
+
+  secao('6.5 Máquinas e equipamentos com requisitos específicos');
+  paragrafo(
+    pendente('6.5', 'Relação de máquinas e equipamentos com requisitos de NR-12, NR-13 ou NR-11 não cadastrada.'),
+    7
+  );
+
+  // ==================================================================
+  // 7. INVENTARIO DE RISCOS
+  // ==================================================================
+  novaPagina();
+  secao('7. INVENTÁRIO DE RISCOS OCUPACIONAIS');
+  paragrafo(
+    'Cada registro corresponde a um perigo em um GES e contém os campos abaixo. O inventário é ' +
+    'mantido atualizado e seu histórico guardado por 20 anos (subitens 1.5.7.3.3 e 1.5.7.3.3.1).'
+  );
+
+  secao('7.1 Estrutura do registro');
+  tabela({
+    head: [['Campo', 'Conteúdo', 'Alínea do 1.5.7.3.2']],
+    body: PGR_CAMPOS_DO_INVENTARIO.map(([a, b, c]) => [a, b, c]),
+    columnStyles: {
+      0: { cellWidth: util * 0.26, fontStyle: 'bold' },
+      2: { cellWidth: util * 0.14, halign: 'center' }
+    },
+    styles: { fontSize: 6.4, cellPadding: 1.4, overflow: 'linebreak' }
+  });
+
+  secao('7.2 Registros do inventário');
+  if (riscosDoCliente.length === 0) {
+    paragrafo(
+      pendente('7.2', 'Inventário vazio: nenhum agente de risco cadastrado. Sem inventário este documento não atende ao subitem 1.5.7.1 e não deve ser entregue como PGR concluído.'),
+      8
+    );
+  } else {
+    riscosDoCliente.forEach((r: any, indice: number) => {
+      const ghe = gheDoCliente.find((g: any) => g?.id === r?.ghe_id);
+      const classificado = classificarRisco(r?.severity, r?.probability);
+      const nivel = classificado
+        ? `${classificado.score} — ${classificado.rotulo} — ${classificado.classificacao}`
+        : pendente('7.2', `Risco "${r?.agent_name || 's/ nome'}" sem severidade e probabilidade avaliadas: não há como classificá-lo (alínea "i").`);
+
+      const medidas = [
+        r?.epc_implemented ? `Proteção coletiva: ${r?.epc_description?.trim() || 'descrição não informada'}` : '',
+        r?.epc_implemented && !r?.epc_effective ? '(eficácia ainda não verificada — subitem 1.5.5.3)' : '',
+        r?.epi_required
+          ? `EPI: ${(r?.epis || []).map((e: any) => `${e?.epi_name || 's/ nome'}${e?.ca_number ? ` (CA ${e.ca_number})` : ''}`).join('; ') || 'exigido, sem EPI cadastrado'}`
+          : ''
+      ].filter(Boolean).join('\n');
+
+      const avaliacao = [
+        r?.evaluation_type ? `Tipo: ${r.evaluation_type}` : '',
+        r?.measured_value ? `Resultado: ${r.measured_value} ${r?.measurement_unit || ''}`.trim() : '',
+        r?.measurement_methodology ? `Método: ${r.measurement_methodology}` : '',
+        r?.action_level ? `NA: ${r.action_level}` : '',
+        r?.tolerance_limit ? `LEO: ${r.tolerance_limit}` : ''
+      ].filter(Boolean).join('\n');
+
+      garantirEspaco(56);
+      tabela({
+        head: [[{
+          content: `R-${ghe?.code || 'SEM-GHE'}-${String(indice + 1).padStart(2, '0')} · ${r?.agent_name || 'Perigo não identificado'}`,
+          colSpan: 2,
+          styles: { fillColor: [30, 41, 59], textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 7.5 }
+        }]],
+        body: [
+          ['Setor / GES', `${ghe?.name || 'GHE não vinculado'}${ghe?.code ? ` (${ghe.code})` : ''}`],
+          ['Situação operacional', pendente('7.2', `Situação operacional (R, NR ou E) do risco "${r?.agent_name || ''}" não registrada (alínea "b").`)],
+          ['Tipo de perigo', r?.risk_category || 'não informado'],
+          ['Fonte ou circunstância', r?.generating_source?.trim() || 'não informada'],
+          ['Possíveis lesões ou agravos', r?.health_effects?.trim()
+            || pendente('7.2', `Possíveis lesões ou agravos do risco "${r?.agent_name || ''}" não descritos (alínea "d").`)],
+          ['Nº de expostos', String(expostosDoGhe(r?.ghe_id))],
+          ['Medidas implementadas', medidas || 'Nenhuma medida de controle registrada'],
+          ['Caracterização da exposição', r?.propagation_path?.trim() || 'não caracterizada'],
+          ['Avaliação / monitoramento', avaliacao || 'Sem avaliação registrada'],
+          ['Severidade (S)', classificado ? String(classificado.severidade) : 'não avaliada'],
+          ['Probabilidade (P)', classificado ? String(classificado.probabilidade) : 'não avaliada'],
+          ['Nível e classificação', nivel]
+        ].map(([a, b]) => [
+          { content: a, styles: { fontStyle: 'bold' as const, cellWidth: util * 0.28 } },
+          { content: b }
+        ]),
+        styles: { fontSize: 6.4, cellPadding: 1.4, overflow: 'linebreak' }
       });
-    }
-  });
-
-  autoTable(doc, {
-    startY: curY,
-    margin: { left: margin, right: margin },
-    theme: 'grid',
-    head: [[
-      { content: '2. INVENTÁRIO DE RISCOS OCUPACIONAIS POR GHE (SUBITEM 1.5.7 NR-01)', colSpan: 6, styles: { fillColor: [30, 41, 59], textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 8 } }
-    ], [
-      'GHE', 'Setor / Posto', 'Perigo / Agente de Risco (eSocial)', 'Tipo de Avaliação / Medição', 'Medidas de Prevenção / Plano', 'Expostos'
-    ]],
-    // Sem GHE cadastrado o PGR nao tem inventario. Antes saia uma linha de
-    // exemplo com ruido de 82 dBA e um CA que nunca existiu naquele cliente.
-    body: tableRows.length > 0 ? tableRows : [
-      [{
-        content:
-          'INVENTÁRIO DE RISCOS VAZIO. Não há GHE nem agente de risco cadastrado para este cliente. ' +
-          'Sem inventário, este documento não atende ao subitem 1.5.7 da NR-01 e não deve ser entregue ' +
-          'como PGR concluído: cadastre os GHEs e os riscos antes de emitir.',
-        colSpan: 6,
-        styles: { textColor: [180, 83, 9], fontStyle: 'bold' }
-      }]
-    ],
-    styles: { fontSize: 6.8, cellPadding: 2 },
-    headStyles: { fillColor: [51, 65, 85], textColor: [255, 255, 255], fontStyle: 'bold' }
-  });
-
-  curY = (doc as any).lastAutoTable.finalY + 6;
-
-  // Plan of Action (5W2H)
-  if (curY > 230) {
-    doc.addPage();
-    curY = 20;
+    });
   }
 
-  autoTable(doc, {
-    startY: curY,
-    margin: { left: margin, right: margin },
-    theme: 'grid',
-    head: [[
-      { content: '3. PLANO DE AÇÃO ANUAL (CRONOGRAMA DE MEDIDAS DE PREVENÇÃO - 5W2H)', colSpan: 5, styles: { fillColor: [30, 41, 59], textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 8 } }
-    ], [
-      'O Que Fazer (Ação)', 'GHE / Setor Alvo', 'Responsável Técnico', 'Prazo Limite', 'Status / Evidência'
-    ]],
-    body: actionPlanBody,
-    styles: { fontSize: 7, cellPadding: 2.2 },
-    headStyles: { fillColor: [51, 65, 85], textColor: [255, 255, 255], fontStyle: 'bold' }
+  secao('7.3 Registro de avaliações ambientais');
+  const comMedicao = riscosDoCliente.filter((r: any) => r?.measured_value);
+  tabela({
+    head: [['Agente', 'GES', 'Método', 'Resultado', 'NA / LEO', 'Conclusão']],
+    body: comMedicao.length > 0
+      ? comMedicao.map((r: any) => {
+          const ghe = gheDoCliente.find((g: any) => g?.id === r?.ghe_id);
+          return [
+            r?.agent_name || '',
+            ghe?.code || '',
+            r?.measurement_methodology?.trim() || 'não informado',
+            `${r.measured_value} ${r?.measurement_unit || ''}`.trim(),
+            [r?.action_level, r?.tolerance_limit].filter(Boolean).join(' / ') || 'não informados',
+            r?.ltcat_technical_conclusion?.trim() || 'não informada'
+          ];
+        })
+      : [[{
+          content: 'Nenhuma avaliação quantitativa registrada no inventário deste cliente.',
+          colSpan: 6
+        }]],
+    styles: { fontSize: 6.4, cellPadding: 1.5, overflow: 'linebreak' }
   });
+
+  secao('7.4 Resultados da avaliação ergonômica');
+  paragrafo(
+    'Os resultados da AEP, e da AET quando realizada, integram este inventário (item 17.3.5 da ' +
+    'NR-17). O registro da AEP é obrigatório (item 17.3.1.2.1) e o relatório de AET é guardado ' +
+    'por 20 anos (item 17.3.7).\n\n' +
+    pendente('7.4', 'AEP da NR-17 não registrada no sistema.'),
+    7
+  );
+
+  // ==================================================================
+  // 8. PLANO DE ACAO
+  // ==================================================================
+  novaPagina();
+  secao('8. PLANO DE AÇÃO');
+  paragrafo(
+    'O plano de ação indica as medidas a introduzir, aprimorar ou manter para cada risco ' +
+    'classificado (subitem 1.5.5.2.1), com cronograma, responsáveis, forma de acompanhamento e ' +
+    'aferição de resultados (subitem 1.5.5.2.2). Todo risco do inventário tem ao menos uma ação, ' +
+    'inclusive os toleráveis (ação "manter").'
+  );
+  secao('8.1 Regras de elaboração');
+  lista(PGR_REGRAS_DO_PLANO);
+
+  secao('8.2 Quadro do plano de ação');
+
+  // Uma acao por risco: introduzir quando nao ha controle, aprimorar quando o
+  // controle existe mas a eficacia nao foi verificada, manter quando esta
+  // tudo implementado e verificado. Ordenado por prioridade do modelo.
+  const acoes = riscosDoCliente
+    .map((r: any, i: number) => {
+      const ghe = gheDoCliente.find((g: any) => g?.id === r?.ghe_id);
+      const c = classificarRisco(r?.severity, r?.probability);
+      const semControle = !r?.epc_implemented;
+      const semEficacia = r?.epc_implemented && !r?.epc_effective;
+      return {
+        risco: r,
+        id: `R-${ghe?.code || 'SEM-GHE'}-${String(i + 1).padStart(2, '0')}`,
+        gheNome: ghe?.name || 'GHE não vinculado',
+        classificado: c,
+        expostos: expostosDoGhe(r?.ghe_id),
+        tipo: semControle ? 'Introduzir' : semEficacia ? 'Aprimorar' : 'Manter',
+        medida: semControle
+          ? `Implantar medida de proteção coletiva para ${r?.agent_name || 'o perigo identificado'}`
+          : semEficacia
+            ? `Verificar e evidenciar a eficácia do controle coletivo de ${r?.agent_name || 'o perigo identificado'}`
+            : `Manter e monitorar os controles de ${r?.agent_name || 'o perigo identificado'}`,
+        hierarquia: semControle || semEficacia ? 'Proteção coletiva' : 'Manutenção dos controles'
+      };
+    })
+    .sort((a, b) => (a.classificado?.prioridade ?? 9) - (b.classificado?.prioridade ?? 9));
+
+  tabela({
+    head: [['Nº', 'Risco / nível', 'Exp.', 'Medida · hierarquia · tipo', 'Responsável · prazo', 'Acompanhamento · aferição', 'Status']],
+    body: acoes.length > 0
+      ? acoes.map((a, i) => [
+          `A-${String(i + 1).padStart(2, '0')}`,
+          `${a.id}\n${a.classificado ? `${a.classificado.rotulo} (${a.classificado.score})` : 'não classificado'}`,
+          String(a.expostos),
+          `${a.medida}\n${a.hierarquia} · ${a.tipo}`,
+          `${technicalResponsibleName(organization)}\n${a.classificado ? a.classificado.prazo : 'prazo depende da classificação'}`,
+          'Revisão do status e das evidências do plano\nAferição: reavaliação do risco após a medida (alínea "a" do subitem 1.5.4.4.6)',
+          'Não iniciada'
+        ])
+      : [[{
+          content: pendente('8.2', 'Plano de ação vazio: sem inventário não há plano, e sem os dois não há PGR (subitem 1.5.7.1).'),
+          colSpan: 7,
+          styles: { textColor: [180, 83, 9], fontStyle: 'bold' }
+        }]],
+    columnStyles: {
+      0: { cellWidth: 12 },
+      1: { cellWidth: util * 0.14 },
+      2: { cellWidth: 10, halign: 'center' },
+      6: { cellWidth: util * 0.1 }
+    },
+    styles: { fontSize: 6, cellPadding: 1.3, overflow: 'linebreak' }
+  });
+  paragrafo(PGR_STATUS_DO_PLANO, 6.4);
+
+  // ==================================================================
+  // 9. ACOMPANHAMENTO E GESTAO
+  // ==================================================================
+  novaPagina();
+  secao('9. ACOMPANHAMENTO, RESPOSTA A EMERGÊNCIAS E GESTÃO DO PROGRAMA');
+
+  secao('9.1 Acompanhamento das medidas de prevenção');
+  tabela({
+    head: [['Elemento', 'Forma', 'Periodicidade', 'Responsável']],
+    body: [
+      ['Execução e continuidade das ações', 'Revisão do status e das evidências do plano', 'Mensal', technicalResponsibleName(organization)],
+      ['Inspeções de locais e equipamentos', 'Checklist por setor, com registro fotográfico', 'Mensal ou conforme NR específica', technicalResponsibleName(organization)],
+      ['Monitoramento ambiental', 'Reavaliação de agentes acima do NA', 'Anual ou após mudança', technicalResponsibleName(organization)],
+      ['Participação dos trabalhadores e da CIPA', 'Pauta fixa nas reuniões da CIPA; inspeções conjuntas', 'Mensal', pendente('9.1', 'CIPA ou nomeado da NR-05 não cadastrado.')]
+    ],
+    styles: { fontSize: 6.6, cellPadding: 1.6, overflow: 'linebreak' }
+  });
+  paragrafo(
+    'Indicadores de desempenho em SST (subitem 1.5.3.4): ações concluídas no prazo (%); riscos ' +
+    'altos e muito altos abertos; taxa de frequência e gravidade de acidentes; eventos perigosos ' +
+    'registrados; afastamentos por doença relacionada ao trabalho. Medida ineficaz é corrigida ' +
+    '(subitem 1.5.5.3.2.1) e o risco reavaliado.',
+    6.8
+  );
+
+  secao('9.2 Acompanhamento da saúde ocupacional');
+  paragrafo(
+    'O PCMSO é elaborado com base no inventário e na classificação de riscos deste PGR (subitem ' +
+    '1.5.5.4.2). O médico responsável informa, preservado o sigilo médico, dados agregados que ' +
+    'indiquem associação entre agravos e riscos, o que obriga à revisão da avaliação e a novas ' +
+    'medidas (alínea "c" do subitem 1.5.5.1.1).'
+  );
+
+  secao('9.3 Análise de acidentes, doenças e eventos perigosos');
+  paragrafo(
+    'Toda ocorrência de acidente ou doença relacionada ao trabalho é analisada e documentada; ' +
+    'eventos perigosos com potencial de consequência grave também são analisados (subitens ' +
+    '1.5.5.5.1 e 1.5.5.5.1.1). A análise considera a atividade real, o ambiente, os materiais, o ' +
+    'processo e a organização do trabalho, e não se limita a apontar ato inseguro do trabalhador ' +
+    '(subitem 1.5.5.5.2).'
+  );
+
+  secao('9.4 Preparação e resposta a emergências (subitem 1.5.6)');
+  tabela({
+    head: [['Requisito', 'Definição da organização']],
+    body: [
+      ['Cenários de emergência', pendente('9.4', 'Cenários de emergência não cadastrados.')],
+      ['Primeiros socorros e encaminhamento', pendente('9.4', 'Recursos de primeiros socorros e hospital de referência não cadastrados.')],
+      ['Abandono de área', pendente('9.4', 'Rotas, alarme e ponto de encontro não cadastrados.')],
+      ['Emergências de grande magnitude', pendente('9.4', 'Tratamento das emergências de grande magnitude não definido.')],
+      ['Exercícios simulados', pendente('9.4', 'Periodicidade e evidências dos simulados não cadastradas (subitens 1.5.6.3 e 1.5.6.3.1).')]
+    ],
+    columnStyles: { 0: { cellWidth: util * 0.34, fontStyle: 'bold' } },
+    styles: { fontSize: 6.6, cellPadding: 1.6, overflow: 'linebreak' }
+  });
+
+  secao('9.5 Organizações contratadas (subitem 1.5.8)');
+  paragrafo(pendente('9.5', 'Relação de contratadas e evidências de troca de informações não cadastradas.'), 7);
+
+  secao('9.6 Participação, consulta e comunicação (subitem 1.5.3.3)');
+  paragrafo(
+    'Todo trabalhador recebe, na admissão e na mudança de função com alteração de risco, ' +
+    'informações sobre os riscos, os meios de prevenção, as medidas adotadas, os procedimentos ' +
+    'de emergência e o direito de interromper a atividade em risco grave e iminente (itens 1.4.3 ' +
+    'e 1.4.4). As ordens de serviço de SST são emitidas com ciência do trabalhador (alínea "c" do ' +
+    'item 1.4.1) e ficam registradas no sistema.'
+  );
+
+  secao('9.7 Capacitação e treinamento');
+  paragrafo(
+    'Os treinamentos exigidos pelas NR aplicáveis constam da matriz de capacitação, com inicial, ' +
+    'periódico e eventual (subitem 1.7.1.2). Cada certificado contém nome e assinatura do ' +
+    'trabalhador, conteúdo programático, carga horária, data, local, nome e qualificação dos ' +
+    'instrutores e assinatura do responsável técnico (subitem 1.7.1.1).\n\n' +
+    pendente('9.7', 'Matriz de treinamentos por função não cadastrada.'),
+    7
+  );
+
+  secao('9.8 Prevenção do assédio e da violência no trabalho (subitem 1.4.1.1)');
+  paragrafo(pendente('9.8', 'Regras de conduta, canal de denúncias e capacitação sobre assédio não cadastrados.'), 7);
+
+  secao('9.9 Revisão da avaliação de riscos');
+  paragrafo(
+    `A avaliação de riscos é revista a cada 24 meses — próxima revisão periódica em ` +
+    `${formatDate(proximaRevisao)} — ou 36 meses com certificação SGSST válida (subitem ` +
+    `1.5.4.4.6.1), e sempre que ocorrer (subitem 1.5.4.4.6):`
+  );
+  lista(PGR_HIPOTESES_DE_REVISAO, true);
+
+  secao('9.10 Registro, guarda e disponibilidade');
+  lista(PGR_GUARDA);
+
+  // ==================================================================
+  // 10. ANEXOS E CHECKLIST
+  // ==================================================================
+  novaPagina();
+  secao('10. ANEXOS E CHECKLIST DE CONFORMIDADE');
+
+  secao('10.1 Anexos do PGR');
+  tabela({
+    head: [['Anexo', 'Conteúdo']],
+    body: PGR_ANEXOS.map(([n, c]) => [n, c]),
+    columnStyles: { 0: { cellWidth: 18, halign: 'center', fontStyle: 'bold' } },
+    styles: { fontSize: 6.8, cellPadding: 1.6, overflow: 'linebreak' }
+  });
+
+  secao('10.2 Checklist de conformidade para a fiscalização');
+  const secoesComPendencia = new Set(pendencias.map((p) => p.secao));
+  tabela({
+    head: [['Requisito', 'NR-01', 'Onde está', 'Situação']],
+    body: PGR_CHECKLIST.map((item) => {
+      const pendente_ = item.secoes.some((sec) => secoesComPendencia.has(sec));
+      return [
+        item.requisito,
+        item.norma,
+        item.onde,
+        {
+          content: pendente_ ? 'Com pendência' : 'Atendido',
+          styles: pendente_
+            ? { textColor: [180, 83, 9] as [number, number, number], fontStyle: 'bold' as const }
+            : {}
+        }
+      ];
+    }),
+    // Sem largura fixa na primeira coluna: com as quatro fixas, a autoTable
+    // reclamava de 18 mm que nao cabiam na pagina.
+    columnStyles: {
+      1: { cellWidth: util * 0.17 },
+      2: { cellWidth: util * 0.13 },
+      3: { cellWidth: util * 0.15, halign: 'center' }
+    },
+    styles: { fontSize: 6.4, cellPadding: 1.5, overflow: 'linebreak' }
+  });
+
+  secao(`10.3 Pendências deste PGR (${pendencias.length})`);
+  if (pendencias.length === 0) {
+    paragrafo('Nenhuma pendência: todos os campos exigidos pelo modelo foram preenchidos.');
+  } else {
+    tabela({
+      head: [['Seção', 'O que falta']],
+      body: pendencias.map((p) => [p.secao, p.texto]),
+      columnStyles: { 0: { cellWidth: 20, halign: 'center', fontStyle: 'bold' } },
+      styles: { fontSize: 6.4, cellPadding: 1.5, overflow: 'linebreak', textColor: [120, 53, 15] }
+    });
+    paragrafo(
+      'O PGR vale pela implementação, não pelo papel: na fiscalização, o auditor confronta o ' +
+      'inventário com o local de trabalho e o plano de ação com as evidências de execução. ' +
+      'Resolva as pendências acima antes de entregar este documento como PGR concluído.',
+      6.8
+    );
+  }
 
   applyPageNumbers(doc);
   doc.save(`pgr-nr01-${(client.trade_name || client.legal_name || 'empresa').replace(/\s+/g, '_').toLowerCase()}.pdf`);
 }
+
 
 /**
  * Export full PGRTR (Programa de Gerenciamento de Riscos no Trabalho Rural - NR-31)

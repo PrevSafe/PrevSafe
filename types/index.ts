@@ -1275,7 +1275,23 @@ export interface SSTGroupHomogeneousExposure {
 export type RiskCategoryType = 'FÍSICO' | 'QUÍMICO' | 'BIOLÓGICO' | 'ERGONÔMICO' | 'ACIDENTES' | 'AUSÊNCIA_RISCO' | 'FISICO' | 'QUIMICO' | 'BIOLOGICO' | 'ERGONOMICO';
 export type EnvironmentalRiskAgentCategory = RiskCategoryType;
 export type RiskEvaluationType = 'QUALITATIVA' | 'QUANTITATIVA';
-export type RiskLevelType = 'MUITO_BAIXO' | 'BAIXO' | 'MEDIO' | 'ALTO' | 'CRITICO';
+/**
+ * Nivel de risco.
+ *
+ * Os quatro do modelo de PGR (secao 5.6) sao BAIXO, MEDIO, ALTO e MUITO_ALTO.
+ * MUITO_BAIXO e CRITICO sao os rotulos que o sistema usava antes e que os
+ * riscos ja gravados carregam; ficam no tipo para nao invalidar o que esta no
+ * banco. lib/classificacaoDeRisco.ts converte uns nos outros.
+ */
+export type RiskLevelType =
+  | 'BAIXO'
+  | 'MEDIO'
+  | 'ALTO'
+  | 'MUITO_ALTO'
+  /** @deprecated rotulo antigo; normalizarNivelAntigo o converte para BAIXO. */
+  | 'MUITO_BAIXO'
+  /** @deprecated rotulo antigo; normalizarNivelAntigo o converte para MUITO_ALTO. */
+  | 'CRITICO';
 
 // 48.1 Global Occupational Risks Catalog / Tabela 24 eSocial
 export interface OccupationalRiskEPISuggestion {

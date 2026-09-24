@@ -160,6 +160,7 @@ import { montarTermosDoContrato, resumirServicos } from '@/lib/contratoTermos';
 import { hashDoDocumento, hashDaAssinatura } from '@/lib/documentoHash';
 import { dataDeHoje, dataEmDias, formatarDataISO, novoId } from '@/lib/datas';
 import { limparOrdensDeServico, AVISO_SEM_INVENTARIO } from '@/lib/limpezaDeOrdensDeServico';
+import { classificarRisco } from '@/lib/classificacaoDeRisco';
 import {
   montarCondicoesAmbientais,
   montarAsoDoEvento,
@@ -5144,12 +5145,13 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
         const riskId = `risk-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
         const severityValue = payload.custom_risk_data?.severity || catRisk.default_severity;
         const probabilityValue = payload.custom_risk_data?.probability || catRisk.default_probability;
-        const riskScore = severityValue * probabilityValue;
-        const derivedRiskLevel: RiskLevelType =
-          riskScore >= 20 ? 'CRITICO' :
-          riskScore >= 15 ? 'ALTO' :
-          riskScore >= 10 ? 'MEDIO' :
-          riskScore >= 5 ? 'BAIXO' : 'MUITO_BAIXO';
+        // Segunda formula de classificacao que existia no sistema, divergente
+        // da aba do GHE e das duas do modelo. Score 9 saia BAIXO aqui e MEDIO
+        // la; score 20 saia CRITICO aqui e ALTO la. Agora as duas chamam a
+        // matriz do modelo (secao 5.6).
+        const classificacaoDoCatalogo = classificarRisco(severityValue, probabilityValue);
+        const riskScore = classificacaoDoCatalogo?.score ?? 0;
+        const derivedRiskLevel: RiskLevelType = (classificacaoDoCatalogo?.nivel || 'MEDIO') as RiskLevelType;
 
         const riskObj: SSTEnvironmentalRisk = {
           id: riskId,

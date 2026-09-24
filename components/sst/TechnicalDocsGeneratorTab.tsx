@@ -97,13 +97,16 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
   const actionPlanRows = clientRisks
     .filter(r =>
       r.risk_level === 'ALTO' ||
+      // 'CRITICO' e o rotulo antigo; o modelo usa 'MUITO_ALTO'. Os dois
+      // aparecem porque ha riscos gravados antes da mudanca.
+      r.risk_level === 'MUITO_ALTO' ||
       r.risk_level === 'CRITICO' ||
       !r.epc_implemented ||
       !r.epc_effective
     )
     .map(r => {
       const ghe = clientGhes.find(g => g.id === r.ghe_id);
-      const isCritical = r.risk_level === 'CRITICO' || r.risk_level === 'ALTO';
+      const isCritical = r.risk_level === 'MUITO_ALTO' || r.risk_level === 'CRITICO' || r.risk_level === 'ALTO';
       return {
         id: r.id,
         action: !r.epc_implemented

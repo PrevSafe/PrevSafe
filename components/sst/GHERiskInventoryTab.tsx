@@ -5,6 +5,7 @@ import { usePrevSafe } from '@/context/PrevSafeContext';
 import { SSTGroupHomogeneousExposure, SSTEnvironmentalRisk, RiskCategoryType, OccupationalRiskCatalogItem } from '@/types';
 import { SeletorTabela27 } from './SeletorTabela27';
 import { consultarProcedimento, codigoExisteNaTabela27 } from '@/lib/tabela27';
+import { classificarRisco } from '@/lib/classificacaoDeRisco';
 import { 
   ShieldAlert, 
   Plus, 
@@ -366,13 +367,17 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
       return;
     }
 
-    const riskScore = riskForm.severity * riskForm.probability;
-    let risk_level: 'MUITO_BAIXO' | 'BAIXO' | 'MEDIO' | 'ALTO' | 'CRITICO';
-    if (riskScore <= 3) risk_level = 'MUITO_BAIXO';
-    else if (riskScore <= 8) risk_level = 'BAIXO';
-    else if (riskScore <= 14) risk_level = 'MEDIO';
-    else if (riskScore <= 20) risk_level = 'ALTO';
-    else risk_level = 'CRITICO';
+    // A classificacao vem da matriz do modelo de PGR (secao 5.6), nao de uma
+    // formula desta tela. Havia duas formulas no sistema e elas divergiam:
+    // score 20 saia "ALTO" aqui e "CRITICO" no catalogo de riscos, quando no
+    // modelo 20 e MUITO ALTO - nivel em que a atividade nao se inicia ou e
+    // interrompida ate a reducao do risco.
+    const classificacao = classificarRisco(riskForm.severity, riskForm.probability);
+    if (!classificacao) {
+      alert('Não foi possível classificar o risco: confira a severidade e a probabilidade.');
+      return;
+    }
+    const risk_level = classificacao.nivel;
 
     const epis = riskForm.epi_required && riskForm.ca_number_input ? [
       {
