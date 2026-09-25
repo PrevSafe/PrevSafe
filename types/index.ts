@@ -282,6 +282,25 @@ export interface ClientUnit {
   external_hazards?: string;
   /** Extintores, hidrantes, rotas, ponto de encontro, hospital de referencia. */
   emergency_resources?: string;
+
+  /**
+   * Secoes 1.1, 1.2 e 1.3 do PGR.
+   *
+   * Ficam no estabelecimento, e nao no cliente, porque o PGR e emitido por
+   * estabelecimento (subitem 1.5.3.1.1.1): matriz e filial tem efetivo
+   * terceirizado, turnos e frentes de trabalho diferentes, e podem ter
+   * signatario diferente.
+   */
+  /** Quantos terceirizados trabalham NESTE local (1.1). */
+  outsourced_worker_count?: string;
+  /** "08h-17h48, seg-sex; turno noturno 22h-06h" (1.1). */
+  work_shifts_description?: string;
+  /** Quem assina pela organizacao neste estabelecimento: nome e cargo (1.2). */
+  legal_representative?: string;
+  /** Quem gere o plano de acao, cronogramas e evidencias: nome e cargo (1.2). */
+  pgr_coordinator?: string;
+  /** Servicos em clientes, trabalho externo, teletrabalho (1.3). */
+  external_work_fronts?: string;
 }
 
 // 21. Leads

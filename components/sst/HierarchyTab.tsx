@@ -116,6 +116,12 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
     utilities_description: string;
     external_hazards: string;
     emergency_resources: string;
+    // Secoes 1.1, 1.2 e 1.3 do PGR.
+    outsourced_worker_count: string;
+    work_shifts_description: string;
+    legal_representative: string;
+    pgr_coordinator: string;
+    external_work_fronts: string;
   }>({
     name: '',
     code: '',
@@ -131,7 +137,12 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
     buildings_description: '',
     utilities_description: '',
     external_hazards: '',
-    emergency_resources: ''
+    emergency_resources: '',
+    outsourced_worker_count: '',
+    work_shifts_description: '',
+    legal_representative: '',
+    pgr_coordinator: '',
+    external_work_fronts: ''
   });
   const [editingUnit, setEditingUnit] = useState<ClientUnit | null>(null);
 
@@ -154,7 +165,12 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
         buildings_description: unit.buildings_description || '',
         utilities_description: unit.utilities_description || '',
         external_hazards: unit.external_hazards || '',
-        emergency_resources: unit.emergency_resources || ''
+        emergency_resources: unit.emergency_resources || '',
+        outsourced_worker_count: unit.outsourced_worker_count || '',
+        work_shifts_description: unit.work_shifts_description || '',
+        legal_representative: unit.legal_representative || '',
+        pgr_coordinator: unit.pgr_coordinator || '',
+        external_work_fronts: unit.external_work_fronts || ''
       });
     } else {
       setEditingUnit(null);
@@ -162,7 +178,9 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
         name: '', code: '', type: 'MATRIZ', cnpj_cno_caepf: '', address: '',
         city: '', state: '', cnae_preponderant: '', risk_grade: null,
         built_area_m2: '', total_area_m2: '', buildings_description: '',
-        utilities_description: '', external_hazards: '', emergency_resources: ''
+        utilities_description: '', external_hazards: '', emergency_resources: '',
+        outsourced_worker_count: '', work_shifts_description: '',
+        legal_representative: '', pgr_coordinator: '', external_work_fronts: ''
       });
     }
     setIsUnitModalOpen(true);
@@ -352,7 +370,12 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
       buildings_description: unitForm.buildings_description.trim() || undefined,
       utilities_description: unitForm.utilities_description.trim() || undefined,
       external_hazards: unitForm.external_hazards.trim() || undefined,
-      emergency_resources: unitForm.emergency_resources.trim() || undefined
+      emergency_resources: unitForm.emergency_resources.trim() || undefined,
+      outsourced_worker_count: unitForm.outsourced_worker_count.trim() || undefined,
+      work_shifts_description: unitForm.work_shifts_description.trim() || undefined,
+      legal_representative: unitForm.legal_representative.trim() || undefined,
+      pgr_coordinator: unitForm.pgr_coordinator.trim() || undefined,
+      external_work_fronts: unitForm.external_work_fronts.trim() || undefined
     };
 
     if (editingUnit) {
@@ -605,7 +628,7 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
                 <th className="py-3 px-4">Cidade / UF</th>
                 <th className="py-3 px-4">CNAE Principal</th>
                 <th className="py-3 px-4 text-center">Grau de Risco</th>
-                <th className="py-3 px-4 text-center">Caracterização (PGR 6.1)</th>
+                <th className="py-3 px-4 text-center">Dados do PGR</th>
                 <th className="py-3 px-4 text-right">Ações</th>
               </tr>
             </thead>
@@ -633,13 +656,15 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
                     {(() => {
                       const campos = [
                         u.built_area_m2, u.buildings_description, u.utilities_description,
-                        u.external_hazards, u.emergency_resources
+                        u.external_hazards, u.emergency_resources,
+                        u.outsourced_worker_count, u.work_shifts_description,
+                        u.legal_representative, u.pgr_coordinator, u.external_work_fronts
                       ];
                       const preenchidos = campos.filter((c) => String(c || '').trim()).length;
                       const completo = preenchidos === campos.length;
                       return (
                         <span
-                          title="Área, edificações, utilidades, entorno e recursos de emergência — seção 6.1 do PGR"
+                          title="Campos do PGR que vivem no estabelecimento: seções 1.1, 1.2, 1.3 e 6.1"
                           className={`px-2 py-0.5 rounded text-[10px] font-bold border ${
                             completo
                               ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
@@ -1231,6 +1256,101 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
                     onChange={(e) => setUnitForm({ ...unitForm, state: e.target.value.toUpperCase() })}
                     className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 uppercase"
                   />
+                </div>
+              </div>
+
+              {/* Secoes 1.1, 1.2 e 1.3 do PGR */}
+              <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 space-y-3">
+                <div>
+                  <h4 className="font-bold text-slate-200 text-xs flex items-center gap-1.5">
+                    <Users className="w-4 h-4 text-teal-400" />
+                    Pessoas e Abrangência (PGR, seções 1.1 a 1.3)
+                  </h4>
+                  <p className="text-[11px] text-slate-500 mt-0.5">
+                    Ficam no estabelecimento porque o PGR é emitido por estabelecimento
+                    (subitem 1.5.3.1.1.1): matriz e filial têm turnos, terceirizados e
+                    frentes de trabalho diferentes.
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-slate-400 font-semibold mb-1">
+                      Nº de terceirizados neste local
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Ex.: 4"
+                      value={unitForm.outsourced_worker_count}
+                      onChange={(e) => setUnitForm({ ...unitForm, outsourced_worker_count: e.target.value })}
+                      className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                    />
+                    <p className="text-[10px] text-slate-500 mt-1">
+                      Terceirizados contam para a abrangência do PGR, e não para o
+                      dimensionamento do SESMT e da CIPA.
+                    </p>
+                  </div>
+                  <div>
+                    <label className="block text-slate-400 font-semibold mb-1">Jornada e turnos</label>
+                    <input
+                      type="text"
+                      placeholder="Ex.: 08h-17h48, seg-sex; turno noturno 22h-06h"
+                      value={unitForm.work_shifts_description}
+                      onChange={(e) => setUnitForm({ ...unitForm, work_shifts_description: e.target.value })}
+                      className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-slate-400 font-semibold mb-1">
+                      Responsável legal da organização
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Nome e cargo de quem assina pela empresa"
+                      value={unitForm.legal_representative}
+                      onChange={(e) => setUnitForm({ ...unitForm, legal_representative: e.target.value })}
+                      className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                    />
+                    <p className="text-[10px] text-slate-500 mt-1">
+                      Vai para o termo de responsabilidade do PGR.
+                    </p>
+                  </div>
+                  <div>
+                    <label className="block text-slate-400 font-semibold mb-1">
+                      Coordenador da implementação do PGR
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Nome e cargo de quem gere o plano de ação"
+                      value={unitForm.pgr_coordinator}
+                      onChange={(e) => setUnitForm({ ...unitForm, pgr_coordinator: e.target.value })}
+                      className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                    />
+                    <p className="text-[10px] text-slate-500 mt-1">
+                      Responde pelo cronograma e pelas evidências (subitens 1.5.5.2 e 1.5.5.3).
+                      Pode ser a mesma pessoa do responsável técnico.
+                    </p>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-slate-400 font-semibold mb-1">
+                    Frentes de trabalho e locais externos
+                  </label>
+                  <textarea
+                    rows={2}
+                    placeholder="Serviços na casa do cliente, atendimento externo, teletrabalho, obras de terceiros..."
+                    value={unitForm.external_work_fronts}
+                    onChange={(e) => setUnitForm({ ...unitForm, external_work_fronts: e.target.value })}
+                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                  />
+                  <p className="text-[10px] text-slate-500 mt-1">
+                    Se ninguém trabalha fora do estabelecimento, escreva &quot;nenhuma&quot;
+                    — declarar é diferente de deixar em branco.
+                  </p>
                 </div>
               </div>
 

@@ -265,7 +265,12 @@ const UNIDADE = {
   buildings_description: 'Bloco unico terreo em alvenaria, pe-direito 3 m',
   utilities_description: 'Energia da concessionaria, ar-condicionado split, sem caldeira',
   external_hazards: 'Avenida de trafego intenso na testada; area sem historico de alagamento',
-  emergency_resources: 'Extintores ABC, rota de fuga sinalizada, ponto de encontro no estacionamento, hospital de referencia a 1,2 km'
+  emergency_resources: 'Extintores ABC, rota de fuga sinalizada, ponto de encontro no estacionamento, hospital de referencia a 1,2 km',
+  outsourced_worker_count: '4',
+  work_shifts_description: '07h-17h, seg-sex; sem turno noturno',
+  legal_representative: 'Marcos Tavares - socio administrador',
+  pgr_coordinator: 'Juliana Reis - gerente administrativa',
+  external_work_fronts: 'Atendimento domiciliar de fisioterapia na regiao central'
 };
 
 function gerar(args) {
@@ -527,6 +532,64 @@ check(
   !/if \(!unitForm\.name\) return;/.test(hierarquia),
   'salvar unidade nao da mais `return` em silencio'
 );
+
+// ===========================================================================
+// 3d. PESSOAS E ABRANGENCIA (secoes 1.1, 1.2 e 1.3)
+// ===========================================================================
+// Cinco campos que nao existiam: terceirizados, jornada, responsavel legal,
+// coordenador da implementacao e frentes de trabalho.
+console.log('');
+console.log('--- 3d. Pessoas e abrangencia (1.1 a 1.3) ---');
+
+check(tc.includes('07h-17h, seg-sex'), '1.1 traz a jornada e os turnos');
+check(tc.includes('Marcos Tavares - socio administrador'), '1.2 nomeia o responsavel legal');
+check(tc.includes('Juliana Reis - gerente administrativa'), '1.2 nomeia o coordenador da implementacao');
+check(
+  tc.includes('Atendimento domiciliar de fisioterapia'),
+  '1.3 traz as frentes de trabalho e locais externos'
+);
+
+// O responsavel legal e o coordenador chegam ao termo de responsabilidade.
+check(
+  (tc.match(/Marcos Tavares/g) || []).length >= 2,
+  'o responsavel legal chega tambem ao termo de responsabilidade'
+);
+check(
+  (tc.match(/Juliana Reis/g) || []).length >= 3,
+  'o coordenador chega ao termo e ao acompanhamento do plano (9.1)'
+);
+
+// As pendencias correspondentes somem.
+for (const sumiu of [
+  'Número de trabalhadores terceirizados no local não cadastrado',
+  'Jornada e turnos do estabelecimento não cadastrados',
+  'Responsável legal da organização não cadastrado',
+  'Coordenador da implementação do PGR não cadastrado',
+  'Frentes de trabalho e locais externos não cadastrados'
+]) {
+  check(!tc.includes(sumiu), `pendencia resolvida: ${sumiu.slice(0, 44)}...`);
+}
+
+// Sem estabelecimento, as cinco continuam apontando a tela.
+check(
+  semUnidade.includes('Jornada e turnos do estabelecimento não cadastrados (Hierarquia > Unidades)'),
+  'sem estabelecimento, a pendencia da jornada aponta a tela'
+);
+check(
+  semUnidade.includes('Coordenador da implementação do PGR não cadastrado (Hierarquia > Unidades)'),
+  'sem estabelecimento, a pendencia do coordenador aponta a tela'
+);
+
+// A tela grava e recarrega os cinco.
+for (const campo of [
+  'outsourced_worker_count', 'work_shifts_description',
+  'legal_representative', 'pgr_coordinator', 'external_work_fronts'
+]) {
+  check(
+    hierarquia.includes(`${campo}: unitForm.${campo}`) && hierarquia.includes(`${campo}: unit.${campo}`),
+    `a tela grava e recarrega ${campo}`
+  );
+}
 
 // ===========================================================================
 // 4. UMA CLASSIFICACAO SO NO SISTEMA

@@ -2859,6 +2859,13 @@ export function exportPGRDocumentPdf({
     return d.toISOString().slice(0, 10);
   })();
 
+  // O estabelecimento e a unidade de emissao do PGR (subitem 1.5.3.1.1.1) e
+  // guarda a caracterizacao (secao 6.1) e os campos das secoes 1.1 a 1.3.
+  const unidadesDoCliente = (units || []).filter(
+    (u: any) => u?.client_id === client.id && u?.status !== 'INACTIVE'
+  );
+  const estabelecimento = unidadesDoCliente[0] || null;
+
   // Dimensionamento do SESMT (Anexo II da NR-04) e da CIPA (Quadro I da
   // NR-05) a partir do grau de risco e do efetivo do estabelecimento.
   const dimensionamento = client?.risk_degree
@@ -3096,10 +3103,14 @@ export function exportPGRDocumentPdf({
   tabela({
     head: [['Função', 'Nome', 'Cargo / registro', 'Data', 'Assinatura']],
     body: [
-      ['Responsável legal da organização', LINHA_PARA_PREENCHER, LINHA_PARA_PREENCHER, LINHA_PARA_PREENCHER, ''],
+      ['Responsável legal da organização',
+        estabelecimento?.legal_representative?.trim() || LINHA_PARA_PREENCHER,
+        LINHA_PARA_PREENCHER, LINHA_PARA_PREENCHER, ''],
       ['Responsável técnico pela elaboração', technicalResponsibleName(organization),
         organization?.technical_responsible_council?.trim() || LINHA_PARA_PREENCHER, formatDate(emissao), ''],
-      ['Responsável pela implementação do PGR', LINHA_PARA_PREENCHER, LINHA_PARA_PREENCHER, LINHA_PARA_PREENCHER, ''],
+      ['Responsável pela implementação do PGR',
+        estabelecimento?.pgr_coordinator?.trim() || LINHA_PARA_PREENCHER,
+        LINHA_PARA_PREENCHER, LINHA_PARA_PREENCHER, ''],
       ['Ciência — CIPA ou nomeado NR-05', LINHA_PARA_PREENCHER, LINHA_PARA_PREENCHER, LINHA_PARA_PREENCHER, '']
     ],
     styles: { fontSize: 6.8, cellPadding: 3, overflow: 'linebreak' }
@@ -3127,8 +3138,10 @@ export function exportPGRDocumentPdf({
     ['CNAE principal', cnaeLine(client)],
     ['Grau de risco (NR-04, Anexo I)', riskDegreeLine(client)],
     ['Nº de trabalhadores próprios', String((employees || []).length)],
-    ['Nº de terceirizados no local', pendente('1.1', 'Número de trabalhadores terceirizados no local não cadastrado.')],
-    ['Jornada e turnos', pendente('1.1', 'Jornada e turnos do estabelecimento não cadastrados.')],
+    ['Nº de terceirizados no local', String(estabelecimento?.outsourced_worker_count || '').trim()
+      || pendente('1.1', 'Número de trabalhadores terceirizados no local não cadastrado (Hierarquia > Unidades).')],
+    ['Jornada e turnos', estabelecimento?.work_shifts_description?.trim()
+      || pendente('1.1', 'Jornada e turnos do estabelecimento não cadastrados (Hierarquia > Unidades).')],
     // SESMT e CIPA nao sao cadastro: sao DIMENSIONAMENTO, e o sistema ja
     // calcula os dois pelo grau de risco e pelo numero de trabalhadores
     // (Anexo II da NR-04 e Quadro I da NR-05). Diziam "não cadastrada" para
@@ -3143,9 +3156,11 @@ export function exportPGRDocumentPdf({
   ]);
 
   duasColunas('1.2 Responsáveis', [
-    ['Responsável legal', pendente('1.2', 'Responsável legal da organização não cadastrado.')],
+    ['Responsável legal', estabelecimento?.legal_representative?.trim()
+      || pendente('1.2', 'Responsável legal da organização não cadastrado (Hierarquia > Unidades).')],
     ['Responsável técnico pela elaboração', technicalResponsibleLine(organization)],
-    ['Coordenador da implementação', pendente('1.2', 'Coordenador da implementação do PGR não cadastrado.')],
+    ['Coordenador da implementação', estabelecimento?.pgr_coordinator?.trim()
+      || pendente('1.2', 'Coordenador da implementação do PGR não cadastrado (Hierarquia > Unidades).')],
     ['Médico responsável pelo PCMSO', pcmsoPhysicianLine(organization)]
   ]);
 
@@ -3162,7 +3177,8 @@ export function exportPGRDocumentPdf({
         gheDoCliente.length > 0
           ? gheDoCliente.map((g: any) => `${g?.code || 's/ código'} — ${g?.name || 's/ nome'}`).join('; ')
           : pendente('1.3', 'Nenhum GHE cadastrado: sem GES não há inventário por grupo de exposição.')],
-      ['Frentes de trabalho e locais externos', pendente('1.3', 'Frentes de trabalho e locais externos não cadastrados.')],
+      ['Frentes de trabalho e locais externos', estabelecimento?.external_work_fronts?.trim()
+        || pendente('1.3', 'Frentes de trabalho e locais externos não cadastrados (Hierarquia > Unidades).')],
       ['Contratadas que atuam no local', pendente('1.3', 'Relação de contratadas não cadastrada (seção 9.5).')],
       ['Exclusões', 'Nenhuma']
     ],
@@ -3397,13 +3413,6 @@ export function exportPGRDocumentPdf({
     'Esta seção atende às alíneas "a", "b" e "e" do subitem 1.5.7.3.2 e é a base de todos os ' +
     'registros do inventário.'
   );
-
-  // A caracterizacao vive no ESTABELECIMENTO (Hierarquia > Unidades), que e
-  // a unidade de emissao do PGR segundo o subitem 1.5.3.1.1.1.
-  const unidadesDoCliente = (units || []).filter(
-    (u: any) => u?.client_id === client.id && u?.status !== 'INACTIVE'
-  );
-  const estabelecimento = unidadesDoCliente[0] || null;
 
   if (unidadesDoCliente.length > 1) {
     pendente(
@@ -3706,7 +3715,10 @@ export function exportPGRDocumentPdf({
   tabela({
     head: [['Elemento', 'Forma', 'Periodicidade', 'Responsável']],
     body: [
-      ['Execução e continuidade das ações', 'Revisão do status e das evidências do plano', 'Mensal', technicalResponsibleName(organization)],
+      // Quem gere o plano de acao e o coordenador da implementacao
+      // (subitens 1.5.5.2 e 1.5.5.3), nao o responsavel tecnico.
+      ['Execução e continuidade das ações', 'Revisão do status e das evidências do plano', 'Mensal',
+        estabelecimento?.pgr_coordinator?.trim() || technicalResponsibleName(organization)],
       ['Inspeções de locais e equipamentos', 'Checklist por setor, com registro fotográfico', 'Mensal ou conforme NR específica', technicalResponsibleName(organization)],
       ['Monitoramento ambiental', 'Reavaliação de agentes acima do NA', 'Anual ou após mudança', technicalResponsibleName(organization)],
       ['Participação dos trabalhadores e da CIPA', 'Pauta fixa nas reuniões da CIPA; inspeções conjuntas', 'Mensal',
