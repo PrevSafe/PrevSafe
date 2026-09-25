@@ -9,7 +9,8 @@ import {
   ClientContact, 
   ClientUnit,
   ContractedOrganization,
-  MachineEquipment, 
+  MachineEquipment,
+  ChemicalProduct, 
   Lead, 
   Opportunity, 
   Proposal, 
@@ -232,6 +233,11 @@ interface PrevSafeContextType {
   ) => MachineEquipment;
   updateMachineEquipment: (id: string, updates: Partial<MachineEquipment>) => void;
   deleteMachineEquipment: (id: string) => void;
+  addChemicalProduct: (
+    data: Omit<ChemicalProduct, 'id' | 'organization_id' | 'created_at'>
+  ) => ChemicalProduct;
+  updateChemicalProduct: (id: string, updates: Partial<ChemicalProduct>) => void;
+  deleteChemicalProduct: (id: string) => void;
   addLead: (lead: Omit<Lead, 'id' | 'organization_id' | 'created_at'>) => Lead;
   updateLead: (id: string, updates: Partial<Lead>) => void;
   deleteLead: (id: string) => void;
@@ -646,6 +652,7 @@ interface PrevSafeContextType {
   cipaProcesses: CipaManagementProcess[];
   contractedOrganizations: ContractedOrganization[];
   machinesEquipment: MachineEquipment[];
+  chemicalProducts: ChemicalProduct[];
   addCipaProcess: (data: Omit<CipaManagementProcess, 'id'>) => CipaManagementProcess;
   updateCipaProcess: (id: string, updates: Partial<CipaManagementProcess>) => void;
   deleteCipaProcess: (id: string) => void;
@@ -775,6 +782,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
   const [cipaProcesses, setCipaProcesses] = useState<CipaManagementProcess[]>(INITIAL_CIPA_PROCESSES);
   const [contractedOrganizations, setContractedOrganizations] = useState<ContractedOrganization[]>([]);
   const [machinesEquipment, setMachinesEquipment] = useState<MachineEquipment[]>([]);
+  const [chemicalProducts, setChemicalProducts] = useState<ChemicalProduct[]>([]);
   const [occupationalRisksCatalog, setOccupationalRisksCatalog] = useState<OccupationalRiskCatalogItem[]>(INITIAL_OCCUPATIONAL_RISKS_CATALOG);
 
   // Estado da sincronizacao com o Supabase, exposto na barra superior.
@@ -874,6 +882,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     apply(setCipaProcesses, list(parsed.cipaProcesses, []));
     apply(setContractedOrganizations, list(parsed.contractedOrganizations, []));
     apply(setMachinesEquipment, list(parsed.machinesEquipment, []));
+    apply(setChemicalProducts, list(parsed.chemicalProducts, []));
     apply(setOccupationalRisksCatalog, list(parsed.occupationalRisksCatalog, INITIAL_OCCUPATIONAL_RISKS_CATALOG, 'occupationalRisksCatalog'));
   }, []);
 
@@ -940,7 +949,8 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     cipaProcesses,
     occupationalRisksCatalog,
     contractedOrganizations,
-    machinesEquipment
+    machinesEquipment,
+    chemicalProducts
   }), [
     organization,
     esocialConfig,
@@ -983,7 +993,8 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     cipaProcesses,
     occupationalRisksCatalog,
     contractedOrganizations,
-    machinesEquipment
+    machinesEquipment,
+    chemicalProducts
   ]);
 
   // Cache local: nao e mais a fonte da verdade, e sim a copia que permite abrir
@@ -1759,6 +1770,37 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
   const deleteMachineEquipment = useCallback((id: string) => {
     setMachinesEquipment(prev => prev.filter(m => m.id !== id));
     logAudit('DELETE_MACHINE' as any, 'CLIENT' as any, id, 'Maquina removida', {});
+  }, [logAudit]);
+
+  /**
+   * Produtos quimicos — secao 6.4 do PGR.
+   *
+   * A classificacao GHS nao tem padrao: presumir "nao perigoso" dispensaria a
+   * ficha com dados de seguranca de um produto que a exige (subitem 26.4.3.1),
+   * e presumir "perigoso" poria pendencia em detergente.
+   */
+  const addChemicalProduct = useCallback((
+    data: Omit<ChemicalProduct, 'id' | 'organization_id' | 'created_at'>
+  ): ChemicalProduct => {
+    const novo: ChemicalProduct = {
+      ...data,
+      id: novoId('quimico'),
+      organization_id: organization.id,
+      created_at: new Date().toISOString()
+    };
+    setChemicalProducts(prev => [...prev, novo]);
+    logAudit('CREATE_CHEMICAL' as any, 'CLIENT' as any, novo.id, `Produto quimico cadastrado: ${novo.name}`, novo);
+    return novo;
+  }, [organization.id, logAudit]);
+
+  const updateChemicalProduct = useCallback((id: string, updates: Partial<ChemicalProduct>) => {
+    setChemicalProducts(prev => prev.map(q => (q.id === id ? { ...q, ...updates } : q)));
+    logAudit('UPDATE_CHEMICAL' as any, 'CLIENT' as any, id, 'Produto quimico atualizado', updates);
+  }, [logAudit]);
+
+  const deleteChemicalProduct = useCallback((id: string) => {
+    setChemicalProducts(prev => prev.filter(q => q.id !== id));
+    logAudit('DELETE_CHEMICAL' as any, 'CLIENT' as any, id, 'Produto quimico removido', {});
   }, [logAudit]);
 
   const addLead = useCallback((leadData: Omit<Lead, 'id' | 'organization_id' | 'created_at'>): Lead => {
@@ -7282,6 +7324,10 @@ ${exames.map(ex => `      <exameMedico>
     addMachineEquipment,
     updateMachineEquipment,
     deleteMachineEquipment,
+    chemicalProducts,
+    addChemicalProduct,
+    updateChemicalProduct,
+    deleteChemicalProduct,
     addLead,
     updateLead,
     deleteLead,
@@ -7563,6 +7609,10 @@ ${exames.map(ex => `      <exameMedico>
     addMachineEquipment,
     updateMachineEquipment,
     deleteMachineEquipment,
+    chemicalProducts,
+    addChemicalProduct,
+    updateChemicalProduct,
+    deleteChemicalProduct,
     addLead,
     updateLead,
     deleteLead,

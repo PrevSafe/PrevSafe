@@ -47,6 +47,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
     units,
     contractedOrganizations,
     machinesEquipment,
+    chemicalProducts,
     hierarchySectors,
     hierarchyJobs,
     ghes,
@@ -75,6 +76,9 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
   );
   const clientMaquinas = machinesEquipment.filter(
     m => !selectedClientId || m.client_id === selectedClientId
+  );
+  const clientQuimicos = chemicalProducts.filter(
+    q => !selectedClientId || q.client_id === selectedClientId
   );
   const clientSectors = hierarchySectors.filter(s => !selectedClientId || s.client_id === selectedClientId);
   const clientJobs = hierarchyJobs.filter(j => !selectedClientId || j.client_id === selectedClientId);
@@ -175,7 +179,8 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
         sectors: clientSectors,
         units: clientUnits,
         contractedOrganizations: clientContratadas,
-        machinesEquipment: clientMaquinas
+        machinesEquipment: clientMaquinas,
+        chemicalProducts: clientQuimicos
       });
       setSuccessToast('PDF do PGR (NR-01) gerado com sucesso!');
     } else if (activeDocType === 'PGRTR') {
@@ -974,6 +979,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
         employees={clientEmployees}
         contractedOrganizations={clientContratadas}
         machinesEquipment={clientMaquinas}
+        chemicalProducts={clientQuimicos}
         sectors={clientSectors}
         units={clientUnits}
         onTransmitESocial={handleTransmitSelectedEvent}

@@ -35,11 +35,12 @@ import { IntegrationTrainingTab } from './IntegrationTrainingTab';
 import { SSTSignaturesManagementTab } from './SSTSignaturesManagementTab';
 import { ContractedOrganizationsTab } from './ContractedOrganizationsTab';
 import { MachinesEquipmentTab } from './MachinesEquipmentTab';
-import { PenTool, Handshake, Cog } from 'lucide-react';
+import { ChemicalProductsTab } from './ChemicalProductsTab';
+import { PenTool, Handshake, Cog, FlaskConical } from 'lucide-react';
 
 interface SSTUnifiedEngineeringViewProps {
   onNavigate?: (view: string) => void;
-  initialTab?: 'HIERARCHY' | 'GHE_RISKS' | 'EXAMS_PCMSO' | 'EMPLOYEES' | 'WORK_ORDERS_OS' | 'DOCS_XML' | 'INTEGRATION_TRAINING' | 'SIGNATURES' | 'CONTRACTED' | 'MACHINES';
+  initialTab?: 'HIERARCHY' | 'GHE_RISKS' | 'EXAMS_PCMSO' | 'EMPLOYEES' | 'WORK_ORDERS_OS' | 'DOCS_XML' | 'INTEGRATION_TRAINING' | 'SIGNATURES' | 'CONTRACTED' | 'MACHINES' | 'CHEMICALS';
 }
 
 export const SSTUnifiedEngineeringView: React.FC<SSTUnifiedEngineeringViewProps> = ({ onNavigate, initialTab }) => {
@@ -58,7 +59,7 @@ export const SSTUnifiedEngineeringView: React.FC<SSTUnifiedEngineeringViewProps>
   } = usePrevSafe();
 
   const [selectedClientId, setSelectedClientId] = useState<string>(clients?.[0]?.id || '');
-  const [activeTab, setActiveTab] = useState<'HIERARCHY' | 'GHE_RISKS' | 'EXAMS_PCMSO' | 'EMPLOYEES' | 'WORK_ORDERS_OS' | 'DOCS_XML' | 'INTEGRATION_TRAINING' | 'SIGNATURES' | 'CONTRACTED' | 'MACHINES'>(initialTab || 'HIERARCHY');
+  const [activeTab, setActiveTab] = useState<'HIERARCHY' | 'GHE_RISKS' | 'EXAMS_PCMSO' | 'EMPLOYEES' | 'WORK_ORDERS_OS' | 'DOCS_XML' | 'INTEGRATION_TRAINING' | 'SIGNATURES' | 'CONTRACTED' | 'MACHINES' | 'CHEMICALS'>(initialTab || 'HIERARCHY');
 
   // Sync when initialTab prop updates from external navigation
   React.useEffect(() => {
@@ -340,6 +341,20 @@ export const SSTUnifiedEngineeringView: React.FC<SSTUnifiedEngineeringViewProps>
           <Cog className="w-4 h-4" />
           10. Máquinas (NR-12, NR-13, NR-11)
         </button>
+
+        <button
+          type="button"
+          id="main-tab-chemicals-btn"
+          onClick={() => setActiveTab('CHEMICALS')}
+          className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 shrink-0 ${
+            activeTab === 'CHEMICALS'
+              ? 'bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/20'
+              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
+          }`}
+        >
+          <FlaskConical className="w-4 h-4" />
+          11. Produtos Químicos (NR-26)
+        </button>
       </div>
 
       {/* Render Active View Tab */}
@@ -373,6 +388,9 @@ export const SSTUnifiedEngineeringView: React.FC<SSTUnifiedEngineeringViewProps>
         )}
         {activeTab === 'MACHINES' && (
           <MachinesEquipmentTab selectedClientId={selectedClientId} />
+        )}
+        {activeTab === 'CHEMICALS' && (
+          <ChemicalProductsTab selectedClientId={selectedClientId} />
         )}
       </div>
     </div>

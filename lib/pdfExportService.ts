@@ -2822,7 +2822,8 @@ export function exportPGRDocumentPdf({
   sectors = [],
   units = [],
   contractedOrganizations = [],
-  machinesEquipment = []
+  machinesEquipment = [],
+  chemicalProducts = []
 }: {
   client: Client;
   organization: Organization;
@@ -2833,6 +2834,7 @@ export function exportPGRDocumentPdf({
   units: any[];
   contractedOrganizations?: any[];
   machinesEquipment?: any[];
+  chemicalProducts?: any[];
 }) {
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
   const pageWidth = doc.internal.pageSize.getWidth();
@@ -3530,9 +3532,168 @@ export function exportPGRDocumentPdf({
 
   secao('6.4 Inventário de produtos químicos');
   paragrafo(
-    pendente('6.4', 'Inventário de produtos químicos (componentes, CAS, classificação GHS, FDS) não cadastrado.'),
-    7
+    'O produto químico utilizado no local de trabalho é classificado quanto aos perigos para a ' +
+    'segurança e a saúde dos trabalhadores segundo os critérios do Sistema Globalmente ' +
+    'Harmonizado - GHS (subitem 26.4.1.1 da NR-26). Para todo produto classificado como ' +
+    'perigoso, o fabricante ou, na importação, o fornecedor no mercado nacional elabora e ' +
+    'torna disponível a ficha com dados de segurança (subitem 26.4.3.1), e a organização ' +
+    'assegura o acesso dos trabalhadores a ela (subitem 26.5.1) e os treina para compreender a ' +
+    'rotulagem e a ficha e para atuar em emergência com o produto (subitem 26.5.2).'
   );
+
+  const quimicosDoCliente = (chemicalProducts || []).filter(
+    (q: any) => q?.client_id === client.id && q?.status !== 'INACTIVE'
+  );
+
+  if (quimicosDoCliente.length === 0) {
+    const declarado = estabelecimento?.no_chemical_products_declared_at?.trim();
+    if (declarado) {
+      paragrafo(
+        `A organização declarou em ${formatDate(declarado)} que nenhum produto químico é ` +
+        'utilizado neste estabelecimento. Álcool 70%, hipoclorito, desinfetante e detergente são ' +
+        'produtos químicos: a dispensa do subitem 26.4.2.4 alcança apenas a rotulagem preventiva ' +
+        'dos saneantes notificados ou registrados na Anvisa, e não a existência do produto, sua ' +
+        'classificação nem a ficha com dados de segurança.',
+        7
+      );
+    } else {
+      paragrafo(
+        pendente('6.4', 'Nenhum produto químico cadastrado e nenhuma declaração de que não se utiliza produto químico (Engenharia SST > Produtos Químicos). Lista vazia não é declaração de inexistência.'),
+        7
+      );
+    }
+  } else {
+    const CLASSIFICACAO: Record<string, string> = {
+      PERIGOSO: 'Perigoso (GHS)',
+      NAO_PERIGOSO: 'Não perigoso (GHS)'
+    };
+    const ROTULAGEM: Record<string, string> = {
+      CONFORME_GHS: 'Conforme o GHS (26.4.2.2)',
+      SIMPLIFICADA: 'Simplificada (26.4.2.3)',
+      DISPENSADA_SANEANTE: 'Saneante Anvisa, dispensada (26.4.2.4)',
+      IRREGULAR: 'IRREGULAR'
+    };
+    const FDS: Record<string, string> = {
+      DISPONIVEL: 'Disponível',
+      SOLICITADA: 'Solicitada ao fornecedor',
+      NAO_OBTIDA: 'Não obtida'
+    };
+    const FALTA = 'PENDENTE';
+
+    const linhas = quimicosDoCliente.map((q: any) => {
+      const faltando: string[] = [];
+      const perigoso = q?.ghs_classification === 'PERIGOSO';
+
+      if (!q?.ghs_classification) {
+        faltando.push('classificação quanto aos perigos segundo o GHS (subitem 26.4.1.1)');
+      }
+      if (perigoso && !q?.ghs_hazard_classes?.trim()) {
+        faltando.push('classes e categorias de perigo do GHS');
+      }
+      if (!q?.components?.trim()) {
+        faltando.push('componentes com nome e número CAS');
+      }
+
+      const classificacao = [
+        CLASSIFICACAO[q?.ghs_classification] || FALTA,
+        q?.ghs_hazard_classes?.trim(),
+        q?.ghs_signal_word?.trim()
+      ].filter(Boolean).join('\n');
+
+      // Rotulagem: a dispensa do 26.4.2.4 e so dela, e exige o registro.
+      let rotulagem = ROTULAGEM[q?.labeling_status] || FALTA;
+      if (!q?.labeling_status) {
+        faltando.push('conferência da rotulagem preventiva no local (subitem 26.4.2)');
+      }
+      if (q?.labeling_status === 'DISPENSADA_SANEANTE') {
+        if (q?.anvisa_registration?.trim()) {
+          rotulagem += `\nAnvisa: ${q.anvisa_registration.trim()}`;
+        } else {
+          faltando.push('número da notificação ou do registro do saneante na Anvisa, que é o que fundamenta a dispensa do subitem 26.4.2.4');
+        }
+      }
+      if (q?.labeling_status === 'IRREGULAR') {
+        faltando.push('regularização da rotulagem preventiva (subitem 26.4.2)');
+      }
+
+      // FDS: obrigatoria para o perigoso (26.4.3.1). Para o nao perigoso, o
+      // subitem 26.4.3.3 a exige quando os usos previstos derem origem a
+      // riscos - juizo que o avaliador faz, e por isso aqui e nota, nao
+      // pendencia.
+      const partesFds: string[] = [FDS[q?.sds_status] || FALTA];
+      if (q?.sds_date?.trim()) partesFds.push(`Revisão: ${formatDate(q.sds_date)}`);
+      if (q?.sds_location?.trim()) {
+        partesFds.push(`Acesso: ${q.sds_location.trim()}`);
+      } else if (q?.sds_status === 'DISPONIVEL') {
+        faltando.push('onde o trabalhador acessa a ficha com dados de segurança (subitem 26.5.1)');
+      }
+      if (perigoso && q?.sds_status !== 'DISPONIVEL') {
+        faltando.push('ficha com dados de segurança do produto classificado como perigoso (subitem 26.4.3.1)');
+      }
+      if (!perigoso && q?.sds_status !== 'DISPONIVEL') {
+        partesFds.push('O subitem 26.4.3.3 exige a ficha também para produto não classificado como perigoso cujos usos previstos derem origem a riscos.');
+      }
+
+      if (!q?.training_date?.trim()) {
+        faltando.push('treinamento sobre rotulagem, ficha com dados de segurança, perigos e emergência (subitem 26.5.2)');
+      }
+
+      if (faltando.length > 0) {
+        pendente('6.4', `Produto ${q?.name || 'sem nome'}: falta ${faltando.join('; ')}.`);
+      }
+
+      return [
+        [q?.name || 'Sem nome', q?.manufacturer?.trim()].filter(Boolean).join('\n'),
+        [q?.use_description?.trim(), q?.location?.trim(), q?.quantity?.trim()]
+          .filter(Boolean).join('\n') || '—',
+        q?.components?.trim() || FALTA,
+        classificacao,
+        rotulagem,
+        [
+          partesFds.join('. '),
+          q?.training_date?.trim() ? `Treinamento: ${formatDate(q.training_date)}` : `Treinamento: ${FALTA}`
+        ].join('\n')
+      ];
+    });
+
+    tabela({
+      head: [['Produto', 'Uso, local e quantidade', 'Componentes e CAS', 'Classificação GHS', 'Rotulagem', 'FDS e treinamento']],
+      body: linhas,
+      columnStyles: {
+        0: { cellWidth: util * 0.14, fontStyle: 'bold' },
+        1: { cellWidth: util * 0.16 },
+        2: { cellWidth: util * 0.17 },
+        3: { cellWidth: util * 0.15 },
+        4: { cellWidth: util * 0.15 }
+      },
+      styles: { fontSize: 5.9, cellPadding: 1.3, overflow: 'linebreak' }
+    });
+
+    // A dispensa do saneante e so da rotulagem. Dito no documento porque e o
+    // erro mais facil de cometer em clinica, escola e escritorio.
+    if (quimicosDoCliente.some((q: any) => q?.labeling_status === 'DISPENSADA_SANEANTE')) {
+      paragrafo(
+        'Os saneantes notificados ou registrados na Anvisa estão dispensados das obrigações de ' +
+        'rotulagem preventiva dos subitens 26.4.2.1, 26.4.2.1.1 e 26.4.2.2. A dispensa é apenas ' +
+        'da rotulagem: a classificação do subitem 26.4.1 e a ficha com dados de segurança do ' +
+        'subitem 26.4.3 continuam exigíveis.',
+        6.8
+      );
+    }
+
+    // Consistencia com a secao 7: produto perigoso sem agente quimico no
+    // inventario e contradicao entre duas secoes do mesmo documento.
+    const temPerigoso = quimicosDoCliente.some((q: any) => q?.ghs_classification === 'PERIGOSO');
+    const temAgenteQuimico = riscosDoCliente.some(
+      (r: any) => String(r?.risk_category || '').toUpperCase().startsWith('QU')
+    );
+    if (temPerigoso && !temAgenteQuimico) {
+      paragrafo(
+        pendente('6.4', 'Há produto classificado como perigoso pelo GHS e nenhum agente químico no inventário da seção 7. Avalie a exposição e inventarie o agente, ou registre no inventário a ausência de risco com a justificativa.'),
+        6.8
+      );
+    }
+  }
 
   secao('6.5 Máquinas e equipamentos com requisitos específicos');
   paragrafo(

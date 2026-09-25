@@ -371,6 +371,92 @@ export interface ClientUnit {
    * clinica e vaso de pressao, e o compressor de ar tambem.
    */
   no_specific_machines_declared_at?: string;
+
+  /**
+   * Data em que se declarou que NENHUM produto quimico e utilizado no
+   * estabelecimento (secao 6.4).
+   *
+   * A declaracao aqui e a mais arriscada das tres: alcool 70%, hipoclorito,
+   * desinfetante e detergente sao produtos quimicos, e a dispensa do subitem
+   * 26.4.2.4 alcanca apenas a rotulagem dos saneantes - nao a existencia do
+   * produto, nem a classificacao, nem a ficha com dados de seguranca.
+   */
+  no_chemical_products_declared_at?: string;
+}
+
+/**
+ * 20d. Produto quimico — secao 6.4 do PGR, item 26.4 da NR-26.
+ *
+ * O produto quimico utilizado no local de trabalho deve ser classificado quanto
+ * aos perigos segundo o GHS (subitem 26.4.1.1); o fabricante, ou o fornecedor
+ * no caso de importacao, elabora e torna disponivel a ficha com dados de
+ * seguranca de todo produto classificado como perigoso (subitem 26.4.3.1); e a
+ * organizacao assegura o acesso dos trabalhadores a essas fichas (subitem
+ * 26.5.1) e treina sobre rotulagem, FDS, perigos e emergencia (subitem 26.5.2).
+ *
+ * DUAS COISAS QUE ESTE CADASTRO TEM DE SEPARAR:
+ *
+ * 1. Saneante notificado ou registrado na Anvisa e dispensado da ROTULAGEM
+ *    preventiva do GHS (subitem 26.4.2.4) - e so dela. Continua a exigir
+ *    classificacao (26.4.1) e ficha com dados de seguranca (26.4.3).
+ * 2. Produto NAO classificado como perigoso tambem exige FDS quando os usos
+ *    previstos ou recomendados derem origem a riscos (subitem 26.4.3.3), e
+ *    exige rotulagem preventiva simplificada (subitem 26.4.2.3).
+ */
+export interface ChemicalProduct {
+  id: string;
+  organization_id: string;
+  client_id: string;
+  client_unit_id?: string;
+  /** Nome comercial do produto, como esta no rotulo. */
+  name: string;
+  manufacturer?: string;
+  /** Para que serve e em que tarefa e usado. */
+  use_description?: string;
+  /** Setor ou local de uso e de armazenagem. */
+  location?: string;
+  /** Consumo ou quantidade em estoque, para dimensionar a exposicao. */
+  quantity?: string;
+
+  /**
+   * Componentes com nome, numero CAS e concentracao ou faixa.
+   *
+   * No caso de mistura, o subitem 26.4.3.1.1.1 manda explicitar na FDS o nome e
+   * a concentracao das substancias que representem perigo a saude acima dos
+   * valores de corte do GHS e das que tenham limite de exposicao ocupacional.
+   */
+  components?: string;
+
+  /** Vazio = nao classificado, e sai como pendencia do subitem 26.4.1.1. */
+  ghs_classification?: 'PERIGOSO' | 'NAO_PERIGOSO';
+  /** Classes e categorias de perigo, como constam da FDS. */
+  ghs_hazard_classes?: string;
+  /** Palavra de advertencia e frases de perigo (H). */
+  ghs_signal_word?: string;
+
+  /**
+   * Situacao da rotulagem preventiva conferida no local.
+   *
+   * DISPENSADA_SANEANTE e o subitem 26.4.2.4; SIMPLIFICADA e o 26.4.2.3, do
+   * produto nao classificado como perigoso.
+   */
+  labeling_status?: 'CONFORME_GHS' | 'SIMPLIFICADA' | 'DISPENSADA_SANEANTE' | 'IRREGULAR';
+  /** Notificacao ou registro do saneante na Anvisa, quando for o caso. */
+  anvisa_registration?: string;
+
+  /** Vazio = nao informado. */
+  sds_status?: 'DISPONIVEL' | 'SOLICITADA' | 'NAO_OBTIDA';
+  /** Data de elaboracao ou da ultima revisao da FDS. */
+  sds_date?: string;
+  /** Onde o trabalhador acessa a FDS (subitem 26.5.1). */
+  sds_location?: string;
+
+  /** Data do treinamento do subitem 26.5.2. */
+  training_date?: string;
+
+  notes?: string;
+  status: 'ACTIVE' | 'INACTIVE';
+  created_at: string;
 }
 
 /**

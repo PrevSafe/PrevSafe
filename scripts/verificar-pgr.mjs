@@ -398,6 +398,75 @@ const UNIDADE_SEM_MAQUINA = {
   ...UNIDADE, no_specific_machines_declared_at: '2026-09-16'
 };
 
+/**
+ * Produtos quimicos da secao 6.4, um por caminho do item 26.4 da NR-26.
+ *
+ * O saneante e o caso que engana: dispensado da ROTULAGEM pelo subitem
+ * 26.4.2.4, continua a exigir classificacao e ficha com dados de seguranca.
+ */
+const QUIMICO_PERIGOSO_COMPLETO = {
+  id: 'qm1', client_id: 'c1', status: 'ACTIVE',
+  name: 'Alcool etilico 70% INPM', manufacturer: 'Quimica Bahia',
+  use_description: 'Desinfeccao de superficies e macas entre atendimentos',
+  location: 'Salas de atendimento e deposito', quantity: '5 L/mes',
+  components: 'etanol (CAS 64-17-5), 70% v/v; agua (CAS 7732-18-5)',
+  ghs_classification: 'PERIGOSO',
+  ghs_hazard_classes: 'Liquido inflamavel categoria 2; irritacao ocular categoria 2A',
+  ghs_signal_word: 'Perigo - H225, H319',
+  labeling_status: 'CONFORME_GHS',
+  sds_status: 'DISPONIVEL', sds_date: '2025-11-03',
+  sds_location: 'Pasta fisica na copa e no deposito',
+  training_date: '2026-04-22',
+};
+const QUIMICO_SANEANTE = {
+  id: 'qm2', client_id: 'c1', status: 'ACTIVE',
+  name: 'Hipoclorito de sodio 2,5%',
+  use_description: 'Limpeza de piso',
+  components: 'hipoclorito de sodio (CAS 7681-52-9), 2,5%',
+  ghs_classification: 'PERIGOSO',
+  ghs_hazard_classes: 'Corrosao cutanea categoria 1B',
+  labeling_status: 'DISPENSADA_SANEANTE', anvisa_registration: '3.0123.4567.001-8',
+  sds_status: 'DISPONIVEL', sds_date: '2026-01-15',
+  sds_location: 'Pasta fisica no deposito',
+  training_date: '2026-04-22',
+};
+/** Saneante sem o numero que fundamenta a dispensa. */
+const QUIMICO_SANEANTE_SEM_REGISTRO = {
+  ...QUIMICO_SANEANTE, id: 'qm3', name: 'Desinfetante concentrado',
+  anvisa_registration: undefined,
+};
+/** Nao perigoso e sem FDS: o 26.4.3.3 entra como nota, nao como pendencia. */
+const QUIMICO_NAO_PERIGOSO = {
+  id: 'qm4', client_id: 'c1', status: 'ACTIVE',
+  name: 'Detergente neutro',
+  components: 'tensoativo anionico (CAS 25155-30-0), 5%',
+  ghs_classification: 'NAO_PERIGOSO',
+  labeling_status: 'SIMPLIFICADA',
+  sds_status: 'NAO_OBTIDA',
+  training_date: '2026-04-22',
+};
+/** Sem classificacao GHS: pendencia do proprio subitem 26.4.1.1. */
+const QUIMICO_SEM_CLASSIFICACAO = {
+  id: 'qm5', client_id: 'c1', status: 'ACTIVE',
+  name: 'Removedor multiuso',
+};
+/** Produto de OUTRO cliente: nao pode aparecer neste PGR. */
+const QUIMICO_DE_OUTRO_CLIENTE = {
+  id: 'qm9', client_id: 'cli-9', status: 'ACTIVE',
+  name: 'Xileno de outra empresa', ghs_classification: 'PERIGOSO',
+};
+/** Estabelecimento que declarou nao utilizar produto quimico. */
+const UNIDADE_SEM_QUIMICO = {
+  ...UNIDADE, no_chemical_products_declared_at: '2026-09-17'
+};
+/** Risco quimico no inventario, para a checagem de coerencia da 6.4 com a 7. */
+const RISCO_QUIMICO = {
+  id: 'rq1', ghe_id: 'g1', client_id: 'c1', risk_category: 'QUIMICO',
+  agent_name: 'Alcool etilico', generating_source: 'Desinfeccao de superficies',
+  severity: 2, probability: 3, epc_implemented: false,
+  operational_situation: ['ROTINEIRA'],
+};
+
 function gerar(args) {
   ultimoPdf = null;
   exportPGRDocumentPdf(args);
@@ -416,6 +485,10 @@ const pdfCheio = gerar({
   machinesEquipment: [
     MAQUINA_NR12, MAQUINA_NR13_VENCIDA, MAQUINA_NR11, MAQUINA_SEM_NORMA,
     MAQUINA_DE_OUTRO_CLIENTE
+  ],
+  chemicalProducts: [
+    QUIMICO_PERIGOSO_COMPLETO, QUIMICO_SANEANTE, QUIMICO_SANEANTE_SEM_REGISTRO,
+    QUIMICO_NAO_PERIGOSO, QUIMICO_SEM_CLASSIFICACAO, QUIMICO_DE_OUTRO_CLIENTE
   ],
 });
 const pdfVazio = gerar({
@@ -1135,6 +1208,155 @@ check(
 );
 check(sync.includes("'machinesEquipment'"), 'a colecao das maquinas e sincronizada');
 check(contexto.includes('parsed.machinesEquipment'), 'o snapshot carrega as maquinas');
+
+// ===========================================================================
+// 3h. PRODUTOS QUIMICOS (secao 6.4)
+// ===========================================================================
+console.log('');
+console.log('--- 3h. Produtos quimicos (6.4) ---');
+
+check(tc.includes('6.4 Inventário de produtos químicos'), '6.4 mantem o titulo do modelo');
+for (const sub of ['26.4.1.1', '26.4.3.1', '26.5.1', '26.5.2']) {
+  check(tc.includes(sub), `6.4 cita o subitem ${sub}`);
+}
+
+// Os cinco produtos do cliente saem; o de outro cliente, nao.
+check(tc.includes('Alcool etilico 70% INPM'), '6.4 lista o produto perigoso completo');
+check(tc.includes('Hipoclorito de sodio 2,5%'), '6.4 lista o saneante');
+check(tc.includes('Detergente neutro'), '6.4 lista o produto nao perigoso');
+check(!tc.includes('Xileno de outra empresa'), 'NAO traz produto de outro cliente');
+
+// CAS, GHS e FDS: os tres que o modelo pede na 6.4.
+check(
+  tc.includes('etanol (CAS 64-17-5), 70% v/v'),
+  '6.4 traz os componentes com numero CAS'
+);
+check(
+  tc.includes('Liquido inflamavel categoria 2') && tc.includes('Perigo - H225, H319'),
+  '6.4 traz classe de perigo e palavra de advertencia do GHS'
+);
+check(
+  tc.includes('Revisão: 03/11/2025') && tc.includes('Acesso: Pasta fisica na copa'),
+  '6.4 traz a revisao da FDS e onde o trabalhador a acessa (26.5.1)'
+);
+check(tc.includes('Treinamento: 22/04/2026'), '6.4 traz a data do treinamento do 26.5.2');
+
+// O SANEANTE: dispensa so da rotulagem.
+check(
+  tc.includes('Saneante Anvisa, dispensada (26.4.2.4)')
+  && tc.includes('Anvisa: 3.0123.4567.001-8'),
+  'o saneante sai com a dispensa e o numero que a fundamenta'
+);
+check(
+  tc.includes('A dispensa é apenas da rotulagem')
+  && tc.includes('subitem 26.4.3 continuam exigíveis'),
+  '6.4 diz no documento que a dispensa do saneante nao alcanca classificacao nem FDS'
+);
+check(
+  !tc.includes('Produto Hipoclorito de sodio 2,5%: falta'),
+  'o saneante completo nao gera pendencia'
+);
+check(
+  tc.includes('Produto Desinfetante concentrado: falta')
+  && tc.includes('que fundamenta a dispensa do subitem 26.4.2.4'),
+  'saneante sem numero Anvisa gera pendencia: dispensa sem prova nao vale'
+);
+
+// NAO PERIGOSO: o 26.4.3.3 e nota, nao pendencia - o juizo e do avaliador.
+check(
+  tc.includes('O subitem 26.4.3.3 exige a ficha também para produto não classificado como perigoso'),
+  'produto nao perigoso sem FDS recebe a nota do 26.4.3.3'
+);
+check(
+  !tc.includes('Produto Detergente neutro: falta ficha com dados de segurança'),
+  'a falta de FDS do nao perigoso nao e afirmada como descumprimento'
+);
+
+// Sem classificacao GHS: pendencia do proprio subitem.
+check(
+  tc.includes('Produto Removedor multiuso: falta classificação quanto aos perigos segundo o GHS (subitem 26.4.1.1)'),
+  'produto sem classificacao GHS sai como pendencia nomeada'
+);
+
+// Uma pendencia por produto, agrupada.
+check(
+  (tc.match(/Produto [^:]{3,60}: falta/g) || []).length === 2,
+  'as pendencias sao agrupadas por produto, uma cada'
+);
+
+// COERENCIA ENTRE A 6.4 E A 7: produto perigoso e nenhum agente quimico.
+check(
+  tc.includes('nenhum agente químico no inventário da seção 7'),
+  '6.4 aponta a contradicao entre produto perigoso e inventario sem agente quimico'
+);
+const comRiscoQuimico = corrido(gerar({
+  client: CLIENTE, organization: ORG, ghes: GHES,
+  risks: [RISCO_CLASSIFICADO, RISCO_QUIMICO],
+  employees: FUNCIONARIOS, sectors: SETORES, units: [UNIDADE],
+  chemicalProducts: [QUIMICO_PERIGOSO_COMPLETO],
+}));
+check(
+  !comRiscoQuimico.includes('nenhum agente químico no inventário da seção 7'),
+  'com agente quimico inventariado, a contradicao desaparece'
+);
+
+// Lista vazia nao e declaracao de inexistencia.
+const semQuimico = corrido(gerar({
+  client: CLIENTE, organization: ORG, ghes: GHES, risks: [RISCO_CLASSIFICADO],
+  employees: FUNCIONARIOS, sectors: SETORES, units: [UNIDADE],
+  chemicalProducts: [],
+}));
+check(
+  semQuimico.includes('Nenhum produto químico cadastrado')
+  && semQuimico.includes('Engenharia SST > Produtos Químicos'),
+  'sem produto e sem declaracao, a 6.4 sai como pendencia apontando a tela'
+);
+const quimicoDeclarado = corrido(gerar({
+  client: CLIENTE, organization: ORG, ghes: GHES, risks: [RISCO_CLASSIFICADO],
+  employees: FUNCIONARIOS, sectors: SETORES, units: [UNIDADE_SEM_QUIMICO],
+  chemicalProducts: [],
+}));
+check(
+  quimicoDeclarado.includes('declarou em 17/09/2026 que nenhum produto químico'),
+  'a declaracao datada sai no documento'
+);
+check(
+  quimicoDeclarado.includes('Álcool 70%, hipoclorito, desinfetante e detergente são')
+  && quimicoDeclarado.includes('dispensa do subitem 26.4.2.4 alcança apenas a rotulagem'),
+  'a declaracao vem com o aviso de que saneante nao e "sem produto quimico"'
+);
+
+// A tela.
+const quimicosTela = fs.readFileSync(
+  path.join(RAIZ, 'components/sst/ChemicalProductsTab.tsx'), 'utf8'
+);
+check(
+  quimicosTela.includes('addChemicalProduct')
+  && quimicosTela.includes('updateChemicalProduct')
+  && quimicosTela.includes('deleteChemicalProduct'),
+  'a tela cria, edita e remove produto'
+);
+check(
+  /ghs_classification: '' as ChemicalProduct\['ghs_classification'\] \| ''/.test(quimicosTela)
+  && /sds_status: '' as ChemicalProduct\['sds_status'\] \| ''/.test(quimicosTela),
+  'classificacao GHS e FDS comecam vazias, sem padrao'
+);
+check(
+  quimicosTela.includes('a classificação e a FDS continuam')
+  || quimicosTela.includes('a classificação e a FDS continuam exigíveis deste produto'),
+  'a tela avisa que a dispensa do saneante nao alcanca classificacao nem FDS'
+);
+check(
+  quimicosTela.includes('no_chemical_products_declared_at: dataDeHoje()')
+  && quimicosTela.includes('no_chemical_products_declared_at: undefined'),
+  'a tela grava a declaracao e a retira ao cadastrar produto'
+);
+check(
+  !/if \(!form\.name\.trim\(\)\) return;/.test(quimicosTela),
+  'salvar sem nome avisa, em vez de dar `return` em silencio'
+);
+check(sync.includes("'chemicalProducts'"), 'a colecao dos produtos e sincronizada');
+check(contexto.includes('parsed.chemicalProducts'), 'o snapshot carrega os produtos');
 
 // ===========================================================================
 // 4. UMA CLASSIFICACAO SO NO SISTEMA
