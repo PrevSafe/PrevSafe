@@ -360,6 +360,89 @@ export interface ClientUnit {
    * do mesmo modo que as frentes de trabalho da secao 1.3 pedem "nenhuma".
    */
   no_contracted_organizations_declared_at?: string;
+
+  /**
+   * Data em que se declarou que NENHUMA maquina ou equipamento do
+   * estabelecimento tem requisito especifico de NR-12, NR-13 ou NR-11
+   * (secao 6.5).
+   *
+   * Vale a mesma regra das contratadas: lista vazia nao e declaracao de
+   * inexistencia. E aqui a declaracao exige cuidado - a autoclave de uma
+   * clinica e vaso de pressao, e o compressor de ar tambem.
+   */
+  no_specific_machines_declared_at?: string;
+}
+
+/**
+ * NR que traz requisito especifico para a maquina ou equipamento.
+ *
+ * Nao e o rol de tudo que se aplica: e o que a secao 6.5 do PGR precisa
+ * distinguir, porque cada uma puxa evidencia diferente.
+ */
+export type NormaDeMaquina =
+  /** Seguranca no trabalho em maquinas e equipamentos. */
+  | 'NR_12'
+  /** Caldeiras, vasos de pressao, tubulacoes e tanques metalicos. */
+  | 'NR_13'
+  /** Transporte, movimentacao, armazenagem e manuseio de materiais. */
+  | 'NR_11';
+
+/**
+ * 20c. Maquina ou equipamento — secao 6.5 do PGR.
+ *
+ * Serve a caracterizacao dos processos e ambientes (alinea "a" do subitem
+ * 1.5.7.3.2 da NR-01): o inventario de riscos aponta o perigo, e esta lista diz
+ * em que maquina ele esta e qual evidencia existe.
+ *
+ * O QUE ESTE CADASTRO NAO FAZ: nao calcula prazo de inspecao da NR-13. Os
+ * prazos do item 13.4.4 variam por categoria da caldeira, pela existencia de
+ * SPIE (Anexo II) e de SIS - de 12 a 48 meses -, e quem os fixa e o
+ * Profissional Habilitado. O campo recebe a data que consta do relatorio dele.
+ */
+export interface MachineEquipment {
+  id: string;
+  organization_id: string;
+  client_id: string;
+  client_unit_id?: string;
+  /** "Prensa excentrica 40 t", "Caldeira flamotubular", "Empilhadeira". */
+  name: string;
+  /** Tag, numero de patrimonio ou numero de serie. */
+  tag?: string;
+  manufacturer?: string;
+  manufacture_year?: string;
+  /** Setor ou local onde esta instalada. */
+  location?: string;
+  /** Vazio = nao classificado, e sai como pendencia. Nao se presume NR-12. */
+  applicable_norms?: NormaDeMaquina[];
+  /** Outro requisito aplicavel, por extenso. */
+  other_requirements?: string;
+  /** Vazio = nao informado. */
+  operational_state?: 'EM_OPERACAO' | 'PARADA' | 'DESATIVADA';
+
+  /** NR-12, subitem 12.1.9: a apreciacao de riscos e quem a fez. */
+  risk_appraisal_date?: string;
+  risk_appraisal_author?: string;
+  /** NR-12: protecoes fixas e moveis, interfaces, parada de emergencia. */
+  safety_systems?: string;
+  /** NR-12, subitem 12.11.2: onde fica o registro das manutencoes. */
+  maintenance_record?: string;
+
+  /** NR-13: categoria ou classe, como o PH a definiu. */
+  nr13_category?: string;
+  nr13_last_inspection_date?: string;
+  /** Data da PROXIMA inspecao como consta do relatorio do PH. Nao calculada. */
+  nr13_next_inspection_date?: string;
+  /** Nome e registro do Profissional Habilitado (PH). */
+  nr13_professional?: string;
+
+  /** NR-11: quem esta habilitado e autorizado a operar. */
+  nr11_operators?: string;
+  /** NR-11: capacidade de carga e sua sinalizacao. */
+  nr11_load_capacity?: string;
+
+  notes?: string;
+  status: 'ACTIVE' | 'INACTIVE';
+  created_at: string;
 }
 
 /**

@@ -8,7 +8,8 @@ import {
   Client, 
   ClientContact, 
   ClientUnit,
-  ContractedOrganization, 
+  ContractedOrganization,
+  MachineEquipment, 
   Lead, 
   Opportunity, 
   Proposal, 
@@ -226,6 +227,11 @@ interface PrevSafeContextType {
   ) => ContractedOrganization;
   updateContractedOrganization: (id: string, updates: Partial<ContractedOrganization>) => void;
   deleteContractedOrganization: (id: string) => void;
+  addMachineEquipment: (
+    data: Omit<MachineEquipment, 'id' | 'organization_id' | 'created_at'>
+  ) => MachineEquipment;
+  updateMachineEquipment: (id: string, updates: Partial<MachineEquipment>) => void;
+  deleteMachineEquipment: (id: string) => void;
   addLead: (lead: Omit<Lead, 'id' | 'organization_id' | 'created_at'>) => Lead;
   updateLead: (id: string, updates: Partial<Lead>) => void;
   deleteLead: (id: string) => void;
@@ -639,6 +645,7 @@ interface PrevSafeContextType {
   // CIPA & CIPATR & CIPAMIN Management (NR-05, NR-31.7, NR-22.36, NR-18, NR-30, NR-32 & Lei 14.457)
   cipaProcesses: CipaManagementProcess[];
   contractedOrganizations: ContractedOrganization[];
+  machinesEquipment: MachineEquipment[];
   addCipaProcess: (data: Omit<CipaManagementProcess, 'id'>) => CipaManagementProcess;
   updateCipaProcess: (id: string, updates: Partial<CipaManagementProcess>) => void;
   deleteCipaProcess: (id: string) => void;
@@ -767,6 +774,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
   const [sstSignatures, setSstSignatures] = useState<SSTDocumentSignature[]>(INITIAL_SST_DOCUMENT_SIGNATURES);
   const [cipaProcesses, setCipaProcesses] = useState<CipaManagementProcess[]>(INITIAL_CIPA_PROCESSES);
   const [contractedOrganizations, setContractedOrganizations] = useState<ContractedOrganization[]>([]);
+  const [machinesEquipment, setMachinesEquipment] = useState<MachineEquipment[]>([]);
   const [occupationalRisksCatalog, setOccupationalRisksCatalog] = useState<OccupationalRiskCatalogItem[]>(INITIAL_OCCUPATIONAL_RISKS_CATALOG);
 
   // Estado da sincronizacao com o Supabase, exposto na barra superior.
@@ -865,6 +873,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     apply(setSstSignatures, list(parsed.sstSignatures, []));
     apply(setCipaProcesses, list(parsed.cipaProcesses, []));
     apply(setContractedOrganizations, list(parsed.contractedOrganizations, []));
+    apply(setMachinesEquipment, list(parsed.machinesEquipment, []));
     apply(setOccupationalRisksCatalog, list(parsed.occupationalRisksCatalog, INITIAL_OCCUPATIONAL_RISKS_CATALOG, 'occupationalRisksCatalog'));
   }, []);
 
@@ -930,7 +939,8 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     sstSignatures,
     cipaProcesses,
     occupationalRisksCatalog,
-    contractedOrganizations
+    contractedOrganizations,
+    machinesEquipment
   }), [
     organization,
     esocialConfig,
@@ -972,7 +982,8 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     sstSignatures,
     cipaProcesses,
     occupationalRisksCatalog,
-    contractedOrganizations
+    contractedOrganizations,
+    machinesEquipment
   ]);
 
   // Cache local: nao e mais a fonte da verdade, e sim a copia que permite abrir
@@ -1717,6 +1728,37 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
   const deleteContractedOrganization = useCallback((id: string) => {
     setContractedOrganizations(prev => prev.filter(o => o.id !== id));
     logAudit('DELETE_CONTRACTED_ORG' as any, 'CLIENT' as any, id, 'Contratada removida', {});
+  }, [logAudit]);
+
+  /**
+   * Maquinas e equipamentos — secao 6.5 do PGR.
+   *
+   * Nenhuma norma aplicavel vem marcada por padrao: presumir NR-12 em tudo
+   * encheria o documento de exigencia que nao se aplica, e presumir nenhuma
+   * esconderia a caldeira. O cadastro cobra a classificacao por nome.
+   */
+  const addMachineEquipment = useCallback((
+    data: Omit<MachineEquipment, 'id' | 'organization_id' | 'created_at'>
+  ): MachineEquipment => {
+    const nova: MachineEquipment = {
+      ...data,
+      id: novoId('maquina'),
+      organization_id: organization.id,
+      created_at: new Date().toISOString()
+    };
+    setMachinesEquipment(prev => [...prev, nova]);
+    logAudit('CREATE_MACHINE' as any, 'CLIENT' as any, nova.id, `Maquina cadastrada: ${nova.name}`, nova);
+    return nova;
+  }, [organization.id, logAudit]);
+
+  const updateMachineEquipment = useCallback((id: string, updates: Partial<MachineEquipment>) => {
+    setMachinesEquipment(prev => prev.map(m => (m.id === id ? { ...m, ...updates } : m)));
+    logAudit('UPDATE_MACHINE' as any, 'CLIENT' as any, id, 'Maquina atualizada', updates);
+  }, [logAudit]);
+
+  const deleteMachineEquipment = useCallback((id: string) => {
+    setMachinesEquipment(prev => prev.filter(m => m.id !== id));
+    logAudit('DELETE_MACHINE' as any, 'CLIENT' as any, id, 'Maquina removida', {});
   }, [logAudit]);
 
   const addLead = useCallback((leadData: Omit<Lead, 'id' | 'organization_id' | 'created_at'>): Lead => {
@@ -7236,6 +7278,10 @@ ${exames.map(ex => `      <exameMedico>
     addContractedOrganization,
     updateContractedOrganization,
     deleteContractedOrganization,
+    machinesEquipment,
+    addMachineEquipment,
+    updateMachineEquipment,
+    deleteMachineEquipment,
     addLead,
     updateLead,
     deleteLead,
@@ -7513,6 +7559,10 @@ ${exames.map(ex => `      <exameMedico>
     addContractedOrganization,
     updateContractedOrganization,
     deleteContractedOrganization,
+    machinesEquipment,
+    addMachineEquipment,
+    updateMachineEquipment,
+    deleteMachineEquipment,
     addLead,
     updateLead,
     deleteLead,

@@ -34,11 +34,12 @@ import { TechnicalDocsGeneratorTab } from './TechnicalDocsGeneratorTab';
 import { IntegrationTrainingTab } from './IntegrationTrainingTab';
 import { SSTSignaturesManagementTab } from './SSTSignaturesManagementTab';
 import { ContractedOrganizationsTab } from './ContractedOrganizationsTab';
-import { PenTool, Handshake } from 'lucide-react';
+import { MachinesEquipmentTab } from './MachinesEquipmentTab';
+import { PenTool, Handshake, Cog } from 'lucide-react';
 
 interface SSTUnifiedEngineeringViewProps {
   onNavigate?: (view: string) => void;
-  initialTab?: 'HIERARCHY' | 'GHE_RISKS' | 'EXAMS_PCMSO' | 'EMPLOYEES' | 'WORK_ORDERS_OS' | 'DOCS_XML' | 'INTEGRATION_TRAINING' | 'SIGNATURES' | 'CONTRACTED';
+  initialTab?: 'HIERARCHY' | 'GHE_RISKS' | 'EXAMS_PCMSO' | 'EMPLOYEES' | 'WORK_ORDERS_OS' | 'DOCS_XML' | 'INTEGRATION_TRAINING' | 'SIGNATURES' | 'CONTRACTED' | 'MACHINES';
 }
 
 export const SSTUnifiedEngineeringView: React.FC<SSTUnifiedEngineeringViewProps> = ({ onNavigate, initialTab }) => {
@@ -57,7 +58,7 @@ export const SSTUnifiedEngineeringView: React.FC<SSTUnifiedEngineeringViewProps>
   } = usePrevSafe();
 
   const [selectedClientId, setSelectedClientId] = useState<string>(clients?.[0]?.id || '');
-  const [activeTab, setActiveTab] = useState<'HIERARCHY' | 'GHE_RISKS' | 'EXAMS_PCMSO' | 'EMPLOYEES' | 'WORK_ORDERS_OS' | 'DOCS_XML' | 'INTEGRATION_TRAINING' | 'SIGNATURES' | 'CONTRACTED'>(initialTab || 'HIERARCHY');
+  const [activeTab, setActiveTab] = useState<'HIERARCHY' | 'GHE_RISKS' | 'EXAMS_PCMSO' | 'EMPLOYEES' | 'WORK_ORDERS_OS' | 'DOCS_XML' | 'INTEGRATION_TRAINING' | 'SIGNATURES' | 'CONTRACTED' | 'MACHINES'>(initialTab || 'HIERARCHY');
 
   // Sync when initialTab prop updates from external navigation
   React.useEffect(() => {
@@ -325,6 +326,20 @@ export const SSTUnifiedEngineeringView: React.FC<SSTUnifiedEngineeringViewProps>
           <Handshake className="w-4 h-4" />
           9. Contratadas (NR-01, 1.5.8)
         </button>
+
+        <button
+          type="button"
+          id="main-tab-machines-btn"
+          onClick={() => setActiveTab('MACHINES')}
+          className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 shrink-0 ${
+            activeTab === 'MACHINES'
+              ? 'bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/20'
+              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
+          }`}
+        >
+          <Cog className="w-4 h-4" />
+          10. Máquinas (NR-12, NR-13, NR-11)
+        </button>
       </div>
 
       {/* Render Active View Tab */}
@@ -355,6 +370,9 @@ export const SSTUnifiedEngineeringView: React.FC<SSTUnifiedEngineeringViewProps>
         )}
         {activeTab === 'CONTRACTED' && (
           <ContractedOrganizationsTab selectedClientId={selectedClientId} />
+        )}
+        {activeTab === 'MACHINES' && (
+          <MachinesEquipmentTab selectedClientId={selectedClientId} />
         )}
       </div>
     </div>

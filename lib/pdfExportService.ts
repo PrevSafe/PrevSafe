@@ -2821,7 +2821,8 @@ export function exportPGRDocumentPdf({
   employees = [],
   sectors = [],
   units = [],
-  contractedOrganizations = []
+  contractedOrganizations = [],
+  machinesEquipment = []
 }: {
   client: Client;
   organization: Organization;
@@ -2831,6 +2832,7 @@ export function exportPGRDocumentPdf({
   sectors: any[];
   units: any[];
   contractedOrganizations?: any[];
+  machinesEquipment?: any[];
 }) {
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
   const pageWidth = doc.internal.pageSize.getWidth();
@@ -3534,9 +3536,149 @@ export function exportPGRDocumentPdf({
 
   secao('6.5 Máquinas e equipamentos com requisitos específicos');
   paragrafo(
-    pendente('6.5', 'Relação de máquinas e equipamentos com requisitos de NR-12, NR-13 ou NR-11 não cadastrada.'),
-    7
+    'Esta relação compõe a caracterização dos processos e ambientes de trabalho (alínea "a" ' +
+    'do subitem 1.5.7.3.2 da NR-01): o inventário da seção 7 aponta o perigo, e esta seção diz ' +
+    'em que máquina ele está e qual evidência existe. A aplicação da NR-12 considera as ' +
+    'características da máquina, do processo, a apreciação de riscos e o estado da técnica ' +
+    '(subitem 12.1.9), e as manutenções são registradas em livro, ficha ou sistema, com ' +
+    'indicação conclusiva quanto às condições de segurança (subitem 12.11.2).'
   );
+
+  const maquinasDoCliente = (machinesEquipment || []).filter(
+    (m: any) => m?.client_id === client.id && m?.status !== 'INACTIVE'
+  );
+
+  if (maquinasDoCliente.length === 0) {
+    const declarado = estabelecimento?.no_specific_machines_declared_at?.trim();
+    if (declarado) {
+      paragrafo(
+        `A organização declarou em ${formatDate(declarado)} que nenhuma máquina ou ` +
+        'equipamento deste estabelecimento tem requisito específico de NR-12, NR-13 ou NR-11. ' +
+        'Vaso de pressão, caldeira e compressor de ar entram na NR-13 mesmo em atividade ' +
+        'administrativa ou de saúde, e a aquisição de qualquer um deles obriga a rever esta ' +
+        'seção e o inventário.',
+        7
+      );
+    } else {
+      paragrafo(
+        pendente('6.5', 'Nenhuma máquina ou equipamento cadastrado e nenhuma declaração de que não há requisito específico de NR-12, NR-13 ou NR-11 (Engenharia SST > Máquinas). Lista vazia não é declaração de inexistência.'),
+        7
+      );
+    }
+  } else {
+    const NORMAS: Record<string, string> = {
+      NR_12: 'NR-12',
+      NR_13: 'NR-13',
+      NR_11: 'NR-11'
+    };
+    const ESTADOS: Record<string, string> = {
+      EM_OPERACAO: 'Em operação',
+      PARADA: 'Parada',
+      DESATIVADA: 'Desativada'
+    };
+    const FALTA = 'PENDENTE';
+
+    const linhas = maquinasDoCliente.map((m: any) => {
+      const faltando: string[] = [];
+      const normas: string[] = Array.isArray(m?.applicable_norms) ? m.applicable_norms : [];
+      if (normas.length === 0 && !m?.other_requirements?.trim()) {
+        faltando.push('classificação das normas aplicáveis');
+      }
+
+      const rotuloNormas = [
+        ...normas.map((n: string) => NORMAS[n]).filter(Boolean),
+        m?.other_requirements?.trim()
+      ].filter(Boolean).join('; ') || FALTA;
+
+      // NR-12: apreciacao de riscos (12.1.9), sistemas de seguranca e o
+      // registro das manutencoes (12.11.2).
+      let nr12: string;
+      if (normas.includes('NR_12')) {
+        const apreciacao = m?.risk_appraisal_date?.trim();
+        if (!apreciacao) faltando.push('apreciação de riscos da máquina (subitem 12.1.9)');
+        if (!m?.safety_systems?.trim()) faltando.push('sistemas de segurança e proteções existentes');
+        if (!m?.maintenance_record?.trim()) faltando.push('onde fica o registro das manutenções (subitem 12.11.2)');
+        nr12 = [
+          `Apreciação de riscos: ${apreciacao ? formatDate(apreciacao) : FALTA}`
+          + (m?.risk_appraisal_author?.trim() ? `, ${m.risk_appraisal_author.trim()}` : ''),
+          `Segurança: ${m?.safety_systems?.trim() || FALTA}`,
+          `Registro de manutenções: ${m?.maintenance_record?.trim() || FALTA}`
+        ].join('\n');
+      } else {
+        nr12 = '—';
+      }
+
+      // NR-13 e NR-11.
+      const outras: string[] = [];
+      if (normas.includes('NR_13')) {
+        const categoria = m?.nr13_category?.trim();
+        const ultima = m?.nr13_last_inspection_date?.trim();
+        const proxima = m?.nr13_next_inspection_date?.trim();
+        const ph = m?.nr13_professional?.trim();
+        if (!categoria) faltando.push('categoria ou classe definida pelo Profissional Habilitado');
+        if (!proxima) faltando.push('data da próxima inspeção de segurança, conforme o relatório do PH');
+        if (!ph) faltando.push('nome e registro do Profissional Habilitado da NR-13');
+        if (proxima && proxima < emissao) {
+          faltando.push(`inspeção de segurança vencida em ${formatDate(proxima)}`);
+        }
+        outras.push(
+          `NR-13 — ${categoria || FALTA}. `
+          + `Última inspeção: ${ultima ? formatDate(ultima) : FALTA}. `
+          + `Próxima: ${proxima ? formatDate(proxima) : FALTA}. `
+          + `PH: ${ph || FALTA}`
+        );
+      }
+      if (normas.includes('NR_11')) {
+        if (!m?.nr11_operators?.trim()) faltando.push('operadores habilitados e autorizados (NR-11)');
+        if (!m?.nr11_load_capacity?.trim()) faltando.push('capacidade de carga e sua sinalização (NR-11)');
+        outras.push(
+          `NR-11 — Carga: ${m?.nr11_load_capacity?.trim() || FALTA}. `
+          + `Operadores: ${m?.nr11_operators?.trim() || FALTA}`
+        );
+      }
+
+      if (faltando.length > 0) {
+        pendente('6.5', `Máquina ${m?.name || 'sem nome'}${m?.tag?.trim() ? ` (${m.tag.trim()})` : ''}: falta ${faltando.join('; ')}.`);
+      }
+
+      return [
+        [
+          m?.name || 'Sem nome',
+          m?.tag?.trim(),
+          [m?.location?.trim(), ESTADOS[m?.operational_state]].filter(Boolean).join(' — ')
+        ].filter(Boolean).join('\n'),
+        [m?.manufacturer?.trim(), m?.manufacture_year?.trim()].filter(Boolean).join('\n') || '—',
+        rotuloNormas,
+        nr12,
+        outras.join('\n') || '—'
+      ];
+    });
+
+    tabela({
+      head: [['Máquina / equipamento', 'Fabricante e ano', 'Normas', 'NR-12', 'NR-13 e NR-11']],
+      body: linhas,
+      columnStyles: {
+        0: { cellWidth: util * 0.19, fontStyle: 'bold' },
+        1: { cellWidth: util * 0.12 },
+        2: { cellWidth: util * 0.10 },
+        3: { cellWidth: util * 0.29 }
+      },
+      styles: { fontSize: 6.0, cellPadding: 1.4, overflow: 'linebreak' }
+    });
+
+    // Os prazos da NR-13 nao sao calculados aqui de proposito: o item 13.4.4
+    // e seguintes os fazem variar por categoria, por SPIE (Anexo II) e por
+    // SIS, de 12 a 48 meses, e quem os fixa e o Profissional Habilitado.
+    if (maquinasDoCliente.some((m: any) => (m?.applicable_norms || []).includes('NR_13'))) {
+      paragrafo(
+        'As datas de inspeção acima são as que constam dos relatórios do Profissional ' +
+        'Habilitado. Os prazos máximos da NR-13 variam com a categoria do equipamento, com a ' +
+        'existência de Serviço Próprio de Inspeção de Equipamentos e com sistema instrumentado ' +
+        'de segurança, e este PGR não os substitui nem os recalcula.',
+        6.8
+      );
+    }
+  }
 
   // ==================================================================
   // 7. INVENTARIO DE RISCOS

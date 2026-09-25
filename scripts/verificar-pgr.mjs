@@ -349,6 +349,55 @@ const UNIDADE_SEM_CONTRATADA = {
   ...UNIDADE, no_contracted_organizations_declared_at: '2026-09-15'
 };
 
+/**
+ * Maquinas da secao 6.5, uma por norma.
+ *
+ * A autoclave e o caso que passa desapercebido numa clinica: e vaso de pressao
+ * da NR-13. A do NR-13 esta com a inspecao VENCIDA de proposito, para conferir
+ * que o PGR aponta a data - que vem do relatorio do PH, nao de calculo nosso.
+ */
+const MAQUINA_NR12 = {
+  id: 'mq1', client_id: 'c1', status: 'ACTIVE',
+  name: 'Prensa excentrica 40 t', tag: 'MAQ-014',
+  manufacturer: 'Metalurgica Sul', manufacture_year: '2019',
+  location: 'Galpao de producao, linha 2', operational_state: 'EM_OPERACAO',
+  applicable_norms: ['NR_12'],
+  risk_appraisal_date: '2026-02-05', risk_appraisal_author: 'Eng. Carla Nunes, CREA-BA 98765',
+  safety_systems: 'Protecao movel com chave de seguranca e interface, comando bimanual, botao de emergencia',
+  maintenance_record: 'Ficha por equipamento arquivada na manutencao',
+};
+const MAQUINA_NR13_VENCIDA = {
+  id: 'mq2', client_id: 'c1', status: 'ACTIVE',
+  name: 'Autoclave horizontal 100 L', tag: 'AUT-01',
+  location: 'Sala de esterilizacao', operational_state: 'EM_OPERACAO',
+  applicable_norms: ['NR_13'],
+  nr13_category: 'Vaso de pressao classe IV',
+  nr13_last_inspection_date: '2024-05-20',
+  nr13_next_inspection_date: '2025-05-20',
+  nr13_professional: 'Eng. Mario Lopes, CREA-BA 11223',
+};
+const MAQUINA_NR11 = {
+  id: 'mq3', client_id: 'c1', status: 'ACTIVE',
+  name: 'Empilhadeira a gas', location: 'Expedicao',
+  applicable_norms: ['NR_11'],
+  nr11_load_capacity: '2.500 kg, placa no posto do operador',
+  nr11_operators: 'Dois operadores autorizados por documento interno',
+};
+/** Sem norma marcada e sem outro requisito: nao classificada. */
+const MAQUINA_SEM_NORMA = {
+  id: 'mq4', client_id: 'c1', status: 'ACTIVE',
+  name: 'Compressor de ar de pistao', location: 'Casa de maquinas',
+};
+/** Maquina de OUTRO cliente: nao pode aparecer neste PGR. */
+const MAQUINA_DE_OUTRO_CLIENTE = {
+  id: 'mq9', client_id: 'cli-9', status: 'ACTIVE',
+  name: 'Torno mecanico de outra empresa', applicable_norms: ['NR_12'],
+};
+/** Estabelecimento que declarou nao ter maquina com requisito especifico. */
+const UNIDADE_SEM_MAQUINA = {
+  ...UNIDADE, no_specific_machines_declared_at: '2026-09-16'
+};
+
 function gerar(args) {
   ultimoPdf = null;
   exportPGRDocumentPdf(args);
@@ -363,6 +412,10 @@ const pdfCheio = gerar({
   contractedOrganizations: [
     CONTRATADA_COMPLETA, CONTRATADA_TITULAR, CONTRATADA_SEM_REGIME,
     CONTRATADA_DE_OUTRO_CLIENTE
+  ],
+  machinesEquipment: [
+    MAQUINA_NR12, MAQUINA_NR13_VENCIDA, MAQUINA_NR11, MAQUINA_SEM_NORMA,
+    MAQUINA_DE_OUTRO_CLIENTE
   ],
 });
 const pdfVazio = gerar({
@@ -888,7 +941,8 @@ const semContratada = corrido(gerar({
   contractedOrganizations: [],
 }));
 check(
-  semContratada.includes('Lista vazia não é declaração de inexistência'),
+  semContratada.includes('Nenhuma organização contratada cadastrada')
+  && semContratada.includes('Lista vazia não é declaração de inexistência'),
   'sem contratada e sem declaracao, a 9.5 sai como pendencia'
 );
 check(
@@ -907,7 +961,7 @@ check(
   'a declaracao datada sai no documento com a data'
 );
 check(
-  !declarado.includes('Lista vazia não é declaração de inexistência'),
+  !declarado.includes('Nenhuma organização contratada cadastrada'),
   'declarada a inexistencia, a 9.5 deixa de ser pendencia'
 );
 check(
@@ -949,6 +1003,138 @@ const sync = fs.readFileSync(path.join(RAIZ, 'lib/supabaseSync.ts'), 'utf8');
 check(sync.includes("'contractedOrganizations'"), 'a colecao das contratadas e sincronizada');
 const contexto = fs.readFileSync(path.join(RAIZ, 'context/PrevSafeContext.tsx'), 'utf8');
 check(contexto.includes('parsed.contractedOrganizations'), 'o snapshot carrega as contratadas');
+
+// ===========================================================================
+// 3g. MAQUINAS E EQUIPAMENTOS (secao 6.5)
+// ===========================================================================
+console.log('');
+console.log('--- 3g. Maquinas e equipamentos (6.5) ---');
+
+check(
+  tc.includes('6.5 Máquinas e equipamentos com requisitos específicos'),
+  '6.5 mantem o titulo do modelo'
+);
+check(
+  tc.includes('alínea "a" do subitem 1.5.7.3.2'),
+  '6.5 diz a que exigencia da NR-01 a relacao serve'
+);
+check(tc.includes('subitem 12.1.9'), '6.5 cita o subitem da apreciacao de riscos');
+check(tc.includes('subitem 12.11.2'), '6.5 cita o subitem do registro das manutencoes');
+
+// As quatro maquinas do cliente saem; a de outro cliente, nao.
+check(tc.includes('Prensa excentrica 40 t'), '6.5 lista a maquina da NR-12');
+check(tc.includes('Autoclave horizontal 100 L'), '6.5 lista o equipamento da NR-13');
+check(tc.includes('Empilhadeira a gas'), '6.5 lista o equipamento da NR-11');
+check(
+  !tc.includes('Torno mecanico de outra empresa'),
+  'NAO traz maquina de outro cliente'
+);
+
+// Cada norma puxa a evidencia que lhe cabe.
+check(
+  tc.includes('Apreciação de riscos: 05/02/2026, Eng. Carla Nunes'),
+  'NR-12: a apreciacao de riscos sai com data e autor'
+);
+check(
+  tc.includes('Registro de manutenções: Ficha por equipamento'),
+  'NR-12: sai onde fica o registro das manutencoes'
+);
+check(
+  tc.includes('NR-13 - Vaso de pressao classe IV') && tc.includes('Próxima: 20/05/2025'),
+  'NR-13: categoria, inspecoes e PH saem na mesma celula'
+);
+check(
+  tc.includes('NR-11 - Carga: 2.500 kg'),
+  'NR-11: capacidade de carga e operadores saem'
+);
+
+// Inspecao vencida: o PGR aponta, porque a data veio do relatorio do PH.
+check(
+  tc.includes('inspeção de segurança vencida em 20/05/2025'),
+  '6.5 aponta a inspecao da NR-13 vencida, com a data'
+);
+
+// O que o documento NAO pode fazer: calcular o prazo da NR-13.
+check(
+  tc.includes('este PGR não os substitui nem os recalcula'),
+  '6.5 declara que nao recalcula os prazos da NR-13'
+);
+check(
+  !/pr[óo]ximo prazo|pr[óo]xima inspe[çc][ãa]o calculada|vence em \d+ meses/i.test(tc),
+  '6.5 nao calcula prazo de inspecao a partir da categoria'
+);
+
+// Maquina sem classificacao e pendencia nomeada.
+check(
+  tc.includes('Máquina Compressor de ar de pistao: falta classificação das normas aplicáveis'),
+  'maquina sem norma marcada sai como pendencia nomeada'
+);
+
+// Uma pendencia por maquina, agrupada: so a sem norma e a da NR-13 vencida.
+check(
+  (tc.match(/Máquina [^:]{3,60}: falta/g) || []).length === 2,
+  'as pendencias sao agrupadas por maquina, uma cada'
+);
+check(
+  !tc.includes('Máquina Prensa excentrica 40 t (MAQ-014): falta'),
+  'a maquina completa da NR-12 nao gera pendencia'
+);
+
+// Lista vazia nao e declaracao de inexistencia.
+const semMaquina = corrido(gerar({
+  client: CLIENTE, organization: ORG, ghes: GHES, risks: [RISCO_CLASSIFICADO],
+  employees: FUNCIONARIOS, sectors: SETORES, units: [UNIDADE],
+  machinesEquipment: [],
+}));
+check(
+  semMaquina.includes('Nenhuma máquina ou equipamento cadastrado')
+  && semMaquina.includes('Engenharia SST > Máquinas'),
+  'sem maquina e sem declaracao, a 6.5 sai como pendencia apontando a tela'
+);
+
+const maquinaDeclarada = corrido(gerar({
+  client: CLIENTE, organization: ORG, ghes: GHES, risks: [RISCO_CLASSIFICADO],
+  employees: FUNCIONARIOS, sectors: SETORES, units: [UNIDADE_SEM_MAQUINA],
+  machinesEquipment: [],
+}));
+check(
+  maquinaDeclarada.includes('declarou em 16/09/2026 que nenhuma máquina'),
+  'a declaracao datada sai no documento'
+);
+check(
+  maquinaDeclarada.includes('Vaso de pressão, caldeira e compressor de ar entram na NR-13'),
+  'a declaracao vem com o aviso dos equipamentos que passam desapercebidos'
+);
+
+// A tela.
+const maquinasTela = fs.readFileSync(
+  path.join(RAIZ, 'components/sst/MachinesEquipmentTab.tsx'), 'utf8'
+);
+check(
+  maquinasTela.includes('addMachineEquipment')
+  && maquinasTela.includes('updateMachineEquipment')
+  && maquinasTela.includes('deleteMachineEquipment'),
+  'a tela cria, edita e remove maquina'
+);
+check(
+  /applicable_norms: \[\] as NormaDeMaquina\[\]/.test(maquinasTela),
+  'nenhuma norma vem marcada por padrao'
+);
+check(
+  maquinasTela.includes('no_specific_machines_declared_at: dataDeHoje()')
+  && maquinasTela.includes('no_specific_machines_declared_at: undefined'),
+  'a tela grava a declaracao e a retira ao cadastrar maquina'
+);
+check(
+  !/nr13_next_inspection_date: .*setUTCMonth|somarMeses|addMonths/.test(maquinasTela),
+  'a tela nao calcula a proxima inspecao da NR-13'
+);
+check(
+  !/if \(!form\.name\.trim\(\)\) return;/.test(maquinasTela),
+  'salvar sem nome avisa, em vez de dar `return` em silencio'
+);
+check(sync.includes("'machinesEquipment'"), 'a colecao das maquinas e sincronizada');
+check(contexto.includes('parsed.machinesEquipment'), 'o snapshot carrega as maquinas');
 
 // ===========================================================================
 // 4. UMA CLASSIFICACAO SO NO SISTEMA
