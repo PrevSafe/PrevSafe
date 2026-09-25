@@ -29,6 +29,21 @@ import { exameSugeridosParaAso } from '@/lib/esocialDados';
 import { VERSAO_DO_DOCUMENTO } from '@/lib/versaoDoDocumento';
 import { GATILHOS_DE_TREINAMENTO_EVENTUAL, BASE_POR_EXTENSO } from '@/lib/catalogoDeTreinamentos';
 import {
+  NR17_ASPECTOS,
+  NR17_FATORES_DA_ORGANIZACAO,
+  NR17_EXIGENCIAS_A_EVITAR,
+  NR17_ALTERNATIVAS_DE_PREVENCAO,
+  NR17_MINIMO_DE_ALTERNATIVAS,
+  NR17_REQUISITOS_DAS_PAUSAS,
+  NR17_GATILHOS_DA_AET,
+  NR17_ETAPAS_DA_AET,
+  PARAMETROS_DE_CONFORTO,
+  CONCLUSAO_POR_EXTENSO,
+  ABORDAGEM_POR_EXTENSO,
+  dispensadaDeElaborarAET,
+  NR17_FUNDAMENTO_DA_DISPENSA
+} from '@/lib/nr17';
+import {
   classificarRisco,
   matrizDoModelo,
   FAIXAS_DO_MODELO,
@@ -2826,7 +2841,8 @@ export function exportPGRDocumentPdf({
   machinesEquipment = [],
   chemicalProducts = [],
   trainingRequirements = [],
-  jobs = []
+  jobs = [],
+  ergonomicAssessments = []
 }: {
   client: Client;
   organization: Organization;
@@ -2840,6 +2856,7 @@ export function exportPGRDocumentPdf({
   chemicalProducts?: any[];
   trainingRequirements?: any[];
   jobs?: any[];
+  ergonomicAssessments?: any[];
 }) {
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
   const pageWidth = doc.internal.pageSize.getWidth();
@@ -2876,6 +2893,17 @@ export function exportPGRDocumentPdf({
     (u: any) => u?.client_id === client.id && u?.status !== 'INACTIVE'
   );
   const estabelecimento = unidadesDoCliente[0] || null;
+
+  // AEP da NR-17 (item 17.3.1): alimenta as secoes 5.3 e 7.4.
+  const aepsDoCliente = (ergonomicAssessments || []).filter(
+    (a: any) => a?.client_id === client.id && a?.status !== 'INACTIVE'
+  );
+  // Item 17.3.4: ME e EPP de graus 1 e 2, e o MEI, nao elaboram a AET. null
+  // quando o porte nao foi informado - nao se presume a dispensa.
+  const dispensaDeAET = dispensadaDeElaborarAET(
+    client?.porte,
+    (estabelecimento?.risk_degree ?? client?.risk_degree) as any
+  );
 
   // Dimensionamento do SESMT (Anexo II da NR-04) e da CIPA (Quadro I da
   // NR-05) a partir do grau de risco e do efetivo do estabelecimento.
@@ -3334,16 +3362,93 @@ export function exportPGRDocumentPdf({
     styles: { fontSize: 6.6, cellPadding: 1.6, overflow: 'linebreak' }
   });
 
-  secao('5.3 Fatores de risco psicossociais relacionados ao trabalho');
+  secao('5.3 Avaliação ergonômica e fatores psicossociais (item 17.3 da NR-17)');
   paragrafo(
     'A avaliação recai sobre as condições e a organização do trabalho, e não sobre o estado de ' +
     'saúde mental dos trabalhadores. Não se usam sintomas individuais, testes de personalidade ou ' +
-    'sinais biológicos como critério de risco. Os resultados integram a AEP (item 17.3.1 da ' +
-    'NR-17) e o inventário.'
+    'sinais biológicos como critério de risco.'
   );
   paragrafo(
-    pendente('5.3', 'Estratégia de avaliação dos fatores psicossociais não definida para este cliente (instrumento, anonimato, comunicação prévia e participação).'),
+    'A avaliação ergonômica preliminar — AEP — recai sobre as situações de trabalho que, em ' +
+    'decorrência da natureza e do conteúdo das atividades, demandam adaptação às características ' +
+    'psicofisiológicas dos trabalhadores (item 17.3.1). Ela pode ser realizada por abordagens ' +
+    'qualitativas, semiquantitativas, quantitativas ou combinação dessas, conforme o risco e os ' +
+    'requisitos legais (subitem 17.3.1.1), e pode ser contemplada nas etapas de identificação de ' +
+    'perigos e avaliação de riscos do item 1.5.4 da NR-01 (subitem 17.3.1.2). A NR-17 não ' +
+    'prescreve método, técnica ou ferramenta específicos; o registro da AEP é obrigatório ' +
+    '(subitem 17.3.1.2.1), seus resultados integram o inventário (item 17.3.5) e as medidas ' +
+    'decorrentes entram no plano de ação (item 17.3.6). Os empregados são ouvidos no processo ' +
+    '(item 17.3.8).'
+  );
+
+  secao('5.3.1 O que a avaliação percorre');
+  tabela({
+    head: [['Aspecto', 'Item da NR-17', 'Abrange']],
+    body: NR17_ASPECTOS.map((a) => [a.rotulo, a.fonte, a.ajuda]),
+    columnStyles: {
+      0: { cellWidth: util * 0.22, fontStyle: 'bold' },
+      1: { cellWidth: util * 0.13, halign: 'center' }
+    },
+    styles: { fontSize: 6.4, cellPadding: 1.4, overflow: 'linebreak' }
+  });
+
+  secao('5.3.2 Organização do trabalho e exigências a evitar');
+  paragrafo('A organização do trabalho leva em consideração (item 17.4.1):', 7);
+  lista(NR17_FATORES_DA_ORGANIZACAO.map((f) => `${f.alinea}) ${f.texto}`));
+  paragrafo(
+    'As medidas de prevenção, a partir da AEP ou da AET, evitam que o trabalhador seja obrigado ' +
+    'a efetuar de forma contínua e repetitiva (item 17.4.3):',
     7
+  );
+  lista(NR17_EXIGENCIAS_A_EVITAR.map((f) => `${f.alinea}) ${f.texto}`));
+
+  secao('5.3.3 Medidas de prevenção: duas ou mais');
+  paragrafo(
+    `As medidas de prevenção devem incluir ${NR17_MINIMO_DE_ALTERNATIVAS} ou mais das ` +
+    'alternativas do subitem 17.4.3.1. Quando não for possível adotar as das alíneas "c" e "d", ' +
+    'as das alíneas "a" e "b" — pausas e alternância — tornam-se obrigatórias (subitem ' +
+    '17.4.3.1.1).'
+  );
+  lista(NR17_ALTERNATIVAS_DE_PREVENCAO.map((f) => `${f.alinea}) ${f.texto}`));
+  lista(NR17_REQUISITOS_DAS_PAUSAS);
+
+  secao('5.3.4 Parâmetros de conforto (item 17.8)');
+  tabela({
+    head: [['Item', 'Parâmetro', 'Fonte']],
+    body: PARAMETROS_DE_CONFORTO.map((c) => [c.item, c.parametro, c.fonte]),
+    columnStyles: {
+      0: { cellWidth: util * 0.17, fontStyle: 'bold' },
+      2: { cellWidth: util * 0.17 }
+    },
+    styles: { fontSize: 6.4, cellPadding: 1.4, overflow: 'linebreak' }
+  });
+
+  secao('5.3.5 Quando a AET é devida');
+  paragrafo('A Análise Ergonômica do Trabalho é realizada quando (item 17.3.2):', 7);
+  lista(NR17_GATILHOS_DA_AET.map((g) => `${g.alinea}) ${g.texto}`));
+  if (dispensaDeAET === true) {
+    paragrafo(
+      `${NR17_FUNDAMENTO_DA_DISPENSA} Esta organização se enquadra na dispensa, de modo que ` +
+      'a AET é devida apenas nas situações das alíneas "c" e "d" acima.',
+      6.8
+    );
+  } else if (dispensaDeAET === false) {
+    paragrafo(
+      'Esta organização não se enquadra na dispensa do item 17.3.4, de modo que a AET é ' +
+      'devida em qualquer das quatro situações acima.',
+      6.8
+    );
+  } else {
+    paragrafo(
+      pendente('5.3', 'Porte da organização não informado: sem ele não se sabe se incide a dispensa de elaborar a AET do item 17.3.4 da NR-17, que alcança ME e EPP de graus de risco 1 e 2 e o MEI (CRM > Clientes).'),
+      6.8
+    );
+  }
+  paragrafo('Quando realizada, a AET abrange as etapas do item 17.3.3:', 7);
+  lista(NR17_ETAPAS_DA_AET.map((e) => `${e.alinea}) ${e.texto}`));
+  paragrafo(
+    'O relatório da AET fica à disposição na organização pelo prazo de 20 anos (item 17.3.7).',
+    6.8
   );
 
   secao('5.4 Gradação da severidade');
@@ -3955,14 +4060,178 @@ export function exportPGRDocumentPdf({
     styles: { fontSize: 6.4, cellPadding: 1.5, overflow: 'linebreak' }
   });
 
-  secao('7.4 Resultados da avaliação ergonômica');
+  secao('7.4 Resultados da avaliação ergonômica preliminar');
   paragrafo(
     'Os resultados da AEP, e da AET quando realizada, integram este inventário (item 17.3.5 da ' +
-    'NR-17). O registro da AEP é obrigatório (item 17.3.1.2.1) e o relatório de AET é guardado ' +
-    'por 20 anos (item 17.3.7).\n\n' +
-    pendente('7.4', 'AEP da NR-17 não registrada no sistema.'),
-    7
+    'NR-17). O registro da AEP é obrigatório (subitem 17.3.1.2.1) e o relatório de AET é ' +
+    'guardado por 20 anos (item 17.3.7). A metodologia está na seção 5.3.'
   );
+
+  if (aepsDoCliente.length === 0) {
+    // Nao cabe declaracao de inexistencia: o item 17.3.1 obriga a AEP das
+    // situacoes que demandam adaptacao, e a NR-17 se aplica a TODAS as
+    // situacoes de trabalho (item 17.2.1).
+    paragrafo(
+      pendente('7.4', 'Nenhuma avaliação ergonômica preliminar registrada (Engenharia SST > Avaliação Ergonômica). O subitem 17.3.1.2.1 exige o registro da AEP, e o item 17.2.1 aplica a NR-17 a todas as situações de trabalho.'),
+      7
+    );
+  } else {
+    const nomeDoCargoAep = (id: string) =>
+      (jobs || []).find((j: any) => j?.id === id)?.name || '';
+    const nomeDoGheAep = (id: string) => {
+      const g = gheDoCliente.find((x: any) => x?.id === id);
+      return g?.code || g?.name || '';
+    };
+
+    const linhas = aepsDoCliente.map((a: any) => {
+      const faltando: string[] = [];
+
+      const alcance = [
+        ...(Array.isArray(a?.ghe_ids) ? a.ghe_ids.map(nomeDoGheAep) : []),
+        ...(Array.isArray(a?.job_ids) ? a.job_ids.map(nomeDoCargoAep) : [])
+      ].filter(Boolean).join('; ');
+      if (!alcance) faltando.push('GHE ou cargo a que a situação corresponde');
+
+      if (!a?.approach) {
+        faltando.push('abordagem empregada: qualitativa, semiquantitativa, quantitativa ou combinação (subitem 17.3.1.1)');
+      }
+      if (!a?.methods?.trim()) {
+        faltando.push('métodos, técnicas e ferramentas empregados');
+      }
+      if (!a?.assessment_date?.trim()) faltando.push('data da avaliação');
+      if (!a?.assessor?.trim()) faltando.push('quem realizou a avaliação');
+
+      // Aspecto ausente do mapa e aspecto nao avaliado.
+      const aspectos = a?.aspects || {};
+      const naoAvaliados = NR17_ASPECTOS.filter((asp) => !aspectos?.[asp.chave]?.conclusao);
+      if (naoAvaliados.length > 0) {
+        faltando.push(`conclusão dos aspectos: ${naoAvaliados.map((x) => `${x.rotulo} (${x.fonte})`).join(', ')}`);
+      }
+      const inadequadosSemNota = NR17_ASPECTOS.filter(
+        (asp) => aspectos?.[asp.chave]?.conclusao === 'INADEQUADO'
+          && !aspectos?.[asp.chave]?.observacao?.trim()
+      );
+      if (inadequadosSemNota.length > 0) {
+        faltando.push(`o que se observou nos aspectos julgados inadequados: ${inadequadosSemNota.map((x) => x.rotulo).join(', ')}`);
+      }
+
+      const inadequados = NR17_ASPECTOS.filter(
+        (asp) => aspectos?.[asp.chave]?.conclusao === 'INADEQUADO'
+      );
+
+      // Subitem 17.4.3.1: duas ou mais. E 17.4.3.1.1: sem "c" e "d", as
+      // alineas "a" e "b" sao obrigatorias.
+      const medidas: string[] = Array.isArray(a?.prevention_measures) ? a.prevention_measures : [];
+      if (inadequados.length > 0) {
+        if (medidas.length < NR17_MINIMO_DE_ALTERNATIVAS) {
+          faltando.push(`ao menos ${NR17_MINIMO_DE_ALTERNATIVAS} alternativas de prevenção do subitem 17.4.3.1, e há ${medidas.length} registrada(s)`);
+        }
+        const temCouD = medidas.includes('c') || medidas.includes('d');
+        if (!temCouD && !(medidas.includes('a') && medidas.includes('b'))) {
+          faltando.push('pausas e alternância de atividades, que o subitem 17.4.3.1.1 torna obrigatórias quando não se adotam as alíneas "c" e "d"');
+        }
+      }
+
+      if (!a?.workers_heard) {
+        faltando.push('registro de que os empregados foram ouvidos no processo (item 17.3.8)');
+      } else if (a.workers_heard === 'NAO') {
+        faltando.push('a oitiva dos empregados, que o item 17.3.8 exige na AEP e na AET');
+      }
+
+      // Gatilho da AET observado exige o relatorio - ou, na dispensa do
+      // 17.3.4, so os das alineas "c" e "d" o exigem (subitem 17.3.4.1).
+      const gatilhos: string[] = Array.isArray(a?.aet_triggers) ? a.aet_triggers : [];
+      const gatilhosQueObrigam = dispensaDeAET === true
+        ? gatilhos.filter((g) => g === 'c' || g === 'd')
+        : gatilhos;
+      if (gatilhosQueObrigam.length > 0 && !a?.aet_report_date?.trim()) {
+        faltando.push(`AET, exigida pelas alíneas "${gatilhosQueObrigam.join('", "')}" do item 17.3.2 observadas nesta situação`);
+      }
+
+      if (faltando.length > 0) {
+        pendente('7.4', `AEP ${a?.situation_name || 'sem nome'}: falta ${faltando.join('; ')}.`);
+      }
+
+      const conclusoes = NR17_ASPECTOS.map((asp) => {
+        const c = aspectos?.[asp.chave]?.conclusao;
+        const obs = aspectos?.[asp.chave]?.observacao?.trim();
+        return `${asp.rotulo}: ${c ? CONCLUSAO_POR_EXTENSO[c as keyof typeof CONCLUSAO_POR_EXTENSO] : 'PENDENTE'}`
+          + (obs ? ` — ${obs}` : '');
+      }).join('\n');
+
+      const prevencao = [
+        medidas.length > 0
+          ? medidas.map((m) => {
+            const alt = NR17_ALTERNATIVAS_DE_PREVENCAO.find((x) => x.alinea === m);
+            return `${m}) ${alt ? alt.texto : ''}`;
+          }).join('\n')
+          : (inadequados.length > 0 ? 'PENDENTE' : 'Sem aspecto inadequado a tratar'),
+        a?.prevention_description?.trim()
+      ].filter(Boolean).join('\n');
+
+      const aet = gatilhos.length === 0
+        ? 'Nenhum gatilho do item 17.3.2 observado'
+        : [
+          `Gatilhos: ${gatilhos.map((g) => `"${g}"`).join(', ')}`,
+          a?.aet_report_date?.trim()
+            ? `AET de ${formatDate(a.aet_report_date)}`
+              + (a?.aet_report_reference?.trim() ? ` (${a.aet_report_reference.trim()})` : '')
+            : (gatilhosQueObrigam.length > 0 ? 'AET PENDENTE' : 'AET não exigível pela dispensa do item 17.3.4')
+        ].join('\n');
+
+      return [
+        [
+          a?.situation_name || 'Sem nome',
+          alcance,
+          a?.worker_count ? `${a.worker_count} trabalhador(es)` : ''
+        ].filter(Boolean).join('\n'),
+        [
+          a?.approach ? ABORDAGEM_POR_EXTENSO[a.approach as keyof typeof ABORDAGEM_POR_EXTENSO] : 'PENDENTE',
+          a?.methods?.trim(),
+          a?.assessment_date?.trim() ? formatDate(a.assessment_date) : '',
+          a?.assessor?.trim()
+        ].filter(Boolean).join('\n'),
+        conclusoes,
+        prevencao,
+        [
+          a?.workers_heard === 'SIM'
+            ? `Empregados ouvidos${a?.workers_heard_note?.trim() ? `: ${a.workers_heard_note.trim()}` : ''}`
+            : a?.workers_heard === 'NAO' ? 'Empregados NÃO ouvidos' : 'PENDENTE',
+          aet
+        ].join('\n')
+      ];
+    });
+
+    tabela({
+      head: [['Situação de trabalho', 'Abordagem e autoria', 'Conclusões por aspecto', 'Prevenção (17.4.3.1)', 'Oitiva e AET']],
+      body: linhas,
+      columnStyles: {
+        0: { cellWidth: util * 0.15, fontStyle: 'bold' },
+        1: { cellWidth: util * 0.17 },
+        3: { cellWidth: util * 0.20 },
+        4: { cellWidth: util * 0.17 }
+      },
+      styles: { fontSize: 5.8, cellPadding: 1.3, overflow: 'linebreak' }
+    });
+
+    // Coerencia com o inventario: risco ergonomico sem AEP, e AEP sem risco
+    // ergonomico inventariado - o item 17.3.5 liga as duas coisas.
+    const temRiscoErgonomico = riscosDoCliente.some(
+      (r: any) => String(r?.risk_category || '').toUpperCase().startsWith('ERGON')
+    );
+    if (!temRiscoErgonomico) {
+      pendente('7.4', 'Há avaliação ergonômica preliminar registrada e nenhum agente ergonômico no inventário da seção 7.2. O item 17.3.5 manda os resultados da AEP integrarem o inventário de riscos do PGR: inventarie o perigo, ou registre a ausência de risco com a justificativa.');
+    }
+
+    // GHE sem AEP nenhuma: a NR-17 alcanca todas as situacoes de trabalho.
+    const idsComAep = new Set(
+      aepsDoCliente.flatMap((a: any) => Array.isArray(a?.ghe_ids) ? a.ghe_ids : [])
+    );
+    const ghesSemAep = gheDoCliente.filter((g: any) => !idsComAep.has(g?.id));
+    if (ghesSemAep.length > 0) {
+      pendente('7.4', `${ghesSemAep.length} GHE sem avaliação ergonômica preliminar: ${ghesSemAep.map((g: any) => g?.code || g?.name).join(', ')}. O item 17.2.1 aplica a NR-17 a todas as situações de trabalho.`);
+    }
+  }
 
   // ==================================================================
   // 8. PLANO DE ACAO

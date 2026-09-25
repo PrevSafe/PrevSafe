@@ -385,6 +385,75 @@ export interface ClientUnit {
 }
 
 /**
+ * 20f. Avaliacao ergonomica preliminar de uma situacao de trabalho — AEP.
+ *
+ * Item 17.3.1 da NR-17. O subitem 17.3.1.2.1 exige que ela seja REGISTRADA, e o
+ * item 17.3.5 manda os resultados integrarem o inventario de riscos do PGR.
+ *
+ * A NR-17 nao prescreve instrumento: o subitem 17.3.1.1 admite abordagem
+ * qualitativa, semiquantitativa, quantitativa ou combinacao. Por isso esta
+ * entidade guarda a abordagem empregada e a conclusao por aspecto, e nao uma
+ * pontuacao - pontuar seria inventar metodo e atribui-lo a norma.
+ */
+export interface ErgonomicAssessment {
+  id: string;
+  organization_id: string;
+  client_id: string;
+  client_unit_id?: string;
+  /** Como a situacao de trabalho e identificada: "Recepcao - atendimento". */
+  situation_name: string;
+  /** GHE e cargos alcancados pela situacao avaliada. */
+  ghe_ids?: string[];
+  job_ids?: string[];
+  /** Quantos trabalhadores estao na situacao avaliada. */
+  worker_count?: number;
+
+  /** Vazio = nao informado. Subitem 17.3.1.1. */
+  approach?: 'QUALITATIVA' | 'SEMIQUANTITATIVA' | 'QUANTITATIVA' | 'COMBINADA';
+  /** Metodos, tecnicas e ferramentas empregados, por extenso. */
+  methods?: string;
+  assessment_date?: string;
+  /** Quem avaliou: nome e registro. */
+  assessor?: string;
+
+  /**
+   * Conclusao por aspecto, pela chave de NR17_ASPECTOS.
+   *
+   * Aspecto ausente do mapa = nao avaliado, e sai como pendencia. Ausencia nao
+   * e "adequado": e avaliacao que ninguem fez.
+   */
+  aspects?: Record<string, {
+    conclusao?: 'ADEQUADO' | 'INADEQUADO' | 'NAO_APLICAVEL';
+    /** O que se observou. Exigido quando a conclusao e INADEQUADO. */
+    observacao?: string;
+  }>;
+
+  /**
+   * Alineas do subitem 17.4.3.1 adotadas como medida de prevencao.
+   *
+   * O subitem exige DUAS OU MAIS. E o 17.4.3.1.1: quando nao for possivel
+   * adotar as das alineas "c" e "d", as das alineas "a" e "b" passam a ser
+   * obrigatorias.
+   */
+  prevention_measures?: Array<'a' | 'b' | 'c' | 'd'>;
+  prevention_description?: string;
+
+  /** Subitem 17.3.8: os empregados foram ouvidos? Vazio = nao informado. */
+  workers_heard?: 'SIM' | 'NAO';
+  workers_heard_note?: string;
+
+  /** Gatilhos do item 17.3.2 observados nesta situacao. */
+  aet_triggers?: Array<'a' | 'b' | 'c' | 'd'>;
+  /** Data do relatorio de AET, quando realizada (guarda de 20 anos, 17.3.7). */
+  aet_report_date?: string;
+  aet_report_reference?: string;
+
+  notes?: string;
+  status: 'ACTIVE' | 'INACTIVE';
+  created_at: string;
+}
+
+/**
  * 20e. Linha da matriz de capacitacao — secao 9.7 do PGR.
  *
  * O subitem 1.7.1.2 da NR-01 divide a capacitacao em inicial, periodico e

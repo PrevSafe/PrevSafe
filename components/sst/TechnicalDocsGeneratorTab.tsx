@@ -49,6 +49,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
     machinesEquipment,
     chemicalProducts,
     trainingRequirements,
+    ergonomicAssessments,
     hierarchySectors,
     hierarchyJobs,
     ghes,
@@ -83,6 +84,9 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
   );
   const clientMatriz = trainingRequirements.filter(
     t => !selectedClientId || t.client_id === selectedClientId
+  );
+  const clientAeps = ergonomicAssessments.filter(
+    a => !selectedClientId || a.client_id === selectedClientId
   );
   const clientSectors = hierarchySectors.filter(s => !selectedClientId || s.client_id === selectedClientId);
   const clientJobs = hierarchyJobs.filter(j => !selectedClientId || j.client_id === selectedClientId);
@@ -186,7 +190,8 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
         machinesEquipment: clientMaquinas,
         chemicalProducts: clientQuimicos,
         trainingRequirements: clientMatriz,
-        jobs: clientJobs
+        jobs: clientJobs,
+        ergonomicAssessments: clientAeps
       });
       setSuccessToast('PDF do PGR (NR-01) gerado com sucesso!');
     } else if (activeDocType === 'PGRTR') {
@@ -988,6 +993,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
         chemicalProducts={clientQuimicos}
         trainingRequirements={clientMatriz}
         jobs={clientJobs}
+        ergonomicAssessments={clientAeps}
         sectors={clientSectors}
         units={clientUnits}
         onTransmitESocial={handleTransmitSelectedEvent}

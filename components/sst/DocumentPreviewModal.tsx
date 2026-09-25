@@ -70,6 +70,7 @@ interface DocumentPreviewModalProps {
   chemicalProducts?: any[];
   trainingRequirements?: any[];
   jobs?: any[];
+  ergonomicAssessments?: any[];
   sectors?: any[];
   units?: any[];
   selectedEmployee?: any;
@@ -91,6 +92,7 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
   chemicalProducts = [],
   trainingRequirements = [],
   jobs = [],
+  ergonomicAssessments = [],
   sectors = [],
   units = [],
   selectedEmployee,
@@ -202,7 +204,7 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
     if (!client) return;
 
     if (docType === 'PGR') {
-      exportPGRDocumentPdf({ client, organization, ghes, risks, employees, sectors, units, contractedOrganizations, machinesEquipment, chemicalProducts, trainingRequirements, jobs });
+      exportPGRDocumentPdf({ client, organization, ghes, risks, employees, sectors, units, contractedOrganizations, machinesEquipment, chemicalProducts, trainingRequirements, jobs, ergonomicAssessments });
       setDownloadSuccess('PGR gerado e baixado em PDF com sucesso!');
     } else if (docType === 'PGRTR') {
       exportPGRTRDocumentPdf({ client, organization, ghes, risks, employees });

@@ -11,7 +11,8 @@ import {
   ContractedOrganization,
   MachineEquipment,
   ChemicalProduct,
-  TrainingRequirement, 
+  TrainingRequirement,
+  ErgonomicAssessment, 
   Lead, 
   Opportunity, 
   Proposal, 
@@ -244,6 +245,11 @@ interface PrevSafeContextType {
   ) => TrainingRequirement;
   updateTrainingRequirement: (id: string, updates: Partial<TrainingRequirement>) => void;
   deleteTrainingRequirement: (id: string) => void;
+  addErgonomicAssessment: (
+    data: Omit<ErgonomicAssessment, 'id' | 'organization_id' | 'created_at'>
+  ) => ErgonomicAssessment;
+  updateErgonomicAssessment: (id: string, updates: Partial<ErgonomicAssessment>) => void;
+  deleteErgonomicAssessment: (id: string) => void;
   addLead: (lead: Omit<Lead, 'id' | 'organization_id' | 'created_at'>) => Lead;
   updateLead: (id: string, updates: Partial<Lead>) => void;
   deleteLead: (id: string) => void;
@@ -660,6 +666,7 @@ interface PrevSafeContextType {
   machinesEquipment: MachineEquipment[];
   chemicalProducts: ChemicalProduct[];
   trainingRequirements: TrainingRequirement[];
+  ergonomicAssessments: ErgonomicAssessment[];
   addCipaProcess: (data: Omit<CipaManagementProcess, 'id'>) => CipaManagementProcess;
   updateCipaProcess: (id: string, updates: Partial<CipaManagementProcess>) => void;
   deleteCipaProcess: (id: string) => void;
@@ -791,6 +798,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
   const [machinesEquipment, setMachinesEquipment] = useState<MachineEquipment[]>([]);
   const [chemicalProducts, setChemicalProducts] = useState<ChemicalProduct[]>([]);
   const [trainingRequirements, setTrainingRequirements] = useState<TrainingRequirement[]>([]);
+  const [ergonomicAssessments, setErgonomicAssessments] = useState<ErgonomicAssessment[]>([]);
   const [occupationalRisksCatalog, setOccupationalRisksCatalog] = useState<OccupationalRiskCatalogItem[]>(INITIAL_OCCUPATIONAL_RISKS_CATALOG);
 
   // Estado da sincronizacao com o Supabase, exposto na barra superior.
@@ -892,6 +900,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     apply(setMachinesEquipment, list(parsed.machinesEquipment, []));
     apply(setChemicalProducts, list(parsed.chemicalProducts, []));
     apply(setTrainingRequirements, list(parsed.trainingRequirements, []));
+    apply(setErgonomicAssessments, list(parsed.ergonomicAssessments, []));
     apply(setOccupationalRisksCatalog, list(parsed.occupationalRisksCatalog, INITIAL_OCCUPATIONAL_RISKS_CATALOG, 'occupationalRisksCatalog'));
   }, []);
 
@@ -960,7 +969,8 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     contractedOrganizations,
     machinesEquipment,
     chemicalProducts,
-    trainingRequirements
+    trainingRequirements,
+    ergonomicAssessments
   }), [
     organization,
     esocialConfig,
@@ -1005,7 +1015,8 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     contractedOrganizations,
     machinesEquipment,
     chemicalProducts,
-    trainingRequirements
+    trainingRequirements,
+    ergonomicAssessments
   ]);
 
   // Cache local: nao e mais a fonte da verdade, e sim a copia que permite abrir
@@ -1843,6 +1854,37 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
   const deleteTrainingRequirement = useCallback((id: string) => {
     setTrainingRequirements(prev => prev.filter(t => t.id !== id));
     logAudit('DELETE_TRAINING_REQ' as any, 'CLIENT' as any, id, 'Treinamento removido da matriz', {});
+  }, [logAudit]);
+
+  /**
+   * Avaliacao ergonomica preliminar — AEP, item 17.3.1 da NR-17.
+   *
+   * Nenhum aspecto nasce concluido: aspecto ausente e aspecto nao avaliado, e o
+   * PGR o cobra por nome. Nascer 'ADEQUADO' faria a AEP afirmar conformidade
+   * que ninguem verificou - e a AEP integra o inventario (item 17.3.5).
+   */
+  const addErgonomicAssessment = useCallback((
+    data: Omit<ErgonomicAssessment, 'id' | 'organization_id' | 'created_at'>
+  ): ErgonomicAssessment => {
+    const nova: ErgonomicAssessment = {
+      ...data,
+      id: novoId('aep'),
+      organization_id: organization.id,
+      created_at: new Date().toISOString()
+    };
+    setErgonomicAssessments(prev => [...prev, nova]);
+    logAudit('CREATE_AEP' as any, 'CLIENT' as any, nova.id, `AEP registrada: ${nova.situation_name}`, nova);
+    return nova;
+  }, [organization.id, logAudit]);
+
+  const updateErgonomicAssessment = useCallback((id: string, updates: Partial<ErgonomicAssessment>) => {
+    setErgonomicAssessments(prev => prev.map(a => (a.id === id ? { ...a, ...updates } : a)));
+    logAudit('UPDATE_AEP' as any, 'CLIENT' as any, id, 'AEP atualizada', updates);
+  }, [logAudit]);
+
+  const deleteErgonomicAssessment = useCallback((id: string) => {
+    setErgonomicAssessments(prev => prev.filter(a => a.id !== id));
+    logAudit('DELETE_AEP' as any, 'CLIENT' as any, id, 'AEP removida', {});
   }, [logAudit]);
 
   const addLead = useCallback((leadData: Omit<Lead, 'id' | 'organization_id' | 'created_at'>): Lead => {
@@ -7374,6 +7416,10 @@ ${exames.map(ex => `      <exameMedico>
     addTrainingRequirement,
     updateTrainingRequirement,
     deleteTrainingRequirement,
+    ergonomicAssessments,
+    addErgonomicAssessment,
+    updateErgonomicAssessment,
+    deleteErgonomicAssessment,
     addLead,
     updateLead,
     deleteLead,
@@ -7663,6 +7709,10 @@ ${exames.map(ex => `      <exameMedico>
     addTrainingRequirement,
     updateTrainingRequirement,
     deleteTrainingRequirement,
+    ergonomicAssessments,
+    addErgonomicAssessment,
+    updateErgonomicAssessment,
+    deleteErgonomicAssessment,
     addLead,
     updateLead,
     deleteLead,

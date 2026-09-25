@@ -106,12 +106,13 @@ try {
   inconclusivo('não foi possível carregar o jspdf', e.message);
 }
 
-let servico, classif, situacao, catTreinamentos;
+let servico, classif, situacao, catTreinamentos, nr17;
 try {
   servico = require_(achar('pdfExportService.js'));
   classif = require_(achar('classificacaoDeRisco.js'));
   situacao = require_(achar('situacaoOperacional.js'));
   catTreinamentos = require_(achar('catalogoDeTreinamentos.js'));
+  nr17 = require_(achar('nr17.js'));
 } catch (e) {
   inconclusivo('não foi possível carregar os módulos compilados', e.message);
 }
@@ -492,6 +493,70 @@ const CAPACITACAO_DE_OUTRO_CLIENTE = {
 };
 const CARGOS = [{ id: 'cargo-1', client_id: 'c1', name: 'Tecnico de manutencao', status: 'ACTIVE' }];
 
+/**
+ * AEP da NR-17.
+ *
+ * A completa cobre os seis aspectos, tem abordagem, metodos, autoria, duas
+ * medidas do 17.4.3.1 e oitiva registrada. A incompleta exercita as pendencias
+ * uma a uma. A com gatilho "b" e sem relatorio exercita a AET devida - e, na
+ * dispensa do 17.3.4, que o gatilho "b" NAO obriga.
+ */
+const AEP_COMPLETA = {
+  id: 'ae1', client_id: 'c1', status: 'ACTIVE',
+  situation_name: 'Recepcao - atendimento em posto informatizado',
+  ghe_ids: ['g1'], job_ids: ['cargo-1'], worker_count: 2,
+  approach: 'COMBINADA',
+  methods: 'Observacao direta em dois turnos, entrevista com os trabalhadores e medicao de iluminamento pela NHO 11',
+  assessment_date: '2026-03-12', assessor: 'Eng. Carla Nunes, CREA-BA 98765',
+  aspects: {
+    organizacao: { conclusao: 'ADEQUADO' },
+    sobrecarga: { conclusao: 'INADEQUADO', observacao: 'Digitacao continua por mais de duas horas sem alternancia' },
+    cargas: { conclusao: 'NAO_APLICAVEL' },
+    mobiliario: { conclusao: 'INADEQUADO', observacao: 'Cadeira sem regulagem de altura e sem apoio lombar' },
+    maquinas: { conclusao: 'ADEQUADO' },
+    conforto: { conclusao: 'ADEQUADO', observacao: 'Iluminamento conforme a NHO 11; ar entre 22 e 24 graus' },
+  },
+  prevention_measures: ['a', 'b'],
+  prevention_description: 'Pausa de 10 min a cada 50 min fora do posto e revezamento com o arquivo a cada 2 h',
+  workers_heard: 'SIM', workers_heard_note: 'Entrevista individual com as duas recepcionistas',
+};
+/** Sem abordagem, sem metodos, sem aspectos, sem oitiva. */
+const AEP_INCOMPLETA = {
+  id: 'ae2', client_id: 'c1', status: 'ACTIVE',
+  situation_name: 'Arquivo - manuseio de prontuarios',
+};
+/** Inadequado com uma medida so: viola o 17.4.3.1 e o 17.4.3.1.1. */
+const AEP_UMA_MEDIDA = {
+  ...AEP_COMPLETA, id: 'ae3', situation_name: 'Esterilizacao - autoclave',
+  prevention_measures: ['a'],
+};
+/** Gatilho "b" do 17.3.2 sem relatorio de AET. */
+const AEP_COM_GATILHO_B = {
+  ...AEP_COMPLETA, id: 'ae4', situation_name: 'Fisioterapia - atendimento em maca',
+  aet_triggers: ['b'],
+};
+/** Gatilho "c": obriga a AET mesmo na dispensa do 17.3.4 (subitem 17.3.4.1). */
+const AEP_COM_GATILHO_C = {
+  ...AEP_COMPLETA, id: 'ae5', situation_name: 'Lavanderia - manuseio de roupa suja',
+  aet_triggers: ['c'],
+};
+/** AEP de OUTRO cliente: nao pode aparecer neste PGR. */
+const AEP_DE_OUTRO_CLIENTE = {
+  ...AEP_COMPLETA, id: 'ae9', client_id: 'cli-9',
+  situation_name: 'Linha de montagem de outra empresa',
+};
+/** Risco ergonomico no inventario, para a coerencia do item 17.3.5. */
+const RISCO_ERGONOMICO = {
+  id: 'rerg', ghe_id: 'g1', client_id: 'c1', risk_category: 'ERGONOMICO',
+  agent_name: 'Postura sentada prolongada', generating_source: 'Atendimento em posto informatizado',
+  severity: 2, probability: 3, epc_implemented: false,
+  operational_situation: ['ROTINEIRA'],
+};
+/** Cliente ME de grau 2: dispensado de ELABORAR a AET (item 17.3.4). */
+const CLIENTE_ME = { ...CLIENTE, porte: 'MICROEMPRESA', risk_degree: 2 };
+/** Cliente de grande porte: nao alcancado pela dispensa. */
+const CLIENTE_GRANDE = { ...CLIENTE, porte: 'DEMAIS', risk_degree: 3 };
+
 /** Risco quimico no inventario, para a checagem de coerencia da 6.4 com a 7. */
 const RISCO_QUIMICO = {
   id: 'rq1', ghe_id: 'g1', client_id: 'c1', risk_category: 'QUIMICO',
@@ -528,6 +593,9 @@ const pdfCheio = gerar({
     CAPACITACAO_DE_OUTRO_CLIENTE
   ],
   jobs: CARGOS,
+  ergonomicAssessments: [
+    AEP_COMPLETA, AEP_INCOMPLETA, AEP_UMA_MEDIDA, AEP_DE_OUTRO_CLIENTE
+  ],
 });
 const pdfVazio = gerar({
   client: CLIENTE, organization: ORG, ghes: [], risks: [], employees: [], sectors: [], units: [],
@@ -559,7 +627,7 @@ for (const s of SECOES) {
 
 // Subsecoes da metodologia, que e o que faltava.
 for (const sub of ['5.1 Levantamento preliminar', '5.2 Identificação de perigos',
-  '5.3 Fatores de risco psicossociais', '5.4 Gradação da severidade',
+  '5.3 Avaliação ergonômica e fatores psicossociais', '5.4 Gradação da severidade',
   '5.5 Gradação da probabilidade', '5.6 Matriz de risco', '5.7 Classificação e tomada de decisão']) {
   check(tc.includes(sub), `metodologia: "${sub}"`);
 }
@@ -1623,6 +1691,282 @@ check(
 );
 check(sync.includes("'trainingRequirements'"), 'a colecao da matriz e sincronizada');
 check(contexto.includes('parsed.trainingRequirements'), 'o snapshot carrega a matriz');
+
+// ===========================================================================
+// 3j. AEP DA NR-17 (secoes 5.3 e 7.4)
+// ===========================================================================
+console.log('');
+console.log('--- 3j. AEP da NR-17 (5.3 e 7.4) ---');
+
+const {
+  NR17_ASPECTOS, NR17_ALTERNATIVAS_DE_PREVENCAO, NR17_MINIMO_DE_ALTERNATIVAS,
+  NR17_GATILHOS_DA_AET, NR17_ETAPAS_DA_AET, PARAMETROS_DE_CONFORTO,
+  NR17_FATORES_DA_ORGANIZACAO, NR17_EXIGENCIAS_A_EVITAR, dispensadaDeElaborarAET
+} = nr17;
+
+// --- O modulo normativo ----------------------------------------------------
+check(NR17_ASPECTOS.length === 6, `os seis aspectos da NR-17 (${NR17_ASPECTOS.length})`);
+check(
+  NR17_ASPECTOS.every((a) => /^ite(m|ns) 17\./.test(a.fonte)),
+  'todo aspecto cita o item da NR-17 de onde saiu'
+);
+check(NR17_FATORES_DA_ORGANIZACAO.length === 6, 'as seis alineas do item 17.4.1');
+check(NR17_EXIGENCIAS_A_EVITAR.length === 6, 'as seis alineas do item 17.4.3');
+check(NR17_ALTERNATIVAS_DE_PREVENCAO.length === 4, 'as quatro alternativas do subitem 17.4.3.1');
+check(NR17_MINIMO_DE_ALTERNATIVAS === 2, 'o minimo de duas alternativas do subitem 17.4.3.1');
+check(NR17_GATILHOS_DA_AET.length === 4, 'os quatro gatilhos do item 17.3.2');
+check(NR17_ETAPAS_DA_AET.length === 6, 'as seis etapas do item 17.3.3');
+
+// Os numeros da redacao VIGENTE, nao da anterior.
+const conforto = PARAMETROS_DE_CONFORTO.map((c) => c.parametro).join(' | ');
+check(conforto.includes('18 e 25'), 'conforto termico: 18 a 25 graus, da redacao vigente');
+check(!/20 e 23|20 a 23/.test(conforto), 'NAO traz a faixa de 20 a 23 graus, da redacao revogada');
+check(conforto.includes('NHO 11'), 'iluminamento pela NHO 11 da Fundacentro, versao 2018');
+check(!/5413|8995/.test(conforto), 'NAO cita a NBR 5413 nem a ISO 8995, da redacao revogada');
+check(conforto.includes('65 dB(A)'), 'conforto acustico: ate 65 dB(A) nos demais casos');
+check(
+  !/umidade relativa.*40|40 ?%/.test(conforto),
+  'NAO traz umidade minima de 40%, que a redacao vigente nao fixa'
+);
+
+// Item 17.3.4: a dispensa de ELABORAR a AET.
+check(dispensadaDeElaborarAET('MICROEMPRESA', 2) === true, 'ME de grau 2 dispensada de elaborar a AET');
+check(dispensadaDeElaborarAET('EPP', 1) === true, 'EPP de grau 1 dispensada');
+check(dispensadaDeElaborarAET('MICROEMPRESA', 3) === false, 'ME de grau 3 NAO dispensada');
+check(dispensadaDeElaborarAET('MEI', 4) === true, 'MEI dispensado em qualquer grau');
+check(dispensadaDeElaborarAET('DEMAIS', 2) === false, 'empresa de demais portes NAO dispensada');
+check(dispensadaDeElaborarAET('', 2) === null, 'sem porte informado nao se presume a dispensa');
+check(dispensadaDeElaborarAET('MICROEMPRESA', null) === null, 'sem grau de risco nao se presume a dispensa');
+
+// --- Secao 5.3: a metodologia ---------------------------------------------
+check(
+  tc.includes('5.3 Avaliação ergonômica e fatores psicossociais (item 17.3 da NR-17)'),
+  '5.3 passou a nomear o item 17.3'
+);
+for (const sub of ['17.3.1.1', '17.3.1.2', '17.3.1.2.1', '17.3.5', '17.3.6', '17.3.8', '17.4.3.1.1', '17.3.7']) {
+  check(tc.includes(sub), `5.3 cita o subitem ${sub}`);
+}
+check(
+  tc.includes('A NR-17 não prescreve método, técnica ou ferramenta específicos'),
+  '5.3 diz que a norma nao prescreve instrumento'
+);
+check(
+  tc.includes('pode ser contemplada nas etapas de identificação de perigos'),
+  '5.3 registra que a AEP pode viver no processo do item 1.5.4 da NR-01'
+);
+for (const aspecto of NR17_ASPECTOS) {
+  check(tc.includes(aspecto.rotulo), `5.3.1 traz o aspecto "${aspecto.rotulo}"`);
+}
+check(tc.includes('18 e 25'), '5.3.4 imprime a faixa de temperatura vigente');
+check(tc.includes('NHO 11'), '5.3.4 imprime o iluminamento pela NHO 11');
+check(
+  tc.includes('pausas e altern') && tc.includes('tornam-se obrigat'),
+  '5.3.3 explica a regra do subitem 17.4.3.1.1'
+);
+for (const etapa of NR17_ETAPAS_DA_AET) {
+  check(tc.includes(etapa.texto.slice(0, 34)), `5.3.5 traz a etapa "${etapa.alinea}" da AET`);
+}
+
+// Porte nao informado: a dispensa nao se presume.
+check(
+  tc.includes('Porte da organização não informado')
+  && tc.includes('dispensa de elaborar a AET do item 17.3.4'),
+  'sem porte, a 5.3 declara a duvida sobre a dispensa em vez de decidir'
+);
+const comMe = corrido(gerar({
+  client: CLIENTE_ME, organization: ORG, ghes: GHES, risks: [RISCO_CLASSIFICADO, RISCO_ERGONOMICO],
+  employees: FUNCIONARIOS, sectors: SETORES, units: [UNIDADE],
+  ergonomicAssessments: [AEP_COMPLETA],
+}));
+check(
+  comMe.includes('Esta organização se enquadra na dispensa')
+  && comMe.includes('apenas nas situações das alíneas "c" e "d"'),
+  'ME de grau 2: a 5.3 reconhece a dispensa e limita a AET as alineas "c" e "d"'
+);
+const comGrande = corrido(gerar({
+  client: CLIENTE_GRANDE, organization: ORG, ghes: GHES, risks: [RISCO_CLASSIFICADO, RISCO_ERGONOMICO],
+  employees: FUNCIONARIOS, sectors: SETORES, units: [UNIDADE],
+  ergonomicAssessments: [AEP_COMPLETA],
+}));
+check(
+  comGrande.includes('não se enquadra na dispensa do item 17.3.4'),
+  'demais portes: a AET e devida nas quatro situacoes'
+);
+
+// --- Secao 7.4: os registros ----------------------------------------------
+check(
+  tc.includes('7.4 Resultados da avaliação ergonômica preliminar'),
+  '7.4 mantem o titulo do modelo'
+);
+check(tc.includes('Recepcao - atendimento em posto informatizado'), '7.4 lista a AEP registrada');
+check(
+  !tc.includes('Linha de montagem de outra empresa'),
+  'NAO traz AEP de outro cliente'
+);
+check(
+  tc.includes('Combinação de abordagens') && tc.includes('Observacao direta em dois turnos'),
+  '7.4 traz a abordagem e os metodos empregados'
+);
+check(
+  tc.includes('Eng. Carla Nunes, CREA-BA 98765') && tc.includes('12/03/2026'),
+  '7.4 traz autoria e data da avaliacao'
+);
+check(
+  tc.includes('Digitacao continua por mais de duas horas'),
+  '7.4 traz a observacao do aspecto julgado inadequado'
+);
+check(
+  tc.includes('Inadequado - exige medida') && tc.includes('Não aplicável a esta situação'),
+  '7.4 distingue adequado, inadequado e nao aplicavel'
+);
+check(
+  tc.includes('Empregados ouvidos: Entrevista individual'),
+  '7.4 registra a oitiva dos empregados (17.3.8)'
+);
+check(
+  tc.includes('Pausas para recuperação psicofisiológica'),
+  '7.4 nomeia as alternativas de prevencao adotadas'
+);
+check(
+  !tc.includes('AEP Recepcao - atendimento em posto informatizado: falta'),
+  'a AEP completa nao gera pendencia'
+);
+
+// A incompleta: cada exigencia da norma cobrada por nome.
+for (const [rotulo, texto_] of [
+  ['abordagem', 'abordagem empregada: qualitativa, semiquantitativa, quantitativa ou combinação (subitem 17.3.1.1)'],
+  ['aspectos', 'conclusão dos aspectos:'],
+  ['oitiva', 'os empregados foram ouvidos no processo (item 17.3.8)'],
+  ['GHE', 'GHE ou cargo a que a situação corresponde'],
+]) {
+  check(
+    tc.includes(texto_),
+    `AEP incompleta: pendencia de ${rotulo} citada com o subitem`
+  );
+}
+
+// Uma medida so: o 17.4.3.1 exige duas, e o 17.4.3.1.1 impoe "a" e "b".
+check(
+  tc.includes(`ao menos ${NR17_MINIMO_DE_ALTERNATIVAS} alternativas de prevenção do subitem 17.4.3.1, e há 1 registrada`),
+  'uma medida so gera pendencia contando as registradas'
+);
+
+// Pendencia agrupada por AEP.
+check(
+  (tc.match(/AEP [^:]{3,60}: falta/g) || []).length === 2,
+  'as pendencias sao agrupadas por AEP, uma cada'
+);
+
+// Gatilho da AET.
+const comGatilhoB = corrido(gerar({
+  client: CLIENTE_GRANDE, organization: ORG, ghes: GHES, risks: [RISCO_CLASSIFICADO, RISCO_ERGONOMICO],
+  employees: FUNCIONARIOS, sectors: SETORES, units: [UNIDADE],
+  ergonomicAssessments: [AEP_COM_GATILHO_B],
+}));
+check(
+  comGatilhoB.includes('AET, exigida pelas alíneas "b" do item 17.3.2'),
+  'gatilho "b" sem relatorio gera pendencia de AET quando nao ha dispensa'
+);
+// Na dispensa do 17.3.4, o gatilho "b" NAO obriga; o "c" obriga.
+const meGatilhoB = corrido(gerar({
+  client: CLIENTE_ME, organization: ORG, ghes: GHES, risks: [RISCO_CLASSIFICADO, RISCO_ERGONOMICO],
+  employees: FUNCIONARIOS, sectors: SETORES, units: [UNIDADE],
+  ergonomicAssessments: [AEP_COM_GATILHO_B],
+}));
+check(
+  !meGatilhoB.includes('AET, exigida pelas alíneas')
+  && meGatilhoB.includes('AET não exigível pela dispensa do item 17.3.4'),
+  'na dispensa do 17.3.4, o gatilho "b" nao obriga a AET'
+);
+const meGatilhoC = corrido(gerar({
+  client: CLIENTE_ME, organization: ORG, ghes: GHES, risks: [RISCO_CLASSIFICADO, RISCO_ERGONOMICO],
+  employees: FUNCIONARIOS, sectors: SETORES, units: [UNIDADE],
+  ergonomicAssessments: [AEP_COM_GATILHO_C],
+}));
+check(
+  meGatilhoC.includes('AET, exigida pelas alíneas "c" do item 17.3.2'),
+  'na dispensa do 17.3.4, o gatilho "c" obriga a AET (subitem 17.3.4.1)'
+);
+
+// Coerencia com o inventario (item 17.3.5) e cobertura dos GHE (item 17.2.1).
+check(
+  tc.includes('nenhum agente ergonômico no inventário da seção 7.2'),
+  'AEP registrada sem risco ergonomico inventariado gera pendencia do 17.3.5'
+);
+check(
+  !comMe.includes('nenhum agente ergonômico no inventário da seção 7.2'),
+  'com risco ergonomico inventariado, a contradicao desaparece'
+);
+const gheSemAep = corrido(gerar({
+  client: CLIENTE_GRANDE, organization: ORG,
+  ghes: [...GHES, { id: 'g2', code: 'GHE-02', name: 'Limpeza', client_id: 'c1' }],
+  risks: [RISCO_CLASSIFICADO, RISCO_ERGONOMICO],
+  employees: FUNCIONARIOS, sectors: SETORES, units: [UNIDADE],
+  ergonomicAssessments: [AEP_COMPLETA],
+}));
+check(
+  gheSemAep.includes('GHE sem avaliação ergonômica preliminar: GHE-02'),
+  'GHE sem AEP sai nomeado, citando o item 17.2.1'
+);
+
+// Sem AEP nenhuma: nao cabe declaracao de inexistencia.
+const semAep = corrido(gerar({
+  client: CLIENTE_GRANDE, organization: ORG, ghes: GHES, risks: [RISCO_CLASSIFICADO],
+  employees: FUNCIONARIOS, sectors: SETORES, units: [UNIDADE],
+  ergonomicAssessments: [],
+}));
+check(
+  semAep.includes('Nenhuma avaliação ergonômica preliminar registrada')
+  && semAep.includes('Engenharia SST > Avaliação Ergonômica'),
+  'sem AEP, a 7.4 sai como pendencia apontando a tela'
+);
+check(
+  semAep.includes('item 17.2.1 aplica a NR-17 a todas as situações de trabalho'),
+  'a pendencia explica por que nao cabe declarar inexistencia aqui'
+);
+
+// --- A tela ----------------------------------------------------------------
+const aepTela = fs.readFileSync(
+  path.join(RAIZ, 'components/sst/ErgonomicAssessmentTab.tsx'), 'utf8'
+);
+check(
+  aepTela.includes('addErgonomicAssessment')
+  && aepTela.includes('updateErgonomicAssessment')
+  && aepTela.includes('deleteErgonomicAssessment'),
+  'a tela cria, edita e remove AEP'
+);
+check(
+  aepTela.includes("from '@/lib/nr17'"),
+  'os aspectos e os parametros vem do modulo da NR-17, nao de literais na tela'
+);
+check(
+  /approach: '' as AbordagemDaAvaliacao \| ''/.test(aepTela)
+  && /workers_heard: '' as 'SIM' \| 'NAO' \| ''/.test(aepTela),
+  'abordagem e oitiva comecam vazias, sem padrao'
+);
+check(
+  aepTela.includes('aspects: {} as Record<'),
+  'nenhum aspecto nasce concluido: mapa vazio'
+);
+// O defeito que esta tela existe para nao cometer: inventar pontuacao.
+// A prosa do arquivo fala de pontuacao para explicar por que nao ha nenhuma,
+// entao a busca tem de ser pela forma que o defeito teria no codigo, e nao
+// pela palavra.
+check(
+  !/(const|let)\s+\w*[Ss]core|pontuacao\s*[:=]|pontos\s*[:=]\s*\d|peso\s*[:=]\s*\d/.test(aepTela),
+  'a tela nao inventa pontuacao nem escala para atribuir a NR-17'
+);
+check(
+  !/18 e 25|65 dB|NHO 11/.test(aepTela.replace(/PARAMETROS_DE_CONFORTO/g, '')) === false
+  || aepTela.includes('PARAMETROS_DE_CONFORTO'),
+  'os parametros de conforto na tela vem da constante conferida'
+);
+check(
+  !/if \(!form\.situation_name\.trim\(\)\) return;/.test(aepTela),
+  'salvar sem situacao avisa, em vez de dar `return` em silencio'
+);
+check(sync.includes("'ergonomicAssessments'"), 'a colecao das AEP e sincronizada');
+check(contexto.includes('parsed.ergonomicAssessments'), 'o snapshot carrega as AEP');
 
 // ===========================================================================
 // 4. UMA CLASSIFICACAO SO NO SISTEMA

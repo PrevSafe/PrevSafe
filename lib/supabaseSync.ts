@@ -65,6 +65,7 @@ export const SYNCED_COLLECTIONS = [
   'machinesEquipment',
   'chemicalProducts',
   'trainingRequirements',
+  'ergonomicAssessments',
 ] as const;
 
 export type SyncedCollection = (typeof SYNCED_COLLECTIONS)[number];

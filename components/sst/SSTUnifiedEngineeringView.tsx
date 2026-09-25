@@ -37,11 +37,12 @@ import { ContractedOrganizationsTab } from './ContractedOrganizationsTab';
 import { MachinesEquipmentTab } from './MachinesEquipmentTab';
 import { ChemicalProductsTab } from './ChemicalProductsTab';
 import { TrainingMatrixTab } from './TrainingMatrixTab';
-import { PenTool, Handshake, Cog, FlaskConical } from 'lucide-react';
+import { ErgonomicAssessmentTab } from './ErgonomicAssessmentTab';
+import { PenTool, Handshake, Cog, FlaskConical, Activity } from 'lucide-react';
 
 interface SSTUnifiedEngineeringViewProps {
   onNavigate?: (view: string) => void;
-  initialTab?: 'HIERARCHY' | 'GHE_RISKS' | 'EXAMS_PCMSO' | 'EMPLOYEES' | 'WORK_ORDERS_OS' | 'DOCS_XML' | 'INTEGRATION_TRAINING' | 'SIGNATURES' | 'CONTRACTED' | 'MACHINES' | 'CHEMICALS' | 'TRAINING_MATRIX';
+  initialTab?: 'HIERARCHY' | 'GHE_RISKS' | 'EXAMS_PCMSO' | 'EMPLOYEES' | 'WORK_ORDERS_OS' | 'DOCS_XML' | 'INTEGRATION_TRAINING' | 'SIGNATURES' | 'CONTRACTED' | 'MACHINES' | 'CHEMICALS' | 'TRAINING_MATRIX' | 'ERGONOMICS';
 }
 
 export const SSTUnifiedEngineeringView: React.FC<SSTUnifiedEngineeringViewProps> = ({ onNavigate, initialTab }) => {
@@ -60,7 +61,7 @@ export const SSTUnifiedEngineeringView: React.FC<SSTUnifiedEngineeringViewProps>
   } = usePrevSafe();
 
   const [selectedClientId, setSelectedClientId] = useState<string>(clients?.[0]?.id || '');
-  const [activeTab, setActiveTab] = useState<'HIERARCHY' | 'GHE_RISKS' | 'EXAMS_PCMSO' | 'EMPLOYEES' | 'WORK_ORDERS_OS' | 'DOCS_XML' | 'INTEGRATION_TRAINING' | 'SIGNATURES' | 'CONTRACTED' | 'MACHINES' | 'CHEMICALS' | 'TRAINING_MATRIX'>(initialTab || 'HIERARCHY');
+  const [activeTab, setActiveTab] = useState<'HIERARCHY' | 'GHE_RISKS' | 'EXAMS_PCMSO' | 'EMPLOYEES' | 'WORK_ORDERS_OS' | 'DOCS_XML' | 'INTEGRATION_TRAINING' | 'SIGNATURES' | 'CONTRACTED' | 'MACHINES' | 'CHEMICALS' | 'TRAINING_MATRIX' | 'ERGONOMICS'>(initialTab || 'HIERARCHY');
 
   // Sync when initialTab prop updates from external navigation
   React.useEffect(() => {
@@ -370,6 +371,20 @@ export const SSTUnifiedEngineeringView: React.FC<SSTUnifiedEngineeringViewProps>
           <GraduationCap className="w-4 h-4" />
           12. Matriz de Capacitação (NR-01, 1.7)
         </button>
+
+        <button
+          type="button"
+          id="main-tab-ergonomics-btn"
+          onClick={() => setActiveTab('ERGONOMICS')}
+          className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 shrink-0 ${
+            activeTab === 'ERGONOMICS'
+              ? 'bg-cyan-500 text-slate-950 shadow-lg shadow-cyan-500/20'
+              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
+          }`}
+        >
+          <Activity className="w-4 h-4" />
+          13. Avaliação Ergonômica (NR-17)
+        </button>
       </div>
 
       {/* Render Active View Tab */}
@@ -409,6 +424,9 @@ export const SSTUnifiedEngineeringView: React.FC<SSTUnifiedEngineeringViewProps>
         )}
         {activeTab === 'TRAINING_MATRIX' && (
           <TrainingMatrixTab selectedClientId={selectedClientId} />
+        )}
+        {activeTab === 'ERGONOMICS' && (
+          <ErgonomicAssessmentTab selectedClientId={selectedClientId} />
         )}
       </div>
     </div>
