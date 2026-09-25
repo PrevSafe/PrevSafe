@@ -21,7 +21,9 @@ import {
   RotateCcw,
   BookOpen,
   Filter,
-  Check
+  Check,
+  Siren,
+  ShieldAlert
 } from 'lucide-react';
 import { CBO_DATABASE, searchCBO, CBOItem } from '@/lib/cboDatabase';
 
@@ -122,6 +124,17 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
     legal_representative: string;
     pgr_coordinator: string;
     external_work_fronts: string;
+    // Secao 9.4 do PGR (item 1.5.6).
+    emergency_scenarios: string;
+    emergency_evacuation: string;
+    emergency_large_scale: string;
+    emergency_drills: string;
+    emergency_drill_last_date: string;
+    // Secao 9.8 do PGR (subitem 1.4.1.1).
+    harassment_conduct_rules: string;
+    harassment_report_channel: string;
+    harassment_training_actions: string;
+    harassment_training_last_date: string;
   }>({
     name: '',
     code: '',
@@ -142,7 +155,16 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
     work_shifts_description: '',
     legal_representative: '',
     pgr_coordinator: '',
-    external_work_fronts: ''
+    external_work_fronts: '',
+    emergency_scenarios: '',
+    emergency_evacuation: '',
+    emergency_large_scale: '',
+    emergency_drills: '',
+    emergency_drill_last_date: '',
+    harassment_conduct_rules: '',
+    harassment_report_channel: '',
+    harassment_training_actions: '',
+    harassment_training_last_date: ''
   });
   const [editingUnit, setEditingUnit] = useState<ClientUnit | null>(null);
 
@@ -170,7 +192,16 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
         work_shifts_description: unit.work_shifts_description || '',
         legal_representative: unit.legal_representative || '',
         pgr_coordinator: unit.pgr_coordinator || '',
-        external_work_fronts: unit.external_work_fronts || ''
+        external_work_fronts: unit.external_work_fronts || '',
+        emergency_scenarios: unit.emergency_scenarios || '',
+        emergency_evacuation: unit.emergency_evacuation || '',
+        emergency_large_scale: unit.emergency_large_scale || '',
+        emergency_drills: unit.emergency_drills || '',
+        emergency_drill_last_date: unit.emergency_drill_last_date || '',
+        harassment_conduct_rules: unit.harassment_conduct_rules || '',
+        harassment_report_channel: unit.harassment_report_channel || '',
+        harassment_training_actions: unit.harassment_training_actions || '',
+        harassment_training_last_date: unit.harassment_training_last_date || ''
       });
     } else {
       setEditingUnit(null);
@@ -180,7 +211,11 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
         built_area_m2: '', total_area_m2: '', buildings_description: '',
         utilities_description: '', external_hazards: '', emergency_resources: '',
         outsourced_worker_count: '', work_shifts_description: '',
-        legal_representative: '', pgr_coordinator: '', external_work_fronts: ''
+        legal_representative: '', pgr_coordinator: '', external_work_fronts: '',
+        emergency_scenarios: '', emergency_evacuation: '', emergency_large_scale: '',
+        emergency_drills: '', emergency_drill_last_date: '',
+        harassment_conduct_rules: '', harassment_report_channel: '',
+        harassment_training_actions: '', harassment_training_last_date: ''
       });
     }
     setIsUnitModalOpen(true);
@@ -375,7 +410,16 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
       work_shifts_description: unitForm.work_shifts_description.trim() || undefined,
       legal_representative: unitForm.legal_representative.trim() || undefined,
       pgr_coordinator: unitForm.pgr_coordinator.trim() || undefined,
-      external_work_fronts: unitForm.external_work_fronts.trim() || undefined
+      external_work_fronts: unitForm.external_work_fronts.trim() || undefined,
+      emergency_scenarios: unitForm.emergency_scenarios.trim() || undefined,
+      emergency_evacuation: unitForm.emergency_evacuation.trim() || undefined,
+      emergency_large_scale: unitForm.emergency_large_scale.trim() || undefined,
+      emergency_drills: unitForm.emergency_drills.trim() || undefined,
+      emergency_drill_last_date: unitForm.emergency_drill_last_date.trim() || undefined,
+      harassment_conduct_rules: unitForm.harassment_conduct_rules.trim() || undefined,
+      harassment_report_channel: unitForm.harassment_report_channel.trim() || undefined,
+      harassment_training_actions: unitForm.harassment_training_actions.trim() || undefined,
+      harassment_training_last_date: unitForm.harassment_training_last_date.trim() || undefined
     };
 
     if (editingUnit) {
@@ -658,13 +702,17 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
                         u.built_area_m2, u.buildings_description, u.utilities_description,
                         u.external_hazards, u.emergency_resources,
                         u.outsourced_worker_count, u.work_shifts_description,
-                        u.legal_representative, u.pgr_coordinator, u.external_work_fronts
+                        u.legal_representative, u.pgr_coordinator, u.external_work_fronts,
+                        u.emergency_scenarios, u.emergency_evacuation, u.emergency_large_scale,
+                        u.emergency_drills, u.emergency_drill_last_date,
+                        u.harassment_conduct_rules, u.harassment_report_channel,
+                        u.harassment_training_actions, u.harassment_training_last_date
                       ];
                       const preenchidos = campos.filter((c) => String(c || '').trim()).length;
                       const completo = preenchidos === campos.length;
                       return (
                         <span
-                          title="Campos do PGR que vivem no estabelecimento: seções 1.1, 1.2, 1.3 e 6.1"
+                          title="Campos do PGR que vivem no estabelecimento: seções 1.1, 1.2, 1.3, 6.1, 9.4 e 9.8"
                           className={`px-2 py-0.5 rounded text-[10px] font-bold border ${
                             completo
                               ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
@@ -1443,6 +1491,187 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
                   <p className="text-[10px] text-slate-500 mt-1">
                     Alimenta também a seção 9.4 do PGR (preparação e resposta a emergências).
                   </p>
+                </div>
+              </div>
+
+              {/* Preparacao e resposta a emergencias — secao 9.4 do PGR */}
+              <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 space-y-3">
+                <div>
+                  <h4 className="font-bold text-slate-200 text-xs flex items-center gap-1.5">
+                    <Siren className="w-4 h-4 text-teal-400" />
+                    Emergências (PGR, seção 9.4)
+                  </h4>
+                  <p className="text-[11px] text-slate-500 mt-0.5">
+                    Item 1.5.6 da NR-01. Os procedimentos se definem &quot;de acordo com os
+                    riscos, as características e as circunstâncias das atividades&quot;
+                    (subitem 1.5.6.1) — por isso ficam no estabelecimento, e não no cliente.
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-slate-400 font-semibold mb-1">
+                    Cenários de emergência <span className="text-slate-600">(1.5.6.1)</span>
+                  </label>
+                  <textarea
+                    rows={2}
+                    placeholder="Incêndio no depósito, vazamento de GLP, choque elétrico na subestação, queda de nível, acidente com veículo em rota..."
+                    value={unitForm.emergency_scenarios}
+                    onChange={(e) => setUnitForm({ ...unitForm, emergency_scenarios: e.target.value })}
+                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                  />
+                  <p className="text-[10px] text-slate-500 mt-1">
+                    Os cenários saem do inventário deste estabelecimento: o que pode dar errado
+                    nos riscos que você já levantou.
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-slate-400 font-semibold mb-1">
+                    Abandono dos locais afetados <span className="text-slate-600">(1.5.6.2 &quot;a&quot;)</span>
+                  </label>
+                  <textarea
+                    rows={2}
+                    placeholder="Alarme sonoro acionado na portaria; duas rotas sinalizadas; ponto de encontro no estacionamento; brigada de 6 integrantes; responsável pela contagem..."
+                    value={unitForm.emergency_evacuation}
+                    onChange={(e) => setUnitForm({ ...unitForm, emergency_evacuation: e.target.value })}
+                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                  />
+                  <p className="text-[10px] text-slate-500 mt-1">
+                    A alínea &quot;a&quot; pede meios, responsáveis e recursos — as três coisas,
+                    com nome de quem responde.
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-slate-400 font-semibold mb-1">
+                    Emergências de grande magnitude <span className="text-slate-600">(1.5.6.2 &quot;b&quot;)</span>
+                  </label>
+                  <textarea
+                    rows={2}
+                    placeholder="Plano de auxílio mútuo com as empresas do distrito, aviso ao Corpo de Bombeiros e à Defesa Civil... ou: não aplicável, por quê"
+                    value={unitForm.emergency_large_scale}
+                    onChange={(e) => setUnitForm({ ...unitForm, emergency_large_scale: e.target.value })}
+                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                  />
+                  <p className="text-[10px] text-slate-500 mt-1">
+                    A alínea vale &quot;quando aplicável&quot;. Se não for o caso aqui, escreva
+                    &quot;não aplicável&quot; e o motivo — em branco não é declaração.
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-[1fr_auto] gap-3">
+                  <div>
+                    <label className="block text-slate-400 font-semibold mb-1">
+                      Periodicidade dos simulados <span className="text-slate-600">(1.5.6.3)</span>
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Ex.: anual, com abandono total; semestral na área de caldeira"
+                      value={unitForm.emergency_drills}
+                      onChange={(e) => setUnitForm({ ...unitForm, emergency_drills: e.target.value })}
+                      className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                    />
+                    <p className="text-[10px] text-slate-500 mt-1">
+                      A NR-01 não fixa prazo: a periodicidade é a que o seu próprio
+                      procedimento definir — e é essa que o auditor cobra.
+                    </p>
+                  </div>
+                  <div>
+                    <label className="block text-slate-400 font-semibold mb-1">Último simulado</label>
+                    <input
+                      type="date"
+                      value={unitForm.emergency_drill_last_date}
+                      onChange={(e) => setUnitForm({ ...unitForm, emergency_drill_last_date: e.target.value })}
+                      className="bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                    />
+                    <p className="text-[10px] text-slate-500 mt-1">
+                      Subitem 1.5.6.3.1: evidência.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Prevencao e combate ao assedio sexual — secao 9.8 do PGR */}
+              <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 space-y-3">
+                <div>
+                  <h4 className="font-bold text-slate-200 text-xs flex items-center gap-1.5">
+                    <ShieldAlert className="w-4 h-4 text-teal-400" />
+                    Assédio e violência (PGR, seção 9.8)
+                  </h4>
+                  <p className="text-[11px] text-slate-500 mt-0.5">
+                    As três medidas do subitem 1.4.1.1 da NR-01 (Portaria MTP nº 4.219/2022).
+                    Valem para quem é <strong className="text-slate-400">obrigado a constituir
+                    CIPA</strong> nos termos da NR-05 — e o PGR lê isso do próprio
+                    dimensionamento: se este estabelecimento não se enquadra no Quadro I, a
+                    seção sai como não aplicável em vez de pendente.
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-slate-400 font-semibold mb-1">
+                    Regras de conduta e divulgação <span className="text-slate-600">(alínea &quot;a&quot;)</span>
+                  </label>
+                  <textarea
+                    rows={2}
+                    placeholder="Capítulo 7 do Regulamento Interno, revisão de 03/2026; divulgado no mural, na integração e por e-mail a todos os empregados"
+                    value={unitForm.harassment_conduct_rules}
+                    onChange={(e) => setUnitForm({ ...unitForm, harassment_conduct_rules: e.target.value })}
+                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                  />
+                  <p className="text-[10px] text-slate-500 mt-1">
+                    A alínea pede as regras <em>nas normas internas</em> e a ampla divulgação do
+                    conteúdo. Diga onde estão e como foram divulgadas.
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-slate-400 font-semibold mb-1">
+                    Canal e procedimento de denúncia <span className="text-slate-600">(alínea &quot;b&quot;)</span>
+                  </label>
+                  <textarea
+                    rows={2}
+                    placeholder="Canal por formulário e telefone 0800 operado por terceiro; comissão de apuração em até 30 dias; sanções previstas no regulamento; anonimato garantido"
+                    value={unitForm.harassment_report_channel}
+                    onChange={(e) => setUnitForm({ ...unitForm, harassment_report_channel: e.target.value })}
+                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                  />
+                  <p className="text-[10px] text-slate-500 mt-1">
+                    São quatro coisas na mesma alínea: recebimento e acompanhamento, apuração,
+                    sanções aos responsáveis diretos e indiretos, e anonimato de quem denuncia.
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-[1fr_auto] gap-3">
+                  <div>
+                    <label className="block text-slate-400 font-semibold mb-1">
+                      Ações de capacitação e sensibilização <span className="text-slate-600">(alínea &quot;c&quot;)</span>
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Ex.: palestra de 2h para todos os níveis, com módulo de igualdade e diversidade"
+                      value={unitForm.harassment_training_actions}
+                      onChange={(e) => setUnitForm({ ...unitForm, harassment_training_actions: e.target.value })}
+                      className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                    />
+                    <p className="text-[10px] text-slate-500 mt-1">
+                      Para <strong className="text-slate-400">todos os níveis hierárquicos</strong>,
+                      inclusive direção e chefias, sobre violência, assédio, igualdade e
+                      diversidade.
+                    </p>
+                  </div>
+                  <div>
+                    <label className="block text-slate-400 font-semibold mb-1">Última ação</label>
+                    <input
+                      type="date"
+                      value={unitForm.harassment_training_last_date}
+                      onChange={(e) => setUnitForm({ ...unitForm, harassment_training_last_date: e.target.value })}
+                      className="bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                    />
+                    <p className="text-[10px] text-slate-500 mt-1">
+                      A alínea exige no mínimo a cada 12 meses. Com a data, o PGR calcula o
+                      próximo prazo e aponta se venceu.
+                    </p>
+                  </div>
                 </div>
               </div>
 

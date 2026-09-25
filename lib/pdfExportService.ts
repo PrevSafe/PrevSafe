@@ -2881,6 +2881,24 @@ export function exportPGRDocumentPdf({
     return `PENDENTE — ${texto}`;
   };
 
+  /**
+   * Requisitos que o enquadramento afasta, pela chave `norma` do checklist.
+   *
+   * Sem isto o checklist da 10.2 so tem dois estados, e um requisito que nao
+   * se aplica ao estabelecimento sairia como "Atendido" - afirmar que foi
+   * cumprido algo que nunca foi exigido.
+   */
+  const naoAplicaveis = new Set<string>();
+
+  /** Data ISO + n meses, ou null se a data nao for utilizavel. */
+  const somarMeses = (iso: string, meses: number): string | null => {
+    if (!/^\d{4}-\d{2}-\d{2}/.test(iso)) return null;
+    const d = new Date(`${iso.slice(0, 10)}T00:00:00Z`);
+    if (Number.isNaN(d.getTime())) return null;
+    d.setUTCMonth(d.getUTCMonth() + meses);
+    return d.toISOString().slice(0, 10);
+  };
+
   // ------------------------------------------------------------------
   // Auxiliares de desenho
   // ------------------------------------------------------------------
@@ -3755,17 +3773,50 @@ export function exportPGRDocumentPdf({
     '(subitem 1.5.5.5.2).'
   );
 
-  secao('9.4 Preparação e resposta a emergências (subitem 1.5.6)');
+  secao('9.4 Preparação e resposta a emergências (item 1.5.6)');
+  paragrafo(
+    'Os procedimentos de resposta a emergências são estabelecidos, implementados e mantidos de ' +
+    'acordo com os riscos, as características e as circunstâncias das atividades (subitem ' +
+    '1.5.6.1) e preveem, no mínimo, os meios, responsáveis e recursos necessários para os ' +
+    'primeiros socorros, o encaminhamento de acidentados e o abandono dos locais afetados, e as ' +
+    'medidas necessárias para emergências de grande magnitude quando aplicável (alíneas "a" e ' +
+    '"b" do subitem 1.5.6.2).'
+  );
+
+  // Periodicidade e ultima realizacao andam juntas: a periodicidade e a
+  // promessa (subitem 1.5.6.3) e a data e a evidencia (subitem 1.5.6.3.1).
+  // A NR-01 nao fixa prazo, entao nada aqui compara a data com um prazo legal.
+  const simuladosDoEstabelecimento = (() => {
+    const periodicidade = estabelecimento?.emergency_drills?.trim();
+    const ultimo = estabelecimento?.emergency_drill_last_date?.trim();
+    if (!periodicidade && !ultimo) {
+      return pendente('9.4', 'Periodicidade e evidências dos exercícios simulados não cadastradas (subitens 1.5.6.3 e 1.5.6.3.1) (Hierarquia > Unidades).');
+    }
+    const partes: string[] = [];
+    partes.push(periodicidade
+      || pendente('9.4', 'Periodicidade dos exercícios simulados não cadastrada: o subitem 1.5.6.3 exige que o próprio procedimento a defina (Hierarquia > Unidades).'));
+    partes.push(ultimo
+      ? `Último simulado realizado em ${formatDate(ultimo)}.`
+      : pendente('9.4', 'Data do último exercício simulado não cadastrada: o subitem 1.5.6.3.1 exige evidência do exercício realizado (Hierarquia > Unidades).'));
+    return partes.join(' ');
+  })();
+
   tabela({
     head: [['Requisito', 'Definição da organização']],
     body: [
-      ['Cenários de emergência', pendente('9.4', 'Cenários de emergência não cadastrados.')],
-      ['Primeiros socorros e encaminhamento',
+      ['Cenários de emergência (1.5.6.1)',
+        estabelecimento?.emergency_scenarios?.trim()
+          || pendente('9.4', 'Cenários de emergência não cadastrados (Hierarquia > Unidades).')],
+      ['Primeiros socorros e encaminhamento (1.5.6.2 "a")',
         estabelecimento?.emergency_resources?.trim()
           || pendente('9.4', 'Recursos de primeiros socorros e hospital de referência não cadastrados (Hierarquia > Unidades).')],
-      ['Abandono de área', pendente('9.4', 'Rotas, alarme e ponto de encontro não cadastrados.')],
-      ['Emergências de grande magnitude', pendente('9.4', 'Tratamento das emergências de grande magnitude não definido.')],
-      ['Exercícios simulados', pendente('9.4', 'Periodicidade e evidências dos simulados não cadastradas (subitens 1.5.6.3 e 1.5.6.3.1).')]
+      ['Abandono dos locais afetados (1.5.6.2 "a")',
+        estabelecimento?.emergency_evacuation?.trim()
+          || pendente('9.4', 'Alarme, rotas de fuga, ponto de encontro e responsáveis pelo abandono não cadastrados (Hierarquia > Unidades).')],
+      ['Emergências de grande magnitude (1.5.6.2 "b")',
+        estabelecimento?.emergency_large_scale?.trim()
+          || pendente('9.4', 'Medidas para emergências de grande magnitude não declaradas. A alínea "b" vale quando aplicável: se não for o caso, declare por que (Hierarquia > Unidades).')],
+      ['Exercícios simulados e evidências (1.5.6.3)', simuladosDoEstabelecimento]
     ],
     columnStyles: { 0: { cellWidth: util * 0.34, fontStyle: 'bold' } },
     styles: { fontSize: 6.6, cellPadding: 1.6, overflow: 'linebreak' }
@@ -3793,8 +3844,90 @@ export function exportPGRDocumentPdf({
     7
   );
 
-  secao('9.8 Prevenção do assédio e da violência no trabalho (subitem 1.4.1.1)');
-  paragrafo(pendente('9.8', 'Regras de conduta, canal de denúncias e capacitação sobre assédio não cadastrados.'), 7);
+  secao('9.8 Prevenção e combate ao assédio sexual e às demais formas de violência (subitem 1.4.1.1)');
+
+  // O subitem 1.4.1.1 obriga as organizacoes OBRIGADAS A CONSTITUIR CIPA nos
+  // termos da NR-05, e a CIPA e dimensionada por estabelecimento (Quadro I).
+  // Por isso a aplicabilidade sai do dimensionamento, e nao de uma suposicao.
+  const enquadramentoCipa = dimensionamento?.cipa?.status || 'NAO_DIMENSIONADO';
+
+  if (enquadramentoCipa === 'CIPA') {
+    paragrafo(
+      'A organização é obrigada a constituir CIPA neste estabelecimento ' +
+      `(${dimensionamento?.cipa?.efetivos} efetivo(s) pelo Quadro I da NR-05), o que a sujeita às ` +
+      'medidas do subitem 1.4.1.1 da NR-01, incluído pela Portaria MTP nº 4.219, de 20 de ' +
+      'dezembro de 2022, além de outras que entenda necessárias.'
+    );
+
+    // Alinea "c": no minimo a cada 12 meses. O prazo esta na propria alinea,
+    // por isso aqui se pode dizer que venceu - o que a 9.4 nao pode fazer com
+    // os simulados, cuja periodicidade a NR-01 nao fixa.
+    const capacitacaoAssedio = (() => {
+      const acoes = estabelecimento?.harassment_training_actions?.trim();
+      const ultima = estabelecimento?.harassment_training_last_date?.trim();
+      if (!acoes && !ultima) {
+        return pendente('9.8', 'Ações de capacitação, orientação e sensibilização sobre violência, assédio, igualdade e diversidade não cadastradas (alínea "c" do subitem 1.4.1.1) (Hierarquia > Unidades).');
+      }
+      const partes: string[] = [];
+      if (acoes) partes.push(acoes);
+      const prazo = ultima ? somarMeses(ultima, 12) : null;
+      if (ultima && prazo) {
+        partes.push(`Última ação em ${formatDate(ultima)}; a alínea "c" exige nova ação até ${formatDate(prazo)}.`);
+        if (prazo < emissao) {
+          partes.push(pendente('9.8', `Ação de capacitação sobre assédio vencida: a última foi em ${formatDate(ultima)} e o intervalo máximo de 12 meses da alínea "c" do subitem 1.4.1.1 terminou em ${formatDate(prazo)}.`));
+        }
+      } else {
+        partes.push(pendente('9.8', 'Data da última ação de capacitação sobre assédio não cadastrada: sem ela não se comprova o intervalo máximo de 12 meses da alínea "c" (Hierarquia > Unidades).'));
+      }
+      return partes.join(' ');
+    })();
+
+    tabela({
+      head: [['Medida do subitem 1.4.1.1', 'Como a organização atende']],
+      body: [
+        ['a) Regras de conduta sobre assédio sexual e outras formas de violência nas normas internas, com ampla divulgação',
+          estabelecimento?.harassment_conduct_rules?.trim()
+            || pendente('9.8', 'Regras de conduta sobre assédio nas normas internas e a forma de divulgação não cadastradas (alínea "a" do subitem 1.4.1.1) (Hierarquia > Unidades).')],
+        ['b) Procedimentos de recebimento e acompanhamento de denúncias, apuração dos fatos e sanções administrativas, garantido o anonimato de quem denuncia',
+          estabelecimento?.harassment_report_channel?.trim()
+            || pendente('9.8', 'Canal e procedimento de denúncia, apuração e sanções não cadastrados (alínea "b" do subitem 1.4.1.1) (Hierarquia > Unidades).')],
+        ['c) Ações de capacitação, orientação e sensibilização, no mínimo a cada 12 meses, para todos os níveis hierárquicos',
+          capacitacaoAssedio]
+      ],
+      columnStyles: { 0: { cellWidth: util * 0.42, fontStyle: 'bold' } },
+      styles: { fontSize: 6.6, cellPadding: 1.6, overflow: 'linebreak' }
+    });
+  } else if (enquadramentoCipa === 'REPRESENTANTE_NR05') {
+    // Nao se enquadra no Quadro I: nao ha CIPA a constituir, e o subitem
+    // 1.4.1.1 nao alcanca o estabelecimento. Nao e pendencia, e tambem nao e
+    // requisito atendido - ver `naoAplicaveis`.
+    naoAplicaveis.add('1.4.1.1');
+    paragrafo(
+      'O subitem 1.4.1.1 alcança as organizações obrigadas a constituir CIPA nos termos da ' +
+      'NR-05. Este estabelecimento não se enquadra no Quadro I da NR-05 e nomeia representante ' +
+      'da NR-05 (item 5.4.13), de modo que as medidas daquele subitem não lhe são exigíveis. ' +
+      'Permanecem exigíveis o levantamento e o controle dos fatores de risco psicossociais ' +
+      'relacionados ao trabalho, tratados nas seções 5.3 e 7.4 deste PGR, e a violência no ' +
+      'trabalho continua a ser perigo a inventariar quando presente.'
+    );
+    const adotadas = [
+      estabelecimento?.harassment_conduct_rules?.trim()
+        && `Regras de conduta: ${estabelecimento.harassment_conduct_rules.trim()}`,
+      estabelecimento?.harassment_report_channel?.trim()
+        && `Canal de denúncia: ${estabelecimento.harassment_report_channel.trim()}`,
+      estabelecimento?.harassment_training_actions?.trim()
+        && `Capacitação: ${estabelecimento.harassment_training_actions.trim()}`
+    ].filter(Boolean) as string[];
+    if (adotadas.length > 0) {
+      paragrafo('A organização adota, por iniciativa própria, as medidas abaixo:', 7);
+      lista(adotadas);
+    }
+  } else {
+    paragrafo(
+      pendente('9.8', 'Não é possível dizer se o subitem 1.4.1.1 se aplica: ele alcança quem é obrigado a constituir CIPA, e o Quadro I da NR-05 não pôde ser aplicado. Informe o grau de risco e o efetivo do estabelecimento.'),
+      7
+    );
+  }
 
   secao('9.9 Revisão da avaliação de riscos');
   paragrafo(
@@ -3826,16 +3959,19 @@ export function exportPGRDocumentPdf({
   tabela({
     head: [['Requisito', 'NR-01', 'Onde está', 'Situação']],
     body: PGR_CHECKLIST.map((item) => {
-      const pendente_ = item.secoes.some((sec) => secoesComPendencia.has(sec));
+      const naoAplicavel = naoAplicaveis.has(item.norma);
+      const pendente_ = !naoAplicavel && item.secoes.some((sec) => secoesComPendencia.has(sec));
       return [
         item.requisito,
         item.norma,
         item.onde,
         {
-          content: pendente_ ? 'Com pendência' : 'Atendido',
-          styles: pendente_
-            ? { textColor: [180, 83, 9] as [number, number, number], fontStyle: 'bold' as const }
-            : {}
+          content: naoAplicavel ? 'Não aplicável' : pendente_ ? 'Com pendência' : 'Atendido',
+          styles: naoAplicavel
+            ? { textColor: [100, 116, 139] as [number, number, number] }
+            : pendente_
+              ? { textColor: [180, 83, 9] as [number, number, number], fontStyle: 'bold' as const }
+              : {}
         }
       ];
     }),

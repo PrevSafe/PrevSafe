@@ -270,8 +270,41 @@ const UNIDADE = {
   work_shifts_description: '07h-17h, seg-sex; sem turno noturno',
   legal_representative: 'Marcos Tavares - socio administrador',
   pgr_coordinator: 'Juliana Reis - gerente administrativa',
-  external_work_fronts: 'Atendimento domiciliar de fisioterapia na regiao central'
+  external_work_fronts: 'Atendimento domiciliar de fisioterapia na regiao central',
+  emergency_scenarios: 'Incendio na sala de arquivo, choque no quadro de distribuicao, queda de paciente na rampa',
+  emergency_evacuation: 'Alarme manual na recepcao, rota unica sinalizada ate a calcada, ponto de encontro no estacionamento, contagem pela recepcionista de plantao',
+  emergency_large_scale: 'Nao aplicavel: sem processo de grande porte, sem inflamaveis a granel e sem vizinhanca industrial',
+  emergency_drills: 'Anual, com abandono total da edificacao',
+  emergency_drill_last_date: '2026-04-18',
+  harassment_conduct_rules: 'Capitulo 7 do Regulamento Interno, revisao de 03/2026, divulgado no mural e na integracao',
+  harassment_report_channel: 'Formulario lacrado na recepcao e telefone da contabilidade externa; apuracao em 30 dias pela diretoria; anonimato garantido',
+  harassment_training_actions: 'Palestra de 2h para todos os niveis, com modulo de igualdade e diversidade',
+  harassment_training_last_date: '2026-05-20'
 };
+
+/** O mesmo estabelecimento sem os campos da secao 9.8. */
+const UNIDADE_SEM_ASSEDIO = (() => {
+  const u = { ...UNIDADE };
+  delete u.harassment_conduct_rules;
+  delete u.harassment_report_channel;
+  delete u.harassment_training_actions;
+  delete u.harassment_training_last_date;
+  return u;
+})();
+
+/** Capacitacao da alinea "c" realizada ha mais de 12 meses. */
+const UNIDADE_ASSEDIO_VENCIDO = { ...UNIDADE, harassment_training_last_date: '2024-02-10' };
+
+/**
+ * Efetivo que obriga a CIPA: grau de risco 2 na faixa de 51 a 80 empregados
+ * da o Quadro I com 1 efetivo. So entao o subitem 1.4.1.1 alcanca a
+ * organizacao. Com os 2 empregados da fixture principal, o estabelecimento
+ * nomeia representante da NR-05 (item 5.4.13) e a secao 9.8 nao se aplica.
+ */
+const FUNCIONARIOS_COM_CIPA = Array.from({ length: 60 }, (_, i) => ({
+  id: `ec${i}`, ghe_id: 'g1', client_id: 'c1', name: `Colaborador ${i}`,
+  job_title: 'Recepcionista', status: 'ACTIVE',
+}));
 
 function gerar(args) {
   ultimoPdf = null;
@@ -584,6 +617,145 @@ check(
 for (const campo of [
   'outsourced_worker_count', 'work_shifts_description',
   'legal_representative', 'pgr_coordinator', 'external_work_fronts'
+]) {
+  check(
+    hierarquia.includes(`${campo}: unitForm.${campo}`) && hierarquia.includes(`${campo}: unit.${campo}`),
+    `a tela grava e recarrega ${campo}`
+  );
+}
+
+// ===========================================================================
+// 3e. EMERGENCIAS (item 1.5.6) E ASSEDIO (subitem 1.4.1.1)
+// ===========================================================================
+console.log('');
+console.log('--- 3e. Emergencias (9.4) e assedio (9.8) ---');
+
+// --- 9.4: o que o estabelecimento definiu -----------------------------------
+check(tc.includes('9.4 Preparação e resposta a emergências (item 1.5.6)'), '9.4 cita o item 1.5.6');
+check(tc.includes('1.5.6.1'), '9.4 cita o subitem dos procedimentos');
+check(
+  tc.includes('alíneas "a" e "b" do subitem 1.5.6.2'),
+  '9.4 cita as duas alineas do conteudo minimo'
+);
+check(tc.includes('Incendio na sala de arquivo'), '9.4 traz os cenarios cadastrados');
+check(tc.includes('Alarme manual na recepcao'), '9.4 traz o abandono dos locais afetados');
+check(
+  tc.includes('Nao aplicavel: sem processo de grande porte'),
+  '9.4 imprime a declaracao de nao aplicabilidade da grande magnitude'
+);
+check(tc.includes('Anual, com abandono total'), '9.4 traz a periodicidade dos simulados');
+check(tc.includes('Último simulado realizado em 18/04/2026'), '9.4 traz a data do ultimo simulado');
+
+// Sem estabelecimento, cada uma das quatro aponta a tela.
+for (const [rotulo, texto_] of [
+  ['cenarios', 'Cenários de emergência não cadastrados (Hierarquia > Unidades)'],
+  ['abandono', 'ponto de encontro e responsáveis pelo abandono não cadastrados (Hierarquia > Unidades)'],
+  ['grande magnitude', 'Medidas para emergências de grande magnitude não declaradas'],
+  ['simulados', 'exercícios simulados não cadastradas (subitens 1.5.6.3 e 1.5.6.3.1)'],
+]) {
+  check(semUnidade.includes(texto_), `sem estabelecimento, a pendencia de ${rotulo} aponta a tela`);
+}
+
+// A NR-01 nao fixa prazo para o simulado: o documento nao pode inventar um.
+check(
+  !/simulado[^.]{0,80}a cada \d+ meses/i.test(tc),
+  '9.4 nao atribui prazo legal ao simulado, que a NR-01 nao fixa'
+);
+
+// --- 9.8: a aplicabilidade sai do dimensionamento da CIPA -------------------
+check(
+  tc.includes('9.8 Prevenção e combate ao assédio sexual'),
+  '9.8 usa o titulo do subitem 1.4.1.1'
+);
+
+// Com 2 empregados e grau 2 nao ha CIPA a constituir: item 5.4.13 da NR-05.
+check(
+  tc.includes('não lhe são exigíveis') && tc.includes('item 5.4.13'),
+  '9.8 diz que o subitem nao alcanca quem nao constitui CIPA'
+);
+check(
+  !tc.includes('Regras de conduta sobre assédio nas normas internas'),
+  '9.8 nao cobra as tres medidas de quem nao esta obrigado a CIPA'
+);
+check(tc.includes('Não aplicável'), 'o checklist da 10.2 ganhou o estado "Nao aplicavel"');
+check(
+  tc.includes('por iniciativa própria') && tc.includes('Capitulo 7 do Regulamento Interno'),
+  '9.8 imprime como adocao voluntaria o que foi cadastrado sem obrigacao'
+);
+
+// Obrigada a CIPA: as tres alineas passam a ser cobradas.
+const comCipa = corrido(gerar({
+  client: CLIENTE, organization: ORG, ghes: GHES, risks: [RISCO_CLASSIFICADO],
+  employees: FUNCIONARIOS_COM_CIPA, sectors: SETORES, units: [UNIDADE],
+}));
+check(
+  comCipa.includes('obrigada a constituir CIPA neste estabelecimento'),
+  '9.8 reconhece a obrigacao a partir do Quadro I da NR-05'
+);
+check(
+  comCipa.includes('Portaria MTP nº 4.219, de 20 de dezembro de 2022'),
+  '9.8 cita a portaria que incluiu o subitem 1.4.1.1'
+);
+for (const alinea of [
+  'a) Regras de conduta sobre assédio sexual',
+  'b) Procedimentos de recebimento e acompanhamento de denúncias',
+  'c) Ações de capacitação, orientação e sensibilização, no mínimo a cada 12 meses',
+]) {
+  check(comCipa.includes(alinea), `9.8 traz a medida "${alinea.slice(0, 26)}..."`);
+}
+check(
+  comCipa.includes('garantido o anonimato de quem denuncia'),
+  '9.8 nao omite o anonimato, que esta na propria alinea "b"'
+);
+check(
+  comCipa.includes('Última ação em 20/05/2026') && comCipa.includes('nova ação até 20/05/2027'),
+  '9.8 calcula o prazo de 12 meses da alinea "c"'
+);
+check(
+  !comCipa.includes('Não aplicável'),
+  'obrigada a CIPA, o checklist nao marca o requisito como nao aplicavel'
+);
+
+// Obrigada a CIPA e sem os dados: tres pendencias, nao tres frases vazias.
+const comCipaSemDados = corrido(gerar({
+  client: CLIENTE, organization: ORG, ghes: GHES, risks: [RISCO_CLASSIFICADO],
+  employees: FUNCIONARIOS_COM_CIPA, sectors: SETORES, units: [UNIDADE_SEM_ASSEDIO],
+}));
+for (const [rotulo, texto_] of [
+  ['"a"', 'Regras de conduta sobre assédio nas normas internas'],
+  ['"b"', 'Canal e procedimento de denúncia, apuração e sanções não cadastrados'],
+  ['"c"', 'sensibilização sobre violência, assédio, igualdade e diversidade não cadastradas'],
+]) {
+  check(comCipaSemDados.includes(texto_), `sem dado, a alinea ${rotulo} sai como pendencia`);
+}
+
+// Capacitacao vencida: o prazo esta na propria alinea "c", entao o PGR pode dizer.
+const assedioVencido = corrido(gerar({
+  client: CLIENTE, organization: ORG, ghes: GHES, risks: [RISCO_CLASSIFICADO],
+  employees: FUNCIONARIOS_COM_CIPA, sectors: SETORES, units: [UNIDADE_ASSEDIO_VENCIDO],
+}));
+check(
+  assedioVencido.includes('Ação de capacitação sobre assédio vencida')
+  && assedioVencido.includes('terminou em 10/02/2025'),
+  '9.8 aponta a capacitacao vencida com a data do vencimento'
+);
+
+// Sem grau de risco nao da para dizer se o subitem se aplica.
+const semGrau = corrido(gerar({
+  client: { ...CLIENTE, risk_degree: undefined }, organization: ORG, ghes: GHES,
+  risks: [RISCO_CLASSIFICADO], employees: FUNCIONARIOS_COM_CIPA, sectors: SETORES, units: [UNIDADE],
+}));
+check(
+  semGrau.includes('Não é possível dizer se o subitem 1.4.1.1 se aplica'),
+  'sem grau de risco, a 9.8 declara a duvida em vez de decidir'
+);
+
+// A tela grava e recarrega os nove campos novos.
+for (const campo of [
+  'emergency_scenarios', 'emergency_evacuation', 'emergency_large_scale',
+  'emergency_drills', 'emergency_drill_last_date',
+  'harassment_conduct_rules', 'harassment_report_channel',
+  'harassment_training_actions', 'harassment_training_last_date',
 ]) {
   check(
     hierarquia.includes(`${campo}: unitForm.${campo}`) && hierarquia.includes(`${campo}: unit.${campo}`),

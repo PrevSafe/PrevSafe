@@ -301,6 +301,55 @@ export interface ClientUnit {
   pgr_coordinator?: string;
   /** Servicos em clientes, trabalho externo, teletrabalho (1.3). */
   external_work_fronts?: string;
+
+  /**
+   * PREPARACAO E RESPOSTA A EMERGENCIAS — secao 9.4 do PGR (item 1.5.6).
+   *
+   * Os procedimentos sao definidos "de acordo com os riscos, as
+   * caracteristicas e as circunstancias das atividades" (subitem 1.5.6.1),
+   * ou seja: por estabelecimento. O que a matriz faz nao serve para a obra.
+   *
+   * `emergency_resources` (secao 6.1) ja cobre os meios de primeiros socorros
+   * e o hospital de referencia da alinea "a" do subitem 1.5.6.2.
+   */
+  /** Subitem 1.5.6.1: incendio, vazamento, choque, soterramento, colapso... */
+  emergency_scenarios?: string;
+  /** Alinea "a" do 1.5.6.2: abandono dos locais afetados — alarme, rotas, ponto de encontro, brigada. */
+  emergency_evacuation?: string;
+  /**
+   * Alinea "b" do 1.5.6.2: emergencias de grande magnitude, QUANDO APLICAVEL.
+   * Nao aplicavel se declara por extenso, com o porque; em branco nao e
+   * declaracao de inexistencia.
+   */
+  emergency_large_scale?: string;
+  /**
+   * Subitem 1.5.6.3: periodicidade dos exercicios simulados. A NR-01 nao fixa
+   * prazo — a periodicidade e a que o proprio procedimento definir, e e ela
+   * que o auditor cobra.
+   */
+  emergency_drills?: string;
+  /** Data do ultimo simulado realizado (evidencia do subitem 1.5.6.3.1). */
+  emergency_drill_last_date?: string;
+
+  /**
+   * PREVENCAO E COMBATE AO ASSEDIO SEXUAL — secao 9.8 do PGR.
+   *
+   * As tres alineas do subitem 1.4.1.1 (incluido pela Portaria MTP 4.219/2022)
+   * obrigam apenas as organizacoes obrigadas a constituir CIPA nos termos da
+   * NR-05 — e a CIPA e dimensionada POR ESTABELECIMENTO (Quadro I). Por isso
+   * os campos ficam aqui: a matriz pode ser obrigada e o posto de servico nao.
+   *
+   * Regras de conduta e canal costumam ser corporativos e repetem entre
+   * estabelecimentos do mesmo cliente; a evidencia da capacitacao nao.
+   */
+  /** Alinea "a": onde as regras de conduta estao e como foram divulgadas. */
+  harassment_conduct_rules?: string;
+  /** Alinea "b": canal e procedimento de denuncia, apuracao, sancoes e anonimato. */
+  harassment_report_channel?: string;
+  /** Alinea "c": as acoes de capacitacao, orientacao e sensibilizacao realizadas. */
+  harassment_training_actions?: string;
+  /** Data da ultima acao. A alinea "c" exige no minimo a cada 12 meses. */
+  harassment_training_last_date?: string;
 }
 
 // 21. Leads
