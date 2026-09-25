@@ -27,6 +27,7 @@ import { dataDeHoje } from '@/lib/datas';
 import { formatarCPF } from '@/lib/validacoesBr';
 import { exameSugeridosParaAso } from '@/lib/esocialDados';
 import { VERSAO_DO_DOCUMENTO } from '@/lib/versaoDoDocumento';
+import { GATILHOS_DE_TREINAMENTO_EVENTUAL, BASE_POR_EXTENSO } from '@/lib/catalogoDeTreinamentos';
 import {
   classificarRisco,
   matrizDoModelo,
@@ -2823,7 +2824,9 @@ export function exportPGRDocumentPdf({
   units = [],
   contractedOrganizations = [],
   machinesEquipment = [],
-  chemicalProducts = []
+  chemicalProducts = [],
+  trainingRequirements = [],
+  jobs = []
 }: {
   client: Client;
   organization: Organization;
@@ -2835,6 +2838,8 @@ export function exportPGRDocumentPdf({
   contractedOrganizations?: any[];
   machinesEquipment?: any[];
   chemicalProducts?: any[];
+  trainingRequirements?: any[];
+  jobs?: any[];
 }) {
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
   const pageWidth = doc.internal.pageSize.getWidth();
@@ -4281,15 +4286,145 @@ export function exportPGRDocumentPdf({
     'item 1.4.1) e ficam registradas no sistema.'
   );
 
-  secao('9.7 Capacitação e treinamento');
+  secao('9.7 Capacitação e treinamento (item 1.7)');
   paragrafo(
-    'Os treinamentos exigidos pelas NR aplicáveis constam da matriz de capacitação, com inicial, ' +
-    'periódico e eventual (subitem 1.7.1.2). Cada certificado contém nome e assinatura do ' +
-    'trabalhador, conteúdo programático, carga horária, data, local, nome e qualificação dos ' +
-    'instrutores e assinatura do responsável técnico (subitem 1.7.1.1).\n\n' +
-    pendente('9.7', 'Matriz de treinamentos por função não cadastrada.'),
+    'Os treinamentos exigidos pelas NR aplicáveis constam da matriz de capacitação abaixo, com ' +
+    'inicial, periódico e eventual (subitem 1.7.1.2). O treinamento inicial ocorre antes de o ' +
+    'trabalhador iniciar suas funções ou no prazo especificado em NR (subitem 1.7.1.2.1), e o ' +
+    'periódico segue a periodicidade estabelecida na NR ou, quando esta não a estabelece, prazo ' +
+    'determinado pelo empregador (subitem 1.7.1.2.2). Cada certificado contém nome e assinatura ' +
+    'do trabalhador, conteúdo programático, carga horária, data, local, nome e qualificação dos ' +
+    'instrutores e assinatura do responsável técnico do treinamento (subitem 1.7.1.1). O tempo ' +
+    'despendido é considerado de trabalho efetivo (subitem 1.7.2).'
+  );
+
+  const matrizDoCliente = (trainingRequirements || []).filter(
+    (t: any) => t?.client_id === client.id && t?.status !== 'INACTIVE'
+  );
+
+  if (matrizDoCliente.length === 0) {
+    // Aqui nao ha declaracao de inexistencia possivel: o subitem 1.7.1.2.1
+    // exige treinamento inicial de todo trabalhador antes de iniciar as
+    // funcoes, sem excecao. Matriz vazia e sempre pendencia.
+    paragrafo(
+      pendente('9.7', 'Matriz de capacitação não cadastrada (Engenharia SST > Matriz de Capacitação). O subitem 1.7.1.2.1 exige treinamento inicial de todo trabalhador antes de iniciar suas funções, de modo que a matriz nunca é vazia.'),
+      7
+    );
+  } else {
+    const nomeDoCargo = (id: string) =>
+      (jobs || []).find((j: any) => j?.id === id)?.name || '';
+    const nomeDoGhe = (id: string) =>
+      gheDoCliente.find((g: any) => g?.id === id)?.code
+      || gheDoCliente.find((g: any) => g?.id === id)?.name || '';
+
+    const linhas = matrizDoCliente.map((t: any) => {
+      const faltando: string[] = [];
+
+      const alcance = [
+        ...(Array.isArray(t?.job_ids) ? t.job_ids.map(nomeDoCargo) : []),
+        ...(Array.isArray(t?.ghe_ids) ? t.ghe_ids.map(nomeDoGhe) : []),
+        t?.audience_note?.trim()
+      ].filter(Boolean).join('; ');
+      if (!alcance) {
+        faltando.push('a quem se aplica: cargo, GHE ou descrição do público');
+      }
+
+      if (!t?.basis) {
+        faltando.push('se a carga horária e a periodicidade são fixadas na NR ou definidas pelo empregador (subitem 1.7.1.2.2)');
+      }
+      if (!t?.initial_hours?.trim()) {
+        faltando.push('carga horária do treinamento inicial');
+      }
+      // Sem periodicidade nenhuma o periodico do subitem 1.7.1.2 fica sem
+      // prazo - inclusive quando quem o determina e o empregador.
+      if (!t?.periodic_months) {
+        faltando.push('periodicidade do treinamento periódico, que a NR estabelece ou o empregador determina (subitem 1.7.1.2.2)');
+      }
+
+      if (faltando.length > 0) {
+        pendente('9.7', `Treinamento ${t?.name || 'sem nome'}: falta ${faltando.join('; ')}.`);
+      }
+
+      const periodico = t?.periodic_months
+        ? `A cada ${t.periodic_months} ${t.periodic_months === 1 ? 'mês' : 'meses'}`
+          + (t?.periodic_hours?.trim() ? `, ${t.periodic_hours.trim()}` : '')
+        : 'PENDENTE';
+
+      return [
+        t?.name || 'Sem nome',
+        [t?.norm?.trim(), t?.norm_reference?.trim()].filter(Boolean).join('\n') || '—',
+        alcance || 'PENDENTE',
+        t?.initial_hours?.trim() || 'PENDENTE',
+        periodico,
+        t?.basis ? BASE_POR_EXTENSO[t.basis as keyof typeof BASE_POR_EXTENSO] : 'PENDENTE'
+      ];
+    });
+
+    tabela({
+      head: [['Treinamento', 'Norma e subitem', 'A quem se aplica', 'Inicial', 'Periódico', 'Carga e prazo']],
+      body: linhas,
+      columnStyles: {
+        0: { cellWidth: util * 0.20, fontStyle: 'bold' },
+        1: { cellWidth: util * 0.16 },
+        3: { cellWidth: util * 0.08, halign: 'center' },
+        4: { cellWidth: util * 0.14 },
+        5: { cellWidth: util * 0.18 }
+      },
+      styles: { fontSize: 6.0, cellPadding: 1.3, overflow: 'linebreak' }
+    });
+
+    // Quem definiu a carga: a NR ou o empregador. Atribuir a NR um numero que
+    // ela nao fixa e o erro classico desta secao - a NR-12 deixa a carga
+    // expressamente ao empregador (alinea "c" do subitem 12.16.3).
+    if (matrizDoCliente.some((t: any) => t?.basis === 'EMPREGADOR')) {
+      paragrafo(
+        'Nas linhas marcadas como definidas pelo empregador, a NR exige o treinamento mas não ' +
+        'fixa carga horária ou periodicidade: quem as determina é a organização, e a matriz ' +
+        'registra o que ela determinou (subitem 1.7.1.2.2 da NR-01).',
+        6.8
+      );
+    }
+
+    // Coerencia com as secoes 6.4, 6.5 e 7: o que esta cadastrado no PGR
+    // pressupoe treinamento na matriz.
+    const temNorma = (n: string) =>
+      matrizDoCliente.some((t: any) => String(t?.norm || '').toUpperCase().replace(/[^0-9A-Z]/g, '') === n);
+
+    const maquinasNr12 = (machinesEquipment || []).filter(
+      (m: any) => m?.client_id === client.id && (m?.applicable_norms || []).includes('NR_12')
+    );
+    if (maquinasNr12.length > 0 && !temNorma('NR12')) {
+      pendente('9.7', `Há ${maquinasNr12.length} máquina(s) com requisito de NR-12 na seção 6.5 e nenhum treinamento de NR-12 na matriz. O subitem 12.16.1 exige que a operação, manutenção e inspeção sejam feitas por trabalhador capacitado e autorizado.`);
+    }
+
+    const equipamentosNr13 = (machinesEquipment || []).filter(
+      (m: any) => m?.client_id === client.id && (m?.applicable_norms || []).includes('NR_13')
+    );
+    if (equipamentosNr13.length > 0 && !temNorma('NR13')) {
+      pendente('9.7', `Há ${equipamentosNr13.length} equipamento(s) da NR-13 na seção 6.5 e nenhum treinamento de NR-13 na matriz.`);
+    }
+
+    const quimicos = (chemicalProducts || []).filter(
+      (q: any) => q?.client_id === client.id && q?.status !== 'INACTIVE'
+    );
+    if (quimicos.length > 0 && !temNorma('NR26')) {
+      pendente('9.7', `Há ${quimicos.length} produto(s) químico(s) na seção 6.4 e nenhum treinamento de NR-26 na matriz, exigido pelo subitem 26.5.2.`);
+    }
+
+    const comEpi = riscosDoCliente.filter((r: any) => r?.epi_required);
+    if (comEpi.length > 0 && !temNorma('NR06')) {
+      pendente('9.7', `Há ${comEpi.length} risco(s) no inventário com EPI exigido e nenhum treinamento de NR-06 na matriz. A alínea "d" do subitem 6.6.1 obriga a orientar e treinar sobre uso adequado, guarda e conservação do EPI.`);
+    }
+  }
+
+  // O eventual nao e linha da matriz: e gatilho.
+  paragrafo(
+    'Independentemente do treinamento periódico, o treinamento eventual ocorre nas situações do ' +
+    'subitem 1.7.1.2.3, com carga horária, prazo e conteúdo que atendam à situação que o ' +
+    'motivou (subitem 1.7.1.2.3.1):',
     7
   );
+  lista(GATILHOS_DE_TREINAMENTO_EVENTUAL);
 
   secao('9.8 Prevenção e combate ao assédio sexual e às demais formas de violência (subitem 1.4.1.1)');
 

@@ -106,11 +106,12 @@ try {
   inconclusivo('não foi possível carregar o jspdf', e.message);
 }
 
-let servico, classif, situacao;
+let servico, classif, situacao, catTreinamentos;
 try {
   servico = require_(achar('pdfExportService.js'));
   classif = require_(achar('classificacaoDeRisco.js'));
   situacao = require_(achar('situacaoOperacional.js'));
+  catTreinamentos = require_(achar('catalogoDeTreinamentos.js'));
 } catch (e) {
   inconclusivo('não foi possível carregar os módulos compilados', e.message);
 }
@@ -459,6 +460,38 @@ const QUIMICO_DE_OUTRO_CLIENTE = {
 const UNIDADE_SEM_QUIMICO = {
   ...UNIDADE, no_chemical_products_declared_at: '2026-09-17'
 };
+/**
+ * Linhas da matriz de capacitacao.
+ *
+ * A de NR-35 e completa e conferida; a de NR-12 exercita `basis` EMPREGADOR,
+ * que e o caso em que a norma NAO fixa carga; e a incompleta exercita a
+ * pendencia agrupada.
+ */
+const CAPACITACAO_NR35 = {
+  id: 'cp1', client_id: 'c1', status: 'ACTIVE',
+  name: 'Trabalho em altura', norm: 'NR-35',
+  norm_reference: 'subitens 35.3.2 e 35.3.3.1', catalog_key: 'nr35-altura',
+  basis: 'NORMA', initial_hours: '8 h', periodic_months: 24, periodic_hours: '8 h',
+  audience_note: 'Trabalhadores que executam trabalho em altura',
+};
+const CAPACITACAO_NR12 = {
+  id: 'cp2', client_id: 'c1', status: 'ACTIVE',
+  name: 'Operacao, manutencao e inspecao de maquinas', norm: 'NR-12',
+  norm_reference: 'subitens 12.16.2 e 12.16.3', catalog_key: 'nr12-maquinas',
+  basis: 'EMPREGADOR', initial_hours: '4 h', periodic_months: 12,
+  job_ids: ['cargo-1'],
+};
+const CAPACITACAO_INCOMPLETA = {
+  id: 'cp3', client_id: 'c1', status: 'ACTIVE',
+  name: 'Integracao em SST', norm: 'NR-01',
+};
+/** Linha de OUTRO cliente: nao pode aparecer neste PGR. */
+const CAPACITACAO_DE_OUTRO_CLIENTE = {
+  id: 'cp9', client_id: 'cli-9', status: 'ACTIVE',
+  name: 'Brigada de incendio de outra empresa', norm: 'NR-23',
+};
+const CARGOS = [{ id: 'cargo-1', client_id: 'c1', name: 'Tecnico de manutencao', status: 'ACTIVE' }];
+
 /** Risco quimico no inventario, para a checagem de coerencia da 6.4 com a 7. */
 const RISCO_QUIMICO = {
   id: 'rq1', ghe_id: 'g1', client_id: 'c1', risk_category: 'QUIMICO',
@@ -490,6 +523,11 @@ const pdfCheio = gerar({
     QUIMICO_PERIGOSO_COMPLETO, QUIMICO_SANEANTE, QUIMICO_SANEANTE_SEM_REGISTRO,
     QUIMICO_NAO_PERIGOSO, QUIMICO_SEM_CLASSIFICACAO, QUIMICO_DE_OUTRO_CLIENTE
   ],
+  trainingRequirements: [
+    CAPACITACAO_NR35, CAPACITACAO_NR12, CAPACITACAO_INCOMPLETA,
+    CAPACITACAO_DE_OUTRO_CLIENTE
+  ],
+  jobs: CARGOS,
 });
 const pdfVazio = gerar({
   client: CLIENTE, organization: ORG, ghes: [], risks: [], employees: [], sectors: [], units: [],
@@ -1357,6 +1395,234 @@ check(
 );
 check(sync.includes("'chemicalProducts'"), 'a colecao dos produtos e sincronizada');
 check(contexto.includes('parsed.chemicalProducts'), 'o snapshot carrega os produtos');
+
+// ===========================================================================
+// 3i. MATRIZ DE CAPACITACAO (secao 9.7) E O CATALOGO DAS NR
+// ===========================================================================
+console.log('');
+console.log('--- 3i. Matriz de capacitacao (9.7) ---');
+
+const {
+  CATALOGO_DE_TREINAMENTOS, GATILHOS_DE_TREINAMENTO_EVENTUAL, catalogoPorChave, CHAVE_CIPA
+} = catTreinamentos;
+
+// --- O catalogo: toda linha tem fonte, e nenhuma carga sem base normativa ---
+check(CATALOGO_DE_TREINAMENTOS.length > 0, `o catalogo tem ${CATALOGO_DE_TREINAMENTOS.length} treinamentos`);
+check(
+  CATALOGO_DE_TREINAMENTOS.every((t) => t.fonte && /\d/.test(t.fonte)),
+  'toda linha do catalogo cita um subitem com numero'
+);
+check(
+  CATALOGO_DE_TREINAMENTOS.every((t) => t.norma && /^NR-\d{2}$/.test(t.norma)),
+  'toda linha do catalogo nomeia a NR de origem'
+);
+check(
+  CATALOGO_DE_TREINAMENTOS.every((t) => ['NORMA', 'EMPREGADOR', 'ORGANIZACAO'].includes(t.base)),
+  'toda linha declara de onde vem a carga: norma, empregador ou organizacao'
+);
+// O ponto central: carga ou periodicidade so podem vir preenchidas quando a
+// NORMA as fixa. Preenche-las numa linha 'EMPREGADOR' seria atribuir a NR um
+// numero que ela nao tem - o defeito que a NR-12 torna obvio.
+check(
+  CATALOGO_DE_TREINAMENTOS.filter((t) => t.base === 'EMPREGADOR')
+    .every((t) => !t.cargaInicial && !t.periodicidadeMeses && !t.cargaPeriodica),
+  'linha "definida pelo empregador" nao traz carga nem periodicidade de norma'
+);
+check(
+  CATALOGO_DE_TREINAMENTOS.filter((t) => t.base === 'NORMA' && t.chave !== CHAVE_CIPA)
+    .every((t) => !!t.cargaInicial),
+  'toda linha "fixada na NR" traz a carga inicial que a norma fixa'
+);
+// A CIPA e a excecao deliberada: a carga depende do grau de risco, e vem de
+// lib/nr5Quadros.ts em vez de numero fixo aqui.
+check(
+  !catalogoPorChave(CHAVE_CIPA).cargaInicial,
+  'a carga da CIPA nao esta fixada no catalogo: depende do grau de risco'
+);
+
+// Os numeros conferidos no texto das normas, um por um.
+const ESPERADO = [
+  ['nr35-altura', '8 h', 24, '8 h'],
+  ['nr33-autorizados', '16 h', 12, '8 h'],
+  ['nr33-supervisores', '40 h', 12, '8 h'],
+  ['nr10-basico', '40 h', 24, '16 h'],
+  ['nr10-sep', '40 h', 24, '16 h'],
+  ['nr10-mt-at', '16 h', 24, '16 h'],
+  ['nr10-area-classificada', '16 h', 24, '16 h'],
+  ['nr13-caldeiras', '40 h', undefined, undefined],
+  ['nr13-unidades-processo', '40 h', undefined, undefined],
+];
+for (const [chave, inicial, meses, periodica] of ESPERADO) {
+  const item = catalogoPorChave(chave);
+  check(
+    !!item && item.cargaInicial === inicial && item.periodicidadeMeses === meses
+      && item.cargaPeriodica === periodica,
+    `catalogo: ${chave} = inicial ${inicial}, periodico ${meses ?? 'nao fixado'}`
+  );
+}
+// As tres que a norma NAO fixa.
+for (const chave of ['nr06-epi', 'nr12-maquinas', 'nr26-quimicos']) {
+  const item = catalogoPorChave(chave);
+  check(
+    !!item && item.base === 'EMPREGADOR',
+    `catalogo: ${chave} fica com o empregador, porque a NR nao fixa carga`
+  );
+}
+check(
+  GATILHOS_DE_TREINAMENTO_EVENTUAL.length === 3
+  && GATILHOS_DE_TREINAMENTO_EVENTUAL.some((g) => g.includes('180 dias')),
+  'os tres gatilhos do eventual, com o retorno de afastamento superior a 180 dias'
+);
+
+// --- O documento -----------------------------------------------------------
+check(tc.includes('9.7 Capacitação e treinamento (item 1.7)'), '9.7 cita o item 1.7');
+for (const sub of ['1.7.1.2.1', '1.7.1.2.2', '1.7.1.1', '1.7.2']) {
+  check(tc.includes(sub), `9.7 cita o subitem ${sub}`);
+}
+check(tc.includes('Trabalho em altura'), '9.7 lista o treinamento da matriz');
+check(
+  tc.includes('subitens 35.3.2 e 35.3.3.1'),
+  '9.7 imprime o subitem que exige cada treinamento'
+);
+check(
+  tc.includes('A cada 24 meses, 8 h'),
+  '9.7 imprime a periodicidade e a carga do periodico'
+);
+check(
+  tc.includes('Trabalhadores que executam trabalho em altura'),
+  '9.7 diz a quem cada treinamento se aplica'
+);
+check(
+  tc.includes('Tecnico de manutencao'),
+  '9.7 resolve o cargo pelo id, em vez de imprimir o id'
+);
+check(
+  !tc.includes('Brigada de incendio de outra empresa'),
+  'NAO traz treinamento de outro cliente'
+);
+
+// Norma x empregador: a distincao sai no documento.
+check(
+  tc.includes('Fixada na NR') && tc.includes('Definida pelo empregador (subitem 1.7.1.2.2)'),
+  '9.7 distingue carga fixada na NR de carga definida pelo empregador'
+);
+check(
+  tc.includes('a NR exige o treinamento mas não fixa carga horária ou periodicidade'),
+  '9.7 explica o que significa "definida pelo empregador"'
+);
+
+// Pendencia agrupada por treinamento.
+check(
+  tc.includes('Treinamento Integracao em SST: falta'),
+  'linha incompleta sai como pendencia nomeada'
+);
+check(
+  (tc.match(/Treinamento [^:]{3,60}: falta/g) || []).length === 1,
+  'as pendencias sao agrupadas por treinamento, uma cada'
+);
+check(
+  !tc.includes('Treinamento Trabalho em altura: falta'),
+  'a linha completa nao gera pendencia'
+);
+
+// O eventual sai sempre, inclusive com matriz vazia.
+check(
+  tc.includes('período superior a 180 dias'),
+  '9.7 traz os gatilhos do treinamento eventual'
+);
+
+// Matriz vazia e sempre pendencia: nao ha declaracao de inexistencia possivel.
+const semMatriz = corrido(gerar({
+  client: CLIENTE, organization: ORG, ghes: GHES, risks: [RISCO_CLASSIFICADO],
+  employees: FUNCIONARIOS, sectors: SETORES, units: [UNIDADE],
+  trainingRequirements: [],
+}));
+check(
+  semMatriz.includes('Matriz de capacitação não cadastrada')
+  && semMatriz.includes('Engenharia SST > Matriz de Capacitação'),
+  'matriz vazia sai como pendencia apontando a tela'
+);
+check(
+  semMatriz.includes('de modo que a matriz nunca é vazia'),
+  'a pendencia explica por que nao cabe declarar inexistencia aqui'
+);
+check(
+  semMatriz.includes('período superior a 180 dias'),
+  'os gatilhos do eventual saem mesmo sem matriz'
+);
+
+// --- Coerencia com as secoes 6.4, 6.5 e 7 ---------------------------------
+// O PDF principal tem maquina NR-12 e linha de NR-12: sem lacuna. Tem
+// equipamento NR-13, produto quimico e nenhuma linha dessas normas: lacuna.
+check(
+  !tc.includes('nenhum treinamento de NR-12 na matriz'),
+  'com linha de NR-12 na matriz, a maquina da 6.5 nao gera lacuna'
+);
+check(
+  tc.includes('equipamento(s) da NR-13 na seção 6.5 e nenhum treinamento de NR-13 na matriz'),
+  'equipamento da NR-13 sem treinamento de NR-13 gera pendencia'
+);
+check(
+  tc.includes('produto(s) químico(s) na seção 6.4 e nenhum treinamento de NR-26 na matriz'),
+  'produto quimico sem treinamento de NR-26 gera pendencia, citando o 26.5.2'
+);
+
+// Sem a linha de NR-12, a lacuna aparece.
+const semNr12 = corrido(gerar({
+  client: CLIENTE, organization: ORG, ghes: GHES, risks: [RISCO_CLASSIFICADO],
+  employees: FUNCIONARIOS, sectors: SETORES, units: [UNIDADE],
+  machinesEquipment: [MAQUINA_NR12],
+  trainingRequirements: [CAPACITACAO_NR35],
+}));
+check(
+  semNr12.includes('máquina(s) com requisito de NR-12 na seção 6.5 e nenhum treinamento de NR-12'),
+  'maquina de NR-12 sem treinamento de NR-12 gera pendencia, citando o 12.16.1'
+);
+
+// EPI exigido no inventario sem treinamento de NR-06.
+const comEpi = corrido(gerar({
+  client: CLIENTE, organization: ORG, ghes: GHES,
+  risks: [{ ...RISCO_CLASSIFICADO, epi_required: true }],
+  employees: FUNCIONARIOS, sectors: SETORES, units: [UNIDADE],
+  trainingRequirements: [CAPACITACAO_NR35],
+}));
+check(
+  comEpi.includes('com EPI exigido e nenhum treinamento de NR-06 na matriz'),
+  'risco com EPI exigido sem treinamento de NR-06 gera pendencia'
+);
+
+// --- A tela ----------------------------------------------------------------
+const matrizTela = fs.readFileSync(
+  path.join(RAIZ, 'components/sst/TrainingMatrixTab.tsx'), 'utf8'
+);
+check(
+  matrizTela.includes('addTrainingRequirement')
+  && matrizTela.includes('updateTrainingRequirement')
+  && matrizTela.includes('deleteTrainingRequirement'),
+  'a tela cria, edita e remove linha da matriz'
+);
+check(
+  matrizTela.includes("from '@/lib/catalogoDeTreinamentos'"),
+  'os presets da tela vem do catalogo, nao de literais na propria tela'
+);
+check(
+  matrizTela.includes('NR5_CARGA_HORARIA_TREINAMENTO'),
+  'a carga da CIPA vem do Quadro da NR-05 conforme o grau de risco'
+);
+check(
+  /basis: '' as TrainingRequirement\['basis'\] \| ''/.test(matrizTela),
+  '`basis` comeca vazio: nao se presume que a carga e normativa'
+);
+check(
+  !/cargaInicial: '\d/.test(matrizTela) && !/initial_hours: '\d+ ?h'/.test(matrizTela),
+  'a tela nao traz carga horaria de NR escrita nela mesma'
+);
+check(
+  !/if \(!form\.name\.trim\(\)\) return;/.test(matrizTela),
+  'salvar sem nome avisa, em vez de dar `return` em silencio'
+);
+check(sync.includes("'trainingRequirements'"), 'a colecao da matriz e sincronizada');
+check(contexto.includes('parsed.trainingRequirements'), 'o snapshot carrega a matriz');
 
 // ===========================================================================
 // 4. UMA CLASSIFICACAO SO NO SISTEMA

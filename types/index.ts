@@ -385,6 +385,53 @@ export interface ClientUnit {
 }
 
 /**
+ * 20e. Linha da matriz de capacitacao — secao 9.7 do PGR.
+ *
+ * O subitem 1.7.1.2 da NR-01 divide a capacitacao em inicial, periodico e
+ * eventual; o periodico ocorre "de acordo com periodicidade estabelecida nas NR
+ * ou, quando nao estabelecido, em prazo determinado pelo empregador" (subitem
+ * 1.7.1.2.2). Por isso `base` existe: sem ela a matriz confunde carga
+ * normativa com carga que a organizacao escolheu, e o documento passa a
+ * atribuir a NR um numero que ela nao fixa.
+ *
+ * O eventual nao e linha desta matriz: e gatilho, e sai na secao 9.7 a partir
+ * de GATILHOS_DE_TREINAMENTO_EVENTUAL.
+ */
+export interface TrainingRequirement {
+  id: string;
+  organization_id: string;
+  client_id: string;
+  client_unit_id?: string;
+  name: string;
+  /** Rotulo da NR de origem: "NR-35". Vazio quando e requisito proprio. */
+  norm?: string;
+  /** Subitem que o exige, para o PGR poder citar a fonte. */
+  norm_reference?: string;
+  /** Chave do catalogo, quando a linha veio de uma sugestao conferida. */
+  catalog_key?: string;
+
+  /** Cargos alcancados (SSTHierarchyJob). */
+  job_ids?: string[];
+  /** GHE alcancados. */
+  ghe_ids?: string[];
+  /** A quem se aplica, por extenso, quando nao se escolhe cargo nem GHE. */
+  audience_note?: string;
+
+  /** Vazio = nao informado. */
+  basis?: 'NORMA' | 'EMPREGADOR' | 'ORGANIZACAO';
+  /** Carga horaria do treinamento inicial. */
+  initial_hours?: string;
+  /** Periodicidade do periodico, em meses. */
+  periodic_months?: number;
+  /** Carga horaria do periodico. */
+  periodic_hours?: string;
+
+  notes?: string;
+  status: 'ACTIVE' | 'INACTIVE';
+  created_at: string;
+}
+
+/**
  * 20d. Produto quimico — secao 6.4 do PGR, item 26.4 da NR-26.
  *
  * O produto quimico utilizado no local de trabalho deve ser classificado quanto

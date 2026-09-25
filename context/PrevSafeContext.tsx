@@ -10,7 +10,8 @@ import {
   ClientUnit,
   ContractedOrganization,
   MachineEquipment,
-  ChemicalProduct, 
+  ChemicalProduct,
+  TrainingRequirement, 
   Lead, 
   Opportunity, 
   Proposal, 
@@ -238,6 +239,11 @@ interface PrevSafeContextType {
   ) => ChemicalProduct;
   updateChemicalProduct: (id: string, updates: Partial<ChemicalProduct>) => void;
   deleteChemicalProduct: (id: string) => void;
+  addTrainingRequirement: (
+    data: Omit<TrainingRequirement, 'id' | 'organization_id' | 'created_at'>
+  ) => TrainingRequirement;
+  updateTrainingRequirement: (id: string, updates: Partial<TrainingRequirement>) => void;
+  deleteTrainingRequirement: (id: string) => void;
   addLead: (lead: Omit<Lead, 'id' | 'organization_id' | 'created_at'>) => Lead;
   updateLead: (id: string, updates: Partial<Lead>) => void;
   deleteLead: (id: string) => void;
@@ -653,6 +659,7 @@ interface PrevSafeContextType {
   contractedOrganizations: ContractedOrganization[];
   machinesEquipment: MachineEquipment[];
   chemicalProducts: ChemicalProduct[];
+  trainingRequirements: TrainingRequirement[];
   addCipaProcess: (data: Omit<CipaManagementProcess, 'id'>) => CipaManagementProcess;
   updateCipaProcess: (id: string, updates: Partial<CipaManagementProcess>) => void;
   deleteCipaProcess: (id: string) => void;
@@ -783,6 +790,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
   const [contractedOrganizations, setContractedOrganizations] = useState<ContractedOrganization[]>([]);
   const [machinesEquipment, setMachinesEquipment] = useState<MachineEquipment[]>([]);
   const [chemicalProducts, setChemicalProducts] = useState<ChemicalProduct[]>([]);
+  const [trainingRequirements, setTrainingRequirements] = useState<TrainingRequirement[]>([]);
   const [occupationalRisksCatalog, setOccupationalRisksCatalog] = useState<OccupationalRiskCatalogItem[]>(INITIAL_OCCUPATIONAL_RISKS_CATALOG);
 
   // Estado da sincronizacao com o Supabase, exposto na barra superior.
@@ -883,6 +891,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     apply(setContractedOrganizations, list(parsed.contractedOrganizations, []));
     apply(setMachinesEquipment, list(parsed.machinesEquipment, []));
     apply(setChemicalProducts, list(parsed.chemicalProducts, []));
+    apply(setTrainingRequirements, list(parsed.trainingRequirements, []));
     apply(setOccupationalRisksCatalog, list(parsed.occupationalRisksCatalog, INITIAL_OCCUPATIONAL_RISKS_CATALOG, 'occupationalRisksCatalog'));
   }, []);
 
@@ -950,7 +959,8 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     occupationalRisksCatalog,
     contractedOrganizations,
     machinesEquipment,
-    chemicalProducts
+    chemicalProducts,
+    trainingRequirements
   }), [
     organization,
     esocialConfig,
@@ -994,7 +1004,8 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     occupationalRisksCatalog,
     contractedOrganizations,
     machinesEquipment,
-    chemicalProducts
+    chemicalProducts,
+    trainingRequirements
   ]);
 
   // Cache local: nao e mais a fonte da verdade, e sim a copia que permite abrir
@@ -1801,6 +1812,37 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
   const deleteChemicalProduct = useCallback((id: string) => {
     setChemicalProducts(prev => prev.filter(q => q.id !== id));
     logAudit('DELETE_CHEMICAL' as any, 'CLIENT' as any, id, 'Produto quimico removido', {});
+  }, [logAudit]);
+
+  /**
+   * Matriz de capacitacao — secao 9.7 do PGR.
+   *
+   * `basis` nao tem padrao: marcar 'NORMA' por omissao faria a matriz atribuir
+   * a NR uma carga horaria que ela pode nao fixar (a NR-12 e explicita em
+   * deixa-la ao empregador, alinea "c" do subitem 12.16.3).
+   */
+  const addTrainingRequirement = useCallback((
+    data: Omit<TrainingRequirement, 'id' | 'organization_id' | 'created_at'>
+  ): TrainingRequirement => {
+    const nova: TrainingRequirement = {
+      ...data,
+      id: novoId('capacitacao'),
+      organization_id: organization.id,
+      created_at: new Date().toISOString()
+    };
+    setTrainingRequirements(prev => [...prev, nova]);
+    logAudit('CREATE_TRAINING_REQ' as any, 'CLIENT' as any, nova.id, `Treinamento na matriz: ${nova.name}`, nova);
+    return nova;
+  }, [organization.id, logAudit]);
+
+  const updateTrainingRequirement = useCallback((id: string, updates: Partial<TrainingRequirement>) => {
+    setTrainingRequirements(prev => prev.map(t => (t.id === id ? { ...t, ...updates } : t)));
+    logAudit('UPDATE_TRAINING_REQ' as any, 'CLIENT' as any, id, 'Treinamento da matriz atualizado', updates);
+  }, [logAudit]);
+
+  const deleteTrainingRequirement = useCallback((id: string) => {
+    setTrainingRequirements(prev => prev.filter(t => t.id !== id));
+    logAudit('DELETE_TRAINING_REQ' as any, 'CLIENT' as any, id, 'Treinamento removido da matriz', {});
   }, [logAudit]);
 
   const addLead = useCallback((leadData: Omit<Lead, 'id' | 'organization_id' | 'created_at'>): Lead => {
@@ -7328,6 +7370,10 @@ ${exames.map(ex => `      <exameMedico>
     addChemicalProduct,
     updateChemicalProduct,
     deleteChemicalProduct,
+    trainingRequirements,
+    addTrainingRequirement,
+    updateTrainingRequirement,
+    deleteTrainingRequirement,
     addLead,
     updateLead,
     deleteLead,
@@ -7613,6 +7659,10 @@ ${exames.map(ex => `      <exameMedico>
     addChemicalProduct,
     updateChemicalProduct,
     deleteChemicalProduct,
+    trainingRequirements,
+    addTrainingRequirement,
+    updateTrainingRequirement,
+    deleteTrainingRequirement,
     addLead,
     updateLead,
     deleteLead,

@@ -36,11 +36,12 @@ import { SSTSignaturesManagementTab } from './SSTSignaturesManagementTab';
 import { ContractedOrganizationsTab } from './ContractedOrganizationsTab';
 import { MachinesEquipmentTab } from './MachinesEquipmentTab';
 import { ChemicalProductsTab } from './ChemicalProductsTab';
+import { TrainingMatrixTab } from './TrainingMatrixTab';
 import { PenTool, Handshake, Cog, FlaskConical } from 'lucide-react';
 
 interface SSTUnifiedEngineeringViewProps {
   onNavigate?: (view: string) => void;
-  initialTab?: 'HIERARCHY' | 'GHE_RISKS' | 'EXAMS_PCMSO' | 'EMPLOYEES' | 'WORK_ORDERS_OS' | 'DOCS_XML' | 'INTEGRATION_TRAINING' | 'SIGNATURES' | 'CONTRACTED' | 'MACHINES' | 'CHEMICALS';
+  initialTab?: 'HIERARCHY' | 'GHE_RISKS' | 'EXAMS_PCMSO' | 'EMPLOYEES' | 'WORK_ORDERS_OS' | 'DOCS_XML' | 'INTEGRATION_TRAINING' | 'SIGNATURES' | 'CONTRACTED' | 'MACHINES' | 'CHEMICALS' | 'TRAINING_MATRIX';
 }
 
 export const SSTUnifiedEngineeringView: React.FC<SSTUnifiedEngineeringViewProps> = ({ onNavigate, initialTab }) => {
@@ -59,7 +60,7 @@ export const SSTUnifiedEngineeringView: React.FC<SSTUnifiedEngineeringViewProps>
   } = usePrevSafe();
 
   const [selectedClientId, setSelectedClientId] = useState<string>(clients?.[0]?.id || '');
-  const [activeTab, setActiveTab] = useState<'HIERARCHY' | 'GHE_RISKS' | 'EXAMS_PCMSO' | 'EMPLOYEES' | 'WORK_ORDERS_OS' | 'DOCS_XML' | 'INTEGRATION_TRAINING' | 'SIGNATURES' | 'CONTRACTED' | 'MACHINES' | 'CHEMICALS'>(initialTab || 'HIERARCHY');
+  const [activeTab, setActiveTab] = useState<'HIERARCHY' | 'GHE_RISKS' | 'EXAMS_PCMSO' | 'EMPLOYEES' | 'WORK_ORDERS_OS' | 'DOCS_XML' | 'INTEGRATION_TRAINING' | 'SIGNATURES' | 'CONTRACTED' | 'MACHINES' | 'CHEMICALS' | 'TRAINING_MATRIX'>(initialTab || 'HIERARCHY');
 
   // Sync when initialTab prop updates from external navigation
   React.useEffect(() => {
@@ -355,6 +356,20 @@ export const SSTUnifiedEngineeringView: React.FC<SSTUnifiedEngineeringViewProps>
           <FlaskConical className="w-4 h-4" />
           11. Produtos Químicos (NR-26)
         </button>
+
+        <button
+          type="button"
+          id="main-tab-training-matrix-btn"
+          onClick={() => setActiveTab('TRAINING_MATRIX')}
+          className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 shrink-0 ${
+            activeTab === 'TRAINING_MATRIX'
+              ? 'bg-cyan-500 text-slate-950 shadow-lg shadow-cyan-500/20'
+              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
+          }`}
+        >
+          <GraduationCap className="w-4 h-4" />
+          12. Matriz de Capacitação (NR-01, 1.7)
+        </button>
       </div>
 
       {/* Render Active View Tab */}
@@ -391,6 +406,9 @@ export const SSTUnifiedEngineeringView: React.FC<SSTUnifiedEngineeringViewProps>
         )}
         {activeTab === 'CHEMICALS' && (
           <ChemicalProductsTab selectedClientId={selectedClientId} />
+        )}
+        {activeTab === 'TRAINING_MATRIX' && (
+          <TrainingMatrixTab selectedClientId={selectedClientId} />
         )}
       </div>
     </div>
