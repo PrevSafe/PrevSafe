@@ -1364,6 +1364,9 @@ export interface OccupationalRiskCatalogItem {
   description?: string;
 }
 
+export type { SituacaoOperacional } from '@/lib/situacaoOperacional';
+import type { SituacaoOperacional } from '@/lib/situacaoOperacional';
+
 export interface SSTEnvironmentalRisk {
   id: string;
   organization_id: string;
@@ -1380,6 +1383,21 @@ export interface SSTEnvironmentalRisk {
   generating_source: string; // Fonte geradora: ex: "Corte por plasma, solda MIG/MAG e lixamento"
   propagation_path: string; // Via de propagação: "Aérea", "Contato dérmico", etc.
   health_effects: string; // Possíveis danos: "PAIR, irritação respiratória, estresse térmico"
+
+  /**
+   * Situação operacional em que o perigo existe — alínea "b" do subitem
+   * 1.5.7.3.2 da NR-01: rotineira (R), não rotineira (NR) e emergência (E).
+   *
+   * É uma LISTA porque o mesmo perigo costuma existir em mais de uma
+   * situação, com probabilidade diferente em cada uma. Ver
+   * lib/situacaoOperacional.ts.
+   *
+   * Opcional no tipo porque os riscos cadastrados antes deste campo não o
+   * têm; o PGR aponta a pendência em vez de supor "rotineira".
+   */
+  operational_situation?: SituacaoOperacional[];
+  /** A circunstância, quando não rotineira ou de emergência: "limpeza e ajuste". */
+  operational_situation_note?: string;
 
   // Exposure Evaluation & Metrics
   evaluation_type: RiskEvaluationType;

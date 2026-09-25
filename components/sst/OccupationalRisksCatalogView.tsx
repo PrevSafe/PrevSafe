@@ -7,6 +7,10 @@ import { SeletorTabela27 } from './SeletorTabela27';
 import { consultarProcedimento, codigoExisteNaTabela27 } from '@/lib/tabela27';
 import { formatoDoCodigoTabela24, codigosDuplicados, consultarAgente, codigoExisteNaTabela24 } from '@/lib/tabela24';
 import { SeletorTabela24 } from './SeletorTabela24';
+import {
+  SITUACOES_OPERACIONAIS,
+  type SituacaoOperacional
+} from '@/lib/situacaoOperacional';
 import { 
   ShieldAlert, 
   Plus, 
@@ -118,6 +122,11 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
   const [selectedTargetJobIds, setSelectedTargetJobIds] = useState<string[]>([]);
   const [selectedTargetSectorIds, setSelectedTargetSectorIds] = useState<string[]>([]);
   const [includeSuggestedExams, setIncludeSuggestedExams] = useState(true);
+  // Situacao operacional do risco aplicado. Sem ela, todo risco vindo do
+  // catalogo nasce com a alinea "b" do subitem 1.5.7.3.2 em aberto e o PGR
+  // aponta pendencia para cada um.
+  const [situacaoAplicada, setSituacaoAplicada] = useState<SituacaoOperacional[]>(['ROTINEIRA']);
+  const [situacaoNota, setSituacaoNota] = useState('');
   const [applyFeedback, setApplyFeedback] = useState<{ count: number; examsCount: number; message: string } | null>(null);
 
   // Filtered risks list
@@ -362,6 +371,14 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
       alert('Selecione ao menos um risco do catálogo para aplicar.');
       return;
     }
+    if (situacaoAplicada.length === 0) {
+      alert(
+        'Informe a situação operacional dos riscos que serão aplicados.\n\n' +
+        'Rotineira (R), não rotineira (NR) ou emergência (E) — alínea "b" do ' +
+        'subitem 1.5.7.3.2 da NR-01.'
+      );
+      return;
+    }
 
     const result = applyRisksToTargets({
       client_id: applyClientId,
@@ -370,7 +387,11 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
       target_ghe_ids: selectedTargetGheIds,
       target_job_ids: selectedTargetJobIds,
       target_sector_ids: selectedTargetSectorIds,
-      include_suggested_exams: includeSuggestedExams
+      include_suggested_exams: includeSuggestedExams,
+      custom_risk_data: {
+        operational_situation: situacaoAplicada,
+        operational_situation_note: situacaoNota.trim() || undefined
+      }
     });
 
     setApplyFeedback({
@@ -1391,6 +1412,57 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                   )}
                 </div>
               )}
+
+              {/* Situacao operacional — alinea "b" do subitem 1.5.7.3.2 */}
+              <div className="p-3 bg-slate-950 border border-slate-800 rounded-lg space-y-2">
+                <div>
+                  <span className="font-bold text-slate-200 text-xs block">
+                    Situação operacional destes riscos <span className="text-rose-400">*</span>
+                  </span>
+                  <span className="text-[11px] text-slate-500">
+                    Vale para todos os riscos desta aplicação. Um risco que também exista na
+                    manutenção ou na limpeza pode ser ajustado depois, no próprio GHE.
+                  </span>
+                </div>
+                <div className="grid grid-cols-3 gap-2">
+                  {SITUACOES_OPERACIONAIS.map((op) => {
+                    const marcada = situacaoAplicada.includes(op.valor);
+                    return (
+                      <button
+                        key={op.valor}
+                        type="button"
+                        title={op.ajuda}
+                        onClick={() =>
+                          setSituacaoAplicada(
+                            marcada
+                              ? situacaoAplicada.filter((v) => v !== op.valor)
+                              : [...situacaoAplicada, op.valor]
+                          )
+                        }
+                        className={`text-left px-3 py-2 rounded-lg border transition-colors ${
+                          marcada
+                            ? 'bg-teal-500/15 border-teal-500/50 text-teal-200'
+                            : 'bg-slate-900 border-slate-700 text-slate-400 hover:border-slate-600'
+                        }`}
+                      >
+                        <span className="block text-xs font-bold">
+                          {op.sigla} — {op.rotulo}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+                {(situacaoAplicada.includes('NAO_ROTINEIRA') ||
+                  situacaoAplicada.includes('EMERGENCIA')) && (
+                  <input
+                    type="text"
+                    placeholder="Qual a circunstância? Ex.: limpeza e ajuste; parada programada"
+                    value={situacaoNota}
+                    onChange={(e) => setSituacaoNota(e.target.value)}
+                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 text-xs focus:outline-none focus:border-teal-500"
+                  />
+                )}
+              </div>
 
               {/* Include PCMSO Exams Checkbox */}
               <div className="p-3 bg-blue-500/15 border border-blue-500/30 rounded-lg">

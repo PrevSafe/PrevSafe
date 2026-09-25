@@ -58,6 +58,7 @@ fs.writeFileSync(
       path.join(RAIZ, 'lib/pdfExportService.ts'),
       path.join(RAIZ, 'lib/classificacaoDeRisco.ts'),
       path.join(RAIZ, 'lib/pgrModelo.ts'),
+      path.join(RAIZ, 'lib/situacaoOperacional.ts'),
     ],
   })
 );
@@ -105,10 +106,11 @@ try {
   inconclusivo('não foi possível carregar o jspdf', e.message);
 }
 
-let servico, classif;
+let servico, classif, situacao;
 try {
   servico = require_(achar('pdfExportService.js'));
   classif = require_(achar('classificacaoDeRisco.js'));
+  situacao = require_(achar('situacaoOperacional.js'));
 } catch (e) {
   inconclusivo('não foi possível carregar os módulos compilados', e.message);
 }
@@ -238,6 +240,8 @@ const RISCO_CLASSIFICADO = {
   measured_value: '78,4', measurement_unit: 'dB(A)',
   measurement_methodology: 'NHO-01', action_level: 'dose 0,5', tolerance_limit: 'dose 1,0',
   severity: 4, probability: 5, epc_implemented: false, epi_required: false,
+  operational_situation: ['ROTINEIRA', 'NAO_ROTINEIRA'],
+  operational_situation_note: 'limpeza e ajuste',
 };
 // Risco de OUTRO cliente: a versao anterior o trazia para o plano de acao.
 const RISCO_DE_OUTRO_CLIENTE = {
@@ -350,6 +354,96 @@ check(
   'avisa que sem inventário o documento não atende ao subitem 1.5.7.1'
 );
 check(corrido(pdfVazio).includes('5.6 Matriz de risco'), 'a metodologia sai mesmo sem inventário');
+
+// ===========================================================================
+// 3b. SITUACAO OPERACIONAL (alinea "b" do subitem 1.5.7.3.2)
+// ===========================================================================
+// O inventario tem de dizer em que situacao o perigo existe: rotineira,
+// nao rotineira (manutencao, limpeza, setup) ou emergencia. O mesmo perigo
+// tem probabilidade diferente em cada uma, e a nao rotineira costuma ser a
+// pior - a maquina esta aberta. O campo nao existia.
+console.log('');
+console.log('--- 3b. Situação operacional R / NR / E ---');
+
+const { descreverSituacao, normalizarSituacoes, temSituacaoOperacional, SITUACOES_OPERACIONAIS } = situacao;
+
+check(SITUACOES_OPERACIONAIS.length === 3, 'as tres situacoes do modelo existem');
+check(
+  SITUACOES_OPERACIONAIS.map((o) => o.sigla).join(',') === 'R,NR,E',
+  'as siglas sao R, NR e E'
+);
+
+check(descreverSituacao(['ROTINEIRA']) === 'R', 'uma situacao sai como a sigla');
+check(
+  descreverSituacao(['ROTINEIRA', 'NAO_ROTINEIRA']) === 'R e NR',
+  'duas situacoes saem como "R e NR"'
+);
+check(
+  descreverSituacao(['ROTINEIRA', 'NAO_ROTINEIRA'], 'limpeza e ajuste') === 'R e NR (limpeza e ajuste)',
+  'a circunstancia entra entre parenteses, como no exemplo 2 do modelo'
+);
+check(
+  descreverSituacao(['EMERGENCIA', 'ROTINEIRA', 'NAO_ROTINEIRA']) === 'R, NR e E',
+  'a ordem sai sempre R, NR, E, independente de como foi gravada'
+);
+check(descreverSituacao([]) === '', 'sem situacao, devolve vazio (quem chama decide a pendencia)');
+check(descreverSituacao(undefined) === '', 'risco antigo, sem o campo, nao quebra');
+
+// Aceita a sigla, para dado vindo de importacao.
+check(
+  normalizarSituacoes(['R', 'NR']).join(',') === 'ROTINEIRA,NAO_ROTINEIRA',
+  'aceita a sigla no lugar do valor'
+);
+check(normalizarSituacoes(['XPTO']).length === 0, 'descarta valor desconhecido em vez de aceitar');
+check(normalizarSituacoes(['R', 'R']).length === 1, 'nao duplica');
+
+check(temSituacaoOperacional({ operational_situation: ['ROTINEIRA'] }), 'o registro com situacao atende a alinea "b"');
+check(!temSituacaoOperacional({}), 'o registro sem situacao nao atende');
+
+// No documento.
+check(
+  tc.includes('R e NR (limpeza e ajuste)'),
+  'o PGR imprime a situacao operacional do risco'
+);
+check(
+  !tc.includes('Situação operacional (R, NR ou E) do risco "Ruído contínuo"'),
+  'com a situacao preenchida, a pendencia da alinea "b" some'
+);
+
+// Risco sem o campo continua apontando a pendencia, e dizendo onde resolver.
+const semSituacao = { ...RISCO_CLASSIFICADO, id: 'r2', operational_situation: undefined };
+const pdfSemSituacao = corrido(gerar({
+  client: CLIENTE, organization: ORG, ghes: GHES, risks: [semSituacao],
+  employees: FUNCIONARIOS, sectors: SETORES, units: [],
+}));
+check(
+  pdfSemSituacao.includes('Situação operacional (R, NR ou E)'),
+  'risco sem o campo continua apontando a pendencia'
+);
+check(
+  pdfSemSituacao.includes('edite o risco em GHE & Inventário de Riscos'),
+  'a pendencia diz onde resolver'
+);
+
+// A tela pede o campo e nao deixa salvar sem ele.
+const abaGhe = fs.readFileSync(path.join(RAIZ, 'components/sst/GHERiskInventoryTab.tsx'), 'utf8');
+const catalogo = fs.readFileSync(path.join(RAIZ, 'components/sst/OccupationalRisksCatalogView.tsx'), 'utf8');
+check(
+  abaGhe.includes('riskForm.operational_situation.length === 0'),
+  'a aba do GHE nao deixa salvar risco sem situacao operacional'
+);
+check(
+  abaGhe.includes('operational_situation: riskForm.operational_situation'),
+  'a aba do GHE grava a situacao'
+);
+check(
+  abaGhe.includes('normalizarSituacoes(risk.operational_situation)'),
+  'ao editar um risco, a situacao gravada e carregada'
+);
+check(
+  catalogo.includes('operational_situation: situacaoAplicada'),
+  'aplicar risco do catalogo tambem grava a situacao'
+);
 
 // ===========================================================================
 // 4. UMA CLASSIFICACAO SO NO SISTEMA

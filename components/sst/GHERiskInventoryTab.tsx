@@ -6,6 +6,11 @@ import { SSTGroupHomogeneousExposure, SSTEnvironmentalRisk, RiskCategoryType, Oc
 import { SeletorTabela27 } from './SeletorTabela27';
 import { consultarProcedimento, codigoExisteNaTabela27 } from '@/lib/tabela27';
 import { classificarRisco } from '@/lib/classificacaoDeRisco';
+import {
+  SITUACOES_OPERACIONAIS,
+  normalizarSituacoes,
+  type SituacaoOperacional
+} from '@/lib/situacaoOperacional';
 import { 
   ShieldAlert, 
   Plus, 
@@ -132,6 +137,8 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
     risk_code_table_24: string;
     generating_source: string;
     propagation_path: string;
+    operational_situation: SituacaoOperacional[];
+    operational_situation_note: string;
     health_effects: string;
     evaluation_type: 'QUALITATIVA' | 'QUANTITATIVA';
     measurement_unit: string;
@@ -162,6 +169,8 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
     risk_code_table_24: '',
     generating_source: '',
     propagation_path: '',
+    operational_situation: [],
+    operational_situation_note: '',
     health_effects: '',
     evaluation_type: 'QUALITATIVA',
     measurement_unit: '',
@@ -280,6 +289,8 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
         risk_code_table_24: risk.risk_code_table_24,
         generating_source: risk.generating_source,
         propagation_path: risk.propagation_path || 'Aérea',
+        operational_situation: normalizarSituacoes(risk.operational_situation),
+        operational_situation_note: risk.operational_situation_note || '',
         health_effects: risk.health_effects || '',
         evaluation_type: risk.evaluation_type,
         measurement_unit: risk.measurement_unit || '',
@@ -316,6 +327,8 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
         risk_code_table_24: '',
         generating_source: '',
         propagation_path: '',
+        operational_situation: [],
+        operational_situation_note: '',
         health_effects: '',
         evaluation_type: 'QUALITATIVA',
         measurement_unit: '',
@@ -358,6 +371,18 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
     // A Tabela 24 so vale para os agentes do Anexo IV do Decreto 3.048/1999.
     // Risco ergonomico e de acidente entram no inventario do PGR e NAO tem
     // codigo - por isso o campo deixou de ser obrigatorio.
+    // Alinea "b" do subitem 1.5.7.3.2: o inventario tem de dizer em que
+    // situacao o perigo existe. O mesmo perigo tem probabilidade diferente na
+    // operacao e na manutencao, e a nao rotineira costuma ser a pior.
+    if (riskForm.operational_situation.length === 0) {
+      alert(
+        'Informe a situação operacional do risco.\n\n' +
+        'Rotineira (R), não rotineira (NR — manutenção, limpeza, setup, parada) ' +
+        'ou emergência (E). É a alínea "b" do subitem 1.5.7.3.2 da NR-01 e sem ' +
+        'ela o registro do inventário fica incompleto no PGR.'
+      );
+      return;
+    }
     if (!riskForm.severity || !riskForm.probability) {
       alert(
         'Classifique a severidade e a probabilidade.\n\n' +
@@ -412,6 +437,8 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
       agent_name: riskForm.agent_name,
       generating_source: riskForm.generating_source,
       propagation_path: riskForm.propagation_path,
+      operational_situation: riskForm.operational_situation,
+      operational_situation_note: riskForm.operational_situation_note.trim() || undefined,
       health_effects: riskForm.health_effects,
       evaluation_type: riskForm.evaluation_type,
       measured_value: riskForm.measured_value || undefined,
@@ -1028,6 +1055,69 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
                   onChange={(e) => setRiskForm({ ...riskForm, generating_source: e.target.value })}
                   className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 focus:outline-none focus:border-teal-500"
                 />
+              </div>
+
+              {/* Situacao operacional — alinea "b" do subitem 1.5.7.3.2 */}
+              <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 space-y-2">
+                <div>
+                  <h4 className="font-bold text-slate-200 text-xs">
+                    Situação Operacional <span className="text-rose-400">*</span>
+                  </h4>
+                  <p className="text-[11px] text-slate-500 mt-0.5">
+                    Em que situações este perigo existe. Marque todas que se aplicam — a
+                    probabilidade costuma ser diferente em cada uma (alínea &quot;b&quot; do
+                    subitem 1.5.7.3.2 da NR-01).
+                  </p>
+                </div>
+                <div className="grid grid-cols-3 gap-2">
+                  {SITUACOES_OPERACIONAIS.map((op) => {
+                    const marcada = riskForm.operational_situation.includes(op.valor);
+                    return (
+                      <button
+                        key={op.valor}
+                        type="button"
+                        title={op.ajuda}
+                        onClick={() =>
+                          setRiskForm({
+                            ...riskForm,
+                            operational_situation: marcada
+                              ? riskForm.operational_situation.filter((v) => v !== op.valor)
+                              : [...riskForm.operational_situation, op.valor]
+                          })
+                        }
+                        className={`text-left px-3 py-2 rounded-lg border transition-colors ${
+                          marcada
+                            ? 'bg-teal-500/15 border-teal-500/50 text-teal-200'
+                            : 'bg-slate-900 border-slate-700 text-slate-400 hover:border-slate-600'
+                        }`}
+                      >
+                        <span className="block text-xs font-bold">
+                          {op.sigla} — {op.rotulo}
+                        </span>
+                        <span className="block text-[10px] leading-tight mt-0.5 opacity-80">
+                          {op.ajuda}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+                {(riskForm.operational_situation.includes('NAO_ROTINEIRA') ||
+                  riskForm.operational_situation.includes('EMERGENCIA')) && (
+                  <div>
+                    <label className="block text-slate-400 font-semibold mb-1 text-xs">
+                      Qual a circunstância?
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Ex.: limpeza e ajuste; parada programada; abandono de área"
+                      value={riskForm.operational_situation_note}
+                      onChange={(e) =>
+                        setRiskForm({ ...riskForm, operational_situation_note: e.target.value })
+                      }
+                      className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 text-xs focus:outline-none focus:border-teal-500"
+                    />
+                  </div>
+                )}
               </div>
 
               {/* Quantification & Limits */}

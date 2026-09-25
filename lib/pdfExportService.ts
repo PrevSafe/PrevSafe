@@ -34,6 +34,7 @@ import {
   DECISAO_POR_NIVEL
 } from '@/lib/classificacaoDeRisco';
 import { calculateSesmtDimensioning } from '@/lib/nr4';
+import { descreverSituacao } from '@/lib/situacaoOperacional';
 import {
   PGR_NORMA_DE_REGENCIA,
   PGR_OBJETIVO,
@@ -3530,7 +3531,9 @@ export function exportPGRDocumentPdf({
         }]],
         body: [
           ['Setor / GES', `${ghe?.name || 'GHE não vinculado'}${ghe?.code ? ` (${ghe.code})` : ''}`],
-          ['Situação operacional', pendente('7.2', `Situação operacional (R, NR ou E) do risco "${r?.agent_name || ''}" não registrada (alínea "b").`)],
+          ['Situação operacional',
+            descreverSituacao(r?.operational_situation, r?.operational_situation_note)
+              || pendente('7.2', `Situação operacional (R, NR ou E) do risco "${r?.agent_name || ''}" não registrada — edite o risco em GHE & Inventário de Riscos (alínea "b").`)],
           ['Tipo de perigo', r?.risk_category || 'não informado'],
           ['Fonte ou circunstância', r?.generating_source?.trim() || 'não informada'],
           ['Possíveis lesões ou agravos', r?.health_effects?.trim()
