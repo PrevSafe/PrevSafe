@@ -33,6 +33,7 @@ import {
   FAIXAS_DO_MODELO,
   DECISAO_POR_NIVEL
 } from '@/lib/classificacaoDeRisco';
+import { calculateSesmtDimensioning } from '@/lib/nr4';
 import {
   PGR_NORMA_DE_REGENCIA,
   PGR_OBJETIVO,
@@ -203,6 +204,17 @@ const NAO_INFORMADO = 'Não informado';
 const LINHA_PARA_PREENCHER = '____________________';
 const SEM_RISCO_NO_INVENTARIO = 'Nenhum agente desta natureza no inventário de riscos (PGR)';
 const LINHA_CURTA = '________';
+/** Rotulos do "Tipo de Ambiente Físico" do cadastro de setor. */
+const AMBIENTE_FISICO: Record<string, string> = {
+  OPERACIONAL_FECHADO: 'Operacional fechado (galpão / oficina)',
+  OPERACIONAL_ABERTO: 'Operacional aberto (pátio / externo)',
+  ADMINISTRATIVO: 'Administrativo (escritório)',
+  CANTEIRO_OBRA: 'Canteiro de obras',
+  LABORATORIO: 'Laboratório',
+  ESPACO_CONFINADO: 'Espaço confinado (NR-33)',
+  VEICULO_TRANSPORTE: 'Veículo / transporte',
+  OUTROS: 'Outros ambientes'
+};
 const RESULTADO_ASO: Record<string, string> = {
   APTO: 'Apto',
   INAPTO: 'Inapto',
@@ -2840,6 +2852,12 @@ export function exportPGRDocumentPdf({
     return d.toISOString().slice(0, 10);
   })();
 
+  // Dimensionamento do SESMT (Anexo II da NR-04) e da CIPA (Quadro I da
+  // NR-05) a partir do grau de risco e do efetivo do estabelecimento.
+  const dimensionamento = client?.risk_degree
+    ? calculateSesmtDimensioning(client.risk_degree, (employees || []).length)
+    : null;
+
   const codigoDoDocumento = `PGR-${(client.document_number || 'SEM-INSCRICAO').replace(/\D/g, '') || 'SEM-INSCRICAO'}-${emissao.slice(0, 4)}-REV00`;
 
   // Pendencias: alimentam o checklist da secao 10.2 e o aviso da capa.
@@ -2888,6 +2906,20 @@ export function exportPGRDocumentPdf({
       ...opcoes
     });
     curY = (doc as any).lastAutoTable.finalY + 4;
+  };
+
+  /**
+   * Ha medicao de verdade?
+   *
+   * O catalogo gravava a string "0" quando o agente nao tinha valor sugerido,
+   * e a unidade padrao do catalogo ia junto. O resultado era "0 dB(A)" num
+   * risco ergonomico - um numero que ninguem mediu, na unidade errada.
+   */
+  const temMedicao = (r: any) => {
+    const v = String(r?.measured_value ?? '').trim().replace(',', '.');
+    if (v === '') return false;
+    const n = Number(v);
+    return !(Number.isFinite(n) && n === 0);
   };
 
   /** Faixa de titulo de secao, como uma linha de cabecalho que ocupa a largura. */
@@ -2966,7 +2998,44 @@ export function exportPGRDocumentPdf({
   doc.text('Gerenciamento de Riscos Ocupacionais — GRO', pageWidth / 2, 119, { align: 'center' });
   doc.text(PGR_NORMA_DE_REGENCIA, pageWidth / 2, 124.5, { align: 'center', maxWidth: util });
 
-  curY = 134;
+  // As duas tabelas passam para a pagina 2: a capa fica so com o titulo,
+  // centralizado, como pediu a analise do documento.
+  doc.setFontSize(8);
+  doc.setTextColor(100, 116, 139);
+  doc.text(
+    `${client.legal_name || client.trade_name || ''}`,
+    pageWidth / 2, 168, { align: 'center', maxWidth: util }
+  );
+  doc.setFontSize(9);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(15, 23, 42);
+  doc.text(
+    (client.trade_name && client.trade_name !== client.legal_name) ? client.trade_name : '',
+    pageWidth / 2, 175, { align: 'center', maxWidth: util }
+  );
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(8);
+  doc.setTextColor(100, 116, 139);
+  doc.text(clientDocumentLine(client), pageWidth / 2, 182, { align: 'center' });
+
+  doc.setDrawColor(203, 213, 225);
+  doc.setLineWidth(0.4);
+  doc.line(pageWidth / 2 - 30, 192, pageWidth / 2 + 30, 192);
+
+  doc.setFontSize(9);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(15, 23, 42);
+  doc.text(`Revisão ${'00'} — emitido em ${formatDate(emissao)}`, pageWidth / 2, 200, { align: 'center' });
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(8);
+  doc.setTextColor(100, 116, 139);
+  doc.text(codigoDoDocumento, pageWidth / 2, 206, { align: 'center' });
+  doc.text(
+    `Próxima revisão periódica: ${formatDate(proximaRevisao)}`,
+    pageWidth / 2, 212, { align: 'center' }
+  );
+
+  novaPagina();
   duasColunas('ORGANIZAÇÃO E ESTABELECIMENTO', [
     ['Organização', client.legal_name || client.trade_name || NAO_INFORMADO],
     ['Estabelecimento', client.trade_name || client.legal_name || NAO_INFORMADO],
@@ -3053,8 +3122,16 @@ export function exportPGRDocumentPdf({
     ['Nº de trabalhadores próprios', String((employees || []).length)],
     ['Nº de terceirizados no local', pendente('1.1', 'Número de trabalhadores terceirizados no local não cadastrado.')],
     ['Jornada e turnos', pendente('1.1', 'Jornada e turnos do estabelecimento não cadastrados.')],
-    ['SESMT (NR-04)', pendente('1.1', 'Situação do SESMT não cadastrada.')],
-    ['CIPA (NR-05)', pendente('1.1', 'Situação da CIPA não cadastrada.')],
+    // SESMT e CIPA nao sao cadastro: sao DIMENSIONAMENTO, e o sistema ja
+    // calcula os dois pelo grau de risco e pelo numero de trabalhadores
+    // (Anexo II da NR-04 e Quadro I da NR-05). Diziam "não cadastrada" para
+    // um dado que estava a uma chamada de funcao de distancia.
+    ['SESMT (NR-04)', dimensionamento
+      ? `${dimensionamento.status === 'DISPENSADO' ? 'Não obrigatório' : dimensionamento.status === 'NAO_DIMENSIONADO' ? 'Não dimensionado' : 'Obrigatório'} — ${dimensionamento.legalBasis}`
+      : pendente('1.1', 'Grau de risco ou número de trabalhadores ausente: o Anexo II da NR-04 não pode ser aplicado.')],
+    ['CIPA (NR-05)', dimensionamento?.cipa
+      ? `${dimensionamento.cipa.efetivos !== null ? `${dimensionamento.cipa.efetivos} efetivo(s) e ${dimensionamento.cipa.suplentes} suplente(s)` : 'Não dimensionada'} — ${dimensionamento.cipa.fundamentacao}`
+      : pendente('1.1', 'Grau de risco ou número de trabalhadores ausente: o Quadro I da NR-05 não pode ser aplicado.')],
     ['Certificação em SGSST', 'Não informada — o prazo de revisão adotado é o de 24 meses']
   ]);
 
@@ -3326,12 +3403,23 @@ export function exportPGRDocumentPdf({
   tabela({
     head: [['Setor / ambiente', 'Descrição física', 'Processo e etapas', 'Máquinas, equipamentos e produtos']],
     body: (sectors || []).length > 0
-      ? (sectors || []).map((s: any) => [
-          s?.name || 'Setor sem nome',
-          pendente('6.2', `Descrição física do setor "${s?.name || 's/ nome'}" não cadastrada.`),
-          LINHA_PARA_PREENCHER,
-          LINHA_PARA_PREENCHER
-        ])
+      // O cadastro do setor JA TEM estes campos (Hierarquia > Setores >
+      // Editar Setor): Tipo de Ambiente Físico, Descrição do Setor e
+      // Processos, Características Construtivas. O gerador não os lia e
+      // imprimia PENDENTE em cima de dado preenchido.
+      ? (sectors || []).map((st: any) => {
+          const fisica = [
+            st?.environment_type ? AMBIENTE_FISICO[st.environment_type] || st.environment_type : '',
+            st?.building_features?.trim() || ''
+          ].filter(Boolean).join(' — ');
+          return [
+            st?.name || 'Setor sem nome',
+            fisica || pendente('6.2', `Características construtivas do setor "${st?.name || 's/ nome'}" não preenchidas (Hierarquia > Setores).`),
+            st?.description?.trim()
+              || pendente('6.2', `Descrição do setor e processos de "${st?.name || 's/ nome'}" não preenchida (Hierarquia > Setores).`),
+            LINHA_PARA_PREENCHER
+          ];
+        })
       : [[{
           content: pendente('6.2', 'Nenhum setor cadastrado: a caracterização dos processos e ambientes (alínea "a" do subitem 1.5.7.3.2) não pode ser emitida.'),
           colSpan: 4,
@@ -3352,7 +3440,9 @@ export function exportPGRDocumentPdf({
             g?.sector_name || g?.name || '',
             cargos.length > 0 ? cargos.join(', ') : pendente('6.3', `Nenhum trabalhador vinculado ao GHE "${g?.name || g?.code || ''}".`),
             String(doGhe.length),
-            LINHA_PARA_PREENCHER,
+            // work_schedule_description ja existe no cadastro do GHE.
+            g?.work_schedule_description?.trim()
+              || pendente('6.3', `Jornada e turno do GHE "${g?.name || g?.code || ''}" não preenchidos (GHE & Inventário de Riscos).`),
             g?.environment_description?.trim()
               || pendente('6.3', `Atividades reais do GHE "${g?.name || g?.code || ''}" não descritas.`)
           ];
@@ -3422,7 +3512,10 @@ export function exportPGRDocumentPdf({
 
       const avaliacao = [
         r?.evaluation_type ? `Tipo: ${r.evaluation_type}` : '',
-        r?.measured_value ? `Resultado: ${r.measured_value} ${r?.measurement_unit || ''}`.trim() : '',
+        // "0 dB(A)" nao e medicao: era o valor que o catalogo gravava quando
+        // o agente nao tinha valor sugerido. Num risco ergonomico entao,
+        // decibel nao significa nada.
+        temMedicao(r) ? `Resultado: ${r.measured_value} ${r?.measurement_unit || ''}`.trim() : '',
         r?.measurement_methodology ? `Método: ${r.measurement_methodology}` : '',
         r?.action_level ? `NA: ${r.action_level}` : '',
         r?.tolerance_limit ? `LEO: ${r.tolerance_limit}` : ''
@@ -3459,7 +3552,7 @@ export function exportPGRDocumentPdf({
   }
 
   secao('7.3 Registro de avaliações ambientais');
-  const comMedicao = riscosDoCliente.filter((r: any) => r?.measured_value);
+  const comMedicao = riscosDoCliente.filter(temMedicao);
   tabela({
     head: [['Agente', 'GES', 'Método', 'Resultado', 'NA / LEO', 'Conclusão']],
     body: comMedicao.length > 0
@@ -3572,7 +3665,12 @@ export function exportPGRDocumentPdf({
       ['Execução e continuidade das ações', 'Revisão do status e das evidências do plano', 'Mensal', technicalResponsibleName(organization)],
       ['Inspeções de locais e equipamentos', 'Checklist por setor, com registro fotográfico', 'Mensal ou conforme NR específica', technicalResponsibleName(organization)],
       ['Monitoramento ambiental', 'Reavaliação de agentes acima do NA', 'Anual ou após mudança', technicalResponsibleName(organization)],
-      ['Participação dos trabalhadores e da CIPA', 'Pauta fixa nas reuniões da CIPA; inspeções conjuntas', 'Mensal', pendente('9.1', 'CIPA ou nomeado da NR-05 não cadastrado.')]
+      ['Participação dos trabalhadores e da CIPA', 'Pauta fixa nas reuniões da CIPA; inspeções conjuntas', 'Mensal',
+        dimensionamento?.cipa?.efetivos
+          ? `CIPA constituída conforme o Quadro I da NR-05 (${dimensionamento.cipa.efetivos} efetivo(s))`
+          : dimensionamento?.cipa
+            ? 'Designado da NR-05 (estabelecimento não obrigado a constituir CIPA)'
+            : pendente('9.1', 'CIPA ou designado da NR-05 não dimensionado.')]
     ],
     styles: { fontSize: 6.6, cellPadding: 1.6, overflow: 'linebreak' }
   });

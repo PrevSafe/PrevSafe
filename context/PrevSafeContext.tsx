@@ -5169,7 +5169,12 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
           measurement_unit: catRisk.standard_unit,
           tolerance_limit: catRisk.tolerance_limit_reference,
           action_level: catRisk.action_level_reference,
-          measured_value: payload.custom_risk_data?.measured_value || String(catRisk.suggested_measured_value ?? 0),
+          // `?? 0` gravava a string "0" como se fosse medicao, e a unidade
+          // padrao do catalogo ia junto: "0 dB(A)" num risco ergonomico.
+          // Sem valor sugerido, o campo fica vazio ate alguem medir.
+          measured_value:
+            payload.custom_risk_data?.measured_value ||
+            (catRisk.suggested_measured_value != null ? String(catRisk.suggested_measured_value) : ''),
           severity: severityValue,
           probability: probabilityValue,
           risk_level: payload.custom_risk_data?.risk_level || derivedRiskLevel,
