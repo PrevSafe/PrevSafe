@@ -2820,7 +2820,8 @@ export function exportPGRDocumentPdf({
   risks = [],
   employees = [],
   sectors = [],
-  units = []
+  units = [],
+  contractedOrganizations = []
 }: {
   client: Client;
   organization: Organization;
@@ -2829,6 +2830,7 @@ export function exportPGRDocumentPdf({
   employees: Employee[];
   sectors: any[];
   units: any[];
+  contractedOrganizations?: any[];
 }) {
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
   const pageWidth = doc.internal.pageSize.getWidth();
@@ -3822,8 +3824,150 @@ export function exportPGRDocumentPdf({
     styles: { fontSize: 6.6, cellPadding: 1.6, overflow: 'linebreak' }
   });
 
-  secao('9.5 Organizações contratadas (subitem 1.5.8)');
-  paragrafo(pendente('9.5', 'Relação de contratadas e evidências de troca de informações não cadastradas.'), 7);
+  secao('9.5 GRO nas relações de prestação de serviços a terceiros (item 1.5.8)');
+  paragrafo(
+    'O PGR da organização contratante inclui as medidas de prevenção para as organizações ' +
+    'contratadas que atuem em suas dependências ou em local previamente convencionado em ' +
+    'contrato, ou utiliza os programas das contratadas (subitem 1.5.8.1). Contratante e ' +
+    'contratada informam-se mutuamente dos riscos ocupacionais sob sua responsabilidade que ' +
+    'possam impactar as atividades da outra (subitens 1.5.8.2 e 1.5.8.3). Quando os riscos ' +
+    'resultam da interação das atividades, as medidas de prevenção são definidas em conjunto, ' +
+    'sob a coordenação da organização contratante (subitem 1.5.8.4).'
+  );
+
+  const contratadasDoCliente = (contractedOrganizations || []).filter(
+    (o: any) => o?.client_id === client.id && o?.status !== 'INACTIVE'
+  );
+
+  if (contratadasDoCliente.length === 0) {
+    // Lista vazia nao e "nao ha contratada": pode ser cadastro nao feito. So a
+    // declaracao datada distingue as duas coisas, e e ela que o auditor le.
+    const declarado = estabelecimento?.no_contracted_organizations_declared_at?.trim();
+    if (declarado) {
+      paragrafo(
+        `A organização declarou em ${formatDate(declarado)} que nenhuma organização ` +
+        'contratada atua neste estabelecimento nem em local previamente convencionado em ' +
+        'contrato. Na contratação de terceiros, esta seção e as medidas de prevenção ' +
+        'correspondentes devem ser revistas antes do início das atividades.',
+        7
+      );
+    } else {
+      paragrafo(
+        pendente('9.5', 'Nenhuma organização contratada cadastrada e nenhuma declaração de que não há contratadas atuando (Engenharia SST > Contratadas). Lista vazia não é declaração de inexistência.'),
+        7
+      );
+    }
+  } else {
+    const LOCAIS: Record<string, string> = {
+      DEPENDENCIAS: 'Nas dependências do contratante',
+      LOCAL_CONVENCIONADO: 'Local convencionado em contrato',
+      NAO_ATUA_NO_LOCAL: 'Não atua nas dependências nem em local convencionado'
+    };
+    const REGIMES: Record<string, string> = {
+      PGR_DO_CONTRATANTE: 'Medidas neste PGR (1.5.8.1)',
+      PROGRAMA_DA_CONTRATADA: 'Programas da contratada (1.5.8.1)',
+      SOMENTE_TITULAR_OU_SOCIOS: 'Somente titular ou sócios (1.5.8.1.2)'
+    };
+    const FALTA = 'PENDENTE';
+
+    const linhas = contratadasDoCliente.map((o: any) => {
+      // Uma pendencia por contratada, com a lista do que falta. Uma por campo
+      // encheria a 10.3 de dez linhas por contrato e esconderia o resto.
+      const faltando: string[] = [];
+
+      const local = LOCAIS[o?.work_location] || '';
+      if (!local) faltando.push('onde atua (subitem 1.5.8.1)');
+      const localCompleto = [local, o?.work_location_note?.trim()].filter(Boolean).join(' — ');
+
+      const regime = REGIMES[o?.gro_regime] || '';
+      if (!regime) faltando.push('regime de GRO: medidas neste PGR ou programas da contratada (subitem 1.5.8.1)');
+
+      // Documentos da contratada: exigidos so quando se usam os programas dela.
+      let documentos: string;
+      if (o?.gro_regime === 'PROGRAMA_DA_CONTRATADA') {
+        const inv = o?.received_inventory_date?.trim();
+        const plano = o?.received_action_plan_date?.trim();
+        if (!inv) faltando.push('inventário de riscos da contratada (subitem 1.5.8.1.1)');
+        if (!plano) faltando.push('plano de ação da contratada (subitem 1.5.8.1.1)');
+        documentos = [
+          `Inventário: ${inv ? formatDate(inv) : FALTA}`,
+          `Plano de ação: ${plano ? formatDate(plano) : FALTA}`
+        ].join('\n');
+      } else if (o?.gro_regime === 'SOMENTE_TITULAR_OU_SOCIOS') {
+        const estendidas = o?.extended_measures?.trim();
+        if (!estendidas) faltando.push('como as medidas deste PGR se estendem à atividade contratada (subitem 1.5.8.1.2)');
+        documentos = estendidas || FALTA;
+      } else if (o?.gro_regime === 'PGR_DO_CONTRATANTE') {
+        documentos = 'Medidas de prevenção no inventário e no plano de ação deste PGR';
+      } else {
+        documentos = FALTA;
+      }
+
+      const informou = o?.informed_risks_date?.trim();
+      const recebeu = o?.received_risks_date?.trim();
+      if (!informou) faltando.push('registro de que os riscos do contratante foram informados à contratada (subitem 1.5.8.2)');
+      if (!recebeu) faltando.push('registro dos riscos informados pela contratada (subitem 1.5.8.3)');
+      const troca = [
+        `Informou (1.5.8.2): ${informou ? formatDate(informou) : FALTA}`
+        + (o?.informed_risks_evidence?.trim() ? ` — ${o.informed_risks_evidence.trim()}` : ''),
+        `Recebeu (1.5.8.3): ${recebeu ? formatDate(recebeu) : FALTA}`
+        + (o?.received_risks_evidence?.trim() ? ` — ${o.received_risks_evidence.trim()}` : '')
+      ].join('\n');
+
+      let interacao: string;
+      if (o?.interaction_risks === 'SIM') {
+        const conjuntas = o?.joint_measures?.trim();
+        if (!conjuntas) faltando.push('medidas definidas em conjunto, sob coordenação do contratante (subitem 1.5.8.4)');
+        interacao = `Há riscos de interação. ${conjuntas || FALTA}`;
+      } else if (o?.interaction_risks === 'NAO') {
+        interacao = 'Avaliado: sem riscos resultantes da interação das atividades';
+      } else {
+        faltando.push('avaliação de riscos resultantes da interação das atividades (subitem 1.5.8.4)');
+        interacao = FALTA;
+      }
+
+      if (faltando.length > 0) {
+        pendente('9.5', `Contratada ${o?.legal_name || 'sem nome'}: falta ${faltando.join('; ')}.`);
+      }
+
+      return [
+        [o?.legal_name || 'Sem nome', o?.document_number?.trim()].filter(Boolean).join('\n'),
+        [o?.contracted_service?.trim() || FALTA, localCompleto || FALTA].join('\n'),
+        regime || FALTA,
+        documentos,
+        troca,
+        interacao
+      ];
+    });
+
+    tabela({
+      head: [['Contratada', 'Serviço e local', 'Regime de GRO', 'Documentos e medidas', 'Troca de informações', 'Interação (1.5.8.4)']],
+      body: linhas,
+      columnStyles: {
+        0: { cellWidth: util * 0.16, fontStyle: 'bold' },
+        1: { cellWidth: util * 0.17 },
+        2: { cellWidth: util * 0.14 },
+        4: { cellWidth: util * 0.21 }
+      },
+      styles: { fontSize: 6.0, cellPadding: 1.4, overflow: 'linebreak' }
+    });
+
+    // As que atuam no local sem constar do inventario deste PGR: o subitem
+    // 1.5.8.1 obriga a inclui-las de um modo ou de outro.
+    const noLocalSemRegime = contratadasDoCliente.filter(
+      (o: any) => (o?.work_location === 'DEPENDENCIAS' || o?.work_location === 'LOCAL_CONVENCIONADO')
+        && !o?.gro_regime
+    );
+    if (noLocalSemRegime.length > 0) {
+      paragrafo(
+        `${noLocalSemRegime.length} contratada(s) atua(m) nas dependências ou em local ` +
+        'convencionado sem regime de GRO definido. O subitem 1.5.8.1 não admite a omissão: ou ' +
+        'as medidas de prevenção entram neste PGR, ou se utilizam os programas da contratada, ' +
+        'que então deve fornecer inventário de riscos e plano de ação.',
+        6.8
+      );
+    }
+  }
 
   secao('9.6 Participação, consulta e comunicação (subitem 1.5.3.3)');
   paragrafo(

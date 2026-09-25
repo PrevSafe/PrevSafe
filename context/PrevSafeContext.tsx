@@ -7,7 +7,8 @@ import {
   RoleType, 
   Client, 
   ClientContact, 
-  ClientUnit, 
+  ClientUnit,
+  ContractedOrganization, 
   Lead, 
   Opportunity, 
   Proposal, 
@@ -220,6 +221,11 @@ interface PrevSafeContextType {
   addUnit: (unit: Omit<ClientUnit, 'id' | 'organization_id'>) => ClientUnit;
   updateUnit: (id: string, updates: Partial<ClientUnit>) => void;
   deleteUnit: (id: string) => void;
+  addContractedOrganization: (
+    data: Omit<ContractedOrganization, 'id' | 'organization_id' | 'created_at'>
+  ) => ContractedOrganization;
+  updateContractedOrganization: (id: string, updates: Partial<ContractedOrganization>) => void;
+  deleteContractedOrganization: (id: string) => void;
   addLead: (lead: Omit<Lead, 'id' | 'organization_id' | 'created_at'>) => Lead;
   updateLead: (id: string, updates: Partial<Lead>) => void;
   deleteLead: (id: string) => void;
@@ -632,6 +638,7 @@ interface PrevSafeContextType {
 
   // CIPA & CIPATR & CIPAMIN Management (NR-05, NR-31.7, NR-22.36, NR-18, NR-30, NR-32 & Lei 14.457)
   cipaProcesses: CipaManagementProcess[];
+  contractedOrganizations: ContractedOrganization[];
   addCipaProcess: (data: Omit<CipaManagementProcess, 'id'>) => CipaManagementProcess;
   updateCipaProcess: (id: string, updates: Partial<CipaManagementProcess>) => void;
   deleteCipaProcess: (id: string) => void;
@@ -759,6 +766,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
   const [accidentsIncidents, setAccidentsIncidents] = useState<SSTAccidentIncidentRecord[]>(INITIAL_ACCIDENTS_INCIDENTS);
   const [sstSignatures, setSstSignatures] = useState<SSTDocumentSignature[]>(INITIAL_SST_DOCUMENT_SIGNATURES);
   const [cipaProcesses, setCipaProcesses] = useState<CipaManagementProcess[]>(INITIAL_CIPA_PROCESSES);
+  const [contractedOrganizations, setContractedOrganizations] = useState<ContractedOrganization[]>([]);
   const [occupationalRisksCatalog, setOccupationalRisksCatalog] = useState<OccupationalRiskCatalogItem[]>(INITIAL_OCCUPATIONAL_RISKS_CATALOG);
 
   // Estado da sincronizacao com o Supabase, exposto na barra superior.
@@ -856,6 +864,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     apply(setAccidentsIncidents, list(parsed.accidentsIncidents, []));
     apply(setSstSignatures, list(parsed.sstSignatures, []));
     apply(setCipaProcesses, list(parsed.cipaProcesses, []));
+    apply(setContractedOrganizations, list(parsed.contractedOrganizations, []));
     apply(setOccupationalRisksCatalog, list(parsed.occupationalRisksCatalog, INITIAL_OCCUPATIONAL_RISKS_CATALOG, 'occupationalRisksCatalog'));
   }, []);
 
@@ -920,7 +929,8 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     accidentsIncidents,
     sstSignatures,
     cipaProcesses,
-    occupationalRisksCatalog
+    occupationalRisksCatalog,
+    contractedOrganizations
   }), [
     organization,
     esocialConfig,
@@ -961,7 +971,8 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     accidentsIncidents,
     sstSignatures,
     cipaProcesses,
-    occupationalRisksCatalog
+    occupationalRisksCatalog,
+    contractedOrganizations
   ]);
 
   // Cache local: nao e mais a fonte da verdade, e sim a copia que permite abrir
@@ -1676,6 +1687,37 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
   const deleteUnit = useCallback((id: string) => {
     setUnits(prev => prev.filter(u => u.id !== id));
   }, []);
+
+  /**
+   * Organizacoes contratadas — item 1.5.8 da NR-01.
+   *
+   * Nada aqui recebe valor padrao: regime, local de atuacao e risco de
+   * interacao chegam vazios e o PGR os cobra por nome. Um padrao aqui viraria
+   * declaracao de conformidade que ninguem fez.
+   */
+  const addContractedOrganization = useCallback((
+    data: Omit<ContractedOrganization, 'id' | 'organization_id' | 'created_at'>
+  ): ContractedOrganization => {
+    const nova: ContractedOrganization = {
+      ...data,
+      id: novoId('contratada'),
+      organization_id: organization.id,
+      created_at: new Date().toISOString()
+    };
+    setContractedOrganizations(prev => [...prev, nova]);
+    logAudit('CREATE_CONTRACTED_ORG' as any, 'CLIENT' as any, nova.id, `Contratada cadastrada: ${nova.legal_name}`, nova);
+    return nova;
+  }, [organization.id, logAudit]);
+
+  const updateContractedOrganization = useCallback((id: string, updates: Partial<ContractedOrganization>) => {
+    setContractedOrganizations(prev => prev.map(o => (o.id === id ? { ...o, ...updates } : o)));
+    logAudit('UPDATE_CONTRACTED_ORG' as any, 'CLIENT' as any, id, 'Contratada atualizada', updates);
+  }, [logAudit]);
+
+  const deleteContractedOrganization = useCallback((id: string) => {
+    setContractedOrganizations(prev => prev.filter(o => o.id !== id));
+    logAudit('DELETE_CONTRACTED_ORG' as any, 'CLIENT' as any, id, 'Contratada removida', {});
+  }, [logAudit]);
 
   const addLead = useCallback((leadData: Omit<Lead, 'id' | 'organization_id' | 'created_at'>): Lead => {
     const newLead: Lead = {
@@ -7190,6 +7232,10 @@ ${exames.map(ex => `      <exameMedico>
     addUnit,
     updateUnit,
     deleteUnit,
+    contractedOrganizations,
+    addContractedOrganization,
+    updateContractedOrganization,
+    deleteContractedOrganization,
     addLead,
     updateLead,
     deleteLead,
@@ -7463,6 +7509,10 @@ ${exames.map(ex => `      <exameMedico>
     addUnit,
     updateUnit,
     deleteUnit,
+    contractedOrganizations,
+    addContractedOrganization,
+    updateContractedOrganization,
+    deleteContractedOrganization,
     addLead,
     updateLead,
     deleteLead,

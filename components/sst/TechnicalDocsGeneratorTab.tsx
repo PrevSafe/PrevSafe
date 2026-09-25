@@ -45,6 +45,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
     organization,
     clients,
     units,
+    contractedOrganizations,
     hierarchySectors,
     hierarchyJobs,
     ghes,
@@ -68,6 +69,9 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
 
   const clientObj = clients.find(c => c.id === selectedClientId) || clients[0];
   const clientUnits = units.filter(u => !selectedClientId || u.client_id === selectedClientId);
+  const clientContratadas = contractedOrganizations.filter(
+    o => !selectedClientId || o.client_id === selectedClientId
+  );
   const clientSectors = hierarchySectors.filter(s => !selectedClientId || s.client_id === selectedClientId);
   const clientJobs = hierarchyJobs.filter(j => !selectedClientId || j.client_id === selectedClientId);
   const clientGhes = ghes.filter(g => !selectedClientId || g.client_id === selectedClientId);
@@ -165,7 +169,8 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
         risks: environmentalRisks,
         employees: clientEmployees,
         sectors: clientSectors,
-        units: clientUnits
+        units: clientUnits,
+        contractedOrganizations: clientContratadas
       });
       setSuccessToast('PDF do PGR (NR-01) gerado com sucesso!');
     } else if (activeDocType === 'PGRTR') {
@@ -962,6 +967,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
         risks={environmentalRisks}
         examProtocols={examProtocols}
         employees={clientEmployees}
+        contractedOrganizations={clientContratadas}
         sectors={clientSectors}
         units={clientUnits}
         onTransmitESocial={handleTransmitSelectedEvent}

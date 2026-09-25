@@ -306,6 +306,49 @@ const FUNCIONARIOS_COM_CIPA = Array.from({ length: 60 }, (_, i) => ({
   job_title: 'Recepcionista', status: 'ACTIVE',
 }));
 
+/**
+ * Contratadas do item 1.5.8, uma por regime do subitem 1.5.8.1.
+ *
+ * A completa nao gera pendencia; as outras duas exercitam cada exigencia que o
+ * regime escolhido puxa: inventario e plano (1.5.8.1.1) e extensao das medidas
+ * (1.5.8.1.2).
+ */
+const CONTRATADA_COMPLETA = {
+  id: 'ct1', client_id: 'c1', status: 'ACTIVE',
+  legal_name: 'Alfa Conservacao e Limpeza Ltda', document_number: '11.222.333/0001-44',
+  contracted_service: 'Limpeza e conservacao das areas comuns',
+  work_location: 'DEPENDENCIAS', gro_regime: 'PROGRAMA_DA_CONTRATADA',
+  received_inventory_date: '2026-03-10', received_action_plan_date: '2026-03-10',
+  informed_risks_date: '2026-03-12', informed_risks_evidence: 'Oficio 12/2026 com protocolo assinado',
+  received_risks_date: '2026-03-18', received_risks_evidence: 'Comunicacao sobre saneante desinfetante',
+  interaction_risks: 'SIM', joint_measures: 'Isolamento da area durante a lavagem e reuniao diaria de compatibilizacao',
+};
+const CONTRATADA_TITULAR = {
+  id: 'ct2', client_id: 'c1', status: 'ACTIVE',
+  legal_name: 'Joao Eletricista MEI', document_number: '123.456.789-00',
+  contracted_service: 'Manutencao eletrica preventiva do quadro geral',
+  work_location: 'DEPENDENCIAS', gro_regime: 'SOMENTE_TITULAR_OU_SOCIOS',
+  informed_risks_date: '2026-06-02',
+  interaction_risks: 'NAO',
+};
+const CONTRATADA_SEM_REGIME = {
+  id: 'ct3', client_id: 'c1', status: 'ACTIVE',
+  legal_name: 'Beta Manutencao Predial Ltda',
+  contracted_service: 'Manutencao do ar-condicionado',
+  work_location: 'DEPENDENCIAS',
+};
+/** Contratada de OUTRO cliente: nao pode aparecer neste PGR. */
+const CONTRATADA_DE_OUTRO_CLIENTE = {
+  id: 'ct9', client_id: 'cli-9', status: 'ACTIVE',
+  legal_name: 'Gama Vigilancia de Outra Empresa',
+  contracted_service: 'Vigilancia patrimonial',
+  work_location: 'DEPENDENCIAS', gro_regime: 'PGR_DO_CONTRATANTE',
+};
+/** Estabelecimento que declarou, com data, nao ter contratada atuando. */
+const UNIDADE_SEM_CONTRATADA = {
+  ...UNIDADE, no_contracted_organizations_declared_at: '2026-09-15'
+};
+
 function gerar(args) {
   ultimoPdf = null;
   exportPGRDocumentPdf(args);
@@ -317,6 +360,10 @@ const pdfCheio = gerar({
   client: CLIENTE, organization: ORG, ghes: GHES,
   risks: [RISCO_CLASSIFICADO, RISCO_DE_OUTRO_CLIENTE],
   employees: FUNCIONARIOS, sectors: SETORES, units: [UNIDADE],
+  contractedOrganizations: [
+    CONTRATADA_COMPLETA, CONTRATADA_TITULAR, CONTRATADA_SEM_REGIME,
+    CONTRATADA_DE_OUTRO_CLIENTE
+  ],
 });
 const pdfVazio = gerar({
   client: CLIENTE, organization: ORG, ghes: [], risks: [], employees: [], sectors: [], units: [],
@@ -762,6 +809,146 @@ for (const campo of [
     `a tela grava e recarrega ${campo}`
   );
 }
+
+// ===========================================================================
+// 3f. ORGANIZACOES CONTRATADAS (item 1.5.8)
+// ===========================================================================
+console.log('');
+console.log('--- 3f. Contratadas (9.5) ---');
+
+check(
+  tc.includes('9.5 GRO nas relações de prestação de serviços a terceiros (item 1.5.8)'),
+  '9.5 usa o titulo do item 1.5.8'
+);
+for (const sub of ['1.5.8.1', '1.5.8.2', '1.5.8.3', '1.5.8.4']) {
+  check(tc.includes(sub), `9.5 cita o subitem ${sub}`);
+}
+
+// As tres contratadas do cliente saem; a de outro cliente, nao.
+check(tc.includes('Alfa Conservacao e Limpeza'), '9.5 lista a contratada completa');
+check(tc.includes('Joao Eletricista MEI'), '9.5 lista a contratada de titular unico');
+check(tc.includes('Beta Manutencao Predial'), '9.5 lista a contratada sem regime definido');
+check(
+  !tc.includes('Gama Vigilancia de Outra Empresa'),
+  'NAO traz contratada de outro cliente'
+);
+
+// Cada regime puxa o que a NR-01 exige dele.
+check(
+  tc.includes('Programas da contratada (1.5.8.1)') && tc.includes('Inventário: 10/03/2026'),
+  'quem usa o programa da contratada tem inventario e plano conferidos (1.5.8.1.1)'
+);
+check(
+  tc.includes('Somente titular ou sócios (1.5.8.1.2)'),
+  'o regime do titular unico sai nomeado com o subitem'
+);
+check(
+  tc.includes('Informou (1.5.8.2): 12/03/2026') && tc.includes('Recebeu (1.5.8.3): 18/03/2026'),
+  '9.5 registra a troca de informacoes nos dois sentidos, com data'
+);
+check(
+  tc.includes('Há riscos de interação. Isolamento da area durante a lavagem'),
+  '9.5 traz as medidas definidas em conjunto (1.5.8.4)'
+);
+check(
+  tc.includes('Avaliado: sem riscos resultantes da interação'),
+  '9.5 distingue "avaliado e nao ha" de "ninguem avaliou"'
+);
+
+// A contratada completa nao gera pendencia; as outras duas geram, uma cada.
+check(
+  !tc.includes('Contratada Alfa Conservacao e Limpeza Ltda: falta'),
+  'a contratada completa nao gera pendencia'
+);
+check(
+  tc.includes('Contratada Joao Eletricista MEI: falta')
+  && tc.includes('como as medidas deste PGR se estendem à atividade contratada (subitem 1.5.8.1.2)'),
+  'o titular unico sem extensao das medidas gera pendencia do 1.5.8.1.2'
+);
+check(
+  tc.includes('Contratada Beta Manutencao Predial Ltda: falta')
+  && tc.includes('regime de GRO'),
+  'a contratada sem regime gera pendencia do 1.5.8.1'
+);
+check(
+  tc.includes('sem regime de GRO definido') && tc.includes('não admite a omissão'),
+  '9.5 avisa que atuar no local sem regime definido nao e opcao'
+);
+
+// Uma pendencia por contratada, nao uma por campo: a 10.3 tem de continuar legivel.
+check(
+  (tc.match(/Contratada [^:]{3,60}: falta/g) || []).length === 2,
+  'as pendencias sao agrupadas por contratada, uma cada'
+);
+
+// Lista vazia nao e declaracao de inexistencia.
+const semContratada = corrido(gerar({
+  client: CLIENTE, organization: ORG, ghes: GHES, risks: [RISCO_CLASSIFICADO],
+  employees: FUNCIONARIOS, sectors: SETORES, units: [UNIDADE],
+  contractedOrganizations: [],
+}));
+check(
+  semContratada.includes('Lista vazia não é declaração de inexistência'),
+  'sem contratada e sem declaracao, a 9.5 sai como pendencia'
+);
+check(
+  semContratada.includes('Engenharia SST > Contratadas'),
+  'a pendencia da 9.5 aponta a tela'
+);
+
+// Com a declaracao datada, deixa de ser pendencia.
+const declarado = corrido(gerar({
+  client: CLIENTE, organization: ORG, ghes: GHES, risks: [RISCO_CLASSIFICADO],
+  employees: FUNCIONARIOS, sectors: SETORES, units: [UNIDADE_SEM_CONTRATADA],
+  contractedOrganizations: [],
+}));
+check(
+  declarado.includes('declarou em 15/09/2026 que nenhuma organização'),
+  'a declaracao datada sai no documento com a data'
+);
+check(
+  !declarado.includes('Lista vazia não é declaração de inexistência'),
+  'declarada a inexistencia, a 9.5 deixa de ser pendencia'
+);
+check(
+  declarado.includes('devem ser revistas antes do início das atividades'),
+  'a declaracao vem com a obrigacao de revisar ao contratar'
+);
+
+// A tela: CRUD, tres estados do risco de interacao e nada com padrao.
+const contratadasTela = fs.readFileSync(
+  path.join(RAIZ, 'components/sst/ContractedOrganizationsTab.tsx'), 'utf8'
+);
+check(
+  contratadasTela.includes('addContractedOrganization')
+  && contratadasTela.includes('updateContractedOrganization')
+  && contratadasTela.includes('deleteContractedOrganization'),
+  'a tela cria, edita e remove contratada'
+);
+check(
+  /work_location: '' as LocalDaContratada \| ''/.test(contratadasTela)
+  && /gro_regime: '' as GroRegimeContratada \| ''/.test(contratadasTela)
+  && /interaction_risks: '' as 'SIM' \| 'NAO' \| ''/.test(contratadasTela),
+  'local, regime e interacao comecam vazios, sem padrao'
+);
+check(
+  contratadasTela.includes('no_contracted_organizations_declared_at: dataDeHoje()'),
+  'a tela grava a declaracao de inexistencia com data'
+);
+check(
+  contratadasTela.includes('no_contracted_organizations_declared_at: undefined'),
+  'cadastrar contratada retira a declaracao de que nao havia nenhuma'
+);
+check(
+  !/if \(!form\.legal_name\.trim\(\)\) return;/.test(contratadasTela),
+  'salvar sem razao social avisa, em vez de dar `return` em silencio'
+);
+
+// A colecao entra na sincronizacao: sem isso o cadastro morre no F5.
+const sync = fs.readFileSync(path.join(RAIZ, 'lib/supabaseSync.ts'), 'utf8');
+check(sync.includes("'contractedOrganizations'"), 'a colecao das contratadas e sincronizada');
+const contexto = fs.readFileSync(path.join(RAIZ, 'context/PrevSafeContext.tsx'), 'utf8');
+check(contexto.includes('parsed.contractedOrganizations'), 'o snapshot carrega as contratadas');
 
 // ===========================================================================
 // 4. UMA CLASSIFICACAO SO NO SISTEMA

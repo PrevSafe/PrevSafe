@@ -350,6 +350,102 @@ export interface ClientUnit {
   harassment_training_actions?: string;
   /** Data da ultima acao. A alinea "c" exige no minimo a cada 12 meses. */
   harassment_training_last_date?: string;
+
+  /**
+   * Data em que se declarou que NENHUMA organizacao contratada atua neste
+   * estabelecimento (secao 9.5, item 1.5.8).
+   *
+   * Vazio nao e declaracao de inexistencia: e falta de informacao, e sai como
+   * pendencia. Um estabelecimento sem contratada precisa dizer isso com data,
+   * do mesmo modo que as frentes de trabalho da secao 1.3 pedem "nenhuma".
+   */
+  no_contracted_organizations_declared_at?: string;
+}
+
+/**
+ * Como o GRO da contratada se relaciona com o do contratante (subitem 1.5.8.1).
+ *
+ * O item 1.5.8 da NR-01 nao deixa isso em aberto: o PGR do contratante inclui
+ * as medidas de prevencao para as contratadas que atuem em suas dependencias
+ * ou em local previamente convencionado em contrato, OU utiliza os programas
+ * das contratadas - e, neste segundo caso, o subitem 1.5.8.1.1 obriga a
+ * contratada a fornecer o inventario de riscos e o plano de acao das
+ * atividades objeto da contratacao.
+ */
+export type GroRegimeContratada =
+  /** O PGR do contratante inclui as medidas de prevencao da contratada. */
+  | 'PGR_DO_CONTRATANTE'
+  /** O contratante utiliza os programas da contratada (exige 1.5.8.1.1). */
+  | 'PROGRAMA_DA_CONTRATADA'
+  /** Subitem 1.5.8.1.2: servicos prestados somente pelo titular ou socios. */
+  | 'SOMENTE_TITULAR_OU_SOCIOS';
+
+/** Onde a contratada atua, porque e isso que aciona o subitem 1.5.8.1. */
+export type LocalDaContratada =
+  | 'DEPENDENCIAS'
+  | 'LOCAL_CONVENCIONADO'
+  | 'NAO_ATUA_NO_LOCAL';
+
+/**
+ * 20b. Organizacao contratada — item 1.5.8 da NR-01, secao 9.5 do PGR.
+ *
+ * Nao e um campo de texto no estabelecimento porque cada contratada tem regime
+ * proprio, evidencia propria e data propria: uma pode entregar inventario e
+ * plano, outra pode ser MEI de socio unico coberta pelas medidas do
+ * contratante, e a terceira pode gerar risco de interacao. Uma lista e a unica
+ * forma de a fiscalizacao conferir contrato por contrato.
+ */
+export interface ContractedOrganization {
+  id: string;
+  organization_id: string;
+  client_id: string;
+  /** Estabelecimento em que atua. Vazio = nao vinculada a um especifico. */
+  client_unit_id?: string;
+  legal_name: string;
+  /** CNPJ, ou CPF quando os servicos sao prestados pelo titular. */
+  document_number?: string;
+  /** Atividade objeto da contratacao, na expressao do subitem 1.5.8.1.1. */
+  contracted_service: string;
+  /** Vazio = nao informado. Nao se presume que atua nem que nao atua. */
+  work_location?: LocalDaContratada;
+  /** Qual e o local previamente convencionado em contrato. */
+  work_location_note?: string;
+  /** Vazio = nao definido. O regime decide o que a NR-01 cobra adiante. */
+  gro_regime?: GroRegimeContratada;
+
+  /** Subitem 1.5.8.1.1: inventario de riscos recebido da contratada. */
+  received_inventory_date?: string;
+  /** Subitem 1.5.8.1.1: plano de acao recebido da contratada. */
+  received_action_plan_date?: string;
+
+  /** Subitem 1.5.8.2: riscos do contratante informados a contratada. */
+  informed_risks_date?: string;
+  informed_risks_evidence?: string;
+  /** Subitem 1.5.8.3: riscos da contratada informados ao contratante. */
+  received_risks_date?: string;
+  received_risks_evidence?: string;
+
+  /**
+   * Subitem 1.5.8.4: ha riscos resultantes da INTERACAO das atividades?
+   *
+   * Tres estados de proposito. Vazio nao e "nao": e avaliacao que ninguem
+   * fez, e sai como pendencia. Se ha interacao, as medidas sao definidas em
+   * conjunto, sob a coordenacao do contratante.
+   */
+  interaction_risks?: 'SIM' | 'NAO';
+  /** Medidas definidas em conjunto, sob coordenacao do contratante (1.5.8.4). */
+  joint_measures?: string;
+
+  /**
+   * Subitem 1.5.8.1.2: como as medidas de prevencao do contratante se
+   * estendem aos riscos da atividade contratada. So se aplica a contratada
+   * cujos servicos sao prestados somente pelo titular ou socios.
+   */
+  extended_measures?: string;
+
+  notes?: string;
+  status: 'ACTIVE' | 'INACTIVE';
+  created_at: string;
 }
 
 // 21. Leads

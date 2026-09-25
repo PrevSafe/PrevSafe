@@ -287,7 +287,7 @@ export const PGR_CHECKLIST: Array<{
   { requisito: 'Emergências e simulados com evidências', norma: '1.5.6', onde: '9.4', secoes: ['9.4'] },
   { requisito: 'Inventário com as alíneas "a" a "i"', norma: '1.5.7.3.2', onde: '7.1', secoes: ['7.2'] },
   { requisito: 'Documentos datados, assinados e disponíveis; histórico de 20 anos', norma: '1.5.7.2 e 1.5.7.3.3.1', onde: 'Capa, 9.10', secoes: [] },
-  { requisito: 'Contratadas', norma: '1.5.8', onde: '9.5', secoes: ['9.5'] },
+  { requisito: 'Contratadas: medidas no PGR ou programas da contratada, troca de informações nos dois sentidos e riscos de interação', norma: '1.5.8', onde: '9.5', secoes: ['9.5'] },
   { requisito: 'Prevenção e combate ao assédio sexual e às demais formas de violência (organizações obrigadas a constituir CIPA)', norma: '1.4.1.1', onde: '9.8', secoes: ['9.8'] }
 ];
 

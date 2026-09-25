@@ -65,6 +65,7 @@ interface DocumentPreviewModalProps {
   risks?: any[];
   examProtocols?: any[];
   employees?: any[];
+  contractedOrganizations?: any[];
   sectors?: any[];
   units?: any[];
   selectedEmployee?: any;
@@ -81,6 +82,7 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
   risks = [],
   examProtocols = [],
   employees = [],
+  contractedOrganizations = [],
   sectors = [],
   units = [],
   selectedEmployee,
@@ -192,7 +194,7 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
     if (!client) return;
 
     if (docType === 'PGR') {
-      exportPGRDocumentPdf({ client, organization, ghes, risks, employees, sectors, units });
+      exportPGRDocumentPdf({ client, organization, ghes, risks, employees, sectors, units, contractedOrganizations });
       setDownloadSuccess('PGR gerado e baixado em PDF com sucesso!');
     } else if (docType === 'PGRTR') {
       exportPGRTRDocumentPdf({ client, organization, ghes, risks, employees });

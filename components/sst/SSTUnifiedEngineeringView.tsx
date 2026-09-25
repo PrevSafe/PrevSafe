@@ -33,11 +33,12 @@ import { WorkOrderOSTab } from './WorkOrderOSTab';
 import { TechnicalDocsGeneratorTab } from './TechnicalDocsGeneratorTab';
 import { IntegrationTrainingTab } from './IntegrationTrainingTab';
 import { SSTSignaturesManagementTab } from './SSTSignaturesManagementTab';
-import { PenTool } from 'lucide-react';
+import { ContractedOrganizationsTab } from './ContractedOrganizationsTab';
+import { PenTool, Handshake } from 'lucide-react';
 
 interface SSTUnifiedEngineeringViewProps {
   onNavigate?: (view: string) => void;
-  initialTab?: 'HIERARCHY' | 'GHE_RISKS' | 'EXAMS_PCMSO' | 'EMPLOYEES' | 'WORK_ORDERS_OS' | 'DOCS_XML' | 'INTEGRATION_TRAINING' | 'SIGNATURES';
+  initialTab?: 'HIERARCHY' | 'GHE_RISKS' | 'EXAMS_PCMSO' | 'EMPLOYEES' | 'WORK_ORDERS_OS' | 'DOCS_XML' | 'INTEGRATION_TRAINING' | 'SIGNATURES' | 'CONTRACTED';
 }
 
 export const SSTUnifiedEngineeringView: React.FC<SSTUnifiedEngineeringViewProps> = ({ onNavigate, initialTab }) => {
@@ -56,7 +57,7 @@ export const SSTUnifiedEngineeringView: React.FC<SSTUnifiedEngineeringViewProps>
   } = usePrevSafe();
 
   const [selectedClientId, setSelectedClientId] = useState<string>(clients?.[0]?.id || '');
-  const [activeTab, setActiveTab] = useState<'HIERARCHY' | 'GHE_RISKS' | 'EXAMS_PCMSO' | 'EMPLOYEES' | 'WORK_ORDERS_OS' | 'DOCS_XML' | 'INTEGRATION_TRAINING' | 'SIGNATURES'>(initialTab || 'HIERARCHY');
+  const [activeTab, setActiveTab] = useState<'HIERARCHY' | 'GHE_RISKS' | 'EXAMS_PCMSO' | 'EMPLOYEES' | 'WORK_ORDERS_OS' | 'DOCS_XML' | 'INTEGRATION_TRAINING' | 'SIGNATURES' | 'CONTRACTED'>(initialTab || 'HIERARCHY');
 
   // Sync when initialTab prop updates from external navigation
   React.useEffect(() => {
@@ -310,6 +311,20 @@ export const SSTUnifiedEngineeringView: React.FC<SSTUnifiedEngineeringViewProps>
           <PenTool className="w-4 h-4" />
           8. Assinaturas Digitais & Aceite (Lei 14.063)
         </button>
+
+        <button
+          type="button"
+          id="main-tab-contracted-btn"
+          onClick={() => setActiveTab('CONTRACTED')}
+          className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 shrink-0 ${
+            activeTab === 'CONTRACTED'
+              ? 'bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/20'
+              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
+          }`}
+        >
+          <Handshake className="w-4 h-4" />
+          9. Contratadas (NR-01, 1.5.8)
+        </button>
       </div>
 
       {/* Render Active View Tab */}
@@ -337,6 +352,9 @@ export const SSTUnifiedEngineeringView: React.FC<SSTUnifiedEngineeringViewProps>
         )}
         {activeTab === 'SIGNATURES' && (
           <SSTSignaturesManagementTab selectedClientId={selectedClientId} />
+        )}
+        {activeTab === 'CONTRACTED' && (
+          <ContractedOrganizationsTab selectedClientId={selectedClientId} />
         )}
       </div>
     </div>
