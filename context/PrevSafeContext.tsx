@@ -218,6 +218,7 @@ interface PrevSafeContextType {
   addContact: (contact: Omit<ClientContact, 'id' | 'organization_id'>) => ClientContact;
   deleteContact: (id: string) => void;
   addUnit: (unit: Omit<ClientUnit, 'id' | 'organization_id'>) => ClientUnit;
+  updateUnit: (id: string, updates: Partial<ClientUnit>) => void;
   deleteUnit: (id: string) => void;
   addLead: (lead: Omit<Lead, 'id' | 'organization_id' | 'created_at'>) => Lead;
   updateLead: (id: string, updates: Partial<Lead>) => void;
@@ -1661,6 +1662,16 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     setUnits(prev => [...prev, newUnit]);
     return newUnit;
   }, [organization.id]);
+
+  /**
+   * Nao existia: a unidade so podia ser criada e apagada. Sem edicao, os
+   * campos da caracterizacao do estabelecimento (secao 6.1 do PGR) nao
+   * teriam como ser preenchidos num estabelecimento ja cadastrado.
+   */
+  const updateUnit = useCallback((id: string, updates: Partial<ClientUnit>) => {
+    setUnits(prev => prev.map(u => (u.id === id ? { ...u, ...updates } : u)));
+    logAudit('UPDATE_UNIT' as any, 'CLIENT' as any, id, 'Estabelecimento / unidade atualizado', updates);
+  }, [logAudit]);
 
   const deleteUnit = useCallback((id: string) => {
     setUnits(prev => prev.filter(u => u.id !== id));
@@ -7177,6 +7188,7 @@ ${exames.map(ex => `      <exameMedico>
     addContact,
     deleteContact,
     addUnit,
+    updateUnit,
     deleteUnit,
     addLead,
     updateLead,
@@ -7449,6 +7461,7 @@ ${exames.map(ex => `      <exameMedico>
     addContact,
     deleteContact,
     addUnit,
+    updateUnit,
     deleteUnit,
     addLead,
     updateLead,

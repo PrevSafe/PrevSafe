@@ -251,6 +251,37 @@ export interface ClientUnit {
   risk_degree?: 1 | 2 | 3 | 4;
   employee_count: number;
   status: 'ACTIVE' | 'INACTIVE';
+
+  /**
+   * Codigo e tipo do estabelecimento.
+   *
+   * O formulario ja pedia os dois ("UN-01", Matriz/Filial/Obra/Posto), mas
+   * handleSaveUnit nao os gravava: o que o usuario digitava era descartado
+   * ao salvar.
+   */
+  code?: string;
+  establishment_type?: 'MATRIZ' | 'FILIAL' | 'OBRA' | 'POSTO_SERVICO';
+
+  /**
+   * CARACTERIZACAO DO ESTABELECIMENTO — secao 6.1 do PGR.
+   *
+   * Atende a alinea "a" do subitem 1.5.7.3.2 da NR-01 (caracterizacao dos
+   * processos e ambientes de trabalho) e alimenta tambem o levantamento de
+   * perigos externos previsiveis (subitem 1.5.4.3.2).
+   *
+   * Todos opcionais: estabelecimento cadastrado antes destes campos nao os
+   * tem, e o PGR aponta a pendencia em vez de supor.
+   */
+  built_area_m2?: string;
+  total_area_m2?: string;
+  /** "Galpao em estrutura metalica, pe-direito 8 m; bloco administrativo terreo" */
+  buildings_description?: string;
+  /** "Energia, subestacao, caldeira, compressores, GLP, geradores" */
+  utilities_description?: string;
+  /** Subitem 1.5.4.3.2: vias de trafego intenso, areas alagaveis, vizinhanca industrial. */
+  external_hazards?: string;
+  /** Extintores, hidrantes, rotas, ponto de encontro, hospital de referencia. */
+  emergency_resources?: string;
 }
 
 // 21. Leads

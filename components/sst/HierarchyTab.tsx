@@ -2,7 +2,8 @@
 
 import React, { useState } from 'react';
 import { usePrevSafe } from '@/context/PrevSafeContext';
-import { SSTHierarchySector, SSTHierarchyJob } from '@/types';
+import { SSTHierarchySector, SSTHierarchyJob, ClientUnit } from '@/types';
+import { lookupRiskDegreeByCnae } from '@/lib/nr4';
 import { 
   Building2, 
   Layers, 
@@ -40,7 +41,8 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
     addHierarchyJob,
     updateHierarchyJob,
     deleteHierarchyJob,
-    addUnit
+    addUnit,
+    updateUnit
   } = usePrevSafe();
 
   const [activeSubTab, setActiveSubTab] = useState<'SECTORS' | 'JOBS' | 'UNITS'>('SECTORS');
@@ -103,7 +105,17 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
     city: string;
     state: string;
     cnae_preponderant: string;
-    risk_grade: 1 | 2 | 3 | 4;
+    // null = nao classificado. O grau de risco e o do Anexo I da NR-04,
+    // consultado pelo CNAE; nao e escolha nem padrao. Ele decide o
+    // dimensionamento do SESMT, da CIPA e a carga horaria do treinamento.
+    risk_grade: 1 | 2 | 3 | 4 | null;
+    // Secao 6.1 do PGR — caracterizacao do estabelecimento.
+    built_area_m2: string;
+    total_area_m2: string;
+    buildings_description: string;
+    utilities_description: string;
+    external_hazards: string;
+    emergency_resources: string;
   }>({
     name: '',
     code: '',
@@ -113,8 +125,48 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
     city: '',
     state: '',
     cnae_preponderant: '',
-    risk_grade: 3
+    risk_grade: null,
+    built_area_m2: '',
+    total_area_m2: '',
+    buildings_description: '',
+    utilities_description: '',
+    external_hazards: '',
+    emergency_resources: ''
   });
+  const [editingUnit, setEditingUnit] = useState<ClientUnit | null>(null);
+
+  /** Abre o modal vazio (nova unidade) ou com o que ja esta gravado. */
+  const handleOpenUnitModal = (unit?: ClientUnit) => {
+    if (unit) {
+      setEditingUnit(unit);
+      setUnitForm({
+        name: unit.name || '',
+        code: unit.code || '',
+        type: unit.establishment_type || 'MATRIZ',
+        cnpj_cno_caepf: unit.document_number || '',
+        address: unit.address || '',
+        city: unit.city || '',
+        state: unit.state || '',
+        cnae_preponderant: unit.cnae || '',
+        risk_grade: (unit.risk_degree ?? null) as 1 | 2 | 3 | 4 | null,
+        built_area_m2: unit.built_area_m2 || '',
+        total_area_m2: unit.total_area_m2 || '',
+        buildings_description: unit.buildings_description || '',
+        utilities_description: unit.utilities_description || '',
+        external_hazards: unit.external_hazards || '',
+        emergency_resources: unit.emergency_resources || ''
+      });
+    } else {
+      setEditingUnit(null);
+      setUnitForm({
+        name: '', code: '', type: 'MATRIZ', cnpj_cno_caepf: '', address: '',
+        city: '', state: '', cnae_preponderant: '', risk_grade: null,
+        built_area_m2: '', total_area_m2: '', buildings_description: '',
+        utilities_description: '', external_hazards: '', emergency_resources: ''
+      });
+    }
+    setIsUnitModalOpen(true);
+  };
 
   const clientUnits = units.filter(u => !selectedClientId || u.client_id === selectedClientId);
   const clientSectors = hierarchySectors.filter(s => !selectedClientId || s.client_id === selectedClientId);
@@ -273,19 +325,41 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
 
   const handleSaveUnit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!unitForm.name) return;
-    addUnit({
-      client_id: selectedClientId,
-      name: unitForm.name,
+
+    // Dava `return` em silencio: o modal ficava aberto e nada acontecia.
+    if (!unitForm.name.trim()) {
+      alert('Informe o nome do estabelecimento / unidade.');
+      return;
+    }
+    if (!editingUnit && !selectedClientId) {
+      alert('Selecione o cliente no topo da tela antes de cadastrar o estabelecimento.');
+      return;
+    }
+
+    // `code` e `type` eram digitados e DESCARTADOS ao salvar.
+    const dados = {
+      name: unitForm.name.trim(),
+      code: unitForm.code.trim() || undefined,
+      establishment_type: unitForm.type,
       document_number: unitForm.cnpj_cno_caepf || '',
       address: unitForm.address || '',
       city: unitForm.city,
       state: unitForm.state,
       cnae: unitForm.cnae_preponderant,
-      risk_degree: unitForm.risk_grade,
-      employee_count: 0,
-      status: 'ACTIVE'
-    });
+      risk_degree: unitForm.risk_grade ?? undefined,
+      built_area_m2: unitForm.built_area_m2.trim() || undefined,
+      total_area_m2: unitForm.total_area_m2.trim() || undefined,
+      buildings_description: unitForm.buildings_description.trim() || undefined,
+      utilities_description: unitForm.utilities_description.trim() || undefined,
+      external_hazards: unitForm.external_hazards.trim() || undefined,
+      emergency_resources: unitForm.emergency_resources.trim() || undefined
+    };
+
+    if (editingUnit) {
+      updateUnit(editingUnit.id, dados);
+    } else {
+      addUnit({ client_id: selectedClientId, employee_count: 0, status: 'ACTIVE', ...dados });
+    }
     setIsUnitModalOpen(false);
   };
 
@@ -376,7 +450,7 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
             <button
               type="button"
               id="add-unit-btn"
-              onClick={() => setIsUnitModalOpen(true)}
+              onClick={() => handleOpenUnitModal()}
               className="px-3.5 py-1.5 bg-teal-500 hover:bg-teal-400 text-slate-950 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 shadow-sm"
             >
               <Plus className="w-4 h-4" />
@@ -531,6 +605,8 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
                 <th className="py-3 px-4">Cidade / UF</th>
                 <th className="py-3 px-4">CNAE Principal</th>
                 <th className="py-3 px-4 text-center">Grau de Risco</th>
+                <th className="py-3 px-4 text-center">Caracterização (PGR 6.1)</th>
+                <th className="py-3 px-4 text-right">Ações</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800/60">
@@ -552,6 +628,37 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
                     <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-teal-500/10 text-teal-400 border border-teal-500/30">
                       {u.risk_degree ? `Grau ${u.risk_degree}` : 'Grau n/c'}
                     </span>
+                  </td>
+                  <td className="py-3 px-4 text-center">
+                    {(() => {
+                      const campos = [
+                        u.built_area_m2, u.buildings_description, u.utilities_description,
+                        u.external_hazards, u.emergency_resources
+                      ];
+                      const preenchidos = campos.filter((c) => String(c || '').trim()).length;
+                      const completo = preenchidos === campos.length;
+                      return (
+                        <span
+                          title="Área, edificações, utilidades, entorno e recursos de emergência — seção 6.1 do PGR"
+                          className={`px-2 py-0.5 rounded text-[10px] font-bold border ${
+                            completo
+                              ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
+                              : 'bg-amber-500/10 text-amber-400 border-amber-500/30'
+                          }`}
+                        >
+                          {preenchidos}/{campos.length}
+                        </span>
+                      );
+                    })()}
+                  </td>
+                  <td className="py-3 px-4 text-right">
+                    <button
+                      type="button"
+                      onClick={() => handleOpenUnitModal(u)}
+                      className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-[10px] font-semibold"
+                    >
+                      Editar
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -967,11 +1074,11 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
       {/* Unit Modal */}
       {isUnitModalOpen && (
         <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl animate-in fade-in zoom-in-95 duration-150">
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-2xl w-full p-6 space-y-4 shadow-2xl animate-in fade-in zoom-in-95 duration-150 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-slate-800 pb-3">
               <h3 className="text-base font-bold text-slate-100 flex items-center gap-2">
                 <Building2 className="w-5 h-5 text-teal-400" />
-                Cadastrar Novo Estabelecimento / Unidade
+                {editingUnit ? 'Editar Estabelecimento / Unidade' : 'Cadastrar Novo Estabelecimento / Unidade'}
               </h3>
               <button 
                 type="button" 
@@ -1023,17 +1130,48 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
                   </select>
                 </div>
                 <div>
-                  <label className="block text-slate-400 font-semibold mb-1">Grau de Risco (NR-04)</label>
+                  <label className="block text-slate-400 font-semibold mb-1">Grau de Risco (NR-04, Anexo I)</label>
                   <select
-                    value={unitForm.risk_grade}
-                    onChange={(e) => setUnitForm({ ...unitForm, risk_grade: Number(e.target.value) as any })}
+                    value={unitForm.risk_grade ?? ''}
+                    onChange={(e) =>
+                      setUnitForm({
+                        ...unitForm,
+                        risk_grade: e.target.value === '' ? null : (Number(e.target.value) as 1 | 2 | 3 | 4)
+                      })
+                    }
                     className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 font-bold text-teal-400"
                   >
+                    <option value="">Não classificado</option>
                     <option value={1}>Grau de Risco 1</option>
                     <option value={2}>Grau de Risco 2</option>
                     <option value={3}>Grau de Risco 3</option>
                     <option value={4}>Grau de Risco 4</option>
                   </select>
+                  {(() => {
+                    // O grau vem do Anexo I pelo CNAE. Comecava em 3 por
+                    // padrao, e o grau decide o dimensionamento do SESMT
+                    // (Anexo II) e da CIPA (Quadro I da NR-05).
+                    const consulta = unitForm.cnae_preponderant.trim()
+                      ? lookupRiskDegreeByCnae(unitForm.cnae_preponderant)
+                      : null;
+                    if (!consulta?.found || !consulta.riskDegree) return null;
+                    if (consulta.riskDegree === unitForm.risk_grade) {
+                      return (
+                        <p className="text-[10px] text-emerald-400 mt-1">
+                          Confere com o Anexo I da NR-04 para este CNAE.
+                        </p>
+                      );
+                    }
+                    return (
+                      <button
+                        type="button"
+                        onClick={() => setUnitForm({ ...unitForm, risk_grade: consulta.riskDegree as 1 | 2 | 3 | 4 })}
+                        className="text-[10px] text-amber-400 hover:text-amber-300 mt-1 text-left underline underline-offset-2"
+                      >
+                        O Anexo I da NR-04 classifica este CNAE como grau {consulta.riskDegree}. Aplicar.
+                      </button>
+                    );
+                  })()}
                 </div>
               </div>
 
@@ -1093,6 +1231,98 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
                     onChange={(e) => setUnitForm({ ...unitForm, state: e.target.value.toUpperCase() })}
                     className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 uppercase"
                   />
+                </div>
+              </div>
+
+              {/* Caracterizacao do estabelecimento — secao 6.1 do PGR */}
+              <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 space-y-3">
+                <div>
+                  <h4 className="font-bold text-slate-200 text-xs flex items-center gap-1.5">
+                    <Building2 className="w-4 h-4 text-teal-400" />
+                    Caracterização do Estabelecimento (PGR, seção 6.1)
+                  </h4>
+                  <p className="text-[11px] text-slate-500 mt-0.5">
+                    Atende à alínea &quot;a&quot; do subitem 1.5.7.3.2 da NR-01. Descreva o que
+                    existe de fato na data da avaliação — o auditor confronta este texto com o
+                    local de trabalho.
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-slate-400 font-semibold mb-1">Área construída (m²)</label>
+                    <input
+                      type="text"
+                      placeholder="Ex.: 1.250"
+                      value={unitForm.built_area_m2}
+                      onChange={(e) => setUnitForm({ ...unitForm, built_area_m2: e.target.value })}
+                      className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-slate-400 font-semibold mb-1">Área total do terreno (m²)</label>
+                    <input
+                      type="text"
+                      placeholder="Ex.: 3.000"
+                      value={unitForm.total_area_m2}
+                      onChange={(e) => setUnitForm({ ...unitForm, total_area_m2: e.target.value })}
+                      className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-slate-400 font-semibold mb-1">Edificações e pavimentos</label>
+                  <textarea
+                    rows={2}
+                    placeholder="Ex.: galpão em estrutura metálica, pé-direito 8 m; bloco administrativo térreo em alvenaria"
+                    value={unitForm.buildings_description}
+                    onChange={(e) => setUnitForm({ ...unitForm, buildings_description: e.target.value })}
+                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-slate-400 font-semibold mb-1">Utilidades</label>
+                  <textarea
+                    rows={2}
+                    placeholder="Energia e subestação, caldeira, compressores, GLP, geradores, ar-condicionado central..."
+                    value={unitForm.utilities_description}
+                    onChange={(e) => setUnitForm({ ...unitForm, utilities_description: e.target.value })}
+                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-slate-400 font-semibold mb-1">
+                    Entorno e perigos externos <span className="text-slate-600">(subitem 1.5.4.3.2)</span>
+                  </label>
+                  <textarea
+                    rows={2}
+                    placeholder="Vias de tráfego intenso, área alagável, vizinhança industrial, índice de violência da região, fauna peçonhenta..."
+                    value={unitForm.external_hazards}
+                    onChange={(e) => setUnitForm({ ...unitForm, external_hazards: e.target.value })}
+                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                  />
+                  <p className="text-[10px] text-slate-500 mt-1">
+                    Perigo externo é o previsível que está fora do controle da organização, mas
+                    atinge quem trabalha aqui. Assalto em trabalho externo e trânsito em
+                    deslocamento a serviço entram.
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-slate-400 font-semibold mb-1">Recursos de emergência</label>
+                  <textarea
+                    rows={2}
+                    placeholder="Extintores e hidrantes, rotas de fuga, ponto de encontro, ambulatório, distância e nome do hospital de referência..."
+                    value={unitForm.emergency_resources}
+                    onChange={(e) => setUnitForm({ ...unitForm, emergency_resources: e.target.value })}
+                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                  />
+                  <p className="text-[10px] text-slate-500 mt-1">
+                    Alimenta também a seção 9.4 do PGR (preparação e resposta a emergências).
+                  </p>
                 </div>
               </div>
 

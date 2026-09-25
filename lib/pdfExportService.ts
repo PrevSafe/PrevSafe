@@ -205,6 +205,12 @@ const NAO_INFORMADO = 'Não informado';
 const LINHA_PARA_PREENCHER = '____________________';
 const SEM_RISCO_NO_INVENTARIO = 'Nenhum agente desta natureza no inventário de riscos (PGR)';
 const LINHA_CURTA = '________';
+const TIPO_DE_ESTABELECIMENTO: Record<string, string> = {
+  MATRIZ: 'Matriz',
+  FILIAL: 'Filial',
+  OBRA: 'Obra de construção civil (CNO)',
+  POSTO_SERVICO: 'Posto de trabalho externo'
+};
 /** Rotulos do "Tipo de Ambiente Físico" do cadastro de setor. */
 const AMBIENTE_FISICO: Record<string, string> = {
   OPERACIONAL_FECHADO: 'Operacional fechado (galpão / oficina)',
@@ -3392,12 +3398,47 @@ export function exportPGRDocumentPdf({
     'registros do inventário.'
   );
 
+  // A caracterizacao vive no ESTABELECIMENTO (Hierarquia > Unidades), que e
+  // a unidade de emissao do PGR segundo o subitem 1.5.3.1.1.1.
+  const unidadesDoCliente = (units || []).filter(
+    (u: any) => u?.client_id === client.id && u?.status !== 'INACTIVE'
+  );
+  const estabelecimento = unidadesDoCliente[0] || null;
+
+  if (unidadesDoCliente.length > 1) {
+    pendente(
+      '6.1',
+      `Este cliente tem ${unidadesDoCliente.length} estabelecimentos cadastrados e o PGR é emitido por estabelecimento ` +
+      `(subitem 1.5.3.1.1.1). A caracterização abaixo é a de "${estabelecimento?.name || ''}"; emita um PGR para cada um.`
+    );
+  }
+
+  const areas = [estabelecimento?.built_area_m2?.trim(), estabelecimento?.total_area_m2?.trim()];
+  const areaTexto = areas[0] || areas[1]
+    ? `${areas[0] || 'não informada'} m² construída / ${areas[1] || 'não informada'} m² total`
+    : '';
+
+  const campoDoEstabelecimento = (valor: any, oQueFalta: string) =>
+    String(valor || '').trim() || pendente('6.1', oQueFalta);
+
   duasColunas('6.1 Estabelecimento', [
-    ['Área construída / área total', pendente('6.1', 'Área construída e área total do estabelecimento não cadastradas.')],
-    ['Edificações e pavimentos', pendente('6.1', 'Descrição das edificações não cadastrada.')],
-    ['Utilidades', pendente('6.1', 'Utilidades (energia, caldeira, compressores, GLP, geradores) não cadastradas.')],
-    ['Entorno e perigos externos', pendente('6.1', 'Entorno e perigos externos previsíveis não cadastrados (subitem 1.5.4.3.2).')],
-    ['Recursos de emergência', pendente('6.1', 'Recursos de emergência não cadastrados (extintores, hidrantes, rotas, hospital de referência).')]
+    ['Estabelecimento', estabelecimento
+      ? `${estabelecimento.name}${estabelecimento.code ? ` (${estabelecimento.code})` : ''}${estabelecimento.establishment_type ? ` — ${TIPO_DE_ESTABELECIMENTO[estabelecimento.establishment_type] || estabelecimento.establishment_type}` : ''}`
+      : pendente('6.1', 'Nenhum estabelecimento cadastrado em Hierarquia > Unidades: sem ele não há a que se referir a caracterização.')],
+    ['Área construída / área total', areaTexto
+      || pendente('6.1', 'Área construída e área total não cadastradas (Hierarquia > Unidades).')],
+    ['Edificações e pavimentos', campoDoEstabelecimento(
+      estabelecimento?.buildings_description,
+      'Descrição das edificações e pavimentos não cadastrada (Hierarquia > Unidades).')],
+    ['Utilidades', campoDoEstabelecimento(
+      estabelecimento?.utilities_description,
+      'Utilidades (energia, caldeira, compressores, GLP, geradores) não cadastradas (Hierarquia > Unidades).')],
+    ['Entorno e perigos externos', campoDoEstabelecimento(
+      estabelecimento?.external_hazards,
+      'Entorno e perigos externos previsíveis não cadastrados (subitem 1.5.4.3.2, em Hierarquia > Unidades).')],
+    ['Recursos de emergência', campoDoEstabelecimento(
+      estabelecimento?.emergency_resources,
+      'Recursos de emergência não cadastrados (extintores, hidrantes, rotas, hospital de referência).')]
   ]);
 
   secao('6.2 Processos e ambientes de trabalho');
@@ -3707,7 +3748,9 @@ export function exportPGRDocumentPdf({
     head: [['Requisito', 'Definição da organização']],
     body: [
       ['Cenários de emergência', pendente('9.4', 'Cenários de emergência não cadastrados.')],
-      ['Primeiros socorros e encaminhamento', pendente('9.4', 'Recursos de primeiros socorros e hospital de referência não cadastrados.')],
+      ['Primeiros socorros e encaminhamento',
+        estabelecimento?.emergency_resources?.trim()
+          || pendente('9.4', 'Recursos de primeiros socorros e hospital de referência não cadastrados (Hierarquia > Unidades).')],
       ['Abandono de área', pendente('9.4', 'Rotas, alarme e ponto de encontro não cadastrados.')],
       ['Emergências de grande magnitude', pendente('9.4', 'Tratamento das emergências de grande magnitude não definido.')],
       ['Exercícios simulados', pendente('9.4', 'Periodicidade e evidências dos simulados não cadastradas (subitens 1.5.6.3 e 1.5.6.3.1).')]

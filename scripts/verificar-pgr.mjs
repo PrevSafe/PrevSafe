@@ -255,6 +255,19 @@ const FUNCIONARIOS = [
 ];
 const SETORES = [{ id: 's1', name: 'Atendimento', client_id: 'c1' }];
 
+/** O estabelecimento com a caracterizacao da secao 6.1 preenchida. */
+const UNIDADE = {
+  id: 'u1', client_id: 'c1', name: 'FISIOMED', code: 'UN-01',
+  establishment_type: 'MATRIZ', status: 'ACTIVE',
+  address: 'Av. Ivan de Almeida Moura, 430', city: 'Eunapolis', state: 'BA',
+  cnae: '86.50-0-04', risk_degree: 2, employee_count: 2,
+  built_area_m2: '320', total_area_m2: '450',
+  buildings_description: 'Bloco unico terreo em alvenaria, pe-direito 3 m',
+  utilities_description: 'Energia da concessionaria, ar-condicionado split, sem caldeira',
+  external_hazards: 'Avenida de trafego intenso na testada; area sem historico de alagamento',
+  emergency_resources: 'Extintores ABC, rota de fuga sinalizada, ponto de encontro no estacionamento, hospital de referencia a 1,2 km'
+};
+
 function gerar(args) {
   ultimoPdf = null;
   exportPGRDocumentPdf(args);
@@ -265,7 +278,7 @@ function gerar(args) {
 const pdfCheio = gerar({
   client: CLIENTE, organization: ORG, ghes: GHES,
   risks: [RISCO_CLASSIFICADO, RISCO_DE_OUTRO_CLIENTE],
-  employees: FUNCIONARIOS, sectors: SETORES, units: [],
+  employees: FUNCIONARIOS, sectors: SETORES, units: [UNIDADE],
 });
 const pdfVazio = gerar({
   client: CLIENTE, organization: ORG, ghes: [], risks: [], employees: [], sectors: [], units: [],
@@ -414,7 +427,7 @@ check(
 const semSituacao = { ...RISCO_CLASSIFICADO, id: 'r2', operational_situation: undefined };
 const pdfSemSituacao = corrido(gerar({
   client: CLIENTE, organization: ORG, ghes: GHES, risks: [semSituacao],
-  employees: FUNCIONARIOS, sectors: SETORES, units: [],
+  employees: FUNCIONARIOS, sectors: SETORES, units: [UNIDADE],
 }));
 check(
   pdfSemSituacao.includes('Situação operacional (R, NR ou E)'),
@@ -443,6 +456,76 @@ check(
 check(
   catalogo.includes('operational_situation: situacaoAplicada'),
   'aplicar risco do catalogo tambem grava a situacao'
+);
+
+// ===========================================================================
+// 3c. CARACTERIZACAO DO ESTABELECIMENTO (secao 6.1)
+// ===========================================================================
+// Alinea "a" do subitem 1.5.7.3.2. Os cinco campos nao existiam no sistema:
+// area, edificacoes, utilidades, entorno e recursos de emergencia. Ficavam
+// como cinco pendencias fixas em todo PGR emitido.
+console.log('');
+console.log('--- 3c. Caracterizacao do estabelecimento (6.1) ---');
+
+check(tc.includes('FISIOMED (UN-01) - Matriz'), 'a 6.1 nomeia o estabelecimento, com codigo e tipo');
+check(tc.includes('320 m² construída / 450 m² total'), 'traz area construida e area total');
+check(tc.includes('Bloco unico terreo em alvenaria'), 'traz as edificacoes');
+check(tc.includes('sem caldeira'), 'traz as utilidades');
+check(tc.includes('Avenida de trafego intenso na testada'), 'traz o entorno e os perigos externos');
+check(tc.includes('hospital de referencia a 1,2 km'), 'traz os recursos de emergencia');
+
+// Os recursos de emergencia alimentam tambem a 9.4.
+check(
+  (tc.match(/hospital de referencia a 1,2 km/g) || []).length >= 2,
+  'os recursos de emergencia aparecem tambem na secao 9.4'
+);
+
+// Preenchida a 6.1, some a pendencia de perigos externos do checklist.
+check(
+  !tc.includes('Entorno e perigos externos previsíveis não cadastrados'),
+  'com o entorno preenchido, a pendencia do subitem 1.5.4.3.2 some'
+);
+
+// Sem estabelecimento cadastrado, aponta onde resolver.
+const semUnidade = corrido(gerar({
+  client: CLIENTE, organization: ORG, ghes: GHES, risks: [RISCO_CLASSIFICADO],
+  employees: FUNCIONARIOS, sectors: SETORES, units: [],
+}));
+check(
+  semUnidade.includes('Nenhum estabelecimento cadastrado em Hierarquia > Unidades'),
+  'sem estabelecimento, a 6.1 diz onde cadastrar'
+);
+check(
+  semUnidade.includes('Hierarquia > Unidades'),
+  'as pendencias da 6.1 apontam a tela'
+);
+
+// Mais de um estabelecimento: o PGR e por estabelecimento (1.5.3.1.1.1).
+const duasUnidades = corrido(gerar({
+  client: CLIENTE, organization: ORG, ghes: GHES, risks: [RISCO_CLASSIFICADO],
+  employees: FUNCIONARIOS, sectors: SETORES,
+  units: [UNIDADE, { ...UNIDADE, id: 'u2', name: 'FILIAL CENTRO', code: 'UN-02' }],
+}));
+check(
+  duasUnidades.includes('2 estabelecimentos cadastrados e o PGR é emitido por estabelecimento'),
+  'com mais de um estabelecimento, avisa que o PGR e por estabelecimento'
+);
+check(
+  duasUnidades.includes('subitem 1.5.3.1.1.1'),
+  'e cita o subitem que exige isso'
+);
+
+// A tela: edicao de unidade nao existia, e code/type eram descartados.
+const hierarquia = fs.readFileSync(path.join(RAIZ, 'components/sst/HierarchyTab.tsx'), 'utf8');
+const contexto2 = fs.readFileSync(path.join(RAIZ, 'context/PrevSafeContext.tsx'), 'utf8');
+check(contexto2.includes('const updateUnit = useCallback'), 'o contexto passou a permitir editar a unidade');
+check(hierarquia.includes('handleOpenUnitModal(u)'), 'a tabela de unidades tem botao de editar');
+check(hierarquia.includes('establishment_type: unitForm.type'), 'o tipo de estabelecimento passou a ser gravado');
+check(hierarquia.includes('code: unitForm.code.trim()'), 'o codigo da unidade passou a ser gravado');
+check(hierarquia.includes('external_hazards: unitForm.external_hazards'), 'o entorno e gravado');
+check(
+  !/if \(!unitForm\.name\) return;/.test(hierarquia),
+  'salvar unidade nao da mais `return` em silencio'
 );
 
 // ===========================================================================
