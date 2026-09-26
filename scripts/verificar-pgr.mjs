@@ -809,11 +809,11 @@ const semUnidade = corrido(gerar({
   employees: FUNCIONARIOS, sectors: SETORES, units: [],
 }));
 check(
-  semUnidade.includes('Nenhum estabelecimento cadastrado em Hierarquia > Unidades'),
+  semUnidade.includes('Nenhum estabelecimento cadastrado em Hierarquia > Estabelecimentos'),
   'sem estabelecimento, a 6.1 diz onde cadastrar'
 );
 check(
-  semUnidade.includes('Hierarquia > Unidades'),
+  semUnidade.includes('Hierarquia > Estabelecimentos'),
   'as pendencias da 6.1 apontam a tela'
 );
 
@@ -884,11 +884,11 @@ for (const sumiu of [
 
 // Sem estabelecimento, as cinco continuam apontando a tela.
 check(
-  semUnidade.includes('Jornada e turnos do estabelecimento não cadastrados (Hierarquia > Unidades)'),
+  semUnidade.includes('Jornada e turnos do estabelecimento não cadastrados (Hierarquia > Estabelecimentos)'),
   'sem estabelecimento, a pendencia da jornada aponta a tela'
 );
 check(
-  semUnidade.includes('Coordenador da implementação do PGR não cadastrado (Hierarquia > Unidades)'),
+  semUnidade.includes('Coordenador da implementação do PGR não cadastrado (Hierarquia > Estabelecimentos)'),
   'sem estabelecimento, a pendencia do coordenador aponta a tela'
 );
 
@@ -927,8 +927,8 @@ check(tc.includes('Último simulado realizado em 18/04/2026'), '9.4 traz a data 
 
 // Sem estabelecimento, cada uma das quatro aponta a tela.
 for (const [rotulo, texto_] of [
-  ['cenarios', 'Cenários de emergência não cadastrados (Hierarquia > Unidades)'],
-  ['abandono', 'ponto de encontro e responsáveis pelo abandono não cadastrados (Hierarquia > Unidades)'],
+  ['cenarios', 'Cenários de emergência não cadastrados (Hierarquia > Estabelecimentos)'],
+  ['abandono', 'ponto de encontro e responsáveis pelo abandono não cadastrados (Hierarquia > Estabelecimentos)'],
   ['grande magnitude', 'Medidas para emergências de grande magnitude não declaradas'],
   ['simulados', 'exercícios simulados não cadastradas (subitens 1.5.6.3 e 1.5.6.3.1)'],
 ]) {
@@ -1125,7 +1125,7 @@ check(
   'sem contratada e sem declaracao, a 9.5 sai como pendencia'
 );
 check(
-  semContratada.includes('Engenharia SST > Contratadas'),
+  semContratada.includes('Engenharia SST > 9. Contratadas'),
   'a pendencia da 9.5 aponta a tela'
 );
 
@@ -1267,7 +1267,7 @@ const semMaquina = corrido(gerar({
 }));
 check(
   semMaquina.includes('Nenhuma máquina ou equipamento cadastrado')
-  && semMaquina.includes('Engenharia SST > Máquinas'),
+  && semMaquina.includes('Engenharia SST > 10. Máquinas'),
   'sem maquina e sem declaracao, a 6.5 sai como pendencia apontando a tela'
 );
 
@@ -1414,7 +1414,7 @@ const semQuimico = corrido(gerar({
 }));
 check(
   semQuimico.includes('Nenhum produto químico cadastrado')
-  && semQuimico.includes('Engenharia SST > Produtos Químicos'),
+  && semQuimico.includes('Engenharia SST > 11. Produtos Químicos'),
   'sem produto e sem declaracao, a 6.4 sai como pendencia apontando a tela'
 );
 const quimicoDeclarado = corrido(gerar({
@@ -1607,7 +1607,7 @@ const semMatriz = corrido(gerar({
 }));
 check(
   semMatriz.includes('Matriz de capacitação não cadastrada')
-  && semMatriz.includes('Engenharia SST > Matriz de Capacitação'),
+  && semMatriz.includes('Engenharia SST > 12. Matriz de Capacitação'),
   'matriz vazia sai como pendencia apontando a tela'
 );
 check(
@@ -1917,7 +1917,7 @@ const semAep = corrido(gerar({
 }));
 check(
   semAep.includes('Nenhuma avaliação ergonômica preliminar registrada')
-  && semAep.includes('Engenharia SST > Avaliação Ergonômica'),
+  && semAep.includes('Engenharia SST > 13. Avaliação Ergonômica'),
   'sem AEP, a 7.4 sai como pendencia apontando a tela'
 );
 check(

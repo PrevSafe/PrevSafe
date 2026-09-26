@@ -3196,9 +3196,9 @@ export function exportPGRDocumentPdf({
     ['Grau de risco (NR-04, Anexo I)', riskDegreeLine(client)],
     ['Nº de trabalhadores próprios', String((employees || []).length)],
     ['Nº de terceirizados no local', String(estabelecimento?.outsourced_worker_count || '').trim()
-      || pendente('1.1', 'Número de trabalhadores terceirizados no local não cadastrado (Hierarquia > Unidades).')],
+      || pendente('1.1', 'Número de trabalhadores terceirizados no local não cadastrado (Hierarquia > Estabelecimentos).')],
     ['Jornada e turnos', estabelecimento?.work_shifts_description?.trim()
-      || pendente('1.1', 'Jornada e turnos do estabelecimento não cadastrados (Hierarquia > Unidades).')],
+      || pendente('1.1', 'Jornada e turnos do estabelecimento não cadastrados (Hierarquia > Estabelecimentos).')],
     // SESMT e CIPA nao sao cadastro: sao DIMENSIONAMENTO, e o sistema ja
     // calcula os dois pelo grau de risco e pelo numero de trabalhadores
     // (Anexo II da NR-04 e Quadro I da NR-05). Diziam "não cadastrada" para
@@ -3214,10 +3214,10 @@ export function exportPGRDocumentPdf({
 
   duasColunas('1.2 Responsáveis', [
     ['Responsável legal', estabelecimento?.legal_representative?.trim()
-      || pendente('1.2', 'Responsável legal da organização não cadastrado (Hierarquia > Unidades).')],
+      || pendente('1.2', 'Responsável legal da organização não cadastrado (Hierarquia > Estabelecimentos).')],
     ['Responsável técnico pela elaboração', technicalResponsibleLine(organization)],
     ['Coordenador da implementação', estabelecimento?.pgr_coordinator?.trim()
-      || pendente('1.2', 'Coordenador da implementação do PGR não cadastrado (Hierarquia > Unidades).')],
+      || pendente('1.2', 'Coordenador da implementação do PGR não cadastrado (Hierarquia > Estabelecimentos).')],
     ['Médico responsável pelo PCMSO', pcmsoPhysicianLine(organization)]
   ]);
 
@@ -3235,7 +3235,7 @@ export function exportPGRDocumentPdf({
           ? gheDoCliente.map((g: any) => `${g?.code || 's/ código'} — ${g?.name || 's/ nome'}`).join('; ')
           : pendente('1.3', 'Nenhum GHE cadastrado: sem GES não há inventário por grupo de exposição.')],
       ['Frentes de trabalho e locais externos', estabelecimento?.external_work_fronts?.trim()
-        || pendente('1.3', 'Frentes de trabalho e locais externos não cadastrados (Hierarquia > Unidades).')],
+        || pendente('1.3', 'Frentes de trabalho e locais externos não cadastrados (Hierarquia > Estabelecimentos).')],
       ['Contratadas que atuam no local', pendente('1.3', 'Relação de contratadas não cadastrada (seção 9.5).')],
       ['Exclusões', 'Nenhuma']
     ],
@@ -3440,7 +3440,7 @@ export function exportPGRDocumentPdf({
     );
   } else {
     paragrafo(
-      pendente('5.3', 'Porte da organização não informado: sem ele não se sabe se incide a dispensa de elaborar a AET do item 17.3.4 da NR-17, que alcança ME e EPP de graus de risco 1 e 2 e o MEI (CRM > Clientes).'),
+      pendente('5.3', 'Porte da organização não informado: sem ele não se sabe se incide a dispensa de elaborar a AET do item 17.3.4 da NR-17, que alcança ME e EPP de graus de risco 1 e 2 e o MEI (CRM > Clientes & Unidades).'),
       6.8
     );
   }
@@ -3567,15 +3567,15 @@ export function exportPGRDocumentPdf({
   duasColunas('6.1 Estabelecimento', [
     ['Estabelecimento', estabelecimento
       ? `${estabelecimento.name}${estabelecimento.code ? ` (${estabelecimento.code})` : ''}${estabelecimento.establishment_type ? ` — ${TIPO_DE_ESTABELECIMENTO[estabelecimento.establishment_type] || estabelecimento.establishment_type}` : ''}`
-      : pendente('6.1', 'Nenhum estabelecimento cadastrado em Hierarquia > Unidades: sem ele não há a que se referir a caracterização.')],
+      : pendente('6.1', 'Nenhum estabelecimento cadastrado em Hierarquia > Estabelecimentos: sem ele não há a que se referir a caracterização.')],
     ['Área construída / área total', areaTexto
-      || pendente('6.1', 'Área construída e área total não cadastradas (Hierarquia > Unidades).')],
+      || pendente('6.1', 'Área construída e área total não cadastradas (Hierarquia > Estabelecimentos).')],
     ['Edificações e pavimentos', campoDoEstabelecimento(
       estabelecimento?.buildings_description,
-      'Descrição das edificações e pavimentos não cadastrada (Hierarquia > Unidades).')],
+      'Descrição das edificações e pavimentos não cadastrada (Hierarquia > Estabelecimentos).')],
     ['Utilidades', campoDoEstabelecimento(
       estabelecimento?.utilities_description,
-      'Utilidades (energia, caldeira, compressores, GLP, geradores) não cadastradas (Hierarquia > Unidades).')],
+      'Utilidades (energia, caldeira, compressores, GLP, geradores) não cadastradas (Hierarquia > Estabelecimentos).')],
     ['Entorno e perigos externos', campoDoEstabelecimento(
       estabelecimento?.external_hazards,
       'Entorno e perigos externos previsíveis não cadastrados (subitem 1.5.4.3.2, em Hierarquia > Unidades).')],
@@ -3668,7 +3668,7 @@ export function exportPGRDocumentPdf({
       );
     } else {
       paragrafo(
-        pendente('6.4', 'Nenhum produto químico cadastrado e nenhuma declaração de que não se utiliza produto químico (Engenharia SST > Produtos Químicos). Lista vazia não é declaração de inexistência.'),
+        pendente('6.4', 'Nenhum produto químico cadastrado e nenhuma declaração de que não se utiliza produto químico (Engenharia SST > 11. Produtos Químicos). Lista vazia não é declaração de inexistência.'),
         7
       );
     }
@@ -3832,7 +3832,7 @@ export function exportPGRDocumentPdf({
       );
     } else {
       paragrafo(
-        pendente('6.5', 'Nenhuma máquina ou equipamento cadastrado e nenhuma declaração de que não há requisito específico de NR-12, NR-13 ou NR-11 (Engenharia SST > Máquinas). Lista vazia não é declaração de inexistência.'),
+        pendente('6.5', 'Nenhuma máquina ou equipamento cadastrado e nenhuma declaração de que não há requisito específico de NR-12, NR-13 ou NR-11 (Engenharia SST > 10. Máquinas). Lista vazia não é declaração de inexistência.'),
         7
       );
     }
@@ -4072,7 +4072,7 @@ export function exportPGRDocumentPdf({
     // situacoes que demandam adaptacao, e a NR-17 se aplica a TODAS as
     // situacoes de trabalho (item 17.2.1).
     paragrafo(
-      pendente('7.4', 'Nenhuma avaliação ergonômica preliminar registrada (Engenharia SST > Avaliação Ergonômica). O subitem 17.3.1.2.1 exige o registro da AEP, e o item 17.2.1 aplica a NR-17 a todas as situações de trabalho.'),
+      pendente('7.4', 'Nenhuma avaliação ergonômica preliminar registrada (Engenharia SST > 13. Avaliação Ergonômica). O subitem 17.3.1.2.1 exige o registro da AEP, e o item 17.2.1 aplica a NR-17 a todas as situações de trabalho.'),
       7
     );
   } else {
@@ -4369,14 +4369,14 @@ export function exportPGRDocumentPdf({
     const periodicidade = estabelecimento?.emergency_drills?.trim();
     const ultimo = estabelecimento?.emergency_drill_last_date?.trim();
     if (!periodicidade && !ultimo) {
-      return pendente('9.4', 'Periodicidade e evidências dos exercícios simulados não cadastradas (subitens 1.5.6.3 e 1.5.6.3.1) (Hierarquia > Unidades).');
+      return pendente('9.4', 'Periodicidade e evidências dos exercícios simulados não cadastradas (subitens 1.5.6.3 e 1.5.6.3.1) (Hierarquia > Estabelecimentos).');
     }
     const partes: string[] = [];
     partes.push(periodicidade
-      || pendente('9.4', 'Periodicidade dos exercícios simulados não cadastrada: o subitem 1.5.6.3 exige que o próprio procedimento a defina (Hierarquia > Unidades).'));
+      || pendente('9.4', 'Periodicidade dos exercícios simulados não cadastrada: o subitem 1.5.6.3 exige que o próprio procedimento a defina (Hierarquia > Estabelecimentos).'));
     partes.push(ultimo
       ? `Último simulado realizado em ${formatDate(ultimo)}.`
-      : pendente('9.4', 'Data do último exercício simulado não cadastrada: o subitem 1.5.6.3.1 exige evidência do exercício realizado (Hierarquia > Unidades).'));
+      : pendente('9.4', 'Data do último exercício simulado não cadastrada: o subitem 1.5.6.3.1 exige evidência do exercício realizado (Hierarquia > Estabelecimentos).'));
     return partes.join(' ');
   })();
 
@@ -4385,16 +4385,16 @@ export function exportPGRDocumentPdf({
     body: [
       ['Cenários de emergência (1.5.6.1)',
         estabelecimento?.emergency_scenarios?.trim()
-          || pendente('9.4', 'Cenários de emergência não cadastrados (Hierarquia > Unidades).')],
+          || pendente('9.4', 'Cenários de emergência não cadastrados (Hierarquia > Estabelecimentos).')],
       ['Primeiros socorros e encaminhamento (1.5.6.2 "a")',
         estabelecimento?.emergency_resources?.trim()
-          || pendente('9.4', 'Recursos de primeiros socorros e hospital de referência não cadastrados (Hierarquia > Unidades).')],
+          || pendente('9.4', 'Recursos de primeiros socorros e hospital de referência não cadastrados (Hierarquia > Estabelecimentos).')],
       ['Abandono dos locais afetados (1.5.6.2 "a")',
         estabelecimento?.emergency_evacuation?.trim()
-          || pendente('9.4', 'Alarme, rotas de fuga, ponto de encontro e responsáveis pelo abandono não cadastrados (Hierarquia > Unidades).')],
+          || pendente('9.4', 'Alarme, rotas de fuga, ponto de encontro e responsáveis pelo abandono não cadastrados (Hierarquia > Estabelecimentos).')],
       ['Emergências de grande magnitude (1.5.6.2 "b")',
         estabelecimento?.emergency_large_scale?.trim()
-          || pendente('9.4', 'Medidas para emergências de grande magnitude não declaradas. A alínea "b" vale quando aplicável: se não for o caso, declare por que (Hierarquia > Unidades).')],
+          || pendente('9.4', 'Medidas para emergências de grande magnitude não declaradas. A alínea "b" vale quando aplicável: se não for o caso, declare por que (Hierarquia > Estabelecimentos).')],
       ['Exercícios simulados e evidências (1.5.6.3)', simuladosDoEstabelecimento]
     ],
     columnStyles: { 0: { cellWidth: util * 0.34, fontStyle: 'bold' } },
@@ -4430,7 +4430,7 @@ export function exportPGRDocumentPdf({
       );
     } else {
       paragrafo(
-        pendente('9.5', 'Nenhuma organização contratada cadastrada e nenhuma declaração de que não há contratadas atuando (Engenharia SST > Contratadas). Lista vazia não é declaração de inexistência.'),
+        pendente('9.5', 'Nenhuma organização contratada cadastrada e nenhuma declaração de que não há contratadas atuando (Engenharia SST > 9. Contratadas). Lista vazia não é declaração de inexistência.'),
         7
       );
     }
@@ -4576,7 +4576,7 @@ export function exportPGRDocumentPdf({
     // exige treinamento inicial de todo trabalhador antes de iniciar as
     // funcoes, sem excecao. Matriz vazia e sempre pendencia.
     paragrafo(
-      pendente('9.7', 'Matriz de capacitação não cadastrada (Engenharia SST > Matriz de Capacitação). O subitem 1.7.1.2.1 exige treinamento inicial de todo trabalhador antes de iniciar suas funções, de modo que a matriz nunca é vazia.'),
+      pendente('9.7', 'Matriz de capacitação não cadastrada (Engenharia SST > 12. Matriz de Capacitação). O subitem 1.7.1.2.1 exige treinamento inicial de todo trabalhador antes de iniciar suas funções, de modo que a matriz nunca é vazia.'),
       7
     );
   } else {
@@ -4717,7 +4717,7 @@ export function exportPGRDocumentPdf({
       const acoes = estabelecimento?.harassment_training_actions?.trim();
       const ultima = estabelecimento?.harassment_training_last_date?.trim();
       if (!acoes && !ultima) {
-        return pendente('9.8', 'Ações de capacitação, orientação e sensibilização sobre violência, assédio, igualdade e diversidade não cadastradas (alínea "c" do subitem 1.4.1.1) (Hierarquia > Unidades).');
+        return pendente('9.8', 'Ações de capacitação, orientação e sensibilização sobre violência, assédio, igualdade e diversidade não cadastradas (alínea "c" do subitem 1.4.1.1) (Hierarquia > Estabelecimentos).');
       }
       const partes: string[] = [];
       if (acoes) partes.push(acoes);
@@ -4728,7 +4728,7 @@ export function exportPGRDocumentPdf({
           partes.push(pendente('9.8', `Ação de capacitação sobre assédio vencida: a última foi em ${formatDate(ultima)} e o intervalo máximo de 12 meses da alínea "c" do subitem 1.4.1.1 terminou em ${formatDate(prazo)}.`));
         }
       } else {
-        partes.push(pendente('9.8', 'Data da última ação de capacitação sobre assédio não cadastrada: sem ela não se comprova o intervalo máximo de 12 meses da alínea "c" (Hierarquia > Unidades).'));
+        partes.push(pendente('9.8', 'Data da última ação de capacitação sobre assédio não cadastrada: sem ela não se comprova o intervalo máximo de 12 meses da alínea "c" (Hierarquia > Estabelecimentos).'));
       }
       return partes.join(' ');
     })();
@@ -4738,10 +4738,10 @@ export function exportPGRDocumentPdf({
       body: [
         ['a) Regras de conduta sobre assédio sexual e outras formas de violência nas normas internas, com ampla divulgação',
           estabelecimento?.harassment_conduct_rules?.trim()
-            || pendente('9.8', 'Regras de conduta sobre assédio nas normas internas e a forma de divulgação não cadastradas (alínea "a" do subitem 1.4.1.1) (Hierarquia > Unidades).')],
+            || pendente('9.8', 'Regras de conduta sobre assédio nas normas internas e a forma de divulgação não cadastradas (alínea "a" do subitem 1.4.1.1) (Hierarquia > Estabelecimentos).')],
         ['b) Procedimentos de recebimento e acompanhamento de denúncias, apuração dos fatos e sanções administrativas, garantido o anonimato de quem denuncia',
           estabelecimento?.harassment_report_channel?.trim()
-            || pendente('9.8', 'Canal e procedimento de denúncia, apuração e sanções não cadastrados (alínea "b" do subitem 1.4.1.1) (Hierarquia > Unidades).')],
+            || pendente('9.8', 'Canal e procedimento de denúncia, apuração e sanções não cadastrados (alínea "b" do subitem 1.4.1.1) (Hierarquia > Estabelecimentos).')],
         ['c) Ações de capacitação, orientação e sensibilização, no mínimo a cada 12 meses, para todos os níveis hierárquicos',
           capacitacaoAssedio]
       ],
