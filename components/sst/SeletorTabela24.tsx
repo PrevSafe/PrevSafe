@@ -111,10 +111,10 @@ export const SeletorTabela24: React.FC<SeletorTabela24Props> = ({
         <button
           type="button"
           onClick={() => setAberto(true)}
-          className={`w-full flex items-center gap-2 bg-white border border-slate-300 hover:border-emerald-500 rounded-lg px-2.5 ${altura} text-left transition-colors`}
+          className={`w-full flex items-center gap-2 bg-slate-950 border border-slate-700 hover:border-emerald-500 rounded-lg px-2.5 ${altura} text-left transition-colors`}
         >
-          <span className="font-mono text-emerald-700 font-semibold shrink-0">{selecionado.codigo}</span>
-          <span className="text-slate-800 truncate flex-1">{selecionado.nome}</span>
+          <span className="font-mono text-emerald-400 font-semibold shrink-0">{selecionado.codigo}</span>
+          <span className="text-slate-100 truncate flex-1">{selecionado.nome}</span>
           {onLimpar && (
             <span
               role="button"
@@ -149,15 +149,15 @@ export const SeletorTabela24: React.FC<SeletorTabela24Props> = ({
             onFocus={() => setAberto(true)}
             onKeyDown={aoTeclar}
             placeholder="Busque o agente por nome ou código — deixe vazio se não houver"
-            className={`w-full bg-white border rounded-lg pl-8 pr-2.5 ${altura} text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 ${
-              codigoInvalido ? 'border-rose-400' : 'border-slate-300'
+            className={`w-full bg-slate-950 border rounded-lg pl-8 pr-2.5 ${altura} text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 ${
+              codigoInvalido ? 'border-rose-500/50' : 'border-slate-700'
             }`}
           />
         </div>
       )}
 
       {codigoInvalido && !aberto && (
-        <p className="mt-1 text-[11px] text-rose-600 flex items-start gap-1">
+        <p className="mt-1 text-[11px] text-rose-400 flex items-start gap-1">
           <AlertTriangle className="w-3 h-3 shrink-0 mt-px" />
           <span>
             O código <span className="font-mono">{formatoDoCodigoTabela24(codigo).codigo || codigo}</span>{' '}
@@ -178,8 +178,8 @@ export const SeletorTabela24: React.FC<SeletorTabela24Props> = ({
       )}
 
       {aberto && (
-        <div className="absolute z-50 mt-1 w-full bg-white border border-slate-300 rounded-lg shadow-2xl overflow-hidden">
-          <div className="px-2.5 py-1.5 border-b border-slate-200 text-[10px] text-slate-500 flex items-center justify-between">
+        <div className="absolute z-50 mt-1 w-full bg-slate-950 border border-slate-700 rounded-lg shadow-2xl overflow-hidden">
+          <div className="px-2.5 py-1.5 border-b border-slate-800 text-[10px] text-slate-500 flex items-center justify-between">
             <span>
               {termo.trim() ? `${resultados.length} resultado(s)` : 'Agentes mais comuns — digite para buscar'}
             </span>
@@ -187,7 +187,7 @@ export const SeletorTabela24: React.FC<SeletorTabela24Props> = ({
           </div>
 
           {resultados.length === 0 ? (
-            <div className="px-2.5 py-3 text-[11px] text-slate-600 space-y-1.5">
+            <div className="px-2.5 py-3 text-[11px] text-slate-300 space-y-1.5">
               <p>Nenhum agente encontrado para “{termo}”.</p>
               <p className="text-slate-500">
                 A Tabela 24 só lista os agentes do Anexo IV do Decreto 3.048/1999. Riscos
@@ -204,17 +204,17 @@ export const SeletorTabela24: React.FC<SeletorTabela24Props> = ({
                     onMouseEnter={() => setIndiceAtivo(i)}
                     onClick={() => escolher(a)}
                     className={`w-full flex items-start gap-2 px-2.5 py-1.5 text-left text-[11px] transition-colors ${
-                      i === indiceAtivo ? 'bg-emerald-50' : 'hover:bg-slate-50'
+                      i === indiceAtivo ? 'bg-emerald-500/20' : 'hover:bg-slate-800'
                     }`}
                   >
-                    <span className="font-mono text-emerald-700 font-semibold shrink-0 w-16">
+                    <span className="font-mono text-emerald-400 font-semibold shrink-0 w-16">
                       {a.codigo}
                     </span>
                     <span className="flex-1">
-                      <span className="text-slate-800 block">{a.nome}</span>
+                      <span className="text-slate-100 block">{a.nome}</span>
                       <span className="text-slate-400 text-[10px]">{a.subgrupo}</span>
                     </span>
-                    {a.codigo === codigo && <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />}
+                    {a.codigo === codigo && <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />}
                   </button>
                 </li>
               ))}

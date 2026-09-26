@@ -447,7 +447,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
               </span>
             </div>
             <h1 className="text-2xl font-bold text-slate-100 tracking-tight flex items-center gap-2">
-              <ShieldAlert className="w-7 h-7 text-emerald-600" />
+              <ShieldAlert className="w-7 h-7 text-emerald-400" />
               Catálogo Global de Riscos Ocupacionais
             </h1>
             <p className="text-sm text-slate-400 max-w-3xl mt-1">
@@ -489,18 +489,18 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
         </div>
 
         {/* Group Cards Overview */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mt-6 pt-6 border-t border-slate-100">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mt-6 pt-6 border-t border-slate-800">
           <button
             onClick={() => setSelectedGroup(selectedGroup === 'FÍSICO' ? 'ALL' : 'FÍSICO')}
             className={`p-3 rounded-lg border text-left transition-all ${
               selectedGroup === 'FÍSICO' 
-                ? 'border-amber-500 bg-amber-500/15/70 shadow-sm ring-2 ring-amber-200' 
-                : 'border-slate-800 hover:border-amber-500/30 hover:bg-amber-500/15/30'
+                ? 'border-amber-500 bg-amber-500/25 shadow-sm ring-2 ring-amber-500/40' 
+                : 'border-slate-800 hover:border-amber-500/30 hover:bg-amber-500/10'
             }`}
           >
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-amber-300 uppercase tracking-wide">Físicos (01)</span>
-              <Activity className="w-4 h-4 text-amber-600" />
+              <Activity className="w-4 h-4 text-amber-400" />
             </div>
             <div className="mt-2 flex items-baseline gap-1">
               <span className="text-xl font-extrabold text-slate-100">{groupStats['FÍSICO']}</span>
@@ -513,13 +513,13 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
             onClick={() => setSelectedGroup(selectedGroup === 'QUÍMICO' ? 'ALL' : 'QUÍMICO')}
             className={`p-3 rounded-lg border text-left transition-all ${
               selectedGroup === 'QUÍMICO' 
-                ? 'border-rose-500 bg-rose-500/15/70 shadow-sm ring-2 ring-rose-200' 
-                : 'border-slate-800 hover:border-rose-500/30 hover:bg-rose-500/15/30'
+                ? 'border-rose-500 bg-rose-500/25 shadow-sm ring-2 ring-rose-500/40' 
+                : 'border-slate-800 hover:border-rose-500/30 hover:bg-rose-500/10'
             }`}
           >
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-rose-300 uppercase tracking-wide">Químicos (02)</span>
-              <Flame className="w-4 h-4 text-rose-600" />
+              <Flame className="w-4 h-4 text-rose-400" />
             </div>
             <div className="mt-2 flex items-baseline gap-1">
               <span className="text-xl font-extrabold text-slate-100">{groupStats['QUÍMICO']}</span>
@@ -532,13 +532,13 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
             onClick={() => setSelectedGroup(selectedGroup === 'BIOLÓGICO' ? 'ALL' : 'BIOLÓGICO')}
             className={`p-3 rounded-lg border text-left transition-all ${
               selectedGroup === 'BIOLÓGICO' 
-                ? 'border-emerald-500 bg-emerald-500/15/70 shadow-sm ring-2 ring-emerald-200' 
-                : 'border-slate-800 hover:border-emerald-500/30 hover:bg-emerald-500/15/30'
+                ? 'border-emerald-500 bg-emerald-500/25 shadow-sm ring-2 ring-emerald-500/40' 
+                : 'border-slate-800 hover:border-emerald-500/30 hover:bg-emerald-500/10'
             }`}
           >
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-emerald-300 uppercase tracking-wide">Biológicos (03)</span>
-              <ShieldAlert className="w-4 h-4 text-emerald-600" />
+              <ShieldAlert className="w-4 h-4 text-emerald-400" />
             </div>
             <div className="mt-2 flex items-baseline gap-1">
               <span className="text-xl font-extrabold text-slate-100">{groupStats['BIOLÓGICO']}</span>
@@ -551,13 +551,13 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
             onClick={() => setSelectedGroup(selectedGroup === 'ERGONÔMICO' ? 'ALL' : 'ERGONÔMICO')}
             className={`p-3 rounded-lg border text-left transition-all ${
               selectedGroup === 'ERGONÔMICO' 
-                ? 'border-purple-500 bg-purple-500/15/70 shadow-sm ring-2 ring-purple-200' 
-                : 'border-slate-800 hover:border-purple-500/30 hover:bg-purple-500/15/30'
+                ? 'border-purple-500 bg-purple-500/25 shadow-sm ring-2 ring-purple-500/40' 
+                : 'border-slate-800 hover:border-purple-500/30 hover:bg-purple-500/10'
             }`}
           >
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-purple-300 uppercase tracking-wide">Ergonômicos (04)</span>
-              <Sliders className="w-4 h-4 text-purple-600" />
+              <Sliders className="w-4 h-4 text-purple-400" />
             </div>
             <div className="mt-2 flex items-baseline gap-1">
               <span className="text-xl font-extrabold text-slate-100">{groupStats['ERGONÔMICO']}</span>
@@ -570,13 +570,13 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
             onClick={() => setSelectedGroup(selectedGroup === 'ACIDENTES' ? 'ALL' : 'ACIDENTES')}
             className={`p-3 rounded-lg border text-left transition-all ${
               selectedGroup === 'ACIDENTES' 
-                ? 'border-sky-500 bg-sky-500/15/70 shadow-sm ring-2 ring-sky-200' 
-                : 'border-slate-800 hover:border-sky-500/30 hover:bg-sky-500/15/30'
+                ? 'border-sky-500 bg-sky-500/25 shadow-sm ring-2 ring-sky-500/40' 
+                : 'border-slate-800 hover:border-sky-500/30 hover:bg-sky-500/10'
             }`}
           >
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-sky-300 uppercase tracking-wide">Acidentes (05)</span>
-              <Zap className="w-4 h-4 text-sky-600" />
+              <Zap className="w-4 h-4 text-sky-400" />
             </div>
             <div className="mt-2 flex items-baseline gap-1">
               <span className="text-xl font-extrabold text-slate-100">{groupStats['ACIDENTES']}</span>
@@ -598,7 +598,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
               placeholder="Buscar por agente, código eSocial (ex: 01.01.001), efeito nocivo, norma regulamentadora..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 text-sm border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="w-full pl-9 pr-4 py-2 text-sm bg-slate-950 text-slate-100 placeholder-slate-500 border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
             />
           </div>
 
@@ -607,7 +607,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
               id="select-filter-group"
               value={selectedGroup}
               onChange={(e) => setSelectedGroup(e.target.value)}
-              className="px-3 py-2 text-sm border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-900"
+              className="px-3 py-2 text-sm border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-950 text-slate-100 placeholder-slate-500"
             >
               <option value="ALL">Todos os Grupos</option>
               <option value="FÍSICO">Físicos (Grupo 1)</option>
@@ -621,7 +621,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
               id="select-filter-eval-type"
               value={evaluationTypeFilter}
               onChange={(e) => setEvaluationTypeFilter(e.target.value)}
-              className="px-3 py-2 text-sm border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-900"
+              className="px-3 py-2 text-sm border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-950 text-slate-100 placeholder-slate-500"
             >
               <option value="ALL">Todas as Avaliações</option>
               <option value="QUANTITATIVA">Quantitativa (com limites)</option>
@@ -635,7 +635,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
             >
               {selectedRiskIdsToApply.length === filteredRisks.length && filteredRisks.length > 0 ? (
                 <>
-                  <CheckSquare className="w-4 h-4 text-emerald-600" />
+                  <CheckSquare className="w-4 h-4 text-emerald-400" />
                   Desmarcar Todos
                 </>
               ) : (
@@ -687,8 +687,8 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
               return (
                 <div 
                   key={item.id} 
-                  className={`p-5 transition-colors hover:bg-slate-800/60/80 ${
-                    isSelected ? 'bg-indigo-500/15/40 border-l-4 border-l-indigo-600' : ''
+                  className={`p-5 transition-colors hover:bg-slate-800/60 ${
+                    isSelected ? 'bg-indigo-500/20 border-l-4 border-l-indigo-600' : ''
                   }`}
                 >
                   <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
@@ -696,11 +696,11 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                     <div className="flex items-start gap-3 flex-1">
                       <button
                         onClick={() => toggleSelectRisk(item.id)}
-                        className="mt-1 flex-shrink-0 text-slate-400 hover:text-indigo-600"
+                        className="mt-1 flex-shrink-0 text-slate-400 hover:text-indigo-400"
                         title={isSelected ? 'Desmarcar risco' : 'Selecionar risco para aplicar'}
                       >
                         {isSelected ? (
-                          <CheckSquare className="w-5 h-5 text-indigo-600" />
+                          <CheckSquare className="w-5 h-5 text-indigo-400" />
                         ) : (
                           <Square className="w-5 h-5 text-slate-300" />
                         )}
@@ -792,28 +792,28 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                         {/* Characterization Details Grid */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 pt-2 text-xs">
                           {item.tolerance_limit_reference && (
-                            <div className="p-2 rounded bg-slate-950 border border-slate-100">
+                            <div className="p-2 rounded bg-slate-950 border border-slate-800">
                               <span className="font-semibold text-slate-500 block">Limite Tolerância (NR-15):</span>
                               <span className="font-medium text-slate-200">{item.tolerance_limit_reference}</span>
                             </div>
                           )}
 
                           {item.action_level_reference && (
-                            <div className="p-2 rounded bg-slate-950 border border-slate-100">
+                            <div className="p-2 rounded bg-slate-950 border border-slate-800">
                               <span className="font-semibold text-slate-500 block">Nível de Ação (NR-09):</span>
                               <span className="font-medium text-slate-200">{item.action_level_reference}</span>
                             </div>
                           )}
 
                           {item.suggested_medium && (
-                            <div className="p-2 rounded bg-slate-950 border border-slate-100">
+                            <div className="p-2 rounded bg-slate-950 border border-slate-800">
                               <span className="font-semibold text-slate-500 block">Meio Propagação:</span>
                               <span className="font-medium text-slate-200">{item.suggested_medium}</span>
                             </div>
                           )}
 
                           {item.suggested_source && (
-                            <div className="p-2 rounded bg-slate-950 border border-slate-100">
+                            <div className="p-2 rounded bg-slate-950 border border-slate-800">
                               <span className="font-semibold text-slate-500 block">Fonte Típica:</span>
                               <span className="font-medium text-slate-200 truncate block" title={item.suggested_source}>
                                 {item.suggested_source}
@@ -881,7 +881,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                             deleteOccupationalRiskCatalogItem(item.id);
                           }
                         }}
-                        className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-500/15 rounded-lg border border-slate-800 transition-colors"
+                        className="p-1.5 text-slate-400 hover:text-rose-400 hover:bg-rose-500/15 rounded-lg border border-slate-800 transition-colors"
                         title="Excluir risco do catálogo"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -901,12 +901,12 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
           <div className="bg-slate-900 rounded-xl shadow-2xl border border-slate-800 w-full max-w-3xl my-8 overflow-hidden">
             <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-950">
               <div className="flex items-center gap-2">
-                <ShieldAlert className="w-5 h-5 text-emerald-600" />
+                <ShieldAlert className="w-5 h-5 text-emerald-400" />
                 <h3 className="text-lg font-bold text-slate-100">
                   {editingItem ? 'Editar Caracterização do Risco Ocupacional' : 'Cadastrar Novo Risco no Catálogo Oficial'}
                 </h3>
               </div>
-              <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-slate-400">
+              <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-slate-200">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -934,7 +934,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                   <select
                     value={form.group}
                     onChange={(e) => setForm({ ...form, group: e.target.value as RiskCategoryType })}
-                    className="w-full px-3 py-2 text-sm border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-900"
+                    className="w-full px-3 py-2 text-sm border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-950 text-slate-100 placeholder-slate-500"
                   >
                     <option value="FÍSICO">Físico (Grupo 1 - Verde/Laranja)</option>
                     <option value="QUÍMICO">Químico (Grupo 2 - Vermelho)</option>
@@ -954,7 +954,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                     placeholder="Ex: NR-15 Anexo 1 / NR-09"
                     value={form.regulatory_norm_reference}
                     onChange={(e) => setForm({ ...form, regulatory_norm_reference: e.target.value })}
-                    className="w-full px-3 py-2 text-sm border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    className="bg-slate-950 w-full px-3 py-2 text-sm border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-100 placeholder-slate-500"
                   />
                 </div>
               </div>
@@ -969,7 +969,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                   placeholder="Ex: Ruído Contínuo ou Intermitente"
                   value={form.agent_name}
                   onChange={(e) => setForm({ ...form, agent_name: e.target.value })}
-                  className="w-full px-3 py-2 text-sm font-semibold border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="bg-slate-950 w-full px-3 py-2 text-sm font-semibold border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-100 placeholder-slate-500"
                 />
               </div>
 
@@ -983,7 +983,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                   placeholder="Ex: Perda auditiva induzida por ruído ocupacional (PAIR), zumbido, estresse, fadiga."
                   value={form.harmful_effects}
                   onChange={(e) => setForm({ ...form, harmful_effects: e.target.value })}
-                  className="w-full px-3 py-2 text-sm border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="bg-slate-950 w-full px-3 py-2 text-sm border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-100 placeholder-slate-500"
                 />
               </div>
 
@@ -995,7 +995,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                   <select
                     value={form.evaluation_type_standard}
                     onChange={(e) => setForm({ ...form, evaluation_type_standard: e.target.value as 'QUALITATIVA' | 'QUANTITATIVA' })}
-                    className="w-full px-3 py-2 text-sm border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-900"
+                    className="w-full px-3 py-2 text-sm border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-950 text-slate-100 placeholder-slate-500"
                   >
                     <option value="QUANTITATIVA">Quantitativa (Medição instrumental)</option>
                     <option value="QUALITATIVA">Qualitativa (Inspeção visual / checklist)</option>
@@ -1011,7 +1011,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                     placeholder="Ex: dB(A), ppm, mg/m³, m/s²"
                     value={form.measurement_unit_standard}
                     onChange={(e) => setForm({ ...form, measurement_unit_standard: e.target.value })}
-                    className="w-full px-3 py-2 text-sm border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    className="bg-slate-950 w-full px-3 py-2 text-sm border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-100 placeholder-slate-500"
                   />
                 </div>
 
@@ -1024,7 +1024,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                     placeholder="Ex: AR, Contato Dérmico, Solo"
                     value={form.suggested_medium}
                     onChange={(e) => setForm({ ...form, suggested_medium: e.target.value })}
-                    className="w-full px-3 py-2 text-sm border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    className="bg-slate-950 w-full px-3 py-2 text-sm border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-100 placeholder-slate-500"
                   />
                 </div>
               </div>
@@ -1039,7 +1039,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                     placeholder="Ex: 85.0 dB(A) para 8 horas"
                     value={form.tolerance_limit_nr15}
                     onChange={(e) => setForm({ ...form, tolerance_limit_nr15: e.target.value })}
-                    className="w-full px-3 py-2 text-sm border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    className="bg-slate-950 w-full px-3 py-2 text-sm border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-100 placeholder-slate-500"
                   />
                 </div>
 
@@ -1052,7 +1052,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                     placeholder="Ex: 80.0 dB(A) (dose 50%)"
                     value={form.action_level_nr09}
                     onChange={(e) => setForm({ ...form, action_level_nr09: e.target.value })}
-                    className="w-full px-3 py-2 text-sm border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    className="bg-slate-950 w-full px-3 py-2 text-sm border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-100 placeholder-slate-500"
                   />
                 </div>
               </div>
@@ -1066,7 +1066,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                   placeholder="Ex: Operação de maquinários rotativos, caldeiras, prensas"
                   value={form.suggested_source}
                   onChange={(e) => setForm({ ...form, suggested_source: e.target.value })}
-                  className="w-full px-3 py-2 text-sm border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="bg-slate-950 w-full px-3 py-2 text-sm border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-100 placeholder-slate-500"
                 />
               </div>
 
@@ -1079,7 +1079,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                   placeholder="Ex: Protetor Auditivo tipo Plug (CA 14235), Óculos de Proteção (CA 27500)"
                   value={form.suggested_epis_text}
                   onChange={(e) => setForm({ ...form, suggested_epis_text: e.target.value })}
-                  className="w-full px-3 py-2 text-sm border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="bg-slate-950 w-full px-3 py-2 text-sm border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-100 placeholder-slate-500"
                 />
               </div>
 
@@ -1177,7 +1177,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                   placeholder="Ex: Enclausuramento acústico, EPC exaustão mecânica e pausas térmicas"
                   value={form.suggested_controls_summary}
                   onChange={(e) => setForm({ ...form, suggested_controls_summary: e.target.value })}
-                  className="w-full px-3 py-2 text-sm border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="bg-slate-950 w-full px-3 py-2 text-sm border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-100 placeholder-slate-500"
                 />
               </div>
 
@@ -1207,12 +1207,12 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
           <div className="bg-slate-900 rounded-xl shadow-2xl border border-slate-800 w-full max-w-2xl my-8 overflow-hidden">
             <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-indigo-500/15">
               <div className="flex items-center gap-2">
-                <ArrowUpRight className="w-5 h-5 text-indigo-600" />
+                <ArrowUpRight className="w-5 h-5 text-indigo-400" />
                 <h3 className="text-lg font-bold text-slate-100">
                   Aplicar Riscos Ocupacionais a GHEs ou Árvore de Cargos
                 </h3>
               </div>
-              <button onClick={() => setIsApplyModalOpen(false)} className="text-slate-400 hover:text-slate-400">
+              <button onClick={() => setIsApplyModalOpen(false)} className="text-slate-400 hover:text-slate-200">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -1244,7 +1244,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                     const newClientGhes = ghes.filter(g => g.client_id === e.target.value);
                     setSelectedTargetGheIds(newClientGhes.map(g => g.id));
                   }}
-                  className="w-full px-3 py-2 text-sm border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-900"
+                  className="w-full px-3 py-2 text-sm border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-950 text-slate-100 placeholder-slate-500"
                 >
                   {clients.map(c => (
                     <option key={c.id} value={c.id}>
@@ -1265,11 +1265,11 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                     onClick={() => setApplyTargetMode('GHE')}
                     className={`p-3 rounded-lg border text-left text-xs font-bold transition-all ${
                       applyTargetMode === 'GHE'
-                        ? 'border-indigo-600 bg-indigo-500/15 text-indigo-300 ring-2 ring-indigo-200'
+                        ? 'border-indigo-600 bg-indigo-500/15 text-indigo-300 ring-2 ring-indigo-500/40'
                         : 'border-slate-800 text-slate-300 hover:bg-slate-800/60'
                     }`}
                   >
-                    <Layers className="w-4 h-4 mb-1 text-indigo-600" />
+                    <Layers className="w-4 h-4 mb-1 text-indigo-400" />
                     Vários / Específico GHE
                   </button>
 
@@ -1278,11 +1278,11 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                     onClick={() => setApplyTargetMode('JOB')}
                     className={`p-3 rounded-lg border text-left text-xs font-bold transition-all ${
                       applyTargetMode === 'JOB'
-                        ? 'border-indigo-600 bg-indigo-500/15 text-indigo-300 ring-2 ring-indigo-200'
+                        ? 'border-indigo-600 bg-indigo-500/15 text-indigo-300 ring-2 ring-indigo-500/40'
                         : 'border-slate-800 text-slate-300 hover:bg-slate-800/60'
                     }`}
                   >
-                    <Briefcase className="w-4 h-4 mb-1 text-indigo-600" />
+                    <Briefcase className="w-4 h-4 mb-1 text-indigo-400" />
                     Cargos Específicos
                   </button>
 
@@ -1291,11 +1291,11 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                     onClick={() => setApplyTargetMode('SECTOR_TREE')}
                     className={`p-3 rounded-lg border text-left text-xs font-bold transition-all ${
                       applyTargetMode === 'SECTOR_TREE'
-                        ? 'border-indigo-600 bg-indigo-500/15 text-indigo-300 ring-2 ring-indigo-200'
+                        ? 'border-indigo-600 bg-indigo-500/15 text-indigo-300 ring-2 ring-indigo-500/40'
                         : 'border-slate-800 text-slate-300 hover:bg-slate-800/60'
                     }`}
                   >
-                    <Building2 className="w-4 h-4 mb-1 text-indigo-600" />
+                    <Building2 className="w-4 h-4 mb-1 text-indigo-400" />
                     Árvore de Setores / Áreas
                   </button>
                 </div>
@@ -1327,7 +1327,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                                   setSelectedTargetGheIds(prev => [...prev, g.id]);
                                 }
                               }}
-                              className="rounded border-slate-700 text-indigo-600 focus:ring-indigo-500"
+                              className="rounded border-slate-700 text-indigo-400 focus:ring-indigo-500"
                             />
                             <span className="font-semibold text-slate-200">{g.name}</span>
                             <span className="text-slate-500 font-mono text-[11px]">({g.code})</span>
@@ -1364,7 +1364,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                                   setSelectedTargetJobIds(prev => [...prev, job.id]);
                                 }
                               }}
-                              className="rounded border-slate-700 text-indigo-600 focus:ring-indigo-500"
+                              className="rounded border-slate-700 text-indigo-400 focus:ring-indigo-500"
                             />
                             <span className="font-semibold text-slate-200">{job.name}</span>
                             <span className="text-slate-500 text-[11px]">CBO: {job.cbo || 'N/A'}</span>
@@ -1401,7 +1401,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                                   setSelectedTargetSectorIds(prev => [...prev, sec.id]);
                                 }
                               }}
-                              className="rounded border-slate-700 text-indigo-600 focus:ring-indigo-500"
+                              className="rounded border-slate-700 text-indigo-400 focus:ring-indigo-500"
                             />
                             <span className="font-semibold text-slate-200">{sec.name}</span>
                             <span className="text-slate-500 text-[11px]">({sec.code})</span>
@@ -1471,7 +1471,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                     type="checkbox"
                     checked={includeSuggestedExams}
                     onChange={(e) => setIncludeSuggestedExams(e.target.checked)}
-                    className="rounded border-blue-500/30 text-blue-600 focus:ring-blue-500"
+                    className="rounded border-blue-500/30 text-blue-400 focus:ring-blue-500"
                   />
                   <div className="text-xs">
                     <span className="font-bold text-blue-300 block">
@@ -1487,7 +1487,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
               {/* Result Feedback */}
               {applyFeedback && (
                 <div className="p-3 bg-emerald-500/15 border border-emerald-500/30 rounded-lg flex items-center gap-2 text-xs text-emerald-300 font-medium">
-                  <CheckCircle2 className="w-5 h-5 text-emerald-600 flex-shrink-0" />
+                  <CheckCircle2 className="w-5 h-5 text-emerald-400 flex-shrink-0" />
                   <div>
                     <span className="font-bold">{applyFeedback.message}</span>
                   </div>
