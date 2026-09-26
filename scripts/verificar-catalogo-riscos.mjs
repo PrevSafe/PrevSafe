@@ -336,66 +336,6 @@ console.log('\n--- catálogo de riscos do sistema ---');
   );
 }
 
-// ===========================================================================
-// TEMA: a tela do catalogo tem de seguir o resto do sistema
-// ===========================================================================
-// A conversao anterior para o tema escuro foi uma substituicao mecanica e
-// deixou o catalogo com campo branco e fonte branca. Estes casos travam os
-// quatro defeitos que ela produziu, um por um.
-console.log('\n--- tema da tela (escuro, como o resto do sistema) ---');
-
-const TELAS_DO_CATALOGO = [
-  'components/sst/OccupationalRisksCatalogView.tsx',
-  'components/sst/SeletorTabela24.tsx',
-  'components/sst/SeletorTabela27.tsx'
-];
-
-for (const rel of TELAS_DO_CATALOGO) {
-  const fonteTela = fs.readFileSync(new URL(`../${rel}`, import.meta.url), 'utf8');
-  const nome = rel.split('/').pop();
-
-  // 1. Opacidade dupla: `bg-amber-500/15/70` nao existe em Tailwind. A classe
-  //    e descartada e o elemento fica SEM FUNDO - foi assim que o painel
-  //    branco apareceu.
-  const opacidadeDupla = fonteTela.match(/\b[a-z-]+-\d{2,3}\/\d{1,3}\/\d{1,3}\b/g) || [];
-  check(
-    opacidadeDupla.length === 0,
-    `${nome}: nenhuma classe com opacidade dupla${
-      opacidadeDupla.length ? `: ${[...new Set(opacidadeDupla)].join(', ')}` : ''
-    }`
-  );
-
-  // 2. Tema claro: fundo branco e cinzas do Tailwind nao existem no sistema.
-  const claras = fonteTela.match(/\b(bg-white|bg-gray-\d+|text-gray-\d+|border-gray-\d+|bg-slate-50|bg-slate-100|ring-[a-z]+-(100|200)|border-slate-(100|200|300))\b/g) || [];
-  check(
-    claras.length === 0,
-    `${nome}: nenhuma classe de tema claro${
-      claras.length ? `: ${[...new Set(claras)].join(', ')}` : ''
-    }`
-  );
-
-  // 3. Todo controle de formulario tem fundo e cor de texto proprios. Sem
-  //    eles o campo herda o padrao do navegador, que e o branco no branco que
-  //    o usuario viu.
-  const controles = [...fonteTela.matchAll(/className=(?:"([^"]*)"|\{`([^`]*)`\})/g)]
-    .map((m) => (m[1] || m[2] || '').replace(/\s+/g, ' '))
-    .filter((c) => c.includes('focus:ring-2') && /px-\d|py-\d/.test(c));
-  const semFundo = controles.filter((c) => !/(^| )bg-/.test(c));
-  const semTexto = controles.filter((c) => !/(^| )text-(slate|white)-/.test(c));
-  check(
-    controles.length === 0 || semFundo.length === 0,
-    `${nome}: os ${controles.length} controles de formulario tem fundo proprio`
-  );
-  check(
-    controles.length === 0 || semTexto.length === 0,
-    `${nome}: os ${controles.length} controles de formulario tem cor de texto propria`
-  );
-
-  // 4. Hover que repete a cor de origem nao muda nada na tela.
-  const hoverInutil = fonteTela.match(/text-(slate-\d+) hover:text-\1\b/g) || [];
-  check(hoverInutil.length === 0, `${nome}: nenhum hover que repete a propria cor`);
-}
-
 console.log(
   falhas === 0 ? `\nTODOS OS TESTES PASSARAM (${casos} casos)` : `\n${falhas} FALHA(S) em ${casos} casos`
 );

@@ -663,6 +663,7 @@ export const SSTElectronicSignatureModal: React.FC<SSTElectronicSignatureModalPr
                     </button>
                   </div>
 
+                  {/* TEMA-CLARO-INICIO: quadro de assinatura, traço escuro sobre branco */}
                   <div className="bg-white rounded-2xl border-2 border-dashed border-slate-700 overflow-hidden relative">
                     <canvas
                       ref={canvasRef}
@@ -683,6 +684,7 @@ export const SSTElectronicSignatureModal: React.FC<SSTElectronicSignatureModalPr
                       </div>
                     )}
                   </div>
+                  {/* TEMA-CLARO-FIM */}
                 </div>
               )}
 

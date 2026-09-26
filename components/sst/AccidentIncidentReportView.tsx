@@ -1925,6 +1925,7 @@ export const AccidentIncidentReportView: React.FC<AccidentIncidentReportViewProp
       )}
 
       {/* ========================================================================= */}
+      {/* TEMA-CLARO-INICIO: documento oficial do acidente, impresso em papel */}
       {/* 4. MODAL / VISUALIZAÇÃO DE DOCUMENTO OFICIAL PARA IMPRESSÃO / PDF */}
       {/* ========================================================================= */}
       {selectedIncidentForPrint && (
@@ -2122,6 +2123,7 @@ export const AccidentIncidentReportView: React.FC<AccidentIncidentReportViewProp
           </div>
         </div>
       )}
+      {/* TEMA-CLARO-FIM */}
     </div>
   );
 };

@@ -887,7 +887,7 @@ export const EPIManagementTab: React.FC<EPIManagementTabProps> = ({ selectedClie
             </div>
           </div>
 
-          {/* Printable Sheet View - Styled cleanly for screen and print */}
+          {/* TEMA-CLARO-INICIO: ficha de EPI impressa em papel (NR-06, alinea "h" do subitem 6.6.1) */}
           <div className="bg-white text-slate-900 p-8 rounded-2xl shadow-2xl border border-slate-300 max-w-4xl mx-auto space-y-6 font-sans text-xs">
             {/* Sheet Header */}
             <div className="border-b-2 border-slate-900 pb-4 flex items-center justify-between">
@@ -1022,6 +1022,7 @@ export const EPIManagementTab: React.FC<EPIManagementTabProps> = ({ selectedClie
               </div>
             </div>
           </div>
+          {/* TEMA-CLARO-FIM */}
         </div>
       )}
 

@@ -1145,7 +1145,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                               };
                               setForm({ ...form, suggested_exams: lista });
                             }}
-                            className="w-14 px-2 py-1.5 text-[11px] border border-slate-700 rounded-lg text-center"
+                            className="w-14 px-2 py-1.5 text-[11px] bg-slate-950 text-slate-100 border border-slate-700 rounded-lg text-center"
                           />
                           <span className="text-[10px] text-slate-500">meses</span>
                         </div>
@@ -1185,7 +1185,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 text-sm font-semibold text-slate-300 bg-slate-800 hover:bg-slate-200 rounded-lg"
+                  className="px-4 py-2 text-sm font-semibold text-slate-300 bg-slate-800 hover:bg-slate-700 rounded-lg"
                 >
                   Cancelar
                 </button>
@@ -1498,7 +1498,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                 <button
                   type="button"
                   onClick={() => setIsApplyModalOpen(false)}
-                  className="px-4 py-2 text-sm font-semibold text-slate-300 bg-slate-800 hover:bg-slate-200 rounded-lg"
+                  className="px-4 py-2 text-sm font-semibold text-slate-300 bg-slate-800 hover:bg-slate-700 rounded-lg"
                 >
                   Fechar
                 </button>
