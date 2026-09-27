@@ -167,6 +167,12 @@ import { dataDeHoje, dataEmDias, formatarDataISO, novoId } from '@/lib/datas';
 import { limparOrdensDeServico, AVISO_SEM_INVENTARIO } from '@/lib/limpezaDeOrdensDeServico';
 import { classificarRisco } from '@/lib/classificacaoDeRisco';
 import {
+  INATIVIDADE_MINUTOS,
+  limparUltimaAtividade,
+  registrarAtividade,
+  sessaoRestauradaExpirou,
+} from '@/lib/sessaoInativa';
+import {
   montarCondicoesAmbientais,
   montarAsoDoEvento,
   riscosDoColaborador,
@@ -175,13 +181,25 @@ import {
   type PendenciaESocial,
 } from '@/lib/esocialDados';
 
+/**
+ * Por que a sessao terminou.
+ *
+ * INATIVIDADE nao e a mesma coisa que sair: o usuario nao pediu, entao a tela
+ * de login tem que dizer o que aconteceu, e a auditoria tem que registrar a
+ * diferenca.
+ */
+export type MotivoDeEncerramento = 'USUARIO' | 'INATIVIDADE';
+
 interface PrevSafeContextType {
   // Current active session state
   isAuthenticated: boolean;
   isAuthLoading: boolean;
   setIsAuthenticated: (val: boolean) => void;
   login: (email: string, password: string) => Promise<{ success: boolean; message?: string; profile?: Profile }>;
-  logout: () => void;
+  /** `motivo` ausente = o usuario clicou em sair. */
+  logout: (motivo?: MotivoDeEncerramento) => void;
+  /** Verdadeiro quando a sessao anterior caiu por inatividade, para a tela de login avisar. */
+  encerradaPorInatividade: boolean;
   currentProfile: Profile;
   setCurrentProfile: (profile: Profile) => void;
   currentRole: RoleType;
@@ -734,6 +752,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
   const [papelDaConta, setPapelDaConta] = useState<RoleType | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [isAuthLoading, setIsAuthLoading] = useState<boolean>(true);
+  const [encerradaPorInatividade, setEncerradaPorInatividade] = useState<boolean>(false);
   const [clients, setClients] = useState<Client[]>(INITIAL_CLIENTS);
   const [contacts, setContacts] = useState<ClientContact[]>(INITIAL_CONTACTS);
   const [units, setUnits] = useState<ClientUnit[]>(INITIAL_UNITS);
@@ -1370,6 +1389,18 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     supabase.auth.getSession().then(({ data }) => {
       if (!active) return;
       if (data.session?.user) {
+        // O token do Supabase se renova sozinho, entao ele estar valido nao
+        // diz nada sobre o tempo que a estacao ficou aberta e sozinha. Quem
+        // decide e a marca de ultima atividade.
+        if (sessaoRestauradaExpirou()) {
+          limparUltimaAtividade();
+          supabase.auth.signOut();
+          setEncerradaPorInatividade(true);
+          setIsAuthenticated(false);
+          setIsAuthLoading(false);
+          return;
+        }
+        registrarAtividade();
         setCurrentProfile(buildProfileFromAuthUser(data.session.user));
         setIsAuthenticated(true);
       }
@@ -1419,6 +1450,8 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     }
 
     setCurrentProfile(matched);
+    setEncerradaPorInatividade(false);
+    registrarAtividade();
     setIsAuthenticated(true);
     if (matched.role === 'CLIENTE_ADMIN' || matched.role === 'CLIENTE_USER') {
       setActiveClientId(matched.client_id);
@@ -1435,13 +1468,20 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     return { success: true, profile: matched };
   }, [buildProfileFromAuthUser, organization, logAudit]);
 
-  const logout = useCallback(() => {
+  const logout = useCallback((motivo: MotivoDeEncerramento = 'USUARIO') => {
     logAudit('LOGOUT', 'ORGANIZATION', organization.id, organization.name, {
-      event: 'USER_LOGOUT',
+      event: motivo === 'INATIVIDADE' ? 'SESSION_TIMEOUT' : 'USER_LOGOUT',
       user_name: currentProfile.full_name,
-      user_email: currentProfile.email
+      user_email: currentProfile.email,
+      reason: motivo === 'INATIVIDADE'
+        ? `Sessão encerrada automaticamente após ${INATIVIDADE_MINUTOS} minutos sem atividade`
+        : 'Encerrada pelo usuário'
     });
+    // A marca sai junto: o proximo login comeca a contar do zero, e uma marca
+    // velha nao encerra a sessao nova no primeiro segundo.
+    limparUltimaAtividade();
     getSupabaseClient()?.auth.signOut();
+    setEncerradaPorInatividade(motivo === 'INATIVIDADE');
     setIsAuthenticated(false);
   }, [currentProfile, organization, logAudit]);
 
@@ -7359,6 +7399,7 @@ ${exames.map(ex => `      <exameMedico>
     setIsAuthenticated,
     login,
     logout,
+    encerradaPorInatividade,
     currentProfile,
     setCurrentProfile,
     currentRole: currentProfile.role,
@@ -7639,6 +7680,7 @@ ${exames.map(ex => `      <exameMedico>
   }), [
     isAuthenticated,
     isAuthLoading,
+    encerradaPorInatividade,
     login,
     logout,
     updateOrganization,

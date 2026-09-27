@@ -33,6 +33,7 @@ import { FinancialView } from '@/components/financial/FinancialView';
 import { HelpCenterView } from '@/components/help-center/HelpCenterView';
 import { SiteContentView } from '@/components/site-admin/SiteContentView';
 import { LoginView } from '@/components/auth/LoginView';
+import { AvisoDeInatividade } from '@/components/auth/AvisoDeInatividade';
 import { AICopilotModal, FastTrackFlowModal } from '@/components/ai/AICopilotModal';
 import { 
   GlobalCommandPalette, 
@@ -468,6 +469,9 @@ export default function Home() {
           if (numericTimer) clearTimeout(numericTimer);
         }}
       />
+
+      {/* Aviso de sessao a encerrar por inatividade (nao desenha nada enquanto ativa) */}
+      <AvisoDeInatividade />
 
       {/* Modals */}
       <AICopilotModal 

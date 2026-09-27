@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { usePrevSafe } from '@/context/PrevSafeContext';
 import { getSupabaseClient } from '@/lib/supabase';
+import { INATIVIDADE_MINUTOS } from '@/lib/sessaoInativa';
 import {
   Shield,
   ShieldCheck,
@@ -28,7 +29,7 @@ interface LoginViewProps {
 }
 
 export const LoginView: React.FC<LoginViewProps> = ({ onSuccess, onNavigateHelp }) => {
-  const { login, organization } = usePrevSafe();
+  const { login, organization, encerradaPorInatividade } = usePrevSafe();
 
   // Form state
   const [email, setEmail] = useState('');
@@ -226,6 +227,16 @@ export const LoginView: React.FC<LoginViewProps> = ({ onSuccess, onNavigateHelp 
             </div>
 
             {/* Feedback Alerts */}
+            {encerradaPorInatividade && !errorMessage && !successMessage && (
+              <div className="mt-6 p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-200 text-xs flex items-start space-x-2.5">
+                <Clock className="w-4 h-4 flex-shrink-0 text-amber-400 mt-0.5" />
+                <span>
+                  Sua sessão foi encerrada após {INATIVIDADE_MINUTOS} minutos sem atividade.
+                  Entre novamente para continuar.
+                </span>
+              </div>
+            )}
+
             {errorMessage && (
               <div className="mt-6 p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-center space-x-2.5 animate-in fade-in duration-200">
                 <AlertCircle className="w-4 h-4 flex-shrink-0 text-rose-400" />
@@ -241,7 +252,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onSuccess, onNavigateHelp 
             )}
 
             {/* Email & Password Form */}
-            <form onSubmit={handleCredentialsSubmit} className={`space-y-4 ${errorMessage || successMessage ? 'mt-4' : 'mt-6'}`}>
+            <form onSubmit={handleCredentialsSubmit} className={`space-y-4 ${errorMessage || successMessage || encerradaPorInatividade ? 'mt-4' : 'mt-6'}`}>
 
               {/* Email Input */}
               <div>
