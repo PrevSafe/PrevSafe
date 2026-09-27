@@ -173,6 +173,10 @@ import {
   sessaoRestauradaExpirou,
 } from '@/lib/sessaoInativa';
 import {
+  enfileirarEventoDeSessao,
+  enviarEventosDeSessao,
+} from '@/lib/auditoriaDeSessao';
+import {
   montarCondicoesAmbientais,
   montarAsoDoEvento,
   riscosDoColaborador,
@@ -735,6 +739,15 @@ const SYNC_DEBOUNCE_MS = 1200;
 /** Espera antes de tentar de novo apos uma falha de gravacao. */
 const SYNC_RETRY_MS = 15000;
 
+/**
+ * Teto da espera pelo registro de saida, antes de encerrar a sessao.
+ *
+ * O registro tem que subir antes do signOut, senao a RLS recusa. Mas sair do
+ * sistema nao pode ficar pendurado num servidor que nao responde: passando
+ * daqui, o evento fica na fila e sobe na proxima entrada.
+ */
+const ESPERA_MAXIMA_DA_AUDITORIA_MS = 2000;
+
 const PrevSafeContext = createContext<PrevSafeContextType | undefined>(undefined);
 
 export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
@@ -1068,6 +1081,20 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     syncedShadow.current = shadow;
   }, []);
 
+  /**
+   * Sobe a fila de entradas e saidas numa gravacao unica.
+   *
+   * Sem isto, LOGIN e LOGOUT nunca chegavam ao servidor: o primeiro era
+   * sobrescrito pelo snapshot que desce logo apos autenticar, e o segundo
+   * tinha o envio cancelado no mesmo instante em que era criado.
+   */
+  const enviarAuditoriaDeSessao = useCallback(async (organizationId: string | null) => {
+    if (!organizationId) return;
+    await enviarEventosDeSessao((eventos) =>
+      pushRecords(organizationId, [{ collection: 'auditLogs', rows: eventos, deletedIds: [] }])
+    );
+  }, []);
+
   // Baixa os dados da organizacao assim que existe sessao. Se o servidor ainda
   // estiver vazio, a sombra fica zerada e o efeito de envio sobe tudo o que
   // houver em memoria - e a migracao do localStorage para o Supabase.
@@ -1095,6 +1122,17 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
 
       setSyncOrganizationId(orgId);
 
+      // A fila de entradas e saidas sobe agora: ate aqui a organizacao era
+      // desconhecida, e o LOGIN desta sessao esta nela. Antes do snapshot, de
+      // proposito: assim o snapshot ja desce com o registro, e a tela de
+      // auditoria mostra a entrada que acabou de acontecer. Com teto de
+      // espera, para nao atrasar a entrada quando o servidor nao responde.
+      await Promise.race([
+        enviarAuditoriaDeSessao(orgId),
+        new Promise((resolve) => setTimeout(resolve, ESPERA_MAXIMA_DA_AUDITORIA_MS)),
+      ]);
+      if (!active) return;
+
       const { snapshot, materialized, isEmpty, error } = await fetchRemoteSnapshot(orgId);
       if (!active) return;
 
@@ -1119,7 +1157,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     })();
 
     return () => { active = false; };
-  }, [isAuthenticated, applySnapshot, resetShadowFrom]);
+  }, [isAuthenticated, applySnapshot, resetShadowFrom, enviarAuditoriaDeSessao]);
 
   // Envia o delta para o Supabase, com debounce para agrupar rajadas de edicao.
   useEffect(() => {
@@ -1288,6 +1326,9 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
       created_at: new Date().toISOString()
     };
     setAuditLogs(prev => [newLog, ...prev]);
+    // Devolve o registro porque os eventos de sessao precisam dele para subir
+    // fora do envio com debounce (ver lib/auditoriaDeSessao.ts).
+    return newLog;
   }, [organization.id, currentProfile]);
 
   // Role Switcher helper
@@ -1457,19 +1498,22 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
       setActiveClientId(matched.client_id);
     }
 
-    logAudit('LOGIN', 'ORGANIZATION', organization.id, organization.name, {
+    const registroDeEntrada = logAudit('LOGIN', 'ORGANIZATION', organization.id, organization.name, {
       event: 'USER_AUTHENTICATED',
       user_name: matched.full_name,
       user_email: matched.email,
       role: matched.role,
       method: 'CREDENTIALS'
     });
+    // Nao basta estar no estado: o snapshot do servidor desce em seguida e
+    // substitui o estado inteiro. A fila esta fora dele.
+    enfileirarEventoDeSessao(registroDeEntrada);
 
     return { success: true, profile: matched };
   }, [buildProfileFromAuthUser, organization, logAudit]);
 
-  const logout = useCallback((motivo: MotivoDeEncerramento = 'USUARIO') => {
-    logAudit('LOGOUT', 'ORGANIZATION', organization.id, organization.name, {
+  const logout = useCallback(async (motivo: MotivoDeEncerramento = 'USUARIO') => {
+    const registroDeSaida = logAudit('LOGOUT', 'ORGANIZATION', organization.id, organization.name, {
       event: motivo === 'INATIVIDADE' ? 'SESSION_TIMEOUT' : 'USER_LOGOUT',
       user_name: currentProfile.full_name,
       user_email: currentProfile.email,
@@ -1477,13 +1521,23 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
         ? `Sessão encerrada automaticamente após ${INATIVIDADE_MINUTOS} minutos sem atividade`
         : 'Encerrada pelo usuário'
     });
+    // O registro sobe ANTES do signOut: depois dele o token nao vale mais e a
+    // RLS recusa a gravacao. Com teto de espera, para servidor lento ou sem
+    // rede nao prender o usuario na tela - o evento fica na fila e sobe na
+    // proxima entrada.
+    enfileirarEventoDeSessao(registroDeSaida);
+    await Promise.race([
+      enviarAuditoriaDeSessao(syncOrganizationId),
+      new Promise((resolve) => setTimeout(resolve, ESPERA_MAXIMA_DA_AUDITORIA_MS)),
+    ]);
+
     // A marca sai junto: o proximo login comeca a contar do zero, e uma marca
     // velha nao encerra a sessao nova no primeiro segundo.
     limparUltimaAtividade();
     getSupabaseClient()?.auth.signOut();
     setEncerradaPorInatividade(motivo === 'INATIVIDADE');
     setIsAuthenticated(false);
-  }, [currentProfile, organization, logAudit]);
+  }, [currentProfile, organization, logAudit, syncOrganizationId, enviarAuditoriaDeSessao]);
 
   // User Profile & Access Control Management
   const addProfile = useCallback((data: Omit<Profile, 'id' | 'organization_id' | 'created_at' | 'updated_at'>) => {

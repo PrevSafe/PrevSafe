@@ -48,13 +48,14 @@ function inconclusivo(motivo, detalhe) {
 try {
   execFileSync(
     'npx',
-    ['tsc', 'lib/sessaoInativa.ts', '--outDir', TMP, '--module', 'esnext',
-      '--target', 'es2020', '--moduleResolution', 'bundler'],
+    ['tsc', 'lib/sessaoInativa.ts', 'lib/auditoriaDeSessao.ts', '--outDir', TMP,
+      '--module', 'esnext', '--target', 'es2020', '--moduleResolution', 'bundler'],
     { stdio: 'pipe', shell: true }
   );
   fs.renameSync(`${TMP}/sessaoInativa.js`, `${TMP}/sessaoInativa.mjs`);
+  fs.renameSync(`${TMP}/auditoriaDeSessao.js`, `${TMP}/auditoriaDeSessao.mjs`);
 } catch (e) {
-  inconclusivo('nao foi possivel compilar lib/sessaoInativa.ts', e.stdout || e.message);
+  inconclusivo('nao foi possivel compilar os modulos de sessao', e.stdout || e.message);
 }
 
 let falhas = 0;
@@ -258,7 +259,7 @@ check(posExpirou >= 0 && posAutentica > posExpirou,
 
 check(/registrarAtividade\(\)/.test(ctx), 'o login comeca a contar o prazo');
 check(/limparUltimaAtividade\(\)/.test(ctx), 'o logout apaga a marca');
-check(/logout = useCallback\(\(motivo: MotivoDeEncerramento = 'USUARIO'\)/.test(ctx),
+check(/logout = useCallback\(async \(motivo: MotivoDeEncerramento = 'USUARIO'\)/.test(ctx),
   'logout recebe o motivo, e o padrao e o usuario ter clicado em sair');
 check(/'SESSION_TIMEOUT'/.test(ctx), 'a auditoria distingue timeout de logout do usuario');
 check(/encerradaPorInatividade/.test(ctx), 'o contexto informa quando a sessao caiu por inatividade');
@@ -274,9 +275,126 @@ check(/Continuar conectado/.test(aviso), 'o aviso deixa o usuario continuar');
 check(!/setTimeout/.test(aviso), 'a contagem vem do hook, e nao de um temporizador solto na tela');
 
 // ===========================================================================
-// 5. DUAS ABAS DE VERDADE, NUM NAVEGADOR DE VERDADE
+// 5. A TRILHA DE AUDITORIA GUARDA ENTRADA E SAIDA
 // ===========================================================================
-console.log('\n--- 5. Duas abas, num Chromium de verdade ---');
+console.log('\n--- 5. Entrada e saida na trilha de auditoria ---');
+
+const CAMINHO_AUDITORIA = path.resolve(TMP, 'auditoriaDeSessao.mjs').split(path.sep).join('/');
+const A = await import(`file:///${CAMINHO_AUDITORIA}`);
+const {
+  CHAVE_FILA_DE_SESSAO, TETO_DA_FILA,
+  enfileirarEventoDeSessao, lerEventosPendentes, removerEventosPendentes,
+  enviarEventosDeSessao,
+} = A;
+
+// Armazenamento limpo para esta secao.
+memoria.clear();
+
+const evento = (id) => ({ id, action: 'LOGOUT', created_at: new Date().toISOString() });
+
+enfileirarEventoDeSessao(evento('a1'));
+enfileirarEventoDeSessao(evento('a2'));
+check(lerEventosPendentes().map((e) => e.id).join(',') === 'a1,a2',
+  'os eventos entram na fila, na ordem');
+
+enfileirarEventoDeSessao({ action: 'LOGOUT' });
+check(lerEventosPendentes().length === 2, 'evento sem id nao entra: nao haveria como remove-lo depois');
+
+removerEventosPendentes(['a1']);
+check(lerEventosPendentes().map((e) => e.id).join(',') === 'a2',
+  'remover tira o id confirmado, e so ele');
+
+memoria.set(CHAVE_FILA_DE_SESSAO, '{isso nao e json');
+let quebrou = false;
+let lidos = null;
+try { lidos = lerEventosPendentes(); } catch { quebrou = true; }
+check(!quebrou && lidos?.length === 0, 'fila corrompida le como vazia, sem lancar');
+
+memoria.clear();
+for (let i = 0; i < TETO_DA_FILA + 10; i++) enfileirarEventoDeSessao(evento(`e${i}`));
+const cheia = lerEventosPendentes();
+check(cheia.length === TETO_DA_FILA, `a fila para em ${TETO_DA_FILA} (nao estoura a cota do armazenamento)`);
+check(cheia[cheia.length - 1].id === `e${TETO_DA_FILA + 9}`,
+  'cheia, a fila guarda os mais RECENTES');
+
+// O envio: nada sai da fila sem confirmacao.
+memoria.clear();
+enfileirarEventoDeSessao(evento('b1'));
+
+let recebido = null;
+let r = await enviarEventosDeSessao(async (eventos) => { recebido = eventos; return { ok: false }; });
+check(recebido?.length === 1, 'o envio recebe os eventos pendentes');
+check(r.enviados === 0 && lerEventosPendentes().length === 1,
+  'servidor recusou: o evento CONTINUA na fila (nao se perde um registro de acesso)');
+
+// A falha de rede tem que ser ABSORVIDA: o logout chama isto antes do
+// signOut, e uma excecao aqui deixaria o usuario preso sem sair.
+quebrou = false;
+try {
+  r = await enviarEventosDeSessao(async () => { throw new Error('sem rede'); });
+} catch {
+  quebrou = true;
+}
+check(!quebrou, 'falha de rede lancada nao escapa da fila (o logout depende disso)');
+check(!quebrou && r.enviados === 0 && lerEventosPendentes().length === 1,
+  'falha de rede lancada: o evento continua na fila');
+
+// Um evento que chega durante o envio nao pode sair junto com os confirmados.
+r = await enviarEventosDeSessao(async () => {
+  enfileirarEventoDeSessao(evento('b2'));
+  return { ok: true };
+});
+check(r.enviados === 1, 'confirmado: sai da fila');
+check(lerEventosPendentes().map((e) => e.id).join(',') === 'b2',
+  'o evento enfileirado DURANTE o envio nao e removido junto');
+
+r = await enviarEventosDeSessao(async () => { throw new Error('nunca chamado'); });
+check(lerEventosPendentes().length === 1, 'a fila restante continua intacta');
+
+memoria.clear();
+r = await enviarEventosDeSessao(async () => { throw new Error('nao deveria ser chamado'); });
+check(r.enviados === 0 && r.pendentes === 0, 'fila vazia nao chama o servidor');
+
+// --- e o contexto usa isso nos dois eventos ---
+const ctxAud = ctx;
+check(/return newLog;/.test(ctxAud), 'logAudit devolve o registro criado');
+check(/enfileirarEventoDeSessao\(registroDeEntrada\)/.test(ctxAud),
+  'o LOGIN entra na fila (o snapshot do servidor sobrescreve o estado local logo depois)');
+check(/enfileirarEventoDeSessao\(registroDeSaida\)/.test(ctxAud),
+  'o LOGOUT entra na fila');
+
+// A ORDEM e o que faz a gravacao funcionar: depois do signOut a RLS recusa.
+const corpoDoLogout = ctxAud.slice(
+  ctxAud.indexOf("const logout = useCallback(async"),
+  ctxAud.indexOf('// User Profile & Access Control Management')
+);
+check(corpoDoLogout.includes('enviarAuditoriaDeSessao'), 'o logout tenta gravar o registro de saida');
+check(
+  corpoDoLogout.indexOf('enviarAuditoriaDeSessao') < corpoDoLogout.indexOf('auth.signOut()')
+    && corpoDoLogout.indexOf('auth.signOut()') > 0,
+  'a gravacao vem ANTES do signOut (depois dele o token nao vale mais e a RLS recusa)'
+);
+check(/^\s*await Promise\.race\(/m.test(corpoDoLogout),
+  'a espera tem teto, e e um passo do fluxo - nao uma linha desviada por condicao'
+);
+// A fila sobe quando a organizacao fica conhecida - e antes do snapshot, senao
+// a tela de auditoria nao mostra a entrada que acabou de acontecer.
+const carregamento = ctxAud.slice(
+  ctxAud.indexOf('setSyncOrganizationId(orgId);'),
+  ctxAud.indexOf('resetShadowFrom(snapshot as Record<string, any>);')
+);
+check(carregamento.includes('enviarAuditoriaDeSessao(orgId)'),
+  'a fila sobe assim que a organizacao e conhecida');
+check(
+  carregamento.indexOf('enviarAuditoriaDeSessao(orgId)') < carregamento.indexOf('fetchRemoteSnapshot(orgId)'),
+  'a fila sobe ANTES do snapshot, para a entrada aparecer na tela de auditoria'
+);
+check(/'auditLogs'/.test(ctxAud), 'o registro vai para a colecao auditLogs, a mesma da tela');
+
+// ===========================================================================
+// 6. DUAS ABAS DE VERDADE, NUM NAVEGADOR DE VERDADE
+// ===========================================================================
+console.log('\n--- 6. Duas abas, num Chromium de verdade ---');
 
 let chromium;
 try {
