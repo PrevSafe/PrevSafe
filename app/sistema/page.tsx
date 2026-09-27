@@ -49,7 +49,6 @@ import {
   Smartphone,
   Menu,
   CheckSquare,
-  Keyboard,
   RefreshCw
 } from 'lucide-react';
 
@@ -444,20 +443,11 @@ export default function Home() {
         </button>
       </nav>
 
-      {/* Discreet Global Shortcut Helper Pill for Desktop */}
-      <button
-        type="button"
-        onClick={() => setIsShortcutsHelpOpen(true)}
-        className="hidden lg:flex fixed bottom-5 right-5 z-30 items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900/90 hover:bg-slate-800 text-slate-400 hover:text-white border border-slate-800 hover:border-emerald-500/30 backdrop-blur-md shadow-xl text-xs transition active:scale-95 group cursor-pointer"
-        title="Atalhos globais de teclado (Ctrl+K para busca, Ctrl+N para nova OS, digite '100' para Funcionários, ? para ajuda)"
-        aria-label="Ver atalhos de teclado"
-      >
-        <Keyboard className="w-3.5 h-3.5 text-emerald-400 group-hover:scale-110 transition-transform" />
-        <span className="font-medium text-slate-300">Atalhos:</span>
-        <kbd className="font-mono text-[10px] text-emerald-300 bg-slate-950 px-1.5 py-0.5 rounded border border-slate-800 group-hover:border-emerald-500/40">Ctrl+K</kbd>
-        <kbd className="font-mono text-[10px] text-emerald-300 bg-slate-950 px-1.5 py-0.5 rounded border border-slate-800 group-hover:border-emerald-500/40">Ctrl+N</kbd>
-        <kbd className="font-mono text-[10px] text-teal-300 bg-slate-950 px-1.5 py-0.5 rounded border border-slate-800 group-hover:border-teal-500/40" title="Digite 100 para Funcionários, 050 para OS">100</kbd>
-      </button>
+      {/* O balao de atalhos ficava aqui, fixo no canto inferior direito, e
+          cobria a barra de rolagem e o conteudo do canto em toda tela. Virou
+          um botao na barra superior (components/layout/Navbar.tsx), que nao
+          fica por cima de nada. Ctrl+K e Ctrl+N ja aparecem la, nos proprios
+          botoes de busca e de nova OS. */}
 
       {/* Numeric Quick Jump Floating Toast Indicator */}
       <NumericQuickJumpIndicator

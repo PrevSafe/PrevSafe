@@ -96,6 +96,7 @@ export const ServiceWorkerManager: React.FC = () => {
   // usuario esta vendo codigo desatualizado.
   if (precisaRecarregar) {
     return (
+      /* CANTO-FLUTUANTE: aviso de nova versao, sai da tela no primeiro clique */
       <div className="fixed bottom-4 right-4 z-50 w-[min(24rem,calc(100vw-2rem))] bg-slate-900 border border-emerald-600/50 text-white p-4 rounded-2xl shadow-2xl flex items-start space-x-3">
         <div className="p-2 rounded-xl shrink-0 bg-emerald-500/20 text-emerald-400">
           <RefreshCw className="w-5 h-5" />
@@ -120,6 +121,7 @@ export const ServiceWorkerManager: React.FC = () => {
   if (!showBanner) return null;
 
   return (
+    /* CANTO-FLUTUANTE: aviso de app pronto para uso offline, dispensavel */
     <div className="fixed bottom-4 right-4 z-50 max-w-md bg-slate-900 border border-slate-800 text-white p-4 rounded-2xl shadow-2xl flex items-start space-x-3 animate-in fade-in slide-in-from-bottom-5 duration-300">
       <div className={`p-2 rounded-xl flex-shrink-0 ${
         bannerType === 'OFFLINE' ? 'bg-amber-500/20 text-amber-400' :

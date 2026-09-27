@@ -391,7 +391,8 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
   return (
     <div id="esocial-module-root" className="min-h-screen bg-slate-950 text-slate-100 p-4 md:p-6 lg:p-8 space-y-6">
       
-      {/* Feedback Toast */}
+      {/* Feedback Toast
+          CANTO-FLUTUANTE: aviso do envio ao eSocial, sai sozinho em 4 s */}
       {toastMessage && (
         <div id="esocial-toast-alert" className={`fixed bottom-6 right-6 z-50 px-4 py-3 rounded-2xl shadow-2xl flex items-center space-x-3 border transition-all duration-300 ${
           toastMessage.type === 'success' 

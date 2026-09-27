@@ -284,6 +284,27 @@ export const Navbar: React.FC<NavbarProps> = ({
               </button>
             )}
 
+            {/* Atalhos de teclado.
+                Era um balao fixo no canto inferior direito da TELA, cobrindo a
+                barra de rolagem e o conteudo do canto em todo modulo. Aqui nao
+                fica por cima de nada.
+                So o icone, por causa do aperto que o comentario abaixo
+                descreve: sao 32px, e some abaixo de lg - em tela estreita nao
+                ha teclado para ter atalho, e a mesma opcao continua dentro do
+                menu "Mais". Ctrl+K e Ctrl+N ja aparecem nos proprios botoes de
+                busca e de nova OS. */}
+            {onOpenShortcutsHelp && (
+              <button
+                type="button"
+                onClick={onOpenShortcutsHelp}
+                className="hidden lg:flex shrink-0 items-center justify-center p-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700 border border-slate-700 transition group"
+                title="Atalhos de teclado: Ctrl+K busca, Ctrl+N nova OS, digite 100 para Funcionários, ? para esta lista"
+                aria-label="Ver atalhos de teclado"
+              >
+                <Keyboard className="w-4 h-4 text-emerald-400 group-hover:scale-110 transition-transform" />
+              </button>
+            )}
+
             {/* Acoes secundarias.
                 Somadas, elas deixavam o grupo da direita com 1204px dentro de um
                 container de 1216px: sobrava zero para o nome e para a barra de
