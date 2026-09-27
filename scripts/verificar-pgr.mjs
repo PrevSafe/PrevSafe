@@ -152,6 +152,38 @@ const corrido = (buf) => trechosDoPdf(buf).join(' ').replace(/\s+/g, ' ');
 const paginas = (buf) => (buf.toString('latin1').match(/\/Type\s*\/Page[^s]/g) || []).length;
 const quebrados = (buf) => trechosDoPdf(buf).filter((t) => t.includes('\u0000'));
 
+/**
+ * TAMANHO de uma celula, em milimetros.
+ *
+ * O texto extraido do PDF nao diz quanto espaco a celula tem - e foi por isso
+ * que um campo de assinatura de 18,6 x 8,8 mm passou por todas as
+ * verificacoes anteriores: o rotulo "Assinatura" estava la, e era o que se
+ * conferia. O jsPDF desenha cada celula como "x y largura -altura re" e so
+ * depois escreve o texto dela, entao o retangulo que interessa e o ultimo
+ * antes do rotulo.
+ */
+const PT_EM_MM = 25.4 / 72;
+function celulaAntesDe(bruto, indice) {
+  if (indice < 0) return null;
+  const rects = [...bruto.slice(0, indice)
+    .matchAll(/(-?\d[\d.]*) (-?\d[\d.]*) (-?\d[\d.]*) (-?\d[\d.]*) re/g)];
+  const r = rects[rects.length - 1];
+  if (!r) return null;
+  return {
+    largura: Number(r[3]) * PT_EM_MM,
+    altura: Math.abs(Number(r[4])) * PT_EM_MM,
+  };
+}
+/** Celula de um rotulo. `depois` procura a primeira celula VAZIA apos ele. */
+function celula(buf, rotulo, depois = false) {
+  const bruto = buf.toString('latin1');
+  // No fluxo do PDF os parenteses do texto vem escapados, como o jsPDF os
+  // escreve: "Assinatura (manual" esta gravado "Assinatura \(manual".
+  const i = bruto.indexOf(`(${rotulo.replace(/[()]/g, (c) => `\\${c}`)}`);
+  if (i < 0) return null;
+  return celulaAntesDe(bruto, depois ? bruto.indexOf('() Tj', i) : i);
+}
+
 // ===========================================================================
 // 1. A MATRIZ, CELULA POR CELULA CONTRA O MODELO
 // ===========================================================================
@@ -637,6 +669,30 @@ check(tc.includes('PROGRAMA DE'), 'a capa traz o título do documento');
 check(tc.includes('PGR-12483776000199-2026-REV00'), 'a capa traz o código do documento');
 check(tc.includes('CONTROLE DE REVISÕES'), 'traz o controle de revisões');
 check(tc.includes('TERMO DE RESPONSABILIDADE E APROVAÇÃO'), 'traz o termo de responsabilidade');
+
+// O quadro de assinatura tem que caber uma assinatura. Tinha 18,6 x 8,8 mm.
+const cabecalhoDaAssinatura = celula(pdfCheio, 'Assinatura (manual');
+const quadroDeAssinatura = celula(pdfCheio, 'Assinatura (manual', true);
+check(tc.includes('Assinatura (manual ou eletrônica)'),
+  'o quadro de assinatura diz que serve para as duas formas');
+check(
+  Boolean(cabecalhoDaAssinatura) && cabecalhoDaAssinatura.largura >= 60,
+  `a coluna de assinatura tem ${(cabecalhoDaAssinatura?.largura ?? 0).toFixed(1)} mm de largura (tinha 18,6; um carimbo de assinatura digital ocupa ~65)`
+);
+check(
+  Boolean(quadroDeAssinatura) && quadroDeAssinatura.altura >= 24,
+  `o quadro de assinatura tem ${(quadroDeAssinatura?.altura ?? 0).toFixed(1)} mm de altura (tinha 8,8; uma rubrica a mao ocupa ~15)`
+);
+// A linha da esquerda cresce junto: assinatura alta e identificacao rasa
+// deixariam o quadro fora da propria linha da tabela.
+const linhaDoSignatario = celula(pdfCheio, 'Cargo / registro:');
+check(
+  Boolean(linhaDoSignatario) && Boolean(quadroDeAssinatura)
+    && Math.abs(linhaDoSignatario.altura - quadroDeAssinatura.altura) < 0.5,
+  'a linha inteira acompanha a altura do quadro de assinatura'
+);
+check(tc.includes('Cargo / registro: ') && tc.includes('Data: '),
+  'nome, cargo e data ficam empilhados numa coluna, para sobrar largura ao quadro');
 check(tc.includes('23/09/2028') || /\d{2}\/\d{2}\/20\d\d \(24 meses/.test(tc), 'a próxima revisão é a 24 meses');
 check(tc.includes('subitem 1.5.4.4.6.1'), 'cita o subitem do prazo ampliado com certificação SGSST');
 

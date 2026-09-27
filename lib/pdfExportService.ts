@@ -221,6 +221,18 @@ const NAO_INFORMADO = 'Não informado';
 const LINHA_PARA_PREENCHER = '____________________';
 const SEM_RISCO_NO_INVENTARIO = 'Nenhum agente desta natureza no inventário de riscos (PGR)';
 const LINHA_CURTA = '________';
+
+/**
+ * Quadro de assinatura do PGR, em milimetros.
+ *
+ * O quadro tinha 18,6 x 8,8 mm - a largura que sobrava depois de cinco colunas
+ * de texto, e a altura de uma linha. Nao cabe rubrica a mao, e nao cabe o
+ * carimbo visual de uma assinatura digital, que sai com cerca de 65 x 22 mm.
+ * Um campo de assinatura que nao cabe a assinatura obriga a assinar por cima
+ * do texto da linha de baixo.
+ */
+const ASSINATURA_LARGURA_MM = 66;
+const ASSINATURA_ALTURA_MM = 26;
 const TIPO_DE_ESTABELECIMENTO: Record<string, string> = {
   MATRIZ: 'Matriz',
   FILIAL: 'Filial',
@@ -3157,20 +3169,55 @@ export function exportPGRDocumentPdf({
     `disponibilizar os documentos aos trabalhadores, aos sindicatos das categorias profissionais e ` +
     `à Inspeção do Trabalho (subitem 1.5.7.2.1).`
   );
+  /**
+   * Identificacao de quem assina, numa celula so.
+   *
+   * Nome, cargo e data eram tres colunas, e as tres juntas nao deixavam
+   * largura para o quadro de assinatura. Empilhadas, sobram 66 mm para ele.
+   */
+  const identificacaoDoSignatario = (nome: string, cargo: string, data: string) =>
+    `${nome}
+Cargo / registro: ${cargo}
+Data: ${data}`;
+
+  // O quadro inteiro fica na mesma pagina: um campo de assinatura cortado ao
+  // meio pela quebra de pagina nao serve para assinar.
+  garantirEspaco(ASSINATURA_ALTURA_MM * 4 + 16);
   tabela({
-    head: [['Função', 'Nome', 'Cargo / registro', 'Data', 'Assinatura']],
+    head: [['Função', 'Nome, cargo e data', 'Assinatura (manual ou eletrônica)']],
     body: [
       ['Responsável legal da organização',
-        estabelecimento?.legal_representative?.trim() || LINHA_PARA_PREENCHER,
-        LINHA_PARA_PREENCHER, LINHA_PARA_PREENCHER, ''],
-      ['Responsável técnico pela elaboração', technicalResponsibleName(organization),
-        organization?.technical_responsible_council?.trim() || LINHA_PARA_PREENCHER, formatDate(emissao), ''],
+        identificacaoDoSignatario(
+          estabelecimento?.legal_representative?.trim() || LINHA_PARA_PREENCHER,
+          LINHA_PARA_PREENCHER, LINHA_PARA_PREENCHER), ''],
+      ['Responsável técnico pela elaboração',
+        identificacaoDoSignatario(
+          technicalResponsibleName(organization),
+          organization?.technical_responsible_council?.trim() || LINHA_PARA_PREENCHER,
+          formatDate(emissao)), ''],
       ['Responsável pela implementação do PGR',
-        estabelecimento?.pgr_coordinator?.trim() || LINHA_PARA_PREENCHER,
-        LINHA_PARA_PREENCHER, LINHA_PARA_PREENCHER, ''],
-      ['Ciência — CIPA ou nomeado NR-05', LINHA_PARA_PREENCHER, LINHA_PARA_PREENCHER, LINHA_PARA_PREENCHER, '']
+        identificacaoDoSignatario(
+          estabelecimento?.pgr_coordinator?.trim() || LINHA_PARA_PREENCHER,
+          LINHA_PARA_PREENCHER, LINHA_PARA_PREENCHER), ''],
+      ['Ciência — CIPA ou nomeado NR-05',
+        identificacaoDoSignatario(
+          LINHA_PARA_PREENCHER, LINHA_PARA_PREENCHER, LINHA_PARA_PREENCHER), '']
     ],
-    styles: { fontSize: 6.8, cellPadding: 3, overflow: 'linebreak' }
+    styles: { fontSize: 6.8, cellPadding: 2.4, overflow: 'linebreak' },
+    columnStyles: {
+      0: { cellWidth: 40 },
+      1: { cellWidth: pageWidth - margin * 2 - 40 - ASSINATURA_LARGURA_MM },
+      2: { cellWidth: ASSINATURA_LARGURA_MM, minCellHeight: ASSINATURA_ALTURA_MM }
+    },
+    didDrawCell: (dados: any) => {
+      if (dados.section !== 'body' || dados.column.index !== 2) return;
+      // Linha de base para a assinatura a mao, no terco inferior do quadro: o
+      // espaco acima dela e onde cabe o carimbo de uma assinatura digital.
+      const linhaY = dados.cell.y + dados.cell.height - 7;
+      doc.setDrawColor(148, 163, 184);
+      doc.setLineWidth(0.15);
+      doc.line(dados.cell.x + 5, linhaY, dados.cell.x + dados.cell.width - 5, linhaY);
+    }
   });
   paragrafo(
     'As NR não definem um profissional específico para elaborar o PGR; a responsabilidade é da ' +
