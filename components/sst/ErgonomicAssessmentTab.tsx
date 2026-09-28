@@ -31,7 +31,8 @@ import {
   ConclusaoDoAspecto,
   AbordagemDaAvaliacao,
   dispensadaDeElaborarAET,
-  NR17_FUNDAMENTO_DA_DISPENSA
+  NR17_FUNDAMENTO_DA_DISPENSA,
+  faltasDaAEP
 } from '@/lib/nr17';
 import { formatDate } from '@/lib/utils';
 import {
@@ -115,50 +116,21 @@ export const ErgonomicAssessmentTab: React.FC<ErgonomicAssessmentTabProps> = ({ 
       && String(r?.risk_category || '').toUpperCase().startsWith('ERGON')
   );
 
-  /** O que falta em cada AEP, pelos itens da NR-17. */
+  /**
+   * O que falta em cada AEP.
+   *
+   * A regra esta em lib/nr17.ts, junto do PGR e do documento da AEP: sao tres
+   * telas perguntando a mesma coisa, e a resposta tem que ser a mesma.
+   */
   const pendenciasDe = (a: ErgonomicAssessment): string[] => {
-    const falta: string[] = [];
-    if ((a.ghe_ids || []).length === 0 && (a.job_ids || []).length === 0) {
-      falta.push('GHE ou cargo');
-    }
-    if (!a.approach) falta.push('abordagem (17.3.1.1)');
-    if (!a.methods) falta.push('métodos empregados');
-    if (!a.assessment_date) falta.push('data');
-    if (!a.assessor) falta.push('quem avaliou');
-
-    const naoAvaliados = NR17_ASPECTOS.filter((asp) => !a.aspects?.[asp.chave]?.conclusao);
-    if (naoAvaliados.length > 0) {
-      falta.push(`${naoAvaliados.length} aspecto(s) sem conclusão`);
-    }
-    const inadequadosSemNota = NR17_ASPECTOS.filter(
-      (asp) => a.aspects?.[asp.chave]?.conclusao === 'INADEQUADO' && !a.aspects?.[asp.chave]?.observacao
-    );
-    if (inadequadosSemNota.length > 0) {
-      falta.push('observação nos aspectos inadequados');
-    }
-
-    const inadequados = NR17_ASPECTOS.filter(
-      (asp) => a.aspects?.[asp.chave]?.conclusao === 'INADEQUADO'
-    );
-    const medidas = a.prevention_measures || [];
-    if (inadequados.length > 0) {
-      if (medidas.length < NR17_MINIMO_DE_ALTERNATIVAS) {
-        falta.push(`${NR17_MINIMO_DE_ALTERNATIVAS} ou mais medidas do 17.4.3.1`);
-      }
-      const temCouD = medidas.includes('c') || medidas.includes('d');
-      if (!temCouD && !(medidas.includes('a') && medidas.includes('b'))) {
-        falta.push('pausas e alternância, obrigatórias pelo 17.4.3.1.1');
-      }
-    }
-
-    if (!a.workers_heard) falta.push('oitiva dos empregados (17.3.8)');
-    else if (a.workers_heard === 'NAO') falta.push('empregados não ouvidos (17.3.8)');
-
-    const gatilhos = a.aet_triggers || [];
-    const obrigam = dispensaAET === true ? gatilhos.filter((g) => g === 'c' || g === 'd') : gatilhos;
-    if (obrigam.length > 0 && !a.aet_report_date) falta.push('AET (17.3.2)');
-
-    return falta;
+    const alcance = [
+      ...(a.ghe_ids || []).map((id) => {
+        const g = ghesDoCliente.find((x: any) => x.id === id);
+        return g?.code || g?.name || '';
+      }),
+      ...(a.job_ids || []).map((id) => cargosDoCliente.find((c) => c.id === id)?.name || '')
+    ].filter(Boolean).join('; ');
+    return faltasDaAEP(a, { dispensaDeAET: dispensaAET, alcance }).map((f) => f.curto);
   };
 
   const definirAspecto = (chave: string, campo: 'conclusao' | 'observacao', valor: any) => {

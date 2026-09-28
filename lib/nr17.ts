@@ -13,6 +13,11 @@
  * que a avaliacao tem de ALCANCAR, e nao um questionario com pontuacao.
  */
 
+/** Redacao vigente, para o cabecalho dos documentos. */
+export const NR17_NORMA_DE_REGENCIA =
+  'NR-17 — Ergonomia, na redação das Portarias MTP nº 423, de 07/10/2021, e nº 4.219, de '
+  + '20/12/2022';
+
 /** Item 17.4.1: o que a organizacao do trabalho deve levar em consideracao. */
 export const NR17_FATORES_DA_ORGANIZACAO: Array<{ alinea: string; texto: string }> = [
   { alinea: 'a', texto: 'As normas de produção' },
@@ -215,3 +220,108 @@ export const NR17_FUNDAMENTO_DA_DISPENSA =
   + 'obrigados a elaborar a AET, mas devem atender a todos os demais requisitos desta NR. '
   + 'Subitem 17.3.4.1: essas ME e EPP devem realizar a AET quando observadas as situações das '
   + 'alíneas "c" e "d" do item 17.3.2.';
+
+/** Uma coisa que falta numa AEP, nas duas formas em que ela e lida. */
+export interface FaltaNaAEP {
+  /** Rotulo curto, para a coluna "O que falta" da tela de cadastro. */
+  curto: string;
+  /** Frase inteira, para a lista de pendencias de um documento impresso. */
+  longo: string;
+}
+
+/**
+ * O que falta nesta AEP, pelos itens da NR-17.
+ *
+ * FONTE UNICA, de proposito. Tres lugares fazem a mesma pergunta: a aba de
+ * cadastro, a secao 7.4 do PGR e o documento da AEP. Ate aqui eram duas
+ * copias das mesmas regras com palavras diferentes - e regra de conformidade
+ * duplicada nao fica igual por muito tempo. A que divergir primeiro vai dizer
+ * "completa" para uma avaliacao que nao esta.
+ *
+ * `alcance` e o texto ja resolvido dos GHE e cargos (o id de um GHE apagado
+ * nao e alcance). Sem ele, vale a existencia dos ids.
+ */
+export function faltasDaAEP(
+  aep: any,
+  opcoes: { dispensaDeAET: boolean | null; alcance?: string }
+): FaltaNaAEP[] {
+  const falta: FaltaNaAEP[] = [];
+  const add = (curto: string, longo: string) => falta.push({ curto, longo });
+
+  const temAlcance = opcoes.alcance !== undefined
+    ? Boolean(opcoes.alcance.trim())
+    : ((aep?.ghe_ids || []).length > 0 || (aep?.job_ids || []).length > 0);
+  if (!temAlcance) add('GHE ou cargo', 'GHE ou cargo a que a situação corresponde');
+
+  if (!aep?.approach) {
+    add('abordagem (17.3.1.1)',
+      'abordagem empregada: qualitativa, semiquantitativa, quantitativa ou combinação (subitem 17.3.1.1)');
+  }
+  if (!aep?.methods?.trim()) add('métodos empregados', 'métodos, técnicas e ferramentas empregados');
+  if (!aep?.assessment_date?.trim()) add('data', 'data da avaliação');
+  if (!aep?.assessor?.trim()) add('quem avaliou', 'quem realizou a avaliação');
+
+  // Aspecto ausente do mapa e aspecto NAO AVALIADO. Ausencia nunca vale como
+  // "adequado": seria dar por cumprida uma avaliacao que ninguem fez.
+  const aspectos = aep?.aspects || {};
+  const naoAvaliados = NR17_ASPECTOS.filter((asp) => !aspectos?.[asp.chave]?.conclusao);
+  if (naoAvaliados.length > 0) {
+    add(`${naoAvaliados.length} aspecto(s) sem conclusão`,
+      `conclusão dos aspectos: ${naoAvaliados.map((x) => `${x.rotulo} (${x.fonte})`).join(', ')}`);
+  }
+
+  const inadequadosSemNota = NR17_ASPECTOS.filter(
+    (asp) => aspectos?.[asp.chave]?.conclusao === 'INADEQUADO'
+      && !aspectos?.[asp.chave]?.observacao?.trim()
+  );
+  if (inadequadosSemNota.length > 0) {
+    add('observação nos aspectos inadequados',
+      `o que se observou nos aspectos julgados inadequados: ${inadequadosSemNota.map((x) => x.rotulo).join(', ')}`);
+  }
+
+  const inadequados = NR17_ASPECTOS.filter(
+    (asp) => aspectos?.[asp.chave]?.conclusao === 'INADEQUADO'
+  );
+  const medidas: string[] = Array.isArray(aep?.prevention_measures) ? aep.prevention_measures : [];
+  if (inadequados.length > 0) {
+    if (medidas.length < NR17_MINIMO_DE_ALTERNATIVAS) {
+      add(`${NR17_MINIMO_DE_ALTERNATIVAS} ou mais medidas do 17.4.3.1`,
+        `ao menos ${NR17_MINIMO_DE_ALTERNATIVAS} alternativas de prevenção do subitem 17.4.3.1, e há ${medidas.length} registrada(s)`);
+    }
+    const temCouD = medidas.includes('c') || medidas.includes('d');
+    if (!temCouD && !(medidas.includes('a') && medidas.includes('b'))) {
+      add('pausas e alternância, obrigatórias pelo 17.4.3.1.1',
+        'pausas e alternância de atividades, que o subitem 17.4.3.1.1 torna obrigatórias quando não se adotam as alíneas "c" e "d"');
+    }
+  }
+
+  if (!aep?.workers_heard) {
+    add('oitiva dos empregados (17.3.8)',
+      'registro de que os empregados foram ouvidos no processo (item 17.3.8)');
+  } else if (aep.workers_heard === 'NAO') {
+    add('empregados não ouvidos (17.3.8)',
+      'a oitiva dos empregados, que o item 17.3.8 exige na AEP e na AET');
+  }
+
+  // Gatilho observado exige o relatorio de AET. Na dispensa do item 17.3.4, so
+  // os das alineas "c" e "d" o exigem (subitem 17.3.4.1).
+  const gatilhos: string[] = Array.isArray(aep?.aet_triggers) ? aep.aet_triggers : [];
+  const obrigam = opcoes.dispensaDeAET === true
+    ? gatilhos.filter((g) => g === 'c' || g === 'd')
+    : gatilhos;
+  if (obrigam.length > 0 && !aep?.aet_report_date?.trim()) {
+    add('AET (17.3.2)',
+      `AET, exigida pelas alíneas "${obrigam.join('", "')}" do item 17.3.2 observadas nesta situação`);
+  }
+
+  return falta;
+}
+
+/** Os gatilhos do item 17.3.2 que, nesta organizacao, obrigam a AET. */
+export function gatilhosQueObrigamAET(
+  gatilhos: string[] | undefined,
+  dispensaDeAET: boolean | null
+): string[] {
+  const lista = Array.isArray(gatilhos) ? gatilhos : [];
+  return dispensaDeAET === true ? lista.filter((g) => g === 'c' || g === 'd') : lista;
+}

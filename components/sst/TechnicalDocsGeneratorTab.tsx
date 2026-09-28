@@ -18,6 +18,7 @@ import {
   Eye,
   FileCheck,
   Stethoscope,
+  Activity,
   ShieldAlert,
   Info,
   Flame,
@@ -30,6 +31,7 @@ import {
   exportPGRTRDocumentPdf,
   exportPCMSODocumentPdf,
   exportLTCATDocumentPdf,
+  exportAEPDocumentPdf,
   exportInsalubridadeLaudoPdf,
   exportPericulosidadeLaudoPdf
 } from '@/lib/pdfExportService';
@@ -64,7 +66,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
   } = usePrevSafe();
 
 
-  const [activeDocType, setActiveDocType] = useState<'PGR' | 'PGRTR' | 'PCMSO' | 'LTCAT' | 'INSALUBRIDADE' | 'PERICULOSIDADE' | 'XML_ESOCIAL'>('PGR');
+  const [activeDocType, setActiveDocType] = useState<'PGR' | 'PGRTR' | 'PCMSO' | 'LTCAT' | 'AEP' | 'INSALUBRIDADE' | 'PERICULOSIDADE' | 'XML_ESOCIAL'>('PGR');
   const [selectedXmlEventId, setSelectedXmlEventId] = useState<string>(esocialEvents[0]?.id || '');
   const [copiedCode, setCopiedCode] = useState(false);
   const [successToast, setSuccessToast] = useState<string | null>(null);
@@ -221,6 +223,16 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
         employees: clientEmployees
       });
       setSuccessToast('PDF do LTCAT Previdenciário (INSS) gerado com sucesso!');
+    } else if (activeDocType === 'AEP') {
+      exportAEPDocumentPdf({
+        client: clientObj,
+        organization,
+        ergonomicAssessments: clientAeps,
+        ghes: clientGhes,
+        jobs: hierarchyJobs,
+        units
+      });
+      setSuccessToast('PDF da AEP (NR-17) gerado com sucesso!');
     } else if (activeDocType === 'INSALUBRIDADE') {
       exportInsalubridadeLaudoPdf({
         client: clientObj,
@@ -317,6 +329,20 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
 
           <button
             type="button"
+            id="doc-aep-btn"
+            onClick={() => setActiveDocType('AEP')}
+            className={`px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 ${
+              activeDocType === 'AEP'
+                ? 'bg-teal-500 text-slate-950 shadow-md shadow-teal-500/20 font-bold'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+            }`}
+          >
+            <Activity className="w-4 h-4" />
+            5. AEP (NR-17)
+          </button>
+
+          <button
+            type="button"
             id="doc-insalubridade-btn"
             onClick={() => setActiveDocType('INSALUBRIDADE')}
             className={`px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 ${
@@ -326,7 +352,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
             }`}
           >
             <AlertTriangle className="w-4 h-4" />
-            5. Laudo Insalubridade (NR-15)
+            6. Laudo Insalubridade (NR-15)
           </button>
 
           <button
@@ -340,7 +366,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
             }`}
           >
             <Flame className="w-4 h-4" />
-            6. Laudo Periculosidade (NR-16)
+            7. Laudo Periculosidade (NR-16)
           </button>
 
           <button
@@ -354,7 +380,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
             }`}
           >
             <FileCode2 className="w-4 h-4" />
-            7. XMLs eSocial (MOS)
+            8. XMLs eSocial (MOS)
           </button>
         </div>
 
@@ -759,7 +785,75 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
         </div>
       )}
 
-      {/* VIEW 5: LAUDO DE INSALUBRIDADE (NR-15) */}
+      {/* VIEW 5: AEP (NR-17) */}
+      {activeDocType === 'AEP' && (
+        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-6 shadow-xl" id="aep-doc-view">
+          <div className="border-b border-slate-800 pb-4 flex justify-between items-start">
+            <div>
+              <span className="px-2.5 py-1 bg-teal-500/20 text-teal-300 text-xs font-bold rounded">
+                AVALIAÇÃO ERGONÔMICA PRELIMINAR (AEP - NR-17, ITEM 17.3)
+              </span>
+              <h2 className="text-lg font-bold text-slate-100 mt-2">
+                Situações de trabalho avaliadas, aspecto por aspecto
+              </h2>
+              <p className="text-xs text-slate-400">
+                Responsável técnico: <strong className="text-slate-200">{rtWithCouncil}</strong>
+              </p>
+            </div>
+            <div className="text-right text-xs text-slate-400 space-y-1">
+              <div>Registro obrigatório: <span className="text-teal-400 font-semibold">subitem 17.3.1.2.1</span></div>
+              <div>Integra o inventário: <span className="text-slate-200 font-bold">item 17.3.5</span></div>
+            </div>
+          </div>
+
+          {clientAeps.length === 0 ? (
+            <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 text-xs text-amber-200">
+              Nenhuma situação de trabalho avaliada. Cadastre em <strong>Engenharia SST &gt; 13. Avaliação
+              Ergonômica</strong>. O item 17.2.1 aplica a NR-17 a todas as situações de trabalho: não cabe
+              declarar que não há o que avaliar.
+            </div>
+          ) : (
+            <div className="bg-slate-950 border border-slate-800 rounded-xl overflow-x-auto">
+              <table className="w-full text-left text-xs text-slate-300">
+                <thead className="bg-slate-900 text-slate-400 uppercase text-[10px] border-b border-slate-800">
+                  <tr>
+                    <th className="py-3 px-4">Situação de trabalho</th>
+                    <th className="py-3 px-4">Abordagem</th>
+                    <th className="py-3 px-4">Aspectos inadequados</th>
+                    <th className="py-3 px-4">Medidas (17.4.3.1)</th>
+                    <th className="py-3 px-4">AET (17.3.2)</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-800/60">
+                  {clientAeps.map((a: any) => {
+                    const inadequados = Object.values(a.aspects || {})
+                      .filter((x: any) => x?.conclusao === 'INADEQUADO').length;
+                    const gatilhos = (a.aet_triggers || []).length;
+                    return (
+                      <tr key={a.id} className="hover:bg-slate-900/40">
+                        <td className="py-3 px-4 font-bold text-slate-100">{a.situation_name || 'Sem nome'}</td>
+                        <td className="py-3 px-4 text-slate-300">{a.approach || 'PENDENTE'}</td>
+                        <td className="py-3 px-4 font-mono text-amber-400">{inadequados}</td>
+                        <td className="py-3 px-4 text-slate-300">{(a.prevention_measures || []).join(', ') || '—'}</td>
+                        <td className="py-3 px-4 text-slate-300">
+                          {a.aet_report_date ? 'Realizada' : gatilhos > 0 ? 'Gatilho observado' : 'Não exigível'}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          <p className="text-[11px] text-slate-500">
+            O PDF traz uma página por situação, com a conclusão de cada um dos seis aspectos, o que se
+            observou, as medidas de prevenção, a oitiva dos trabalhadores e o quadro de assinaturas.
+          </p>
+        </div>
+      )}
+
+      {/* VIEW 6: LAUDO DE INSALUBRIDADE (NR-15) */}
       {activeDocType === 'INSALUBRIDADE' && (
         <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-6 shadow-xl" id="insalubridade-doc-view">
           <div className="border-b border-slate-800 pb-4 flex justify-between items-start">

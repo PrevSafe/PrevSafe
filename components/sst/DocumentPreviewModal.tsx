@@ -13,7 +13,8 @@ import {
   Building2, 
   Calendar, 
   UserCheck, 
-  Award, 
+  Award,
+  Activity, 
   Search, 
   ZoomIn, 
   ZoomOut, 
@@ -37,7 +38,8 @@ import {
   exportPCMSODocumentPdf,
   exportLTCATDocumentPdf,
   exportInsalubridadeLaudoPdf,
-  exportPericulosidadeLaudoPdf
+  exportPericulosidadeLaudoPdf,
+  exportAEPDocumentPdf
 } from '@/lib/pdfExportService';
 import { SSTElectronicSignatureModal } from './SSTElectronicSignatureModal';
 import { SSTDocumentSignature } from '@/types';
@@ -49,6 +51,7 @@ export type PreviewDocType =
   | 'PGRTR' 
   | 'PCMSO' 
   | 'LTCAT' 
+  | 'AEP' 
   | 'INSALUBRIDADE' 
   | 'PERICULOSIDADE' 
   | 'ORDEM_SERVICO' 
@@ -173,6 +176,8 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
         return 'PROGRAMA DE CONTROLE MÉDICO DE SAÚDE OCUPACIONAL (PCMSO - NR-07)';
       case 'LTCAT':
         return 'LAUDO TÉCNICO DAS CONDIÇÕES AMBIENTAIS DO TRABALHO (LTCAT - INSS)';
+      case 'AEP':
+        return 'AVALIAÇÃO ERGONÔMICA PRELIMINAR (AEP - NR-17, ITEM 17.3)';
       case 'INSALUBRIDADE':
         return 'LAUDO TÉCNICO PERICIAL DE INSALUBRIDADE (NR-15 / ART. 189 A 192 CLT)';
       case 'PERICULOSIDADE':
@@ -194,6 +199,7 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
       case 'PGRTR': return 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30';
       case 'PCMSO': return 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30';
       case 'LTCAT': return 'bg-purple-500/20 text-purple-300 border-purple-500/30';
+      case 'AEP': return 'bg-teal-500/20 text-teal-300 border-teal-500/30';
       case 'INSALUBRIDADE': return 'bg-amber-500/20 text-amber-300 border-amber-500/30';
       case 'PERICULOSIDADE': return 'bg-rose-500/20 text-rose-300 border-rose-500/30';
       default: return 'bg-blue-500/20 text-blue-300 border-blue-500/30';
@@ -215,6 +221,9 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
     } else if (docType === 'LTCAT') {
       exportLTCATDocumentPdf({ client, organization, risks, ghes, employees });
       setDownloadSuccess('LTCAT gerado e baixado em PDF com sucesso!');
+    } else if (docType === 'AEP') {
+      exportAEPDocumentPdf({ client, organization, ergonomicAssessments, ghes, jobs, units });
+      setDownloadSuccess('AEP (NR-17) gerada e baixada em PDF!');
     } else if (docType === 'INSALUBRIDADE') {
       exportInsalubridadeLaudoPdf({ client, organization, risks, ghes, employees });
       setDownloadSuccess('Laudo de Insalubridade gerado e baixado em PDF!');
@@ -669,6 +678,72 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
                       </table>
                     </div>
                   </div>
+                </div>
+              )}
+
+              {/* 5. AEP (NR-17) Content */}
+              {docType === 'AEP' && (
+                <div className="space-y-4">
+                  <div className="border border-slate-300 rounded-lg overflow-hidden">
+                    <div className="bg-slate-900 text-white px-4 py-2.5 flex items-center justify-between">
+                      <span className="font-bold text-xs uppercase tracking-wide flex items-center gap-2">
+                        <Activity className="w-4 h-4 text-teal-400" />
+                        Situações de trabalho avaliadas (item 17.3.1)
+                      </span>
+                      <span className="text-[10px] text-teal-300 font-bold">Registro obrigatório: 17.3.1.2.1</span>
+                    </div>
+
+                    {ergonomicAssessments.length === 0 ? (
+                      <div className="p-4 text-xs text-slate-700">
+                        Nenhuma situação de trabalho avaliada. O item 17.2.1 aplica a NR-17 a todas as
+                        situações de trabalho, e o subitem 17.3.1.2.1 exige o registro da avaliação: não
+                        cabe declarar que não há o que avaliar.
+                      </div>
+                    ) : (
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-left text-xs border-collapse">
+                          <thead className="bg-slate-100 text-slate-700 text-[11px] font-bold border-b border-slate-300">
+                            <tr>
+                              <th className="p-2.5 border-r border-slate-200">Situação de trabalho</th>
+                              <th className="p-2.5 border-r border-slate-200">Abordagem (17.3.1.1)</th>
+                              <th className="p-2.5 border-r border-slate-200">Avaliada em</th>
+                              <th className="p-2.5 border-r border-slate-200">Aspectos inadequados</th>
+                              <th className="p-2.5">Medidas (17.4.3.1)</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-slate-200 text-slate-800">
+                            {ergonomicAssessments.map((a: any, idx: number) => {
+                              const inadequados = Object.values(a?.aspects || {})
+                                .filter((x: any) => x?.conclusao === 'INADEQUADO').length;
+                              return (
+                                <tr key={a?.id || idx} className="hover:bg-slate-50">
+                                  <td className="p-2.5 font-bold border-r border-slate-200">{a?.situation_name || 'Sem nome'}</td>
+                                  <td className="p-2.5 border-r border-slate-200">{a?.approach || 'PENDENTE'}</td>
+                                  <td className="p-2.5 border-r border-slate-200">{a?.assessment_date || 'PENDENTE'}</td>
+                                  <td className="p-2.5 border-r border-slate-200 font-bold">
+                                    {inadequados > 0 ? (
+                                      <span className="text-amber-700">{inadequados} exige(m) medida</span>
+                                    ) : (
+                                      <span className="text-emerald-700">Nenhum</span>
+                                    )}
+                                  </td>
+                                  <td className="p-2.5 text-slate-700">
+                                    {(a?.prevention_measures || []).join(', ') || '—'}
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
+                  </div>
+
+                  <p className="text-[11px] text-slate-600">
+                    O PDF traz uma página por situação, com a conclusão de cada um dos seis aspectos da
+                    NR-17, o que se observou, as medidas de prevenção do subitem 17.4.3.1, a oitiva dos
+                    trabalhadores (item 17.3.8) e o quadro de assinaturas.
+                  </p>
                 </div>
               )}
 
