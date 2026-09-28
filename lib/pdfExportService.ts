@@ -23,7 +23,7 @@ import { formatDate } from '@/lib/utils';
 import { DECLARACAO_DE_INTEGRIDADE } from '@/lib/documentoHash';
 import { ANEXOS_NR16, montarCorpoInsalubridade, montarCorpoPericulosidade } from '@/lib/laudoDados';
 import type { CorpoLaudo } from '@/lib/laudoDados';
-import { dataDeHoje } from '@/lib/datas';
+import { dataDeHoje, somarMesesISO } from '@/lib/datas';
 import { formatarCPF } from '@/lib/validacoesBr';
 import { exameSugeridosParaAso } from '@/lib/esocialDados';
 import { VERSAO_DO_DOCUMENTO } from '@/lib/versaoDoDocumento';
@@ -2944,14 +2944,9 @@ export function exportPGRDocumentPdf({
    */
   const naoAplicaveis = new Set<string>();
 
-  /** Data ISO + n meses, ou null se a data nao for utilizavel. */
-  const somarMeses = (iso: string, meses: number): string | null => {
-    if (!/^\d{4}-\d{2}-\d{2}/.test(iso)) return null;
-    const d = new Date(`${iso.slice(0, 10)}T00:00:00Z`);
-    if (Number.isNaN(d.getTime())) return null;
-    d.setUTCMonth(d.getUTCMonth() + meses);
-    return d.toISOString().slice(0, 10);
-  };
+  // Vencimento a partir de uma data qualquer, com o fim de mes tratado:
+  // 31/01 + 1 mes e 28/02, e nao 03/03 (lib/datas.ts).
+  const somarMeses = somarMesesISO;
 
   // ------------------------------------------------------------------
   // Auxiliares de desenho

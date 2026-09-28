@@ -90,6 +90,27 @@ export function dataEmMeses(meses: number, fuso: string = FUSO_PADRAO): string {
   return `${base.getUTCFullYear()}-${String(base.getUTCMonth() + 1).padStart(2, '0')}-${String(base.getUTCDate()).padStart(2, '0')}`;
 }
 
+/**
+ * Data ISO + N meses de calendario. null quando a data nao serve.
+ *
+ * Mesma regra de `dataEmMeses`, mas a partir de uma data qualquer: e o que
+ * calcula vencimento de exame e de treinamento, que partem da data em que
+ * foram feitos, e nao de hoje.
+ */
+export function somarMesesISO(iso: string, meses: number): string | null {
+  if (!/^\d{4}-\d{2}-\d{2}/.test(String(iso || ''))) return null;
+  if (!Number.isFinite(meses) || meses <= 0) return null;
+  const [ano, mes, dia] = String(iso).slice(0, 10).split('-').map(Number);
+  const base = new Date(Date.UTC(ano, mes - 1, dia, 12, 0, 0));
+  if (Number.isNaN(base.getTime())) return null;
+  const diaOriginal = base.getUTCDate();
+  base.setUTCMonth(base.getUTCMonth() + meses);
+  // 31/01 + 1 mes nao existe: o JS rola para 03/03. Num VENCIMENTO isso e
+  // prazo a mais do que o cadastrado, entao volta para o ultimo dia do mes.
+  if (base.getUTCDate() !== diaOriginal) base.setUTCDate(0);
+  return `${base.getUTCFullYear()}-${String(base.getUTCMonth() + 1).padStart(2, '0')}-${String(base.getUTCDate()).padStart(2, '0')}`;
+}
+
 let contador = 0;
 
 /**

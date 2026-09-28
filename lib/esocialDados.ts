@@ -47,6 +47,7 @@ import {
   formatoDoCodigoTabela24,
   CODIGO_AUSENCIA_DE_RISCO,
 } from '@/lib/tabela24';
+import { protocolosDoTrabalhador } from '@/lib/protocolosDeExame';
 import type {
   Employee,
   EmployeeASOHistory,
@@ -496,17 +497,12 @@ export function exameSugeridosParaAso(
   protocolos: any[],
   tipoDeAso: EmployeeASOHistory['aso_type']
 ): Array<Omit<EmployeeExamResult, 'id' | 'result' | 'exam_date'>> {
-  const lista = Array.isArray(protocolos) ? protocolos : [];
-
-  return lista
-    .filter((p) => p?.status !== 'INACTIVE')
-    // `client_id` vazio = protocolo MODELO, vale para qualquer cliente. Os
-    // protocolos que acompanham o sistema nascem assim, e o filtro por
-    // igualdade estrita os descartava: a lista de exames sugeridos vinha
-    // sempre vazia e nao havia o que selecionar na tela.
-    .filter((p) => !p?.client_id || p.client_id === colaborador.client_id)
-    .filter((p) => !colaborador.ghe_id || !p?.ghe_id || p.ghe_id === colaborador.ghe_id)
-    .filter((p) => !Array.isArray(p?.triggers) || p.triggers.length === 0 || p.triggers.includes(tipoDeAso))
+  // O filtro de quem o protocolo alcanca esta em lib/protocolosDeExame.ts:
+  // a tela, o card do painel e a validade do ASO leem a mesma regra. Note que
+  // `client_id` vazio e protocolo MODELO e vale para qualquer cliente - o
+  // filtro por igualdade estrita os descartava, e a lista de exames sugeridos
+  // vinha sempre vazia.
+  return protocolosDoTrabalhador(protocolos, colaborador, tipoDeAso)
     .map((p) => {
       // O codigo e normalizado pela Tabela 27 (aceita "295", "0295" e
       // "0295 - Avaliacao clinica"). Quando ele consta na tabela, o NOME vem

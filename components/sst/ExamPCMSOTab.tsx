@@ -9,6 +9,11 @@ import { novoId } from '@/lib/datas';
 import type { EmployeeExamResult } from '@/types';
 import { SeletorTabela27 } from './SeletorTabela27';
 import { consultarProcedimento, codigoExisteNaTabela27 } from '@/lib/tabela27';
+import {
+  ehProtocoloModelo,
+  protocolosDoCliente,
+  validadeSugeridaDoAso
+} from '@/lib/protocolosDeExame';
 import { 
   Stethoscope, 
   Plus, 
@@ -21,7 +26,9 @@ import {
   FileCheck2,
   Clock,
   Building2,
-  Info
+  Info,
+  Copy,
+  CalendarClock
 } from 'lucide-react';
 
 interface ExamPCMSOTabProps {
@@ -29,11 +36,6 @@ interface ExamPCMSOTabProps {
 }
 
 const todayISO = () => dataDeHoje();
-const addYearsISO = (years: number) => {
-  const d = new Date();
-  d.setFullYear(d.getFullYear() + years);
-  return d.toISOString().split('T')[0];
-};
 
 export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) => {
   const {
@@ -73,6 +75,10 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
 
   // Apply ASO Modal
   const [isAsoModalOpen, setIsAsoModalOpen] = useState(false);
+  /** De onde veio a validade sugerida, para a tela poder dizer. */
+  const [validadeSugerida, setValidadeSugerida] = useState<
+    { data: string; meses: number; origem: string } | null
+  >(null);
   const [selectedEmployeeId, setSelectedEmployeeId] = useState<string>(employees[0]?.id || '');
   const [asoForm, setAsoForm] = useState<{
     aso_type: 'ADMISSIONAL' | 'PERIODICO' | 'RETORNO_TRABALHO' | 'MUDANCA_RISCO' | 'DEMISSIONAL';
@@ -86,7 +92,10 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
   }>({
     aso_type: 'PERIODICO',
     issue_date: todayISO(),
-    validity_date: addYearsISO(1),
+    // Vazio de proposito: quem define o prazo e a matriz (a menor
+    // periodicidade que alcanca o trabalhador) ou, na falta dela, o medico
+    // coordenador. O "um ano" que ficava aqui era um numero sem origem.
+    validity_date: '',
     doctor_name: '',
     doctor_crm: '',
     doctor_crm_state: '',
@@ -105,11 +114,9 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
 
   const [generatedS2220Success, setGeneratedS2220Success] = useState<string | null>(null);
 
-  const clientExams = examProtocols.filter(e => {
-    if (!selectedClientId) return true;
-    const ghe = ghes.find(g => g.id === e.ghe_id);
-    return !ghe || ghe.client_id === selectedClientId;
-  });
+  // O filtro esta em lib/protocolosDeExame.ts, junto do card do painel: os
+  // dois contavam coisas diferentes e mostravam numeros que discordavam.
+  const clientExams = protocolosDoCliente(examProtocols, ghes, selectedClientId);
 
   const clientEmployees = employees.filter(emp => !selectedClientId || emp.client_id === selectedClientId);
 
@@ -122,6 +129,27 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
     p.exam_code_table_27.includes(searchTerm) ||
     (p.preparation_instructions && p.preparation_instructions.toLowerCase().includes(searchTerm.toLowerCase()))
   );
+
+  /**
+   * Copia um protocolo modelo para o cliente selecionado.
+   *
+   * Abre o mesmo modal, ja preenchido, com o GHE em branco: e o GHE que falta
+   * no modelo, e escolhe-lo e o que transforma o modelo em protocolo deste
+   * cliente. Nada e gravado ate o usuario salvar.
+   */
+  const copiarModeloParaCliente = (protocol: SSTExamProtocol) => {
+    setEditingProtocol(null);
+    setProtocolForm({
+      ghe_id: '',
+      exam_name: protocol.exam_name,
+      exam_code_table_27: protocol.exam_code_table_27,
+      periodicity_months: protocol.periodicity_months,
+      triggers: protocol.triggers,
+      mandatory_by_standard: protocol.mandatory_by_standard,
+      preparation_instructions: protocol.preparation_instructions || ''
+    });
+    setIsProtocolModalOpen(true);
+  };
 
   const handleOpenProtocolModal = (protocol?: SSTExamProtocol) => {
     if (protocol) {
@@ -208,13 +236,26 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
    */
   const carregarExamesSugeridos = (
     employeeId: string,
-    tipo: typeof asoForm.aso_type
+    tipo: typeof asoForm.aso_type,
+    dataDoExame?: string
   ) => {
     const emp = employees.find(x => x.id === employeeId);
     if (!emp) {
       setExamesDoAso([]);
+      setValidadeSugerida(null);
       return;
     }
+
+    // A validade vem da MENOR periodicidade entre os exames que alcancam este
+    // trabalhador: quem tem audiometria semestral volta em seis meses, senao
+    // ela vence sozinha no meio do caminho. Sem periodicidade na matriz, o
+    // campo fica vazio e quem preenche e o medico.
+    const sugestao = validadeSugeridaDoAso(
+      dataDoExame || asoForm.issue_date, examProtocols, emp
+    );
+    setValidadeSugerida(sugestao);
+    setAsoForm(f => ({ ...f, validity_date: sugestao?.data || '' }));
+
     const sugeridos = exameSugeridosParaAso(emp, examProtocols, tipo);
     setExamesDoAso(
       sugeridos.map(su => ({
@@ -405,7 +446,7 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
               type="button"
               id="apply-aso-btn"
               onClick={() => {
-                carregarExamesSugeridos(selectedEmployeeId, asoForm.aso_type);
+                carregarExamesSugeridos(selectedEmployeeId, asoForm.aso_type, asoForm.issue_date);
                 setIsAsoModalOpen(true);
               }}
               className="px-3.5 py-1.5 bg-teal-500 hover:bg-teal-400 text-slate-950 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 shadow-sm"
@@ -435,6 +476,7 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="protocols-grid">
           {filteredProtocols.map((protocol) => {
             const ghe = ghes.find(g => g.id === protocol.ghe_id);
+            const ehModelo = ehProtocoloModelo(protocol);
 
             return (
               <div 
@@ -478,8 +520,18 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
                   
                   <div className="flex items-center gap-1.5 text-xs text-slate-400 mt-1">
                     <Building2 className="w-3.5 h-3.5 text-slate-500" />
-                    <span>GHE: <strong className="text-slate-300">{ghe?.name || 'GHE Geral'}</strong></span>
+                    <span>GHE: <strong className="text-slate-300">{ghe?.name || (ehModelo ? 'nenhum — é modelo' : 'GHE Geral')}</strong></span>
                   </div>
+
+                  {/* Um modelo aparece em TODO cliente. Sem dizer isso, quem
+                      olha a lista acha que o PCMSO deste cliente ja esta
+                      cadastrado quando nao ha nada cadastrado. */}
+                  {ehModelo && (
+                    <p className="text-[10px] text-amber-300 bg-amber-500/10 border border-amber-500/30 rounded p-2 mt-2">
+                      <strong>Modelo do sistema.</strong> Aparece em todos os clientes e não é o PCMSO
+                      deste. Copie para este cliente e escolha o GHE.
+                    </p>
+                  )}
                 </div>
 
                 <div className="space-y-2 pt-2 border-t border-slate-800 text-xs">
@@ -507,6 +559,17 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
                 </div>
 
                 <div className="flex items-center justify-end gap-1 pt-2 border-t border-slate-800">
+                  {ehModelo && selectedClientId && (
+                    <button
+                      type="button"
+                      onClick={() => copiarModeloParaCliente(protocol)}
+                      className="px-2 py-1 text-[11px] font-bold text-amber-300 hover:text-amber-200 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 rounded transition-colors flex items-center gap-1"
+                      title="Cria um protocolo deste cliente a partir do modelo. Escolha o GHE no formulário."
+                    >
+                      <Copy className="w-3 h-3" />
+                      Copiar para este cliente
+                    </button>
+                  )}
                   <button
                     type="button"
                     onClick={() => handleOpenProtocolModal(protocol)}
@@ -575,7 +638,7 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
                           type="button"
                           onClick={() => {
                             setSelectedEmployeeId(emp.id);
-                            carregarExamesSugeridos(emp.id, asoForm.aso_type);
+                            carregarExamesSugeridos(emp.id, asoForm.aso_type, asoForm.issue_date);
                             setIsAsoModalOpen(true);
                           }}
                           className="px-2.5 py-1 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold rounded text-[11px] transition-colors"
@@ -798,7 +861,19 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
                     type="date"
                     required
                     value={asoForm.issue_date}
-                    onChange={(e) => setAsoForm({ ...asoForm, issue_date: e.target.value })}
+                    onChange={(e) => {
+                      const data = e.target.value;
+                      // Mudou a data do exame, muda o vencimento junto.
+                      const sugestao = validadeSugeridaDoAso(
+                        data, examProtocols, employees.find(x => x.id === selectedEmployeeId)
+                      );
+                      setValidadeSugerida(sugestao);
+                      setAsoForm({
+                        ...asoForm,
+                        issue_date: data,
+                        validity_date: sugestao?.data || asoForm.validity_date
+                      });
+                    }}
                     className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
                   />
                 </div>
@@ -811,6 +886,23 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
                     onChange={(e) => setAsoForm({ ...asoForm, validity_date: e.target.value })}
                     className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
                   />
+                  {validadeSugerida ? (
+                    <p className="text-[10px] text-teal-400/90 mt-1 flex items-start gap-1">
+                      <CalendarClock className="w-3 h-3 mt-0.5 shrink-0" />
+                      <span>
+                        {validadeSugerida.meses} meses pela matriz ({validadeSugerida.origem}).
+                        O médico coordenador pode alterar.
+                      </span>
+                    </p>
+                  ) : (
+                    <p className="text-[10px] text-amber-400/90 mt-1 flex items-start gap-1">
+                      <Info className="w-3 h-3 mt-0.5 shrink-0" />
+                      <span>
+                        A matriz não define periodicidade de exame periódico para este
+                        trabalhador: informe a validade definida pelo médico coordenador.
+                      </span>
+                    </p>
+                  )}
                 </div>
               </div>
 

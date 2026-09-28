@@ -28,6 +28,7 @@ import {
 import { HierarchyTab } from './HierarchyTab';
 import { GHERiskInventoryTab } from './GHERiskInventoryTab';
 import { ExamPCMSOTab } from './ExamPCMSOTab';
+import { protocolosDoCliente } from '@/lib/protocolosDeExame';
 import { EmployeesTab } from './EmployeesTab';
 import { WorkOrderOSTab } from './WorkOrderOSTab';
 import { TechnicalDocsGeneratorTab } from './TechnicalDocsGeneratorTab';
@@ -78,6 +79,9 @@ export const SSTUnifiedEngineeringView: React.FC<SSTUnifiedEngineeringViewProps>
   const clientJobs = (hierarchyJobs || []).filter(j => !selectedClientId || j.client_id === selectedClientId);
   const clientGhes = (ghes || []).filter(g => !selectedClientId || g.client_id === selectedClientId);
   const clientRisks = (environmentalRisks || []).filter(r => clientGhes.some(g => g.id === r.ghe_id));
+  // Mesma regra da lista da aba 3: o card contava os protocolos de TODOS os
+  // clientes, e a lista abaixo dele contava so os de um.
+  const clientExamProtocols = protocolosDoCliente(examProtocols || [], ghes || [], selectedClientId);
   const clientEmployees = (employees || []).filter(e => !selectedClientId || e.client_id === selectedClientId);
   const clientWorkOrders = (workOrdersOS || []).filter(o => !selectedClientId || o.client_id === selectedClientId);
   const clientTrainings = (integrationTrainings || []).filter(t => !selectedClientId || t.client_id === selectedClientId);
@@ -169,7 +173,7 @@ export const SSTUnifiedEngineeringView: React.FC<SSTUnifiedEngineeringViewProps>
               <span>PCMSO & Exames</span>
               <Stethoscope className="w-3.5 h-3.5 text-blue-400" />
             </div>
-            <div className="text-lg font-black text-slate-100 mt-1">{examProtocols.length} exames</div>
+            <div className="text-lg font-black text-slate-100 mt-1">{clientExamProtocols.length} exames</div>
             <div className="text-[10px] text-slate-400">Tabela 27 eSocial</div>
           </div>
 

@@ -61,6 +61,8 @@ fs.writeFileSync(
       path.join(RAIZ, 'lib/esocialDados.ts'),
       path.join(RAIZ, 'lib/tabela27.ts'),
       path.join(RAIZ, 'lib/tabela24.ts'),
+      path.join(RAIZ, 'lib/protocolosDeExame.ts'),
+      path.join(RAIZ, 'lib/datas.ts'),
     ],
   })
 );
@@ -99,6 +101,27 @@ try {
 }
 
 const { exameSugeridosParaAso, montarAsoDoEvento, riscosDoColaborador } = esocial;
+
+let protocolosLib;
+try {
+  protocolosLib = require_(achar('protocolosDeExame.js'));
+} catch (e) {
+  inconclusivo('não foi possível carregar protocolosDeExame', e.message);
+}
+const {
+  ehProtocoloModelo,
+  protocolosDoCliente,
+  periodicidadeDoTrabalhador,
+  validadeSugeridaDoAso,
+} = protocolosLib;
+
+let datasLib;
+try {
+  datasLib = require_(achar('datas.js'));
+} catch (e) {
+  inconclusivo('não foi possível carregar datas', e.message);
+}
+const { somarMesesISO } = datasLib;
 
 let falhas = 0;
 let casos = 0;
@@ -337,6 +360,153 @@ console.log('\n--- do exame aplicado até o evento S-2220 ---');
     !m.pendencias.some((p) => /exame com resultado/i.test(p.motivo)),
     'e sem a pendência de exames'
   );
+}
+
+// ===========================================================================
+// A MATRIZ GOVERNA O VENCIMENTO DO ASO
+//
+// Antes a validade era "um ano" escrito no formulario: uma audiometria
+// semestral saia semestral no PCMSO impresso e o alerta de vencimento
+// continuava contando doze meses.
+// ===========================================================================
+console.log('\n--- a periodicidade cadastrada governa a validade do ASO ---');
+{
+  const semestralEAnual = [
+    {
+      id: 'p-audio', client_id: CLIENTE_A, ghe_id: GHE_A,
+      exam_code_table_27: '0281', exam_name: 'Audiometria tonal ocupacional',
+      periodicity_months: 6, triggers: ['ADMISSIONAL', 'PERIODICO'], status: 'ACTIVE',
+    },
+    {
+      id: 'p-hemo', client_id: CLIENTE_A, ghe_id: GHE_A,
+      exam_code_table_27: '0693', exam_name: 'Hemograma',
+      periodicity_months: 12, triggers: ['ADMISSIONAL', 'PERIODICO'], status: 'ACTIVE',
+    },
+  ];
+
+  const p = periodicidadeDoTrabalhador(semestralEAnual, soldador);
+  check(p?.meses === 6, `vale a MENOR periodicidade, 6 meses (veio ${p?.meses})`);
+  check(/Audiometria/.test(p?.origem || ''), 'e a tela pode dizer de qual exame ela veio');
+
+  const v = validadeSugeridaDoAso('2026-03-09', semestralEAnual, soldador);
+  check(v?.data === '2026-09-09', `a validade sai em 09/09/2026 (veio ${v?.data})`);
+
+  // Sem periodicidade na matriz o sistema NAO arbitra prazo: quem define e o
+  // medico coordenador. Devolver 12 meses aqui seria inventar um numero.
+  check(periodicidadeDoTrabalhador([], soldador) === null,
+    'matriz vazia: nenhuma periodicidade presumida');
+  check(validadeSugeridaDoAso('2026-03-09', [], soldador) === null,
+    'e nenhuma validade sugerida — o campo fica com o médico');
+
+  const soPeriodico = [{
+    id: 'p-adm', client_id: CLIENTE_A, ghe_id: GHE_A,
+    exam_code_table_27: '0295', exam_name: 'Avaliação clínica',
+    periodicity_months: 12, triggers: ['ADMISSIONAL'], status: 'ACTIVE',
+  }];
+  check(periodicidadeDoTrabalhador(soPeriodico, soldador) === null,
+    'exame só admissional não define o vencimento do periódico');
+
+  const inativo = [{
+    id: 'p-off', client_id: CLIENTE_A, ghe_id: GHE_A,
+    exam_code_table_27: '0281', exam_name: 'Audiometria', periodicity_months: 6,
+    triggers: ['PERIODICO'], status: 'INACTIVE',
+  }];
+  check(periodicidadeDoTrabalhador(inativo, soldador) === null,
+    'protocolo inativo não governa nada');
+
+  const zerado = [{
+    id: 'p-zero', client_id: CLIENTE_A, ghe_id: GHE_A,
+    exam_code_table_27: '0281', exam_name: 'Audiometria', periodicity_months: 0,
+    triggers: ['PERIODICO'], status: 'ACTIVE',
+  }];
+  check(periodicidadeDoTrabalhador(zerado, soldador) === null,
+    'periodicidade zero não vira validade no mesmo dia');
+
+  // 31/01 + 1 mes nao existe. Rolar para 03/03 daria ao trabalhador tres
+  // dias a mais de prazo do que o protocolo cadastrado diz.
+  check(somarMesesISO('2026-01-31', 1) === '2026-02-28',
+    `31/01 + 1 mês vence em 28/02, e não em março (${somarMesesISO('2026-01-31', 1)})`);
+  check(somarMesesISO('2026-03-31', 6) === '2026-09-30',
+    `31/03 + 6 meses vence em 30/09 (${somarMesesISO('2026-03-31', 6)})`);
+  check(somarMesesISO('2026-03-09', 6) === '2026-09-09', 'dia que existe nos dois meses é preservado');
+  check(somarMesesISO('', 6) === null, 'data vazia não vira validade');
+  check(somarMesesISO('2026-03-09', 0) === null, 'periodicidade zero não vira validade');
+}
+
+// ===========================================================================
+// MODELO E O FILTRO POR CLIENTE
+// ===========================================================================
+console.log('\n--- protocolo modelo, e a contagem por cliente ---');
+{
+  const modelo = {
+    id: 'modelo-1', client_id: '', ghe_id: '',
+    exam_code_table_27: '0295', exam_name: 'Avaliação clínica ocupacional',
+    periodicity_months: 12, triggers: ['PERIODICO'], status: 'ACTIVE',
+  };
+  const doClienteA = {
+    id: 'p-A', client_id: CLIENTE_A, ghe_id: GHE_A,
+    exam_code_table_27: '0281', exam_name: 'Audiometria tonal ocupacional',
+    periodicity_months: 6, triggers: ['PERIODICO'], status: 'ACTIVE',
+  };
+  const doClienteB = {
+    id: 'p-B', client_id: CLIENTE_B, ghe_id: GHE_B,
+    exam_code_table_27: '0295', exam_name: 'Avaliação clínica ocupacional',
+    periodicity_months: 12, triggers: ['PERIODICO'], status: 'ACTIVE',
+  };
+  const ghes = [
+    { id: GHE_A, client_id: CLIENTE_A },
+    { id: GHE_B, client_id: CLIENTE_B },
+  ];
+
+  check(ehProtocoloModelo(modelo), 'sem cliente e sem GHE: é modelo');
+  check(!ehProtocoloModelo(doClienteA), 'com cliente e GHE: não é modelo');
+  check(!ehProtocoloModelo({ ...modelo, ghe_id: GHE_A }),
+    'com GHE mas sem cliente: também não é modelo — já foi endereçado');
+
+  const todos = [modelo, doClienteA, doClienteB];
+  const deA = protocolosDoCliente(todos, ghes, CLIENTE_A);
+  check(deA.length === 2, `o cliente A vê 2: o dele e o modelo (viu ${deA.length})`);
+  check(!deA.some((p) => p.id === 'p-B'), 'e NÃO vê o protocolo do cliente B');
+
+  const deB = protocolosDoCliente(todos, ghes, CLIENTE_B);
+  check(deB.length === 2, 'o cliente B vê o dele e o modelo');
+  check(protocolosDoCliente(todos, ghes, null).length === 3,
+    'sem cliente selecionado, vê os três');
+
+  // Era aqui que o card do painel e a lista discordavam: um contava todos.
+  check(protocolosDoCliente(todos, ghes, CLIENTE_A).length !== todos.length,
+    'a contagem por cliente é MENOR que o total — é o que o card mostrava errado');
+
+  check(protocolosDoCliente([...todos, { ...doClienteA, id: 'off', status: 'INACTIVE' }],
+    ghes, CLIENTE_A).length === 2, 'protocolo inativo não entra na conta');
+}
+
+// ===========================================================================
+// A TELA USA ESSAS REGRAS
+// ===========================================================================
+console.log('\n--- ligação com as telas (conferência no código) ---');
+{
+  const semComentarios = (txt) => txt
+    .replace(/\/\*[\s\S]*?\*\//g, ' ')
+    .replace(/(^|[^:])\/\/[^\n]*/gm, '$1');
+
+  const aba = semComentarios(fs.readFileSync(path.join(RAIZ, 'components/sst/ExamPCMSOTab.tsx'), 'utf8'));
+  const painel = semComentarios(fs.readFileSync(path.join(RAIZ, 'components/sst/SSTUnifiedEngineeringView.tsx'), 'utf8'));
+  const dados = semComentarios(fs.readFileSync(path.join(RAIZ, 'lib/esocialDados.ts'), 'utf8'));
+
+  check(/protocolosDoCliente\(/.test(aba), 'a lista da aba usa o filtro único');
+  check(/protocolosDoCliente\(/.test(painel), 'o card do painel usa o MESMO filtro');
+  check(!/examProtocols\.length\} exames/.test(painel),
+    'o card não conta mais os protocolos de todos os clientes');
+  check(/protocolosDoTrabalhador\(/.test(dados),
+    'a sugestão de exames do ASO usa o mesmo filtro de alcance');
+
+  check(/validadeSugeridaDoAso\(/.test(aba), 'a validade do ASO vem da matriz');
+  check(!/validity_date: addYearsISO\(1\)/.test(aba),
+    'o "um ano" fixo saiu do formulário');
+  check(/ehProtocoloModelo\(/.test(aba), 'a aba identifica o protocolo modelo');
+  check(/Copiar para este cliente/.test(aba), 'e oferece copiá-lo para o cliente');
+  check(/Modelo do sistema/.test(aba), 'dizendo, na lista, que ele não é o PCMSO deste cliente');
 }
 
 console.log(
