@@ -64,6 +64,15 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
   } = usePrevSafe();
 
   const clientGhes = ghes.filter(g => !selectedClientId || g.client_id === selectedClientId);
+  // As listas de cargos mostravam `hierarchyJobs` inteiro: davam para marcar o
+  // "Recepcionista" de OUTRA empresa, identico ao deste cliente. E o mesmo
+  // defeito que ja tinha sido corrigido no select de GHE desta tela.
+  const clientJobs = hierarchyJobs.filter(
+    j => (!selectedClientId || j.client_id === selectedClientId) && j.status !== 'INACTIVE'
+  );
+  const clientSectors = hierarchySectors.filter(
+    sec => (!selectedClientId || sec.client_id === selectedClientId) && sec.status !== 'INACTIVE'
+  );
   const [selectedGheId, setSelectedGheId] = useState<string>(clientGhes[0]?.id || '');
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCategory, setFilterCategory] = useState<string>('ALL');
@@ -227,8 +236,11 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
         code: `GHE-${String(clientGhes.length + 1).padStart(2, '0')}`,
         name: '',
         description: '',
-        sector_ids: hierarchySectors.slice(0, 1).map(s => s.id),
-        job_ids: hierarchyJobs.slice(0, 2).map(j => j.id),
+        sector_ids: [],
+        // Nascia com os dois primeiros cargos da lista inteira ja
+        // marcados - de qualquer cliente. Vinculo de cargo a GHE define quem
+        // recebe risco e exame: nao se marca por conta propria.
+        job_ids: [],
         work_schedule_description: 'Jornada regular: 44h semanais, 07:00 às 17:00 com 1h intervalo',
         environment_description: 'Galpão industrial fechado, piso nivelado, iluminação adequada conforme NR-17'
       });
@@ -1416,7 +1428,7 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
                   <div className="space-y-1.5 pt-2 border-t border-slate-800/80">
                     <span className="text-[11px] text-slate-400 block">Marque os cargos que receberão os riscos:</span>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-32 overflow-y-auto">
-                      {hierarchyJobs.map(job => {
+                      {clientJobs.map(job => {
                         const isChecked = catalogSelectedJobIds.includes(job.id);
                         return (
                           <label key={job.id} className="flex items-center gap-2 p-1.5 bg-slate-900 rounded border border-slate-800 cursor-pointer">
@@ -1445,7 +1457,7 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
                   <div className="space-y-1.5 pt-2 border-t border-slate-800/80">
                     <span className="text-[11px] text-slate-400 block">Marque os setores da árvore hierárquica:</span>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-32 overflow-y-auto">
-                      {hierarchySectors.map(sec => {
+                      {clientSectors.map(sec => {
                         const isChecked = catalogSelectedSectorIds.includes(sec.id);
                         return (
                           <label key={sec.id} className="flex items-center gap-2 p-1.5 bg-slate-900 rounded border border-slate-800 cursor-pointer">
@@ -1860,7 +1872,7 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
                   <div className="space-y-1.5 pt-2 border-t border-slate-800/80">
                     <span className="text-[11px] text-slate-400 block">Marque os cargos que receberão este exame:</span>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-32 overflow-y-auto">
-                      {hierarchyJobs.map(job => {
+                      {clientJobs.map(job => {
                         const checked = multiExamForm.target_job_ids.includes(job.id);
                         return (
                           <label key={job.id} className="flex items-center gap-2 p-1.5 bg-slate-900 rounded border border-slate-800 cursor-pointer">

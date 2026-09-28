@@ -166,6 +166,7 @@ import { hashDoDocumento, hashDaAssinatura } from '@/lib/documentoHash';
 import { dataDeHoje, dataEmDias, formatarDataISO, novoId } from '@/lib/datas';
 import { limparOrdensDeServico, AVISO_SEM_INVENTARIO } from '@/lib/limpezaDeOrdensDeServico';
 import { classificarRisco } from '@/lib/classificacaoDeRisco';
+import { ghesDosCargos, avisoDeCargosSemGhe } from '@/lib/ghesDoCargo';
 import {
   INATIVIDADE_MINUTOS,
   limparUltimaAtividade,
@@ -5406,22 +5407,17 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
 
     // Resolve target GHEs
     let resolvedGheIds: string[] = [];
+    let cargosSemGhe: string[] = [];
     if (payload.target_mode === 'GHE' && payload.target_ghe_ids) {
       resolvedGheIds = [...payload.target_ghe_ids];
     } else if (payload.target_mode === 'JOB' && payload.target_job_ids) {
-      // Find GHEs associated with these jobs or create matching if not found
-      const matchingGhes = ghes.filter(g => g.client_id === payload.client_id);
-      payload.target_job_ids.forEach(jobId => {
-        const job = hierarchyJobs.find(j => j.id === jobId);
-        if (!job) return;
-        // Find existing GHE that mentions this job or same sector
-        const existingGhe = matchingGhes.find(g => g.job_ids?.includes(jobId) || g.name.toLowerCase().includes(job.name.toLowerCase()) || g.sector_ids?.includes(job.sector_id));
-        if (existingGhe && !resolvedGheIds.includes(existingGhe.id)) {
-          resolvedGheIds.push(existingGhe.id);
-        } else if (matchingGhes.length > 0 && !resolvedGheIds.includes(matchingGhes[0].id)) {
-          resolvedGheIds.push(matchingGhes[0].id);
-        }
-      });
+      // O cargo cai nos GHE que o LISTAM (lib/ghesDoCargo.ts). Casava tambem
+      // por nome do GHE contendo o nome do cargo, ou por setor em comum - e,
+      // nao achando nada, aplicava no primeiro GHE do cliente dizendo que
+      // deu certo. Coincidencia de texto nao e enquadramento de exposicao.
+      const resolucao = ghesDosCargos(ghes, hierarchyJobs, payload.client_id, payload.target_job_ids);
+      resolvedGheIds = resolucao.gheIds;
+      cargosSemGhe = resolucao.cargosSemGhe;
     } else if (payload.target_mode === 'SECTOR_TREE' && payload.target_sector_ids) {
       // Find all GHEs in the selected sectors
       const sectorGhes = ghes.filter(g => g.client_id === payload.client_id && g.sector_ids?.some(sid => payload.target_sector_ids?.includes(sid)));
@@ -5436,16 +5432,16 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
       });
     }
 
-    // Fallback: if no specific GHE resolved, use the first GHE of the client or create a generic GHE
     if (resolvedGheIds.length === 0) {
-      const clientGhe = ghes.find(g => g.client_id === payload.client_id);
-      if (clientGhe) {
-        resolvedGheIds.push(clientGhe.id);
-      }
-    }
-
-    if (resolvedGheIds.length === 0) {
-      return { created_risks_count: 0, created_exams_count: 0, message: 'Nenhum GHE ou cargo de destino encontrado para vincular o risco.' };
+      // Sem destino nao se inventa um. O fallback antigo mandava para o
+      // primeiro GHE do cliente e dizia "sucesso".
+      return {
+        created_risks_count: 0,
+        created_exams_count: 0,
+        message: cargosSemGhe.length > 0
+          ? avisoDeCargosSemGhe(cargosSemGhe)
+          : 'Nenhum GHE de destino: selecione o GHE, ou vincule o cargo a um GHE antes de aplicar.'
+      };
     }
 
     const now = new Date().toISOString();
@@ -5586,7 +5582,11 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     return {
       created_risks_count: newRisks.length,
       created_exams_count: newExams.length,
-      message: `Sucesso: ${newRisks.length} risco(s) e ${newExams.length} exame(s) aplicados em ${resolvedGheIds.length} GHE(s)/Cargos.`
+      // O que ficou de fora vai junto: aplicacao parcial anunciada como
+      // sucesso e a forma mais silenciosa de perder um cargo.
+      message: `Sucesso: ${newRisks.length} risco(s) e ${newExams.length} exame(s) aplicados em `
+        + `${resolvedGheIds.length} GHE(s).`
+        + (cargosSemGhe.length > 0 ? ` ${avisoDeCargosSemGhe(cargosSemGhe)}` : '')
     };
   }, [occupationalRisksCatalog, ghes, hierarchyJobs, examProtocols, organization.id, logAudit]);
 
@@ -5608,29 +5608,28 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     }
 
     let targetGheIds: string[] = [];
+    let cargosSemGhe: string[] = [];
     if (payload.target_ghe_ids && payload.target_ghe_ids.length > 0) {
       targetGheIds = [...payload.target_ghe_ids];
     }
     if (payload.target_job_ids && payload.target_job_ids.length > 0) {
-      const clientGhes = ghes.filter(g => g.client_id === payload.client_id);
-      payload.target_job_ids.forEach(jobId => {
-        const matchingGhe = clientGhes.find(g => g.job_ids?.includes(jobId));
-        if (matchingGhe && !targetGheIds.includes(matchingGhe.id)) {
-          targetGheIds.push(matchingGhe.id);
-        } else if (clientGhes.length > 0 && !targetGheIds.includes(clientGhes[0].id)) {
-          targetGheIds.push(clientGhes[0].id);
-        }
+      // Mesma regra da aplicacao de riscos (lib/ghesDoCargo.ts): o cargo cai
+      // nos GHE que o listam, em TODOS eles, e cargo sem GHE volta pelo nome
+      // em vez de cair no primeiro GHE do cliente.
+      const resolucao = ghesDosCargos(ghes, hierarchyJobs, payload.client_id, payload.target_job_ids);
+      resolucao.gheIds.forEach(id => {
+        if (!targetGheIds.includes(id)) targetGheIds.push(id);
       });
+      cargosSemGhe = resolucao.cargosSemGhe;
     }
 
     if (targetGheIds.length === 0) {
-      // Fallback to client's primary GHE
-      const clientGhe = ghes.find(g => g.client_id === payload.client_id);
-      if (clientGhe) targetGheIds.push(clientGhe.id);
-    }
-
-    if (targetGheIds.length === 0) {
-      return { created_exams_count: 0, message: 'Nenhum GHE de destino encontrado para aplicar os exames.' };
+      return {
+        created_exams_count: 0,
+        message: cargosSemGhe.length > 0
+          ? avisoDeCargosSemGhe(cargosSemGhe)
+          : 'Nenhum GHE de destino: selecione o GHE, ou vincule o cargo a um GHE antes de aplicar.'
+      };
     }
 
     const now = new Date().toISOString();
@@ -5667,9 +5666,11 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
 
     return {
       created_exams_count: newProtocols.length,
-      message: `Sucesso: ${newProtocols.length} protocolo(s) de exame(s) PCMSO aplicado(s) a ${targetGheIds.length} GHE(s)/Cargos.`
+      message: `Sucesso: ${newProtocols.length} protocolo(s) de exame(s) PCMSO aplicado(s) a `
+        + `${targetGheIds.length} GHE(s).`
+        + (cargosSemGhe.length > 0 ? ` ${avisoDeCargosSemGhe(cargosSemGhe)}` : '')
     };
-  }, [ghes, examProtocols, organization.id, logAudit]);
+  }, [ghes, hierarchyJobs, examProtocols, organization.id, logAudit]);
 
   const addEmployee = useCallback((data: Omit<Employee, 'id' | 'organization_id' | 'created_at' | 'updated_at'>): Employee => {
     const now = new Date().toISOString();

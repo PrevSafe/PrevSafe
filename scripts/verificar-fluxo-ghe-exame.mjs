@@ -63,6 +63,7 @@ fs.writeFileSync(
       path.join(RAIZ, 'lib/tabela24.ts'),
       path.join(RAIZ, 'lib/protocolosDeExame.ts'),
       path.join(RAIZ, 'lib/datas.ts'),
+      path.join(RAIZ, 'lib/ghesDoCargo.ts'),
     ],
   })
 );
@@ -122,6 +123,14 @@ try {
   inconclusivo('não foi possível carregar datas', e.message);
 }
 const { somarMesesISO } = datasLib;
+
+let cargosLib;
+try {
+  cargosLib = require_(achar('ghesDoCargo.js'));
+} catch (e) {
+  inconclusivo('não foi possível carregar ghesDoCargo', e.message);
+}
+const { ghesDosCargos, avisoDeCargosSemGhe } = cargosLib;
 
 let falhas = 0;
 let casos = 0;
@@ -507,6 +516,116 @@ console.log('\n--- ligação com as telas (conferência no código) ---');
   check(/ehProtocoloModelo\(/.test(aba), 'a aba identifica o protocolo modelo');
   check(/Copiar para este cliente/.test(aba), 'e oferece copiá-lo para o cliente');
   check(/Modelo do sistema/.test(aba), 'dizendo, na lista, que ele não é o PCMSO deste cliente');
+}
+
+// ===========================================================================
+// CARGO -> GHE: O ATALHO SILENCIOSO
+//
+// Risco e exame ligam-se a GHE, nao a cargo. Quando a tela deixava marcar
+// CARGOS e o cargo nao estava em GHE nenhum, o sistema aplicava no PRIMEIRO
+// GHE do cliente e dizia "sucesso": exame num grupo que ninguem escolheu, e
+// dali para o ASO daqueles trabalhadores e para o S-2220.
+// ===========================================================================
+console.log('\n--- de qual GHE faz parte o cargo ---');
+{
+  const RECEPCIONISTA = 'job-recep';
+  const SOLDADOR = 'job-sold';
+  const AUXILIAR = 'job-aux';
+
+  const cargos = [
+    { id: RECEPCIONISTA, client_id: CLIENTE_A, name: 'Recepcionista' },
+    { id: SOLDADOR, client_id: CLIENTE_A, name: 'Soldador' },
+    { id: AUXILIAR, client_id: CLIENTE_A, name: 'Auxiliar de produção' },
+    { id: 'job-outro', client_id: CLIENTE_B, name: 'Recepcionista' },
+  ];
+
+  const ghesDoCenario = [
+    { id: 'ghe-adm', client_id: CLIENTE_A, name: 'Administrativo', job_ids: [RECEPCIONISTA] },
+    { id: 'ghe-sold', client_id: CLIENTE_A, name: 'Soldagem', job_ids: [SOLDADOR, AUXILIAR] },
+    { id: 'ghe-mont', client_id: CLIENTE_A, name: 'Montagem', job_ids: [AUXILIAR] },
+    { id: 'ghe-b', client_id: CLIENTE_B, name: 'Recepção B', job_ids: ['job-outro'] },
+  ];
+
+  const r1 = ghesDosCargos(ghesDoCenario, cargos, CLIENTE_A, [RECEPCIONISTA]);
+  check(r1.gheIds.length === 1 && r1.gheIds[0] === 'ghe-adm',
+    'o cargo cai no GHE que o lista, e só nele');
+  check(r1.cargosSemGhe.length === 0, 'e nada fica de fora');
+
+  // `find` devolvia so o primeiro: o segundo GHE ficava sem o exame.
+  const r2 = ghesDosCargos(ghesDoCenario, cargos, CLIENTE_A, [AUXILIAR]);
+  check(r2.gheIds.length === 2,
+    `cargo em dois GHE alcança os DOIS (alcançou ${r2.gheIds.length})`);
+
+  // O caso que produzia o defeito.
+  const semGhe = [{ id: 'ghe-sold', client_id: CLIENTE_A, name: 'Soldagem', job_ids: [SOLDADOR] }];
+  const r3 = ghesDosCargos(semGhe, cargos, CLIENTE_A, [RECEPCIONISTA]);
+  check(r3.gheIds.length === 0,
+    'cargo fora de qualquer GHE NÃO cai no primeiro GHE do cliente');
+  check(r3.cargosSemGhe.length === 1 && r3.cargosSemGhe[0] === 'Recepcionista',
+    'ele volta pelo nome, para o usuário ser avisado');
+  check(/Recepcionista/.test(avisoDeCargosSemGhe(r3.cargosSemGhe))
+    && /nenhum GHE/.test(avisoDeCargosSemGhe(r3.cargosSemGhe)),
+    'e o aviso diz qual cargo ficou de fora');
+  check(/[Vv]incule/.test(avisoDeCargosSemGhe(r3.cargosSemGhe)),
+    'dizendo também o que fazer a respeito');
+  check(avisoDeCargosSemGhe([]) === '', 'sem cargo de fora, nenhum aviso');
+
+  // Aplicacao parcial: o que entrou entra, o que ficou de fora e dito.
+  const r4 = ghesDosCargos(semGhe, cargos, CLIENTE_A, [SOLDADOR, RECEPCIONISTA]);
+  check(r4.gheIds.length === 1 && r4.cargosSemGhe.length === 1,
+    'aplicação parcial: aplica no que dá e conta o que não deu');
+
+  // Cargo de outro cliente com o MESMO nome nao alcanca GHE deste.
+  const r5 = ghesDosCargos(ghesDoCenario, cargos, CLIENTE_A, ['job-outro']);
+  check(r5.gheIds.length === 0,
+    'cargo de outro cliente não alcança GHE deste — mesmo com nome idêntico');
+
+  // GHE com nome parecido com o cargo nao conta: era um dos casamentos
+  // "espertos" da aplicacao de riscos.
+  const soNome = [{ id: 'ghe-x', client_id: CLIENTE_A, name: 'Recepcionista e portaria', job_ids: [] }];
+  check(ghesDosCargos(soNome, cargos, CLIENTE_A, [RECEPCIONISTA]).gheIds.length === 0,
+    'nome de GHE parecido com o do cargo NÃO vale como vínculo');
+
+  check(ghesDosCargos([], cargos, CLIENTE_A, [RECEPCIONISTA]).gheIds.length === 0,
+    'cliente sem GHE nenhum: nada é aplicado');
+  check(ghesDosCargos(ghesDoCenario, cargos, CLIENTE_A, []).cargosSemGhe.length === 0,
+    'nenhum cargo marcado: nada a avisar');
+}
+
+console.log('\n--- as duas aplicações em lote usam essa regra ---');
+{
+  const semComentarios = (txt) => txt
+    .replace(/\/\*[\s\S]*?\*\//g, ' ')
+    .replace(/(^|[^:])\/\/[^\n]*/gm, '$1');
+
+  const ctx = semComentarios(fs.readFileSync(path.join(RAIZ, 'context/PrevSafeContext.tsx'), 'utf8'));
+  const aba = semComentarios(fs.readFileSync(path.join(RAIZ, 'components/sst/GHERiskInventoryTab.tsx'), 'utf8'));
+
+  check((ctx.match(/ghesDosCargos\(/g) || []).length === 2,
+    'riscos e exames resolvem o cargo pela mesma função');
+  check((ctx.match(/avisoDeCargosSemGhe\(/g) || []).length >= 4,
+    'e as duas avisam quando um cargo fica de fora');
+
+  // O defeito, pela forma: o fallback para o primeiro GHE do cliente.
+  check(!/targetGheIds\.push\(clientGhes\[0\]\.id\)/.test(ctx),
+    'o atalho para o primeiro GHE do cliente saiu da aplicação de exames');
+  check(!/resolvedGheIds\.push\(matchingGhes\[0\]\.id\)/.test(ctx),
+    'e da aplicação de riscos');
+  check(!/const clientGhe = ghes\.find\(g => g\.client_id === payload\.client_id\)/.test(ctx),
+    'e o fallback final também');
+  check(!/g\.name\.toLowerCase\(\)\.includes\(job\.name\.toLowerCase\(\)\)/.test(ctx),
+    'casar cargo com GHE pelo NOME saiu de vez');
+
+  check(/const clientJobs = hierarchyJobs\.filter\(/.test(aba),
+    'a tela lista só os cargos deste cliente');
+  check(!/\{hierarchyJobs\.map\(job =>/.test(aba),
+    'nenhuma lista de cargos mostra os de todos os clientes');
+  check(!/\{hierarchySectors\.map\(sec =>/.test(aba),
+    'nem a de setores');
+  check(!/job_ids: hierarchyJobs\.slice\(0, 2\)/.test(aba),
+    'GHE novo não nasce com cargos pré-marcados');
+  check(!/sector_ids: hierarchySectors\.slice\(0, 1\)/.test(aba),
+    'nem com setor pré-marcado');
 }
 
 console.log(
