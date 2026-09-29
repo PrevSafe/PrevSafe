@@ -38,7 +38,9 @@ export const ContractsView: React.FC<{ onNavigate: (view: string) => void }> = (
     createContractFromProposal,
     serviceOrders = [], 
     organization,
-    currentProfile 
+    currentProfile,
+    technicalProfessionals,
+    technicalResponsibilities
   } = usePrevSafe();
 
   const [selectedContract, setSelectedContract] = useState<Contract | null>(contracts?.[0] || null);
@@ -451,6 +453,8 @@ export const ContractsView: React.FC<{ onNavigate: (view: string) => void }> = (
                       client: clients.find(c => c.id === selectedContract.client_id) || null,
                       organization,
                       proposal: proposals.find(pr => pr.id === selectedContract.proposal_id) || null,
+                      technicalProfessionals,
+                      technicalResponsibilities,
                     });
                   } catch (err: any) {
                     alert(`Nao foi possivel gerar o PDF.\n\n${err?.message || 'Erro desconhecido'}`);

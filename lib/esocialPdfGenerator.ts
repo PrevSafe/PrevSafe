@@ -147,7 +147,7 @@ export function generateESocialReportHtml(
           </tr>
           <tr>
             <td><strong>Data e Hora:</strong></td>
-            <td>${cat?.accident_date ? new Date(cat.accident_date).toLocaleDateString('pt-BR') : today} às ${cat?.accident_time || '10:00'}</td>
+            <td>${cat?.accident_date ? new Date(cat.accident_date).toLocaleDateString('pt-BR') : 'DATA NÃO INFORMADA'} às ${cat?.accident_time || 'HORA NÃO INFORMADA'}</td>
             <td><strong>Houve Óbito:</strong></td>
             <td>${cat?.death_occurred ? 'SIM' : 'NÃO'}</td>
           </tr>
@@ -157,19 +157,27 @@ export function generateESocialReportHtml(
           </tr>
           <tr>
             <td><strong>Parte Atingida:</strong></td>
-            <td>Código ${cat?.body_part || '752000000'}</td>
+            <td>${cat?.body_part ? `Código ${cat.body_part}` : 'PARTE ATINGIDA NÃO CODIFICADA'}</td>
             <td><strong>Agente Causador:</strong></td>
-            <td>Código ${cat?.accident_agent || '303020100'}</td>
+            <td>${cat?.accident_agent ? `Código ${cat.accident_agent}` : 'AGENTE CAUSADOR NÃO CODIFICADO'}</td>
           </tr>
           <tr>
             <td><strong>Diagnóstico Provável:</strong></td>
-            <td>CID-10: <strong>${cat?.cid_code || 'S93.4'}</strong></td>
+            <td>CID-10: <strong>${cat?.cid_code || 'NÃO INFORMADO'}</strong></td>
             <td><strong>Dias de Afastamento:</strong></td>
             <td>${cat?.days_away || 0} dias</td>
           </tr>
           <tr>
             <td><strong>Atestado Médico:</strong></td>
-            <td colspan="3">Emitido por ${cat?.medical_cert_issuer || 'Pronto Socouro Regional'} - CRM ${cat?.medical_crm || '88412'}/${cat?.medical_uf || 'SP'}</td>
+            <td colspan="3">${
+              cat?.medical_cert_issuer
+                ? `Emitido por ${cat.medical_cert_issuer}`
+                : 'EMITENTE DO ATESTADO NÃO INFORMADO'
+            }${
+              cat?.medical_crm
+                ? ` - CRM ${cat.medical_crm}${cat?.medical_uf ? `/${cat.medical_uf}` : ''}`
+                : ' - REGISTRO DO EMITENTE NÃO INFORMADO'
+            }</td>
           </tr>
         </table>
       </div>

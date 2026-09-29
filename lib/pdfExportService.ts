@@ -26,7 +26,7 @@ import type { CorpoLaudo } from '@/lib/laudoDados';
 import { dataDeHoje, somarMesesISO } from '@/lib/datas';
 import { formatarCPF } from '@/lib/validacoesBr';
 import { exameSugeridosParaAso } from '@/lib/esocialDados';
-import { assinaturaDoDocumento } from '@/lib/responsabilidadeTecnica';
+import { assinaturaDoDocumento, linhaDeResponsaveis } from '@/lib/responsabilidadeTecnica';
 import type { AssinaturaDoDocumento } from '@/lib/responsabilidadeTecnica';
 import type { TechnicalProfessional, TechnicalResponsibility, TechnicalRoleCode } from '@/types';
 import { VERSAO_DO_DOCUMENTO } from '@/lib/versaoDoDocumento';
@@ -6208,12 +6208,16 @@ export function exportContractPdf({
   contract,
   client,
   organization,
-  proposal
+  proposal,
+  technicalProfessionals = [],
+  technicalResponsibilities = []
 }: {
   contract: Contract;
   client?: Client | null;
   organization: Organization;
   proposal?: Proposal | null;
+  technicalProfessionals?: TechnicalProfessional[];
+  technicalResponsibilities?: TechnicalResponsibility[];
 }) {
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
   const pageWidth = doc.internal.pageSize.getWidth();
@@ -6288,7 +6292,14 @@ export function exportContractPdf({
         { content: 'Proposta:', styles: { fontStyle: 'bold' } },
         { content: proposal ? `${proposal.proposal_number} — aceita em ${proposal.approved_at ? formatDate(proposal.approved_at) : 'data não registrada'}` : 'Contrato sem proposta vinculada' },
         { content: 'Resp. Técnico:', styles: { fontStyle: 'bold' } },
-        { content: technicalResponsibleLine(organization) }
+        // O contrato cobre varios servicos ao mesmo tempo, entao nao tem UM
+        // papel proprio: lista quem responde por este cliente e por que papel.
+        // Antes imprimia o responsavel geral da consultoria, igual em todo
+        // contrato de todo cliente.
+        { content: linhaDeResponsaveis(
+          technicalResponsibilities, technicalProfessionals,
+          String(client?.id || ''), dataDeHoje()
+        ) || technicalResponsibleLine(organization) }
       ]
     ],
     styles: { fontSize: 7.5, cellPadding: 2 },

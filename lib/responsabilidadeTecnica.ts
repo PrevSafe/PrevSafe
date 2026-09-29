@@ -597,3 +597,63 @@ export function codigoDoOrgaoDeClasse(
     ufOC: String(profissional?.council_uf || '').trim().toUpperCase(),
   };
 }
+
+export interface ResponsavelComPapeis {
+  profissional: TechnicalProfessional;
+  papeis: TechnicalRoleCode[];
+}
+
+/**
+ * Todos os profissionais que respondem por um cliente, com os papeis de cada um.
+ *
+ * Existe para documentos que nao tem UM papel proprio - o contrato comercial,
+ * por exemplo, cobre varios servicos ao mesmo tempo. Em vez de o sistema
+ * escolher um papel qualquer para representar "o responsavel tecnico do
+ * contrato", ele mostra quem responde e pelo que.
+ */
+export function responsaveisTecnicosDoCliente(
+  atribuicoes: TechnicalResponsibility[],
+  profissionais: TechnicalProfessional[],
+  clientId: string,
+  data: string
+): ResponsavelComPapeis[] {
+  const porProfissional = new Map<string, ResponsavelComPapeis>();
+
+  for (const definicao of PAPEIS_TECNICOS) {
+    for (const p of responsaveisDoCliente(
+      atribuicoes, profissionais, clientId, definicao.codigo, data
+    )) {
+      const atual = porProfissional.get(p.id);
+      if (atual) {
+        if (!atual.papeis.includes(definicao.codigo)) atual.papeis.push(definicao.codigo);
+      } else {
+        porProfissional.set(p.id, { profissional: p, papeis: [definicao.codigo] });
+      }
+    }
+  }
+
+  return Array.from(porProfissional.values());
+}
+
+/**
+ * Uma linha por responsavel, com os papeis, para imprimir numa celula.
+ *
+ * Devolve string vazia quando ninguem responde - quem chama decide o que
+ * dizer, porque num contrato comercial isso nao e pendencia normativa.
+ */
+export function linhaDeResponsaveis(
+  atribuicoes: TechnicalResponsibility[],
+  profissionais: TechnicalProfessional[],
+  clientId: string,
+  data: string
+): string {
+  return responsaveisTecnicosDoCliente(atribuicoes, profissionais, clientId, data)
+    .map(({ profissional, papeis }) => {
+      const nomes = papeis
+        .map((codigo) => definicaoDoPapel(codigo)?.nome || codigo)
+        .join(', ');
+      const registro = registroDoProfissional(profissional);
+      return `${profissional.full_name}${registro ? ` (${registro})` : ''} — ${nomes}`;
+    })
+    .join('\n');
+}

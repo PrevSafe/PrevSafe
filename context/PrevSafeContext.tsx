@@ -651,7 +651,11 @@ interface PrevSafeContextType {
   updateWorkAbsence: (id: string, updates: Partial<SSTWorkAbsence>) => void;
   transmitWorkAbsence: (id: string) => { success: boolean; receipt?: string; protocol?: string; error?: string };
 
-  generateS2240FromGhe: (gheId: string) => ESocialEvent | null;
+  /**
+   * Gera o S-2240 do GHE. `motivo` diz por que nao gerou, quando nao gerou:
+   * antes devolvia null em silencio e o botao nao fazia nada.
+   */
+  generateS2240FromGhe: (gheId: string) => { evento: ESocialEvent | null; motivo: string };
   /**
    * `asoRecemCriado` evita ler o estado anterior quando o ASO acabou de ser
    * registrado na mesma acao.
@@ -3534,6 +3538,21 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
   }, [organization.id, logAudit]);
 
   // eSocial SST Events XML Generator (v.S-1.2 Layout)
+  /**
+   * Elemento do evento com o valor real, ou vazio com o motivo ao lado.
+   *
+   * O gerador preenchia o que nao sabia com um valor plausivel: data de ASO
+   * 2026-08-20, hora de acidente 10:00, 3h30 trabalhadas antes do acidente,
+   * CID S93.4, parte atingida 752000000, CRM 88412, emitente "Pronto Socorro".
+   * Num evento que o governo recebe como declaracao da empresa, isso nao e
+   * placeholder: e afirmacao. Melhor o campo vazio, que o usuario ve, do que
+   * um valor que passa despercebido porque parece certo.
+   */
+  const campoDoEvento = useCallback((tag: string, valor: any, oQueFalta: string): string => {
+    const v = String(valor ?? '').trim();
+    return v ? `<${tag}>${v}</${tag}>` : `<${tag}></${tag}><!-- ${oQueFalta} -->`;
+  }, []);
+
   const generateESocialXmlPreview = useCallback((event: ESocialEvent): string => {
     const client = clients.find(c => c.id === event.client_id);
     const employerDocType = client?.document_type || 'CNPJ';
@@ -3600,7 +3619,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
       <matricula>${event.worker_registration}</matricula>
     </ideVinculo>
     <infoExpRisco>
-      <dtIniCondic>${amb?.start_date || '2026-01-01'}</dtIniCondic>
+      ${campoDoEvento('dtIniCondic', amb?.start_date, 'data de início da condição não informada')}
       ${amb?.end_date ? `<dtFimCondic>${amb.end_date}</dtFimCondic>` : ''}
       <ideEstab>
         <tpInsc>${tpInscEstab}</tpInsc>
@@ -3608,10 +3627,10 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
       </ideEstab>
       <infoAmb>
         <localAmb>1</localAmb>
-        <dscSetor>${amb?.work_environment || 'Geral'}</dscSetor>
+        ${campoDoEvento('dscSetor', amb?.work_environment, 'ambiente de trabalho não descrito')}
       </infoAmb>
       <infoAtiv>
-        <dscAtivDes>${amb?.description_activities || 'Atividades operacionais'}</dscAtivDes>
+        ${campoDoEvento('dscAtivDes', amb?.description_activities, 'atividades desempenhadas não descritas')}
       </infoAtiv>
       <agNoc>${risksXml}
       </agNoc>
@@ -3667,9 +3686,26 @@ ${blocoRespRegXml(event.client_id, amb?.start_date || dataDeHoje())}
       <nrInsc>${nrInscEstab}</nrInsc>
     </ideEstab>
     <aso>
-      <dtAso>${aso?.exam_date || '2026-08-20'}</dtAso>
-      <tpAso>${aso?.aso_type === 'ADMISSIONAL' ? '0' : aso?.aso_type === 'PERIODICO' ? '1' : aso?.aso_type === 'RETORNO_TRABALHO' ? '2' : aso?.aso_type === 'MUDANCA_RISCO' ? '3' : '4'}</tpAso>
-      <resAso>${aso?.result === 'APTO' ? '1' : '2'}</resAso>
+      ${campoDoEvento('dtAso', aso?.exam_date, 'data do exame não registrada no ASO')}
+      ${campoDoEvento(
+        'tpAso',
+        // O encadeamento terminava em '4' (demissional): ASO sem tipo saia
+        // declarado como demissional.
+        aso?.aso_type === 'ADMISSIONAL' ? '0'
+          : aso?.aso_type === 'PERIODICO' ? '1'
+          : aso?.aso_type === 'RETORNO_TRABALHO' ? '2'
+          : aso?.aso_type === 'MUDANCA_RISCO' ? '3'
+          : aso?.aso_type === 'DEMISSIONAL' ? '4'
+          : '',
+        'tipo do ASO não informado'
+      )}
+      ${campoDoEvento(
+        'resAso',
+        // Era `=== 'APTO' ? '1' : '2'`: ASO sem resultado saia declarando o
+        // trabalhador INAPTO.
+        aso?.result === 'APTO' ? '1' : aso?.result === 'INAPTO' ? '2' : '',
+        'resultado do ASO não informado'
+      )}
       <medico>
         <nmMed>${aso?.physician_name?.trim() || 'MÉDICO EXAMINADOR NÃO INFORMADO'}</nmMed>${
           aso?.physician_crm?.replace(/\D/g, '')
@@ -3720,35 +3756,55 @@ ${blocoRespMonitXml(event.client_id, aso?.exam_date || dataDeHoje())}
       <matricula>${event.worker_registration}</matricula>
     </ideVinculo>
     <cat>
-      <dtAcid>${cat?.accident_date || '2026-08-20'}</dtAcid>
-      <tpAcid>${cat?.accident_type === 'TIPICO' ? '1' : cat?.accident_type === 'DOENCA_OCUPACIONAL' ? '2' : '3'}</tpAcid>
-      <hrAcid>${(cat?.accident_time || '10:00').replace(':', '')}</hrAcid>
-      <hrsTrabAntesAcid>0330</hrsTrabAntesAcid>
-      <tpCat>${cat?.cat_type === 'INICIAL' ? '1' : cat?.cat_type === 'REABERTURA' ? '2' : '3'}</tpCat>
+      ${campoDoEvento('dtAcid', cat?.accident_date, 'data do acidente não informada')}
+      ${campoDoEvento(
+        'tpAcid',
+        cat?.accident_type === 'TIPICO' ? '1'
+          : cat?.accident_type === 'DOENCA_OCUPACIONAL' ? '2'
+          : cat?.accident_type === 'TRAJETO' ? '3'
+          : '',
+        'tipo do acidente não informado'
+      )}
+      ${campoDoEvento('hrAcid', (cat?.accident_time || '').replace(':', ''), 'hora do acidente não informada')}
+      ${campoDoEvento(
+        'hrsTrabAntesAcid',
+        // Ia 0330 fixo: o evento declarava que o trabalhador estava em
+        // atividade havia 3h30, sempre.
+        (cat?.hours_worked_before_accident || '').toString().replace(':', ''),
+        'horas trabalhadas antes do acidente não informadas'
+      )}
+      ${campoDoEvento(
+        'tpCat',
+        cat?.cat_type === 'INICIAL' ? '1'
+          : cat?.cat_type === 'REABERTURA' ? '2'
+          : cat?.cat_type === 'COMUNICACAO_OBITO' ? '3'
+          : '',
+        'tipo da CAT não informado'
+      )}
       <indMorte>${cat?.death_occurred ? 'S' : 'N'}</indMorte>
       <localAcidente>
         <tpLocal>${cat?.location_type === 'ESTABELECIMENTO_EMPREGADOR' ? '1' : '3'}</tpLocal>
-        <dscLocal>${cat?.location_description || 'Instalações da Empresa'}</dscLocal>
+        ${campoDoEvento('dscLocal', cat?.location_description, 'local do acidente não descrito')}
       </localAcidente>
       <parteAtingida>
-        <codParteAting>${cat?.body_part || '752000000'}</codParteAting>
+        ${campoDoEvento('codParteAting', cat?.body_part, 'parte atingida não codificada')}
       </parteAtingida>
       <agenteCausador>
-        <codAgntCausador>${cat?.accident_agent || '303020100'}</codAgntCausador>
+        ${campoDoEvento('codAgntCausador', cat?.accident_agent, 'agente causador não codificado')}
       </agenteCausador>
       <atestado>
-        <dtAtendimento>${cat?.accident_date || '2026-08-20'}</dtAtendimento>
-        <hrAtendimento>${(cat?.accident_time || '10:00').replace(':', '')}</hrAtendimento>
+        ${campoDoEvento('dtAtendimento', cat?.medical_care_date, 'data do atendimento não informada')}
+        ${campoDoEvento('hrAtendimento', (cat?.medical_care_time || '').replace(':', ''), 'hora do atendimento não informada')}
         <indAfast>${(cat?.days_away || 0) > 0 ? 'S' : 'N'}</indAfast>
         <qtdDiasAfast>${cat?.days_away || 0}</qtdDiasAfast>
         <diagProvavel>
-          <codCID>${cat?.cid_code?.split(' ')[0] || 'S93.4'}</codCID>
+          ${campoDoEvento('codCID', cat?.cid_code?.split(' ')[0], 'CID do diagnóstico não informado')}
         </diagProvavel>
         <emitente>
-          <nmEmit>${cat?.medical_cert_issuer || 'Pronto Socorro'}</nmEmit>
+          ${campoDoEvento('nmEmit', cat?.medical_cert_issuer, 'emitente do atestado não informado')}
           <ideOC>1</ideOC>
-          <nrOC>${cat?.medical_crm?.replace(/\D/g, '') || '88412'}</nrOC>
-          <ufOC>${cat?.medical_uf || 'SP'}</ufOC>
+          ${campoDoEvento('nrOC', cat?.medical_crm?.replace(/\D/g, ''), 'registro do emitente não informado')}
+          ${campoDoEvento('ufOC', cat?.medical_uf, 'UF do registro do emitente não informada')}
         </emitente>
       </atestado>
     </cat>
@@ -3817,7 +3873,7 @@ ${blocoRespMonitXml(event.client_id, aso?.exam_date || dataDeHoje())}
     </infoExclusao>
   </evtExclusao>
 </eSocial>`;
-  }, [blocoRespRegXml, blocoRespMonitXml, clients, organization.document_number]);
+  }, [blocoRespRegXml, blocoRespMonitXml, campoDoEvento, clients, organization.document_number]);
 
   // Create eSocial Event
   const createESocialEvent = useCallback((data: Omit<ESocialEvent, 'id' | 'organization_id' | 'event_number' | 'created_at' | 'updated_at' | 'status'> & { status?: ESocialEventStatus }): ESocialEvent => {
@@ -6183,17 +6239,69 @@ ${blocoRespMonitXml(event.client_id, aso?.exam_date || dataDeHoje())}
     return { success: true };
   }, [workAbsences, organization.id]);
 
-  const generateS2240FromGhe = useCallback((gheId: string): ESocialEvent | null => {
+  const generateS2240FromGhe = useCallback((gheId: string): { evento: ESocialEvent | null; motivo: string } => {
     const ghe = ghes.find(g => g.id === gheId);
-    if (!ghe) return null;
+    if (!ghe) return { evento: null, motivo: 'GHE não encontrado.' };
 
     const risks = environmentalRisks.filter(r => r.ghe_id === gheId);
-    const client = clients.find(c => c.id === ghe.client_id);
-    const sampleWorker = employees.find(e => e.ghe_id === gheId) || employees[0];
+
+    /**
+     * O trabalhador tem de ser DESTE GHE.
+     *
+     * Era `employees.find(e => e.ghe_id === gheId) || employees[0]`: sem
+     * ninguem no GHE, o evento saia com o CPF do primeiro trabalhador da
+     * base - possivelmente de outro cliente - declarando ao governo que
+     * aquela pessoa esta exposta a riscos que ela nao tem. E, sem nenhum
+     * trabalhador cadastrado, o CPF saia como 12345678900.
+     */
+    const trabalhador = employees.find(
+      e => e.ghe_id === gheId && e.client_id === ghe.client_id && e.status !== 'DISMISSED'
+    );
+    if (!trabalhador) {
+      return {
+        evento: null,
+        motivo: `Nenhum trabalhador ativo vinculado ao GHE ${ghe.name}. O S-2240 declara a exposição `
+          + 'de um trabalhador: vincule o colaborador ao GHE antes de gerar o evento.'
+      };
+    }
+
+    const cpfDoTrabalhador = String(trabalhador.cpf || '').replace(/\D/g, '');
+    if (cpfDoTrabalhador.length !== 11) {
+      return {
+        evento: null,
+        motivo: `${trabalhador.name} está sem CPF válido no cadastro. O eSocial identifica o `
+          + 'trabalhador pelo CPF e recusa o evento sem ele.'
+      };
+    }
+
+    // dtIniCondicao e a data em que a exposicao comecou. Ia fixa em
+    // 2026-01-01 para todo mundo - data que nao veio de lugar nenhum.
+    const inicioDaExposicao = String(trabalhador.admission_date || '').slice(0, 10);
+    if (!inicioDaExposicao) {
+      return {
+        evento: null,
+        motivo: `${trabalhador.name} está sem data de admissão. É ela que abre a condição `
+          + 'de exposição no campo {dtIniCondicao} do S-2240.'
+      };
+    }
+
+    if (risks.length === 0) {
+      return {
+        evento: null,
+        motivo: `O GHE ${ghe.name} não tem risco inventariado. O S-2240 declara a exposição a `
+          + 'agentes nocivos: sem inventário não há o que declarar.'
+      };
+    }
 
     // Empregador vem do cadastro do cliente. Sem CNPJ/CPF valido nao ha evento.
     const empregador = identificacaoDoEmpregador(ghe.client_id);
-    if (!empregador) return null;
+    if (!empregador) {
+      return {
+        evento: null,
+        motivo: 'Cliente sem CNPJ, CPF, CAEPF ou CNO válido no cadastro. Sem inscrição do '
+          + 'empregador não há evento a transmitir.'
+      };
+    }
 
     const risksXml = risks.map(r => `
           <fatRisco>
@@ -6215,7 +6323,7 @@ ${blocoRespMonitXml(event.client_id, aso?.exam_date || dataDeHoje())}
 
     const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <eSocial xmlns="http://www.esocial.gov.br/schema/evt/evtExpRisco/v_S_01_02_00">
-  <evtExpRisco id="ID1${client?.document_number.replace(/\D/g, '') || '00000000000000'}2026080001">
+  <evtExpRisco id="ID1${empregador.nrInsc}${new Date().getFullYear()}${String(Date.now()).slice(-6)}">
     <ideEvento>
       <tpAmb>1</tpAmb>
       <procEmi>1</procEmi>
@@ -6226,11 +6334,11 @@ ${blocoRespMonitXml(event.client_id, aso?.exam_date || dataDeHoje())}
       <nrInsc>${empregador.nrInsc}</nrInsc>
     </ideEmpregador>
     <ideTrabalhador>
-      <cpfTrab>${sampleWorker?.cpf.replace(/\D/g, '') || '12345678900'}</cpfTrab>
-      <matricula>${sampleWorker?.registration_number || ''}</matricula>
+      <cpfTrab>${cpfDoTrabalhador}</cpfTrab>
+      <matricula>${trabalhador.registration_number || ''}</matricula>
     </ideTrabalhador>
     <infoExpRisco>
-      <dtIniCondicao>2026-01-01</dtIniCondicao>
+      <dtIniCondicao>${inicioDaExposicao}</dtIniCondicao>
       <infoAmb>
         <localAmb>1</localAmb>
         <dscSetor>${ghe.name}</dscSetor>
@@ -6252,19 +6360,21 @@ ${blocoRespRegXml(ghe.client_id, dataDeHoje())}
       status: 'READY_TO_SEND',
       environment: 'PRODUCAO',
       is_rectification: false,
-      worker_name: sampleWorker?.name || '',
-      worker_cpf: sampleWorker?.cpf || '',
-      worker_registration: sampleWorker?.registration_number || '',
-      worker_cbo: sampleWorker?.cbo || undefined,
-      worker_role: sampleWorker?.job_title || 'Operador',
+      worker_name: trabalhador.name || '',
+      worker_cpf: trabalhador.cpf || '',
+      worker_registration: trabalhador.registration_number || '',
+      worker_cbo: trabalhador.cbo || undefined,
+      // Vinha 'Operador' quando o cargo nao estava cadastrado: funcao inventada
+      // dentro do evento que declara a exposicao daquela funcao.
+      worker_role: trabalhador.job_title || '',
       xml_content: xml,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
     };
 
     setEsocialEvents(prev => [newEvt, ...prev]);
-    return newEvt;
-  }, [blocoRespRegXml, ghes, environmentalRisks, clients, employees, organization.id]);
+    return { evento: newEvt, motivo: '' };
+  }, [blocoRespRegXml, ghes, environmentalRisks, employees, organization.id]);
 
   /**
    * Monta o S-2220 a partir de um ASO registrado.

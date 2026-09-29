@@ -1182,6 +1182,14 @@ export interface ESocialCATData {
   death_occurred: boolean;
   death_date?: string;
   police_report: boolean;
+  /**
+   * Horas trabalhadas antes do acidente ({hrsTrabAntesAcid} do S-2210).
+   * O XML mandava 0330 fixo — declarava 3h30 para todo acidente.
+   */
+  hours_worked_before_accident?: string;
+  /** Data e hora do atendimento médico ({dtAtendimento} / {hrAtendimento}). */
+  medical_care_date?: string;
+  medical_care_time?: string;
   medical_cert_issuer: string;
   medical_crm: string;
   medical_uf: string;

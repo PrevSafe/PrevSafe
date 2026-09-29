@@ -203,6 +203,8 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
   });
 
   const [generatedS2240Success, setGeneratedS2240Success] = useState<string | null>(null);
+  // O motivo de NAO ter gerado. Antes o clique nao produzia nada.
+  const [generatedS2240Erro, setGeneratedS2240Erro] = useState<string | null>(null);
 
   const activeGhe = clientGhes.find(g => g.id === selectedGheId) || clientGhes[0];
   const gheRisks = environmentalRisks.filter(r => r.ghe_id === activeGhe?.id);
@@ -587,10 +589,17 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
 
   const handleGenerateS2240 = () => {
     if (!activeGhe) return;
-    const evt = generateS2240FromGhe(activeGhe.id);
-    if (evt) {
-      setGeneratedS2240Success(`Evento S-2240 (${evt.event_number}) gerado com sucesso para ${activeGhe.name}! Pronto para transmissão.`);
-      setTimeout(() => setGeneratedS2240Success(null), 5000);
+    // Sem evento, o botao nao fazia NADA: nem gerava, nem dizia por que.
+    setGeneratedS2240Erro(null);
+    const { evento, motivo } = generateS2240FromGhe(activeGhe.id);
+    if (evento) {
+      setGeneratedS2240Success(
+        `Evento S-2240 (${evento.event_number}) gerado para ${activeGhe.name}, com a exposição de `
+        + `${evento.worker_name}. Pronto para transmissão.`
+      );
+      setTimeout(() => setGeneratedS2240Success(null), 6000);
+    } else {
+      setGeneratedS2240Erro(motivo);
     }
   };
 
@@ -604,6 +613,22 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
             <span className="font-semibold">{generatedS2240Success}</span>
           </div>
           <span className="text-[11px] bg-emerald-500 text-slate-950 font-bold px-2 py-1 rounded">S-2240 Gerado</span>
+        </div>
+      )}
+
+      {generatedS2240Erro && (
+        <div className="p-4 bg-amber-500/10 border border-amber-500/30 rounded-xl flex items-start justify-between gap-3 text-xs text-amber-200 animate-in fade-in">
+          <div className="flex items-start gap-2">
+            <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0" />
+            <span className="font-semibold">{generatedS2240Erro}</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setGeneratedS2240Erro(null)}
+            className="text-amber-300/70 hover:text-amber-200 font-bold shrink-0"
+          >
+            Fechar
+          </button>
         </div>
       )}
 

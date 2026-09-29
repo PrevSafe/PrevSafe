@@ -156,8 +156,11 @@ export const CatAndAbsenceTab: React.FC<CatAndAbsenceTabProps> = ({ selectedClie
       worker_name: emp.name,
       worker_cpf: emp.cpf,
       worker_registration: emp.registration_number,
-      worker_cbo: emp.cbo || '7212-05',
-      worker_role: emp.job_title || 'Operador',
+      // Vinham CBO 7212-05 (soldador) e funcao 'Operador' quando o cadastro
+      // do trabalhador nao tinha: numa CAT, que tem efeito previdenciario, a
+      // funcao declarada e o que caracteriza o acidente de trabalho.
+      worker_cbo: emp.cbo || '',
+      worker_role: emp.job_title || '',
       cat_type: catForm.cat_type,
       accident_date: catForm.accident_date,
       accident_time: catForm.accident_time,
@@ -198,7 +201,7 @@ export const CatAndAbsenceTab: React.FC<CatAndAbsenceTabProps> = ({ selectedClie
       worker_name: emp.name,
       worker_cpf: emp.cpf,
       worker_registration: emp.registration_number,
-      worker_cbo: emp.cbo || '7212-05',
+      worker_cbo: emp.cbo || '',
       reason_code_table_18: absenceForm.reason_code_table_18,
       reason_description: absenceForm.reason_description,
       start_date: absenceForm.start_date,

@@ -110,6 +110,8 @@ const {
   respRegDoCliente,
   papeisSemResponsavel,
   codigoDoOrgaoDeClasse,
+  responsaveisTecnicosDoCliente,
+  linhaDeResponsaveis,
 } = lib;
 
 let falhas = 0;
@@ -539,6 +541,77 @@ console.log('\n--- o atalho antigo não voltou (pela forma, no código) ---');
     'toda resolução filtra pelo cliente');
   check(!/responsavelPadrao|defaultResponsible/i.test(libTxt),
     'não existe responsável padrão que valha em cliente sem atribuição');
+}
+
+// ===========================================================================
+console.log('\n--- o contrato nomeia quem responde por aquele cliente ---');
+//
+// O contrato comercial cobre varios servicos ao mesmo tempo, entao nao tem UM
+// papel proprio. Antes imprimia o responsavel geral da consultoria, igual em
+// todo contrato de todo cliente.
+// ===========================================================================
+{
+  const doA = responsaveisTecnicosDoCliente(atribuicoes, profissionais, CLIENTE_A, HOJE);
+  check(doA.length === 2, `o cliente A tem dois profissionais respondendo (achou ${doA.length})`);
+
+  const eng = doA.find((r) => r.profissional.id === engenheiro.id);
+  check(eng && eng.papeis.length === 2,
+    'e o engenheiro aparece UMA vez, com os dois papéis dele');
+  check(eng && eng.papeis.includes('PGR_RESP') && eng.papeis.includes('REG_AMBIENTAIS'),
+    'os dois papéis certos');
+
+  const linha = linhaDeResponsaveis(atribuicoes, profissionais, CLIENTE_A, HOJE);
+  check(/Marcos Tavares/.test(linha) && /CREA 201812345\/BA/.test(linha),
+    'a linha do contrato traz nome e registro');
+  check(/PGR/.test(linha), 'e diz por qual papel ele responde');
+  check(/Gustavo Maia Pedroni/.test(linha), 'com o médico na linha seguinte');
+
+  check(linhaDeResponsaveis(atribuicoes, profissionais, 'cli-inexistente', HOJE) === '',
+    'cliente sem ninguém atribuído devolve vazio — quem chama decide o que dizer');
+
+  const encerrado = [atribuicao('c1', CLIENTE_A, engenheiro.id, 'PGR_RESP', '2024-01-01', '2024-12-31')];
+  check(linhaDeResponsaveis(encerrado, profissionais, CLIENTE_A, HOJE) === '',
+    'e responsabilidade encerrada não aparece no contrato de hoje');
+}
+
+// ===========================================================================
+console.log('\n--- o evento não inventa o que não sabe ---');
+// ===========================================================================
+{
+  const semComentarios2 = (txt) => txt
+    .replace(/\/\*[\s\S]*?\*\//g, ' ')
+    .replace(/(^|[^:])\/\/[^\n]*/gm, '$1');
+  const ctx = semComentarios2(fs.readFileSync(path.join(RAIZ, 'context/PrevSafeContext.tsx'), 'utf8'));
+  const pdf = semComentarios2(fs.readFileSync(path.join(RAIZ, 'lib/pdfExportService.ts'), 'utf8'));
+
+  check(/linhaDeResponsaveis\(/.test(pdf), 'o contrato resolve os responsáveis pelo cliente');
+
+  // O S-2240 do GHE pegava o primeiro trabalhador da base quando o GHE estava
+  // vazio - possivelmente de outro cliente - e, sem nenhum, usava um CPF fixo.
+  check(!/employees\.find\(e => e\.ghe_id === gheId\) \|\| employees\[0\]/.test(ctx),
+    'o S-2240 não pega mais o primeiro trabalhador da base');
+  check(/e\.ghe_id === gheId && e\.client_id === ghe\.client_id/.test(ctx),
+    'o trabalhador do evento tem de ser do GHE E do cliente');
+  check(!/12345678900/.test(ctx), 'o CPF de trabalhador escrito no código saiu');
+  check(!/<dtIniCondicao>2026-01-01</.test(ctx), 'o início de exposição fixo saiu');
+  check(/evento: null, motivo/.test(ctx),
+    'não gerar o evento passou a dizer por quê, em vez de devolver null em silêncio');
+
+  // Os valores plausiveis do XML de pre-visualizacao.
+  check(!/'2026-08-20'/.test(ctx), 'a data de evento usada como padrão saiu');
+  check(!/<hrsTrabAntesAcid>0330</.test(ctx), 'as 3h30 fixas antes do acidente saíram');
+  check(!/'S93\.4'/.test(ctx), 'o CID usado como padrão saiu');
+  check(!/'752000000'|'303020100'/.test(ctx),
+    'os códigos de parte atingida e agente causador usados como padrão saíram');
+  check(!/'Pronto Socorro'|'88412'/.test(ctx), 'o emitente de atestado inventado saiu');
+  check(/campoDoEvento\('dtAso'/.test(ctx) && /campoDoEvento\('dtAcid'/.test(ctx),
+    'os campos ausentes saem vazios, com o motivo ao lado');
+  check((ctx.match(/campoDoEvento\(/g) || []).length >= 14,
+    'em todos os campos que eram preenchidos por conta própria');
+
+  // Resultado e tipo do ASO caiam num ramo final do ternario.
+  check(!/aso\?\.result === 'APTO' \? '1' : '2'/.test(ctx),
+    'ASO sem resultado não sai mais declarando o trabalhador INAPTO');
 }
 
 console.log(

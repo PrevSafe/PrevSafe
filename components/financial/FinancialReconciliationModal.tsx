@@ -136,7 +136,7 @@ export const FinancialReconciliationModal: React.FC<FinancialReconciliationModal
                 <span>Registro conciliado com o extrato da conta!</span>
               </div>
               <div className="text-slate-400">
-                Conciliado por: <span className="text-slate-200">{transaction.reconciled_by || 'Operador'}</span>
+                Conciliado por: <span className="text-slate-200">{transaction.reconciled_by || 'não registrado'}</span>
               </div>
               <div className="text-slate-400">
                 Data de Conciliação: <span className="text-slate-200">{formatDate(transaction.reconciled_at)}</span>

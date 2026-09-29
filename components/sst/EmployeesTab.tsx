@@ -226,10 +226,14 @@ export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) 
       gender: employeeForm.gender,
       worker_category: employeeForm.worker_category,
       employment_regime: employeeForm.employment_regime,
-      job_title: selectedJobObj?.name || 'Operador Especializado',
-      cbo: selectedJobObj?.cbo || '7212-05',
-      sector_name: selectedSectorObj?.name || 'Produção',
-      unit_name: selectedUnitObj?.name || 'Matriz',
+      // Sem cargo, setor ou unidade escolhidos, estes campos vinham
+      // preenchidos: 'Operador Especializado', CBO 7212-05 (soldador),
+      // setor 'Produção', unidade 'Matriz'. O CBO do trabalhador vai para o
+      // S-2200 e para o S-2240, e o setor define de qual GHE ele faz parte.
+      job_title: selectedJobObj?.name || '',
+      cbo: selectedJobObj?.cbo || '',
+      sector_name: selectedSectorObj?.name || '',
+      unit_name: selectedUnitObj?.name || '',
       ghe_name: selectedGheObj?.name,
       is_pcd: false,
       status: 'ACTIVE' as const,

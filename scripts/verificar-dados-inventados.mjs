@@ -63,6 +63,20 @@ const PROIBIDOS = [
   // O S-2220 preenchia o medico emitente do ASO quando nao sabia quem era.
   { padrao: /\|\| '123456'/, o_que: 'CRM usado como padrão' },
   { padrao: /\|\|\s*'Médico Examinador'/, o_que: 'nome de médico usado como padrão' },
+  // CBO, funcao, setor e unidade preenchidos quando o cadastro nao tinha. O
+  // CBO vai para o S-2200 e para o S-2240; a funcao caracteriza o acidente na
+  // CAT; o setor define de qual GHE o trabalhador faz parte.
+  { padrao: /\|\|\s*'7212-05'/, o_que: 'CBO usado como padrão' },
+  { padrao: /\|\|\s*'Operador( Especializado)?'/, o_que: 'função do trabalhador usada como padrão' },
+  { padrao: /(sector_name|unit_name):\s*[^,]*\|\|\s*'(Produção|Matriz)'/, o_que: 'setor ou unidade usados como padrão' },
+  // Valores plausiveis dentro do XML dos eventos.
+  { padrao: /'2026-08-20'/, o_que: 'data de evento usada como padrão' },
+  { padrao: /<hrsTrabAntesAcid>0330</, o_que: 'horas antes do acidente fixas' },
+  { padrao: /\|\|\s*'S93\.4'/, o_que: 'CID usado como padrão' },
+  { padrao: /\|\|\s*'752000000'|\|\|\s*'303020100'/, o_que: 'código de parte atingida ou agente causador usado como padrão' },
+  { padrao: /\|\|\s*'Pronto Socorro'|\|\|\s*'88412'/, o_que: 'emitente do atestado inventado' },
+  { padrao: /\|\|\s*'12345678900'/, o_que: 'CPF de trabalhador usado como padrão' },
+  { padrao: /<dtIniCondicao>2026-01-01</, o_que: 'início de exposição fixo' },
   // A UF do conselho ia fixa em SP: um CRM-BA saia declarado como CRM-SP.
   { padrao: /(responsible_technician_uf|physician_uf|ufCRM|ufOC):\s*'SP'/, o_que: 'UF de conselho fixa em SP' },
   { padrao: /AC CERTISIGN MULTIPLA G7/, o_que: 'emissor de certificado inventado' },
