@@ -26,6 +26,9 @@ import type { CorpoLaudo } from '@/lib/laudoDados';
 import { dataDeHoje, somarMesesISO } from '@/lib/datas';
 import { formatarCPF } from '@/lib/validacoesBr';
 import { exameSugeridosParaAso } from '@/lib/esocialDados';
+import { assinaturaDoDocumento } from '@/lib/responsabilidadeTecnica';
+import type { AssinaturaDoDocumento } from '@/lib/responsabilidadeTecnica';
+import type { TechnicalProfessional, TechnicalResponsibility, TechnicalRoleCode } from '@/types';
 import { VERSAO_DO_DOCUMENTO } from '@/lib/versaoDoDocumento';
 import { GATILHOS_DE_TREINAMENTO_EVENTUAL, BASE_POR_EXTENSO } from '@/lib/catalogoDeTreinamentos';
 import {
@@ -313,6 +316,44 @@ function clientDocumentLine(client?: Client | null): string {
 /** Documento da organizacao emitente, ou aviso de pendencia. */
 function organizationDocumentLine(organization?: Organization | null): string {
   return organization?.document_number?.trim() || 'CNPJ NÃO INFORMADO';
+}
+
+/**
+ * Quem assina ESTE documento, para ESTE cliente.
+ *
+ * Os documentos saiam todos com organization.technical_responsible_name - um
+ * nome so para a consultoria inteira. Assinar como responsavel tecnico de um
+ * contrato que nao e seu tem consequencia legal, e a NR-07 ainda separa o
+ * medico COORDENADOR do PCMSO (item 7.4.1 "c") do medico que REALIZOU o exame
+ * (item 7.5.19.1 "g").
+ *
+ * Sem ninguem atribuido ao cliente, o nome geral continua saindo - senao todo
+ * documento ja emitido viraria "NAO INFORMADO" de um dia para o outro - mas
+ * `pendencia` volta preenchida e o documento imprime isso.
+ */
+function assinaturaDoCliente(
+  papel: TechnicalRoleCode,
+  client: Client,
+  organization: Organization,
+  data: string,
+  profissionais?: TechnicalProfessional[],
+  atribuicoes?: TechnicalResponsibility[]
+): AssinaturaDoDocumento {
+  const medico = papel === 'PCMSO_COORD'
+    || papel === 'PCMSO_ELABORADOR'
+    || papel === 'MEDICO_EXAMINADOR';
+  return assinaturaDoDocumento(papel, {
+    atribuicoes,
+    profissionais,
+    clientId: client?.id,
+    data,
+    nomeDaOrganizacao: medico
+      ? organization?.pcmso_physician_name
+      : organization?.technical_responsible_name,
+    linhaDaOrganizacao: medico
+      ? pcmsoPhysicianLine(organization)
+      : technicalResponsibleLine(organization)
+  });
 }
 
 function pcmsoPhysicianLine(organization: Organization): string {
@@ -2857,7 +2898,9 @@ export function exportPGRDocumentPdf({
   chemicalProducts = [],
   trainingRequirements = [],
   jobs = [],
-  ergonomicAssessments = []
+  ergonomicAssessments = [],
+  technicalProfessionals = [],
+  technicalResponsibilities = []
 }: {
   client: Client;
   organization: Organization;
@@ -2872,6 +2915,8 @@ export function exportPGRDocumentPdf({
   trainingRequirements?: any[];
   jobs?: any[];
   ergonomicAssessments?: any[];
+  technicalProfessionals?: TechnicalProfessional[];
+  technicalResponsibilities?: TechnicalResponsibility[];
 }) {
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
   const pageWidth = doc.internal.pageSize.getWidth();
@@ -2934,6 +2979,15 @@ export function exportPGRDocumentPdf({
     pendencias.push({ secao, texto });
     return `PENDENTE — ${texto}`;
   };
+
+  // Quem responde pelo PGR DESTE cliente (NR-01, subitem 1.5.7.2: documentos
+  // datados e assinados). Sem atribuicao, sai o nome geral da organizacao e a
+  // pendencia entra na secao 10.3 - em vez de o documento sair como se
+  // estivesse resolvido.
+  const assinaturaPGR = assinaturaDoCliente(
+    'PGR_RESP', client, organization, emissao, technicalProfessionals, technicalResponsibilities
+  );
+  if (assinaturaPGR.pendencia) pendente('Responsabilidade técnica', assinaturaPGR.pendencia);
 
   /**
    * Requisitos que o enquadramento afasta, pela chave `norma` do checklist.
@@ -3134,7 +3188,7 @@ export function exportPGRDocumentPdf({
     ['Data de emissão', formatDate(emissao)],
     ['Próxima revisão periódica', `${formatDate(proximaRevisao)} (24 meses; 36 meses com certificação SGSST válida, subitem 1.5.4.4.6.1)`],
     ['Composição (subitem 1.5.7.1)', `Inventário de riscos: ${riscosDoCliente.length} registro(s) · Plano de ação: seção 8`],
-    ['Responsável técnico pela elaboração', technicalResponsibleLine(organization)]
+    ['Responsável técnico pela elaboração', assinaturaPGR.linha]
   ]);
 
   // ==================================================================
@@ -3153,7 +3207,7 @@ export function exportPGRDocumentPdf({
       formatDate(emissao),
       'Elaboração inicial',
       'Documento integral',
-      technicalResponsibleName(organization),
+      assinaturaPGR.nome || LINHA_PARA_PREENCHER,
       LINHA_PARA_PREENCHER
     ]],
     columnStyles: { 0: { cellWidth: 12 }, 1: { cellWidth: 20 } }
@@ -3190,8 +3244,10 @@ Data: ${data}`;
           LINHA_PARA_PREENCHER, LINHA_PARA_PREENCHER), ''],
       ['Responsável técnico pela elaboração',
         identificacaoDoSignatario(
-          technicalResponsibleName(organization),
-          organization?.technical_responsible_council?.trim() || LINHA_PARA_PREENCHER,
+          assinaturaPGR.nome || LINHA_PARA_PREENCHER,
+          assinaturaPGR.registro
+            || organization?.technical_responsible_council?.trim()
+            || LINHA_PARA_PREENCHER,
           formatDate(emissao)), ''],
       ['Responsável pela implementação do PGR',
         identificacaoDoSignatario(
@@ -3260,7 +3316,7 @@ Data: ${data}`;
   duasColunas('1.2 Responsáveis', [
     ['Responsável legal', estabelecimento?.legal_representative?.trim()
       || pendente('1.2', 'Responsável legal da organização não cadastrado (Hierarquia > Estabelecimentos).')],
-    ['Responsável técnico pela elaboração', technicalResponsibleLine(organization)],
+    ['Responsável técnico pela elaboração', assinaturaPGR.linha],
     ['Coordenador da implementação', estabelecimento?.pgr_coordinator?.trim()
       || pendente('1.2', 'Coordenador da implementação do PGR não cadastrado (Hierarquia > Estabelecimentos).')],
     ['Médico responsável pelo PCMSO', pcmsoPhysicianLine(organization)]
@@ -4281,7 +4337,7 @@ Data: ${data}`;
           `${a.id}\n${a.classificado ? `${a.classificado.rotulo} (${a.classificado.score})` : 'não classificado'}`,
           String(a.expostos),
           `${a.medida}\n${a.hierarquia} · ${a.tipo}`,
-          `${technicalResponsibleName(organization)}\n${a.classificado ? a.classificado.prazo : 'prazo depende da classificação'}`,
+          `${assinaturaPGR.nome || LINHA_PARA_PREENCHER}\n${a.classificado ? a.classificado.prazo : 'prazo depende da classificação'}`,
           'Revisão do status e das evidências do plano\nAferição: reavaliação do risco após a medida (alínea "a" do subitem 1.5.4.4.6)',
           'Não iniciada'
         ])
@@ -4313,9 +4369,9 @@ Data: ${data}`;
       // Quem gere o plano de acao e o coordenador da implementacao
       // (subitens 1.5.5.2 e 1.5.5.3), nao o responsavel tecnico.
       ['Execução e continuidade das ações', 'Revisão do status e das evidências do plano', 'Mensal',
-        estabelecimento?.pgr_coordinator?.trim() || technicalResponsibleName(organization)],
-      ['Inspeções de locais e equipamentos', 'Checklist por setor, com registro fotográfico', 'Mensal ou conforme NR específica', technicalResponsibleName(organization)],
-      ['Monitoramento ambiental', 'Reavaliação de agentes acima do NA', 'Anual ou após mudança', technicalResponsibleName(organization)],
+        estabelecimento?.pgr_coordinator?.trim() || assinaturaPGR.nome || LINHA_PARA_PREENCHER],
+      ['Inspeções de locais e equipamentos', 'Checklist por setor, com registro fotográfico', 'Mensal ou conforme NR específica', assinaturaPGR.nome || LINHA_PARA_PREENCHER],
+      ['Monitoramento ambiental', 'Reavaliação de agentes acima do NA', 'Anual ou após mudança', assinaturaPGR.nome || LINHA_PARA_PREENCHER],
       ['Participação dos trabalhadores e da CIPA', 'Pauta fixa nas reuniões da CIPA; inspeções conjuntas', 'Mensal',
         dimensionamento?.cipa?.efetivos
           ? `CIPA constituída conforme o Quadro I da NR-05 (${dimensionamento.cipa.efetivos} efetivo(s))`
@@ -4865,13 +4921,17 @@ export function exportPGRTRDocumentPdf({
   organization,
   ghes = [],
   risks = [],
-  employees = []
+  employees = [],
+  technicalProfessionals = [],
+  technicalResponsibilities = []
 }: {
   client: Client;
   organization: Organization;
   ghes: any[];
   risks: any[];
   employees: Employee[];
+  technicalProfessionals?: TechnicalProfessional[];
+  technicalResponsibilities?: TechnicalResponsibility[];
 }) {
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
   const pageWidth = doc.internal.pageSize.getWidth();
@@ -4926,7 +4986,7 @@ export function exportPGRTRDocumentPdf({
       ],
       [
         { content: 'Responsável Técnico:', styles: { fontStyle: 'bold' } },
-        { content: technicalResponsibleLine(organization) },
+        { content: assinaturaDoCliente('PGR_RESP', client, organization, dataDeHoje(), technicalProfessionals, technicalResponsibilities).linha },
         { content: 'Data Avaliação:', styles: { fontStyle: 'bold' } },
         { content: formatDate(new Date().toISOString()) }
       ]
@@ -5041,7 +5101,9 @@ export function exportAEPDocumentPdf({
   ergonomicAssessments = [],
   ghes = [],
   jobs = [],
-  units = []
+  units = [],
+  technicalProfessionals = [],
+  technicalResponsibilities = []
 }: {
   client: Client;
   organization: Organization;
@@ -5049,6 +5111,8 @@ export function exportAEPDocumentPdf({
   ghes?: any[];
   jobs?: any[];
   units?: any[];
+  technicalProfessionals?: TechnicalProfessional[];
+  technicalResponsibilities?: TechnicalResponsibility[];
 }) {
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
   const pageWidth = doc.internal.pageSize.getWidth();
@@ -5081,6 +5145,14 @@ export function exportAEPDocumentPdf({
     pendencias.push({ onde, texto });
     return `PENDENTE — ${texto}`;
   };
+
+  // Responsavel pela avaliacao ergonomica DESTE cliente. A NR-17 nao nomeia
+  // conselho de classe, entao o sistema tambem nao exige um - mas exige saber
+  // de quem e a assinatura.
+  const assinaturaAEP = assinaturaDoCliente(
+    'AEP_RESP', client, organization, emissao, technicalProfessionals, technicalResponsibilities
+  );
+  if (assinaturaAEP.pendencia) pendente('Responsabilidade técnica', assinaturaAEP.pendencia);
 
   const nomeDoCargo = (id: string) => (jobs || []).find((j: any) => j?.id === id)?.name || '';
   const nomeDoGhe = (id: string) => {
@@ -5252,7 +5324,7 @@ export function exportAEPDocumentPdf({
     ['Revisão', '00'],
     ['Data de emissão', formatDate(emissao)],
     ['Situações avaliadas', String(aeps.length)],
-    ['Responsável técnico', technicalResponsibleLine(organization)],
+    ['Responsável técnico', assinaturaAEP.linha],
     ['Integração com o PGR', 'Os resultados desta avaliação integram o inventário de riscos (item 17.3.5) e as medidas decorrentes entram no plano de ação (item 17.3.6) — seções 5.3 e 7.4 do PGR.']
   ]);
 
@@ -5512,8 +5584,10 @@ export function exportAEPDocumentPdf({
     body: [
       ['Responsável técnico pela avaliação',
         identificacaoDoSignatario(
-          technicalResponsibleName(organization),
-          organization?.technical_responsible_council?.trim() || LINHA_PARA_PREENCHER,
+          assinaturaAEP.nome || LINHA_PARA_PREENCHER,
+          assinaturaAEP.registro
+            || organization?.technical_responsible_council?.trim()
+            || LINHA_PARA_PREENCHER,
           formatDate(emissao)), ''],
       ['Responsável legal da organização',
         identificacaoDoSignatario(
@@ -5557,14 +5631,25 @@ export function exportPCMSODocumentPdf({
   organization,
   examProtocols = [],
   ghes = [],
-  employees = []
+  employees = [],
+  technicalProfessionals = [],
+  technicalResponsibilities = []
 }: {
   client: Client;
   organization: Organization;
   examProtocols: any[];
   ghes: any[];
   employees: Employee[];
+  technicalProfessionals?: TechnicalProfessional[];
+  technicalResponsibilities?: TechnicalResponsibility[];
 }) {
+  // NR-07, item 7.4.1 "c": compete ao empregador indicar medico do trabalho
+  // responsavel pelo PCMSO. O coordenador e por CLIENTE - o mesmo medico pode
+  // ser so examinador em outro contrato.
+  const coordenador = assinaturaDoCliente(
+    'PCMSO_COORD', client, organization, dataDeHoje(), technicalProfessionals, technicalResponsibilities
+  );
+
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
   const pageWidth = doc.internal.pageSize.getWidth();
   const margin = 14;
@@ -5612,7 +5697,7 @@ export function exportPCMSODocumentPdf({
       ],
       [
         { content: 'Médico Coordenador:', styles: { fontStyle: 'bold' } },
-        { content: pcmsoPhysicianLine(organization) },
+        { content: coordenador.linha || RT_NAO_INFORMADO },
         { content: 'Grau de Risco:', styles: { fontStyle: 'bold' } },
         { content: `${riskDegreeLine(client)} - CNAE ${cnaeLine(client)}` }
       ]
@@ -5661,6 +5746,22 @@ export function exportPCMSODocumentPdf({
     headStyles: { fillColor: [13, 148, 136], textColor: [255, 255, 255], fontStyle: 'bold' }
   });
 
+  // A pendencia sai IMPRESSA. Um PCMSO sem coordenador atribuido a este
+  // cliente e um documento que nao sabe quem o coordena.
+  if (coordenador.pendencia) {
+    const yPend = (doc as any).lastAutoTable.finalY + 6;
+    autoTable(doc, {
+      startY: yPend,
+      margin: { left: margin, right: margin },
+      theme: 'grid',
+      body: [[{
+        content: `PENDÊNCIA — ${coordenador.pendencia}`,
+        styles: { textColor: [180, 83, 9], fontStyle: 'bold' }
+      }]],
+      styles: { fontSize: 7.2, cellPadding: 2.2 }
+    });
+  }
+
   applyPageNumbers(doc);
   doc.save(`pcmso-nr07-${(client.trade_name || client.legal_name || 'empresa').replace(/\s+/g, '_').toLowerCase()}.pdf`);
 }
@@ -5673,13 +5774,17 @@ export function exportLTCATDocumentPdf({
   organization,
   risks = [],
   ghes = [],
-  employees = []
+  employees = [],
+  technicalProfessionals = [],
+  technicalResponsibilities = []
 }: {
   client: Client;
   organization: Organization;
   risks: any[];
   ghes: any[];
   employees: Employee[];
+  technicalProfessionals?: TechnicalProfessional[];
+  technicalResponsibilities?: TechnicalResponsibility[];
 }) {
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
   const pageWidth = doc.internal.pageSize.getWidth();
@@ -5728,7 +5833,7 @@ export function exportLTCATDocumentPdf({
       ],
       [
         { content: 'Responsável Técnico:', styles: { fontStyle: 'bold' } },
-        { content: technicalResponsibleLine(organization) },
+        { content: assinaturaDoCliente('LTCAT_RESP', client, organization, dataDeHoje(), technicalProfessionals, technicalResponsibilities).linha },
         { content: 'Enquadramento Geral:', styles: { fontStyle: 'bold' } },
         { content: 'Decreto 3.048/99 Anexo IV / Tabela 24 eSocial' }
       ]
@@ -5851,13 +5956,17 @@ export function exportInsalubridadeLaudoPdf({
   organization,
   risks = [],
   ghes = [],
-  employees = []
+  employees = [],
+  technicalProfessionals = [],
+  technicalResponsibilities = []
 }: {
   client: Client;
   organization: Organization;
   risks: any[];
   ghes: any[];
   employees: Employee[];
+  technicalProfessionals?: TechnicalProfessional[];
+  technicalResponsibilities?: TechnicalResponsibility[];
 }) {
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
   const pageWidth = doc.internal.pageSize.getWidth();
@@ -5906,7 +6015,7 @@ export function exportInsalubridadeLaudoPdf({
       ],
       [
         { content: 'Perito Responsável:', styles: { fontStyle: 'bold' } },
-        { content: technicalResponsibleLine(organization) },
+        { content: assinaturaDoCliente('LAUDO_INSALUBRIDADE', client, organization, dataDeHoje(), technicalProfessionals, technicalResponsibilities).linha },
         { content: 'Amparo Legal:', styles: { fontStyle: 'bold' } },
         { content: 'Artigos 189 a 192 da CLT e NR-15 do Ministério do Trabalho' }
       ]
@@ -5962,13 +6071,17 @@ export function exportPericulosidadeLaudoPdf({
   organization,
   risks = [],
   ghes = [],
-  employees = []
+  employees = [],
+  technicalProfessionals = [],
+  technicalResponsibilities = []
 }: {
   client: Client;
   organization: Organization;
   risks: any[];
   ghes: any[];
   employees: Employee[];
+  technicalProfessionals?: TechnicalProfessional[];
+  technicalResponsibilities?: TechnicalResponsibility[];
 }) {
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
   const pageWidth = doc.internal.pageSize.getWidth();
@@ -6019,7 +6132,7 @@ export function exportPericulosidadeLaudoPdf({
       ],
       [
         { content: 'Perito Responsável:', styles: { fontStyle: 'bold' } },
-        { content: technicalResponsibleLine(organization) },
+        { content: assinaturaDoCliente('LAUDO_PERICULOSIDADE', client, organization, dataDeHoje(), technicalProfessionals, technicalResponsibilities).linha },
         { content: 'Amparo Legal:', styles: { fontStyle: 'bold' } },
         { content: 'Artigo 193 da CLT e Anexos 1 a 5 da NR-16' }
       ]

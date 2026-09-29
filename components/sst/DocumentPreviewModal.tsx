@@ -101,7 +101,12 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
   selectedEmployee,
   onTransmitESocial
 }) => {
-  const { sstSignatures, createSSTSignatureEnvelope } = usePrevSafe();
+  const {
+    sstSignatures,
+    createSSTSignatureEnvelope,
+    technicalProfessionals,
+    technicalResponsibilities
+  } = usePrevSafe();
 
   // Responsabilidade técnica vem das Configurações da empresa: um laudo assinado
   // nunca pode carregar nome, CREA ou CRM inventados pelo sistema.
@@ -210,25 +215,25 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
     if (!client) return;
 
     if (docType === 'PGR') {
-      exportPGRDocumentPdf({ client, organization, ghes, risks, employees, sectors, units, contractedOrganizations, machinesEquipment, chemicalProducts, trainingRequirements, jobs, ergonomicAssessments });
+      exportPGRDocumentPdf({ client, organization, ghes, risks, employees, sectors, units, contractedOrganizations, machinesEquipment, chemicalProducts, trainingRequirements, jobs, ergonomicAssessments, technicalProfessionals, technicalResponsibilities });
       setDownloadSuccess('PGR gerado e baixado em PDF com sucesso!');
     } else if (docType === 'PGRTR') {
-      exportPGRTRDocumentPdf({ client, organization, ghes, risks, employees });
+      exportPGRTRDocumentPdf({ client, organization, ghes, risks, employees, technicalProfessionals, technicalResponsibilities });
       setDownloadSuccess('PGRTR Rural gerado e baixado em PDF com sucesso!');
     } else if (docType === 'PCMSO') {
-      exportPCMSODocumentPdf({ client, organization, examProtocols, ghes, employees });
+      exportPCMSODocumentPdf({ client, organization, examProtocols, ghes, employees, technicalProfessionals, technicalResponsibilities });
       setDownloadSuccess('PCMSO gerado e baixado em PDF com sucesso!');
     } else if (docType === 'LTCAT') {
-      exportLTCATDocumentPdf({ client, organization, risks, ghes, employees });
+      exportLTCATDocumentPdf({ client, organization, risks, ghes, employees, technicalProfessionals, technicalResponsibilities });
       setDownloadSuccess('LTCAT gerado e baixado em PDF com sucesso!');
     } else if (docType === 'AEP') {
-      exportAEPDocumentPdf({ client, organization, ergonomicAssessments, ghes, jobs, units });
+      exportAEPDocumentPdf({ client, organization, ergonomicAssessments, ghes, jobs, units, technicalProfessionals, technicalResponsibilities });
       setDownloadSuccess('AEP (NR-17) gerada e baixada em PDF!');
     } else if (docType === 'INSALUBRIDADE') {
-      exportInsalubridadeLaudoPdf({ client, organization, risks, ghes, employees });
+      exportInsalubridadeLaudoPdf({ client, organization, risks, ghes, employees, technicalProfessionals, technicalResponsibilities });
       setDownloadSuccess('Laudo de Insalubridade gerado e baixado em PDF!');
     } else if (docType === 'PERICULOSIDADE') {
-      exportPericulosidadeLaudoPdf({ client, organization, risks, ghes, employees });
+      exportPericulosidadeLaudoPdf({ client, organization, risks, ghes, employees, technicalProfessionals, technicalResponsibilities });
       setDownloadSuccess('Laudo de Periculosidade gerado e baixado em PDF!');
     }
     setTimeout(() => setDownloadSuccess(null), 4000);

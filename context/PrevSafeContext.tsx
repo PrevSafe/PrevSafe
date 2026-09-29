@@ -9,6 +9,9 @@ import {
   ClientContact, 
   ClientUnit,
   ContractedOrganization,
+  TechnicalProfessional,
+  TechnicalResponsibility,
+  TechnicalRoleCode,
   MachineEquipment,
   ChemicalProduct,
   TrainingRequirement,
@@ -168,6 +171,13 @@ import { limparOrdensDeServico, AVISO_SEM_INVENTARIO } from '@/lib/limpezaDeOrde
 import { classificarRisco } from '@/lib/classificacaoDeRisco';
 import { ghesDosCargos, avisoDeCargosSemGhe } from '@/lib/ghesDoCargo';
 import {
+  habilitacaoParaPapel,
+  definicaoDoPapel,
+  responsaveisDoCliente,
+  respMonitDoCliente,
+  codigoDoOrgaoDeClasse
+} from '@/lib/responsabilidadeTecnica';
+import {
   INATIVIDADE_MINUTOS,
   limparUltimaAtividade,
   registrarAtividade,
@@ -253,6 +263,27 @@ interface PrevSafeContextType {
   ) => ContractedOrganization;
   updateContractedOrganization: (id: string, updates: Partial<ContractedOrganization>) => void;
   deleteContractedOrganization: (id: string) => void;
+  addTechnicalProfessional: (
+    data: Omit<TechnicalProfessional, 'id' | 'organization_id' | 'created_at' | 'updated_at'>
+  ) => TechnicalProfessional;
+  updateTechnicalProfessional: (id: string, updates: Partial<TechnicalProfessional>) => void;
+  deleteTechnicalProfessional: (id: string) => { ok: boolean; message: string };
+  /**
+   * Atribui um papel a um profissional em um ou mais clientes.
+   *
+   * Recebe lista de clientes porque atribuir de um em um era o que levava o
+   * usuario a preferir um "responsavel padrao" - e o padrao e o defeito.
+   */
+  atribuirResponsabilidade: (entrada: {
+    professional_id: string;
+    role: TechnicalRoleCode;
+    client_ids: string[];
+    start_date: string;
+    end_date?: string;
+    notes?: string;
+  }) => { criadas: number; message: string };
+  encerrarResponsabilidade: (id: string, end_date: string) => void;
+  deleteTechnicalResponsibility: (id: string) => void;
   addMachineEquipment: (
     data: Omit<MachineEquipment, 'id' | 'organization_id' | 'created_at'>
   ) => MachineEquipment;
@@ -686,6 +717,10 @@ interface PrevSafeContextType {
   // CIPA & CIPATR & CIPAMIN Management (NR-05, NR-31.7, NR-22.36, NR-18, NR-30, NR-32 & Lei 14.457)
   cipaProcesses: CipaManagementProcess[];
   contractedOrganizations: ContractedOrganization[];
+  /** Profissionais que respondem tecnicamente por documentos (lib/responsabilidadeTecnica.ts). */
+  technicalProfessionals: TechnicalProfessional[];
+  /** Quem responde por qual papel, em qual cliente, em qual periodo. */
+  technicalResponsibilities: TechnicalResponsibility[];
   machinesEquipment: MachineEquipment[];
   chemicalProducts: ChemicalProduct[];
   trainingRequirements: TrainingRequirement[];
@@ -828,6 +863,10 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
   const [sstSignatures, setSstSignatures] = useState<SSTDocumentSignature[]>(INITIAL_SST_DOCUMENT_SIGNATURES);
   const [cipaProcesses, setCipaProcesses] = useState<CipaManagementProcess[]>(INITIAL_CIPA_PROCESSES);
   const [contractedOrganizations, setContractedOrganizations] = useState<ContractedOrganization[]>([]);
+  // Nascem vazias: nenhum profissional de exemplo. Um nome inventado aqui sai
+  // assinando documento legal de cliente real.
+  const [technicalProfessionals, setTechnicalProfessionals] = useState<TechnicalProfessional[]>([]);
+  const [technicalResponsibilities, setTechnicalResponsibilities] = useState<TechnicalResponsibility[]>([]);
   const [machinesEquipment, setMachinesEquipment] = useState<MachineEquipment[]>([]);
   const [chemicalProducts, setChemicalProducts] = useState<ChemicalProduct[]>([]);
   const [trainingRequirements, setTrainingRequirements] = useState<TrainingRequirement[]>([]);
@@ -930,6 +969,8 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     apply(setSstSignatures, list(parsed.sstSignatures, []));
     apply(setCipaProcesses, list(parsed.cipaProcesses, []));
     apply(setContractedOrganizations, list(parsed.contractedOrganizations, []));
+    apply(setTechnicalProfessionals, list(parsed.technicalProfessionals, []));
+    apply(setTechnicalResponsibilities, list(parsed.technicalResponsibilities, []));
     apply(setMachinesEquipment, list(parsed.machinesEquipment, []));
     apply(setChemicalProducts, list(parsed.chemicalProducts, []));
     apply(setTrainingRequirements, list(parsed.trainingRequirements, []));
@@ -1000,6 +1041,8 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     cipaProcesses,
     occupationalRisksCatalog,
     contractedOrganizations,
+    technicalProfessionals,
+    technicalResponsibilities,
     machinesEquipment,
     chemicalProducts,
     trainingRequirements,
@@ -1046,6 +1089,8 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     cipaProcesses,
     occupationalRisksCatalog,
     contractedOrganizations,
+    technicalProfessionals,
+    technicalResponsibilities,
     machinesEquipment,
     chemicalProducts,
     trainingRequirements,
@@ -1856,6 +1901,263 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
   const deleteContractedOrganization = useCallback((id: string) => {
     setContractedOrganizations(prev => prev.filter(o => o.id !== id));
     logAudit('DELETE_CONTRACTED_ORG' as any, 'CLIENT' as any, id, 'Contratada removida', {});
+  }, [logAudit]);
+
+  // =========================================================================
+  // RESPONSABILIDADE TECNICA POR CLIENTE
+  //
+  // Antes, quem assinava era um par de campos da organizacao, igual para todos
+  // os clientes. A regra de quem pode assumir cada papel, com a norma citada,
+  // esta em lib/responsabilidadeTecnica.ts.
+  // =========================================================================
+  /**
+   * Grupo [respReg] do S-2240, montado com quem responde pelos registros
+   * ambientais DESTE cliente.
+   *
+   * O gerador de preview mandava sempre ideOC 1 (CRM), mesmo para engenheiro,
+   * e nunca mandava nrOC. O gerador em lote era pior: levava um responsavel
+   * inteiro escrito no codigo - CPF 09876543211, CREA 506981240/SP - que ia
+   * assim para todo cliente. O MOS S-1.3, S-2240, item 11.1 diz que o
+   * responsavel pelos registros ambientais e quem elaborou o LTCAT, e que o
+   * grupo aceita ate 99 deles.
+   *
+   * Sem ninguem atribuido, sai um comentario dizendo isso — e nao um CPF que
+   * o eSocial vai aceitar como verdadeiro.
+   */
+  const blocoRespRegXml = useCallback((clientId: string, data: string, recuo = '      '): string => {
+    const lista = responsaveisDoCliente(
+      technicalResponsibilities, technicalProfessionals, clientId, 'REG_AMBIENTAIS', data
+    );
+    if (lista.length === 0) {
+      return `${recuo}<!-- respReg ausente: nenhum responsável pelos registros ambientais `
+        + `atribuído a este cliente (Engenharia SST > Responsabilidade Técnica) -->`;
+    }
+    return lista.map((p) => {
+      const oc = codigoDoOrgaoDeClasse(p);
+      return `${recuo}<respReg>\n`
+        + `${recuo}  <cpfResp>${String(p.cpf || '').replace(/\D/g, '')}</cpfResp>\n`
+        + `${recuo}  <ideOC>${oc.ideOC}</ideOC>\n`
+        + (oc.dscOC ? `${recuo}  <dscOC>${oc.dscOC}</dscOC>\n` : '')
+        + (oc.nrOC ? `${recuo}  <nrOC>${oc.nrOC}</nrOC>\n` : '')
+        + (oc.ufOC ? `${recuo}  <ufOC>${oc.ufOC}</ufOC>\n` : '')
+        + `${recuo}</respReg>`;
+    }).join('\n');
+  }, [technicalResponsibilities, technicalProfessionals]);
+
+  /**
+   * Grupo [respMonit] do S-2220: o medico coordenador do PCMSO deste cliente.
+   *
+   * O evento nunca levava esse grupo. MOS S-1.3, S-2220, item 1.7: "O grupo
+   * [respMonit] e de preenchimento obrigatorio sempre que houver um medico
+   * responsavel/coordenador do PCMSO." Sem coordenador atribuido, nao se
+   * inventa um - e correto omitir, porque o mesmo item diz que, inexistindo
+   * obrigatoriedade de PCMSO, o campo nao precisa ser preenchido.
+   */
+  const blocoRespMonitXml = useCallback((clientId: string, data: string, recuo = '    '): string => {
+    const resp = respMonitDoCliente(
+      technicalResponsibilities, technicalProfessionals, clientId, data
+    );
+    if (!resp) {
+      return `${recuo}<!-- respMonit ausente: nenhum médico coordenador do PCMSO atribuído a `
+        + `este cliente (Engenharia SST > Responsabilidade Técnica) -->`;
+    }
+    return `${recuo}<respMonit>\n`
+      + `${recuo}  <cpfResp>${resp.cpf.replace(/\D/g, '')}</cpfResp>\n`
+      + `${recuo}  <nmResp>${resp.nome}</nmResp>\n`
+      + (resp.crm ? `${recuo}  <nrCRM>${resp.crm.replace(/\D/g, '')}</nrCRM>\n` : '')
+      + (resp.uf ? `${recuo}  <ufCRM>${resp.uf}</ufCRM>\n` : '')
+      + `${recuo}</respMonit>`;
+  }, [technicalResponsibilities, technicalProfessionals]);
+
+  const addTechnicalProfessional = useCallback((
+    data: Omit<TechnicalProfessional, 'id' | 'organization_id' | 'created_at' | 'updated_at'>
+  ): TechnicalProfessional => {
+    const agora = new Date().toISOString();
+    const novo: TechnicalProfessional = {
+      ...data,
+      id: novoId('profissional'),
+      organization_id: organization.id,
+      created_at: agora,
+      updated_at: agora
+    };
+    setTechnicalProfessionals(prev => [...prev, novo]);
+    logAudit(
+      'CREATE_TECHNICAL_PROFESSIONAL' as any, 'USER' as any, novo.id,
+      `Profissional técnico cadastrado: ${novo.full_name}`, novo
+    );
+    return novo;
+  }, [organization.id, logAudit]);
+
+  const updateTechnicalProfessional = useCallback((id: string, updates: Partial<TechnicalProfessional>) => {
+    setTechnicalProfessionals(prev => prev.map(p => (
+      p.id === id ? { ...p, ...updates, updated_at: new Date().toISOString() } : p
+    )));
+    logAudit(
+      'UPDATE_TECHNICAL_PROFESSIONAL' as any, 'USER' as any, id,
+      'Profissional técnico atualizado', updates
+    );
+  }, [logAudit]);
+
+  /**
+   * Remover um profissional que ainda responde por algum cliente apagaria o
+   * nome de baixo de documentos ja emitidos. Nesse caso o cadastro e
+   * desativado, que preserva a trilha e tira da lista de escolha.
+   */
+  const deleteTechnicalProfessional = useCallback((id: string): { ok: boolean; message: string } => {
+    const alvo = technicalProfessionals.find(p => p.id === id);
+    if (!alvo) return { ok: false, message: 'Profissional não encontrado.' };
+
+    const vinculos = technicalResponsibilities.filter(
+      r => r.professional_id === id && r.status !== 'INACTIVE'
+    );
+    if (vinculos.length > 0) {
+      setTechnicalProfessionals(prev => prev.map(p => (
+        p.id === id ? { ...p, status: 'INACTIVE', updated_at: new Date().toISOString() } : p
+      )));
+      logAudit(
+        'DEACTIVATE_TECHNICAL_PROFESSIONAL' as any, 'USER' as any, id,
+        `Profissional desativado com ${vinculos.length} atribuição(ões) vigente(s): ${alvo.full_name}`,
+        { vinculos: vinculos.length }
+      );
+      return {
+        ok: true,
+        message:
+          `${alvo.full_name} responde por ${vinculos.length} atribuição(ões) e foi DESATIVADO em vez de `
+          + 'excluído, para não apagar o nome de documentos já emitidos. Encerre as atribuições antes de excluir.'
+      };
+    }
+
+    setTechnicalProfessionals(prev => prev.filter(p => p.id !== id));
+    logAudit(
+      'DELETE_TECHNICAL_PROFESSIONAL' as any, 'USER' as any, id,
+      `Profissional técnico removido: ${alvo.full_name}`, {}
+    );
+    return { ok: true, message: `${alvo.full_name} foi removido.` };
+  }, [technicalProfessionals, technicalResponsibilities, logAudit]);
+
+  const atribuirResponsabilidade = useCallback((entrada: {
+    professional_id: string;
+    role: TechnicalRoleCode;
+    client_ids: string[];
+    start_date: string;
+    end_date?: string;
+    notes?: string;
+  }): { criadas: number; message: string } => {
+    const profissional = technicalProfessionals.find(p => p.id === entrada.professional_id);
+    if (!profissional) return { criadas: 0, message: 'Profissional não encontrado.' };
+
+    // Habilitacao e conferida aqui, e nao so na tela: o mesmo contexto atende
+    // a tela, o atalho de teclado e qualquer chamada futura.
+    const habilitacao = habilitacaoParaPapel(profissional, entrada.role);
+    if (!habilitacao.apto) return { criadas: 0, message: habilitacao.motivo };
+
+    const definicao = definicaoDoPapel(entrada.role);
+    const agora = new Date().toISOString();
+    const novas: TechnicalResponsibility[] = [];
+    const jaTinham: string[] = [];
+    const substituidos: string[] = [];
+
+    const alvos = Array.from(new Set(entrada.client_ids || [])).filter(Boolean);
+    if (alvos.length === 0) return { criadas: 0, message: 'Selecione ao menos um cliente.' };
+
+    for (const clientId of alvos) {
+      const nomeDoCliente = clients.find(c => c.id === clientId)?.trade_name
+        || clients.find(c => c.id === clientId)?.legal_name
+        || 'cliente';
+
+      const mesmoVinculo = technicalResponsibilities.some(
+        r => r.client_id === clientId
+          && r.role === entrada.role
+          && r.professional_id === entrada.professional_id
+          && r.status !== 'INACTIVE'
+          && !r.end_date
+      );
+      if (mesmoVinculo) {
+        jaTinham.push(nomeDoCliente);
+        continue;
+      }
+
+      if (definicao?.unicoPorCliente) {
+        // Papel de titular unico (coordenador do PCMSO): o anterior e
+        // encerrado hoje, em vez de ficarem dois vigentes e o documento
+        // escolher um em silencio.
+        const anteriores = technicalResponsibilities.filter(
+          r => r.client_id === clientId && r.role === entrada.role && r.status !== 'INACTIVE' && !r.end_date
+        );
+        if (anteriores.length > 0) {
+          const nomes = anteriores
+            .map(r => technicalProfessionals.find(p => p.id === r.professional_id)?.full_name)
+            .filter(Boolean) as string[];
+          substituidos.push(`${nomeDoCliente} (saiu ${nomes.join(', ') || 'o anterior'})`);
+          const ids = new Set(anteriores.map(r => r.id));
+          setTechnicalResponsibilities(prev => prev.map(r => (
+            ids.has(r.id) ? { ...r, end_date: entrada.start_date, updated_at: agora } : r
+          )));
+        }
+      }
+
+      novas.push({
+        id: novoId('responsabilidade'),
+        organization_id: organization.id,
+        client_id: clientId,
+        professional_id: entrada.professional_id,
+        role: entrada.role,
+        start_date: entrada.start_date,
+        end_date: entrada.end_date,
+        notes: entrada.notes,
+        status: 'ACTIVE',
+        created_at: agora,
+        updated_at: agora
+      });
+    }
+
+    if (novas.length > 0) {
+      setTechnicalResponsibilities(prev => [...prev, ...novas]);
+      logAudit(
+        'CREATE_TECHNICAL_RESPONSIBILITY' as any, 'CLIENT' as any, novas[0].client_id,
+        `${profissional.full_name} atribuído como ${definicao?.nome || entrada.role} em `
+        + `${novas.length} cliente(s)`,
+        { papel: entrada.role, clientes: novas.map(n => n.client_id) }
+      );
+    }
+
+    const partes: string[] = [];
+    if (novas.length > 0) {
+      partes.push(
+        `${profissional.full_name} passa a responder como ${definicao?.nome || entrada.role} em `
+        + `${novas.length} cliente(s).`
+      );
+    }
+    if (substituidos.length > 0) {
+      partes.push(`Vigência do titular anterior encerrada em: ${substituidos.join('; ')}.`);
+    }
+    if (jaTinham.length > 0) {
+      partes.push(`Já respondia em: ${jaTinham.join(', ')}.`);
+    }
+
+    return { criadas: novas.length, message: partes.join(' ') || 'Nada a fazer.' };
+  }, [technicalProfessionals, technicalResponsibilities, clients, organization.id, logAudit]);
+
+  /**
+   * Encerrar vigencia, e nao apagar: o documento emitido no ano passado foi
+   * assinado por quem respondia no ano passado, e a trilha precisa dizer isso.
+   */
+  const encerrarResponsabilidade = useCallback((id: string, end_date: string) => {
+    setTechnicalResponsibilities(prev => prev.map(r => (
+      r.id === id ? { ...r, end_date, updated_at: new Date().toISOString() } : r
+    )));
+    logAudit(
+      'END_TECHNICAL_RESPONSIBILITY' as any, 'CLIENT' as any, id,
+      `Responsabilidade técnica encerrada em ${end_date}`, { end_date }
+    );
+  }, [logAudit]);
+
+  const deleteTechnicalResponsibility = useCallback((id: string) => {
+    setTechnicalResponsibilities(prev => prev.filter(r => r.id !== id));
+    logAudit(
+      'DELETE_TECHNICAL_RESPONSIBILITY' as any, 'CLIENT' as any, id,
+      'Atribuição de responsabilidade removida', {}
+    );
   }, [logAudit]);
 
   /**
@@ -3313,12 +3615,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
       </infoAtiv>
       <agNoc>${risksXml}
       </agNoc>
-      <respReg>
-        <cpfResp>${(amb?.responsible_technician_cpf || '').replace(/\D/g, '')}</cpfResp>
-        <ideOC>1</ideOC>
-        <dscOC>${amb?.responsible_technician_crea_crm || ''}</dscOC>
-        <ufOC>${amb?.responsible_technician_uf || ''}</ufOC>
-      </respReg>
+${blocoRespRegXml(event.client_id, amb?.start_date || dataDeHoje())}
     </infoExpRisco>
   </evtExpRisco>
   <Signature xmlns="http://www.w3.org/2000/09/xmldsig#">
@@ -3374,11 +3671,20 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
       <tpAso>${aso?.aso_type === 'ADMISSIONAL' ? '0' : aso?.aso_type === 'PERIODICO' ? '1' : aso?.aso_type === 'RETORNO_TRABALHO' ? '2' : aso?.aso_type === 'MUDANCA_RISCO' ? '3' : '4'}</tpAso>
       <resAso>${aso?.result === 'APTO' ? '1' : '2'}</resAso>
       <medico>
-        <nmMed>${aso?.physician_name || 'Médico Examinador'}</nmMed>
-        <nrCRM>${aso?.physician_crm?.replace(/\D/g, '') || '123456'}</nrCRM>
-        <ufCRM>${aso?.physician_uf || 'SP'}</ufCRM>
+        <nmMed>${aso?.physician_name?.trim() || 'MÉDICO EXAMINADOR NÃO INFORMADO'}</nmMed>${
+          aso?.physician_crm?.replace(/\D/g, '')
+            ? `
+        <nrCRM>${aso.physician_crm.replace(/\D/g, '')}</nrCRM>`
+            : ''
+        }${
+          aso?.physician_uf?.trim()
+            ? `
+        <ufCRM>${aso.physician_uf.trim().toUpperCase()}</ufCRM>`
+            : ''
+        }
       </medico>${examsXml}
     </aso>
+${blocoRespMonitXml(event.client_id, aso?.exam_date || dataDeHoje())}
   </evtMonit>
   <Signature xmlns="http://www.w3.org/2000/09/xmldsig#">
     <SignedInfo>
@@ -3511,7 +3817,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     </infoExclusao>
   </evtExclusao>
 </eSocial>`;
-  }, [clients, organization.document_number]);
+  }, [blocoRespRegXml, blocoRespMonitXml, clients, organization.document_number]);
 
   // Create eSocial Event
   const createESocialEvent = useCallback((data: Omit<ESocialEvent, 'id' | 'organization_id' | 'event_number' | 'created_at' | 'updated_at' | 'status'> & { status?: ESocialEventStatus }): ESocialEvent => {
@@ -5932,12 +6238,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
       </infoAmb>
       <agNoc>${risksXml}
       </agNoc>
-      <respReg>
-        <cpfResp>09876543211</cpfResp>
-        <ideOC>4</ideOC>
-        <nrOC>506981240</nrOC>
-        <ufOC>SP</ufOC>
-      </respReg>
+${blocoRespRegXml(ghe.client_id, dataDeHoje())}
     </infoExpRisco>
   </evtExpRisco>
 </eSocial>`;
@@ -5963,7 +6264,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
 
     setEsocialEvents(prev => [newEvt, ...prev]);
     return newEvt;
-  }, [ghes, environmentalRisks, clients, employees, organization.id]);
+  }, [blocoRespRegXml, ghes, environmentalRisks, clients, employees, organization.id]);
 
   /**
    * Monta o S-2220 a partir de um ASO registrado.
@@ -7500,6 +7801,14 @@ ${exames.map(ex => `      <exameMedico>
     addContractedOrganization,
     updateContractedOrganization,
     deleteContractedOrganization,
+    technicalProfessionals,
+    addTechnicalProfessional,
+    updateTechnicalProfessional,
+    deleteTechnicalProfessional,
+    technicalResponsibilities,
+    atribuirResponsabilidade,
+    encerrarResponsabilidade,
+    deleteTechnicalResponsibility,
     machinesEquipment,
     addMachineEquipment,
     updateMachineEquipment,
@@ -7794,6 +8103,14 @@ ${exames.map(ex => `      <exameMedico>
     addContractedOrganization,
     updateContractedOrganization,
     deleteContractedOrganization,
+    technicalProfessionals,
+    addTechnicalProfessional,
+    updateTechnicalProfessional,
+    deleteTechnicalProfessional,
+    technicalResponsibilities,
+    atribuirResponsabilidade,
+    encerrarResponsabilidade,
+    deleteTechnicalResponsibility,
     machinesEquipment,
     addMachineEquipment,
     updateMachineEquipment,

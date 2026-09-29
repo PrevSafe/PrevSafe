@@ -2732,3 +2732,92 @@ export interface CipaManagementProcess {
   }[];
 }
 
+
+// ==========================================
+// 58. Profissionais técnicos e responsabilidade por cliente
+//
+// A responsabilidade técnica era um único par de campos na organização
+// (technical_responsible_name / pcmso_physician_name), o que fazia todo
+// documento de todo cliente sair assinado pelas mesmas duas pessoas. As
+// regras de quem pode assumir cada papel estão em lib/responsabilidadeTecnica.ts,
+// com a norma citada.
+// ==========================================
+export type ConselhoProfissional =
+  | 'CRM'
+  | 'CREA'
+  | 'CRO'
+  | 'COREN'
+  | 'CREFITO'
+  | 'CRFA'
+  | 'CRP'
+  | 'MTE'
+  | 'OUTRO';
+
+/**
+ * Profissional que responde tecnicamente por algum documento.
+ *
+ * Separado de Profile porque nem todo profissional é usuário do sistema: o
+ * médico examinador que assina o ASO costuma não ter login. `profile_id` liga
+ * os dois quando a mesma pessoa é as duas coisas, para não haver dois
+ * cadastros da mesma pessoa divergindo.
+ */
+export interface TechnicalProfessional {
+  id: string;
+  organization_id: string;
+  full_name: string;
+  /** Exigido pelo eSocial no [respReg] do S-2240 e no [respMonit] do S-2220. */
+  cpf: string;
+  council: ConselhoProfissional;
+  /** Sigla quando council === 'OUTRO'. */
+  council_other?: string;
+  council_number: string;
+  council_uf: string;
+  /** Registro de Qualificação de Especialista, quando houver. */
+  rqe?: string;
+  /** Ex.: "Medicina do Trabalho", "Engenharia de Segurança do Trabalho". */
+  specialty?: string;
+  email?: string;
+  phone?: string;
+  /** Usuário do sistema correspondente, quando a pessoa também tem acesso. */
+  profile_id?: string;
+  notes?: string;
+  status: 'ACTIVE' | 'INACTIVE';
+  created_at: string;
+  updated_at: string;
+}
+
+export type TechnicalRoleCode =
+  | 'PGR_RESP'
+  | 'LTCAT_RESP'
+  | 'LAUDO_INSALUBRIDADE'
+  | 'LAUDO_PERICULOSIDADE'
+  | 'PCMSO_COORD'
+  | 'PCMSO_ELABORADOR'
+  | 'MEDICO_EXAMINADOR'
+  | 'REG_AMBIENTAIS'
+  | 'AEP_RESP'
+  | 'PPP_RESP'
+  | 'TREINAMENTO_RESP';
+
+/**
+ * Um profissional respondendo por um papel, em UM cliente, num período.
+ *
+ * Não existe atribuição sem client_id: responsabilidade "padrão da
+ * organização" é o que fazia um engenheiro assinar contrato que não era dele.
+ */
+export interface TechnicalResponsibility {
+  id: string;
+  organization_id: string;
+  client_id: string;
+  professional_id: string;
+  role: TechnicalRoleCode;
+  start_date: string;
+  /** Vazio = vigente por prazo indeterminado. */
+  end_date?: string;
+  /** Contrato que originou a responsabilidade, quando houver. */
+  contract_id?: string;
+  notes?: string;
+  status: 'ACTIVE' | 'INACTIVE';
+  created_at: string;
+  updated_at: string;
+}

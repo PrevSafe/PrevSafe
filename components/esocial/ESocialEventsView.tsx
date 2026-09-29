@@ -2,6 +2,11 @@
 
 import React, { useState, useMemo } from 'react';
 import { usePrevSafe } from '@/context/PrevSafeContext';
+import {
+  responsaveisDoCliente,
+  respMonitDoCliente,
+  registroDoProfissional
+} from '@/lib/responsabilidadeTecnica';
 import { 
   ESocialEvent, 
   ESocialEventType, 
@@ -1993,7 +1998,12 @@ const CreateEditEventModal: React.FC<CreateEditEventModalProps> = ({
   onClose,
   onSave
 }) => {
-  const { employees, environmentalRisks } = usePrevSafe();
+  const {
+    employees,
+    environmentalRisks,
+    technicalProfessionals,
+    technicalResponsibilities
+  } = usePrevSafe();
 
   const [eventType, setEventType] = useState<ESocialEventType>(initialEvent?.event_type || 'S-2240');
   const [clientId, setClientId] = useState<string>(initialEvent?.client_id || clients[0]?.id || '');
@@ -2012,6 +2022,9 @@ const CreateEditEventModal: React.FC<CreateEditEventModalProps> = ({
   const [s2240TechName, setS2240TechName] = useState<string>(initialEvent?.ambient_data?.responsible_technician_name || '');
   const [s2240TechCpf, setS2240TechCpf] = useState<string>(initialEvent?.ambient_data?.responsible_technician_cpf || '');
   const [s2240TechCrea, setS2240TechCrea] = useState<string>(initialEvent?.ambient_data?.responsible_technician_crea_crm || '');
+  // A UF ia fixa em 'SP' para todo mundo. Um CRM-BA saia declarado como CRM-SP
+  // no evento, e o eSocial confere o registro no conselho da UF informada.
+  const [s2240TechUf, setS2240TechUf] = useState<string>(initialEvent?.ambient_data?.responsible_technician_uf || '');
 
   // S-2220 State
   const [s2220AsoType, setS2220AsoType] = useState<any>(initialEvent?.aso_data?.aso_type || 'PERIODICO');
@@ -2020,6 +2033,39 @@ const CreateEditEventModal: React.FC<CreateEditEventModalProps> = ({
   const [s2220DocName, setS2220DocName] = useState<string>(initialEvent?.aso_data?.physician_name || '');
   // O CRM identifica o medico que assinou o ASO. Vinha 'CRM-SP 145892'.
   const [s2220DocCrm, setS2220DocCrm] = useState<string>(initialEvent?.aso_data?.physician_crm || '');
+  const [s2220DocUf, setS2220DocUf] = useState<string>(initialEvent?.aso_data?.physician_uf || '');
+
+  /**
+   * Profissionais que respondem por este cliente, na data do evento.
+   *
+   * O formulario pedia os tres campos digitados a mao e mandava a UF fixa em
+   * 'SP'. Agora a lista vem de quem foi atribuido ao cliente em Engenharia SST
+   * > Responsabilidade Tecnica, e os campos continuam editaveis para o caso de
+   * um evento antigo, assinado por quem nao responde mais.
+   */
+  const responsaveisAmbientais = useMemo(
+    () => responsaveisDoCliente(
+      technicalResponsibilities || [], technicalProfessionals || [],
+      clientId, 'REG_AMBIENTAIS', s2240StartDate || dataDeHoje()
+    ),
+    [technicalResponsibilities, technicalProfessionals, clientId, s2240StartDate]
+  );
+
+  const medicosExaminadores = useMemo(
+    () => responsaveisDoCliente(
+      technicalResponsibilities || [], technicalProfessionals || [],
+      clientId, 'MEDICO_EXAMINADOR', s2220ExamDate || dataDeHoje()
+    ),
+    [technicalResponsibilities, technicalProfessionals, clientId, s2220ExamDate]
+  );
+
+  const coordenadorPcmso = useMemo(
+    () => respMonitDoCliente(
+      technicalResponsibilities || [], technicalProfessionals || [],
+      clientId, s2220ExamDate || dataDeHoje()
+    ),
+    [technicalResponsibilities, technicalProfessionals, clientId, s2220ExamDate]
+  );
 
   // Riscos reais do trabalhador, localizados pelo CPF digitado.
   const fatoresDeRisco = useMemo(() => {
@@ -2097,7 +2143,7 @@ const CreateEditEventModal: React.FC<CreateEditEventModalProps> = ({
         responsible_technician_name: s2240TechName,
         responsible_technician_cpf: s2240TechCpf,
         responsible_technician_crea_crm: s2240TechCrea,
-        responsible_technician_uf: 'SP'
+        responsible_technician_uf: s2240TechUf.trim().toUpperCase()
       };
     } else if (eventType === 'S-2220') {
       payload.aso_data = {
@@ -2106,7 +2152,7 @@ const CreateEditEventModal: React.FC<CreateEditEventModalProps> = ({
         result: s2220Result,
         physician_name: s2220DocName,
         physician_crm: s2220DocCrm,
-        physician_uf: 'SP',
+        physician_uf: s2220DocUf.trim().toUpperCase(),
         exams_list: [
           {
             code: '0295',
@@ -2312,7 +2358,40 @@ const CreateEditEventModal: React.FC<CreateEditEventModalProps> = ({
                 />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-2 border-t border-slate-800">
+              <div className="pt-2 border-t border-slate-800">
+                <label className="block text-[10px] text-slate-400 mb-1">
+                  Responsável pelos registros ambientais atribuído a este cliente
+                </label>
+                <select
+                  value=""
+                  onChange={e => {
+                    const p = responsaveisAmbientais.find(x => x.id === e.target.value);
+                    if (!p) return;
+                    setS2240TechName(p.full_name || '');
+                    setS2240TechCpf(p.cpf || '');
+                    setS2240TechCrea(registroDoProfissional(p));
+                    setS2240TechUf((p.council_uf || '').toUpperCase());
+                  }}
+                  className="w-full p-2 bg-slate-900 border border-slate-800 rounded-lg text-white"
+                >
+                  <option value="">
+                    {responsaveisAmbientais.length > 0
+                      ? 'Selecione para preencher os campos abaixo'
+                      : 'Nenhum atribuído — Engenharia SST > Responsabilidade Técnica'}
+                  </option>
+                  {responsaveisAmbientais.map(p => (
+                    <option key={p.id} value={p.id}>
+                      {p.full_name} — {registroDoProfissional(p)}
+                    </option>
+                  ))}
+                </select>
+                <p className="text-[10px] text-slate-500 mt-1">
+                  MOS S-1.3, S-2240, item 11.1: o responsável pelos registros ambientais é quem
+                  elaborou o LTCAT.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
                 <div>
                   <label className="block text-[10px] text-slate-400 mb-1">Resp. Técnico (Nome)</label>
                   <input
@@ -2338,6 +2417,17 @@ const CreateEditEventModal: React.FC<CreateEditEventModalProps> = ({
                     value={s2240TechCrea}
                     onChange={e => setS2240TechCrea(e.target.value)}
                     className="w-full p-2 bg-slate-900 border border-slate-800 rounded-lg text-white font-mono"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] text-slate-400 mb-1">UF do registro</label>
+                  <input
+                    type="text"
+                    maxLength={2}
+                    placeholder="BA"
+                    value={s2240TechUf}
+                    onChange={e => setS2240TechUf(e.target.value.toUpperCase())}
+                    className="w-full p-2 bg-slate-900 border border-slate-800 rounded-lg text-white font-mono uppercase"
                   />
                 </div>
               </div>
@@ -2391,7 +2481,49 @@ const CreateEditEventModal: React.FC<CreateEditEventModalProps> = ({
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2 border-t border-slate-800">
+              <div className="pt-2 border-t border-slate-800">
+                <label className="block text-[10px] text-slate-400 mb-1">
+                  Médico examinador atribuído a este cliente
+                </label>
+                <select
+                  value=""
+                  onChange={e => {
+                    const p = medicosExaminadores.find(x => x.id === e.target.value);
+                    if (!p) return;
+                    setS2220DocName(p.full_name || '');
+                    setS2220DocCrm(p.council_number || '');
+                    setS2220DocUf((p.council_uf || '').toUpperCase());
+                  }}
+                  className="w-full p-2 bg-slate-900 border border-slate-800 rounded-lg text-white"
+                >
+                  <option value="">
+                    {medicosExaminadores.length > 0
+                      ? 'Selecione para preencher os campos abaixo'
+                      : 'Nenhum atribuído — Engenharia SST > Responsabilidade Técnica'}
+                  </option>
+                  {medicosExaminadores.map(p => (
+                    <option key={p.id} value={p.id}>
+                      {p.full_name} — {registroDoProfissional(p)}
+                    </option>
+                  ))}
+                </select>
+
+                {/*
+                  O [respMonit] do S-2220 e o COORDENADOR do PCMSO, nao o
+                  examinador: NR-07, item 7.5.19.1, alineas "f" e "g". Sao dois
+                  campos diferentes do ASO, e podem ser duas pessoas.
+                */}
+                <p className={`text-[10px] mt-1.5 ${coordenadorPcmso ? 'text-slate-500' : 'text-amber-400'}`}>
+                  {coordenadorPcmso
+                    ? `[respMonit] deste evento: ${coordenadorPcmso.nome}`
+                      + `${coordenadorPcmso.crm ? ` — CRM ${coordenadorPcmso.crm}/${coordenadorPcmso.uf}` : ''}`
+                      + ' (médico coordenador do PCMSO deste cliente).'
+                    : 'Sem médico coordenador do PCMSO atribuído a este cliente: o evento sai sem o '
+                      + 'grupo [respMonit].'}
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 <div>
                   <label className="block text-[10px] text-slate-400 mb-1">Médico Examinador</label>
                   <input
@@ -2402,12 +2534,23 @@ const CreateEditEventModal: React.FC<CreateEditEventModalProps> = ({
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] text-slate-400 mb-1">CRM e UF do Médico</label>
+                  <label className="block text-[10px] text-slate-400 mb-1">CRM do Médico</label>
                   <input
                     type="text"
                     value={s2220DocCrm}
                     onChange={e => setS2220DocCrm(e.target.value)}
                     className="w-full p-2 bg-slate-900 border border-slate-800 rounded-lg text-white font-mono"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] text-slate-400 mb-1">UF do CRM</label>
+                  <input
+                    type="text"
+                    maxLength={2}
+                    placeholder="BA"
+                    value={s2220DocUf}
+                    onChange={e => setS2220DocUf(e.target.value.toUpperCase())}
+                    className="w-full p-2 bg-slate-900 border border-slate-800 rounded-lg text-white font-mono uppercase"
                   />
                 </div>
               </div>

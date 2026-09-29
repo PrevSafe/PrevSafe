@@ -55,6 +55,16 @@ const PROIBIDOS = [
   { padrao: /CA 14235/, o_que: 'número de CA inventado' },
   { padrao: /Trabalhador do GHE|Colaborador Extraído do (PGR|PCMSO)/, o_que: 'trabalhador inventado' },
   { padrao: /7f8a9e2d4c6b1a0f/, o_que: 'hash SHA-256 fixo' },
+  // O gerador em lote do S-2240 levava um responsavel pelos registros
+  // ambientais inteiro escrito no codigo - o mesmo CPF e o mesmo CREA para
+  // todo cliente, dentro de um evento que o governo recebe como verdadeiro.
+  { padrao: /09876543211/, o_que: 'CPF de responsável pelos registros ambientais inventado' },
+  { padrao: /506981240/, o_que: 'CREA de responsável inventado' },
+  // O S-2220 preenchia o medico emitente do ASO quando nao sabia quem era.
+  { padrao: /\|\| '123456'/, o_que: 'CRM usado como padrão' },
+  { padrao: /\|\|\s*'Médico Examinador'/, o_que: 'nome de médico usado como padrão' },
+  // A UF do conselho ia fixa em SP: um CRM-BA saia declarado como CRM-SP.
+  { padrao: /(responsible_technician_uf|physician_uf|ufCRM|ufOC):\s*'SP'/, o_que: 'UF de conselho fixa em SP' },
   { padrao: /AC CERTISIGN MULTIPLA G7/, o_que: 'emissor de certificado inventado' },
   // Fallbacks que preenchiam um campo desconhecido com um valor plausivel.
   { padrao: /ca_example:\s*\w+\s*\?[^:]*:\s*'/, o_que: 'número de CA usado como padrão' },

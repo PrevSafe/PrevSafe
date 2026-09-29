@@ -52,6 +52,8 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
     chemicalProducts,
     trainingRequirements,
     ergonomicAssessments,
+    technicalProfessionals,
+    technicalResponsibilities,
     hierarchySectors,
     hierarchyJobs,
     ghes,
@@ -193,7 +195,9 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
         chemicalProducts: clientQuimicos,
         trainingRequirements: clientMatriz,
         jobs: clientJobs,
-        ergonomicAssessments: clientAeps
+        ergonomicAssessments: clientAeps,
+        technicalProfessionals,
+        technicalResponsibilities
       });
       setSuccessToast('PDF do PGR (NR-01) gerado com sucesso!');
     } else if (activeDocType === 'PGRTR') {
@@ -202,7 +206,9 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
         organization,
         ghes: clientGhes,
         risks: environmentalRisks,
-        employees: clientEmployees
+        employees: clientEmployees,
+        technicalProfessionals,
+        technicalResponsibilities
       });
       setSuccessToast('PDF do PGRTR (NR-31 Rural) gerado com sucesso!');
     } else if (activeDocType === 'PCMSO') {
@@ -211,7 +217,9 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
         organization,
         examProtocols,
         ghes: clientGhes,
-        employees: clientEmployees
+        employees: clientEmployees,
+        technicalProfessionals,
+        technicalResponsibilities
       });
       setSuccessToast('PDF do PCMSO (NR-07) gerado com sucesso!');
     } else if (activeDocType === 'LTCAT') {
@@ -220,7 +228,9 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
         organization,
         risks: environmentalRisks,
         ghes: clientGhes,
-        employees: clientEmployees
+        employees: clientEmployees,
+        technicalProfessionals,
+        technicalResponsibilities
       });
       setSuccessToast('PDF do LTCAT Previdenciário (INSS) gerado com sucesso!');
     } else if (activeDocType === 'AEP') {
@@ -230,7 +240,9 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
         ergonomicAssessments: clientAeps,
         ghes: clientGhes,
         jobs: hierarchyJobs,
-        units
+        units,
+        technicalProfessionals,
+        technicalResponsibilities
       });
       setSuccessToast('PDF da AEP (NR-17) gerado com sucesso!');
     } else if (activeDocType === 'INSALUBRIDADE') {
@@ -239,7 +251,9 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
         organization,
         risks: environmentalRisks,
         ghes: clientGhes,
-        employees: clientEmployees
+        employees: clientEmployees,
+        technicalProfessionals,
+        technicalResponsibilities
       });
       setSuccessToast('PDF do Laudo de Insalubridade (NR-15) gerado com sucesso!');
     } else if (activeDocType === 'PERICULOSIDADE') {
@@ -248,7 +262,9 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
         organization,
         risks: environmentalRisks,
         ghes: clientGhes,
-        employees: clientEmployees
+        employees: clientEmployees,
+        technicalProfessionals,
+        technicalResponsibilities
       });
       setSuccessToast('PDF do Laudo de Periculosidade (NR-16) gerado com sucesso!');
     }

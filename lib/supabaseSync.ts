@@ -62,6 +62,8 @@ export const SYNCED_COLLECTIONS = [
   'cipaProcesses',
   'occupationalRisksCatalog',
   'contractedOrganizations',
+  'technicalProfessionals',
+  'technicalResponsibilities',
   'machinesEquipment',
   'chemicalProducts',
   'trainingRequirements',
