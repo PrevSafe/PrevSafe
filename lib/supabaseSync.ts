@@ -336,6 +336,22 @@ export async function createEvidenceSignedUrl(path: string, expiresInSeconds = 6
   return data.signedUrl;
 }
 
+/**
+ * Baixa o arquivo original de uma evidencia.
+ *
+ * Usado na emissao da AEP para recalcular o hash e conferir com o registrado:
+ * o bucket admite UPDATE por membro da organizacao, entao "foi guardado sem
+ * alteracao" e algo a conferir, nao a presumir.
+ */
+export async function downloadEvidencePhoto(path: string): Promise<ArrayBuffer | null> {
+  const supabase = getSupabaseClient();
+  if (!supabase || !path) return null;
+
+  const { data, error } = await supabase.storage.from(EVIDENCE_BUCKET).download(path);
+  if (error || !data) return null;
+  return await data.arrayBuffer();
+}
+
 /** Remove a foto do bucket. Usado quando o tecnico exclui a evidencia. */
 export async function removeEvidencePhoto(path: string): Promise<SyncOutcome> {
   const supabase = getSupabaseClient();

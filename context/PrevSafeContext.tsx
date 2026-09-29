@@ -12,6 +12,7 @@ import {
   TechnicalProfessional,
   TechnicalResponsibility,
   TechnicalRoleCode,
+  EvidenciaFotografica,
   MachineEquipment,
   ChemicalProduct,
   TrainingRequirement,
@@ -170,6 +171,7 @@ import { dataDeHoje, dataEmDias, formatarDataISO, novoId } from '@/lib/datas';
 import { limparOrdensDeServico, AVISO_SEM_INVENTARIO } from '@/lib/limpezaDeOrdensDeServico';
 import { classificarRisco } from '@/lib/classificacaoDeRisco';
 import { ghesDosCargos, avisoDeCargosSemGhe } from '@/lib/ghesDoCargo';
+import { substituirEvidencia, descartarEvidencia } from '@/lib/evidenciasFotograficas';
 import {
   habilitacaoParaPapel,
   definicaoDoPapel,
@@ -303,7 +305,23 @@ interface PrevSafeContextType {
     data: Omit<ErgonomicAssessment, 'id' | 'organization_id' | 'created_at'>
   ) => ErgonomicAssessment;
   updateErgonomicAssessment: (id: string, updates: Partial<ErgonomicAssessment>) => void;
-  deleteErgonomicAssessment: (id: string) => void;
+  /**
+   * Remove a AEP. Com fotografia anexada, DESATIVA em vez de remover: apagar
+   * levaria junto o registro das fotos - hash, autor, data - de uma avaliacao
+   * que pode ja ter sido entregue.
+   */
+  deleteErgonomicAssessment: (id: string) => { ok: boolean; message: string };
+  /** Anexa uma fotografia ja enviada ao armazenamento. */
+  registrarEvidenciaDaAEP: (aepId: string, evidencia: EvidenciaFotografica) => void;
+  /** Troca uma foto por outra; a antiga continua guardada. */
+  substituirEvidenciaDaAEP: (
+    aepId: string, idAntiga: string, nova: EvidenciaFotografica, motivo: string
+  ) => { ok: boolean; message: string };
+  /**
+   * Marca a foto como descartada. Quem chama remove o ARQUIVO antes; o
+   * REGISTRO - hash, autor, data, motivo - fica.
+   */
+  descartarEvidenciaDaAEP: (aepId: string, id: string, motivo: string) => { ok: boolean; message: string };
   addLead: (lead: Omit<Lead, 'id' | 'organization_id' | 'created_at'>) => Lead;
   updateLead: (id: string, updates: Partial<Lead>) => void;
   deleteLead: (id: string) => void;
@@ -2283,10 +2301,98 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     logAudit('UPDATE_AEP' as any, 'CLIENT' as any, id, 'AEP atualizada', updates);
   }, [logAudit]);
 
-  const deleteErgonomicAssessment = useCallback((id: string) => {
+  const deleteErgonomicAssessment = useCallback((id: string): { ok: boolean; message: string } => {
+    const alvo = ergonomicAssessments.find(a => a.id === id);
+    if (!alvo) return { ok: false, message: 'Avaliação não encontrada.' };
+
+    const fotos = (alvo.photo_evidence || []).length;
+    if (fotos > 0) {
+      setErgonomicAssessments(prev => prev.map(a => (a.id === id ? { ...a, status: 'INACTIVE' } : a)));
+      logAudit(
+        'DEACTIVATE_AEP' as any, 'CLIENT' as any, id,
+        `AEP desativada, com ${fotos} registro(s) de fotografia preservado(s): ${alvo.situation_name}`,
+        { fotos }
+      );
+      return {
+        ok: true,
+        message:
+          `A avaliação "${alvo.situation_name}" tem ${fotos} registro(s) de fotografia e foi DESATIVADA `
+          + 'em vez de removida: sai das listas e dos documentos, mas o registro das fotos — hash, autor '
+          + 'e data — continua guardado.'
+      };
+    }
+
     setErgonomicAssessments(prev => prev.filter(a => a.id !== id));
     logAudit('DELETE_AEP' as any, 'CLIENT' as any, id, 'AEP removida', {});
+    return { ok: true, message: `A avaliação "${alvo.situation_name}" foi removida.` };
+  }, [ergonomicAssessments, logAudit]);
+
+  // =========================================================================
+  // FOTOGRAFIAS DA AEP
+  //
+  // Nao ha exclusao de foto. As regras - e por que - estao em
+  // lib/evidenciasFotograficas.ts.
+  // =========================================================================
+  const registrarEvidenciaDaAEP = useCallback((aepId: string, evidencia: EvidenciaFotografica) => {
+    setErgonomicAssessments(prev => prev.map(a => (
+      a.id === aepId ? { ...a, photo_evidence: [...(a.photo_evidence || []), evidencia] } : a
+    )));
+    logAudit(
+      'ADD_AEP_PHOTO' as any, 'CLIENT' as any, aepId,
+      `Fotografia anexada à AEP (${evidencia.momento}) — SHA-256 ${evidencia.sha256}`,
+      { evidencia_id: evidencia.id, sha256: evidencia.sha256, path: evidencia.path }
+    );
   }, [logAudit]);
+
+  const substituirEvidenciaDaAEP = useCallback((
+    aepId: string, idAntiga: string, nova: EvidenciaFotografica, motivo: string
+  ): { ok: boolean; message: string } => {
+    const aep = ergonomicAssessments.find(a => a.id === aepId);
+    if (!aep) return { ok: false, message: 'Avaliação não encontrada.' };
+
+    const r = substituirEvidencia(
+      aep.photo_evidence, idAntiga, nova, motivo,
+      currentProfile?.full_name || 'usuário', new Date().toISOString()
+    );
+    if (!r.ok) return { ok: false, message: r.motivo };
+
+    setErgonomicAssessments(prev => prev.map(a => (
+      a.id === aepId ? { ...a, photo_evidence: r.evidencias } : a
+    )));
+    logAudit(
+      'REPLACE_AEP_PHOTO' as any, 'CLIENT' as any, aepId,
+      `Fotografia substituída — motivo: ${motivo.trim()}`,
+      { antiga: idAntiga, nova: nova.id, sha256_nova: nova.sha256 }
+    );
+    return { ok: true, message: 'Foto substituída. A anterior continua guardada, marcada como substituída.' };
+  }, [ergonomicAssessments, currentProfile, logAudit]);
+
+  const descartarEvidenciaDaAEP = useCallback((
+    aepId: string, id: string, motivo: string
+  ): { ok: boolean; message: string } => {
+    const aep = ergonomicAssessments.find(a => a.id === aepId);
+    if (!aep) return { ok: false, message: 'Avaliação não encontrada.' };
+
+    const r = descartarEvidencia(
+      aep.photo_evidence, id, motivo,
+      currentProfile?.full_name || 'usuário', new Date().toISOString()
+    );
+    if (!r.ok) return { ok: false, message: r.motivo };
+
+    const hash = (aep.photo_evidence || []).find(e => e.id === id)?.sha256 || '';
+    setErgonomicAssessments(prev => prev.map(a => (
+      a.id === aepId ? { ...a, photo_evidence: r.evidencias } : a
+    )));
+    logAudit(
+      'DISCARD_AEP_PHOTO' as any, 'CLIENT' as any, aepId,
+      `Fotografia descartada — motivo: ${motivo.trim()} — SHA-256 ${hash}`,
+      { evidencia_id: id, sha256: hash }
+    );
+    return {
+      ok: true,
+      message: 'Arquivo removido. O registro — hash, autor, data e motivo — continua na avaliação.'
+    };
+  }, [ergonomicAssessments, currentProfile, logAudit]);
 
   const addLead = useCallback((leadData: Omit<Lead, 'id' | 'organization_id' | 'created_at'>): Lead => {
     const newLead: Lead = {
@@ -7935,6 +8041,9 @@ ${exames.map(ex => `      <exameMedico>
     addErgonomicAssessment,
     updateErgonomicAssessment,
     deleteErgonomicAssessment,
+    registrarEvidenciaDaAEP,
+    substituirEvidenciaDaAEP,
+    descartarEvidenciaDaAEP,
     addLead,
     updateLead,
     deleteLead,
@@ -8237,6 +8346,9 @@ ${exames.map(ex => `      <exameMedico>
     addErgonomicAssessment,
     updateErgonomicAssessment,
     deleteErgonomicAssessment,
+    registrarEvidenciaDaAEP,
+    substituirEvidenciaDaAEP,
+    descartarEvidenciaDaAEP,
     addLead,
     updateLead,
     deleteLead,

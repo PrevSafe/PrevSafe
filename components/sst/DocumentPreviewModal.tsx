@@ -41,6 +41,7 @@ import {
   exportPericulosidadeLaudoPdf,
   exportAEPDocumentPdf
 } from '@/lib/pdfExportService';
+import { prepararFotosDaAEP } from '@/lib/imagensParaPdf';
 import { SSTElectronicSignatureModal } from './SSTElectronicSignatureModal';
 import { SSTDocumentSignature } from '@/types';
 import { DECLARACAO_DE_INTEGRIDADE } from '@/lib/documentoHash';
@@ -227,8 +228,25 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
       exportLTCATDocumentPdf({ client, organization, risks, ghes, employees, technicalProfessionals, technicalResponsibilities });
       setDownloadSuccess('LTCAT gerado e baixado em PDF com sucesso!');
     } else if (docType === 'AEP') {
-      exportAEPDocumentPdf({ client, organization, ergonomicAssessments, ghes, jobs, units, technicalProfessionals, technicalResponsibilities });
-      setDownloadSuccess('AEP (NR-17) gerada e baixada em PDF!');
+      // As fotos sao baixadas e conferidas (hash) antes de gerar: o gerador de
+      // PDF e sincrono e o armazenamento nao. So as deste cliente.
+      setDownloadSuccess('Conferindo as fotografias da AEP…');
+      prepararFotosDaAEP(
+        (ergonomicAssessments || []).filter(
+          (a: any) => a?.client_id === client.id && a?.status !== 'INACTIVE'
+        )
+      )
+        .then((imagensDasEvidencias) => {
+          exportAEPDocumentPdf({
+            client, organization, ergonomicAssessments, ghes, jobs, units,
+            technicalProfessionals, technicalResponsibilities, imagensDasEvidencias
+          });
+          setDownloadSuccess('AEP (NR-17) gerada e baixada em PDF!');
+          setTimeout(() => setDownloadSuccess(null), 4000);
+        })
+        .catch((erro: any) => {
+          setDownloadSuccess(`Não foi possível gerar a AEP: ${erro?.message || 'erro desconhecido'}`);
+        });
     } else if (docType === 'INSALUBRIDADE') {
       exportInsalubridadeLaudoPdf({ client, organization, risks, ghes, employees, technicalProfessionals, technicalResponsibilities });
       setDownloadSuccess('Laudo de Insalubridade gerado e baixado em PDF!');
@@ -747,7 +765,19 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
                   <p className="text-[11px] text-slate-600">
                     O PDF traz uma página por situação, com a conclusão de cada um dos seis aspectos da
                     NR-17, o que se observou, as medidas de prevenção do subitem 17.4.3.1, a oitiva dos
-                    trabalhadores (item 17.3.8) e o quadro de assinaturas.
+                    trabalhadores (item 17.3.8), o registro fotográfico e o quadro de assinaturas.
+                    {/*
+                      As fotos so existem no PDF: sao baixadas do armazenamento privado e
+                      conferidas pelo hash na hora de gerar. O "Imprimir" desta tela imprime
+                      so este resumo - dizer isso evita entregar um resumo achando que e a AEP.
+                    */}
+                    {(ergonomicAssessments || []).some((a: any) =>
+                      (a?.photo_evidence || []).some((e: any) => e?.situacao === 'ATIVA')) && (
+                      <strong className="block mt-1 text-slate-700">
+                        Esta AEP tem fotografias: elas saem no &quot;Baixar PDF&quot;, com o hash conferido na
+                        emissão. O &quot;Imprimir&quot; desta tela imprime só este resumo.
+                      </strong>
+                    )}
                   </p>
                 </div>
               )}

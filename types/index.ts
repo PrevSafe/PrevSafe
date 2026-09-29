@@ -448,9 +448,68 @@ export interface ErgonomicAssessment {
   aet_report_date?: string;
   aet_report_reference?: string;
 
+  /**
+   * Fotografias da situacao de trabalho. As regras - hash, legenda, troca e
+   * descarte com rastro - estao em lib/evidenciasFotograficas.ts.
+   */
+  photo_evidence?: EvidenciaFotografica[];
+
   notes?: string;
   status: 'ACTIVE' | 'INACTIVE';
   created_at: string;
+}
+
+export type MomentoDaEvidencia = 'SITUACAO_ENCONTRADA' | 'APOS_A_MEDIDA';
+
+/**
+ * ATIVA: vale e sai no documento.
+ * SUBSTITUIDA: trocada por outra; o arquivo continua guardado.
+ * DESCARTADA: o arquivo foi removido (ex.: mostrava rosto identificavel), mas
+ * o registro - hash, quem, quando e por que - continua.
+ */
+export type SituacaoDaEvidencia = 'ATIVA' | 'SUBSTITUIDA' | 'DESCARTADA';
+
+/**
+ * Uma fotografia anexada a AEP.
+ *
+ * O que a torna PROVA e nao ilustracao e o hash calculado sobre o arquivo no
+ * momento do registro: pelo CPC, art. 422, par. 1o, a fotografia digital
+ * impugnada exige autenticacao eletronica ou pericia, e o hash e o que se
+ * apresenta.
+ */
+export interface EvidenciaFotografica {
+  id: string;
+  /** Caminho no bucket privado. Vazio depois de descartada. */
+  path: string;
+  /** SHA-256 do arquivo original, em hexadecimal, calculado antes do envio. */
+  sha256: string;
+  mime: 'image/jpeg' | 'image/png';
+  tamanho_bytes: number;
+  momento: MomentoDaEvidencia;
+  /** Aspecto da NR-17 a que a foto se refere (chave de NR17_ASPECTOS). */
+  aspecto?: string;
+  legenda: string;
+  /** Relogio do sistema no envio. NAO e a hora em que a foto foi tirada. */
+  registrada_em: string;
+  registrada_por_id: string;
+  registrada_por_nome: string;
+  /**
+   * Posicao do APARELHO no momento do registro, quando quem registrou declarou
+   * estar no local. Nao e a posicao em que a foto foi tirada.
+   */
+  local_do_registro?: {
+    latitude: number;
+    longitude: number;
+    precisao_metros: number;
+    obtida_em: string;
+  };
+  /** Quem registrou confirmou que ninguem e identificavel pelo rosto. */
+  sem_rosto_identificavel: boolean;
+  situacao: SituacaoDaEvidencia;
+  substituida_por?: string;
+  encerrada_em?: string;
+  encerrada_por_nome?: string;
+  motivo_encerramento?: string;
 }
 
 /**

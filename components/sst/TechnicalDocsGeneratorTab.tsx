@@ -35,6 +35,7 @@ import {
   exportInsalubridadeLaudoPdf,
   exportPericulosidadeLaudoPdf
 } from '@/lib/pdfExportService';
+import { prepararFotosDaAEP } from '@/lib/imagensParaPdf';
 import { DocumentPreviewModal, PreviewDocType } from '@/lib/../components/sst/DocumentPreviewModal';
 import { montarCorpoInsalubridade, montarCorpoPericulosidade } from '@/lib/laudoDados';
 
@@ -234,17 +235,28 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
       });
       setSuccessToast('PDF do LTCAT Previdenciário (INSS) gerado com sucesso!');
     } else if (activeDocType === 'AEP') {
-      exportAEPDocumentPdf({
-        client: clientObj,
-        organization,
-        ergonomicAssessments: clientAeps,
-        ghes: clientGhes,
-        jobs: hierarchyJobs,
-        units,
-        technicalProfessionals,
-        technicalResponsibilities
-      });
-      setSuccessToast('PDF da AEP (NR-17) gerado com sucesso!');
+      // As fotos sao baixadas e conferidas (hash) antes de gerar: o gerador de
+      // PDF e sincrono e o armazenamento nao.
+      setSuccessToast('Conferindo as fotografias da AEP…');
+      prepararFotosDaAEP(clientAeps)
+        .then((imagensDasEvidencias) => {
+          exportAEPDocumentPdf({
+            client: clientObj,
+            organization,
+            ergonomicAssessments: clientAeps,
+            ghes: clientGhes,
+            jobs: hierarchyJobs,
+            units,
+            technicalProfessionals,
+            technicalResponsibilities,
+            imagensDasEvidencias
+          });
+          setSuccessToast('PDF da AEP (NR-17) gerado com sucesso!');
+          setTimeout(() => setSuccessToast(null), 4000);
+        })
+        .catch((erro: any) => {
+          setSuccessToast(`Não foi possível gerar a AEP: ${erro?.message || 'erro desconhecido'}`);
+        });
     } else if (activeDocType === 'INSALUBRIDADE') {
       exportInsalubridadeLaudoPdf({
         client: clientObj,

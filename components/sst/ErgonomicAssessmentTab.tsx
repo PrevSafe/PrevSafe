@@ -44,8 +44,10 @@ import {
   Info,
   AlertTriangle,
   CheckCircle2,
-  Users
+  Users,
+  Camera
 } from 'lucide-react';
+import { AepPhotoEvidenceModal } from './AepPhotoEvidenceModal';
 
 interface ErgonomicAssessmentTabProps {
   selectedClientId: string;
@@ -86,6 +88,7 @@ export const ErgonomicAssessmentTab: React.FC<ErgonomicAssessmentTabProps> = ({ 
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editando, setEditando] = useState<ErgonomicAssessment | null>(null);
+  const [fotosDe, setFotosDe] = useState<ErgonomicAssessment | null>(null);
   const [form, setForm] = useState({ ...VAZIO });
 
   const cliente = clients.find((c) => c.id === selectedClientId);
@@ -443,9 +446,25 @@ export const ErgonomicAssessmentTab: React.FC<ErgonomicAssessmentTabProps> = ({ 
                         </button>
                         <button
                           type="button"
+                          onClick={() => setFotosDe(a)}
+                          className="p-1.5 text-slate-400 hover:text-teal-400 hover:bg-slate-800 rounded-lg transition-colors relative"
+                          title="Fotografias"
+                        >
+                          <Camera className="w-3.5 h-3.5" />
+                          {(a.photo_evidence || []).some((e) => e.situacao === 'ATIVA') && (
+                            <span className="absolute -top-0.5 -right-0.5 text-[9px] font-bold bg-teal-500 text-slate-950 rounded-full px-1 leading-tight">
+                              {(a.photo_evidence || []).filter((e) => e.situacao === 'ATIVA').length}
+                            </span>
+                          )}
+                        </button>
+                        <button
+                          type="button"
                           onClick={() => {
                             if (confirm(`Remover a avaliação de ${a.situation_name}?`)) {
-                              deleteErgonomicAssessment(a.id);
+                              // Com foto anexada, a avaliacao e desativada em vez de
+                              // removida - e a mensagem diz isso.
+                              const r = deleteErgonomicAssessment(a.id);
+                              if (r?.message) alert(r.message);
                             }
                           }}
                           className="p-1.5 text-slate-400 hover:text-rose-400 hover:bg-slate-800 rounded-lg transition-colors"
@@ -483,6 +502,10 @@ export const ErgonomicAssessmentTab: React.FC<ErgonomicAssessmentTabProps> = ({ 
           ))}
         </div>
       </div>
+
+      {fotosDe && (
+        <AepPhotoEvidenceModal aep={fotosDe} onClose={() => setFotosDe(null)} />
+      )}
 
       {isModalOpen && (
         <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">

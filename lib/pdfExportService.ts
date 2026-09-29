@@ -27,6 +27,13 @@ import { dataDeHoje, somarMesesISO } from '@/lib/datas';
 import { formatarCPF } from '@/lib/validacoesBr';
 import { exameSugeridosParaAso } from '@/lib/esocialDados';
 import { assinaturaDoDocumento, linhaDeResponsaveis } from '@/lib/responsabilidadeTecnica';
+import {
+  evidenciasParaImpressao,
+  legendaDeImpressao,
+  caixaDaImagem,
+  NOTA_SOBRE_AS_FOTOGRAFIAS
+} from '@/lib/evidenciasFotograficas';
+import type { ImagemParaImpressao } from '@/lib/evidenciasFotograficas';
 import type { AssinaturaDoDocumento } from '@/lib/responsabilidadeTecnica';
 import type { TechnicalProfessional, TechnicalResponsibility, TechnicalRoleCode } from '@/types';
 import { VERSAO_DO_DOCUMENTO } from '@/lib/versaoDoDocumento';
@@ -5120,7 +5127,8 @@ export function exportAEPDocumentPdf({
   jobs = [],
   units = [],
   technicalProfessionals = [],
-  technicalResponsibilities = []
+  technicalResponsibilities = [],
+  imagensDasEvidencias = {}
 }: {
   client: Client;
   organization: Organization;
@@ -5130,6 +5138,13 @@ export function exportAEPDocumentPdf({
   units?: any[];
   technicalProfessionals?: TechnicalProfessional[];
   technicalResponsibilities?: TechnicalResponsibility[];
+  /**
+   * Fotos ja baixadas, conferidas e reduzidas, por id da evidencia. Vem de
+   * prepararImagensParaImpressao: o gerador e sincrono e o armazenamento nao.
+   * Ausente = o documento imprime a legenda e diz que a imagem nao pode ser
+   * baixada, em vez de omitir a foto em silencio.
+   */
+  imagensDasEvidencias?: Record<string, ImagemParaImpressao>;
 }) {
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
   const pageWidth = doc.internal.pageSize.getWidth();
@@ -5442,6 +5457,12 @@ export function exportAEPDocumentPdf({
   novaPagina();
   secao('7. RESULTADOS POR SITUAÇÃO DE TRABALHO');
 
+  const ordemDosAspectos = NR17_ASPECTOS.map((x) => x.chave);
+  const algumaFoto = aeps.some(
+    (a: any) => evidenciasParaImpressao(a?.photo_evidence, ordemDosAspectos).length > 0
+  );
+  if (algumaFoto) paragrafo(NOTA_SOBRE_AS_FOTOGRAFIAS, 6.6);
+
   if (aeps.length === 0) {
     // Nao cabe declaracao de inexistencia: o item 17.2.1 aplica a NR-17 a
     // todas as situacoes de trabalho, e o subitem 17.3.1.2.1 exige o registro.
@@ -5545,6 +5566,101 @@ export function exportAEPDocumentPdf({
     ]);
 
     if (a?.notes?.trim()) paragrafo(`Observações: ${a.notes.trim()}`, 6.8);
+
+    // ----------------------------------------------------------------
+    // Registro fotografico: so as fotos ATIVAS, por aspecto, com a da
+    // situacao encontrada antes da de apos a medida. Cada uma leva a
+    // legenda, quem e quando registrou, o hash do original e o resultado da
+    // conferencia feita NESTA emissao.
+    // ----------------------------------------------------------------
+    const fotos = evidenciasParaImpressao(a?.photo_evidence, ordemDosAspectos);
+    if (fotos.length > 0) {
+      garantirEspaco(30);
+      tabela({
+        head: [[{
+          content: `REGISTRO FOTOGRÁFICO (${fotos.length})`,
+          styles: { fillColor: [30, 41, 59], textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 8 }
+        }]],
+        body: []
+      });
+
+      const larguraDaImagem = 78;
+      const alturaMaximaDaImagem = 58;
+      const xDoTexto = margin + larguraDaImagem + 4;
+      const larguraDoTexto = util - larguraDaImagem - 4;
+
+      fotos.forEach((foto) => {
+        const imagem = imagensDasEvidencias?.[foto.id] || null;
+        const rotuloDoAspecto = NR17_ASPECTOS.find((x) => x.chave === foto.aspecto);
+        const linhas = legendaDeImpressao(
+          foto,
+          rotuloDoAspecto ? `${rotuloDoAspecto.rotulo} (${rotuloDoAspecto.fonte})` : 'aspecto não indicado',
+          imagem
+        );
+
+        // Mede o texto antes de desenhar, para o bloco inteiro caber na pagina.
+        const blocos = linhas.map((linha, n) => {
+          const ehHash = linha.startsWith('SHA-256 do original: ');
+          const ehIntegridade = n === linhas.length - 1;
+          doc.setFont(ehHash ? 'courier' : 'helvetica', n === 0 || ehIntegridade ? 'bold' : 'normal');
+          doc.setFontSize(ehHash ? 5.8 : 6.6);
+          const partes: string[] = ehHash
+            ? ['SHA-256 do original:', ...doc.splitTextToSize(linha.slice('SHA-256 do original: '.length), larguraDoTexto)]
+            : doc.splitTextToSize(linha, larguraDoTexto);
+          return { partes, ehHash, ehIntegridade, n };
+        });
+        const alturaDoTexto = blocos.reduce((t, b) => t + b.partes.length * 3 + 1, 0);
+
+        const caixa = imagem?.dataUrl
+          ? caixaDaImagem(imagem.larguraPx, imagem.alturaPx, larguraDaImagem, alturaMaximaDaImagem)
+          : { largura: larguraDaImagem, altura: 24 };
+        const alturaDoBloco = Math.max(caixa.altura, alturaDoTexto) + 5;
+        garantirEspaco(alturaDoBloco + 2);
+
+        const topo = curY;
+        if (imagem?.dataUrl) {
+          doc.addImage(imagem.dataUrl, imagem.formato, margin, topo, caixa.largura, caixa.altura);
+          doc.setDrawColor(203, 213, 225);
+          doc.rect(margin, topo, caixa.largura, caixa.altura);
+        } else {
+          doc.setFillColor(241, 245, 249);
+          doc.rect(margin, topo, caixa.largura, caixa.altura, 'F');
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(6.6);
+          doc.setTextColor(100, 116, 139);
+          doc.text('IMAGEM INDISPONÍVEL NESTA EMISSÃO', margin + caixa.largura / 2, topo + caixa.altura / 2,
+            { align: 'center' });
+        }
+
+        let y = topo + 2.6;
+        blocos.forEach((b) => {
+          doc.setFont(b.ehHash ? 'courier' : 'helvetica', b.n === 0 || b.ehIntegridade ? 'bold' : 'normal');
+          doc.setFontSize(b.ehHash ? 5.8 : 6.6);
+          if (b.ehIntegridade) {
+            if (imagem && imagem.hashConfere === true) doc.setTextColor(21, 128, 61);
+            else if (imagem && imagem.hashConfere === false) doc.setTextColor(185, 28, 28);
+            else doc.setTextColor(180, 83, 9);
+          } else {
+            doc.setTextColor(15, 23, 42);
+          }
+          b.partes.forEach((parte: string, k: number) => {
+            // o rotulo do hash vai em helvetica; o hash, em courier
+            if (b.ehHash && k === 0) {
+              doc.setFont('helvetica', 'normal');
+              doc.setFontSize(6.6);
+            } else if (b.ehHash) {
+              doc.setFont('courier', 'normal');
+              doc.setFontSize(5.8);
+            }
+            doc.text(parte, xDoTexto, y);
+            y += 3;
+          });
+          y += 1;
+        });
+        doc.setTextColor(15, 23, 42);
+        curY = topo + alturaDoBloco;
+      });
+    }
 
     if (faltas.length > 0) {
       paragrafo(
