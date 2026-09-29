@@ -206,13 +206,62 @@ export function dispensadaDeElaborarAET(
   const ehMei = /\bMEI\b|MICROEMPREENDEDOR/.test(p);
   if (ehMei) return true;
 
-  const ehMeOuEpp = /\bME\b|MICROEMPRESA|\bEPP\b|PEQUENO PORTE/.test(p);
+  // A Receita escreve "MICRO EMPRESA" com espaco e "EMPRESA DE PEQUENO
+  // PORTE" por extenso. Sem tolerar as duas formas, o porte vindo da consulta
+  // caia como "nao da para saber" e a dispensa do item 17.3.4 nunca era
+  // avaliada.
+  const ehMeOuEpp = /\bME\b|MICRO\s*EMPRESA|\bEPP\b|PEQUENO PORTE/.test(p);
   if (!p || (!ehMeOuEpp && !/DEMAIS|MEDIO|GRANDE/.test(p))) return null;
   if (!ehMeOuEpp) return false;
   if (grauDeRisco !== 1 && grauDeRisco !== 2) {
     return grauDeRisco == null ? null : false;
   }
   return true;
+}
+
+/**
+ * Os portes que o cadastro oferece.
+ *
+ * Fica aqui, e nao na tela, porque os valores precisam ser exatamente os que
+ * `dispensadaDeElaborarAET` reconhece. Separados, a tela grava um texto que a
+ * regra nao entende e a dispensa do item 17.3.4 nunca e avaliada - que era o
+ * caso do porte vindo da Receita por extenso.
+ */
+export const PORTES: { valor: string; rotulo: string }[] = [
+  { valor: 'MEI', rotulo: 'MEI — Microempreendedor Individual' },
+  { valor: 'ME', rotulo: 'ME — Microempresa' },
+  { valor: 'EPP', rotulo: 'EPP — Empresa de Pequeno Porte' },
+  { valor: 'DEMAIS', rotulo: 'Demais — médio ou grande porte' },
+];
+
+/**
+ * O que o porte informado implica para a AET, em uma frase.
+ *
+ * Existe para a consequencia aparecer no momento em que o campo e preenchido,
+ * e nao so quando a AEP for emitida.
+ */
+export function descreverDispensaDaAET(
+  porte: string | null | undefined,
+  grauDeRisco: 1 | 2 | 3 | 4 | null | undefined
+): string {
+  const dispensa = dispensadaDeElaborarAET(porte, grauDeRisco);
+
+  if (dispensa === null) {
+    if (!String(porte || '').trim()) {
+      return 'Sem o porte não se sabe se incide a dispensa de elaborar a AET (item 17.3.4). '
+        + 'A AEP sai com essa pendência.';
+    }
+    return 'Informe também o grau de risco NR-04: a dispensa do item 17.3.4 depende dos dois.';
+  }
+
+  if (dispensa) {
+    return 'Dispensada de ELABORAR a AET (item 17.3.4) — mas deve atender a todos os demais '
+      + 'requisitos da NR-17, e realizar a AET nas situações das alíneas "c" e "d" do item '
+      + '17.3.2 (subitem 17.3.4.1).';
+  }
+
+  return 'Não alcançada pela dispensa do item 17.3.4: a AET é devida quando a AEP indicar '
+    + 'as situações do item 17.3.2.';
 }
 
 export const NR17_FUNDAMENTO_DA_DISPENSA =

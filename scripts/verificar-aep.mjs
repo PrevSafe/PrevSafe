@@ -114,7 +114,13 @@ try {
 }
 
 const { exportAEPDocumentPdf } = servico;
-const { faltasDaAEP, NR17_ASPECTOS } = nr17;
+const {
+  faltasDaAEP,
+  NR17_ASPECTOS,
+  dispensadaDeElaborarAET,
+  descreverDispensaDaAET,
+  PORTES,
+} = nr17;
 
 let falhas = 0;
 let casos = 0;
@@ -123,6 +129,17 @@ const check = (ok, msg) => {
   if (!ok) falhas++;
   console.log(`${ok ? 'OK   ' : 'FALHA'} ${msg}`);
 };
+
+/**
+ * Texto do arquivo sem comentarios.
+ *
+ * O cabecalho de `porteDaReceita` CITA o defeito antigo para explicar por que
+ * a funcao existe. Sem isto, a varredura pega a propria prosa e acusa um
+ * defeito que ja foi corrigido.
+ */
+const semComentariosDoArquivo = (txt) => txt
+  .replace(/\/\*[\s\S]*?\*\//g, ' ')
+  .replace(/(^|[^:])\/\/[^\n]*/gm, '$1');
 
 /**
  * As strings que o PDF manda desenhar.
@@ -388,6 +405,73 @@ const tSemPorte = corrido(gerar({
 }));
 check(tSemPorte.includes('não afirma nem nega a dispensa'),
   'sem o porte, o documento declara a dúvida em vez de presumir a dispensa');
+
+// ===========================================================================
+// PORTE DA ORGANIZACAO
+//
+// O porte decide, com o grau de risco, a dispensa de ELABORAR a AET (item
+// 17.3.4). O campo existia no cadastro do cliente e NUNCA teve input: so era
+// preenchido pela consulta a Receita. Cliente criado a mao, ou com CPF, CAEPF
+// ou CNO, ficava sem porte para sempre - e a AEP mandava preencher numa tela
+// onde o campo nao existia.
+// ===========================================================================
+console.log('\n--- Porte: o campo, e o que ele decide ---');
+{
+  const tela = fs.readFileSync(path.join(RAIZ, 'components/crm/ClientsView.tsx'), 'utf8');
+  check(/clientForm\.porte/.test(tela) && /setClientForm\(\{ \.\.\.clientForm, porte:/.test(tela),
+    'a tela de clientes tem onde informar o porte');
+  check(/PORTES\.map/.test(tela),
+    'e as opções vêm da mesma lista que a regra do item 17.3.4 reconhece');
+  check(!/porte \|\| 'Empresa Geral'/.test(tela),
+    'o painel não chama de "Empresa Geral" o porte que ninguém informou');
+
+  // Os valores oferecidos na tela TEM de ser entendidos pela regra. Separados,
+  // a tela grava um texto que a regra nao le e a dispensa nunca e avaliada.
+  check(dispensadaDeElaborarAET('MEI', 4) === true,
+    'MEI é dispensado de elaborar a AET em qualquer grau (item 17.3.4)');
+  check(dispensadaDeElaborarAET('ME', 2) === true, 'ME de grau 2 é dispensada');
+  check(dispensadaDeElaborarAET('ME', 3) === false, 'ME de grau 3 não é');
+  check(dispensadaDeElaborarAET('EPP', 1) === true, 'EPP de grau 1 é dispensada');
+  check(dispensadaDeElaborarAET('DEMAIS', 1) === false,
+    'médio e grande porte não são dispensados, mesmo em grau 1');
+  for (const p of PORTES) {
+    check(dispensadaDeElaborarAET(p.valor, 1) !== null,
+      `a regra entende a opção "${p.valor}" oferecida na tela`);
+  }
+
+  // Como a Receita escreve.
+  check(dispensadaDeElaborarAET('MICRO EMPRESA', 1) === true,
+    '"MICRO EMPRESA", com espaço, é entendido como ME');
+  check(dispensadaDeElaborarAET('EMPRESA DE PEQUENO PORTE', 2) === true,
+    '"EMPRESA DE PEQUENO PORTE" é entendido como EPP');
+
+  // Sem porte NAO se presume nada.
+  check(dispensadaDeElaborarAET('', 1) === null, 'sem porte, a dispensa fica indefinida');
+  check(dispensadaDeElaborarAET('ME', null) === null,
+    'com porte e sem grau de risco, também');
+
+  // A consequencia aparece na hora de preencher.
+  check(/dispensada/i.test(descreverDispensaDaAET('MEI', 3)),
+    'o campo explica que o MEI é dispensado');
+  check(/17\.3\.4\.1/.test(descreverDispensaDaAET('ME', 1)),
+    'e lembra do subitem 17.3.4.1, que traz a AET de volta pelas alíneas "c" e "d"');
+  check(/porte/i.test(descreverDispensaDaAET('', 1)),
+    'sem porte, diz que falta o porte');
+  check(/grau de risco/i.test(descreverDispensaDaAET('ME', null)),
+    'com porte e sem grau, diz que falta o grau — e não manda preencher o que já está lá');
+
+  // A consulta a Receita nao chuta mais.
+  // Sem os comentários: o cabeçalho de `porteDaReceita` CITA o defeito antigo
+  // para explicar por que a função existe, e a varredura pegava a própria prosa.
+  const lookup = semComentariosDoArquivo(
+    fs.readFileSync(path.join(RAIZ, 'lib/companyLookup.ts'), 'utf8')
+  );
+  check(!/data\.porte \|\| 'DEMAIS'/.test(lookup),
+    "a consulta não classifica como 'DEMAIS' a empresa cujo porte a Receita não informou");
+  check(/codigo_porte/.test(lookup),
+    'o porte vem do código numérico da Receita, não do texto');
+  check(/opcao_pelo_mei/.test(lookup), 'e o MEI vem da opção pelo SIMEI');
+}
 
 // ===========================================================================
 // 5. SO AS AEP DESTE CLIENTE

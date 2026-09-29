@@ -290,6 +290,23 @@ function technicalResponsibleName(organization: Organization): string {
   return organization?.technical_responsible_name?.trim() || RT_NAO_INFORMADO;
 }
 
+/**
+ * Por que a dispensa do item 17.3.4 da NR-17 ficou indefinida.
+ *
+ * Sao dois motivos diferentes - falta o porte, ou falta o grau de risco - e o
+ * texto mandava preencher o PORTE nos dois casos, inclusive quando ele ja
+ * estava preenchido e o que faltava era o grau.
+ */
+function motivoDaDispensaIndefinida(client: Client): string {
+  const temPorte = Boolean(String(client?.porte || '').trim());
+  const faltando = temPorte
+    ? 'Grau de risco NR-04 não classificado'
+    : 'Porte da organização não informado';
+  return `${faltando}: a dispensa de elaborar a AET do item 17.3.4 da NR-17 alcança ME e EPP de `
+    + 'graus de risco 1 e 2 e o MEI, e depende dos dois campos. Até que estejam preenchidos, este '
+    + 'documento não afirma nem nega a dispensa (CRM > Clientes & Unidades, ao editar o cliente).';
+}
+
 /** CNAE do cliente, ou aviso de pendencia. Nunca um CNAE de exemplo. */
 function cnaeLine(client: Client): string {
   return client?.main_cnae?.trim() || 'CNAE NÃO INFORMADO';
@@ -3541,7 +3558,7 @@ Data: ${data}`;
     );
   } else {
     paragrafo(
-      pendente('5.3', 'Porte da organização não informado: sem ele não se sabe se incide a dispensa de elaborar a AET do item 17.3.4 da NR-17, que alcança ME e EPP de graus de risco 1 e 2 e o MEI (CRM > Clientes & Unidades).'),
+      pendente('5.3', motivoDaDispensaIndefinida(client)),
       6.8
     );
   }
@@ -5316,7 +5333,7 @@ export function exportAEPDocumentPdf({
     ['CNAE principal', cnaeLine(client)],
     ['Grau de risco (NR-04, Anexo I)', riskDegreeLine(client)],
     ['Porte', String(client?.porte || '').trim()
-      || pendente('Identificação', 'Porte da organização não informado: sem ele não se sabe se incide a dispensa de elaborar a AET do item 17.3.4 da NR-17 (CRM > Clientes & Unidades).')]
+      || pendente('Identificação', 'Porte da organização não informado: sem ele não se sabe se incide a dispensa de elaborar a AET do item 17.3.4 da NR-17 (CRM > Clientes & Unidades, ao editar o cliente).')]
   ]);
 
   duasColunas('IDENTIFICAÇÃO DO DOCUMENTO', [
@@ -5408,7 +5425,7 @@ export function exportAEPDocumentPdf({
     );
   } else {
     paragrafo(
-      pendente('Seção 6', 'Porte da organização não informado: sem ele não se sabe se incide a dispensa de elaborar a AET do item 17.3.4, que alcança ME e EPP de graus de risco 1 e 2 e o MEI. Até que o porte seja informado, este documento não afirma nem nega a dispensa (CRM > Clientes & Unidades).'),
+      pendente('Seção 6', motivoDaDispensaIndefinida(client)),
       6.8
     );
   }

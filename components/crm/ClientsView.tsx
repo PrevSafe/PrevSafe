@@ -6,6 +6,7 @@ import { Client, ClientContact, ClientUnit, DocumentType } from '@/types';
 import { lookupRiskDegreeByCnae, calculateSesmtDimensioning } from '@/lib/nr4';
 import { lookupCompanyData, formatDocumentNumber, CompanyLookupResult } from '@/lib/companyLookup';
 import { conferirDocumento } from '@/lib/validacoesBr';
+import { PORTES, descreverDispensaDaAET } from '@/lib/nr17';
 import { 
   Building2, 
   Plus, 
@@ -724,7 +725,11 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
                     )}
                     <div className="flex justify-between">
                       <span className="text-slate-400">Porte / Regime:</span>
-                      <span className="text-slate-200">{selectedClient.porte || 'Empresa Geral'}</span>
+                      <span className={selectedClient.porte ? 'text-slate-200' : 'text-amber-300'}>
+                        {selectedClient.porte
+                          ? (PORTES.find(p => p.valor === selectedClient.porte)?.rotulo || selectedClient.porte)
+                          : 'Não informado'}
+                      </span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-slate-400">Status na Receita:</span>
@@ -1091,6 +1096,48 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
                       <option value={3}>Grau 3 (Grave)</option>
                       <option value={4}>Grau 4 (Crítico)</option>
                     </select>
+                  </div>
+                </div>
+
+                {/*
+                  Porte da organizacao.
+                  O campo existia no cadastro e so era preenchido pela consulta
+                  a Receita: cliente criado a mao, ou com CPF/CAEPF/CNO, ficava
+                  sem porte para sempre - e a AEP apontava a pendencia mandando
+                  preencher numa tela onde o campo nao existia.
+                  Junto com o grau de risco, ele decide a dispensa de elaborar
+                  a AET do item 17.3.4 da NR-17.
+                */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+                  <div>
+                    <label className="block text-[11px] text-slate-400 mb-1">
+                      Porte da organização (NR-17, item 17.3.4)
+                    </label>
+                    <select
+                      value={PORTES.some(p => p.valor === clientForm.porte) ? clientForm.porte : (clientForm.porte ? '__OUTRO__' : '')}
+                      onChange={(e) => {
+                        if (e.target.value === '__OUTRO__') return;
+                        setClientForm({ ...clientForm, porte: e.target.value });
+                      }}
+                      className={`w-full px-3 py-2 bg-slate-900 border rounded-xl text-xs text-white font-bold focus:outline-none focus:border-indigo-500 ${
+                        clientForm.porte ? 'border-slate-800' : 'border-amber-500/60'
+                      }`}
+                    >
+                      <option value="">Não informado — selecione</option>
+                      {PORTES.map(p => (
+                        <option key={p.valor} value={p.valor}>{p.rotulo}</option>
+                      ))}
+                      {clientForm.porte && !PORTES.some(p => p.valor === clientForm.porte) && (
+                        <option value="__OUTRO__">
+                          {clientForm.porte} (vindo da Receita — reclassifique acima)
+                        </option>
+                      )}
+                    </select>
+                  </div>
+                  <div className="flex items-end">
+                    <p className="text-[10px] text-slate-500 leading-relaxed">
+                      {descreverDispensaDaAET(clientForm.porte, clientForm.risk_degree)}
+                    </p>
                   </div>
                 </div>
 

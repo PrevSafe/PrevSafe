@@ -310,13 +310,20 @@ export const ErgonomicAssessmentTab: React.FC<ErgonomicAssessmentTabProps> = ({ 
           )}
           {dispensaAET === null && (
             <>
+              {/*
+                A dispensa fica indefinida por DOIS motivos diferentes: falta o
+                porte, ou falta o grau de risco. O aviso dizia sempre "porte
+                não informado" — e mandava preencher o que já estava lá.
+              */}
               <p className="text-sm text-amber-200 font-semibold">
-                Porte da organização não informado.
+                {String(cliente?.porte || '').trim()
+                  ? 'Grau de risco NR-04 não classificado.'
+                  : 'Porte da organização não informado.'}
               </p>
               <p className="text-xs text-amber-200/70 mt-1">
-                Sem ele não se sabe se incide a dispensa de elaborar a AET do item 17.3.4, que
-                alcança ME e EPP de graus de risco 1 e 2 e o MEI. Preencha em CRM &gt; Clientes. O PGR
-                sai com pendência enquanto isso — a dispensa não se presume.
+                A dispensa de elaborar a AET do item 17.3.4 alcança ME e EPP de graus de risco 1 e 2
+                e o MEI — depende dos dois campos. Preencha em CRM &gt; Clientes &amp; Unidades,
+                ao editar o cliente. O PGR sai com pendência enquanto isso — a dispensa não se presume.
               </p>
             </>
           )}

@@ -38,6 +38,32 @@ export interface CompanyLookupResult {
   raw_message?: string;
 }
 
+/**
+ * Porte da empresa, a partir do que a Receita devolve.
+ *
+ * O porte decide, junto com o grau de risco, se a organizacao esta dispensada
+ * de ELABORAR a AET (NR-17, item 17.3.4). Por isso ele nao pode ser chutado: o
+ * codigo mandava `data.porte || 'DEMAIS'`, e uma empresa cujo porte a Receita
+ * nao informasse saia classificada como media ou grande - ou seja, NAO
+ * dispensada - sem que ninguem tivesse apurado isso.
+ *
+ * `codigo_porte` e numerico e nao depende de como a API escreve o texto:
+ * 01 = microempresa, 03 = empresa de pequeno porte, 05 = demais. O MEI nao tem
+ * codigo de porte proprio (e microempresa), entao vem da opcao pelo SIMEI.
+ *
+ * Vazio quando nao da para saber. Quem le decide, e a AEP diz que falta.
+ */
+export function porteDaReceita(data: any): string {
+  if (data?.opcao_pelo_mei === true) return 'MEI';
+
+  const codigo = Number(data?.codigo_porte);
+  if (codigo === 1) return 'ME';
+  if (codigo === 3) return 'EPP';
+  if (codigo === 5) return 'DEMAIS';
+
+  return String(data?.porte || '').trim();
+}
+
 // Base de entidades verificadas para demonstração instantânea e fallback de alta confiabilidade
 const VERIFIED_ENTITIES_MOCK: Record<string, Partial<CompanyLookupResult>> = {};
 
@@ -148,7 +174,7 @@ export async function lookupCompanyData(
       phone: mock.phone || '(11) 3000-0000',
       email: mock.email || 'contato@empresa.com.br',
       status_receita: mock.status_receita || 'ATIVA',
-      porte: mock.porte || 'EMPRESA REGISTRADA',
+      porte: mock.porte || '',
       natureza_juridica: mock.natureza_juridica || 'Sociedade Empresária',
       esocial_tp_insc: tpInsc,
       esocial_explanation: explanation,
@@ -197,7 +223,7 @@ export async function lookupCompanyData(
           phone: data.ddd_telefone_1 ? `(${data.ddd_telefone_1.slice(0, 2)}) ${data.ddd_telefone_1.slice(2)}` : '',
           email: data.email ? data.email.toLowerCase() : '',
           status_receita: data.descricao_situacao_cadastral === 'ATIVA' ? 'ATIVA' : 'INAPTA',
-          porte: data.porte || 'DEMAIS',
+          porte: porteDaReceita(data),
           natureza_juridica: data.natureza_juridica || '',
           opening_date: data.data_inicio_atividade || '',
           esocial_tp_insc: '1',
