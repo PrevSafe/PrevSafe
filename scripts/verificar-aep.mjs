@@ -212,6 +212,23 @@ const GHES = [{ id: 'ghe-1', client_id: 'cli-1', code: 'GHE-01', name: 'Montagem
 const CARGOS = [{ id: 'cargo-1', client_id: 'cli-1', name: 'Montador' }];
 
 /** AEP completa: nada pendente. */
+/**
+ * Avaliacao psicossocial completa e sem fator presente - nada a inventariar.
+ * Desde 26/05/2026 ela faz parte da AEP (subitem 1.5.3.2.1 da NR-01): AEP
+ * sem ela nao esta completa. As chaves sao as de FATORES_PSICOSSOCIAIS.
+ */
+const PSICOSSOCIAL_COMPLETA = {
+  estrategias: ['OBSERVACAO_E_DIALOGO'],
+  indicadores_consultados: 'Afastamentos do setor nos ultimos 12 meses, somados',
+  fatores: Object.fromEntries(
+    ['assedio', 'mudancas', 'clareza', 'recompensas', 'suporte', 'autonomia', 'justica',
+      'traumaticos', 'subcarga', 'sobrecarga', 'relacionamentos', 'comunicacao', 'remoto']
+      .map((k) => [k, { conclusao: 'NAO_IDENTIFICADO' }])
+  ),
+  avaliacao_de_desempenho: { conclusao: 'NAO_HA_SISTEMA' },
+  orientacao_das_chefias: { conclusao: 'ATENDE' },
+};
+
 const AEP_COMPLETA = {
   id: 'aep-1', client_id: 'cli-1', status: 'ACTIVE',
   situation_name: 'Montagem manual em bancada',
@@ -232,6 +249,9 @@ const AEP_COMPLETA = {
   prevention_description: 'Bancada regulavel ate marco de 2027 e pausa de 10 min a cada 50 trabalhados',
   workers_heard: 'SIM',
   workers_heard_note: 'Reuniao com os 12 montadores em 12/09/2026',
+  workers_heard_date: '2026-09-12',
+  workers_heard_count: 12,
+  psychosocial: PSICOSSOCIAL_COMPLETA,
   aet_triggers: [],
   created_at: '2026-09-10',
 };
@@ -355,12 +375,14 @@ check(
 
 // A mesma regra da aba e da secao 7.4 do PGR: a prova e comparar com a funcao.
 const faltasEsperadas = faltasDaAEP(AEP_VAZIA, { dispensaDeAET: false, alcance: '' });
-// Sete, e sao estas: uma AEP so com nome nao tem aspecto inadequado (entao as
+// Oito, e sao estas: uma AEP so com nome nao tem aspecto inadequado (entao as
 // regras de medida do 17.4.3.1 nao incidem) nem gatilho do 17.3.2 observado.
-check(faltasEsperadas.length === 7,
-  `a AEP vazia tem ${faltasEsperadas.length} faltas pela regra única (esperadas 7)`);
+// A oitava e a avaliacao psicossocial, que desde 26/05/2026 faz parte da AEP -
+// uma pendencia so, e nao uma por fator, enquanto nada foi comecado.
+check(faltasEsperadas.length === 8,
+  `a AEP vazia tem ${faltasEsperadas.length} faltas pela regra única (esperadas 8)`);
 for (const esperada of ['GHE ou cargo', 'abordagem', 'métodos', 'data', 'quem avaliou',
-  'aspecto(s) sem conclusão', 'oitiva']) {
+  'aspecto(s) sem conclusão', 'oitiva', 'fatores psicossociais']) {
   check(faltasEsperadas.some((f) => f.curto.includes(esperada)),
     `a regra cobra "${esperada}"`);
 }

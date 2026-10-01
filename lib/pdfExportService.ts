@@ -21,7 +21,7 @@ import {
 import * as XLSX from 'xlsx';
 import { formatDate } from '@/lib/utils';
 import { DECLARACAO_DE_INTEGRIDADE } from '@/lib/documentoHash';
-import { ANEXOS_NR16, montarCorpoInsalubridade, montarCorpoPericulosidade } from '@/lib/laudoDados';
+import { ANEXOS_NR16, montarCorpoInsalubridade, montarCorpoPericulosidade, ehFatorErgonomico, ehRiscoDeAcidente } from '@/lib/laudoDados';
 import type { CorpoLaudo } from '@/lib/laudoDados';
 import { dataDeHoje, somarMesesISO } from '@/lib/datas';
 import { formatarCPF } from '@/lib/validacoesBr';
@@ -64,6 +64,25 @@ import {
 } from '@/lib/classificacaoDeRisco';
 import { calculateSesmtDimensioning } from '@/lib/nr4';
 import { descreverSituacao } from '@/lib/situacaoOperacional';
+import { acoesDoPlano } from '@/lib/planoDeAcao';
+import {
+  BASE_NORMATIVA_PSICOSSOCIAL,
+  DEFINICAO_DO_GUIA,
+  O_QUE_A_AVALIACAO_NAO_E,
+  FONTE_DA_LISTAGEM,
+  VIGENCIA_DO_CAPITULO_1_5,
+  REQUISITO_17_4_4,
+  REQUISITO_17_4_7,
+  ehRiscoPsicossocial,
+  resumoPsicossocial,
+  avaliacaoIniciada,
+  faltasPsicossociais,
+  faltasDeInventarioPsicossocial,
+  riscosPsicossociaisSemAEP,
+  linhasDosFatores,
+  linhasDoMetodo,
+  linhasDosRequisitos
+} from '@/lib/psicossocial';
 import {
   PGR_NORMA_DE_REGENCIA,
   PGR_OBJETIVO,
@@ -4230,12 +4249,26 @@ Data: ${data}`;
       const gatilhos: string[] = Array.isArray(a?.aet_triggers) ? a.aet_triggers : [];
       const gatilhosQueObrigam = gatilhosQueObrigamAET(gatilhos, dispensaDeAET);
 
-      const conclusoes = NR17_ASPECTOS.map((asp) => {
-        const c = aspectos?.[asp.chave]?.conclusao;
-        const obs = aspectos?.[asp.chave]?.observacao?.trim();
-        return `${asp.rotulo}: ${c ? CONCLUSAO_POR_EXTENSO[c as keyof typeof CONCLUSAO_POR_EXTENSO] : 'PENDENTE'}`
-          + (obs ? ` — ${obs}` : '');
-      }).join('\n');
+      const psico = resumoPsicossocial(a);
+      const conclusoes = [
+        ...NR17_ASPECTOS.map((asp) => {
+          const c = aspectos?.[asp.chave]?.conclusao;
+          const obs = aspectos?.[asp.chave]?.observacao?.trim();
+          return `${asp.rotulo}: ${c ? CONCLUSAO_POR_EXTENSO[c as keyof typeof CONCLUSAO_POR_EXTENSO] : 'PENDENTE'}`
+            + (obs ? ` — ${obs}` : '');
+        }),
+        // Fatores psicossociais (subitem 1.5.3.2.1 da NR-01), avaliados na AEP.
+        !avaliacaoIniciada(a)
+          ? 'Fatores psicossociais: PENDENTE'
+          : `Fatores psicossociais: ${psico.avaliados}/${psico.total} avaliados`
+            + (psico.presentes.length > 0 ? `; presentes: ${psico.presentes.join(', ')}` : '; nenhum presente')
+      ].join('\n');
+
+      // Fator presente tem de estar no inventario (item 17.3.5), e o risco que
+      // nasceu de um fator que deixou de ser presente tem de ser reavaliado.
+      faltasDeInventarioPsicossocial(a, riscosDoCliente, nomeDoGheAep).forEach((f) => {
+        pendente('7.4', `AEP ${a?.situation_name || 'sem nome'}: ${f.longo}.`);
+      });
 
       const prevencao = [
         medidas.length > 0
@@ -4311,6 +4344,12 @@ Data: ${data}`;
     }
   }
 
+  // Fora do if/else: e justamente quando a AEP de origem foi desativada - e
+  // o cliente fica sem AEP ativa - que o risco perde a origem.
+  riscosPsicossociaisSemAEP(riscosDoCliente, aepsDoCliente).forEach((r: any) => {
+    pendente('7.4', `O inventário mantém "${r?.agent_name}", e a AEP de origem não está mais ativa: reavalie o risco (subitem 1.5.4.4.6 da NR-01).`);
+  });
+
   // ==================================================================
   // 8. PLANO DE ACAO
   // ==================================================================
@@ -4327,31 +4366,9 @@ Data: ${data}`;
 
   secao('8.2 Quadro do plano de ação');
 
-  // Uma acao por risco: introduzir quando nao ha controle, aprimorar quando o
-  // controle existe mas a eficacia nao foi verificada, manter quando esta
-  // tudo implementado e verificado. Ordenado por prioridade do modelo.
-  const acoes = riscosDoCliente
-    .map((r: any, i: number) => {
-      const ghe = gheDoCliente.find((g: any) => g?.id === r?.ghe_id);
-      const c = classificarRisco(r?.severity, r?.probability);
-      const semControle = !r?.epc_implemented;
-      const semEficacia = r?.epc_implemented && !r?.epc_effective;
-      return {
-        risco: r,
-        id: `R-${ghe?.code || 'SEM-GHE'}-${String(i + 1).padStart(2, '0')}`,
-        gheNome: ghe?.name || 'GHE não vinculado',
-        classificado: c,
-        expostos: expostosDoGhe(r?.ghe_id),
-        tipo: semControle ? 'Introduzir' : semEficacia ? 'Aprimorar' : 'Manter',
-        medida: semControle
-          ? `Implantar medida de proteção coletiva para ${r?.agent_name || 'o perigo identificado'}`
-          : semEficacia
-            ? `Verificar e evidenciar a eficácia do controle coletivo de ${r?.agent_name || 'o perigo identificado'}`
-            : `Manter e monitorar os controles de ${r?.agent_name || 'o perigo identificado'}`,
-        hierarquia: semControle || semEficacia ? 'Proteção coletiva' : 'Manutenção dos controles'
-      };
-    })
-    .sort((a, b) => (a.classificado?.prioridade ?? 9) - (b.classificado?.prioridade ?? 9));
+  // Uma acao por risco. A regra esta em lib/planoDeAcao.ts, a mesma que o
+  // relatorio de fatores psicossociais usa - os dois tem de dar o mesmo numero.
+  const acoes = acoesDoPlano(riscosDoCliente, gheDoCliente, expostosDoGhe);
 
   tabela({
     head: [['Nº', 'Risco / nível', 'Exp.', 'Medida · hierarquia · tipo', 'Responsável · prazo', 'Acompanhamento · aferição', 'Status']],
@@ -5124,6 +5141,7 @@ export function exportAEPDocumentPdf({
   organization,
   ergonomicAssessments = [],
   ghes = [],
+  risks = [],
   jobs = [],
   units = [],
   technicalProfessionals = [],
@@ -5134,6 +5152,11 @@ export function exportAEPDocumentPdf({
   organization: Organization;
   ergonomicAssessments?: any[];
   ghes?: any[];
+  /**
+   * Inventario de riscos. A AEP confere se cada fator psicossocial presente
+   * esta nele (item 17.3.5 da NR-17) - sem o inventario, nao ha o que conferir.
+   */
+  risks?: any[];
   jobs?: any[];
   units?: any[];
   technicalProfessionals?: TechnicalProfessional[];
@@ -5164,6 +5187,10 @@ export function exportAEPDocumentPdf({
     (a: any) => a?.client_id === client.id && a?.status !== 'INACTIVE'
   );
   const gheDoCliente = (ghes || []).filter((g: any) => !g?.client_id || g.client_id === client.id);
+  const idsDeGheDaAep = new Set(gheDoCliente.map((g: any) => g?.id));
+  const riscosDoClienteNaAep = (risks || []).filter(
+    (r: any) => idsDeGheDaAep.has(r?.ghe_id) || r?.client_id === client.id
+  );
 
   // Item 17.3.4: ME e EPP de graus 1 e 2, e o MEI, nao elaboram a AET. null
   // quando o porte nao foi informado - a dispensa nao se presume.
@@ -5402,6 +5429,18 @@ export function exportAEPDocumentPdf({
   );
   lista(NR17_EXIGENCIAS_A_EVITAR.map((f) => `${f.alinea}) ${f.texto}`));
 
+  secao('3.1 FATORES DE RISCO PSICOSSOCIAIS RELACIONADOS AO TRABALHO');
+  paragrafo(
+    `Desde ${VIGENCIA_DO_CAPITULO_1_5}, o subitem 1.5.3.2.1 da NR-01 manda considerar as condições `
+    + 'de trabalho nos termos da NR-17, incluindo os fatores de risco psicossociais relacionados ao '
+    + 'trabalho. Eles são avaliados nesta AEP, situação por situação, e o fator presente vai ao '
+    + 'inventário de riscos do PGR (item 17.3.5).'
+  );
+  paragrafo(DEFINICAO_DO_GUIA, 6.8);
+  paragrafo('O que esta avaliação não é:', 7);
+  lista(O_QUE_A_AVALIACAO_NAO_E);
+  paragrafo(`${FONTE_DA_LISTAGEM} A listagem não esgota o tema: a avaliação admite fatores adicionais.`, 6.6);
+
   secao('4. MEDIDAS DE PREVENÇÃO: DUAS OU MAIS');
   paragrafo(
     `As medidas de prevenção devem incluir ${NR17_MINIMO_DE_ALTERNATIVAS} ou mais das ` +
@@ -5485,7 +5524,10 @@ export function exportAEPDocumentPdf({
     const gatilhos: string[] = Array.isArray(a?.aet_triggers) ? a.aet_triggers : [];
     const obrigam = gatilhosQueObrigamAET(gatilhos, dispensaDeAET);
 
-    const faltas = faltasDaAEP(a, { dispensaDeAET, alcance });
+    const faltas = [
+      ...faltasDaAEP(a, { dispensaDeAET, alcance }),
+      ...faltasDeInventarioPsicossocial(a, riscosDoClienteNaAep, nomeDoGhe)
+    ];
     if (faltas.length > 0) {
       // Uma pendencia por situacao, e nao uma por campo: a lista da secao 8
       // tem de caber numa pagina para ser lida.
@@ -5564,6 +5606,23 @@ export function exportAEPDocumentPdf({
               ? 'Não exigível: os gatilhos observados não obrigam, pela dispensa do item 17.3.4'
               : 'Não exigível nesta situação']
     ]);
+
+    // ----------------------------------------------------------------
+    // Fatores de risco psicossociais (subitem 1.5.3.2.1 da NR-01). As
+    // linhas vem de lib/psicossocial.ts - as mesmas do relatorio.
+    // ----------------------------------------------------------------
+    duasColunas('FATORES DE RISCO PSICOSSOCIAIS — COMO FORAM AVALIADOS', linhasDoMetodo(a));
+    tabela({
+      head: [['Fator (Guia do MTE, 2025)', 'Conclusão', 'Caracterização e fontes', 'Inventário (item 17.3.5)']],
+      body: linhasDosFatores(a, riscosDoClienteNaAep, nomeDoGhe),
+      columnStyles: {
+        0: { cellWidth: util * 0.27, fontStyle: 'bold' },
+        1: { cellWidth: util * 0.13 },
+        3: { cellWidth: util * 0.24 }
+      },
+      styles: { fontSize: 6.2, cellPadding: 1.4, overflow: 'linebreak' }
+    });
+    duasColunas('REQUISITOS DA NR-17 LIGADOS AOS FATORES PSICOSSOCIAIS', linhasDosRequisitos(a));
 
     if (a?.notes?.trim()) paragrafo(`Observações: ${a.notes.trim()}`, 6.8);
 
@@ -5678,8 +5737,8 @@ export function exportAEPDocumentPdf({
   if (pendencias.length === 0) {
     paragrafo(
       'Nenhuma pendência: todas as situações avaliadas têm abordagem, métodos, autoria, data, '
-      + 'conclusão em cada aspecto, medidas de prevenção quando exigidas e registro da oitiva dos '
-      + 'empregados.'
+      + 'conclusão em cada aspecto e em cada fator psicossocial, medidas de prevenção quando '
+      + 'exigidas, registro da oitiva dos empregados e os fatores presentes no inventário.'
     );
   } else {
     paragrafo(
@@ -5757,6 +5816,462 @@ export function exportAEPDocumentPdf({
   }
 
   doc.save(`aep-nr17-${(client.trade_name || client.legal_name || 'cliente').toLowerCase().replace(/[^a-z0-9]+/g, '-')}.pdf`);
+}
+
+/**
+ * Relatorio dos fatores de risco psicossociais relacionados ao trabalho.
+ *
+ * E um RECORTE da AEP (item 17.3 da NR-17) e do inventario e do plano de acao
+ * do PGR (NR-01) - nao um documento com avaliacao propria. O Manual do GRO
+ * (MTE, 2026) e explicito: a gestao desses fatores "nao e um programa
+ * separado". Por isso cada linha daqui sai das mesmas funcoes que a AEP e o PGR
+ * usam (lib/psicossocial.ts e lib/planoDeAcao.ts): os tres documentos nao
+ * podem dizer coisas diferentes sobre o mesmo fator.
+ */
+export function exportPsychosocialReportPdf({
+  client,
+  organization,
+  ergonomicAssessments = [],
+  ghes = [],
+  risks = [],
+  employees = [],
+  jobs = [],
+  units = [],
+  technicalProfessionals = [],
+  technicalResponsibilities = []
+}: {
+  client: Client;
+  organization: Organization;
+  ergonomicAssessments?: any[];
+  ghes?: any[];
+  risks?: any[];
+  employees?: any[];
+  jobs?: any[];
+  units?: any[];
+  technicalProfessionals?: TechnicalProfessional[];
+  technicalResponsibilities?: TechnicalResponsibility[];
+}) {
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
+  const margin = 14;
+  const util = pageWidth - margin * 2;
+
+  const emissao = dataDeHoje();
+  const codigoDoDocumento = `PSICO-${(client.document_number || 'SEM-INSCRICAO').replace(/\D/g, '') || 'SEM-INSCRICAO'}-${emissao.slice(0, 4)}-REV00`;
+
+  const unidadesDoCliente = (units || []).filter(
+    (u: any) => u?.client_id === client.id && u?.status !== 'INACTIVE'
+  );
+  const estabelecimento = unidadesDoCliente[0] || null;
+
+  const aeps = (ergonomicAssessments || []).filter(
+    (a: any) => a?.client_id === client.id && a?.status !== 'INACTIVE'
+  );
+  const gheDoCliente = (ghes || []).filter((g: any) => !g?.client_id || g.client_id === client.id);
+  const idsDeGhe = new Set(gheDoCliente.map((g: any) => g?.id));
+  // O mesmo recorte e a mesma ordem do PGR: e dessa ordem que sai o numero
+  // R-... de cada acao.
+  const riscosDoCliente = (risks || []).filter(
+    (r: any) => idsDeGhe.has(r?.ghe_id) || r?.client_id === client.id
+  );
+  const expostosDoGhe = (gheId: string) =>
+    (employees || []).filter((e: any) => e?.ghe_id === gheId).length;
+
+  const nomeDoGhe = (id: string) => {
+    const g = gheDoCliente.find((x: any) => x?.id === id);
+    return g?.code || g?.name || 'GHE não encontrado';
+  };
+  const nomeDoCargo = (id: string) => (jobs || []).find((j: any) => j?.id === id)?.name || '';
+  const alcanceDe = (a: any) => [
+    ...(Array.isArray(a?.ghe_ids) ? a.ghe_ids.map(nomeDoGhe) : []),
+    ...(Array.isArray(a?.job_ids) ? a.job_ids.map(nomeDoCargo) : [])
+  ].filter(Boolean).join('; ');
+
+  const pendencias: Array<{ onde: string; texto: string }> = [];
+  const pendente = (onde: string, texto: string) => {
+    pendencias.push({ onde, texto });
+    return `PENDENTE — ${texto}`;
+  };
+
+  // A avaliacao e da AEP: assina quem responde pela AEP deste cliente.
+  const assinatura = assinaturaDoCliente(
+    'AEP_RESP', client, organization, emissao, technicalProfessionals, technicalResponsibilities
+  );
+  if (assinatura.pendencia) pendente('Responsabilidade técnica', assinatura.pendencia);
+
+  // ------------------------------------------------------------------
+  // Auxiliares de desenho (o mesmo desenho da AEP)
+  // ------------------------------------------------------------------
+  let curY = 0;
+
+  const novaPagina = () => {
+    doc.addPage();
+    doc.setFillColor(15, 23, 42);
+    doc.rect(0, 0, pageWidth, 16, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'bold');
+    doc.text('FATORES DE RISCO PSICOSSOCIAIS RELACIONADOS AO TRABALHO', margin, 10);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(148, 163, 184);
+    doc.text(
+      `${client.trade_name || client.legal_name || ''} · ${codigoDoDocumento}`,
+      pageWidth - margin, 10, { align: 'right' }
+    );
+    doc.setFillColor(13, 148, 136);
+    doc.rect(0, 16, pageWidth, 1, 'F');
+    doc.setTextColor(15, 23, 42);
+    curY = 22;
+  };
+
+  const garantirEspaco = (mm: number) => {
+    if (pageHeight - 18 - curY < mm) novaPagina();
+  };
+
+  const tabela = (opcoes: any) => {
+    autoTable(doc, {
+      startY: curY,
+      margin: { left: margin, right: margin, top: 22 },
+      theme: 'grid',
+      styles: { fontSize: 7, cellPadding: 1.8, overflow: 'linebreak' },
+      headStyles: { fillColor: [51, 65, 85], textColor: [255, 255, 255], fontStyle: 'bold' },
+      ...opcoes
+    });
+    curY = (doc as any).lastAutoTable.finalY + 4;
+  };
+
+  const secao = (texto: string) => {
+    garantirEspaco(24);
+    tabela({
+      head: [[{
+        content: texto,
+        styles: { fillColor: [15, 23, 42], textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 8.5, cellPadding: 2.4 }
+      }]],
+      body: []
+    });
+  };
+
+  const paragrafo = (texto: string, tamanho = 7.2) => {
+    garantirEspaco(14);
+    tabela({
+      body: [[{ content: texto, styles: { fontSize: tamanho, cellPadding: 2.2, fillColor: [248, 250, 252] } }]]
+    });
+  };
+
+  const lista = (itens: string[]) => paragrafo(itens.map((t) => `• ${t}`).join('\n'));
+
+  const duasColunas = (titulo: string, linhas: Array<[string, string]>) => {
+    garantirEspaco(20);
+    tabela({
+      head: [[{ content: titulo, colSpan: 2, styles: { fillColor: [30, 41, 59], textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 8 } }]],
+      body: linhas.map(([a, b]) => [
+        { content: a, styles: { fontStyle: 'bold', cellWidth: util * 0.34 } },
+        { content: b }
+      ])
+    });
+  };
+
+  // ==================================================================
+  // CAPA
+  // ==================================================================
+  doc.setFillColor(15, 23, 42);
+  doc.rect(0, 0, pageWidth, 46, 'F');
+  doc.setTextColor(148, 163, 184);
+  doc.setFontSize(7);
+  doc.setFont('helvetica', 'normal');
+  doc.text('ELABORADO POR', margin, 13);
+  doc.setFontSize(14);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(255, 255, 255);
+  doc.text(organization.name || 'PREVSAFE SST', margin, 21);
+  doc.setFontSize(8);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(148, 163, 184);
+  if (organization.document_number) {
+    doc.text(`CNPJ ${organization.document_number}`, margin, 27);
+  }
+  doc.text(`Emitido em ${formatDate(emissao)}`, pageWidth - margin, 27, { align: 'right' });
+  doc.setFillColor(13, 148, 136);
+  doc.rect(0, 46, pageWidth, 3, 'F');
+
+  doc.setTextColor(15, 23, 42);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(20);
+  doc.text('FATORES DE RISCO', pageWidth / 2, 78, { align: 'center' });
+  doc.text('PSICOSSOCIAIS', pageWidth / 2, 89, { align: 'center' });
+  doc.setFontSize(11);
+  doc.setTextColor(13, 148, 136);
+  doc.text('RELACIONADOS AO TRABALHO', pageWidth / 2, 99, { align: 'center' });
+
+  doc.setFontSize(9);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(71, 85, 105);
+  doc.text('Recorte da AEP (NR-17, item 17.3) e do inventário e plano de ação do PGR (NR-01)', pageWidth / 2, 113, { align: 'center', maxWidth: util });
+  doc.text(`Capítulo 1.5 da NR-01 em vigor desde ${VIGENCIA_DO_CAPITULO_1_5}`, pageWidth / 2, 119, { align: 'center' });
+
+  doc.setFontSize(8);
+  doc.setTextColor(100, 116, 139);
+  doc.text(client.legal_name || client.trade_name || '', pageWidth / 2, 168, { align: 'center', maxWidth: util });
+  doc.setFontSize(9);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(15, 23, 42);
+  doc.text(
+    (client.trade_name && client.trade_name !== client.legal_name) ? client.trade_name : '',
+    pageWidth / 2, 175, { align: 'center', maxWidth: util }
+  );
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(8);
+  doc.setTextColor(100, 116, 139);
+  doc.text(clientDocumentLine(client), pageWidth / 2, 182, { align: 'center' });
+
+  doc.setDrawColor(203, 213, 225);
+  doc.setLineWidth(0.4);
+  doc.line(pageWidth / 2 - 30, 192, pageWidth / 2 + 30, 192);
+  doc.setFontSize(8);
+  doc.setTextColor(100, 116, 139);
+  doc.text(codigoDoDocumento, pageWidth / 2, 202, { align: 'center' });
+
+  // ==================================================================
+  // IDENTIFICACAO
+  // ==================================================================
+  novaPagina();
+  duasColunas('ORGANIZAÇÃO', [
+    ['Organização', client.legal_name || client.trade_name || NAO_INFORMADO],
+    ['Inscrição', clientDocumentLine(client)],
+    ['Endereço', [client.address, client.city && `${client.city}/${client.state || ''}`]
+      .filter(Boolean).join(' — ') || NAO_INFORMADO]
+  ]);
+  duasColunas('IDENTIFICAÇÃO DO DOCUMENTO', [
+    ['Código do documento', codigoDoDocumento],
+    ['Data de emissão', formatDate(emissao)],
+    ['Situações de trabalho avaliadas', String(aeps.length)],
+    ['Responsável técnico pela avaliação', assinatura.linha],
+    ['Natureza', 'Recorte da AEP e do PGR. Não traz avaliação nem conclusão própria.']
+  ]);
+
+  // ==================================================================
+  // 1. NATUREZA
+  // ==================================================================
+  secao('1. NATUREZA DESTE RELATÓRIO');
+  paragrafo(
+    'Este relatório reúne o que a avaliação ergonômica preliminar (item 17.3 da NR-17) registrou '
+    + 'sobre os fatores de risco psicossociais relacionados ao trabalho e o que o PGR inventariou e '
+    + 'planejou a partir disso. Cada linha vem dos mesmos registros que a AEP e o PGR imprimem. A '
+    + 'gestão desses fatores "não é um programa separado, mas uma parte indissociável e obrigatória '
+    + 'do GRO" (Manual do GRO/PGR da NR-1, MTE, 2026).'
+  );
+  paragrafo(DEFINICAO_DO_GUIA, 6.8);
+  paragrafo('O que esta avaliação não é:', 7);
+  lista(O_QUE_A_AVALIACAO_NAO_E);
+
+  // ==================================================================
+  // 2. BASE NORMATIVA
+  // ==================================================================
+  secao('2. BASE NORMATIVA');
+  paragrafo(
+    `Capítulo 1.5 da NR-01 na redação da Portaria MTE nº 1.419/2024, em vigor desde ${VIGENCIA_DO_CAPITULO_1_5} `
+    + '(Portaria MTE nº 765/2025).',
+    6.8
+  );
+  tabela({
+    head: [['Item', 'Texto']],
+    body: [
+      ...BASE_NORMATIVA_PSICOSSOCIAL.map((b) => [b.item, b.texto]),
+      [REQUISITO_17_4_4.item, REQUISITO_17_4_4.texto],
+      [REQUISITO_17_4_7.item, REQUISITO_17_4_7.texto]
+    ],
+    columnStyles: { 0: { cellWidth: util * 0.22, fontStyle: 'bold' } },
+    styles: { fontSize: 6.6, cellPadding: 1.6, overflow: 'linebreak' }
+  });
+  paragrafo(FONTE_DA_LISTAGEM, 6.6);
+
+  // ==================================================================
+  // 3. RESULTADOS POR SITUACAO
+  // ==================================================================
+  secao('3. RESULTADOS POR SITUAÇÃO DE TRABALHO');
+  if (aeps.length === 0) {
+    paragrafo(
+      pendente(
+        'Seção 3',
+        'Nenhuma avaliação ergonômica preliminar registrada (Engenharia SST > 13. Avaliação '
+        + 'Ergonômica). Os fatores psicossociais são avaliados na AEP, obrigatória em todas as '
+        + 'situações de trabalho (item 17.2.1 da NR-17).'
+      )
+    );
+  }
+
+  aeps.forEach((a: any, indice: number) => {
+    if (indice > 0) novaPagina();
+    const rotulo = `3.${indice + 1} ${a?.situation_name || 'Situação sem nome'}`;
+    secao(rotulo);
+
+    duasColunas('SITUAÇÃO DE TRABALHO', [
+      ['GHE e cargos alcançados', alcanceDe(a) || 'PENDENTE'],
+      ['Trabalhadores na situação', a?.worker_count ? String(a.worker_count) : 'PENDENTE'],
+      ['Data da avaliação', a?.assessment_date?.trim() ? formatDate(a.assessment_date) : 'PENDENTE'],
+      ['Realizada por', a?.assessor?.trim() || 'PENDENTE']
+    ]);
+    duasColunas('COMO OS FATORES FORAM AVALIADOS', linhasDoMetodo(a));
+    tabela({
+      head: [['Fator (Guia do MTE, 2025)', 'Conclusão', 'Caracterização e fontes', 'Inventário (item 17.3.5)']],
+      body: linhasDosFatores(a, riscosDoCliente, nomeDoGhe),
+      columnStyles: {
+        0: { cellWidth: util * 0.27, fontStyle: 'bold' },
+        1: { cellWidth: util * 0.13 },
+        3: { cellWidth: util * 0.24 }
+      },
+      styles: { fontSize: 6.2, cellPadding: 1.4, overflow: 'linebreak' }
+    });
+    duasColunas('REQUISITOS DA NR-17 LIGADOS AOS FATORES PSICOSSOCIAIS', linhasDosRequisitos(a));
+
+    // Aqui so o que falta para a avaliacao PSICOSSOCIAL: o resto da AEP sai
+    // no documento da AEP.
+    const faltas = [
+      ...(a?.workers_heard === 'SIM' ? [] : [{
+        longo: 'oitiva dos empregados (item 17.3.8 da NR-17), sem a qual a avaliação psicossocial '
+          + 'não é válida (Manual do GRO, item 17.2)'
+      }]),
+      ...faltasPsicossociais(a),
+      ...faltasDeInventarioPsicossocial(a, riscosDoCliente, nomeDoGhe)
+    ];
+    if (faltas.length > 0) {
+      pendente(rotulo, `falta ${faltas.map((f) => f.longo).join('; ')}.`);
+      paragrafo(`O QUE FALTA NESTA SITUAÇÃO: ${faltas.map((f) => f.longo).join('; ')}.`, 6.8);
+    }
+  });
+
+  riscosPsicossociaisSemAEP(riscosDoCliente, aeps).forEach((r: any) => {
+    pendente('Inventário', `O inventário mantém "${r?.agent_name}", e a AEP de origem não está mais ativa: reavalie o risco (subitem 1.5.4.4.6 da NR-01).`);
+  });
+
+  // ==================================================================
+  // 4. INVENTARIO E PLANO DE ACAO
+  // ==================================================================
+  novaPagina();
+  secao('4. INVENTÁRIO E PLANO DE AÇÃO');
+  paragrafo(
+    'Os números, a classificação e as ações abaixo são os do inventário e do plano de ação do '
+    + 'PGR, gerados pela mesma regra. Para fatores psicossociais, a medida é na organização do '
+    + 'trabalho e definida com os trabalhadores: o Guia do MTE manda preferir mudanças nas '
+    + 'condições de trabalho a intervenções individuais ou comportamentais.',
+    6.8
+  );
+
+  const acoes = acoesDoPlano(riscosDoCliente, gheDoCliente, expostosDoGhe)
+    .filter((x) => ehRiscoPsicossocial(x.risco) && x.risco?.status !== 'INACTIVE');
+  const avaliacaoIncompleta = aeps.length === 0 || aeps.some((a: any) => faltasPsicossociais(a).length > 0);
+
+  if (acoes.length === 0) {
+    paragrafo(
+      avaliacaoIncompleta
+        ? 'Nenhum fator psicossocial no inventário até aqui — e a avaliação ainda está incompleta (seção 5). Este quadro não afirma ausência de risco.'
+        : 'Nenhum fator psicossocial foi constatado como presente nas situações avaliadas: não há risco psicossocial a inventariar.',
+      7
+    );
+  } else {
+    tabela({
+      head: [['Nº', 'Risco · GHE', 'Nível (S × P)', 'Exp.', 'Medida · hierarquia · tipo', 'Prazo']],
+      body: acoes.map((x) => [
+        x.id,
+        `${x.risco?.agent_name || ''}\n${x.gheNome}`,
+        x.classificado
+          ? `${x.classificado.rotulo} (S${x.classificado.severidade} × P${x.classificado.probabilidade})`
+          : pendente('Seção 4', `"${x.risco?.agent_name}" sem severidade e probabilidade no inventário.`),
+        String(x.expostos),
+        `${x.medida}\n${x.hierarquia} · ${x.tipo}`,
+        x.classificado ? x.classificado.prazo : 'depende da classificação'
+      ]),
+      columnStyles: {
+        0: { cellWidth: 20 },
+        1: { cellWidth: util * 0.24 },
+        2: { cellWidth: util * 0.14 },
+        3: { cellWidth: 9, halign: 'center' },
+        5: { cellWidth: util * 0.13 }
+      },
+      styles: { fontSize: 6.2, cellPadding: 1.4, overflow: 'linebreak' }
+    });
+  }
+
+  // ==================================================================
+  // 5. PENDENCIAS
+  // ==================================================================
+  secao('5. PENDÊNCIAS');
+  if (pendencias.length === 0) {
+    paragrafo(
+      'Nenhuma pendência: em todas as situações os empregados foram ouvidos, a estratégia está '
+      + 'registrada, cada fator tem conclusão, os presentes estão caracterizados e no inventário, e os '
+      + 'itens 17.4.4 e 17.4.7 da NR-17 foram avaliados.'
+    );
+  } else {
+    paragrafo(
+      'Enquanto houver pendência, a avaliação dos fatores psicossociais não atende integralmente ao '
+      + 'subitem 1.5.3.2.1 da NR-01. Cada linha aponta o que falta e onde.'
+    );
+    tabela({
+      head: [['Onde', 'O que falta']],
+      body: pendencias.map((p) => [p.onde, p.texto]),
+      columnStyles: { 0: { cellWidth: util * 0.26, fontStyle: 'bold' } },
+      styles: { fontSize: 6.6, cellPadding: 1.6, overflow: 'linebreak' }
+    });
+  }
+
+  // ==================================================================
+  // 6. ASSINATURAS
+  // ==================================================================
+  secao('6. ENCERRAMENTO E ASSINATURAS');
+  paragrafo(
+    'Este relatório reproduz registros da AEP e do PGR da organização e não os substitui. '
+    + 'Documento emitido só em meio digital deve ser assinado com certificado ICP-Brasil (subitem '
+    + '1.6.2 da NR-01).'
+  );
+
+  const identificacaoDoSignatario = (nome: string, cargo: string, data: string) =>
+    `${nome}\nCargo / registro: ${cargo}\nData: ${data}`;
+
+  garantirEspaco(ASSINATURA_ALTURA_MM * 3 + 16);
+  tabela({
+    head: [['Função', 'Nome, cargo e data', 'Assinatura (manual ou eletrônica)']],
+    body: [
+      ['Responsável técnico pela avaliação',
+        identificacaoDoSignatario(
+          assinatura.nome || LINHA_PARA_PREENCHER,
+          assinatura.registro || LINHA_PARA_PREENCHER,
+          formatDate(emissao)), ''],
+      ['Responsável legal da organização',
+        identificacaoDoSignatario(
+          estabelecimento?.legal_representative?.trim() || LINHA_PARA_PREENCHER,
+          LINHA_PARA_PREENCHER, LINHA_PARA_PREENCHER), ''],
+      ['Ciência — CIPA ou representante dos trabalhadores',
+        identificacaoDoSignatario(
+          LINHA_PARA_PREENCHER, LINHA_PARA_PREENCHER, LINHA_PARA_PREENCHER), '']
+    ],
+    styles: { fontSize: 6.8, cellPadding: 2.4, overflow: 'linebreak' },
+    columnStyles: {
+      0: { cellWidth: 40 },
+      1: { cellWidth: util - 40 - ASSINATURA_LARGURA_MM },
+      2: { cellWidth: ASSINATURA_LARGURA_MM, minCellHeight: ASSINATURA_ALTURA_MM }
+    },
+    didDrawCell: (dados: any) => {
+      if (dados.section !== 'body' || dados.column.index !== 2) return;
+      const linhaY = dados.cell.y + dados.cell.height - 7;
+      doc.setDrawColor(148, 163, 184);
+      doc.setLineWidth(0.15);
+      doc.line(dados.cell.x + 5, linhaY, dados.cell.x + dados.cell.width - 5, linhaY);
+    }
+  });
+
+  const totalDePaginas = (doc as any).internal.getNumberOfPages();
+  for (let p = 1; p <= totalDePaginas; p++) {
+    doc.setPage(p);
+    doc.setFontSize(6.5);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(148, 163, 184);
+    doc.text(`${codigoDoDocumento} · emitido em ${formatDate(emissao)}`, margin, pageHeight - 8);
+    doc.text(`${p} / ${totalDePaginas}`, pageWidth - margin, pageHeight - 8, { align: 'right' });
+  }
+
+  doc.save(`fatores-psicossociais-${(client.trade_name || client.legal_name || 'cliente').toLowerCase().replace(/[^a-z0-9]+/g, '-')}.pdf`);
 }
 
 export function exportPCMSODocumentPdf({
@@ -5981,7 +6496,13 @@ export function exportLTCATDocumentPdf({
   // ninguem tinha classificado - e esse numero vai para o eSocial S-2240.
   const ltcatRows: any[] = [];
   ghes.forEach((ghe: any) => {
-    const gheRisks = risks.filter((r: any) => r.ghe_id === ghe.id && r.status !== 'INACTIVE');
+    // O LTCAT trata de AGENTE NOCIVO (Anexo IV do Decreto 3.048/1999). Fator
+    // ergonomico - inclusive psicossocial - e risco de acidente ficam no PGR:
+    // listados aqui, sairiam como "Agente Nocivo" num laudo para o INSS.
+    const gheRisks = risks.filter(
+      (r: any) => r.ghe_id === ghe.id && r.status !== 'INACTIVE'
+        && !ehFatorErgonomico(r) && !ehRiscoDeAcidente(r)
+    );
     gheRisks.forEach((r: any) => {
       const aposentadoria = r.special_retirement_applies
         ? (r.gfip_code

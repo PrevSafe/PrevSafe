@@ -13,6 +13,8 @@
  * que a avaliacao tem de ALCANCAR, e nao um questionario com pontuacao.
  */
 
+import { faltasPsicossociais } from '@/lib/psicossocial';
+
 /** Redacao vigente, para o cabecalho dos documentos. */
 export const NR17_NORMA_DE_REGENCIA =
   'NR-17 — Ergonomia, na redação das Portarias MTP nº 423, de 07/10/2021, e nº 4.219, de '
@@ -362,6 +364,10 @@ export function faltasDaAEP(
     add('AET (17.3.2)',
       `AET, exigida pelas alíneas "${obrigam.join('", "')}" do item 17.3.2 observadas nesta situação`);
   }
+
+  // Os fatores psicossociais sao avaliados NA AEP (subitem 1.5.3.2.1 da
+  // NR-01): AEP sem eles esta incompleta. A regra mora em lib/psicossocial.ts.
+  falta.push(...faltasPsicossociais(aep));
 
   return falta;
 }

@@ -24,7 +24,8 @@ import {
   Flame,
   AlertTriangle,
   Tractor,
-  FileSpreadsheet
+  FileSpreadsheet,
+  Brain
 } from 'lucide-react';
 import {
   exportPGRDocumentPdf,
@@ -32,12 +33,14 @@ import {
   exportPCMSODocumentPdf,
   exportLTCATDocumentPdf,
   exportAEPDocumentPdf,
+  exportPsychosocialReportPdf,
   exportInsalubridadeLaudoPdf,
   exportPericulosidadeLaudoPdf
 } from '@/lib/pdfExportService';
 import { prepararFotosDaAEP } from '@/lib/imagensParaPdf';
 import { DocumentPreviewModal, PreviewDocType } from '@/lib/../components/sst/DocumentPreviewModal';
 import { montarCorpoInsalubridade, montarCorpoPericulosidade } from '@/lib/laudoDados';
+import { avaliacaoIniciada, faltasPsicossociais, resumoPsicossocial } from '@/lib/psicossocial';
 
 interface TechnicalDocsGeneratorTabProps {
   selectedClientId: string;
@@ -69,7 +72,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
   } = usePrevSafe();
 
 
-  const [activeDocType, setActiveDocType] = useState<'PGR' | 'PGRTR' | 'PCMSO' | 'LTCAT' | 'AEP' | 'INSALUBRIDADE' | 'PERICULOSIDADE' | 'XML_ESOCIAL'>('PGR');
+  const [activeDocType, setActiveDocType] = useState<'PGR' | 'PGRTR' | 'PCMSO' | 'LTCAT' | 'AEP' | 'PSICOSSOCIAL' | 'INSALUBRIDADE' | 'PERICULOSIDADE' | 'XML_ESOCIAL'>('PGR');
   const [selectedXmlEventId, setSelectedXmlEventId] = useState<string>(esocialEvents[0]?.id || '');
   const [copiedCode, setCopiedCode] = useState(false);
   const [successToast, setSuccessToast] = useState<string | null>(null);
@@ -245,6 +248,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
             organization,
             ergonomicAssessments: clientAeps,
             ghes: clientGhes,
+            risks: environmentalRisks,
             jobs: hierarchyJobs,
             units,
             technicalProfessionals,
@@ -257,6 +261,20 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
         .catch((erro: any) => {
           setSuccessToast(`Não foi possível gerar a AEP: ${erro?.message || 'erro desconhecido'}`);
         });
+    } else if (activeDocType === 'PSICOSSOCIAL') {
+      exportPsychosocialReportPdf({
+        client: clientObj,
+        organization,
+        ergonomicAssessments: clientAeps,
+        ghes: clientGhes,
+        risks: environmentalRisks,
+        employees: clientEmployees,
+        jobs: hierarchyJobs,
+        units,
+        technicalProfessionals,
+        technicalResponsibilities
+      });
+      setSuccessToast('PDF do relatório de fatores psicossociais gerado com sucesso!');
     } else if (activeDocType === 'INSALUBRIDADE') {
       exportInsalubridadeLaudoPdf({
         client: clientObj,
@@ -371,6 +389,20 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
 
           <button
             type="button"
+            id="doc-psicossocial-btn"
+            onClick={() => setActiveDocType('PSICOSSOCIAL')}
+            className={`px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 ${
+              activeDocType === 'PSICOSSOCIAL'
+                ? 'bg-teal-500 text-slate-950 shadow-md shadow-teal-500/20 font-bold'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+            }`}
+          >
+            <Brain className="w-4 h-4" />
+            5.1 Fatores Psicossociais
+          </button>
+
+          <button
+            type="button"
             id="doc-insalubridade-btn"
             onClick={() => setActiveDocType('INSALUBRIDADE')}
             className={`px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 ${
@@ -415,6 +447,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
         <div className="flex items-center gap-2 shrink-0">
           {activeDocType !== 'XML_ESOCIAL' && (
             <>
+              {activeDocType !== 'PSICOSSOCIAL' && (
               <button
                 type="button"
                 id="btn-preview-modal-open"
@@ -428,6 +461,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
                 <Eye className="w-4 h-4" />
                 Pré-visualizar Documento
               </button>
+              )}
 
               <button
                 type="button"
@@ -877,6 +911,73 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
           <p className="text-[11px] text-slate-500">
             O PDF traz uma página por situação, com a conclusão de cada um dos seis aspectos, o que se
             observou, as medidas de prevenção, a oitiva dos trabalhadores e o quadro de assinaturas.
+          </p>
+        </div>
+      )}
+
+      {/* VIEW 5.1: FATORES PSICOSSOCIAIS (recorte da AEP e do PGR) */}
+      {activeDocType === 'PSICOSSOCIAL' && (
+        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-6 shadow-xl" id="psicossocial-doc-view">
+          <div className="border-b border-slate-800 pb-4 flex justify-between items-start gap-4">
+            <div>
+              <span className="px-2.5 py-1 bg-teal-500/20 text-teal-300 text-xs font-bold rounded">
+                FATORES DE RISCO PSICOSSOCIAIS RELACIONADOS AO TRABALHO
+              </span>
+              <h2 className="text-lg font-bold text-slate-100 mt-2">
+                Recorte da AEP e do inventário e plano de ação do PGR
+              </h2>
+              <p className="text-xs text-slate-400 max-w-[46rem]">
+                Não traz avaliação própria: cada linha sai dos mesmos registros da AEP e do PGR. A avaliação se
+                faz em Engenharia SST &gt; 13. Avaliação Ergonômica, no botão de fatores psicossociais de cada situação.
+              </p>
+            </div>
+            <div className="text-right text-xs text-slate-400 space-y-1 shrink-0">
+              <div>Base: <span className="text-teal-400 font-semibold">NR-01, 1.5.3.2.1</span></div>
+              <div>Integra o inventário: <span className="text-slate-200 font-bold">NR-17, 17.3.5</span></div>
+            </div>
+          </div>
+
+          {clientAeps.filter((a: any) => a?.status !== 'INACTIVE').length === 0 ? (
+            <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 text-xs text-amber-200">
+              Nenhuma situação de trabalho avaliada. Os fatores psicossociais são avaliados na AEP, obrigatória
+              em todas as situações de trabalho (item 17.2.1 da NR-17).
+            </div>
+          ) : (
+            <div className="bg-slate-950 border border-slate-800 rounded-xl overflow-x-auto">
+              <table className="w-full text-left text-xs text-slate-300">
+                <thead className="bg-slate-900 text-slate-400 uppercase text-[10px] border-b border-slate-800">
+                  <tr>
+                    <th className="py-3 px-4">Situação de trabalho</th>
+                    <th className="py-3 px-4">Fatores avaliados</th>
+                    <th className="py-3 px-4">Presentes</th>
+                    <th className="py-3 px-4">O que falta</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-800/60">
+                  {clientAeps.filter((a: any) => a?.status !== 'INACTIVE').map((a: any) => {
+                    const psico = resumoPsicossocial(a);
+                    const faltas = faltasPsicossociais(a);
+                    return (
+                      <tr key={a.id} className="hover:bg-slate-900/40 align-top">
+                        <td className="py-3 px-4 font-bold text-slate-100">{a.situation_name || 'Sem nome'}</td>
+                        <td className="py-3 px-4">
+                          {avaliacaoIniciada(a) ? `${psico.avaliados}/${psico.total}` : <span className="text-amber-400">Não avaliados</span>}
+                        </td>
+                        <td className="py-3 px-4 text-rose-300">{psico.presentes.join(', ') || '—'}</td>
+                        <td className="py-3 px-4 text-amber-400">
+                          {faltas.length === 0 ? <span className="text-emerald-400">Completa</span> : faltas.map((f) => f.curto).join('; ')}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          <p className="text-[11px] text-slate-500">
+            O PDF traz a base normativa, o que a avaliação não é, o quadro de fatores de cada situação, os riscos
+            psicossociais do inventário com as ações do plano do PGR — mesma numeração — e as pendências.
           </p>
         </div>
       )}

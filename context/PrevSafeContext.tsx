@@ -172,6 +172,13 @@ import { limparOrdensDeServico, AVISO_SEM_INVENTARIO } from '@/lib/limpezaDeOrde
 import { classificarRisco } from '@/lib/classificacaoDeRisco';
 import { ghesDosCargos, avisoDeCargosSemGhe } from '@/lib/ghesDoCargo';
 import { substituirEvidencia, descartarEvidencia } from '@/lib/evidenciasFotograficas';
+import { codigoExisteNaTabela24 } from '@/lib/tabela24';
+import {
+  conferirPedidoDeInventario,
+  riscoDoFator,
+  riscosDaOrigem,
+  PedidoDeInventario
+} from '@/lib/psicossocial';
 import {
   habilitacaoParaPapel,
   definicaoDoPapel,
@@ -306,11 +313,13 @@ interface PrevSafeContextType {
   ) => ErgonomicAssessment;
   updateErgonomicAssessment: (id: string, updates: Partial<ErgonomicAssessment>) => void;
   /**
-   * Remove a AEP. Com fotografia anexada, DESATIVA em vez de remover: apagar
-   * levaria junto o registro das fotos - hash, autor, data - de uma avaliacao
-   * que pode ja ter sido entregue.
+   * Remove a AEP. Com fotografia anexada, ou com risco do inventario nascido
+   * dela, DESATIVA em vez de remover: apagar levaria junto o registro das
+   * fotos, ou deixaria o risco sem origem.
    */
   deleteErgonomicAssessment: (id: string) => { ok: boolean; message: string };
+  /** Leva um fator psicossocial presente ao inventario de um GHE (17.3.5). */
+  levarFatorAoInventario: (pedido: PedidoDeInventario) => { ok: boolean; message: string };
   /** Anexa uma fotografia ja enviada ao armazenamento. */
   registrarEvidenciaDaAEP: (aepId: string, evidencia: EvidenciaFotografica) => void;
   /** Troca uma foto por outra; a antiga continua guardada. */
@@ -2305,6 +2314,24 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     const alvo = ergonomicAssessments.find(a => a.id === id);
     if (!alvo) return { ok: false, message: 'Avaliação não encontrada.' };
 
+    // Risco do inventario que nasceu desta AEP aponta para ela: removida, o
+    // PGR perderia a origem do risco. Desativa, como com as fotos.
+    const riscosLigados = riscosDaOrigem(environmentalRisks, id).length;
+    if (riscosLigados > 0) {
+      setErgonomicAssessments(prev => prev.map(a => (a.id === id ? { ...a, status: 'INACTIVE' } : a)));
+      logAudit(
+        'DEACTIVATE_AEP' as any, 'CLIENT' as any, id,
+        `AEP desativada: ${riscosLigados} risco(s) do inventário nasceram dela — ${alvo.situation_name}`,
+        { riscosLigados }
+      );
+      return {
+        ok: true,
+        message:
+          `A avaliação "${alvo.situation_name}" deu origem a ${riscosLigados} risco(s) do inventário e foi `
+          + 'DESATIVADA em vez de removida. O PGR passa a apontar esses riscos para reavaliação.'
+      };
+    }
+
     const fotos = (alvo.photo_evidence || []).length;
     if (fotos > 0) {
       setErgonomicAssessments(prev => prev.map(a => (a.id === id ? { ...a, status: 'INACTIVE' } : a)));
@@ -2325,7 +2352,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     setErgonomicAssessments(prev => prev.filter(a => a.id !== id));
     logAudit('DELETE_AEP' as any, 'CLIENT' as any, id, 'AEP removida', {});
     return { ok: true, message: `A avaliação "${alvo.situation_name}" foi removida.` };
-  }, [ergonomicAssessments, logAudit]);
+  }, [ergonomicAssessments, environmentalRisks, logAudit]);
 
   // =========================================================================
   // FOTOGRAFIAS DA AEP
@@ -5804,6 +5831,28 @@ ${blocoRespMonitXml(event.client_id, aso?.exam_date || dataDeHoje())}
     logAudit('DELETE_ENVIRONMENTAL_RISK' as any, 'CLIENT' as any, id, 'Risco ambiental excluído');
   }, [logAudit]);
 
+  /**
+   * Leva um fator psicossocial presente ao inventario de um GHE (item 17.3.5
+   * da NR-17). As regras - o que precisa estar preenchido e como o risco nasce
+   * - estao em lib/psicossocial.ts.
+   */
+  const levarFatorAoInventario = useCallback((
+    pedido: PedidoDeInventario
+  ): { ok: boolean; message: string } => {
+    const conferido = conferirPedidoDeInventario(pedido, environmentalRisks);
+    if (!conferido.ok || !conferido.fator) {
+      return { ok: false, message: conferido.motivo || 'Não foi possível levar o fator ao inventário.' };
+    }
+
+    const risco = addEnvironmentalRisk(riscoDoFator(pedido, conferido.fator));
+    logAudit(
+      'ADD_PSYCHOSOCIAL_RISK' as any, 'CLIENT' as any, risco.id,
+      `Fator psicossocial levado ao inventário: ${conferido.fator.perigo} — AEP ${pedido.aep.situation_name}`,
+      { aep: pedido.aep.id, fator: conferido.fator.chave, ghe: pedido.gheId, S: pedido.severidade, P: pedido.probabilidade }
+    );
+    return { ok: true, message: `"${conferido.fator.perigo}" entrou no inventário do GHE.` };
+  }, [environmentalRisks, addEnvironmentalRisk, logAudit]);
+
   const addExamProtocol = useCallback((data: Omit<SSTExamProtocol, 'id' | 'organization_id' | 'created_at'>): SSTExamProtocol => {
     const newProto: SSTExamProtocol = {
       ...data,
@@ -6349,7 +6398,16 @@ ${blocoRespMonitXml(event.client_id, aso?.exam_date || dataDeHoje())}
     const ghe = ghes.find(g => g.id === gheId);
     if (!ghe) return { evento: null, motivo: 'GHE não encontrado.' };
 
-    const risks = environmentalRisks.filter(r => r.ghe_id === gheId);
+    /**
+     * So agente nocivo da Tabela 24. Risco ergonomico - inclusive o fator
+     * psicossocial - e de acidente entra no PGR pela NR-01 e nao tem codigo na
+     * tabela: ia para o evento com <codFatRisc> vazio, declarando ao governo um
+     * "agente" que o Anexo IV nao preve. O S-2240 por colaborador ja filtrava
+     * assim (montarCondicoesAmbientais, em lib/esocialDados.ts).
+     */
+    const risks = environmentalRisks.filter(
+      r => r.ghe_id === gheId && r.status !== 'INACTIVE' && codigoExisteNaTabela24(r.risk_code_table_24)
+    );
 
     /**
      * O trabalhador tem de ser DESTE GHE.
@@ -6394,8 +6452,9 @@ ${blocoRespMonitXml(event.client_id, aso?.exam_date || dataDeHoje())}
     if (risks.length === 0) {
       return {
         evento: null,
-        motivo: `O GHE ${ghe.name} não tem risco inventariado. O S-2240 declara a exposição a `
-          + 'agentes nocivos: sem inventário não há o que declarar.'
+        motivo: `O GHE ${ghe.name} não tem agente nocivo da Tabela 24 no inventário. Riscos `
+          + 'ergonômicos, psicossociais e de acidente ficam no PGR e não vão ao S-2240. Para '
+          + 'declarar ausência de agente nocivo (09.01.001), gere o S-2240 pelo colaborador.'
       };
     }
 
@@ -8041,6 +8100,7 @@ ${exames.map(ex => `      <exameMedico>
     addErgonomicAssessment,
     updateErgonomicAssessment,
     deleteErgonomicAssessment,
+    levarFatorAoInventario,
     registrarEvidenciaDaAEP,
     substituirEvidenciaDaAEP,
     descartarEvidenciaDaAEP,
@@ -8346,6 +8406,7 @@ ${exames.map(ex => `      <exameMedico>
     addErgonomicAssessment,
     updateErgonomicAssessment,
     deleteErgonomicAssessment,
+    levarFatorAoInventario,
     registrarEvidenciaDaAEP,
     substituirEvidenciaDaAEP,
     descartarEvidenciaDaAEP,

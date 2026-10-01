@@ -36,6 +36,12 @@ import {
 } from '@/lib/nr17';
 import { formatDate } from '@/lib/utils';
 import {
+  avaliacaoIniciada,
+  faltasDeInventarioPsicossocial,
+  resumoPsicossocial,
+  VIGENCIA_DO_CAPITULO_1_5
+} from '@/lib/psicossocial';
+import {
   Activity,
   Plus,
   Trash2,
@@ -45,9 +51,11 @@ import {
   AlertTriangle,
   CheckCircle2,
   Users,
-  Camera
+  Camera,
+  Brain
 } from 'lucide-react';
 import { AepPhotoEvidenceModal } from './AepPhotoEvidenceModal';
+import { AepPsychosocialModal } from './AepPsychosocialModal';
 
 interface ErgonomicAssessmentTabProps {
   selectedClientId: string;
@@ -67,6 +75,8 @@ const VAZIO = {
   prevention_description: '',
   workers_heard: '' as 'SIM' | 'NAO' | '',
   workers_heard_note: '',
+  workers_heard_date: '',
+  workers_heard_count: '',
   aet_triggers: [] as Array<'a' | 'b' | 'c' | 'd'>,
   aet_report_date: '',
   aet_report_reference: '',
@@ -89,6 +99,7 @@ export const ErgonomicAssessmentTab: React.FC<ErgonomicAssessmentTabProps> = ({ 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editando, setEditando] = useState<ErgonomicAssessment | null>(null);
   const [fotosDe, setFotosDe] = useState<ErgonomicAssessment | null>(null);
+  const [psicossocialDe, setPsicossocialDe] = useState<ErgonomicAssessment | null>(null);
   const [form, setForm] = useState({ ...VAZIO });
 
   const cliente = clients.find((c) => c.id === selectedClientId);
@@ -133,7 +144,14 @@ export const ErgonomicAssessmentTab: React.FC<ErgonomicAssessmentTabProps> = ({ 
       }),
       ...(a.job_ids || []).map((id) => cargosDoCliente.find((c) => c.id === id)?.name || '')
     ].filter(Boolean).join('; ');
-    return faltasDaAEP(a, { dispensaDeAET: dispensaAET, alcance }).map((f) => f.curto);
+    const nomeDoGhe = (id: string) => {
+      const g: any = ghesDoCliente.find((x: any) => x.id === id);
+      return g?.code || g?.name || id;
+    };
+    return [
+      ...faltasDaAEP(a, { dispensaDeAET: dispensaAET, alcance }),
+      ...faltasDeInventarioPsicossocial(a, environmentalRisks, nomeDoGhe)
+    ].map((f) => f.curto);
   };
 
   const definirAspecto = (chave: string, campo: 'conclusao' | 'observacao', valor: any) => {
@@ -173,6 +191,8 @@ export const ErgonomicAssessmentTab: React.FC<ErgonomicAssessmentTabProps> = ({ 
         prevention_description: a.prevention_description || '',
         workers_heard: a.workers_heard || '',
         workers_heard_note: a.workers_heard_note || '',
+        workers_heard_date: a.workers_heard_date || '',
+        workers_heard_count: a.workers_heard_count ? String(a.workers_heard_count) : '',
         aet_triggers: a.aet_triggers || [],
         aet_report_date: a.aet_report_date || '',
         aet_report_reference: a.aet_report_reference || '',
@@ -218,7 +238,12 @@ export const ErgonomicAssessmentTab: React.FC<ErgonomicAssessmentTabProps> = ({ 
       prevention_measures: form.prevention_measures.length > 0 ? form.prevention_measures : undefined,
       prevention_description: form.prevention_description.trim() || undefined,
       workers_heard: (form.workers_heard || undefined) as ErgonomicAssessment['workers_heard'],
-      workers_heard_note: form.workers_heard_note.trim() || undefined,
+      workers_heard_note: form.workers_heard === 'SIM' ? form.workers_heard_note.trim() || undefined : undefined,
+      workers_heard_date: form.workers_heard === 'SIM' ? form.workers_heard_date || undefined : undefined,
+      workers_heard_count: (() => {
+        const ouvidos = Number(String(form.workers_heard_count).replace(/\D/g, ''));
+        return form.workers_heard === 'SIM' && Number.isFinite(ouvidos) && ouvidos > 0 ? ouvidos : undefined;
+      })(),
       aet_triggers: form.aet_triggers.length > 0 ? form.aet_triggers : undefined,
       aet_report_date: form.aet_report_date || undefined,
       aet_report_reference: form.aet_report_reference.trim() || undefined,
@@ -263,6 +288,12 @@ export const ErgonomicAssessmentTab: React.FC<ErgonomicAssessmentTabProps> = ({ 
               semiquantitativa, quantitativa ou combinação, e a alínea &quot;c&quot; do 17.3.3 diz
               que a análise não está adstrita a ferramentas específicas. Aqui se registra a
               conclusão de quem avalia, aspecto por aspecto — não uma pontuação.
+            </p>
+            <p className="text-xs text-slate-400 mt-1 max-w-[46rem]">
+              <Brain className="w-3.5 h-3.5 inline text-teal-400 mr-1" />
+              Os <strong className="text-slate-300">fatores de risco psicossociais</strong> também são avaliados
+              aqui, em cada situação: desde {VIGENCIA_DO_CAPITULO_1_5} o subitem 1.5.3.2.1 da NR-01 manda
+              considerá-los nos termos da NR-17, e o fator presente vai ao inventário do PGR.
             </p>
           </div>
           <button
@@ -423,6 +454,19 @@ export const ErgonomicAssessmentTab: React.FC<ErgonomicAssessmentTabProps> = ({ 
                           {inadequados.length} inadequado(s): {inadequados.map((x) => x.rotulo).join(', ')}
                         </p>
                       )}
+                      {(() => {
+                        const psico = resumoPsicossocial(a);
+                        return avaliacaoIniciada(a) ? (
+                          <p className="text-[10px] text-slate-400 mt-0.5">
+                            Psicossociais: {psico.avaliados}/{psico.total} avaliados
+                            {psico.presentes.length > 0 && (
+                              <span className="text-rose-300"> · {psico.presentes.length} presente(s)</span>
+                            )}
+                          </p>
+                        ) : (
+                          <p className="text-[10px] text-amber-400 mt-0.5">Psicossociais: não avaliados</p>
+                        );
+                      })()}
                     </td>
                     <td className="py-3 px-4">
                       {falta.length === 0 ? (
@@ -443,6 +487,19 @@ export const ErgonomicAssessmentTab: React.FC<ErgonomicAssessmentTabProps> = ({ 
                           title="Editar avaliação"
                         >
                           <Edit3 className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setPsicossocialDe(a)}
+                          className="p-1.5 text-slate-400 hover:text-teal-400 hover:bg-slate-800 rounded-lg transition-colors relative"
+                          title="Fatores psicossociais"
+                        >
+                          <Brain className="w-3.5 h-3.5" />
+                          {resumoPsicossocial(a).presentes.length > 0 && (
+                            <span className="absolute -top-0.5 -right-0.5 text-[9px] font-bold bg-rose-500 text-white rounded-full px-1 leading-tight">
+                              {resumoPsicossocial(a).presentes.length}
+                            </span>
+                          )}
                         </button>
                         <button
                           type="button"
@@ -505,6 +562,10 @@ export const ErgonomicAssessmentTab: React.FC<ErgonomicAssessmentTabProps> = ({ 
 
       {fotosDe && (
         <AepPhotoEvidenceModal aep={fotosDe} onClose={() => setFotosDe(null)} />
+      )}
+
+      {psicossocialDe && (
+        <AepPsychosocialModal aep={psicossocialDe} onClose={() => setPsicossocialDe(null)} />
       )}
 
       {isModalOpen && (
@@ -808,13 +869,35 @@ export const ErgonomicAssessmentTab: React.FC<ErgonomicAssessmentTabProps> = ({ 
                   ))}
                 </div>
                 {form.workers_heard === 'SIM' && (
-                  <input
-                    type="text"
-                    placeholder="Como: entrevista individual, reunião com o setor, participação da CIPA"
-                    value={form.workers_heard_note}
-                    onChange={(e) => setForm({ ...form, workers_heard_note: e.target.value })}
-                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
-                  />
+                  <div className="grid grid-cols-1 md:grid-cols-[10rem_8rem_1fr] gap-2">
+                    <input
+                      type="date"
+                      title="Quando foram ouvidos"
+                      value={form.workers_heard_date}
+                      onChange={(e) => setForm({ ...form, workers_heard_date: e.target.value })}
+                      className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                    />
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      placeholder="Quantos"
+                      title="Quantos empregados foram ouvidos (número, nunca nomes)"
+                      value={form.workers_heard_count}
+                      onChange={(e) => setForm({ ...form, workers_heard_count: e.target.value })}
+                      className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                    />
+                    <input
+                      type="text"
+                      placeholder="Como: entrevista, roda de conversa, oficina, questionário anônimo, CIPA"
+                      value={form.workers_heard_note}
+                      onChange={(e) => setForm({ ...form, workers_heard_note: e.target.value })}
+                      className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                    />
+                    <p className="md:col-span-3 text-[10px] text-slate-500">
+                      Registre número, nunca nomes. Na avaliação psicossocial, data, número e forma são exigidos:
+                      sem a voz do trabalhador ela não é válida (Manual do GRO, item 17.2).
+                    </p>
+                  </div>
                 )}
               </div>
 

@@ -238,7 +238,7 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
       )
         .then((imagensDasEvidencias) => {
           exportAEPDocumentPdf({
-            client, organization, ergonomicAssessments, ghes, jobs, units,
+            client, organization, ergonomicAssessments, ghes, risks, jobs, units,
             technicalProfessionals, technicalResponsibilities, imagensDasEvidencias
           });
           setDownloadSuccess('AEP (NR-17) gerada e baixada em PDF!');

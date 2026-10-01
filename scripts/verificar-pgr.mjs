@@ -533,6 +533,23 @@ const CARGOS = [{ id: 'cargo-1', client_id: 'c1', name: 'Tecnico de manutencao',
  * uma a uma. A com gatilho "b" e sem relatorio exercita a AET devida - e, na
  * dispensa do 17.3.4, que o gatilho "b" NAO obriga.
  */
+/**
+ * Avaliacao psicossocial completa e sem fator presente - nada a inventariar.
+ * Desde 26/05/2026 ela faz parte da AEP (subitem 1.5.3.2.1 da NR-01): AEP
+ * sem ela nao esta completa. As chaves sao as de FATORES_PSICOSSOCIAIS.
+ */
+const PSICOSSOCIAL_COMPLETA = {
+  estrategias: ['OBSERVACAO_E_DIALOGO'],
+  indicadores_consultados: 'Afastamentos do setor nos ultimos 12 meses, somados',
+  fatores: Object.fromEntries(
+    ['assedio', 'mudancas', 'clareza', 'recompensas', 'suporte', 'autonomia', 'justica',
+      'traumaticos', 'subcarga', 'sobrecarga', 'relacionamentos', 'comunicacao', 'remoto']
+      .map((k) => [k, { conclusao: 'NAO_IDENTIFICADO' }])
+  ),
+  avaliacao_de_desempenho: { conclusao: 'NAO_HA_SISTEMA' },
+  orientacao_das_chefias: { conclusao: 'ATENDE' },
+};
+
 const AEP_COMPLETA = {
   id: 'ae1', client_id: 'c1', status: 'ACTIVE',
   situation_name: 'Recepcao - atendimento em posto informatizado',
@@ -551,6 +568,8 @@ const AEP_COMPLETA = {
   prevention_measures: ['a', 'b'],
   prevention_description: 'Pausa de 10 min a cada 50 min fora do posto e revezamento com o arquivo a cada 2 h',
   workers_heard: 'SIM', workers_heard_note: 'Entrevista individual com as duas recepcionistas',
+  workers_heard_date: '2026-03-12', workers_heard_count: 2,
+  psychosocial: PSICOSSOCIAL_COMPLETA,
 };
 /** Sem abordagem, sem metodos, sem aspectos, sem oitiva. */
 const AEP_INCOMPLETA = {

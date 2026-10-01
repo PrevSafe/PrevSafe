@@ -89,6 +89,25 @@ function inventarioAtivo(risks: any[]): any[] {
   return (risks || []).filter((r: any) => r && r.status !== 'INACTIVE');
 }
 
+/**
+ * Fator ergonomico - inclusive o psicossocial, que o subitem 1.5.3.1.4 da
+ * NR-01 poe entre os ergonomicos - nao e agente da NR-15, nao e atividade da
+ * NR-16 e nao e agente nocivo do Anexo IV do Decreto 3.048/1999. Entra no PGR,
+ * nao nos laudos nem no LTCAT: listado ali, "assedio" viraria linha de laudo
+ * pericial com "sem avaliacao quantitativa".
+ */
+export const ehFatorErgonomico = (r: any): boolean =>
+  String(r?.risk_category || '').toUpperCase().startsWith('ERGON')
+  || Boolean(String(r?.origin_psychosocial_factor || '').trim());
+
+/** Risco de acidente: entra no PGR e pode importar a NR-16, nao ao Anexo IV. */
+export const ehRiscoDeAcidente = (r: any): boolean =>
+  String(r?.risk_category || '').toUpperCase().startsWith('ACIDENTE');
+
+const SO_FATORES_ERGONOMICOS =
+  'O inventário registra apenas fatores ergonômicos, inclusive psicossociais, que não são '
+  + 'agentes nem atividades abrangidos por esta norma e ficam no PGR.';
+
 /** GHEs sem nenhum risco cadastrado: area nao avaliada, e o laudo diz isso. */
 function ghesSemRisco(risks: any[], ghes: any[]): string[] {
   return (ghes || [])
@@ -105,19 +124,29 @@ function ghesSemRisco(risks: any[], ghes: any[]): string[] {
  * prende ao enquadramento em anexo especifico e nao a uma caixa de selecao.
  */
 export function montarCorpoPericulosidade(risks: any[], ghes: any[]): CorpoLaudo {
-  const inventario = inventarioAtivo(risks);
+  const ativos = inventarioAtivo(risks);
+  const inventario = ativos.filter((r: any) => !ehFatorErgonomico(r));
 
   if (inventario.length === 0) {
     return {
       linhas: [],
       pendencias: [
-        'Inventário de riscos vazio: não há nenhum agente de risco registrado para este cliente.',
-        'Sem inventário, nenhuma atividade ou operação pôde ser confrontada com os Anexos da NR-16.',
+        ativos.length > 0
+          ? SO_FATORES_ERGONOMICOS
+          : 'Inventário de riscos vazio: não há nenhum agente de risco registrado para este cliente.',
+        ativos.length > 0
+          ? 'Sem atividade ou operação no inventário, nada pôde ser confrontado com os Anexos da NR-16.'
+          : 'Sem inventário, nenhuma atividade ou operação pôde ser confrontada com os Anexos da NR-16.',
         'A delimitação das áreas de risco (planta ou layout do estabelecimento) não é registrada neste sistema.'
       ],
       conclusao: [
-        'AVALIAÇÃO PERICIAL NÃO CONCLUÍDA — INVENTÁRIO DE RISCOS VAZIO.',
-        'Não existe risco ocupacional registrado para este estabelecimento. Por isso não é possível afirmar ' +
+        ativos.length > 0
+          ? 'AVALIAÇÃO PERICIAL NÃO CONCLUÍDA — NENHUM RISCO DO INVENTÁRIO ALCANÇADO PELA NR-16.'
+          : 'AVALIAÇÃO PERICIAL NÃO CONCLUÍDA — INVENTÁRIO DE RISCOS VAZIO.',
+        (ativos.length > 0
+          ? 'O inventário registra apenas fatores ergonômicos, inclusive psicossociais. '
+          : 'Não existe risco ocupacional registrado para este estabelecimento. ') +
+        'Por isso não é possível afirmar ' +
         'nem negar a existência de atividades ou operações perigosas na forma do art. 193 da CLT.',
         'Este documento NÃO caracteriza periculosidade e NÃO fundamenta o pagamento do adicional de 30%. ' +
         'Para concluir a perícia é necessário registrar o inventário de riscos e realizar inspeção no local ' +
@@ -262,19 +291,29 @@ function avaliacaoDoRisco(r: any): { texto: string; quantitativa: boolean } {
  * enquadramento registrado", que e a verdade do cadastro.
  */
 export function montarCorpoInsalubridade(risks: any[], ghes: any[]): CorpoLaudo {
-  const inventario = inventarioAtivo(risks);
+  const ativos = inventarioAtivo(risks);
+  const inventario = ativos.filter((r: any) => !ehFatorErgonomico(r));
 
   if (inventario.length === 0) {
     return {
       linhas: [],
       pendencias: [
-        'Inventário de riscos vazio: não há nenhum agente de risco registrado para este cliente.',
-        'Sem inventário, nenhum agente pôde ser confrontado com os limites de tolerância dos Anexos da NR-15.',
+        ativos.length > 0
+          ? SO_FATORES_ERGONOMICOS
+          : 'Inventário de riscos vazio: não há nenhum agente de risco registrado para este cliente.',
+        ativos.length > 0
+          ? 'Sem agente físico, químico ou biológico no inventário, nada pôde ser confrontado com os limites de tolerância dos Anexos da NR-15.'
+          : 'Sem inventário, nenhum agente pôde ser confrontado com os limites de tolerância dos Anexos da NR-15.',
         SEM_AVALIACAO_QUANTITATIVA
       ],
       conclusao: [
-        'AVALIAÇÃO PERICIAL NÃO CONCLUÍDA — INVENTÁRIO DE RISCOS VAZIO.',
-        'Não existe agente de risco registrado para este estabelecimento. Não é possível caracterizar nem ' +
+        ativos.length > 0
+          ? 'AVALIAÇÃO PERICIAL NÃO CONCLUÍDA — NENHUM AGENTE DA NR-15 NO INVENTÁRIO.'
+          : 'AVALIAÇÃO PERICIAL NÃO CONCLUÍDA — INVENTÁRIO DE RISCOS VAZIO.',
+        (ativos.length > 0
+          ? 'O inventário registra apenas fatores ergonômicos, inclusive psicossociais, e nenhum agente físico, químico ou biológico. '
+          : 'Não existe agente de risco registrado para este estabelecimento. ') +
+        'Não é possível caracterizar nem ' +
         'descaracterizar a insalubridade na forma dos arts. 189 a 192 da CLT e da NR-15.',
         'Este documento NÃO fundamenta o pagamento de adicional de insalubridade em grau mínimo (10%), ' +
         'médio (20%) ou máximo (40%).',

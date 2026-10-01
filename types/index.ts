@@ -440,7 +440,18 @@ export interface ErgonomicAssessment {
 
   /** Subitem 17.3.8: os empregados foram ouvidos? Vazio = nao informado. */
   workers_heard?: 'SIM' | 'NAO';
+  /** Como foram ouvidos: entrevista, roda de conversa, oficina, questionario anonimo. */
   workers_heard_note?: string;
+  /** Quando foram ouvidos. */
+  workers_heard_date?: string;
+  /** Quantos foram ouvidos. Numero, nunca nomes. */
+  workers_heard_count?: number;
+
+  /**
+   * Fatores de risco psicossociais relacionados ao trabalho, avaliados nesta
+   * situacao (NR-01, subitem 1.5.3.2.1). As regras estao em lib/psicossocial.ts.
+   */
+  psychosocial?: AvaliacaoPsicossocial;
 
   /** Gatilhos do item 17.3.2 observados nesta situacao. */
   aet_triggers?: Array<'a' | 'b' | 'c' | 'd'>;
@@ -457,6 +468,77 @@ export interface ErgonomicAssessment {
   notes?: string;
   status: 'ACTIVE' | 'INACTIVE';
   created_at: string;
+}
+
+/**
+ * Estrategias de conducao da avaliacao psicossocial citadas pelo Guia do MTE
+ * (2025, cap. 3) e pelo Manual do GRO/PGR (2026, item 17.1). O MTE nao indica
+ * nenhuma: a escolha e da organizacao, e pode combinar mais de uma.
+ */
+export type EstrategiaPsicossocial =
+  | 'OBSERVACAO_E_DIALOGO'
+  | 'QUESTIONARIO'
+  | 'OFICINA'
+  | 'EQUIPE_ESPECIALIZADA';
+
+/** De onde veio a constatacao de que o fator esta presente. */
+export type FonteDaConstatacao =
+  | 'OBSERVACAO'
+  | 'DIALOGO'
+  | 'QUESTIONARIO'
+  | 'OFICINA'
+  | 'INDICADORES'
+  | 'DOCUMENTOS';
+
+/**
+ * PRESENTE: o fator foi constatado nas condicoes de trabalho desta situacao.
+ * NAO_IDENTIFICADO: avaliado, e nao constatado. Ausente = nao avaliado.
+ */
+export type ConclusaoDoFator = 'PRESENTE' | 'NAO_IDENTIFICADO';
+
+export interface AvaliacaoDoFatorPsicossocial {
+  conclusao?: ConclusaoDoFator;
+  /**
+   * Caracterizacao da exposicao: como a atividade e realizada, duracao,
+   * frequencia e intensidade (Guia do MTE, cap. 4). Exigida quando PRESENTE.
+   */
+  caracterizacao?: string;
+  fontes?: FonteDaConstatacao[];
+}
+
+/** Fator fora da listagem do Guia, que e exemplificativa. */
+export interface FatorPsicossocialAdicional extends AvaliacaoDoFatorPsicossocial {
+  id: string;
+  perigo: string;
+  consequencias?: string;
+}
+
+export interface AvaliacaoPsicossocial {
+  estrategias?: EstrategiaPsicossocial[];
+  /** Nome do questionario ou ferramenta, quando usado. */
+  instrumento?: string;
+  /** Estudo cientifico ou instituicao de SST que fundamenta o instrumento. */
+  instrumento_fundamentacao?: string;
+  /** O questionario foi aplicado com anonimato garantido? */
+  anonimato_garantido?: boolean;
+  /**
+   * Informacoes de saude consultadas na preparacao (afastamentos, CAT,
+   * indicadores do PCMSO), sempre agregadas: nunca nome nem CID de pessoa.
+   */
+  indicadores_consultados?: string;
+  /** Pela chave de FATORES_PSICOSSOCIAIS. Ausente = nao avaliado. */
+  fatores?: Record<string, AvaliacaoDoFatorPsicossocial>;
+  adicionais?: FatorPsicossocialAdicional[];
+  /** Item 17.4.4 da NR-17: avaliacao de desempenho para remuneracao. */
+  avaliacao_de_desempenho?: {
+    conclusao?: 'ATENDE' | 'NAO_ATENDE' | 'NAO_HA_SISTEMA';
+    observacao?: string;
+  };
+  /** Item 17.4.7 da NR-17: orientacao dos superiores hierarquicos diretos. */
+  orientacao_das_chefias?: {
+    conclusao?: 'ATENDE' | 'NAO_ATENDE';
+    observacao?: string;
+  };
 }
 
 export type MomentoDaEvidencia = 'SITUACAO_ENCONTRADA' | 'APOS_A_MEDIDA';
@@ -1988,6 +2070,15 @@ export interface SSTEnvironmentalRisk {
 
   periculosidade_applies: boolean;
   periculosidade_legal_basis?: string; // ex: "NR-16 Anexo nº 2 - Inflamáveis"
+
+  /**
+   * Risco levado ao inventario a partir de uma AEP (item 17.3.5 da NR-17). E
+   * por esta ligacao que o PGR, a AEP e o relatorio psicossocial conferem um
+   * ao outro.
+   */
+  origin_aep_id?: string;
+  /** Chave de FATORES_PSICOSSOCIAIS, ou id de um fator adicional da AEP. */
+  origin_psychosocial_factor?: string;
 
   status: 'ACTIVE' | 'INACTIVE';
   created_at: string;
