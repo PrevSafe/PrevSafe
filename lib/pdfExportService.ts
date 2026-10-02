@@ -343,10 +343,12 @@ const AMBIENTE_FISICO: Record<string, string> = {
   VEICULO_TRANSPORTE: 'Veículo / transporte',
   OUTROS: 'Outros ambientes'
 };
+// Documento para o empregador: so apto ou inapto (NR-07, 7.5.19.1, "e"). "Apto
+// com restricao" contaria ao RH que ha uma restricao, que pertence ao prontuario.
 const RESULTADO_ASO: Record<string, string> = {
   APTO: 'Apto',
   INAPTO: 'Inapto',
-  APTO_COM_RESTRICAO: 'Apto com restrição'
+  APTO_COM_RESTRICAO: 'Apto'
 };
 const TIPO_DE_ASO: Record<string, string> = {
   ADMISSIONAL: 'Admissional',

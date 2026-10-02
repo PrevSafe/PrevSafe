@@ -338,10 +338,14 @@ export function exportAsosHealthToExcel({
         }
 
         const aptResult = aso.result || (aso as any).aptitude;
-        const aptText = aptResult === 'APTO' ? 'APTO' : aptResult === 'APTO_COM_RESTRICAO' ? 'APTO COM RESTRIÇÃO' : 'INAPTO';
-        const docName = aso.physician_name || (aso as any).doctor_name || 'Dr. Médico Coordenador';
+        // So apto ou inapto (NR-07, 7.5.19.1, "e"): a restricao fica no prontuario.
+        // Sem conclusao, nao se presume inapto; sem medico, nao se inventa um.
+        const aptText = aptResult === 'INAPTO' ? 'INAPTO'
+          : (aptResult === 'APTO' || aptResult === 'APTO_COM_RESTRICAO') ? 'APTO'
+          : 'SEM CONCLUSÃO';
+        const docName = aso.physician_name || (aso as any).doctor_name || 'NÃO INFORMADO';
         const docCrm = aso.physician_crm || (aso as any).doctor_crm;
-        const docUf = aso.physician_uf || (aso as any).doctor_uf || 'SP';
+        const docUf = aso.physician_uf || (aso as any).doctor_uf || '';
 
         rows.push({
           'Matrícula': emp.registration_number || emp.id.substring(0, 8),
@@ -357,7 +361,7 @@ export function exportAsosHealthToExcel({
           'Situação do Prazo': deadlineStatus,
           'Resultado de Aptidão': aptText,
           'Médico Examinador': docName,
-          'CRM/UF': docCrm ? `${docCrm}/${docUf}` : 'CRM/SP',
+          'CRM/UF': docCrm ? `${docCrm}/${docUf || 'UF NÃO INFORMADA'}` : 'NÃO INFORMADO',
           'Transmitido eSocial S-2220': (aso.esocial_event_id || (aso as any).esocial_transmitted) ? `SIM` : 'NÃO'
         });
       });

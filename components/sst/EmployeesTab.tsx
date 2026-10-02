@@ -963,7 +963,8 @@ export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) 
                             <span className="ml-2 text-slate-400">Médico: {aso.physician_name} (CRM {aso.physician_crm}/{aso.physician_uf})</span>
                           </div>
                           <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 font-bold rounded shrink-0">
-                            {aso.result} ({aso.exam_date})
+                            {/* So apto ou inapto (NR-07, 7.5.19.1, "e"): a restricao fica no prontuario. */}
+                            {aso.result === 'INAPTO' ? 'INAPTO' : aso.result ? 'APTO' : 'SEM CONCLUSÃO'} ({aso.exam_date})
                           </span>
                         </div>
 

@@ -502,6 +502,18 @@ const comRestricao = trabalhador({
 });
 const textoRestricao = textoCorrido(gerar(args(comRestricao)));
 check(!textoRestricao.includes(RESTRICAO), 'com ASO "apto com restrição", o texto da restrição não sai no kit');
+check(!/restri/i.test(textoRestricao.replace(/\s+/g, '')) && /Apto/.test(textoRestricao),
+  'com ASO "apto com restrição", o kit diz só "Apto" (7.5.19.1, "e"): nem a existência da restrição chega ao RH');
+
+// A ficha do colaborador e o Excel de ASOs tambem: so apto ou inapto, nada inventado.
+{
+  const dossie = semComentarios(fs.readFileSync(CAMINHO_FICHA, 'utf8'));
+  check(!/\{\s*aso\.result\s*\}/.test(dossie), 'a ficha do colaborador não exibe o código cru do resultado (APTO_COM_RESTRICAO)');
+  const excel = semComentarios(fs.readFileSync(path.join(RAIZ, 'lib', 'excelExportService.ts'), 'utf8'));
+  check(!/APTO COM RESTRI/.test(excel), 'o Excel de ASOs não escreve "APTO COM RESTRIÇÃO"');
+  check(!/Dr\. Médico Coordenador|'CRM\/SP'|doctor_uf \|\| 'SP'/.test(excel), 'o Excel de ASOs não inventa médico nem UF');
+  check(!/:\s*'INAPTO';/.test(excel), 'ASO sem conclusão não vira "INAPTO" no Excel');
+}
 
 // ===========================================================================
 // 3. O CODIGO DO KIT (para o diagnostico apontar a linha)
