@@ -30,3 +30,7 @@ aso-*.pdf
 .tmp-kit-verificacao/
 .tmp-sessao-verificacao/
 .tmp-aep-verificacao/
+
+# Saidas temporarias dos verificadores (scripts/verificar-*.mjs) e do
+# compilador de amostras: todas comecam por .tmp-
+.tmp-*/

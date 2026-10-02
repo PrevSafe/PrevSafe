@@ -1,0 +1,981 @@
+{
+ "_proveniencia": "Dispositivos citados pelo PCMSO, transcritos do texto oficial vigente (portal do MTE e DOU; portal do CFM; Planalto; Manual de Orientacao do eSocial S-1.3). Cada texto foi conferido contra o documento-fonte baixado; as unicas diferencas encontradas sao rodapes de pagina do PDF, que ficaram de fora. Textos normalizados para a forma Unicode NFC (letra acentuada composta). Conferido no texto oficial em 01 e 02/10/2026. Nao editar a mao: scripts/verificar-pcmso.mjs confere que lib/pcmsoFontes.ts e identico a este arquivo.",
+ "dispositivos": {
+  "nr01-1.5.5.4.1": {
+   "norma": "NR-01",
+   "dispositivo": "subitem 1.5.5.4.1",
+   "texto": "1.5.5.4.1 A organização deve desenvolver ações em saúde ocupacional dos trabalhadores integradas às demais medidas de prevenção em SST, de acordo com os riscos gerados pelo trabalho.",
+   "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-01-atualizada-2025-i-3.pdf",
+   "status": "VERIFICADO no texto oficial (conferido com o DOU)",
+   "vigencia": ""
+  },
+  "nr01-1.5.5.4.2": {
+   "norma": "NR-01",
+   "dispositivo": "subitem 1.5.5.4.2",
+   "texto": "1.5.5.4.2 O controle da saúde dos empregados deve ser um processo preventivo planejado, sistemático e continuado, de acordo com a classificação de riscos ocupacionais e nos termos da NR-7.",
+   "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-01-atualizada-2025-i-3.pdf",
+   "status": "VERIFICADO no texto oficial (conferido com o DOU)",
+   "vigencia": ""
+  },
+  "nr01-1.8.6": {
+   "norma": "NR-01",
+   "dispositivo": "subitem 1.8.6",
+   "texto": "1.8.6 O MEI, a ME e a EPP, graus de risco 1 e 2, que declararem as informações digitais na forma do subitem 1.6.1 e não identificarem exposições ocupacionais a agentes físicos, químicos, biológicos e riscos relacionados a fatores ergonômicos, ficam dispensados de elaboração do Programa de Controle Médico de Saúde Ocupacional - PCMSO.",
+   "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-01-atualizada-2025-i-3.pdf",
+   "status": "VERIFICADO no texto oficial (conferido com o DOU)",
+   "vigencia": ""
+  },
+  "nr01-1.8.6.1": {
+   "norma": "NR-01",
+   "dispositivo": "subitem 1.8.6.1",
+   "texto": "1.8.6.1 A dispensa do PCMSO não desobriga a empresa da realização dos exames médicos e emissão do Atestado de Saúde Ocupacional - ASO.",
+   "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-01-atualizada-2025-i-3.pdf",
+   "status": "VERIFICADO no texto oficial (conferido com o DOU)",
+   "vigencia": ""
+  },
+  "nr01-1.6.2": {
+   "norma": "NR-01",
+   "dispositivo": "subitem 1.6.2",
+   "texto": "1.6.2 Os documentos previstos nas NR podem ser emitidos e armazenados em meio digital com certificado digital emitido no âmbito da Infraestrutura de Chaves Públicas Brasileira (ICP-Brasil), normatizada por lei específica.",
+   "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-01-atualizada-2025-i-3.pdf",
+   "status": "VERIFICADO no texto oficial (conferido com o DOU)",
+   "vigencia": ""
+  },
+  "portaria-765-2025-art1": {
+   "norma": "Portaria MTE nº 765/2025",
+   "dispositivo": "art. 1º",
+   "texto": "Art. 1º Prorrogar até 25 de maio de 2026, o início da vigência da nova redação do capítulo \"1.5 Gerenciamento de riscos ocupacionais\" da Norma Regulamentadora nº 1 (NR-1) - Disposições Gerais e Gerenciamento de Riscos Ocupacionais, aprovada pela Portaria MTE nº 1.419, de 27 de agosto de 2024.",
+   "url": "",
+   "status": "VERIFICADO no DOU",
+   "vigencia": ""
+  },
+  "nr07-anexoII-2": {
+   "norma": "NR-07",
+   "dispositivo": "Anexo II, item 2",
+   "texto": "2. Devem ser submetidos a exames audiométricos de referência e seqüenciais todos os empregados que exerçam ou exercerão suas atividades em ambientes cujos níveis de pressão sonora estejam acima dos níveis de ação, conforme informado no PGR da organização, independentemente do uso de protetor auditivo.",
+   "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-07-atualizada-2022-1.pdf",
+   "status": "VERIFICADO no texto oficial (conferido com o DOU)",
+   "vigencia": ""
+  },
+  "nr07-anexoII-4.1": {
+   "norma": "NR-07",
+   "dispositivo": "Anexo II, item 4.1",
+   "texto": "4.1 O exame audiométrico deve ser realizado, no mínimo:\na) na admissão;\nb) anualmente, tendo como referência o exame da alínea \"a\" acima;\nc) na demissão.",
+   "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-07-atualizada-2022-1.pdf",
+   "status": "VERIFICADO no texto oficial (conferido com o DOU)",
+   "vigencia": ""
+  },
+  "nr07-anexoII-6": {
+   "norma": "NR-07",
+   "dispositivo": "Anexo II, item 6",
+   "texto": "6. O diagnóstico conclusivo, o diagnóstico diferencial e a definição da aptidão para a função ou atividade, na suspeita de PAINPSE, são atribuições do médico do trabalho responsável pelo PCMSO.",
+   "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-07-atualizada-2022-1.pdf",
+   "status": "VERIFICADO no texto oficial (conferido com o DOU)",
+   "vigencia": ""
+  },
+  "nr07-anexoIII-1": {
+   "norma": "NR-07",
+   "dispositivo": "Anexo III, item 1",
+   "texto": "1. A organização deve atender às obrigações de periodicidade, condições técnicas e parâmetros mínimos definidos neste Anexo para a realização de:\na) Radiografias de Tórax - RXTP em programas de controle médico em saúde ocupacional de empregados expostos a poeiras minerais, de acordo com os critérios da Organização Internacional do Trabalho - OIT;\nb) Espirometrias para avaliação da função respiratória em empregados expostos a poeiras minerais e para avaliação de empregados com indicação de uso de equipamentos individuais de proteção respiratória.",
+   "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-07-atualizada-2022-1.pdf",
+   "status": "VERIFICADO no texto oficial (conferido com o DOU)",
+   "vigencia": ""
+  },
+  "nr07-anexoIII-3.1": {
+   "norma": "NR-07",
+   "dispositivo": "Anexo III, item 3.1",
+   "texto": "3.1 Os empregados expostos ocupacionalmente a poeiras minerais indicadas no inventário de riscos do PGR devem ser submetidos a espirometria nos exames médicos admissional e a cada dois anos.",
+   "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-07-atualizada-2022-1.pdf",
+   "status": "VERIFICADO no texto oficial (conferido com o DOU)",
+   "vigencia": ""
+  },
+  "nr07-anexoIII-2.17": {
+   "norma": "NR-07",
+   "dispositivo": "Anexo III, item 2.17",
+   "texto": "2.17 Cabe ao empregador, após o término do contrato de trabalho envolvendo exposição ao asbesto, disponibilizar a realização periódica de exames médicos de controle durante, no mínimo, trinta anos, sem custos aos trabalhadores.",
+   "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-07-atualizada-2022-1.pdf",
+   "status": "VERIFICADO no texto oficial (conferido com o DOU)",
+   "vigencia": ""
+  },
+  "nr07-anexoIII-2.17.1": {
+   "norma": "NR-07",
+   "dispositivo": "Anexo III, item 2.17.1",
+   "texto": "2.17.1 Estes exames, incluindo raios X de Tórax, devem ser realizados com a seguinte periodicidade:\na) a cada três anos para trabalhadores com período de exposição até doze anos;\nb) a cada dois anos para trabalhadores com período de exposição de mais de doze a vinte anos; e\nc) anual para trabalhadores com período de exposição superior a vinte anos.",
+   "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-07-atualizada-2022-1.pdf",
+   "status": "VERIFICADO no texto oficial (conferido com o DOU)",
+   "vigencia": ""
+  },
+  "nr07-anexoIV-1.2": {
+   "norma": "NR-07",
+   "dispositivo": "Anexo IV, item 1.2",
+   "texto": "1.2. Os exames médicos para trabalhadores candidatos a trabalho em pressões hiperbáricas deverão ser avaliados por médico qualificado.",
+   "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-07-atualizada-2022-1.pdf",
+   "status": "VERIFICADO no texto oficial (conferido com o DOU)",
+   "vigencia": ""
+  },
+  "nr07-anexoIV-1.3": {
+   "norma": "NR-07",
+   "dispositivo": "Anexo IV, item 1.3",
+   "texto": "1.3. O atestado de aptidão terá validade por 6 (seis) meses.",
+   "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-07-atualizada-2022-1.pdf",
+   "status": "VERIFICADO no texto oficial (conferido com o DOU)",
+   "vigencia": ""
+  },
+  "nr07-anexoV-2.1": {
+   "norma": "NR-07",
+   "dispositivo": "Anexo V, item 2.1",
+   "texto": "2.1 O presente Anexo aplica-se às organizações que produzam, transportem, armazenem, utilizem ou manipulem substâncias químicas cancerígenas, com registro CAS, conforme indicadas no Inventário de Riscos do PGR, misturas líquidas contendo concentração igual ou maior que 0,1% (zero vírgula um por cento) em volume dessas substâncias, ou mistura gasosa contendo essas substâncias, e às organizações nas quais os processos de trabalho exponham seus empregados a radiações ionizantes.",
+   "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-07-atualizada-2022-1.pdf",
+   "status": "VERIFICADO no texto oficial (conferido com o DOU)",
+   "vigencia": ""
+  },
+  "nr07-anexoV-3.1": {
+   "norma": "NR-07",
+   "dispositivo": "Anexo V, item 3.1",
+   "texto": "3.1 O médico do trabalho responsável deve registrar no PCMSO as atividades e funções na organização com exposição ocupacional a radiações ionizantes e a substâncias químicas cancerígenas, identificadas e classificadas no PGR.",
+   "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-07-atualizada-2022-1.pdf",
+   "status": "VERIFICADO no texto oficial (conferido com o DOU)",
+   "vigencia": ""
+  },
+  "nr07-anexoV-4.1": {
+   "norma": "NR-07",
+   "dispositivo": "Anexo V, item 4.1",
+   "texto": "4.1 Os prontuários médicos dos empregados expostos a substâncias químicas cancerígenas devem ser mantidos por período mínimo de 40 (quarenta) anos após o desligamento do empregado.",
+   "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-07-atualizada-2022-1.pdf",
+   "status": "VERIFICADO no texto oficial (conferido com o DOU)",
+   "vigencia": ""
+  },
+  "nr07-anexoV-5.4": {
+   "norma": "NR-07",
+   "dispositivo": "Anexo V, item 5.4",
+   "texto": "5.4 Os prontuários médicos dos empregados expostos a radiações ionizantes devem ser mantidos até a data em que o empregado completará 75 anos e, pelo menos, por período mínimo de 30 (trinta) anos após o desligamento do empregado.",
+   "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-07-atualizada-2022-1.pdf",
+   "status": "VERIFICADO no texto oficial (conferido com o DOU)",
+   "vigencia": ""
+  },
+  "nr07-anexoI-q1-titulo": {
+   "norma": "NR-07",
+   "dispositivo": "Anexo I, Quadro 1, titulo",
+   "texto": "QUADRO 1 - Indicadores Biológicos de Exposição Excessiva (IBE/EE)*",
+   "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-07-atualizada-2022-1.pdf",
+   "status": "VERIFICADO no texto oficial (conferido com o DOU)",
+   "vigencia": ""
+  },
+  "nr07-anexoI-q2-titulo": {
+   "norma": "NR-07",
+   "dispositivo": "Anexo I, Quadro 2, titulo",
+   "texto": "QUADRO 2 - Indicadores Biológicos de Exposição com Significado Clínico (IBE/SC)*",
+   "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-07-atualizada-2022-1.pdf",
+   "status": "VERIFICADO no texto oficial (conferido com o DOU)",
+   "vigencia": ""
+  },
+  "nr07-anexoI-q1-substancias": {
+   "norma": "NR-07",
+   "dispositivo": "Anexo I, Quadro 1, substancias (nome e CAS, literal do DOU)",
+   "texto": "[{\"substancia\": \"1,1,1 Tricloroetano\", \"cas\": \"71-55-6\"}, {\"substancia\": \"1,3 butadieno\", \"cas\": \"106-99-0\"}, {\"substancia\": \"1,6 diisocianato de hexametileno (HDI)\", \"cas\": \"822-06-0\"}, {\"substancia\": \"2-butoxietanol\", \"cas\": \"111-76-2\"}, {\"substancia\": \"2-metoxietanol e\", \"cas\": \"109-86-4\"}, {\"substancia\": \"2-metoxietilacetato\", \"cas\": \"109-49-6\"}, {\"substancia\": \"2-propanol\", \"cas\": \"67-63-0\"}, {\"substancia\": \"2,4 e 2,6 Tolueno diisocianato (puros ou em mistura dos dois isômeros)\", \"cas\": \"58484-9 9108-7\"}, {\"substancia\": \"Acetona\", \"cas\": \"67-64-1\"}, {\"substancia\": \"Anilina\", \"cas\": \"62-53-3\"}, {\"substancia\": \"Arsênico elementar e seus compostos inorgânicos solúveis, exceto arsina e arsenato de gálio\", \"cas\": \"7440-38-2\"}, {\"substancia\": \"Benzeno\", \"cas\": \"71-43-2\"}, {\"substancia\": \"Chumbo tetraetila\", \"cas\": \"78-00-2\"}, {\"substancia\": \"Ciclohexanona\", \"cas\": \"108-94-1\"}, {\"substancia\": \"Clorobenzeno\", \"cas\": \"108-90-7\"}, {\"substancia\": \"Cobalto e seus compostos inorgânicos, incluindo óxidos de cobalto, mas não combinados com carbeto de tungstênio\", \"cas\": \"7440-48-4\"}, {\"substancia\": \"Cromo hexavalente (compostos solúveis)\", \"cas\": \"7440-47-3\"}, {\"substancia\": \"Diclorometano\", \"cas\": \"75-09-2\"}, {\"substancia\": \"Estireno\", \"cas\": \"100-42-5\"}, {\"substancia\": \"Etilbenzeno\", \"cas\": \"100-41-4\"}, {\"substancia\": \"Etoxietanol e Etoxietilacetato\", \"cas\": \"1. 111-15-9\"}, {\"substancia\": \"Fenol\", \"cas\": \"108-95-2\"}, {\"substancia\": \"Furfural\", \"cas\": \"98-01-1\"}, {\"substancia\": \"Indutores de Metahemoglobina\", \"cas\": \"\"}, {\"substancia\": \"Mercúrio metálico\", \"cas\": \"7439-97-6\"}, {\"substancia\": \"Metanol\", \"cas\": \"67-56-1\"}, {\"substancia\": \"Metil butil cetona\", \"cas\": \"591-78-6\"}, {\"substancia\": \"Metiletilcetona (MEK)\", \"cas\": \"78-93-3\"}, {\"substancia\": \"Metilisobutilcetona (MIBK)\", \"cas\": \"108-10-1\"}, {\"substancia\": \"Monóxido de carbono\", \"cas\": \"630-08-0\"}, {\"substancia\": \"n-hexano\", \"cas\": \"110-54-3\"}, {\"substancia\": \"Nitrobenzeno\", \"cas\": \"98-95-3\"}, {\"substancia\": \"N-metil-2- pirrolidona\", \"cas\": \"872-50-4\"}, {\"substancia\": \"N,N Dimetilacetami da\", \"cas\": \"127-19-5\"}, {\"substancia\": \"N,N Dimetilformamida\", \"cas\": \"68-12-2\"}, {\"substancia\": \"Óxido de etileno\", \"cas\": \"75-21-8\"}, {\"substancia\": \"Sulfeto de carbono\", \"cas\": \"75-15-0\"}, {\"substancia\": \"Tetracloroetileno\", \"cas\": \"127-18-4\"}, {\"substancia\": \"Tetrahidrofurano\", \"cas\": \"109-99-9\"}, {\"substancia\": \"Tolueno\", \"cas\": \"108-88-3\"}, {\"substancia\": \"Tricloroetileno\", \"cas\": \"79-01-6\"}, {\"substancia\": \"Xilenos\", \"cas\": \"9547-6 10642-3 10838-3 1330- 27-7\"}]",
+   "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-07-atualizada-2022-1.pdf",
+   "status": "VERIFICADO no texto oficial (conferido com o DOU)",
+   "vigencia": ""
+  },
+  "nr07-anexoI-q2-substancias": {
+   "norma": "NR-07",
+   "dispositivo": "Anexo I, Quadro 2, substancias (nome e CAS, literal do DOU)",
+   "texto": "[{\"substancia\": \"Cádmio e seus compostos inorgânicos\", \"cas\": \"7440-43-9\"}, {\"substancia\": \"Chumbo e seus compostos inorgânicos\", \"cas\": \"7439-92-1\"}, {\"substancia\": \"Inseticidas inibidores da Colinesterase\", \"cas\": \"\"}, {\"substancia\": \"Flúor, ácido fluorídrico e fluoretos inorgânicos\", \"cas\": \"\"}]",
+   "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-07-atualizada-2022-1.pdf",
+   "status": "VERIFICADO no texto oficial (conferido com o DOU)",
+   "vigencia": ""
+  },
+  "nr35-35.4.4": {
+   "norma": "NR-35",
+   "dispositivo": "item 35.4.4",
+   "texto": "35.4.4 Cabe à organização avaliar o estado de saúde dos empregados que exercem atividades de trabalho em altura de acordo com o estabelecido na NR-07 (Programa de Controle Médico de Saúde Ocupacional), em especial o item 7.5.3, considerando patologias que poderão originar mal súbito e queda de altura, bem como os fatores psicossociais.",
+   "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-35-atualizada-2025-1.pdf",
+   "status": "VERIFICADO no texto oficial (PDF MTE baixado em 01/10/2026)",
+   "vigencia": "Redação dada pela Portaria MTP nº 4.218/2022; última alteração Portaria MTE nº 1.259, de 15/07/2026 (DOU 16/07/26) segundo o PDF (a página do MTE diz 15 de junho de 2026)."
+  },
+  "nr35-35.4.4.1": {
+   "norma": "NR-35",
+   "dispositivo": "item 35.4.4.1",
+   "texto": "35.4.4.1 A aptidão para trabalho em altura deve ser consignada no atestado de saúde ocupacional do trabalhador.",
+   "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-35-atualizada-2025-1.pdf",
+   "status": "VERIFICADO no texto oficial (PDF MTE baixado em 01/10/2026)",
+   "vigencia": "Redação dada pela Portaria MTP nº 4.218/2022; última alteração Portaria MTE nº 1.259, de 15/07/2026 (DOU 16/07/26) segundo o PDF (a página do MTE diz 15 de junho de 2026)."
+  },
+  "nr33-33.5.19.1": {
+   "norma": "NR-33",
+   "dispositivo": "item 33.5.19.1",
+   "texto": "33.5.19.1 Os trabalhadores designados para atividades em espaços confinados devem ser avaliados quanto à aptidão física e mental, considerando os fatores de riscos psicossociais.",
+   "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/arquivos/normas-regulamentadoras/nr-33-atualizada-2022-_retificada.pdf",
+   "status": "VERIFICADO no texto oficial (PDF MTE baixado em 01/10/2026)",
+   "vigencia": "Redação dada pela Portaria nº 1.690, de 15/06/2022 (DOU 24/06/22; em vigor desde 03/10/2022). O próprio PDF a chama de SEPRT, MTE e MTP."
+  },
+  "nr33-33.5.19.2": {
+   "norma": "NR-33",
+   "dispositivo": "item 33.5.19.2",
+   "texto": "33.5.19.2 A aptidão para trabalhos em espaços confinados deve estar consignada no Atestado de Saúde Ocupacional - ASO, nos termos da NR-07 (Programa de Controle Médico de Saúde Ocupacional - PCMSO).",
+   "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/arquivos/normas-regulamentadoras/nr-33-atualizada-2022-_retificada.pdf",
+   "status": "VERIFICADO no texto oficial (PDF MTE baixado em 01/10/2026)",
+   "vigencia": "Redação dada pela Portaria nº 1.690, de 15/06/2022 (DOU 24/06/22; em vigor desde 03/10/2022). O próprio PDF a chama de SEPRT, MTE e MTP."
+  },
+  "nr10-10.8.7": {
+   "norma": "NR-10",
+   "dispositivo": "item 10.8.7 (texto vigente até 31/05/2027)",
+   "texto": "10.8.7 Os trabalhadores autorizados a intervir em instalações elétricas devem ser submetidos a exame de saúde compatível com as atividades a serem desenvolvidas, realizado em conformidade com a NR 7 e registrado em seu prontuário médico.",
+   "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/arquivos/normas-regulamentadoras/nr-10-atualizada-2019-1.pdf",
+   "status": "VERIFICADO no texto oficial (PDF MTE baixado em 01/10/2026) — texto em vigor até 31/05/2027",
+   "vigencia": "Texto dado pela Portaria MTE nº 598/2004; última alteração Portaria SEPRT nº 915/2019 (DOU 31/07/19). Vigente até 31/05/2027."
+  },
+  "nr10-10.7.5": {
+   "norma": "NR-10",
+   "dispositivo": "item 10.7.5 (nova redação, a partir de 01/06/2027)",
+   "texto": "10.7.5 Os trabalhadores autorizados a intervir em instalações elétricas devem ser submetidos a exame de saúde compatível com as atividades a serem desenvolvidas, realizado em conformidade com a Norma Regulamentadora nº 07 (NR-7) - Programa de Controle Médico de Saúde Ocupacional e registrado em seu prontuário médico.",
+   "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-10-atualizada-2026-1.pdf",
+   "status": "VERIFICADO no texto oficial (PDF MTE baixado em 01/10/2026) — VIGÊNCIA FUTURA: 01/06/2027 (art. 5º da Portaria MTE nº 737/2026)",
+   "vigencia": "Texto dado pela Portaria MTE nº 737, de 29/05/2026 (DOU 01/06/26). Vigência a partir de 01/06/2027 (art. 5º)."
+  },
+  "nr11-11.1.6": {
+   "norma": "NR-11",
+   "dispositivo": "item 11.1.6 / 11.1.6.1",
+   "texto": "11.1.6 Os operadores de equipamentos de transporte motorizado deverão ser habilitados e só poderão dirigir se durante o horário de trabalho portarem um cartão de identificação, com o nome e fotografia, em lugar visível. 11.1.6.1 O cartão terá a validade de 1 (um) ano, salvo imprevisto, e, para a revalidação, o empregado deverá passar por exame de saúde completo, por conta do empregador.",
+   "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-11-atualizada-2016.pdf",
+   "status": "VERIFICADO no texto oficial (PDF MTE baixado em 01/10/2026)",
+   "vigencia": "Última alteração Portaria MTPS nº 505, de 29/04/2016 (DOU 02/05/16); item 11.1.6.1 da redação original (Portaria MTb nº 3.214/1978)."
+  },
+  "nr32-32.2.3.1": {
+   "norma": "NR-32",
+   "dispositivo": "item 32.2.3.1",
+   "texto": "32.2.3.1 O PCMSO, além do previsto na NR-07, e observando o disposto no inciso I do item 32.2.2.1, deve contemplar: a) o reconhecimento e a avaliação dos riscos biológicos; b) a localização das áreas de risco segundo os parâmetros do item 32.2.2; c) a relação contendo a identificação nominal dos trabalhadores, sua função, o local em que desempenham suas atividades e o risco a que estão expostos; d) a vigilância médica dos trabalhadores potencialmente expostos; e) o programa de vacinação.",
+   "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-32-atualizada-2023-1.pdf",
+   "status": "VERIFICADO no texto oficial (PDF MTE baixado em 01/10/2026)",
+   "vigencia": "Redação dada pela Portaria MTb nº 485/2005; última alteração Portaria MTP nº 4.219, de 20/12/2022 (DOU 22/12/22)."
+  },
+  "nr32-32.2.3.3": {
+   "norma": "NR-32",
+   "dispositivo": "item 32.2.3.3",
+   "texto": "32.2.3.3 Com relação à possibilidade de exposição acidental aos agentes biológicos, deve constar do PCMSO: a) os procedimentos a serem adotados para diagnóstico, acompanhamento e prevenção da soroconversão e das doenças; b) as medidas para descontaminação do local de trabalho; c) o tratamento médico de emergência para os trabalhadores; d) a identificação dos responsáveis pela aplicação das medidas pertinentes; e) a relação dos estabelecimentos de saúde que podem prestar assistência aos trabalhadores; f) as formas de remoção para atendimento dos trabalhadores; g) a relação dos estabelecimentos de assistência à saúde depositários de imunoglobulinas, vacinas, medicamentos necessários, materiais e insumos especiais.",
+   "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-32-atualizada-2023-1.pdf",
+   "status": "VERIFICADO no texto oficial (PDF MTE baixado em 01/10/2026)",
+   "vigencia": "Redação dada pela Portaria MTb nº 485/2005; última alteração Portaria MTP nº 4.219, de 20/12/2022 (DOU 22/12/22)."
+  },
+  "nr32-32.2.3.4-5": {
+   "norma": "NR-32",
+   "dispositivo": "item 32.2.3.4 / 32.2.3.5",
+   "texto": "32.2.3.4 O PCMSO deve estar à disposição dos trabalhadores, bem como da inspeção do trabalho. 32.2.3.5 Em toda ocorrência de acidente envolvendo riscos biológicos, com ou sem afastamento do trabalhador, deve ser emitida a Comunicação de Acidente de Trabalho - CAT.",
+   "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-32-atualizada-2023-1.pdf",
+   "status": "VERIFICADO no texto oficial (PDF MTE baixado em 01/10/2026)",
+   "vigencia": "Redação dada pela Portaria MTb nº 485/2005; última alteração Portaria MTP nº 4.219, de 20/12/2022 (DOU 22/12/22)."
+  },
+  "nr32-32.2.4.17": {
+   "norma": "NR-32",
+   "dispositivo": "item 32.2.4.17.1 a 32.2.4.17.7",
+   "texto": "32.2.4.17 Da Vacinação dos Trabalhadores 32.2.4.17.1 A todo trabalhador dos serviços de saúde deve ser fornecido, gratuitamente, programa de imunização ativa contra tétano, difteria, hepatite B e os estabelecidos no PCMSO. 32.2.4.17.2 Sempre que houver vacinas eficazes contra outros agentes biológicos a que os trabalhadores estão, ou poderão estar, expostos, o empregador deve fornecê-las gratuitamente. 32.2.4.17.3 O empregador deve fazer o controle da eficácia da vacinação sempre que for recomendado pelo Ministério da Saúde e seus órgãos, e providenciar, se necessário, seu reforço. 32.2.4.17.4 A vacinação deve obedecer às recomendações do Ministério da Saúde. 32.2.4.17.5 O empregador deve assegurar que os trabalhadores sejam informados das vantagens e dos efeitos colaterais, assim como dos riscos a que estarão expostos por falta ou recusa de vacinação, devendo, nestes casos, guardar documento comprobatório e mantê-lo disponível à inspeção do trabalho. 32.2.4.17.6 A vacinação deve ser registrada no prontuário clínico individual do trabalhador, previsto na NR-07. 32.2.4.17.7 Deve ser fornecido ao trabalhador comprovante das vacinas recebidas.",
+   "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-32-atualizada-2023-1.pdf",
+   "status": "VERIFICADO no texto oficial (PDF MTE baixado em 01/10/2026)",
+   "vigencia": "Redação dada pela Portaria MTb nº 485/2005; última alteração Portaria MTP nº 4.219, de 20/12/2022 (DOU 22/12/22)."
+  },
+  "nr32-32.4.8": {
+   "norma": "NR-32",
+   "dispositivo": "item 32.4.6 f) / 32.4.8 / 32.4.10",
+   "texto": "f) dar ciência dos resultados das doses referentes às exposições de rotina, acidentais e de emergências, por escrito e mediante recibo, a cada trabalhador e ao médico coordenador do PCMSO ou médico encarregado dos exames médicos previstos na NR-07. […] 32.4.8 O prontuário clínico individual previsto pela NR-07 deve ser mantido atualizado e ser conservado por 30 (trinta) anos após o término de sua ocupação. […] 32.4.10 O médico coordenador do PCMSO ou o encarregado pelos exames médicos, previstos na NR-07, deve estar familiarizado com os efeitos e a terapêutica associados à exposiçãodecorrente das atividades de rotina ou de acidentes com radiações ionizantes.",
+   "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-32-atualizada-2023-1.pdf",
+   "status": "VERIFICADO no texto oficial (PDF MTE baixado em 01/10/2026)",
+   "vigencia": "Redação dada pela Portaria MTb nº 485/2005; última alteração Portaria MTP nº 4.219, de 20/12/2022 (DOU 22/12/22)."
+  },
+  "nr36-36.12.1-4": {
+   "norma": "NR-36",
+   "dispositivo": "item 36.12.1 / 36.12.3 / 36.12.4",
+   "texto": "36.12.1 O Programa de Gerenciamento de Riscos (PGR) e o Programa de Controle Médico de Saúde Ocupacional (PCMSO) devem estar articulados entre si e com as demais normas de segurança e saúde no trabalho, em particular com a NR-17 (Ergonomia). […] 36.12.3 Deve ser utilizado, no PCMSO, instrumental clínico-epidemiológico que oriente as medidas a serem implementadas no PGR e nos programas de melhorias ergonômicas e de condições gerais de trabalho, por meio de tratamento de informações coletivas e individuais, incluindo no mínimo as ações previstas no item 7.3.2.1 da NR-7 (PCMSO). 36.12.4 O médico responsável pelo PCMSO deve informar ao empregador e aos responsáveis pelo PGR, as situações geradoras de riscos aos trabalhadores, especialmente quando observar, no controle médico ocupacional, nexo causal entre as queixas, as lesões e os agravos à saúde dos trabalhadores e as situações de trabalho a que ficam expostos.",
+   "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-36-atualizada-2024-1.pdf",
+   "status": "VERIFICADO no texto oficial (PDF MTE baixado em 01/10/2026)",
+   "vigencia": "Redação dada pela Portaria MTE nº 1.065, de 01/07/2024 (DOU 02/07/24)."
+  },
+  "nr36-36.12.6-7": {
+   "norma": "NR-36",
+   "dispositivo": "item 36.12.6 / 36.12.6.1 / 36.12.7",
+   "texto": "36.12.6 O responsável pelo PCMSO deve elaborar o relatório analítico, anualmente, considerando a data do último relatório, com os dados da evolução clínica e epidemiológica dos trabalhadores, contemplando as medidas administrativas e técnicas a serem adotadas quando evidenciado o nexo causal entre as alterações detectadas nos exames e a atividade exercida. 36.12.6.1 As medidas propostas pelo Médico do Trabalho devem ser apresentadas e discutidas com os responsáveis pelo PGR, com os responsáveis pelas melhorias ergonômicas na organização e com membros da Comissão Interna de Prevenção de Acidentes e de Assédio (CIPA). 36.12.7 O relatório analítico do PCMSO, além do previsto na NR-7, deve discriminar número e duração de afastamentos do trabalho, estatísticas de queixas dos trabalhadores, estatísticas de alterações encontradas em avaliações clínicas e exames complementares, com a indicação dos setores e postos de trabalho respectivos.",
+   "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-36-atualizada-2024-1.pdf",
+   "status": "VERIFICADO no texto oficial (PDF MTE baixado em 01/10/2026)",
+   "vigencia": "Redação dada pela Portaria MTE nº 1.065, de 01/07/2024 (DOU 02/07/24)."
+  },
+  "nr38-38.4.1": {
+   "norma": "NR-38",
+   "dispositivo": "item 38.4.1 a 38.4.1.4",
+   "texto": "38.4.1 O PCMSO deve prever programa de imunização ativa, principalmente contra tétano e hepatite B, considerando a avaliação de riscos ocupacionais previstos no Programa de Gerenciamento de Riscos - PGR. 38.4.1.1 A vacinação deve obedecer às recomendações do Ministério da Saúde, podendo ser aceita vacinação anterior, a critério médico. 38.4.1.2 A organização deve assegurar que os trabalhadores tenham acesso à material informativo sobre a necessidade da vacinação identificada no PCMSO e seus benefícios, assim como dos possíveis riscos a que estarão expostos por falta ou recusa dessa vacinação. 38.4.1.3 Deve ser fornecido ao empregado comprovante das vacinas quando fornecidas pela organização. 38.4.1.3.1 Quando a vacinação for realizada na rede pública, a organização deve solicitar aos empregados que apresentem o respectivo certificado de vacinação. 38.4.1.4 A vacinação, ou sua recusa, deve ser registrada no prontuário clínico individual do empregado.",
+   "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/NR38atualizada2026.pdf",
+   "status": "VERIFICADO no texto oficial (PDF MTE baixado em 01/10/2026)",
+   "vigencia": "Redação dada pela Portaria MTP nº 4.101/2022 (em vigor desde 02/01/2024); últimas alterações Portaria MTE nº 779/2025 e Portaria MTE nº 817, de 08/05/2026 (DOU 11/05/26)."
+  },
+  "nr31-31.2.1.1": {
+   "norma": "NR-31",
+   "dispositivo": "item 31.2.1.1",
+   "texto": "31.2.1.1 Nas atividades previstas no subitem 31.2.1, aplica-se somente o disposto nesta NR, salvo: a) quando houver remissão expressa à aplicação de outras NR na presente Norma;",
+   "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-31-atualizada-2024-2.pdf",
+   "status": "VERIFICADO no texto oficial (PDF MTE baixado em 01/10/2026)",
+   "vigencia": "Redação dada pela Portaria SEPRT nº 22.677/2020; última alteração Portaria MTE nº 342, de 21/03/2024 (DOU 22/03/24)."
+  },
+  "nr31-31.3.7": {
+   "norma": "NR-31",
+   "dispositivo": "item 31.3.6 / 31.3.7",
+   "texto": "31.3.6 As ações de preservação da saúde ocupacional dos trabalhadores e de prevenção e controle dos agravos decorrentes do trabalho devem ser planejadas e executadas com base na identificação dos perigos e nas necessidades e peculiaridades das atividades rurais. 31.3.7 O empregador rural ou equiparado deve garantir a realização de exames médicos, obedecendo aos seguintes requisitos: a) exame admissional, que deve ser realizado antes que o trabalhador assuma suas atividades; b) exame periódico, que deve ser realizado anualmente ou em intervalos menores, quando disposto em acordo ou convenção coletiva de trabalho ou a critério médico; c) exame de retorno ao trabalho, que deve ser realizado no primeiro dia do retorno à atividade do trabalhador ausente por período igual ou superior a 30 (trinta) dias devido a qualquer doença ou acidente; d) exame de mudança de risco ocupacional, que deve, obrigatoriamente, ser realizado antes da data da mudança, adequando-se o controle médico aos novos riscos; e) no exame demissional, o exame clínico deve ser realizado em até 10 (dez) dias, contados do término do contrato, podendo ser dispensado caso o exame clínico mais recente tenha sido realizado há menos de 90 dias, salvo o disposto em acordo ou convenção coletiva de trabalho.",
+   "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-31-atualizada-2024-2.pdf",
+   "status": "VERIFICADO no texto oficial (PDF MTE baixado em 01/10/2026)",
+   "vigencia": "Redação dada pela Portaria SEPRT nº 22.677/2020; última alteração Portaria MTE nº 342, de 21/03/2024 (DOU 22/03/24)."
+  },
+  "nr15-anexo12-19": {
+   "norma": "NR-15",
+   "dispositivo": "item Anexo 12 (Asbesto), 19 / 19.1 / 19.2",
+   "texto": "19. Cabe ao empregador, após o término do contrato de trabalho envolvendo exposição ao asbesto, manter disponível a realização periódica de exames médicos de controle dos trabalhadores durante 30 (trinta) anos. 19.1. Estes exames deverão ser realizados com a seguinte periodicidade: a) a cada 3 (três) anos para trabalhadores com período de exposição de 0 (zero) a 12 (doze) anos; b) a cada 2 (dois) anos para trabalhadores com período de exposição de 12 (doze) a 20 (vinte) anos; c) anual para trabalhadores com período de exposição superior a 20 (vinte) anos. 19.2. O trabalhador receberá, por ocasião da demissão e retornos posteriores, comunicação da data e local da próxima avaliação médica.",
+   "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-15-atualizada-2025.pdf",
+   "status": "VERIFICADO no texto oficial (PDF MTE baixado em 01/10/2026)",
+   "vigencia": "Última alteração Portaria MTE nº 2.021, de 03/12/2025 (DOU 04/12/25). Anexo 6: título pela Portaria SSMT nº 24/1983; item 1 pela Portaria SSMT nº 05/1983."
+  },
+  "cfm-2323-art3-III": {
+   "norma": "Resolução CFM nº 2.323/2022",
+   "dispositivo": "Art. 3º, inciso III",
+   "texto": "III – Dar conhecimento formalmente aos empregadores, aos trabalhadores e às comissões internas de prevenção de acidentes sobre os riscos existentes no ambiente de trabalho, informações da vigilância epidemiológica e outros informes técnicos, desde que resguardado o sigilo profissional.",
+   "url": "https://sistemas.cfm.org.br/normas/arquivos/resolucoes/BR/2022/2323_2022.pdf (página: https://sistemas.cfm.org.br/normas/visualizar/resolucoes/BR/2022/2323)",
+   "status": "vigente",
+   "vigencia": "Em vigor desde 17/10/2022 (publicação no DOU, Seção 1, Edição 197; art. 19). Situação no portal CFM (busca de normas) consultado em 01-02/10/2026: \"Em vigor\", com artigos 10, 12 e § 2º do art. 15 suspensos por decisão judicial. Sem resolução posterior que a altere (busca textual por \"2.323\")."
+  },
+  "cfm-2323-art3-IV": {
+   "norma": "Resolução CFM nº 2.323/2022",
+   "dispositivo": "Art. 3º, inciso IV",
+   "texto": "IV – Notificar formalmente o empregador quando da ocorrência ou da suspeita de acidente ou doença do trabalho para que a empresa proceda à emissão de Comunicação de Acidente de Trabalho, devendo deixar registrado no prontuário do trabalhador.",
+   "url": "https://sistemas.cfm.org.br/normas/arquivos/resolucoes/BR/2022/2323_2022.pdf (página: https://sistemas.cfm.org.br/normas/visualizar/resolucoes/BR/2022/2323)",
+   "status": "vigente",
+   "vigencia": "Em vigor desde 17/10/2022 (publicação no DOU, Seção 1, Edição 197; art. 19). Situação no portal CFM (busca de normas) consultado em 01-02/10/2026: \"Em vigor\", com artigos 10, 12 e § 2º do art. 15 suspensos por decisão judicial. Sem resolução posterior que a altere (busca textual por \"2.323\")."
+  },
+  "cfm-2323-art4": {
+   "norma": "Resolução CFM nº 2.323/2022",
+   "dispositivo": "Art. 4º",
+   "texto": "Art. 4º Compete ao médico do trabalho avaliar as condições de saúde do trabalhador para determinadas funções e/ou ambientes, propondo sua alocação para trabalhos compatíveis com seu atual estado de saúde, orientando-o, bem como ao empregador ou chefia imediata, se necessário, em relação ao processo de adaptação do trabalho.",
+   "url": "https://sistemas.cfm.org.br/normas/arquivos/resolucoes/BR/2022/2323_2022.pdf (página: https://sistemas.cfm.org.br/normas/visualizar/resolucoes/BR/2022/2323)",
+   "status": "vigente",
+   "vigencia": "Em vigor desde 17/10/2022 (publicação no DOU, Seção 1, Edição 197; art. 19). Situação no portal CFM (busca de normas) consultado em 01-02/10/2026: \"Em vigor\", com artigos 10, 12 e § 2º do art. 15 suspensos por decisão judicial. Sem resolução posterior que a altere (busca textual por \"2.323\")."
+  },
+  "cfm-2323-art5": {
+   "norma": "Resolução CFM nº 2.323/2022",
+   "dispositivo": "Art. 5º, caput",
+   "texto": "Art. 5º Os médicos do trabalho, como tais reconhecidos por lei, especialmente investidos da função de Médico Responsável pelo Programa de Controle Médico de Saúde Ocupacional (PCMSO), estarão obrigados a fazerem-se presentes, com a regularidade que for necessária, nas empresas e em suas filiais, para coordenarem o referido programa, estando devidamente inscritos nos conselhos regionais de medicina dos estados em que estiverem atuando.",
+   "url": "https://sistemas.cfm.org.br/normas/arquivos/resolucoes/BR/2022/2323_2022.pdf (página: https://sistemas.cfm.org.br/normas/visualizar/resolucoes/BR/2022/2323)",
+   "status": "vigente",
+   "vigencia": "Em vigor desde 17/10/2022 (publicação no DOU, Seção 1, Edição 197; art. 19). Situação no portal CFM (busca de normas) consultado em 01-02/10/2026: \"Em vigor\", com artigos 10, 12 e § 2º do art. 15 suspensos por decisão judicial. Sem resolução posterior que a altere (busca textual por \"2.323\")."
+  },
+  "cfm-2323-art5-p1": {
+   "norma": "Resolução CFM nº 2.323/2022",
+   "dispositivo": "Art. 5º, § 1º",
+   "texto": "§ 1º Os médicos que executam os exames ocupacionais devem observar o contido nos programas instituídos para proteção integral à saúde do trabalhador, devendo ter conhecimento sobre as condições e riscos do trabalho.",
+   "url": "https://sistemas.cfm.org.br/normas/arquivos/resolucoes/BR/2022/2323_2022.pdf (página: https://sistemas.cfm.org.br/normas/visualizar/resolucoes/BR/2022/2323)",
+   "status": "vigente",
+   "vigencia": "Em vigor desde 17/10/2022 (publicação no DOU, Seção 1, Edição 197; art. 19). Situação no portal CFM (busca de normas) consultado em 01-02/10/2026: \"Em vigor\", com artigos 10, 12 e § 2º do art. 15 suspensos por decisão judicial. Sem resolução posterior que a altere (busca textual por \"2.323\")."
+  },
+  "cfm-2323-art6-I": {
+   "norma": "Resolução CFM nº 2.323/2022",
+   "dispositivo": "Art. 6º, caput e inciso I",
+   "texto": "Art. 6º É vedado ao médico que presta assistência ao trabalhador: I – Realizar exame médico ocupacional, com recursos de telemedicina, sem o exame presencial do trabalhador.",
+   "url": "https://sistemas.cfm.org.br/normas/arquivos/resolucoes/BR/2022/2323_2022.pdf (página: https://sistemas.cfm.org.br/normas/visualizar/resolucoes/BR/2022/2323)",
+   "status": "vigente",
+   "vigencia": "Em vigor desde 17/10/2022 (publicação no DOU, Seção 1, Edição 197; art. 19). Situação no portal CFM (busca de normas) consultado em 01-02/10/2026: \"Em vigor\", com artigos 10, 12 e § 2º do art. 15 suspensos por decisão judicial. Sem resolução posterior que a altere (busca textual por \"2.323\")."
+  },
+  "cfm-2323-art6-II": {
+   "norma": "Resolução CFM nº 2.323/2022",
+   "dispositivo": "Art. 6º, inciso II",
+   "texto": "II – Assinar Atestado de Saúde Ocupacional (ASO) em branco.",
+   "url": "https://sistemas.cfm.org.br/normas/arquivos/resolucoes/BR/2022/2323_2022.pdf (página: https://sistemas.cfm.org.br/normas/visualizar/resolucoes/BR/2022/2323)",
+   "status": "vigente",
+   "vigencia": "Em vigor desde 17/10/2022 (publicação no DOU, Seção 1, Edição 197; art. 19). Situação no portal CFM (busca de normas) consultado em 01-02/10/2026: \"Em vigor\", com artigos 10, 12 e § 2º do art. 15 suspensos por decisão judicial. Sem resolução posterior que a altere (busca textual por \"2.323\")."
+  },
+  "cfm-2323-art6-III": {
+   "norma": "Resolução CFM nº 2.323/2022",
+   "dispositivo": "Art. 6º, inciso III",
+   "texto": "III – Emitir ASO sem que esteja familiarizado com os princípios da patologia ocupacional e suas causas, bem como com o ambiente, as condições de trabalho e os riscos a que está ou será exposto cada trabalhador.",
+   "url": "https://sistemas.cfm.org.br/normas/arquivos/resolucoes/BR/2022/2323_2022.pdf (página: https://sistemas.cfm.org.br/normas/visualizar/resolucoes/BR/2022/2323)",
+   "status": "vigente",
+   "vigencia": "Em vigor desde 17/10/2022 (publicação no DOU, Seção 1, Edição 197; art. 19). Situação no portal CFM (busca de normas) consultado em 01-02/10/2026: \"Em vigor\", com artigos 10, 12 e § 2º do art. 15 suspensos por decisão judicial. Sem resolução posterior que a altere (busca textual por \"2.323\")."
+  },
+  "cfm-2323-art6-IV": {
+   "norma": "Resolução CFM nº 2.323/2022",
+   "dispositivo": "Art. 6º, inciso IV",
+   "texto": "IV – Deixar de registrar no prontuário médico do trabalhador todas as informações referentes aos atos médicos praticados.",
+   "url": "https://sistemas.cfm.org.br/normas/arquivos/resolucoes/BR/2022/2323_2022.pdf (página: https://sistemas.cfm.org.br/normas/visualizar/resolucoes/BR/2022/2323)",
+   "status": "vigente",
+   "vigencia": "Em vigor desde 17/10/2022 (publicação no DOU, Seção 1, Edição 197; art. 19). Situação no portal CFM (busca de normas) consultado em 01-02/10/2026: \"Em vigor\", com artigos 10, 12 e § 2º do art. 15 suspensos por decisão judicial. Sem resolução posterior que a altere (busca textual por \"2.323\")."
+  },
+  "cfm-2323-art6-V": {
+   "norma": "Resolução CFM nº 2.323/2022",
+   "dispositivo": "Art. 6º, inciso V",
+   "texto": "V – Informar resultados dos exames no ASO.",
+   "url": "https://sistemas.cfm.org.br/normas/arquivos/resolucoes/BR/2022/2323_2022.pdf (página: https://sistemas.cfm.org.br/normas/visualizar/resolucoes/BR/2022/2323)",
+   "status": "vigente",
+   "vigencia": "Em vigor desde 17/10/2022 (publicação no DOU, Seção 1, Edição 197; art. 19). Situação no portal CFM (busca de normas) consultado em 01-02/10/2026: \"Em vigor\", com artigos 10, 12 e § 2º do art. 15 suspensos por decisão judicial. Sem resolução posterior que a altere (busca textual por \"2.323\")."
+  },
+  "cfm-2323-art13": {
+   "norma": "Resolução CFM nº 2.323/2022",
+   "dispositivo": "Art. 13",
+   "texto": "Art. 13. Ao médico do trabalho responsável pelo PCMSO da empresa e ao médico participante do Serviço Especializado em Segurança e Medicina do Trabalho (SESMT) é vedado atuar como peritos judiciais, securitários ou previdenciários nos casos que envolvam a firma contratante e/ou seus assistidos, atuais ou passados.",
+   "url": "https://sistemas.cfm.org.br/normas/arquivos/resolucoes/BR/2022/2323_2022.pdf (página: https://sistemas.cfm.org.br/normas/visualizar/resolucoes/BR/2022/2323)",
+   "status": "vigente",
+   "vigencia": "Em vigor desde 17/10/2022 (publicação no DOU, Seção 1, Edição 197; art. 19). Situação no portal CFM (busca de normas) consultado em 01-02/10/2026: \"Em vigor\", com artigos 10, 12 e § 2º do art. 15 suspensos por decisão judicial. Sem resolução posterior que a altere (busca textual por \"2.323\")."
+  },
+  "cem-art12": {
+   "norma": "Código de Ética Médica - Resolução CFM nº 2.217/2018 (modificada pelas Res. CFM nº 2.222/2018 e nº 2.226/2019)",
+   "dispositivo": "Art. 12 e parágrafo único",
+   "texto": "Art. 12 Deixar de esclarecer o trabalhador sobre as condições de trabalho que ponham em risco sua saúde, devendo comunicar o fato aos empregadores responsáveis. Parágrafo único. Se o fato persistir, é dever do médico comunicar o ocorrido às autoridades competentes e ao Conselho Regional de Medicina.",
+   "url": "https://sistemas.cfm.org.br/normas/arquivos/resolucoes/BR/2018/2217_2018.pdf (página: https://sistemas.cfm.org.br/normas/visualizar/resolucoes/BR/2018/2217)",
+   "status": "vigente",
+   "vigencia": "Publicada no DOU de 01/11/2018; o Código entrou em vigor 180 dias após a publicação (art. 3º da Resolução). Situação no portal CFM (busca de normas) consultado em 01-02/10/2026: \"Em vigor\". Alterações registradas no próprio PDF oficial: 2.222/2018 (item VI do Preâmbulo) e 2.226/2019 (art. 72)."
+  },
+  "cem-art73": {
+   "norma": "Código de Ética Médica - Resolução CFM nº 2.217/2018 (modificada pelas Res. CFM nº 2.222/2018 e nº 2.226/2019)",
+   "dispositivo": "Art. 73 e parágrafo único",
+   "texto": "Art. 73 Revelar fato de que tenha conhecimento em virtude do exercício de sua profissão, salvo por motivo justo, dever legal ou consentimento, por escrito, do paciente. Parágrafo único. Permanece essa proibição: a) mesmo que o fato seja de conhecimento público ou o paciente tenha falecido; b) quando de seu depoimento como testemunha (nessa hipótese, o médico comparecerá perante a autoridade e declarará seu impedimento); c) na investigação de suspeita de crime, o médico estará impedido de revelar segredo que possa expor o paciente a processo penal.",
+   "url": "https://sistemas.cfm.org.br/normas/arquivos/resolucoes/BR/2018/2217_2018.pdf (página: https://sistemas.cfm.org.br/normas/visualizar/resolucoes/BR/2018/2217)",
+   "status": "vigente",
+   "vigencia": "Publicada no DOU de 01/11/2018; o Código entrou em vigor 180 dias após a publicação (art. 3º da Resolução). Situação no portal CFM (busca de normas) consultado em 01-02/10/2026: \"Em vigor\". Alterações registradas no próprio PDF oficial: 2.222/2018 (item VI do Preâmbulo) e 2.226/2019 (art. 72)."
+  },
+  "cem-art76": {
+   "norma": "Código de Ética Médica - Resolução CFM nº 2.217/2018 (modificada pelas Res. CFM nº 2.222/2018 e nº 2.226/2019)",
+   "dispositivo": "Art. 76",
+   "texto": "Art. 76 Revelar informações confidenciais obtidas quando do exame médico de trabalhadores, inclusive por exigência dos dirigentes de empresas ou de instituições, salvo se o silêncio puser em risco a saúde dos empregados ou da comunidade.",
+   "url": "https://sistemas.cfm.org.br/normas/arquivos/resolucoes/BR/2018/2217_2018.pdf (página: https://sistemas.cfm.org.br/normas/visualizar/resolucoes/BR/2018/2217)",
+   "status": "vigente",
+   "vigencia": "Publicada no DOU de 01/11/2018; o Código entrou em vigor 180 dias após a publicação (art. 3º da Resolução). Situação no portal CFM (busca de normas) consultado em 01-02/10/2026: \"Em vigor\". Alterações registradas no próprio PDF oficial: 2.222/2018 (item VI do Preâmbulo) e 2.226/2019 (art. 72)."
+  },
+  "cem-art85": {
+   "norma": "Código de Ética Médica - Resolução CFM nº 2.217/2018 (modificada pelas Res. CFM nº 2.222/2018 e nº 2.226/2019)",
+   "dispositivo": "Art. 85",
+   "texto": "Art. 85 Permitir o manuseio e o conhecimento dos prontuários por pessoas não obrigadas ao sigilo profissional quando sob sua responsabilidade.",
+   "url": "https://sistemas.cfm.org.br/normas/arquivos/resolucoes/BR/2018/2217_2018.pdf (página: https://sistemas.cfm.org.br/normas/visualizar/resolucoes/BR/2018/2217)",
+   "status": "vigente",
+   "vigencia": "Publicada no DOU de 01/11/2018; o Código entrou em vigor 180 dias após a publicação (art. 3º da Resolução). Situação no portal CFM (busca de normas) consultado em 01-02/10/2026: \"Em vigor\". Alterações registradas no próprio PDF oficial: 2.222/2018 (item VI do Preâmbulo) e 2.226/2019 (art. 72)."
+  },
+  "cem-art87": {
+   "norma": "Código de Ética Médica - Resolução CFM nº 2.217/2018 (modificada pelas Res. CFM nº 2.222/2018 e nº 2.226/2019)",
+   "dispositivo": "Art. 87, caput e §§ 1º a 3º",
+   "texto": "Art. 87 Deixar de elaborar prontuário legível para cada paciente. § 1º O prontuário deve conter os dados clínicos necessários para a boa condução do caso, sendo preenchido, em cada avaliação, em ordem cronológica com data, hora, assinatura e número de registro do médico no Conselho Regional de Medicina. § 2º O prontuário estará sob a guarda do médico ou da instituição que assiste o paciente. § 3º Cabe ao médico assistente ou a seu substituto elaborar e entregar o sumário de alta ao paciente ou, na sua impossibilidade, ao seu representante legal.",
+   "url": "https://sistemas.cfm.org.br/normas/arquivos/resolucoes/BR/2018/2217_2018.pdf (página: https://sistemas.cfm.org.br/normas/visualizar/resolucoes/BR/2018/2217)",
+   "status": "vigente",
+   "vigencia": "Publicada no DOU de 01/11/2018; o Código entrou em vigor 180 dias após a publicação (art. 3º da Resolução). Situação no portal CFM (busca de normas) consultado em 01-02/10/2026: \"Em vigor\". Alterações registradas no próprio PDF oficial: 2.222/2018 (item VI do Preâmbulo) e 2.226/2019 (art. 72)."
+  },
+  "cem-art88": {
+   "norma": "Código de Ética Médica - Resolução CFM nº 2.217/2018 (modificada pelas Res. CFM nº 2.222/2018 e nº 2.226/2019)",
+   "dispositivo": "Art. 88",
+   "texto": "Art. 88 Negar ao paciente ou, na sua impossibilidade, a seu representante legal, acesso a seu prontuário, deixar de lhe fornecer cópia quando solicitada, bem como deixar de lhe dar explicações necessárias à sua compreensão, salvo quando ocasionarem riscos ao próprio paciente ou a terceiros.",
+   "url": "https://sistemas.cfm.org.br/normas/arquivos/resolucoes/BR/2018/2217_2018.pdf (página: https://sistemas.cfm.org.br/normas/visualizar/resolucoes/BR/2018/2217)",
+   "status": "vigente",
+   "vigencia": "Publicada no DOU de 01/11/2018; o Código entrou em vigor 180 dias após a publicação (art. 3º da Resolução). Situação no portal CFM (busca de normas) consultado em 01-02/10/2026: \"Em vigor\". Alterações registradas no próprio PDF oficial: 2.222/2018 (item VI do Preâmbulo) e 2.226/2019 (art. 72)."
+  },
+  "cem-art89": {
+   "norma": "Código de Ética Médica - Resolução CFM nº 2.217/2018 (modificada pelas Res. CFM nº 2.222/2018 e nº 2.226/2019)",
+   "dispositivo": "Art. 89, caput e §§ 1º e 2º",
+   "texto": "Art. 89 Liberar cópias do prontuário sob sua guarda exceto para atender a ordem judicial ou para sua própria defesa, assim como quando autorizado por escrito pelo paciente. § 1º Quando requisitado judicialmente, o prontuário será encaminhado ao juízo requisitante. § 2º Quando o prontuário for apresentado em sua própria defesa, o médico deverá solicitar que seja observado o sigilo profissional.",
+   "url": "https://sistemas.cfm.org.br/normas/arquivos/resolucoes/BR/2018/2217_2018.pdf (página: https://sistemas.cfm.org.br/normas/visualizar/resolucoes/BR/2018/2217)",
+   "status": "vigente",
+   "vigencia": "Publicada no DOU de 01/11/2018; o Código entrou em vigor 180 dias após a publicação (art. 3º da Resolução). Situação no portal CFM (busca de normas) consultado em 01-02/10/2026: \"Em vigor\". Alterações registradas no próprio PDF oficial: 2.222/2018 (item VI do Preâmbulo) e 2.226/2019 (art. 72)."
+  },
+  "cem-art31": {
+   "norma": "Código de Ética Médica - Resolução CFM nº 2.217/2018 (modificada pelas Res. CFM nº 2.222/2018 e nº 2.226/2019)",
+   "dispositivo": "Art. 31",
+   "texto": "Art. 31 Desrespeitar o direito do paciente ou de seu representante legal de decidir livremente sobre a execução de práticas diagnósticas ou terapêuticas, salvo em caso de iminente risco de morte.",
+   "url": "https://sistemas.cfm.org.br/normas/arquivos/resolucoes/BR/2018/2217_2018.pdf (página: https://sistemas.cfm.org.br/normas/visualizar/resolucoes/BR/2018/2217)",
+   "status": "vigente",
+   "vigencia": "Publicada no DOU de 01/11/2018; o Código entrou em vigor 180 dias após a publicação (art. 3º da Resolução). Situação no portal CFM (busca de normas) consultado em 01-02/10/2026: \"Em vigor\". Alterações registradas no próprio PDF oficial: 2.222/2018 (item VI do Preâmbulo) e 2.226/2019 (art. 72)."
+  },
+  "cfm-1638-art1": {
+   "norma": "Resolução CFM nº 1.638/2002",
+   "dispositivo": "Art. 1º",
+   "texto": "Art. 1º - Definir prontuário médico como o documento único constituído de um conjunto de informações, sinais e imagens registradas, geradas a partir de fatos, acontecimentos e situações sobre a saúde do paciente e a assistência a ele prestada, de caráter legal, sigiloso e científico, que possibilita a comunicação entre membros da equipe multiprofissional e a continuidade da assistência prestada ao indivíduo.",
+   "url": "https://sistemas.cfm.org.br/normas/arquivos/resolucoes/BR/2002/1638_2002.pdf (página: https://sistemas.cfm.org.br/normas/visualizar/resolucoes/BR/2002/1638)",
+   "status": "vigente",
+   "vigencia": "Em vigor desde 09/08/2002 (DOU; art. 7º). Situação no portal CFM (busca de normas) consultado em 01-02/10/2026: \"Em vigor\". Sem alteração registrada no PDF oficial."
+  },
+  "cfm-1821-art3": {
+   "norma": "Resolução CFM nº 1.821/2007 (modificada pela Res. CFM nº 2.218/2018)",
+   "dispositivo": "Art. 3º",
+   "texto": "Art. 3° Autorizar o uso de sistemas informatizados para a guarda e manuseio de prontuários de pacientes e para a troca de informação identificada em saúde, eliminando a obrigatoriedade do registro em papel, desde que esses sistemas atendam integralmente aos requisitos do “Nível de garantia de segurança 2 (NGS2)”, estabelecidos no Manual de Certificação para Sistemas de Registro Eletrônico em Saúde;",
+   "url": "https://sistemas.cfm.org.br/normas/arquivos/resolucoes/BR/2007/1821_2007.pdf (página: https://sistemas.cfm.org.br/normas/visualizar/resolucoes/BR/2007/1821)",
+   "status": "vigente",
+   "vigencia": "Em vigor desde 23/11/2007 (DOU; art. 12). Situação no portal CFM (busca de normas) consultado em 01-02/10/2026: \"Em vigor\". Art. 10 revogado pela Res. CFM nº 2.218/2018."
+  },
+  "cfm-1821-art7": {
+   "norma": "Resolução CFM nº 1.821/2007 (modificada pela Res. CFM nº 2.218/2018)",
+   "dispositivo": "Art. 7º",
+   "texto": "Art. 7º Estabelecer a guarda permanente, considerando a evolução tecnológica, para os prontuários dos pacientes arquivados eletronicamente em meio óptico , microfilmado ou digitalizado.",
+   "url": "https://sistemas.cfm.org.br/normas/arquivos/resolucoes/BR/2007/1821_2007.pdf (página: https://sistemas.cfm.org.br/normas/visualizar/resolucoes/BR/2007/1821)",
+   "status": "vigente",
+   "vigencia": "Em vigor desde 23/11/2007 (DOU; art. 12). Situação no portal CFM (busca de normas) consultado em 01-02/10/2026: \"Em vigor\". Art. 10 revogado pela Res. CFM nº 2.218/2018."
+  },
+  "cfm-1821-art8": {
+   "norma": "Resolução CFM nº 1.821/2007 (modificada pela Res. CFM nº 2.218/2018)",
+   "dispositivo": "Art. 8º",
+   "texto": "Art. 8°Estabelecer o prazo mínimo de 20 (vinte) anos, a partir do último registro, para a preservação dos prontuários dos pacientes em suporte de papel, que não foram arquivados eletronicamente em meio óptico, microfilmado ou digitalizado.",
+   "url": "https://sistemas.cfm.org.br/normas/arquivos/resolucoes/BR/2007/1821_2007.pdf (página: https://sistemas.cfm.org.br/normas/visualizar/resolucoes/BR/2007/1821)",
+   "status": "vigente",
+   "vigencia": "Em vigor desde 23/11/2007 (DOU; art. 12). Situação no portal CFM (busca de normas) consultado em 01-02/10/2026: \"Em vigor\". Art. 10 revogado pela Res. CFM nº 2.218/2018."
+  },
+  "cfm-2376-art2": {
+   "norma": "Resolução CFM nº 2.376/2024",
+   "dispositivo": "Art. 2º",
+   "texto": "Art. 2º Independentemente do registro dos serviços, com previsão no artigo 1º, o Programa de Controle Médico de Saúde Ocupacional (PCMSO), instituído nas organizações empresariais, com o objetivo de proteger e preservar a saúde de seus trabalhadores em relação aos riscos ocupacionais, conforme avaliação de riscos do Programa de Gerenciamento de Risco (PGR) da organização/empresa, terá um médico do trabalho como seu responsável.",
+   "url": "https://sistemas.cfm.org.br/normas/arquivos/resolucoes/BR/2024/2376_2024.pdf (página: https://sistemas.cfm.org.br/normas/visualizar/resolucoes/BR/2024/2376)",
+   "status": "vigente",
+   "vigencia": "Em vigor desde 29/01/2024 (DOU, Edição 20, p. 210; art. 4º). Situação no portal CFM (busca de normas) consultado em 01-02/10/2026: \"Em vigor\"."
+  },
+  "cfm-2376-art3": {
+   "norma": "Resolução CFM nº 2.376/2024",
+   "dispositivo": "Art. 3º e parágrafo único",
+   "texto": "Art. 3º O médico do trabalho é obrigado a registrar-se como responsável por cada PCMSO sob sua coordenação junto ao CRM do estado em que estiver atuando. Parágrafo Único. Sempre que deixar de ser o responsável por um PCMSO, deverá comunicar oficialmente o CRM em até 30 (trinta) dias.",
+   "url": "https://sistemas.cfm.org.br/normas/arquivos/resolucoes/BR/2024/2376_2024.pdf (página: https://sistemas.cfm.org.br/normas/visualizar/resolucoes/BR/2024/2376)",
+   "status": "vigente",
+   "vigencia": "Em vigor desde 29/01/2024 (DOU, Edição 20, p. 210; art. 4º). Situação no portal CFM (busca de normas) consultado em 01-02/10/2026: \"Em vigor\"."
+  },
+  "cfm-2381-art4-V": {
+   "norma": "Resolução CFM nº 2.381/2024 (alterada pela Res. CFM nº 2.418/2024)",
+   "dispositivo": "Art. 4º, inciso V",
+   "texto": "V. Atestado de saúde ocupacional (ASO): documento emitido por médico e definido pela Norma Regulamentadora 7, em conformidade com o Programa de Controle Médico de Saúde Ocupacional, no qual se atesta a aptidão ou inaptidão do(a) trabalhador(a) para o desempenho de suas atividades laborativas, nos termos das normas vigentes expedidas pelo Ministério do Trabalho e Emprego.",
+   "url": "https://sistemas.cfm.org.br/normas/arquivos/resolucoes/BR/2024/2381_2024.pdf (página: https://sistemas.cfm.org.br/normas/visualizar/resolucoes/BR/2024/2381)",
+   "status": "vigente",
+   "vigencia": "Em vigor desde 02/07/2024 (DOU, Edição 125; art. 9º). Situação no portal CFM (busca de normas) consultado em 01-02/10/2026: \"Em vigor\". Art. 3º com redação dada pela Res. CFM nº 2.418/2024 (DOU 09/10/2024)."
+  },
+  "cfm-2437-art6": {
+   "norma": "Resolução CFM nº 2.437/2025 (HIV/aids)",
+   "dispositivo": "Art. 6º",
+   "texto": "Art. 6° É vedada a realização compulsória de testes diagnósticos para infecção por HIV, salvo nos casos de acidente de trabalho com material biológico, risco iminente à vida da pessoa e na impossibilidade de manifestação da vontade por incapacidade física ou mental comprovada.",
+   "url": "https://sistemas.cfm.org.br/normas/arquivos/resolucoes/BR/2025/2437_2025.pdf (página: https://sistemas.cfm.org.br/normas/visualizar/resolucoes/BR/2025/2437)",
+   "status": "vigente",
+   "vigencia": "Em vigor desde 07/08/2025 (DOU, Edição 148; art. 13). Revogou a Res. CFM nº 1.665/2003. Situação no portal CFM (busca de normas) consultado em 01-02/10/2026: \"Em vigor\"."
+  },
+  "cfm-2430-art23": {
+   "norma": "Resolução CFM nº 2.430/2025 (ato médico pericial)",
+   "dispositivo": "Art. 23",
+   "texto": "Art. 23. Os exames médico-legais de natureza criminal e as avaliações médico-periciais para avaliação de dano funcional e/ou estabelecimento de nexo causal, incluindo os realizados pelo médico do trabalho dentro de suas atribuições, devem ser realizados sempre de forma presencial.",
+   "url": "https://sistemas.cfm.org.br/normas/arquivos/resolucoes/BR/2025/2430_2025.pdf (página: https://sistemas.cfm.org.br/normas/visualizar/resolucoes/BR/2025/2430)",
+   "status": "vigente",
+   "vigencia": "Publicada no DOU de 30/05/2025 e republicada em 04/06/2025. Situação no portal CFM (busca de normas) consultado em 01-02/10/2026: \"Em vigor\"."
+  },
+  "cf-art7-XXII": {
+   "norma": "Constituição Federal",
+   "dispositivo": "art. 7º, XXII",
+   "texto": "XXII - redução dos riscos inerentes ao trabalho, por meio de normas de saúde, higiene e segurança;",
+   "url": "https://www.planalto.gov.br/ccivil_03/constituicao/constituicao.htm",
+   "status": "VIGENTE - confirmado no texto oficial",
+   "vigencia": "Constituição Federal de 1988, texto do Planalto baixado em 01/10/2026; redação original"
+  },
+  "clt-168": {
+   "norma": "CLT (Decreto-Lei nº 5.452/1943)",
+   "dispositivo": "art. 168, caput e incisos I a III",
+   "texto": "Art. 168 - Será obrigatório exame médico, por conta do empregador, nas condições estabelecidas neste artigo e nas instruções complementares a serem expedidas pelo Ministério do Trabalho: I - a admissão; II - na demissão; III - periodicamente.",
+   "url": "https://www.planalto.gov.br/ccivil_03/decreto-lei/del5452.htm",
+   "status": "VIGENTE - confirmado no texto oficial",
+   "vigencia": "Decreto-Lei nº 5.452/1943 (CLT), texto multivigente do Planalto baixado em 01/10/2026; conferido com Del5452compilado.htm (idêntico); redação da Lei nº 7.855/1989"
+  },
+  "clt-168-p2": {
+   "norma": "CLT (Decreto-Lei nº 5.452/1943)",
+   "dispositivo": "art. 168, § 2º",
+   "texto": "§ 2º - Outros exames complementares poderão ser exigidos, a critério médico, para apuração da capacidade ou aptidão física e mental do empregado para a função que deva exercer.",
+   "url": "https://www.planalto.gov.br/ccivil_03/decreto-lei/del5452.htm",
+   "status": "VIGENTE - confirmado no texto oficial",
+   "vigencia": "Decreto-Lei nº 5.452/1943 (CLT), texto multivigente do Planalto baixado em 01/10/2026; conferido com Del5452compilado.htm (idêntico); redação da Lei nº 7.855/1989"
+  },
+  "clt-168-p5": {
+   "norma": "CLT (Decreto-Lei nº 5.452/1943)",
+   "dispositivo": "art. 168, § 5º",
+   "texto": "§ 5º - O resultado dos exames médicos, inclusive o exame complementar, será comunicado ao trabalhador, observados os preceitos da ética médica.",
+   "url": "https://www.planalto.gov.br/ccivil_03/decreto-lei/del5452.htm",
+   "status": "VIGENTE - confirmado no texto oficial",
+   "vigencia": "Decreto-Lei nº 5.452/1943 (CLT), texto multivigente do Planalto baixado em 01/10/2026; conferido com Del5452compilado.htm (idêntico); redação da Lei nº 7.855/1989"
+  },
+  "clt-168-p6": {
+   "norma": "CLT (Decreto-Lei nº 5.452/1943)",
+   "dispositivo": "art. 168, § 6º",
+   "texto": "§ 6º Serão exigidos exames toxicológicos, previamente à admissão e por ocasião do desligamento, quando se tratar de motorista profissional, assegurados o direito à contraprova em caso de resultado positivo e a confidencialidade dos resultados dos respectivos exames.",
+   "url": "https://www.planalto.gov.br/ccivil_03/decreto-lei/del5452.htm",
+   "status": "VIGENTE - confirmado no texto oficial",
+   "vigencia": "Decreto-Lei nº 5.452/1943 (CLT), texto multivigente do Planalto baixado em 01/10/2026; conferido com Del5452compilado.htm (idêntico); incluído pela Lei nº 13.103/2015 (texto anterior da Lei nº 12.619/2012 aparece riscado e foi removido); o Planalto remete a \"Vide Lei nº 14.599, de 2023\" (art. 5º dessa lei manda o MTE regulamentar o exame)"
+  },
+  "clt-169": {
+   "norma": "CLT (Decreto-Lei nº 5.452/1943)",
+   "dispositivo": "art. 169",
+   "texto": "Art. 169 - Será obrigatória a notificação das doenças profissionais e das produzidas em virtude de condições especiais de trabalho, comprovadas ou objeto de suspeita, de conformidade com as instruções expedidas pelo Ministério do Trabalho.",
+   "url": "https://www.planalto.gov.br/ccivil_03/decreto-lei/del5452.htm",
+   "status": "VIGENTE - confirmado no texto oficial",
+   "vigencia": "Decreto-Lei nº 5.452/1943 (CLT), texto multivigente do Planalto baixado em 01/10/2026; conferido com Del5452compilado.htm (idêntico); redação da Lei nº 6.514/1977"
+  },
+  "clt-169A": {
+   "norma": "CLT (Decreto-Lei nº 5.452/1943)",
+   "dispositivo": "art. 169-A e parágrafo único",
+   "texto": "Art. 169-A. É obrigação das empresas disponibilizar a seus empregados informações sobre campanhas oficiais de vacinação, sobre o papilomavírus humano (HPV) e sobre os cânceres de mama, de colo do útero e de próstata, em conformidade com as orientações e recomendações do Ministério da Saúde, bem como promover ações afirmativas de conscientização sobre essas doenças e orientar seus empregados sobre o acesso aos serviços de diagnósticos. Parágrafo único. As empresas deverão ainda informar a seus empregados sobre a possibilidade de deixar de comparecer ao serviço para a realização de exames preventivos do papilomavírus humano (HPV), bem como dos cânceres referidos no caput deste artigo, sem prejuízo do salário, nos termos do inciso XII do art. 473 desta Consolidação.",
+   "url": "https://www.planalto.gov.br/ccivil_03/decreto-lei/del5452.htm",
+   "status": "VIGENTE - confirmado no texto oficial",
+   "vigencia": "Decreto-Lei nº 5.452/1943 (CLT), texto multivigente do Planalto baixado em 01/10/2026; conferido com Del5452compilado.htm (idêntico); incluído pela Lei nº 15.377, de 2/4/2026 (DOU 6/4/2026), em vigor na publicação"
+  },
+  "clt-373A-IV": {
+   "norma": "CLT (Decreto-Lei nº 5.452/1943)",
+   "dispositivo": "art. 373-A, IV",
+   "texto": "IV - exigir atestado ou exame, de qualquer natureza, para comprovação de esterilidade ou gravidez, na admissão ou permanência no emprego;",
+   "url": "https://www.planalto.gov.br/ccivil_03/decreto-lei/del5452.htm",
+   "status": "VIGENTE - confirmado no texto oficial",
+   "vigencia": "Decreto-Lei nº 5.452/1943 (CLT), texto multivigente do Planalto baixado em 01/10/2026; conferido com Del5452compilado.htm (idêntico); incluído pela Lei nº 9.799/1999"
+  },
+  "lei9029-art2": {
+   "norma": "Lei nº 9.029/1995",
+   "dispositivo": "art. 2º (incisos, pena e parágrafo único)",
+   "texto": "Art. 2º Constituem crime as seguintes práticas discriminatórias: I - a exigência de teste, exame, perícia, laudo, atestado, declaração ou qualquer outro procedimento relativo à esterilização ou a estado de gravidez; II - a adoção de quaisquer medidas, de iniciativa do empregador, que configurem; a) indução ou instigamento à esterilização genética; b) promoção do controle de natalidade, assim não considerado o oferecimento de serviços e de aconselhamento ou planejamento familiar, realizados através de instituições públicas ou privadas, submetidas às normas do Sistema Único de Saúde (SUS). Pena: detenção de um a dois anos e multa. Parágrafo único. São sujeitos ativos dos crimes a que se refere este artigo: I - a pessoa física empregadora; II - o representante legal do empregador, como definido na legislação trabalhista; III - o dirigente, direto ou por delegação, de órgãos públicos e entidades das administrações públicas direta, indireta e fundacional de qualquer dos Poderes da União, dos Estados, do Distrito Federal e dos Municípios.",
+   "url": "https://www.planalto.gov.br/ccivil_03/leis/l9029.htm",
+   "status": "VIGENTE - confirmado no texto oficial",
+   "vigencia": "Lei nº 9.029, de 13/4/1995 (DOU 17/4/1995), vigente; texto do Planalto baixado em 01/10/2026; redação original"
+  },
+  "lei12984-art1": {
+   "norma": "Lei nº 12.984/2014",
+   "dispositivo": "art. 1º",
+   "texto": "Art. 1º Constitui crime punível com reclusão, de 1 (um) a 4 (quatro) anos, e multa, as seguintes condutas discriminatórias contra o portador do HIV e o doente de aids, em razão da sua condição de portador ou de doente: I - recusar, procrastinar, cancelar ou segregar a inscrição ou impedir que permaneça como aluno em creche ou estabelecimento de ensino de qualquer curso ou grau, público ou privado; II - negar emprego ou trabalho; III - exonerar ou demitir de seu cargo ou emprego; IV - segregar no ambiente de trabalho ou escolar; V - divulgar a condição do portador do HIV ou de doente de aids, com intuito de ofender-lhe a dignidade; VI - recusar ou retardar atendimento de saúde.",
+   "url": "https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2014/lei/l12984.htm",
+   "status": "VIGENTE - confirmado no texto oficial",
+   "vigencia": "Lei nº 12.984, de 2/6/2014 (DOU 3/6/2014), vigente desde a publicação; sem alterações no Planalto"
+  },
+  "lei14289-art2": {
+   "norma": "Lei nº 14.289/2022",
+   "dispositivo": "art. 2º e parágrafo único",
+   "texto": "Art. 2º É vedada a divulgação, pelos agentes públicos ou privados, de informações que permitam a identificação da condição de pessoa que vive com infecção pelos vírus da imunodeficiência humana (HIV) e das hepatites crônicas (HBV e HCV) e de pessoa com hanseníase e com tuberculose, nos seguintes âmbitos: I - serviços de saúde; II - estabelecimentos de ensino; III - locais de trabalho; IV - administração pública; V - segurança pública; VI - processos judiciais; VII - mídia escrita e audiovisual. Parágrafo único. O sigilo profissional sobre a condição de pessoa que vive com infecção pelos vírus da imunodeficiência humana (HIV) e das hepatites crônicas (HBV e HCV) e de pessoa com hanseníase e com tuberculose somente poderá ser quebrado nos casos determinados por lei, por justa causa ou por autorização expressa da pessoa acometida ou, quando se tratar de criança, de seu responsável legal, mediante assinatura de termo de consentimento informado, observado o disposto no art. 11 da Lei nº 13.709, de 14 de agosto de 2018 (Lei Geral de Proteção de Dados Pessoais - LGPD).",
+   "url": "https://www.planalto.gov.br/ccivil_03/_ato2019-2022/2022/lei/l14289.htm",
+   "status": "VIGENTE - confirmado no texto oficial",
+   "vigencia": "Lei nº 14.289, de 3/1/2022 (DOU 4/1/2022), vigente desde a publicação; sem alterações no Planalto"
+  },
+  "p671-art199": {
+   "norma": "Portaria MTP nº 671/2021",
+   "dispositivo": "art. 199, caput, § 1º e § 2º",
+   "texto": "Art. 199. Caracteriza-se como prática discriminatória exigir aos trabalhadores, incluídos os migrantes, às pessoas que procuram emprego e aos candidatos a trabalho, testes para HIV ou quaisquer outras formas de diagnóstico de HIV. § 1º Não será permitida, direta ou indiretamente, nos exames médicos por ocasião da admissão, mudança de função, avaliação periódica, retorno, demissão ou outros ligados à relação de emprego, a testagem do trabalhador quanto ao HIV. § 2º O disposto no § 1º não obsta que campanhas ou programas de prevenção da saúde estimulem os trabalhadores a conhecer seu estado sorológico quanto ao HIV por meio de orientações e exames voluntários, sem vínculo com a relação de trabalho e sempre resguardada a privacidade quanto ao conhecimento dos resultados.",
+   "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/legislacao/portarias-1/portarias-vigentes-3/WORDPortarian671de8denovembrode2021compilada21.07.2026.pdf",
+   "status": "VIGENTE - confirmado no texto compilado oficial do MTE (gov.br); DOU original não conferido",
+   "vigencia": "Portaria MTP nº 671, de 8/11/2021 (DOU 11/11/2021), vigente; texto compilado pelo MTE até a Portaria MTE nº 1.316, de 21/7/2026; arts. 185 a 206 sem nota de revogação ou alteração; em vigor desde 10/12/2021 (art. 401, II)"
+  },
+  "pc1-2025-art13-III": {
+   "norma": "Portaria Consolidada MTE nº 1/2025",
+   "dispositivo": "art. 13, III (cabeça do inciso)",
+   "texto": "III - até o dia 15 (quinze) do mês seguinte ao da ocorrência:",
+   "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/legislacao/portarias-1/portarias-vigentes-3/PDFPortariaMTEConsolidadan1de17dedezembrode2025compiladaem20.01.2026.pdf",
+   "status": "VIGENTE - confirmado no texto compilado oficial do MTE (gov.br); DOU original não conferido",
+   "vigencia": "Portaria Consolidada MTE nº 1, de 17/12/2025 (republicada no DOU de 30/12/2025), em vigor desde 2/1/2026 (art. 117); compilação do MTE de 20/01/2026. Substituiu o art. 14 da Portaria MTP nº 671/2021, que agora consta como revogado"
+  },
+  "pc1-2025-art13-III-d": {
+   "norma": "Portaria Consolidada MTE nº 1/2025",
+   "dispositivo": "art. 13, III, \"d\" (alínea)",
+   "texto": "d) informações relativas ao monitoramento da saúde do trabalhador e ao exame toxicológico a que deve se submeter o motorista profissional empregado, observado o disposto no § 9º;",
+   "url": "https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/legislacao/portarias-1/portarias-vigentes-3/PDFPortariaMTEConsolidadan1de17dedezembrode2025compiladaem20.01.2026.pdf",
+   "status": "VIGENTE - confirmado no texto compilado oficial do MTE (gov.br); DOU original não conferido",
+   "vigencia": "Portaria Consolidada MTE nº 1, de 17/12/2025 (republicada no DOU de 30/12/2025), em vigor desde 2/1/2026 (art. 117); compilação do MTE de 20/01/2026. Substituiu o art. 14 da Portaria MTP nº 671/2021, que agora consta como revogado"
+  },
+  "lei8213-art20": {
+   "norma": "Lei nº 8.213/1991",
+   "dispositivo": "art. 20",
+   "texto": "Art. 20. Consideram-se acidente do trabalho, nos termos do artigo anterior, as seguintes entidades mórbidas: I - doença profissional, assim entendida a produzida ou desencadeada pelo exercício do trabalho peculiar a determinada atividade e constante da respectiva relação elaborada pelo Ministério do Trabalho e da Previdência Social; II - doença do trabalho, assim entendida a adquirida ou desencadeada em função de condições especiais em que o trabalho é realizado e com ele se relacione diretamente, constante da relação mencionada no inciso I. § 1º Não são consideradas como doença do trabalho: a) a doença degenerativa; b) a inerente a grupo etário; c) a que não produza incapacidade laborativa; d) a doença endêmica adquirida por segurado habitante de região em que ela se desenvolva, salvo comprovação de que é resultante de exposição ou contato direto determinado pela natureza do trabalho. § 2º Em caso excepcional, constatando-se que a doença não incluída na relação prevista nos incisos I e II deste artigo resultou das condições especiais em que o trabalho é executado e com ele se relaciona diretamente, a Previdência Social deve considerá-la acidente do trabalho.",
+   "url": "https://www.planalto.gov.br/ccivil_03/leis/l8213cons.htm",
+   "status": "VIGENTE - confirmado no texto oficial",
+   "vigencia": "Lei nº 8.213/1991, texto do Planalto (l8213cons.htm) baixado em 01/10/2026; conferido com L8213compilado.htm (idêntico)"
+  },
+  "lei8213-art22": {
+   "norma": "Lei nº 8.213/1991",
+   "dispositivo": "art. 22",
+   "texto": "Art. 22. A empresa ou o empregador doméstico deverão comunicar o acidente do trabalho à Previdência Social até o primeiro dia útil seguinte ao da ocorrência e, em caso de morte, de imediato, à autoridade competente, sob pena de multa variável entre o limite mínimo e o limite máximo do salário de contribuição, sucessivamente aumentada nas reincidências, aplicada e cobrada pela Previdência Social. § 1º Da comunicação a que se refere este artigo receberão cópia fiel o acidentado ou seus dependentes, bem como o sindicato a que corresponda a sua categoria. § 2º Na falta de comunicação por parte da empresa, podem formalizá-la o próprio acidentado, seus dependentes, a entidade sindical competente, o médico que o assistiu ou qualquer autoridade pública, não prevalecendo nestes casos o prazo previsto neste artigo. § 3º A comunicação a que se refere o § 2º não exime a empresa de responsabilidade pela falta do cumprimento do disposto neste artigo. § 4º Os sindicatos e entidades representativas de classe poderão acompanhar a cobrança, pela Previdência Social, das multas previstas neste artigo. § 5º A multa de que trata este artigo não se aplica na hipótese do caput do art. 21-A.",
+   "url": "https://www.planalto.gov.br/ccivil_03/leis/l8213cons.htm",
+   "status": "VIGENTE - confirmado no texto oficial",
+   "vigencia": "Lei nº 8.213/1991, texto do Planalto (l8213cons.htm) baixado em 01/10/2026; conferido com L8213compilado.htm (idêntico); caput com redação da LC nº 150/2015; § 5º incluído pela Lei nº 11.430/2006"
+  },
+  "lgpd-art5": {
+   "norma": "Lei nº 13.709/2018 (LGPD)",
+   "dispositivo": "art. 5º, I e II",
+   "texto": "Art. 5º Para os fins desta Lei, considera-se: I - dado pessoal: informação relacionada a pessoa natural identificada ou identificável; II - dado pessoal sensível: dado pessoal sobre origem racial ou étnica, convicção religiosa, opinião política, filiação a sindicato ou a organização de caráter religioso, filosófico ou político, dado referente à saúde ou à vida sexual, dado genético ou biométrico, quando vinculado a uma pessoa natural;",
+   "url": "https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709.htm",
+   "status": "VIGENTE - confirmado no texto oficial",
+   "vigencia": "Lei nº 13.709/2018 (LGPD), texto do Planalto baixado em 01/10/2026, atualizado até a Lei nº 15.352/2026; conferido com L13709compilado.htm (idêntico)"
+  },
+  "lgpd-art11": {
+   "norma": "Lei nº 13.709/2018 (LGPD)",
+   "dispositivo": "art. 11",
+   "texto": "Art. 11. O tratamento de dados pessoais sensíveis somente poderá ocorrer nas seguintes hipóteses: I - quando o titular ou seu responsável legal consentir, de forma específica e destacada, para finalidades específicas; II - sem fornecimento de consentimento do titular, nas hipóteses em que for indispensável para: a) cumprimento de obrigação legal ou regulatória pelo controlador; b) tratamento compartilhado de dados necessários à execução, pela administração pública, de políticas públicas previstas em leis ou regulamentos; c) realização de estudos por órgão de pesquisa, garantida, sempre que possível, a anonimização dos dados pessoais sensíveis; d) exercício regular de direitos, inclusive em contrato e em processo judicial, administrativo e arbitral, este último nos termos da Lei nº 9.307, de 23 de setembro de 1996 (Lei de Arbitragem); e) proteção da vida ou da incolumidade física do titular ou de terceiro; f) tutela da saúde, exclusivamente, em procedimento realizado por profissionais de saúde, serviços de saúde ou autoridade sanitária; ou g) garantia da prevenção à fraude e à segurança do titular, nos processos de identificação e autenticação de cadastro em sistemas eletrônicos, resguardados os direitos mencionados no art. 9º desta Lei e exceto no caso de prevalecerem direitos e liberdades fundamentais do titular que exijam a proteção dos dados pessoais. § 1º Aplica-se o disposto neste artigo a qualquer tratamento de dados pessoais que revele dados pessoais sensíveis e que possa causar dano ao titular, ressalvado o disposto em legislação específica. § 2º Nos casos de aplicação do disposto nas alíneas “a” e “b” do inciso II do caput deste artigo pelos órgãos e pelas entidades públicas, será dada publicidade à referida dispensa de consentimento, nos termos do inciso I do caput do art. 23 desta Lei. § 3º A comunicação ou o uso compartilhado de dados pessoais sensíveis entre controladores com objetivo de obter vantagem econômica poderá ser objeto de vedação ou de regulamentação por parte da autoridade nacional, ouvidos os órgãos setoriais do Poder Público, no âmbito de suas competências. § 4º É vedada a comunicação ou o uso compartilhado entre controladores de dados pessoais sensíveis referentes à saúde com objetivo de obter vantagem econômica, exceto nas hipóteses relativas a prestação de serviços de saúde, de assistência farmacêutica e de assistência à saúde, desde que observado o § 5º deste artigo, incluídos os serviços auxiliares de diagnose e terapia, em benefício dos interesses dos titulares de dados, e para permitir: I - a portabilidade de dados quando solicitada pelo titular; ou II - as transações financeiras e administrativas resultantes do uso e da prestação dos serviços de que trata este parágrafo. § 5º É vedado às operadoras de planos privados de assistência à saúde o tratamento de dados de saúde para a prática de seleção de riscos na contratação de qualquer modalidade, assim como na contratação e exclusão de beneficiários.",
+   "url": "https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709.htm",
+   "status": "VIGENTE - confirmado no texto oficial",
+   "vigencia": "Lei nº 13.709/2018 (LGPD), texto do Planalto baixado em 01/10/2026, atualizado até a Lei nº 15.352/2026; conferido com L13709compilado.htm (idêntico); alínea \"f\" do inciso II e §§ 4º e 5º com redação/inclusão da Lei nº 13.853/2019"
+  },
+  "lgpd-art46": {
+   "norma": "Lei nº 13.709/2018 (LGPD)",
+   "dispositivo": "art. 46",
+   "texto": "Art. 46. Os agentes de tratamento devem adotar medidas de segurança, técnicas e administrativas aptas a proteger os dados pessoais de acessos não autorizados e de situações acidentais ou ilícitas de destruição, perda, alteração, comunicação ou qualquer forma de tratamento inadequado ou ilícito. § 1º A autoridade nacional poderá dispor sobre padrões técnicos mínimos para tornar aplicável o disposto no caput deste artigo, considerados a natureza das informações tratadas, as características específicas do tratamento e o estado atual da tecnologia, especialmente no caso de dados pessoais sensíveis, assim como os princípios previstos no caput do art. 6º desta Lei. § 2º As medidas de que trata o caput deste artigo deverão ser observadas desde a fase de concepção do produto ou do serviço até a sua execução.",
+   "url": "https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709.htm",
+   "status": "VIGENTE - confirmado no texto oficial",
+   "vigencia": "Lei nº 13.709/2018 (LGPD), texto do Planalto baixado em 01/10/2026, atualizado até a Lei nº 15.352/2026; conferido com L13709compilado.htm (idêntico)"
+  },
+  "lei13787-art6": {
+   "norma": "Lei nº 13.787/2018",
+   "dispositivo": "art. 6º",
+   "texto": "Art. 6º Decorrido o prazo mínimo de 20 (vinte) anos a partir do último registro, os prontuários em suporte de papel e os digitalizados poderão ser eliminados. § 1º Prazos diferenciados para a guarda de prontuário de paciente, em papel ou digitalizado, poderão ser fixados em regulamento, de acordo com o potencial de uso em estudos e pesquisas nas áreas das ciências da saúde, humanas e sociais, bem como para fins legais e probatórios. § 2º Alternativamente à eliminação, o prontuário poderá ser devolvido ao paciente. § 3º O processo de eliminação deverá resguardar a intimidade do paciente e o sigilo e a confidencialidade das informações. § 4º A destinação final de todos os prontuários e a sua eliminação serão registradas na forma de regulamento. § 5º As disposições deste artigo aplicam-se a todos os prontuários de paciente, independentemente de sua forma de armazenamento, inclusive aos microfilmados e aos arquivados eletronicamente em meio óptico, bem como aos constituídos por documentos gerados e mantidos originalmente de forma eletrônica.",
+   "url": "https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13787.htm",
+   "status": "VIGENTE - confirmado no texto oficial",
+   "vigencia": "Lei nº 13.787, de 27/12/2018 (DOU 28/12/2018), vigente desde a publicação; sem alterações no Planalto"
+  },
+  "mos-s2220-prazo": {
+   "norma": "MOS eSocial S-1.3 - evento S-2220",
+   "dispositivo": "S-2220 - Prazo de envio",
+   "texto": "Prazo de envio: o evento deve ser enviado até o dia 15 (quinze) do mês subsequente ao da emissão do correspondente ASO, salvo para o relativo a ASO admissional {tpExameOcup} = [0], hipótese em que o evento deve ser enviado até o dia 15 (quinze) do mês subsequente ao da admissão. Esses prazos são postergados para o primeiro dia útil quando caírem em dia não útil para fins fiscais. Essa regra não altera o prazo legal para a realização dos exames, que deve seguir o previsto na legislação, sendo que somente o registro da informação no eSocial é permitido até o dia 15 (quinze) do mês subsequente.",
+   "url": "https://www.gov.br/esocial/pt-br/documentacao-tecnica/manuais/mos-s-1-3-consolidada-ate-a-no-s-1-3-11-2026-retificada.pdf",
+   "status": "VIGENTE - documento técnico oficial do eSocial em vigor (orientação de preenchimento, não é lei)",
+   "vigencia": "MOS eSocial S-1.3 consolidado até a NO S-1.3 11/2026 (publicado em 26/05/2026, retificado em 28/05/2026), versão atual na página de documentação técnica do eSocial em 01/10/2026. O S-2220 é igual ao do mos.txt local (NO 07/2026) exceto \"nesse\" -> \"neste\" no item 1.9"
+  },
+  "mos-s2220-1.6": {
+   "norma": "MOS eSocial S-1.3 - evento S-2220",
+   "dispositivo": "S-2220 - item 1.6 (indResult e sigilo médico)",
+   "texto": "1.6. O campo {indResult} não é de preenchimento obrigatório e somente pode ser informado com autorização do trabalhador, em virtude do sigilo médico. Caso preenchido, devem ser adotadas as seguintes diretrizes: • concluir, no primeiro momento, se o exame está normal ou alterado; • em uma segunda avaliação, se concluído que o exame continua alterado, informar se o mesmo se manteve estável ou se houve agravamento.",
+   "url": "https://www.gov.br/esocial/pt-br/documentacao-tecnica/manuais/mos-s-1-3-consolidada-ate-a-no-s-1-3-11-2026-retificada.pdf",
+   "status": "VIGENTE - documento técnico oficial do eSocial em vigor (orientação de preenchimento, não é lei)",
+   "vigencia": "MOS eSocial S-1.3 consolidado até a NO S-1.3 11/2026 (publicado em 26/05/2026, retificado em 28/05/2026), versão atual na página de documentação técnica do eSocial em 01/10/2026. O S-2220 é igual ao do mos.txt local (NO 07/2026) exceto \"nesse\" -> \"neste\" no item 1.9"
+  },
+  "mos-s2220-1.7": {
+   "norma": "MOS eSocial S-1.3 - evento S-2220",
+   "dispositivo": "S-2220 - item 1.7 (respMonit)",
+   "texto": "1.7. O grupo [respMonit] é de preenchimento obrigatório sempre que houver um médico responsável/coordenador do PCMSO. Inexistindo obrigatoriedade de elaboração do PCMSO, o campo não precisa ser preenchido.",
+   "url": "https://www.gov.br/esocial/pt-br/documentacao-tecnica/manuais/mos-s-1-3-consolidada-ate-a-no-s-1-3-11-2026-retificada.pdf",
+   "status": "VIGENTE - documento técnico oficial do eSocial em vigor (orientação de preenchimento, não é lei)",
+   "vigencia": "MOS eSocial S-1.3 consolidado até a NO S-1.3 11/2026 (publicado em 26/05/2026, retificado em 28/05/2026), versão atual na página de documentação técnica do eSocial em 01/10/2026. O S-2220 é igual ao do mos.txt local (NO 07/2026) exceto \"nesse\" -> \"neste\" no item 1.9"
+  },
+  "mos-s2220-1.9": {
+   "norma": "MOS eSocial S-1.3 - evento S-2220",
+   "dispositivo": "S-2220 - item 1.9 (ASO não é sigiloso; prontuário é)",
+   "texto": "1.9. A obrigatoriedade de prestar as informações neste evento é dirigida à empresa e o documento utilizado como fonte da informação a ser enviada é o ASO, o qual contém todas as informações solicitadas no evento e não é protegido por sigilo, sendo um documento administrativo. As informações sigilosas relacionadas à condição de saúde são registradas no prontuário individual do trabalhado, documento que não é fonte de nenhuma das informações exigidas neste evento em decorrência da natureza sigilosa das informações.",
+   "url": "https://www.gov.br/esocial/pt-br/documentacao-tecnica/manuais/mos-s-1-3-consolidada-ate-a-no-s-1-3-11-2026-retificada.pdf",
+   "status": "VIGENTE - documento técnico oficial do eSocial em vigor (orientação de preenchimento, não é lei)",
+   "vigencia": "MOS eSocial S-1.3 consolidado até a NO S-1.3 11/2026 (publicado em 26/05/2026, retificado em 28/05/2026), versão atual na página de documentação técnica do eSocial em 01/10/2026. O S-2220 é igual ao do mos.txt local (NO 07/2026) exceto \"nesse\" -> \"neste\" no item 1.9"
+  },
+  "nr07-anexoII-4.1.1": {
+   "norma": "NR-07",
+   "dispositivo": "Anexo II, item 4.1.1",
+   "texto": "4.1.1 Na demissão pode ser aceito exame audiométrico realizado até 120 (cento e vinte) dias antes da data de finalização do contrato de trabalho.",
+   "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-07-atualizada-2022-1.pdf",
+   "status": "VERIFICADO no texto oficial (conferido com o DOU)",
+   "vigencia": ""
+  },
+  "nr07-anexoIII-q1-titulo": {
+   "norma": "NR-07",
+   "dispositivo": "Anexo III, Quadro 1, titulo",
+   "texto": "QUADRO 1 - Periodicidade dos Exames Radiológicos para Empregados Expostos a Poeira Contendo Sílica, Asbesto ou Carvão Mineral",
+   "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-07-atualizada-2022-1.pdf",
+   "status": "VERIFICADO no texto oficial (conferido com o DOU)",
+   "vigencia": ""
+  },
+  "nr07-anexoIII-q1": {
+   "norma": "NR-07",
+   "dispositivo": "Anexo III, Quadro 1, conteudo",
+   "texto": "Empresas com medições quantitativas periódicas | Radiografia de tórax\nLSC* ≤ 10% LEO** | - na admissão; e - na demissão, se o último exame foi realizado há mais de 2 anos.\nLSC > 10% e ≤ 50% LEO | - na admissão; - a cada 5 anos até os 15 anos de exposição, e, após, a cada 3 anos; e - na demissão, se o último exame foi realizado há mais de 2 anos.\nLSC > 50% e ≤ 100% LEO | - na admissão; - a cada 3 anos até 15 anos de exposição, e, após, a cada 2 anos; e - na demissão, se o último exame foi realizado há mais de 1 ano.\nLSC > 100% LEO | - na admissão; - a cada ano de exposição; e - na demissão, se o último exame foi realizado há mais de 1 ano.\nEmpresas sem avaliações quantitativas | - na admissão; - a cada 2 anos até 15 anos de exposição, e, após, a cada ano; e - na demissão, se o último exame foi realizado há mais de 1 ano.",
+   "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-07-atualizada-2022-1.pdf",
+   "status": "VERIFICADO no texto oficial (conferido com o DOU)",
+   "vigencia": ""
+  },
+  "nr07-anexoIII-q1-notas": {
+   "norma": "NR-07",
+   "dispositivo": "Anexo III, Quadro 1, notas",
+   "texto": "*LSC = Limite superior do intervalo de confiança da média aritmética estimada para uma distribuição lognormal com confiança estatística de 95%.\n**LEO = Limite de exposição ocupacional.\nNOTA 1: Trabalhadores que apresentarem Leitura Radiológica 0/1 ou mais deverão ser avaliados por profissionais médicos especializados. NOTA 2: Para trabalhadores que tenham a sua exposição diminuída, mas que estiveram expostos a concentrações superiores por um ano ou mais, deverá ser mantido o mesmo intervalo de exames radiológicos do período de maior exposição.",
+   "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-07-atualizada-2022-1.pdf",
+   "status": "VERIFICADO no texto oficial (conferido com o DOU)",
+   "vigencia": ""
+  },
+  "nr07-anexoIII-3.5": {
+   "norma": "NR-07",
+   "dispositivo": "Anexo III, item 3.5",
+   "texto": "3.5 Nos exames pós-demissionais em empregados expostos ao asbesto, a periodicidade da espirometria deve ser a mesma do exame radiológico.",
+   "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-07-atualizada-2022-1.pdf",
+   "status": "VERIFICADO no texto oficial (conferido com o DOU)",
+   "vigencia": ""
+  },
+  "nr07-anexoV-4.1.1": {
+   "norma": "NR-07",
+   "dispositivo": "Anexo V, item 4.1.1",
+   "texto": "4.1.1 Os exames complementares para os empregados expostos a agentes químicos cancerígenos, conforme informado no PGR da organização, são obrigatórios quando a exposição ocupacional estiver acima de 10% (dez por cento) dos limites de exposição ocupacional, ou quando não houver avaliação ambiental, e devem ser executados e interpretados com base nos critérios constantes nesta NR.",
+   "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-07-atualizada-2022-1.pdf",
+   "status": "VERIFICADO no texto oficial (conferido com o DOU)",
+   "vigencia": ""
+  },
+  "nr07-anexoV-5.1.1": {
+   "norma": "NR-07",
+   "dispositivo": "Anexo V, item 5.1.1",
+   "texto": "5.1.1 A informação sobre aptidão ou inaptidão para exercer atividade com exposição a radiação ou material radioativo deve ser consignada no ASO do empregado.",
+   "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-07-atualizada-2022-1.pdf",
+   "status": "VERIFICADO no texto oficial (conferido com o DOU)",
+   "vigencia": ""
+  },
+  "nr07-anexoV-5.2": {
+   "norma": "NR-07",
+   "dispositivo": "Anexo V, item 5.2",
+   "texto": "5.2 No caso de exposição ocupacional acima do limite de dose anual de radiação ionizante, efetiva ou equivalente, deve ser realizada nova avaliação médica do empregado para definição sobre a sua continuidade na atividade, quando deve ser emitido novo ASO.",
+   "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-07-atualizada-2022-1.pdf",
+   "status": "VERIFICADO no texto oficial (conferido com o DOU)",
+   "vigencia": ""
+  },
+  "nr07-anexoV-5.3": {
+   "norma": "NR-07",
+   "dispositivo": "Anexo V, item 5.3",
+   "texto": "5.3 No caso de exposição ocupacional acidental a níveis elevados de radiação ionizante, deve ser realizada nova avaliação médica, com coleta de hemograma completo imediatamente e 24 horas após a exposição.",
+   "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-07-atualizada-2022-1.pdf",
+   "status": "VERIFICADO no texto oficial (conferido com o DOU)",
+   "vigencia": ""
+  },
+  "nr01-1.5.4.4.6": {
+   "norma": "NR-01",
+   "dispositivo": "subitem 1.5.4.4.6",
+   "texto": "1.5.4.4.6 A avaliação de riscos deve constituir um processo contínuo e ser revista a cada dois anos ou quando da ocorrência das seguintes situações:\na) após implementação das medidas de prevenção, para avaliação de riscos residuais;\nb) após inovações e modificações nas tecnologias, ambientes, processos, condições, procedimentos e organização do trabalho que impliquem em novos riscos ou modifiquem os riscos existentes;\nc) quando identificadas inadequações, insuficiência ou ineficácia das medidas de prevenção;\nd) na ocorrência de acidentes ou doenças relacionadas ao trabalho;\ne) quando houver mudança nos requisitos legais aplicáveis; e\nf) após a solicitação justificada dos trabalhadores ou da CIPA, quando houver.",
+   "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-01-atualizada-2025-i-3.pdf",
+   "status": "VERIFICADO no texto oficial (conferido com o DOU)",
+   "vigencia": ""
+  },
+  "nr15-anexo12-18": {
+   "norma": "NR-15",
+   "dispositivo": "item Anexo 12 (Asbesto), 18 / 18.1 / 18.2",
+   "texto": "18. Todos os trabalhadores que desempenham ou tenham funções ligadas à exposição ocupacional ao asbesto serão submetidos a exames médicos previstos no subitem 7.1.3 da NR-7, sendo que por ocasião da admissão, demissão e anualmente devem ser realizados, obrigatoriamente, exames complementares, incluindo, além da avaliação clínica, telerradiografia de tórax e prova de função pulmonar (espirometria). 18.1. A técnica utilizada na realização das telerradiografias de tórax deverá obedecer ao padrão determinado pela Organização Internacional do Trabalho, especificado na Classificação Internacional de Radiografias de Pneumoconioses (OIT-1980). 18.2. As empresas ficam obrigadas a informar aos trabalhadores examinados, em formulário próprio, os resultados dos exames realizados.",
+   "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-15-atualizada-2025.pdf",
+   "status": "VERIFICADO no texto oficial (PDF MTE baixado em 01/10/2026)",
+   "vigencia": "Última alteração Portaria MTE nº 2.021, de 03/12/2025 (DOU 04/12/25). Anexo 6: título pela Portaria SSMT nº 24/1983; item 1 pela Portaria SSMT nº 05/1983."
+  },
+  "nr32-32.2.3.2": {
+   "norma": "NR-32",
+   "dispositivo": "item 32.2.3.2",
+   "texto": "32.2.3.2 Sempre que houver transferência permanente ou ocasional de um trabalhador para um outro posto de trabalho, que implique em mudança de risco, esta deve ser comunicada de imediato ao médico coordenador ou responsável pelo PCMSO.",
+   "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-32-atualizada-2023-1.pdf",
+   "status": "VERIFICADO no texto oficial (PDF MTE baixado em 01/10/2026)",
+   "vigencia": "Redação dada pela Portaria MTb nº 485/2005; última alteração Portaria MTP nº 4.219, de 20/12/2022 (DOU 22/12/22)."
+  },
+  "nr32-32.4.4": {
+   "norma": "NR-32",
+   "dispositivo": "item 32.4.2.1 d) / 32.4.4",
+   "texto": "d) ser considerado na elaboração e implementação do PCMSO; […] 32.4.4 Toda trabalhadora com gravidez confirmada deve ser afastada das atividades com radiações ionizantes, devendo ser remanejada para atividade compatível com seu nível de formação.",
+   "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-32-atualizada-2023-1.pdf",
+   "status": "VERIFICADO no texto oficial (PDF MTE baixado em 01/10/2026)",
+   "vigencia": "Redação dada pela Portaria MTb nº 485/2005; última alteração Portaria MTP nº 4.219, de 20/12/2022 (DOU 22/12/22)."
+  },
+  "nr38-38.4.3": {
+   "norma": "NR-38",
+   "dispositivo": "item 38.4.2 / 38.4.3",
+   "texto": "38.4.2 Devem ser previstos no PCMSO os protocolos de saúde de acordo com a identificação dos perigos e avaliação dos riscos do PGR. 38.4.3 O PCMSO, caso haja risco avaliado no PGR, deve estabelecer procedimento específico para o caso de acidente de trabalho envolvendo perfurocortantes, com ou sem afastamento do trabalhador, incluindo acompanhamento da evolução clínica do quadro do trabalhador.",
+   "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/NR38atualizada2026.pdf",
+   "status": "VERIFICADO no texto oficial (PDF MTE baixado em 01/10/2026)",
+   "vigencia": "Redação dada pela Portaria MTP nº 4.101/2022 (em vigor desde 02/01/2024); últimas alterações Portaria MTE nº 779/2025 e Portaria MTE nº 817, de 08/05/2026 (DOU 11/05/26)."
+  },
+  "nr36-36.12.5": {
+   "norma": "NR-36",
+   "dispositivo": "item 36.12.5 e) f)",
+   "texto": "36.12.5 Deve ser implementado um Programa de Conservação Auditiva, para os trabalhadores expostos a níveis de pressão sonora acima dos níveis de ação, conforme informado no PGR, e contendo no mínimo: […] e) audiometrias conforme Anexo II da NR-7; e f) histórico clínico e ocupacional do trabalhador.",
+   "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-36-atualizada-2024-1.pdf",
+   "status": "VERIFICADO no texto oficial (PDF MTE baixado em 01/10/2026)",
+   "vigencia": "Redação dada pela Portaria MTE nº 1.065, de 01/07/2024 (DOU 02/07/24)."
+  },
+  "nr36-36.12.8": {
+   "norma": "NR-36",
+   "dispositivo": "item 36.12.8 / 36.12.9",
+   "texto": "36.12.8 Sendo constatados a ocorrência ou o agravamento de doenças ocupacionais, através de exames médicos que incluam os definidos na NR-7 ou alteração que revele disfunção orgânica por meio dos exames complementares do Quadro 2 do Anexo I da NR-7, dos demais Anexos da NR-7 ou dos exames complementares incluídos com base no item 7.5.18 da NR-7, mesmo sem sintomatologia, cabe à organização, após informada pelo médico responsável pelo PCMSO, adotar as medidas previstas nas alíneas do subitem 7.5.19.5 da NR-7. 36.12.9 Cabe ao empregador, conforme orientação do médico responsável pelo PCMSO, proceder, quando necessário, à readaptação funcional em atividade compatível com o grau de incapacidade apresentada pelo trabalhador.",
+   "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-36-atualizada-2024-1.pdf",
+   "status": "VERIFICADO no texto oficial (PDF MTE baixado em 01/10/2026)",
+   "vigencia": "Redação dada pela Portaria MTE nº 1.065, de 01/07/2024 (DOU 02/07/24)."
+  },
+  "cfm-2323-art3": {
+   "norma": "Resolução CFM nº 2.323/2022",
+   "dispositivo": "Art. 3º, caput e incisos I e II",
+   "texto": "Art. 3º Os médicos do trabalho e os demais médicos que atendem os trabalhadores de empresas e instituições que admitem trabalhadores independentemente de sua especialidade devem: I – Atuar visando essencialmente a promoção da saúde e a prevenção da doença, conhecendo para tanto os processos produtivos e o ambiente de trabalho da empresa. II – Promover o esclarecimento e prestar as orientações necessárias sobre a condição dos trabalhadores com deficiência, idosos e/ou com doenças crônico-degenerativas e gestantes; e promover a inclusão destes no trabalho, participando do processo de adaptação do trabalho ao trabalhador, quando necessário.",
+   "url": "https://sistemas.cfm.org.br/normas/arquivos/resolucoes/BR/2022/2323_2022.pdf (página: https://sistemas.cfm.org.br/normas/visualizar/resolucoes/BR/2022/2323)",
+   "status": "vigente",
+   "vigencia": "Em vigor desde 17/10/2022 (publicação no DOU, Seção 1, Edição 197; art. 19). Situação no portal CFM (busca de normas) consultado em 01-02/10/2026: \"Em vigor\", com artigos 10, 12 e § 2º do art. 15 suspensos por decisão judicial. Sem resolução posterior que a altere (busca textual por \"2.323\")."
+  },
+  "cfm-2323-art3-V": {
+   "norma": "Resolução CFM nº 2.323/2022",
+   "dispositivo": "Art. 3º, inciso V",
+   "texto": "V – Notificar formalmente os agravos de notificação compulsória ao órgão competente do Ministério da Saúde quando suspeitar ou comprovar a existência de agravos relacionados ao trabalho, bem como notificar formalmente ao empregador a adoção dos procedimentos cabíveis, independentemente da necessidade de afastar o empregado do trabalho, devendo registrar tudo em prontuário.",
+   "url": "https://sistemas.cfm.org.br/normas/arquivos/resolucoes/BR/2022/2323_2022.pdf (página: https://sistemas.cfm.org.br/normas/visualizar/resolucoes/BR/2022/2323)",
+   "status": "vigente",
+   "vigencia": "Em vigor desde 17/10/2022 (publicação no DOU, Seção 1, Edição 197; art. 19). Situação no portal CFM (busca de normas) consultado em 01-02/10/2026: \"Em vigor\", com artigos 10, 12 e § 2º do art. 15 suspensos por decisão judicial. Sem resolução posterior que a altere (busca textual por \"2.323\")."
+  },
+  "cem-art80": {
+   "norma": "Código de Ética Médica - Resolução CFM nº 2.217/2018 (modificada pelas Res. CFM nº 2.222/2018 e nº 2.226/2019)",
+   "dispositivo": "Art. 80",
+   "texto": "Art. 80 Expedir documento médico sem ter praticado ato profissional que o justifique, que seja tendencioso ou que não corresponda à verdade.",
+   "url": "https://sistemas.cfm.org.br/normas/arquivos/resolucoes/BR/2018/2217_2018.pdf (página: https://sistemas.cfm.org.br/normas/visualizar/resolucoes/BR/2018/2217)",
+   "status": "vigente",
+   "vigencia": "Publicada no DOU de 01/11/2018; o Código entrou em vigor 180 dias após a publicação (art. 3º da Resolução). Situação no portal CFM (busca de normas) consultado em 01-02/10/2026: \"Em vigor\". Alterações registradas no próprio PDF oficial: 2.222/2018 (item VI do Preâmbulo) e 2.226/2019 (art. 72)."
+  },
+  "cem-vedado": {
+   "norma": "Código de Ética Médica - Resolução CFM nº 2.217/2018 (modificada pelas Res. CFM nº 2.222/2018 e nº 2.226/2019)",
+   "dispositivo": "caput dos capítulos de vedações (antes de cada artigo)",
+   "texto": "É vedado ao médico:",
+   "url": "https://sistemas.cfm.org.br/normas/arquivos/resolucoes/BR/2018/2217_2018.pdf (página: https://sistemas.cfm.org.br/normas/visualizar/resolucoes/BR/2018/2217)",
+   "status": "vigente",
+   "vigencia": "Publicada no DOU de 01/11/2018; o Código entrou em vigor 180 dias após a publicação (art. 3º da Resolução). Situação no portal CFM (busca de normas) consultado em 01-02/10/2026: \"Em vigor\". Alterações registradas no próprio PDF oficial: 2.222/2018 (item VI do Preâmbulo) e 2.226/2019 (art. 72)."
+  },
+  "clt-373A-caput": {
+   "norma": "CLT (Decreto-Lei nº 5.452/1943)",
+   "dispositivo": "art. 373-A, caput",
+   "texto": "Art. 373-A. Ressalvadas as disposições legais destinadas a corrigir as distorções que afetam o acesso da mulher ao mercado de trabalho e certas especificidades estabelecidas nos acordos trabalhistas, é vedado:",
+   "url": "https://www.planalto.gov.br/ccivil_03/decreto-lei/del5452.htm",
+   "status": "VIGENTE - confirmado no texto oficial",
+   "vigencia": "Decreto-Lei nº 5.452/1943 (CLT), texto multivigente do Planalto baixado em 01/10/2026; conferido com Del5452compilado.htm (idêntico); incluído pela Lei nº 9.799/1999"
+  },
+  "nr07-anexoIII-2.15": {
+   "norma": "NR-07",
+   "dispositivo": "Anexo III, item 2.15",
+   "texto": "2.15 São responsáveis pela guarda o médico do trabalho responsável pelo PCMSO ou, no caso de a empresa possuir serviço próprio, o responsável pelo serviço de radiologia.",
+   "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-07-atualizada-2022-1.pdf",
+   "status": "VERIFICADO no texto oficial (conferido com o DOU)",
+   "vigencia": ""
+  },
+  "nr07-anexoIII-2.15.1": {
+   "norma": "NR-07",
+   "dispositivo": "Anexo III, item 2.15.1",
+   "texto": "2.15.1 A guarda das imagens refere-se às radiografias de cunho ocupacional, admissionais, periódicas e demissionais, bem como a eventuais radiografias cujas alterações sejam suspeitas ou atribuíveis à exposição ocupacional.",
+   "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-07-atualizada-2022-1.pdf",
+   "status": "VERIFICADO no texto oficial (conferido com o DOU)",
+   "vigencia": ""
+  },
+  "nr07-anexoIII-2.17.2": {
+   "norma": "NR-07",
+   "dispositivo": "Anexo III, item 2.17.2",
+   "texto": "2.17.2 O trabalhador receberá, por ocasião da demissão e retornos posteriores, comunicação da data e local da próxima avaliação médica.",
+   "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-07-atualizada-2022-1.pdf",
+   "status": "VERIFICADO no texto oficial (conferido com o DOU)",
+   "vigencia": ""
+  },
+  "nr07-anexoV-3.1.1": {
+   "norma": "NR-07",
+   "dispositivo": "Anexo V, item 3.1.1",
+   "texto": "3.1.1 O médico responsável pelo PCMSO deve orientar os médicos que realizam o exame clínico desses empregados sobre a importância da identificação de lesões e alterações clínicas ou laboratoriais que possam estar relacionadas à exposição ocupacional a substâncias químicas cancerígenas e a radiações ionizantes.",
+   "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-07-atualizada-2022-1.pdf",
+   "status": "VERIFICADO no texto oficial (conferido com o DOU)",
+   "vigencia": ""
+  },
+  "nr07-anexoV-5.1": {
+   "norma": "NR-07",
+   "dispositivo": "Anexo V, item 5.1",
+   "texto": "5.1 Os empregados devem ser avaliados, no exame médico admissional, de retorno ao trabalho ou de mudança de risco, quanto à sua aptidão para exercer atividades em áreas controladas ou supervisionadas, de acordo com as informações do PGR e a classificação da Comissão Nacional de Energia Nuclear - CNEN (Norma CNEN NN 3.01) para áreas de trabalho com radiação ou material radioativo.",
+   "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-07-atualizada-2022-1.pdf",
+   "status": "VERIFICADO no texto oficial (conferido com o DOU)",
+   "vigencia": ""
+  },
+  "nr32-32.3.5.1": {
+   "norma": "NR-32",
+   "dispositivo": "item 32.3.4.1.1 c) / 32.3.5.1",
+   "texto": "c) as medidas de proteção coletiva, individual e controle médico da saúde dos trabalhadores; […] 32.3.5 Do Programa de Controle Médico de Saúde Ocupacional - PCMSO 32.3.5.1 Na elaboração e implementação do PCMSO, devem ser consideradas as informações contidas nas fichas descritivas citadas no subitem 32.3.4.1.1.",
+   "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-32-atualizada-2023-1.pdf",
+   "status": "VERIFICADO no texto oficial (PDF MTE baixado em 01/10/2026)",
+   "vigencia": "Redação dada pela Portaria MTb nº 485/2005; última alteração Portaria MTP nº 4.219, de 20/12/2022 (DOU 22/12/22)."
+  },
+  "nr32-32.4.2.1-caput": {
+   "norma": "NR-32",
+   "dispositivo": "32.4.2.1, caput",
+   "texto": "32.4.2.1 O Plano de Proteção Radiológica deve:",
+   "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-32-atualizada-2023-1.pdf",
+   "status": "VERIFICADO no texto oficial (PDF MTE baixado em 01/10/2026)",
+   "vigencia": "Redação dada pela Portaria MTb nº 485/2005; última alteração Portaria MTP nº 4.219, de 20/12/2022 (DOU 22/12/22)."
+  },
+  "nr32-32.4.6-caput": {
+   "norma": "NR-32",
+   "dispositivo": "32.4.6, caput",
+   "texto": "32.4.6 Cabe ao empregador:",
+   "url": "https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-32-atualizada-2023-1.pdf",
+   "status": "VERIFICADO no texto oficial (PDF MTE baixado em 01/10/2026)",
+   "vigencia": "Redação dada pela Portaria MTb nº 485/2005; última alteração Portaria MTP nº 4.219, de 20/12/2022 (DOU 22/12/22)."
+  }
+ }
+}

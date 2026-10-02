@@ -1127,6 +1127,11 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                                 <div className="text-[10px] text-slate-400">
                                   {evt.aso_data?.physician_name} ({evt.aso_data?.physician_crm})
                                 </div>
+                                {(evt.aso_data?.exams_list || []).length === 0 && (
+                                  <div className="text-[10px] font-semibold text-amber-400">
+                                    Pendente: sem exames do ASO (MOS S-2220, item 1.5)
+                                  </div>
+                                )}
                               </div>
                             )}
 
@@ -2029,7 +2034,17 @@ const CreateEditEventModal: React.FC<CreateEditEventModalProps> = ({
   // S-2220 State
   const [s2220AsoType, setS2220AsoType] = useState<any>(initialEvent?.aso_data?.aso_type || 'PERIODICO');
   const [s2220ExamDate, setS2220ExamDate] = useState<string>(initialEvent?.aso_data?.exam_date || dataDeHoje());
-  const [s2220Result, setS2220Result] = useState<'APTO' | 'INAPTO'>(initialEvent?.aso_data?.result || 'APTO');
+  // Sem conclusao presumida: vinha 'APTO' para todo evento novo.
+  const [s2220Result, setS2220Result] = useState<'APTO' | 'INAPTO' | ''>(initialEvent?.aso_data?.result || '');
+  /**
+   * Exames do ASO. MOS S-1.3, S-2220, item 1.5: "devem ser informados todos os
+   * exames realizados pelo trabalhador que constam no Atestado de Saude
+   * Ocupacional emitido (ASO)". Este formulario nao lanca exames: na edicao,
+   * mantem os do evento; num evento novo, a lista fica vazia e vira pendencia.
+   * Antes ia sempre UM exame fixo (0295, "NORMAL", "Apto para o trabalho.") e
+   * a edicao apagava os exames reais do evento.
+   */
+  const examesDoAso = initialEvent?.aso_data?.exams_list || [];
   const [s2220DocName, setS2220DocName] = useState<string>(initialEvent?.aso_data?.physician_name || '');
   // O CRM identifica o medico que assinou o ASO. Vinha 'CRM-SP 145892'.
   const [s2220DocCrm, setS2220DocCrm] = useState<string>(initialEvent?.aso_data?.physician_crm || '');
@@ -2153,16 +2168,8 @@ const CreateEditEventModal: React.FC<CreateEditEventModalProps> = ({
         physician_name: s2220DocName,
         physician_crm: s2220DocCrm,
         physician_uf: s2220DocUf.trim().toUpperCase(),
-        exams_list: [
-          {
-            code: '0295',
-            name: 'Avaliação Clínica Ocupacional e Anamnese Geral',
-            date: s2220ExamDate,
-            procedure_type: 'CLINICO',
-            result: 'NORMAL',
-            observation: 'Apto para o trabalho.'
-          }
-        ]
+        // Os exames reais do evento, ou nenhum: a validacao e o XML acusam a falta.
+        exams_list: examesDoAso
       };
     } else if (eventType === 'S-2210') {
       payload.cat_data = {
@@ -2475,6 +2482,7 @@ const CreateEditEventModal: React.FC<CreateEditEventModalProps> = ({
                     onChange={e => setS2220Result(e.target.value as any)}
                     className="w-full p-2 bg-slate-900 border border-slate-800 rounded-lg text-white font-bold"
                   >
+                    <option value="">Selecione a conclusão do ASO</option>
                     <option value="APTO">APTO</option>
                     <option value="INAPTO">INAPTO</option>
                   </select>
@@ -2553,6 +2561,29 @@ const CreateEditEventModal: React.FC<CreateEditEventModalProps> = ({
                     className="w-full p-2 bg-slate-900 border border-slate-800 rounded-lg text-white font-mono uppercase"
                   />
                 </div>
+              </div>
+
+              {/* Exames do ASO: so leitura. Sem eles, pendencia visivel - nunca um exame de exemplo. */}
+              <div className="pt-2 border-t border-slate-800">
+                <label className="block text-[10px] text-slate-400 mb-1">
+                  Exames do ASO neste evento ({examesDoAso.length})
+                </label>
+                {examesDoAso.length > 0 ? (
+                  <ul className="space-y-0.5">
+                    {examesDoAso.map((x, i) => (
+                      <li key={`${x.code}-${i}`} className="text-[11px] text-slate-300 font-mono">
+                        {x.code || 'sem código'} — {x.name || 'sem nome'} — {x.date || 'sem data'}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-[10px] text-amber-400">
+                    Pendente: nenhum exame do ASO neste evento. O S-2220 exige ao menos um exame da
+                    Tabela 27, e o MOS manda informar todos os que constam no ASO (item 1.5). Lance os
+                    exames em SST › PCMSO › Emitir ASO, que gera o S-2220 com eles; até lá a validação
+                    recusa este evento.
+                  </p>
+                )}
               </div>
             </div>
           )}

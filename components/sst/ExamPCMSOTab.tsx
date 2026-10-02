@@ -30,6 +30,8 @@ import {
   Copy,
   CalendarClock
 } from 'lucide-react';
+import { PcmsoPendencias } from './PcmsoResumo';
+import { procedimentoVedado, PROCEDIMENTOS_QUE_EXIGEM_JUSTIFICATIVA } from '@/lib/pcmso';
 
 interface ExamPCMSOTabProps {
   selectedClientId: string;
@@ -39,6 +41,10 @@ const todayISO = () => dataDeHoje();
 
 export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) => {
   const {
+    clients,
+    environmentalRisks,
+    trainingRequirements,
+    hierarchyJobs,
     examProtocols,
     ghes,
     employees,
@@ -63,6 +69,8 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
     triggers: Array<'ADMISSIONAL' | 'PERIODICO' | 'RETORNO_TRABALHO' | 'MUDANCA_RISCO' | 'DEMISSIONAL'>;
     mandatory_by_standard: 'NR-07' | 'NR-11' | 'NR-15' | 'NR-35' | 'NR-33' | 'NR-10' | 'CRITERIO_MEDICO';
     preparation_instructions: string;
+    technical_justification: string;
+    interpretation_criteria: string;
   }>({
     ghe_id: '',
     exam_name: '',
@@ -70,7 +78,9 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
     periodicity_months: 12,
     triggers: ['ADMISSIONAL', 'PERIODICO', 'DEMISSIONAL'],
     mandatory_by_standard: 'NR-07',
-    preparation_instructions: ''
+    preparation_instructions: '',
+    technical_justification: '',
+    interpretation_criteria: ''
   });
 
   // Apply ASO Modal
@@ -146,7 +156,9 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
       periodicity_months: protocol.periodicity_months,
       triggers: protocol.triggers,
       mandatory_by_standard: protocol.mandatory_by_standard,
-      preparation_instructions: protocol.preparation_instructions || ''
+      preparation_instructions: protocol.preparation_instructions || '',
+      technical_justification: protocol.technical_justification || '',
+      interpretation_criteria: protocol.interpretation_criteria || ''
     });
     setIsProtocolModalOpen(true);
   };
@@ -161,7 +173,9 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
         periodicity_months: protocol.periodicity_months || 12,
         triggers: protocol.triggers || ['PERIODICO'],
         mandatory_by_standard: protocol.mandatory_by_standard || 'NR-07',
-        preparation_instructions: protocol.preparation_instructions || ''
+        preparation_instructions: protocol.preparation_instructions || '',
+        technical_justification: protocol.technical_justification || '',
+        interpretation_criteria: protocol.interpretation_criteria || ''
       });
     } else {
       setEditingProtocol(null);
@@ -173,7 +187,9 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
         periodicity_months: 12,
         triggers: ['ADMISSIONAL', 'PERIODICO', 'DEMISSIONAL'],
         mandatory_by_standard: 'NR-07',
-        preparation_instructions: ''
+        preparation_instructions: '',
+        technical_justification: '',
+        interpretation_criteria: ''
       });
     }
     setIsProtocolModalOpen(true);
@@ -204,11 +220,40 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
       return;
     }
 
+    // Teste de HIV e de gravidez nao entram em exame ocupacional, qualquer que
+    // seja a justificativa (lib/pcmso.ts, PROCEDIMENTOS_VEDADOS).
+    const vedado = procedimentoVedado(protocolForm.exam_code_table_27);
+    if (vedado) {
+      alert(`Este exame não pode integrar o PCMSO: ${vedado.motivo} é vedado em exame ocupacional (${vedado.fonte}).`);
+      return;
+    }
+    const especial = PROCEDIMENTOS_QUE_EXIGEM_JUSTIFICATIVA[protocolForm.exam_code_table_27];
+    if (especial && !protocolForm.technical_justification.trim()) {
+      alert(
+        `Este exame exige justificativa técnica: ${especial.motivo} (${especial.fonte}). `
+        + 'Só cabe relacionado aos riscos classificados no PGR (subitem 7.5.18 da NR-07).'
+      );
+      return;
+    }
+
+    // Subitem 7.5.18 da NR-07: exame a criterio do medico so se relacionado aos
+    // riscos classificados no PGR e "tecnicamente justificado no PCMSO".
+    if (protocolForm.mandatory_by_standard === 'CRITERIO_MEDICO' && !protocolForm.technical_justification.trim()) {
+      alert(
+        'Exame a critério do médico precisa de justificativa técnica: o subitem 7.5.18 da NR-07 '
+        + 'exige que ele esteja relacionado aos riscos classificados no PGR e tecnicamente '
+        + 'justificado no PCMSO.'
+      );
+      return;
+    }
+
     const selectedGhe = ghes.find(g => g.id === protocolForm.ghe_id);
 
     if (editingProtocol) {
       updateExamProtocol(editingProtocol.id, {
         ...protocolForm,
+        technical_justification: protocolForm.technical_justification.trim() || undefined,
+        interpretation_criteria: protocolForm.interpretation_criteria.trim() || undefined,
         client_id: selectedGhe?.client_id || selectedClientId || ''
       });
     } else {
@@ -221,6 +266,8 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
         triggers: protocolForm.triggers,
         mandatory_by_standard: protocolForm.mandatory_by_standard,
         preparation_instructions: protocolForm.preparation_instructions,
+        technical_justification: protocolForm.technical_justification.trim() || undefined,
+        interpretation_criteria: protocolForm.interpretation_criteria.trim() || undefined,
         status: 'ACTIVE'
       });
     }
@@ -297,6 +344,11 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
 
   /** Grava codigo e nome juntos: os dois vem da Tabela 27, nunca digitados. */
   const escolherProcedimento = (id: string, codigo: string, nome: string) => {
+    const vedado = procedimentoVedado(codigo);
+    if (vedado) {
+      alert(`Este exame não pode constar do ASO: ${vedado.motivo} é vedado em exame ocupacional (${vedado.fonte}).`);
+      return;
+    }
     setExamesDoAso(prev =>
       prev.map(ex =>
         ex.id === id
@@ -320,7 +372,7 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
     if (examesDoAso.length === 0) {
       alert(
         'Registre ao menos um exame realizado. O S-2220 exige a lista de procedimentos ' +
-        '(Tabela 27) com o resultado de cada um.'
+        '(Tabela 27). O resultado de cada exame fica no prontuário e não vai ao eSocial.'
       );
       return;
     }
@@ -376,6 +428,19 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
 
   return (
     <div className="space-y-6" id="exam-pcmso-tab-container">
+      {/* Pendencias do PCMSO: a mesma conta do PDF (lib/pcmso.ts) */}
+      {selectedClientId && (
+        <PcmsoPendencias
+          client={clients.find((c) => c.id === selectedClientId)}
+          ghes={ghes}
+          risks={environmentalRisks}
+          examProtocols={examProtocols}
+          employees={employees}
+          trainingRequirements={trainingRequirements}
+          jobs={hierarchyJobs}
+        />
+      )}
+
       {/* Top Banner Alert */}
       {generatedS2220Success && (
         <div className="p-4 bg-teal-500/10 border border-teal-500/30 rounded-xl flex items-center justify-between text-xs text-teal-300 animate-in fade-in">
@@ -741,12 +806,13 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
                     onChange={(e) => setProtocolForm({ ...protocolForm, mandatory_by_standard: e.target.value as any })}
                     className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 focus:outline-none focus:border-teal-500"
                   >
-                    <option value="NR-07">NR-07 (PCMSO Padrão)</option>
-                    <option value="NR-15">NR-15 (Insalubridade)</option>
-                    <option value="NR-35">NR-35 (Trabalho em Altura)</option>
-                    <option value="NR-33">NR-33 (Espaço Confinado)</option>
-                    <option value="NR-10">NR-10 (Eletricidade)</option>
-                    <option value="CRITERIO_MEDICO">Critério do Médico do Trabalho</option>
+                    <option value="NR-07">NR-07 (exame clínico e Anexos I a V)</option>
+                    <option value="NR-35">NR-35 (aptidão para trabalho em altura, 35.4.4)</option>
+                    <option value="NR-33">NR-33 (aptidão para espaço confinado, 33.5.19)</option>
+                    <option value="NR-10">NR-10 (exame para intervir em instalações elétricas)</option>
+                    <option value="NR-11">NR-11 (revalidação do cartão de operador, 11.1.6.1)</option>
+                    <option value="NR-15">NR-15 (Anexos 6, 12 e 13-A)</option>
+                    <option value="CRITERIO_MEDICO">A critério do médico (subitem 7.5.18: exige justificativa)</option>
                   </select>
                 </div>
               </div>
@@ -758,6 +824,38 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
                   value={protocolForm.preparation_instructions}
                   onChange={(e) => setProtocolForm({ ...protocolForm, preparation_instructions: e.target.value })}
                   placeholder="Ex.: Repouso auditivo prévio de 14h, jejum de 8h..."
+                  className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 focus:outline-none focus:border-teal-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-slate-400 font-semibold mb-1">
+                  Justificativa técnica{' '}
+                  <span className="text-slate-500 font-normal">
+                    {protocolForm.mandatory_by_standard === 'CRITERIO_MEDICO'
+                      ? '(obrigatória: subitem 7.5.18 da NR-07)'
+                      : '(o risco do PGR ou o item da norma que exige o exame)'}
+                  </span>
+                </label>
+                <textarea
+                  rows={2}
+                  value={protocolForm.technical_justification}
+                  onChange={(e) => setProtocolForm({ ...protocolForm, technical_justification: e.target.value })}
+                  placeholder="Ex.: Ruído contínuo acima do nível de ação no GHE (Anexo II da NR-07, item 2)"
+                  className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 focus:outline-none focus:border-teal-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-slate-400 font-semibold mb-1">
+                  Critério de interpretação e conduta{' '}
+                  <span className="text-slate-500 font-normal">(alínea &quot;c&quot; do subitem 7.5.4)</span>
+                </label>
+                <textarea
+                  rows={2}
+                  value={protocolForm.interpretation_criteria}
+                  onChange={(e) => setProtocolForm({ ...protocolForm, interpretation_criteria: e.target.value })}
+                  placeholder="Para exames dos Anexos da NR-07, o critério é o do Anexo. Para os demais: o que é alteração e o que se faz diante dela"
                   className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 focus:outline-none focus:border-teal-500"
                 />
               </div>
@@ -965,7 +1063,7 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
 
                 {examesDoAso.length === 0 ? (
                   <p className="text-[11px] text-amber-400 py-2">
-                    Nenhum exame lançado. O S-2220 exige ao menos um procedimento com resultado —
+                    Nenhum exame lançado. O S-2220 exige ao menos um procedimento realizado —
                     cadastre o protocolo do PCMSO deste GHE ou adicione um exame avulso.
                   </p>
                 ) : (
@@ -1032,7 +1130,7 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
                         {(ex.result === 'ALTERADO' || ex.result === 'AGRAVAMENTO') && (
                           <input
                             type="text"
-                            placeholder="Observação do achado (vai no S-2220)"
+                            placeholder="Observação do achado (prontuário; não vai ao eSocial)"
                             value={ex.observation || ''}
                             onChange={e => alterarExame(ex.id, 'observation', e.target.value)}
                             className="col-span-12 bg-slate-950 border border-slate-700 rounded px-2 py-1.5 text-slate-100 text-[11px] mt-0.5"

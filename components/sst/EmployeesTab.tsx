@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { usePrevSafe } from '@/context/PrevSafeContext';
 import { Employee, WorkerCategoryType, EmploymentRegime } from '@/types';
 import { dataDeHoje } from '@/lib/datas';
+import { formatDate } from '@/lib/utils';
 import { conferirDocumento } from '@/lib/validacoesBr';
 import { 
   Users, 
@@ -969,6 +970,11 @@ export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) 
                         {/* Exames realizados. ASOs gravados antes deste campo
                             existir nao os tem, e a ficha diz isso em vez de
                             deixar a impressao de que nenhum exame foi feito. */}
+                        {/* So o exame e a data. Resultado e observacao do
+                            exame pertencem ao prontuario (CEM art. 85) e esta
+                            ficha abre para qualquer usuario. PENDENCIA DE
+                            ARQUITETURA: controle de acesso por perfil medico,
+                            para o medico ver o resultado aqui. */}
                         {aso.exams && aso.exams.length > 0 ? (
                           <ul className="pl-3 border-l border-slate-800 space-y-0.5">
                             {aso.exams.map(ex => (
@@ -976,20 +982,9 @@ export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) 
                                 <span className="truncate">
                                   <span className="font-mono text-slate-500">{ex.exam_code_table_27}</span>{' '}
                                   {ex.exam_name}
-                                  {ex.observation && (
-                                    <span className="text-slate-500"> — {ex.observation}</span>
-                                  )}
                                 </span>
-                                <span
-                                  className={`shrink-0 font-semibold ${
-                                    ex.result === 'NORMAL'
-                                      ? 'text-emerald-400'
-                                      : ex.result === 'ESTAVEL'
-                                        ? 'text-slate-300'
-                                        : 'text-amber-400'
-                                  }`}
-                                >
-                                  {ex.result} ({ex.exam_date})
+                                <span className="shrink-0 text-slate-300">
+                                  {ex.exam_date ? `realizado em ${formatDate(ex.exam_date)}` : 'data não lançada'}
                                 </span>
                               </li>
                             ))}

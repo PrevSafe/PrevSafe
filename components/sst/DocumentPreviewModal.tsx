@@ -42,6 +42,9 @@ import {
   exportAEPDocumentPdf
 } from '@/lib/pdfExportService';
 import { prepararFotosDaAEP } from '@/lib/imagensParaPdf';
+import { PcmsoResumo } from './PcmsoResumo';
+import { assinaturaDoDocumento } from '@/lib/responsabilidadeTecnica';
+import { dataDeHoje } from '@/lib/datas';
 import { SSTElectronicSignatureModal } from './SSTElectronicSignatureModal';
 import { SSTDocumentSignature } from '@/types';
 import { DECLARACAO_DE_INTEGRIDADE } from '@/lib/documentoHash';
@@ -106,7 +109,8 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
     sstSignatures,
     createSSTSignatureEnvelope,
     technicalProfessionals,
-    technicalResponsibilities
+    technicalResponsibilities,
+    catRecords
   } = usePrevSafe();
 
   // Responsabilidade técnica vem das Configurações da empresa: um laudo assinado
@@ -116,9 +120,12 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
   const rtTitle = organization?.technical_responsible_title || 'Responsável Técnico';
   const rtCouncil = organization?.technical_responsible_council || '';
   const rtArt = organization?.technical_responsible_art || '';
-  const pcmsoName = organization?.pcmso_physician_name || NAO_INFORMADO;
-  const pcmsoCrm = organization?.pcmso_physician_crm || '';
-  const pcmsoRqe = organization?.pcmso_physician_rqe || '';
+  // O coordenador do PCMSO e o atribuido A ESTE CLIENTE (NR-07, 7.4.1 "c"),
+  // e nao o medico geral da consultoria.
+  const coordenadorDoCliente = assinaturaDoDocumento('PCMSO_COORD', {
+    atribuicoes: technicalResponsibilities, profissionais: technicalProfessionals,
+    clientId: client?.id, data: dataDeHoje()
+  });
   const [zoomLevel, setZoomLevel] = useState<number>(100);
   const [copiedHash, setCopiedHash] = useState(false);
   const [activePage, setActivePage] = useState<number>(1);
@@ -222,7 +229,7 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
       exportPGRTRDocumentPdf({ client, organization, ghes, risks, employees, technicalProfessionals, technicalResponsibilities });
       setDownloadSuccess('PGRTR Rural gerado e baixado em PDF com sucesso!');
     } else if (docType === 'PCMSO') {
-      exportPCMSODocumentPdf({ client, organization, examProtocols, ghes, employees, technicalProfessionals, technicalResponsibilities });
+      exportPCMSODocumentPdf({ client, organization, examProtocols, ghes, risks, employees, units, sectors, jobs, catRecords, trainingRequirements, technicalProfessionals, technicalResponsibilities });
       setDownloadSuccess('PCMSO gerado e baixado em PDF com sucesso!');
     } else if (docType === 'LTCAT') {
       exportLTCATDocumentPdf({ client, organization, risks, ghes, employees, technicalProfessionals, technicalResponsibilities });
@@ -468,7 +475,7 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
                     <div><strong>Responsável Técnico:</strong> {rtName}</div>
                     <div><strong>Qualificação:</strong> {rtTitle}{rtCouncil ? ` • ${rtCouncil}` : ''}</div>
                     <div><strong>ART de Cargo / Função:</strong> <span className="font-mono font-bold text-teal-800">{rtArt || '—'}</span></div>
-                    <div><strong>Coordenação PCMSO:</strong> {pcmsoName}{pcmsoCrm ? ` (${pcmsoCrm}${pcmsoRqe ? ` - RQE ${pcmsoRqe}` : ''})` : ''}</div>
+                    <div><strong>Coordenação PCMSO:</strong> {coordenadorDoCliente.origem === 'ATRIBUICAO' ? coordenadorDoCliente.linha : 'Não atribuída a este cliente'}</div>
                     <div><strong>População Coberta:</strong> {employees.length} trabalhadores ativos</div>
                   </div>
                 </div>
@@ -614,45 +621,16 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
 
               {/* 3. PCMSO Content */}
               {docType === 'PCMSO' && (
-                <div className="space-y-4">
-                  <div className="border border-slate-300 rounded-lg overflow-hidden">
-                    <div className="bg-slate-900 text-white px-4 py-2.5 flex items-center justify-between">
-                      <span className="font-bold text-xs uppercase tracking-wide flex items-center gap-2">
-                        <Stethoscope className="w-4 h-4 text-cyan-400" />
-                        Quadro de Exames Ocupacionais & Protocolos Médicos (Tabela 27 eSocial)
-                      </span>
-                      <span className="text-[10px] text-cyan-300 font-bold">NR-07 Item 7.5</span>
-                    </div>
-
-                    <div className="overflow-x-auto">
-                      <table className="w-full text-left text-xs border-collapse">
-                        <thead className="bg-slate-100 text-slate-700 text-[11px] font-bold border-b border-slate-300">
-                          <tr>
-                            <th className="p-2.5 border-r border-slate-200">Exame / Procedimento</th>
-                            <th className="p-2.5 border-r border-slate-200">Cód. Tab. 27</th>
-                            <th className="p-2.5 border-r border-slate-200">GHE / Cargo</th>
-                            <th className="p-2.5 border-r border-slate-200">Periodicidade / Gatilhos</th>
-                            <th className="p-2.5">Fundamentação</th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-slate-200 text-slate-800">
-                          {examProtocols.map(p => {
-                            const ghe = ghes.find(g => g.id === p.ghe_id);
-                            return (
-                              <tr key={p.id} className="hover:bg-slate-50">
-                                <td className="p-2.5 font-bold border-r border-slate-200">{p.exam_name}</td>
-                                <td className="p-2.5 font-mono font-bold text-cyan-800 border-r border-slate-200">{p.exam_code_table_27}</td>
-                                <td className="p-2.5 border-r border-slate-200">{ghe?.name || 'Todos os Colaboradores'}</td>
-                                <td className="p-2.5 border-r border-slate-200">{p.periodicity_months} meses ({p.triggers?.join(', ') || 'Admissional, Periódico'})</td>
-                                <td className="p-2.5 text-slate-600">{p.mandatory_by_standard || 'NR-07 Quadro I/II'}</td>
-                              </tr>
-                            );
-                          })}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                </div>
+                <PcmsoResumo
+                  tema="claro"
+                  client={client}
+                  ghes={ghes}
+                  risks={risks}
+                  examProtocols={examProtocols}
+                  employees={employees}
+                  trainingRequirements={trainingRequirements}
+                  jobs={jobs}
+                />
               )}
 
               {/* 4. LTCAT Content */}

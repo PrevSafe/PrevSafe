@@ -40,6 +40,7 @@ import {
 import { prepararFotosDaAEP } from '@/lib/imagensParaPdf';
 import { DocumentPreviewModal, PreviewDocType } from '@/lib/../components/sst/DocumentPreviewModal';
 import { montarCorpoInsalubridade, montarCorpoPericulosidade } from '@/lib/laudoDados';
+import { PcmsoResumo } from './PcmsoResumo';
 import { avaliacaoIniciada, faltasPsicossociais, resumoPsicossocial } from '@/lib/psicossocial';
 
 interface TechnicalDocsGeneratorTabProps {
@@ -114,9 +115,6 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
   const rtName = organization?.technical_responsible_name || NAO_INFORMADO;
   const rtCouncil = organization?.technical_responsible_council || '';
   const rtArt = organization?.technical_responsible_art || '';
-  const pcmsoName = organization?.pcmso_physician_name || NAO_INFORMADO;
-  const pcmsoCrm = organization?.pcmso_physician_crm || '';
-  const pcmsoRqe = organization?.pcmso_physician_rqe || '';
   const rtWithCouncil = rtCouncil ? `${rtName} (${rtCouncil})` : rtName;
 
   // Plano de ação 5W2H derivado do inventário real de riscos: entra no plano todo risco
@@ -221,7 +219,13 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
         organization,
         examProtocols,
         ghes: clientGhes,
+        risks: environmentalRisks,
         employees: clientEmployees,
+        units,
+        sectors: hierarchySectors,
+        jobs: hierarchyJobs,
+        catRecords,
+        trainingRequirements,
         technicalProfessionals,
         technicalResponsibilities
       });
@@ -739,67 +743,36 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
       {/* VIEW 3: PCMSO (NR-07) */}
       {activeDocType === 'PCMSO' && (
         <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-6 shadow-xl" id="pcmso-doc-view">
-          <div className="border-b border-slate-800 pb-4 flex justify-between items-start">
+          <div className="border-b border-slate-800 pb-4 flex justify-between items-start gap-4">
             <div>
               <span className="px-2.5 py-1 bg-cyan-500/20 text-cyan-300 text-xs font-bold rounded">
-                PROGRAMA DE CONTROLE MÉDICO DE SAÚDE OCUPACIONAL (PCMSO - NR-07)
+                PROGRAMA DE CONTROLE MÉDICO DE SAÚDE OCUPACIONAL (PCMSO — NR-07)
               </span>
               <h2 className="text-lg font-bold text-slate-100 mt-2">
-                Planejamento de Saúde Ocupacional & Protocolos de Exames (ASO / eSocial S-2220)
+                Exames por GHE, a partir do inventário do PGR
               </h2>
-              <p className="text-xs text-slate-400">
-                Médico Coordenador do PCMSO: <strong className="text-slate-200">{pcmsoName}{pcmsoCrm ? ` (${pcmsoCrm}${pcmsoRqe ? ` - RQE ${pcmsoRqe}` : ''})` : ''}</strong>
+              <p className="text-xs text-slate-400 max-w-[46rem]">
+                O PDF traz o programa inteiro: diretrizes, base legal, vedações, riscos e agravos, exames e prazos,
+                Anexos da NR-07, atividades críticas, ASO, prontuário e sigilo, relatório analítico e checklist.
               </p>
             </div>
-            <div className="text-right text-xs text-slate-400 space-y-1">
-              <div>Vigência do Programa: <span className="text-cyan-400 font-semibold">12 Meses</span></div>
-              <div>Exames Catalogados: <span className="text-slate-200 font-bold">{examProtocols.length} protocolos</span></div>
+            <div className="text-right text-xs text-slate-400 space-y-1 shrink-0">
+              <div>Base: <span className="text-cyan-400 font-semibold">NR-07, subitem 7.5.1</span></div>
+              <div>Validade: <span className="text-slate-200">a NR-07 não fixa</span></div>
             </div>
           </div>
-
-          <div className="space-y-3">
-            <h3 className="text-sm font-bold text-slate-200 flex items-center gap-2">
-              <Stethoscope className="w-4 h-4 text-cyan-400" />
-              Matriz de Monitoramento Biológico e Exames Clínicos por GHE
-            </h3>
-
-            <div className="bg-slate-950 border border-slate-800 rounded-xl overflow-x-auto">
-              <table className="w-full text-left text-xs text-slate-300">
-                <thead className="bg-slate-900 text-slate-400 uppercase text-[10px] border-b border-slate-800">
-                  <tr>
-                    <th className="py-3 px-4">Procedimento Diagnóstico</th>
-                    <th className="py-3 px-4">Tabela 27 eSocial</th>
-                    <th className="py-3 px-4">GHE Aplicado</th>
-                    <th className="py-3 px-4">Periodicidade</th>
-                    <th className="py-3 px-4">Diretriz NR-07</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-800/60">
-                  {examProtocols.map(p => {
-                    const ghe = ghes.find(g => g.id === p.ghe_id);
-                    return (
-                      <tr key={p.id} className="hover:bg-slate-900/40">
-                        <td className="py-3 px-4 font-bold text-slate-100">{p.exam_name}</td>
-                        <td className="py-3 px-4 font-mono text-cyan-400 font-bold">{p.exam_code_table_27}</td>
-                        <td className="py-3 px-4 text-slate-300">{ghe?.name || 'Geral'}</td>
-                        <td className="py-3 px-4">
-                          <span className="px-2 py-0.5 bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 rounded font-semibold text-[11px]">
-                            {p.periodicity_months} meses ({p.triggers?.join(', ') || 'Periódico'})
-                          </span>
-                        </td>
-                        <td className="py-3 px-4 text-slate-400">
-                          {p.mandatory_by_standard || 'NR-07'} • {p.preparation_instructions || 'Conforme protocolo clínico'}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          </div>
+          <PcmsoResumo
+            tema="escuro"
+            client={clientObj}
+            ghes={clientGhes}
+            risks={environmentalRisks}
+            examProtocols={examProtocols}
+            employees={clientEmployees}
+            trainingRequirements={trainingRequirements}
+            jobs={hierarchyJobs}
+          />
         </div>
       )}
-
       {/* VIEW 4: LTCAT */}
       {activeDocType === 'LTCAT' && (
         <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-6 shadow-xl" id="ltcat-doc-view">

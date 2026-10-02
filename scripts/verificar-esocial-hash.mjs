@@ -53,7 +53,12 @@ fs.writeFileSync(
       baseUrl: RAIZ,
       paths: { '@/*': ['./*'] },
     },
-    files: [path.join(RAIZ, 'lib/esocialDados.ts'), path.join(RAIZ, 'lib/documentoHash.ts')],
+    files: [
+      path.join(RAIZ, 'lib/esocialDados.ts'),
+      path.join(RAIZ, 'lib/documentoHash.ts'),
+      // validarCPF: o montador do [respMonit] o usa para decidir se {cpfResp} vai.
+      path.join(RAIZ, 'lib/validacoesBr.ts'),
+    ],
   })
 );
 
@@ -80,9 +85,11 @@ process.on('exit', () => fs.rmSync(TMP, { recursive: true, force: true }));
 const require_ = createRequire(import.meta.url);
 let esocial;
 let hashLib;
+let validacoesBr;
 try {
   esocial = require_(path.join(SAIDA, 'esocialDados.js'));
   hashLib = require_(path.join(SAIDA, 'documentoHash.js'));
+  validacoesBr = require_(path.join(SAIDA, 'validacoesBr.js'));
 } catch (e) {
   inconclusivo('não foi possível carregar os módulos compilados', e.message);
 }
@@ -97,6 +104,9 @@ const {
   normalizarCategoriaRisco,
   exameSugeridosParaAso,
   sugerirTipoDeProcedimento,
+  tpExameOcupDoAso,
+  resAsoDoAso,
+  xmlDosExamesDoS2220,
 } = esocial;
 
 if (typeof montarCondicoesAmbientais !== 'function') {
@@ -379,8 +389,10 @@ console.log('\n--- S-2220: sem ASO registrado não há evento ---');
     dados.exams_list.length === 0,
     'ASO sem exames lançados não inventa a lista'
   );
+  // A mensagem perdeu "com resultado" quando o indResult saiu do evento (MOS
+  // 1.6); o regex antigo nao casava mais e este caso falhava.
   check(
-    pendencias.some((p) => /exame com resultado/i.test(p.motivo)),
+    pendencias.some((p) => /Nenhum exame registrado/i.test(p.motivo)),
     'a falta dos exames é reportada como pendência, não preenchida com o protocolo'
   );
 }
@@ -517,14 +529,61 @@ console.log('\n--- lançamento de exames realizados ---');
     m.dados.exams_list[0].date === '2026-03-01',
     'a data do exame é a dele, não a do ASO (2026-03-02)'
   );
+  // MOS S-1.3, S-2220, item 1.9: a fonte do evento e o ASO, nao o prontuario.
+  // A observacao clinica do exame fica no sistema e nao vai para o evento.
   check(
-    m.dados.exams_list[0].observation === 'Perda leve bilateral em 4kHz.',
-    'a observação do achado acompanha o exame'
+    m.dados.exams_list.every((e) => e.observation === undefined),
+    'a observação clínica do exame não é copiada para o evento'
   );
+
+  // Codigos do leiaute S-1.3 (S-2220).
+  const tipos = [['ADMISSIONAL', '0'], ['PERIODICO', '1'], ['RETORNO_TRABALHO', '2'], ['MUDANCA_RISCO', '3'], ['DEMISSIONAL', '9']];
+  for (const [tipo, codigo] of tipos) {
+    check(tpExameOcupDoAso(tipo) === codigo, `tpExameOcup do ${tipo} é ${codigo} (${tpExameOcupDoAso(tipo)})`);
+  }
+  check(tpExameOcupDoAso(undefined) === '', 'ASO sem tipo não ganha tpExameOcup');
+  check(resAsoDoAso('APTO_COM_RESTRICAO') === '1', 'apto com restrição é resAso 1 (apto), não 2');
+  check(resAsoDoAso('INAPTO') === '2' && resAsoDoAso('APTO') === '1', 'resAso de apto e inapto');
+  check(resAsoDoAso(undefined) === '', 'ASO sem resultado não vira inapto');
+
+  const xmlExames = xmlDosExamesDoS2220([
+    { code: '0281', name: 'Audiometria', date: '2026-03-01', procedure_type: 'AUDIOMETRIA', result: 'ALTERADO', observation: 'Perda em 4kHz', order: 'SEQUENCIAL' },
+    { code: '0295', name: 'Avaliação clínica', date: '2026-03-02', procedure_type: 'CLINICO', result: 'NORMAL' },
+    { code: '9999', name: 'Teste de esforço <adaptado>', date: '2026-03-02', procedure_type: 'OUTRO', result: 'NORMAL' },
+  ]);
+  check(!/indResult/.test(xmlExames), 'indResult não vai sem autorização do trabalhador (MOS 1.6)');
+  check(!/4kHz/.test(xmlExames), 'a observação clínica não vai para o XML');
+  check((xmlExames.match(/<obsProc>/g) || []).length === 1 && /<obsProc>Teste de esforço &lt;adaptado&gt;<\/obsProc>/.test(xmlExames),
+    'obsProc só no código que o exige (9999), com o nome escapado');
+  check((xmlExames.match(/<ordExame>/g) || []).length === 1 && /<procRealizado>0281<\/procRealizado>\s*<ordExame>2<\/ordExame>/.test(xmlExames),
+    'ordExame só na audiometria, sequencial = 2');
+
+  // Audiometria inicial x sequencial pelo historico.
+  const comAudio = {
+    ...colaborador,
+    aso_history: [
+      { id: 'b1', aso_type: 'ADMISSIONAL', exam_date: '2025-01-10', result: 'APTO', physician_name: 'X', physician_crm: '1', physician_uf: 'BA',
+        exams: [{ id: 'x1', exam_code_table_27: '0281', exam_name: 'Audiometria', exam_date: '2025-01-10', procedure_type: 'AUDIOMETRIA', result: 'NORMAL' }] },
+      { id: 'b2', aso_type: 'PERIODICO', exam_date: '2026-01-10', result: 'APTO', physician_name: 'X', physician_crm: '1', physician_uf: 'BA',
+        exams: [{ id: 'x2', exam_code_table_27: '0281', exam_name: 'Audiometria', exam_date: '2026-01-10', procedure_type: 'AUDIOMETRIA', result: 'NORMAL' }] },
+    ],
+  };
+  check(montarAsoDoEvento(comAudio, comAudio.aso_history[0]).dados.exams_list[0].order === 'INICIAL', 'a primeira audiometria é inicial');
+  check(montarAsoDoEvento(comAudio, comAudio.aso_history[1]).dados.exams_list[0].order === 'SEQUENCIAL', 'a audiometria seguinte é sequencial');
   check(
-    !m.pendencias.some((p) => /exame com resultado/i.test(p.motivo)),
+    !m.pendencias.some((p) => /Nenhum exame registrado/i.test(p.motivo)),
     'com exames lançados, a pendência de exames desaparece'
   );
+
+  {
+    const ctx = fs.readFileSync(path.join(RAIZ, 'context/PrevSafeContext.tsx'), 'utf8')
+      .replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+    check(!/<(tpExame|tpAso|indResult|exameMedico|dscProc)>/.test(ctx), 'o contexto não monta mais tags fora do leiaute do S-2220');
+    // Eram duas copias do XML (pre-visualizacao e criacao a partir do ASO);
+    // agora a criacao chama a pre-visualizacao, entao cada regra aparece uma vez.
+    check((ctx.match(/xmlDosExamesDoS2220\(/g) || []).length === 1 && (ctx.match(/tpExameOcupDoAso\(/g) || []).length === 1 && (ctx.match(/resAsoDoAso\(/g) || []).length === 1,
+      'o S-2220 tem um montador só, com uma regra de códigos');
+  }
 
   // Exame incompleto continua sendo reportado.
   const semCodigo = {
@@ -545,6 +604,167 @@ console.log('\n--- lançamento de exames realizados ---');
     m2.pendencias.some((p) => /sem data de realização/i.test(p.motivo)),
     'exame sem data de realização é reportado'
   );
+}
+
+console.log('\n--- S-2220: um montador só, Id de 36 caracteres, grupos do leiaute ---');
+{
+  // Cru para extrair e executar as funcoes; sem comentarios para procurar a
+  // FORMA dos defeitos no codigo (o comentario que conta o defeito antigo nao conta).
+  const semComentarios = (s) => s.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+  const ctxCru = fs.readFileSync(path.join(RAIZ, 'context/PrevSafeContext.tsx'), 'utf8');
+  const ctx = semComentarios(ctxCru);
+  const view = semComentarios(fs.readFileSync(path.join(RAIZ, 'components/esocial/ESocialEventsView.tsx'), 'utf8'));
+
+  // ---- forma dos defeitos no fonte ----
+  check(!/\bid="ID/.test(ctx), 'nenhum Id de evento é montado à mão no template (era ID1 + CPF do trabalhador + 202608)');
+  const idsNosTemplates = [...ctx.matchAll(/<evt\w+ id="([^"]*)"/g)].map((x) => x[1].trim());
+  check(idsNosTemplates.length > 0 && idsNosTemplates.every((x) => /^\$\{(idEvt|novoIdDoEvento\([^)]*\))\}$/.test(x)),
+    `todo <evt... id> vem da regra do leiaute (${idsNosTemplates.length} templates)`);
+  check((ctx.match(/<evtMonit[\s>]/g) || []).length === 1, 'há um só template do evtMonit (S-2220) no contexto');
+
+  const corpoDaCriacao = (ctx.match(/const generateS2220FromEmployeeAso = useCallback\(([\s\S]*?)\n  \}, \[/) || [])[1] || '';
+  check(corpoDaCriacao !== '' && /xml_content\s*=\s*generateESocialXmlPreview\(newEvt\)/.test(corpoDaCriacao)
+    && !/<\?xml|<evtMonit|xml_content:\s*xml\b/.test(corpoDaCriacao),
+  'a criação a partir do ASO grava o XML do montador da pré-visualização, sem template próprio');
+
+  const templateS2220 = (ctx.match(/<evtMonit id="\$\{idEvt\}">[\s\S]*?<\/evtMonit>/) || [''])[0];
+  check(/^<evtMonit id="\$\{idEvt\}">\s*<ideEvento>\s*<indRetif>[\s\S]*?<tpAmb>[\s\S]*?<procEmi>[\s\S]*?<verProc>[\s\S]*?<\/ideEvento>\s*<ideEmpregador>/.test(templateS2220),
+    'o template abre com <ideEvento> (ocorrência 1), antes de <ideEmpregador>');
+  check(templateS2220 !== '' && !/^\s*<(resAso|nrCRM|ufCRM)>/m.test(templateS2220),
+    'resAso e nrCRM/ufCRM do médico (0-1) não são escritos incondicionalmente');
+  check(!/<nmMed>\$\{[^}]*\|\|\s*['"`]/.test(templateS2220), 'nmMed não tem nome substituto quando o ASO não traz o médico');
+
+  const corpoRespMonit = (ctx.match(/const blocoRespMonitXml = useCallback\(([\s\S]*?)\n  \}, \[/) || [])[1] || '';
+  check(corpoRespMonit !== '' && !/^\s*\+\s*`\$\{recuo\}\s*<cpfResp>/m.test(corpoRespMonit),
+    'respMonit: <cpfResp> não é concatenado incondicionalmente');
+  check(corpoRespMonit !== '' && !/resp\.(crm|uf)\s*\?/.test(corpoRespMonit),
+    'respMonit: nrCRM e ufCRM não são opcionais dentro do grupo (ocorrência 1)');
+
+  check(!/exams_list:\s*\[\s*\{/.test(view), 'o formulário manual não escreve uma lista de exames literal');
+  check(!/aso_data\?\.result\s*\|\|\s*['"](APTO|INAPTO)['"]/.test(view), 'o formulário manual não presume a conclusão do ASO');
+  check(/=\s*initialEvent\?\.aso_data\?\.exams_list\b/.test(view) && /exams_list:\s*examesDoAso\b/.test(view),
+    'ao editar, o formulário devolve os exames que o evento já tinha');
+
+  // ---- execucao: as funcoes do contexto, extraidas e rodando ----
+  const bemFormado = (x) => {
+    const corpo = x.replace(/<\?xml[^>]*\?>/, '').replace(/<!--[\s\S]*?-->/g, '');
+    const pilha = [];
+    for (const t of corpo.matchAll(/<(\/?)([A-Za-z][\w:.-]*)[^>]*?(\/?)>/g)) {
+      if (t[3] === '/') continue;
+      if (t[1] === '/') { if (pilha.pop() !== t[2]) return false; } else pilha.push(t[2]);
+    }
+    const fora = corpo.replace(/<\/?[A-Za-z][^>]*>/g, '');
+    return pilha.length === 0 && !/[<>]/.test(fora) && !/&(?!amp;|lt;|gt;|quot;|apos;)/.test(fora);
+  };
+
+  try {
+    const pegar = (re, nome) => {
+      const x = ctxCru.match(re);
+      if (!x) throw new Error(`${nome} não encontrado no contexto`);
+      return x[1] ?? x[0];
+    };
+    const fonte = [
+      pegar(/^const textoXml = [\s\S]*?;\s*$/m, 'textoXml'),
+      pegar(/^const UFS_DO_CRM = new Set\(\[[\s\S]*?\]\);$/m, 'UFS_DO_CRM'),
+      pegar(/^function idDoEventoESocial\([\s\S]*?\n\}$/m, 'idDoEventoESocial'),
+      `const novoIdDoEvento = ${pegar(/const novoIdDoEvento = useCallback\(([\s\S]*?), \[\]\);/, 'novoIdDoEvento')};`,
+      `const campoDoEvento = ${pegar(/const campoDoEvento = useCallback\(([\s\S]*?), \[\]\);/, 'campoDoEvento')};`,
+      `const blocoRespMonitXml = ${pegar(/const blocoRespMonitXml = useCallback\(([\s\S]*?\n  \}), \[technicalResponsibilities/, 'blocoRespMonitXml')};`,
+      `const generateESocialXmlPreview = ${pegar(/const generateESocialXmlPreview = useCallback\(([\s\S]*?\n  \}), \[blocoRespRegXml/, 'generateESocialXmlPreview')};`,
+    ].join('\n');
+    const ts = require_(path.join(RAIZ, 'node_modules', 'typescript'));
+    const js = ts.transpileModule(fonte, {
+      compilerOptions: { target: ts.ScriptTarget.ES2020, module: ts.ModuleKind.CommonJS },
+    }).outputText;
+
+    let respAtual = null;
+    const fns = new Function(
+      'clients', 'organization', 'respMonitDoCliente', 'technicalResponsibilities', 'technicalProfessionals',
+      'validarCPF', 'xmlDosExamesDoS2220', 'tpExameOcupDoAso', 'resAsoDoAso', 'dataDeHoje', 'sequenciaDoId', 'blocoRespRegXml',
+      `${js}\nreturn { idDoEventoESocial, novoIdDoEvento, blocoRespMonitXml, generateESocialXmlPreview };`
+    )(
+      [{ id: 'cli-1', document_type: 'CNPJ', document_number: '11.222.333/0001-81' }],
+      { document_number: '99.888.777/0001-66' },
+      () => respAtual, [], [],
+      validacoesBr.validarCPF, xmlDosExamesDoS2220, tpExameOcupDoAso, resAsoDoAso,
+      () => '2026-10-02', { current: { segundo: 0, usados: {} } }, () => ''
+    );
+
+    // REGRA_VALIDA_ID_EVENTO: IDTNNNNNNNNNNNNNNAAAAMMDDHHMMSSQQQQQ
+    const quando = new Date(2026, 9, 2, 8, 5, 9);
+    const id1 = fns.idDoEventoESocial('1', '11222333000181', quando, 1);
+    check(id1 === 'ID' + '1' + '11222333000181' + '20261002' + '080509' + '00001' && id1.length === 36,
+      `Id pela regra do leiaute: ${id1} (${id1.length} caracteres)`);
+    check(fns.idDoEventoESocial('1', '11222333', quando, 12) === 'ID1' + '11222333000000' + '20261002080509' + '00012',
+      'CNPJ de 8 posições completa com zeros à direita; sequencial com zeros à esquerda');
+    check(fns.idDoEventoESocial('2', '529.982.247-25', quando, 1) === 'ID2' + '52998224725000' + '20261002080509' + '00001',
+      'empregador pessoa física: T = 2 e o CPF dele, completado à direita');
+
+    const a = fns.novoIdDoEvento('1', '11222333000181');
+    const b = fns.novoIdDoEvento('1', '11222333000181');
+    const c = fns.novoIdDoEvento('1', '99888777000166');
+    check(a !== b && (a.slice(0, 31) !== b.slice(0, 31) || Number(b.slice(31)) === Number(a.slice(31)) + 1),
+      `mesmo empregador no mesmo segundo: o sequencial incrementa (${a.slice(31)} → ${b.slice(31)})`);
+    check(c.endsWith('00001'), 'outro empregador começa o próprio sequencial');
+
+    // Evento a partir de um ASO registrado, pelo mesmo caminho da criacao.
+    const colab = {
+      ...colaborador,
+      aso_history: [{
+        id: 'c1', aso_type: 'PERIODICO', exam_date: '2026-03-02', result: 'APTO',
+        physician_name: 'Dr. Paulo & Filhos <Nunes>', physician_crm: 'CRM-BA 77901', physician_uf: 'ba',
+        exams: [{ id: 'e1', exam_code_table_27: '0295', exam_name: 'Avaliação clínica', exam_date: '2026-03-02', procedure_type: 'CLINICO', result: 'NORMAL' }],
+      }],
+    };
+    const dados = montarAsoDoEvento(colab, colab.aso_history[0]).dados;
+    const evento = (aso) => ({
+      id: 'evt-t', organization_id: 'org', client_id: 'cli-1', event_type: 'S-2220', event_number: 'T',
+      status: 'DRAFT', environment: 'PRODUCAO', is_rectification: false, worker_name: 'Maria Souza',
+      worker_cpf: '529.982.247-25', worker_registration: 'MAT-7781', worker_cbo: '7823-05', worker_role: '',
+      aso_data: aso, created_at: '', updated_at: '',
+    });
+
+    respAtual = { nome: 'Dra. Ana & Cia', cpf: '', crm: 'CRM 12345', uf: 'BA' };
+    const xml = fns.generateESocialXmlPreview(evento(dados));
+    const idXml = (xml.match(/<evtMonit id="([^"]*)">/) || [])[1] || '';
+    check(/^ID1\d{33}$/.test(idXml) && idXml.startsWith('ID1' + '11222333000181'),
+      `o Id do XML tem 36 caracteres e a inscrição do empregador: ${idXml}`);
+    check(!idXml.includes('52998224725'), 'o Id não leva o CPF do trabalhador');
+    check(xml.includes(`<Reference URI="#${idXml}">`), 'a assinatura referencia o mesmo Id');
+    check(/<evtMonit id="[^"]*">\s*<ideEvento>\s*<indRetif>1<\/indRetif>\s*<tpAmb>1<\/tpAmb>\s*<procEmi>1<\/procEmi>\s*<verProc>[^<]+<\/verProc>\s*<\/ideEvento>\s*<ideEmpregador>/.test(xml),
+      'o XML gerado tem <ideEvento> completo antes de <ideEmpregador>');
+    check(/<resAso>1<\/resAso>/.test(xml) && (xml.match(/<exame>/g) || []).length === 1, 'resAso e o exame do ASO vão quando existem');
+    const medico = (xml.match(/<medico>[\s\S]*?<\/medico>/) || [''])[0];
+    check(medico.includes('<nmMed>Dr. Paulo &amp; Filhos &lt;Nunes&gt;</nmMed>'), 'nmMed sai com escape de XML');
+    check(medico.includes('<nrCRM>77901</nrCRM>') && medico.includes('<ufCRM>BA</ufCRM>'), 'nrCRM e ufCRM do médico vão quando existem');
+    check(/<respMonit>/.test(xml) && !/<cpfResp>/.test(xml) && xml.includes('<nmResp>Dra. Ana &amp; Cia</nmResp>'),
+      'respMonit sem CPF cadastrado: o grupo vai sem <cpfResp> (0-1), com o nome escapado');
+    check(!/undefined/.test(xml) && bemFormado(xml), 'o XML não tem "undefined" e as tags fecham');
+
+    const xmlOutro = fns.generateESocialXmlPreview(evento(dados));
+    check((xmlOutro.match(/<evtMonit id="([^"]*)">/) || [])[1] !== idXml, 'dois eventos gerados em seguida têm Ids diferentes');
+
+    respAtual = { nome: 'Dra. Ana', cpf: '529.982.247-25', crm: '', uf: 'BA' };
+    const vazio = { ...dados, result: '', physician_name: '', physician_crm: '', physician_uf: '', exams_list: [] };
+    const xml2 = fns.generateESocialXmlPreview(evento(vazio));
+    const medico2 = (xml2.match(/<medico>[\s\S]*?<\/medico>/) || [''])[0];
+    check(!/<resAso>/.test(xml2), 'sem conclusão no ASO, <resAso> (0-1) não sai');
+    check(!/<(nrCRM|ufCRM)>/.test(medico2) && /<nmMed><\/nmMed>/.test(medico2),
+      'sem médico no ASO: nmMed fica vazio (pendência visível), nrCRM/ufCRM não saem');
+    check(!/<exame>/.test(xml2) && /<!--[^>]*exame/.test(xml2), 'sem exames: nenhum exame fictício, só o aviso de pendência');
+    check(!/<respMonit>/.test(xml2) && /<!--[^>]*respMonit/.test(xml2),
+      'coordenador sem CRM: não monta respMonit inválido, deixa a pendência');
+    check(!/undefined/.test(xml2) && bemFormado(xml2), 'o XML com pendências continua sem "undefined" e com as tags fechando');
+
+    respAtual = { nome: 'Dra. Ana', cpf: '529.982.247-25', crm: 'CRM 12345', uf: 'BA' };
+    check(/<cpfResp>52998224725<\/cpfResp>/.test(fns.blocoRespMonitXml('cli-1', '2026-03-02', '')), 'CPF válido do coordenador vai em <cpfResp>');
+    respAtual = { nome: 'Dra. Ana', cpf: '111.111.111-11', crm: 'CRM 12345', uf: 'BA' };
+    check(!/<cpfResp>/.test(fns.blocoRespMonitXml('cli-1', '2026-03-02', '')), 'CPF inválido não vai ("Se informado, deve ser um CPF válido")');
+    respAtual = null;
+    check(!/<respMonit>/.test(fns.blocoRespMonitXml('cli-1', '2026-03-02', '')), 'sem coordenador atribuído, sem respMonit');
+  } catch (e) {
+    check(false, `não foi possível executar o montador do contexto: ${e.message}`);
+  }
 }
 
 console.log('\n--- ligação colaborador → riscos ---');

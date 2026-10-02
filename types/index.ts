@@ -1347,6 +1347,8 @@ export interface ESocialComplementaryExam {
   procedure_type: 'CLINICO' | 'AUDIOMETRIA' | 'ESPIROMETRIA' | 'RX_TORAX_OIT' | 'HEMOGRAMA' | 'GLICEMIA' | 'ACUIDADE_VISUAL' | 'OUTRO';
   result: 'NORMAL' | 'ALTERADO' | 'ESTAVEL' | 'AGRAVAMENTO';
   observation?: string;
+  /** Audiometria: inicial ou sequencial (S-2220, {ordExame}). */
+  order?: 'INICIAL' | 'SEQUENCIAL';
 }
 
 export interface ESocialASOData {
@@ -2101,6 +2103,17 @@ export interface SSTExamProtocol {
   triggers: Array<'ADMISSIONAL' | 'PERIODICO' | 'RETORNO_TRABALHO' | 'MUDANCA_RISCO' | 'DEMISSIONAL'>;
   mandatory_by_standard: 'NR-07' | 'NR-11' | 'NR-15' | 'NR-35' | 'NR-33' | 'NR-10' | 'CRITERIO_MEDICO';
   preparation_instructions?: string; // ex: "Repouso auditivo de 14h antes do exame", "Jejum de 8h"
+  /**
+   * Por que o exame e feito. Exame a criterio do medico precisa estar
+   * "relacionado aos riscos ocupacionais classificados no PGR e tecnicamente
+   * justificado no PCMSO" (subitem 7.5.18 da NR-07).
+   */
+  technical_justification?: string;
+  /**
+   * Criterio de interpretacao e conduta diante do achado (alinea "c" do
+   * subitem 7.5.4). Para os exames dos Anexos, o criterio e o do proprio Anexo.
+   */
+  interpretation_criteria?: string;
   status: 'ACTIVE' | 'INACTIVE';
   created_at: string;
 }

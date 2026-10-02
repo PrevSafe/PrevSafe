@@ -202,8 +202,44 @@ import {
   riscosDoColaborador,
   selecionarAsoMaisRecente,
   resumirPendencias,
+  tpExameOcupDoAso,
+  resAsoDoAso,
+  xmlDosExamesDoS2220,
   type PendenciaESocial,
 } from '@/lib/esocialDados';
+import { validarCPF } from '@/lib/validacoesBr';
+
+/** Texto de usuario dentro de elemento XML: nome com "&" ou "<" quebrava o evento. */
+const textoXml = (v: unknown): string =>
+  String(v ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+/** Valores validos de {ufCRM} no S-2220 (leiaute S-1.3, grupos medico e respMonit). */
+const UFS_DO_CRM = new Set([
+  'AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MT', 'MS', 'MG', 'PA',
+  'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO',
+]);
+
+/**
+ * Id do evento eSocial - REGRA_VALIDA_ID_EVENTO do leiaute S-1.3: "composta
+ * por 36 caracteres, conforme o que segue: IDTNNNNNNNNNNNNNNAAAAMMDDHHMMSSQQQQQ".
+ * T e o tipo de inscricao do EMPREGADOR (1 CNPJ, 2 CPF); N, o numero dele
+ * "completar com zeros a direita", com as mesmas 8 ou 14 posicoes do
+ * {ideEmpregador/nrInsc}; AAAAMMDDHHMMSS, o instante da geracao; QQQQQ, o
+ * sequencial, "completando com zeros a esquerda".
+ *
+ * Antes era `ID1` + CPF do TRABALHADOR + "202608" (20 caracteres, ano e mes
+ * fixos) no S-2220 criado do ASO, e `ID1` + inscricao + ano + 6 digitos do
+ * relogio + "00001" (32) na pre-visualizacao.
+ */
+function idDoEventoESocial(tpInsc: string, nrInsc: string, geradoEm: Date, sequencial: number): string {
+  const d2 = (n: number) => String(n).padStart(2, '0');
+  return 'ID'
+    + String(tpInsc).slice(0, 1)
+    + String(nrInsc || '').replace(/\D/g, '').slice(0, 14).padEnd(14, '0')
+    + String(geradoEm.getFullYear()).padStart(4, '0') + d2(geradoEm.getMonth() + 1) + d2(geradoEm.getDate())
+    + d2(geradoEm.getHours()) + d2(geradoEm.getMinutes()) + d2(geradoEm.getSeconds())
+    + String(sequencial).padStart(5, '0').slice(-5);
+}
 
 /**
  * Por que a sessao terminou.
@@ -1992,11 +2028,34 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
       return `${recuo}<!-- respMonit ausente: nenhum médico coordenador do PCMSO atribuído a `
         + `este cliente (Engenharia SST > Responsabilidade Técnica) -->`;
     }
+    // Leiaute S-1.3: dentro de [respMonit], nmResp, nrCRM e ufCRM tem ocorrencia
+    // 1. O grupo saia sem nrCRM/ufCRM quando o cadastro nao os tinha - invalido.
+    // Sem eles, nao se monta o grupo: fica a pendencia, como na falta do coordenador.
+    const nrCRM = resp.crm.replace(/\D/g, '');
+    const ufCRM = resp.uf.trim().toUpperCase();
+    const faltam = [
+      !resp.nome && 'nome',
+      !nrCRM && 'número do CRM',
+      !UFS_DO_CRM.has(ufCRM) && 'UF do CRM',
+    ].filter(Boolean);
+    if (faltam.length > 0) {
+      return `${recuo}<!-- respMonit pendente: o médico coordenador do PCMSO deste cliente está sem `
+        + `${faltam.join(', ')} no cadastro (Engenharia SST > Responsabilidade Técnica); o leiaute `
+        + `exige nmResp, nrCRM e ufCRM no grupo -->`;
+    }
+    // cpfResp e 0-1: "Se informado, deve ser um CPF valido". Saia <cpfResp></cpfResp>
+    // vazio quando o cadastro nao tinha CPF.
+    const cpfResp = resp.cpf.replace(/\D/g, '');
+    const linhaDoCpf = validarCPF(cpfResp)
+      ? `${recuo}  <cpfResp>${cpfResp}</cpfResp>\n`
+      : cpfResp
+        ? `${recuo}  <!-- cpfResp omitido: o CPF cadastrado do coordenador não é válido -->\n`
+        : '';
     return `${recuo}<respMonit>\n`
-      + `${recuo}  <cpfResp>${resp.cpf.replace(/\D/g, '')}</cpfResp>\n`
-      + `${recuo}  <nmResp>${resp.nome}</nmResp>\n`
-      + (resp.crm ? `${recuo}  <nrCRM>${resp.crm.replace(/\D/g, '')}</nrCRM>\n` : '')
-      + (resp.uf ? `${recuo}  <ufCRM>${resp.uf}</ufCRM>\n` : '')
+      + linhaDoCpf
+      + `${recuo}  <nmResp>${textoXml(resp.nome)}</nmResp>\n`
+      + `${recuo}  <nrCRM>${nrCRM}</nrCRM>\n`
+      + `${recuo}  <ufCRM>${ufCRM}</ufCRM>\n`
       + `${recuo}</respMonit>`;
   }, [technicalResponsibilities, technicalProfessionals]);
 
@@ -3681,6 +3740,26 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
    * placeholder: e afirmacao. Melhor o campo vazio, que o usuario ve, do que
    * um valor que passa despercebido porque parece certo.
    */
+  /**
+   * Id de um evento gerado agora (regra em idDoEventoESocial). O {QQQQQ} so
+   * incrementa "quando ocorrer geracao de eventos na mesma data/hora": gerar os
+   * S-2220 de uma OS inteira cabe num segundo, e sem o contador todos sairiam
+   * com o mesmo Id.
+   */
+  const sequenciaDoId = useRef<{ segundo: number; usados: Record<string, number> }>({ segundo: 0, usados: {} });
+  const novoIdDoEvento = useCallback((tpInsc: string, nrInsc: string): string => {
+    const agora = new Date();
+    const segundo = Math.floor(agora.getTime() / 1000);
+    const seq = sequenciaDoId.current;
+    if (seq.segundo !== segundo) {
+      seq.segundo = segundo;
+      seq.usados = {};
+    }
+    const chave = `${tpInsc}:${nrInsc}`;
+    seq.usados[chave] = (seq.usados[chave] || 0) + 1;
+    return idDoEventoESocial(tpInsc, nrInsc, agora, seq.usados[chave]);
+  }, []);
+
   const campoDoEvento = useCallback((tag: string, valor: any, oQueFalta: string): string => {
     const v = String(valor ?? '').trim();
     return v ? `<${tag}>${v}</${tag}>` : `<${tag}></${tag}><!-- ${oQueFalta} -->`;
@@ -3710,7 +3789,8 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
         ? (client?.cno ? client.cno.replace(/\D/g, '') : employerRaw)
         : nrInscEmpregador;
 
-    const idEvt = `ID1${nrInscEmpregador}${new Date().getFullYear()}${String(Date.now()).substring(7, 13)}00001`;
+    // 36 caracteres, com a inscricao do empregador que vai em <ideEmpregador>.
+    const idEvt = novoIdDoEvento(tpInscEmpregador, nrInscEmpregador);
 
     if (event.event_type === 'S-2240') {
       const amb = event.ambient_data;
@@ -3786,15 +3866,21 @@ ${blocoRespRegXml(event.client_id, amb?.start_date || dataDeHoje())}
 
     if (event.event_type === 'S-2220') {
       const aso = event.aso_data;
-      const examsXml = (aso?.exams_list || []).map(e => `
-        <exame>
-          <dtExm>${e.date}</dtExm>
-          <procRealizado>${e.code}</procRealizado>
-          <dscProc>${e.name}</dscProc>
-          <ordExame>${e.procedure_type === 'CLINICO' ? '1' : '2'}</ordExame>
-          <indResult>${e.result === 'NORMAL' ? '1' : e.result === 'ALTERADO' ? '2' : e.result === 'ESTAVEL' ? '3' : '4'}</indResult>
-          ${e.observation ? `<obsProc>${e.observation}</obsProc>` : ''}
-        </exame>`).join('');
+      // Unico montador do S-2220: o evento criado do ASO
+      // (generateS2220FromEmployeeAso) tambem grava este XML.
+      // Codigos e campos dos exames: lib/esocialDados.ts (leiaute S-1.3).
+      const exames = aso?.exams_list || [];
+      // [exame] tem ocorrencia 1-99, e o MOS (S-2220, item 1.5) manda informar
+      // "todos os exames realizados pelo trabalhador que constam no ASO". Sem
+      // nenhum, fica a pendencia - nunca um exame de exemplo.
+      const examsXml = exames.length > 0
+        ? xmlDosExamesDoS2220(exames, '        ')
+        : '        <!-- exame ausente: nenhum exame do ASO neste evento; o leiaute exige ao menos 1 grupo '
+          + '[exame] e o MOS (S-2220, item 1.5) manda informar todos os exames que constam no ASO -->';
+      // resAso, nrCRM e ufCRM do medico tem ocorrencia 0-1: vazios, nao vao.
+      const resAso = resAsoDoAso(aso?.result);
+      const nrCrmDoMedico = String(aso?.physician_crm || '').replace(/\D/g, '');
+      const ufCrmDoMedico = String(aso?.physician_uf || '').trim().toUpperCase();
 
       return `<?xml version="1.0" encoding="UTF-8"?>
 <eSocial xmlns="http://www.esocial.gov.br/schema/evt/evtMonit/v_S_01_02_00">
@@ -3812,48 +3898,22 @@ ${blocoRespRegXml(event.client_id, amb?.start_date || dataDeHoje())}
     </ideEmpregador>
     <ideVinculo>
       <cpfTrab>${workerCpf}</cpfTrab>
-      <matricula>${event.worker_registration}</matricula>
+      <matricula>${textoXml(event.worker_registration)}</matricula>
     </ideVinculo>
-    <ideEstab>
-      <tpInsc>${tpInscEstab}</tpInsc>
-      <nrInsc>${nrInscEstab}</nrInsc>
-    </ideEstab>
-    <aso>
-      ${campoDoEvento('dtAso', aso?.exam_date, 'data do exame não registrada no ASO')}
-      ${campoDoEvento(
-        'tpAso',
-        // O encadeamento terminava em '4' (demissional): ASO sem tipo saia
-        // declarado como demissional.
-        aso?.aso_type === 'ADMISSIONAL' ? '0'
-          : aso?.aso_type === 'PERIODICO' ? '1'
-          : aso?.aso_type === 'RETORNO_TRABALHO' ? '2'
-          : aso?.aso_type === 'MUDANCA_RISCO' ? '3'
-          : aso?.aso_type === 'DEMISSIONAL' ? '4'
-          : '',
-        'tipo do ASO não informado'
-      )}
-      ${campoDoEvento(
-        'resAso',
-        // Era `=== 'APTO' ? '1' : '2'`: ASO sem resultado saia declarando o
-        // trabalhador INAPTO.
-        aso?.result === 'APTO' ? '1' : aso?.result === 'INAPTO' ? '2' : '',
-        'resultado do ASO não informado'
-      )}
-      <medico>
-        <nmMed>${aso?.physician_name?.trim() || 'MÉDICO EXAMINADOR NÃO INFORMADO'}</nmMed>${
-          aso?.physician_crm?.replace(/\D/g, '')
-            ? `
-        <nrCRM>${aso.physician_crm.replace(/\D/g, '')}</nrCRM>`
-            : ''
-        }${
-          aso?.physician_uf?.trim()
-            ? `
-        <ufCRM>${aso.physician_uf.trim().toUpperCase()}</ufCRM>`
-            : ''
-        }
-      </medico>${examsXml}
-    </aso>
-${blocoRespMonitXml(event.client_id, aso?.exam_date || dataDeHoje())}
+    <exMedOcup>
+      ${campoDoEvento('tpExameOcup', tpExameOcupDoAso(aso?.aso_type), 'tipo do ASO não informado')}
+      <aso>
+        ${campoDoEvento('dtAso', aso?.exam_date, 'data do exame não registrada no ASO')}
+        ${resAso ? `<resAso>${resAso}</resAso>` : '<!-- resAso omitido: conclusão apto/inapto não informada no ASO -->'}
+${examsXml}
+        <medico>
+          ${campoDoEvento('nmMed', textoXml(String(aso?.physician_name || '').trim()), 'nome do médico emitente do ASO não informado')}
+          ${nrCrmDoMedico ? `<nrCRM>${nrCrmDoMedico}</nrCRM>` : '<!-- nrCRM omitido: CRM do médico emitente não informado no ASO -->'}
+          ${UFS_DO_CRM.has(ufCrmDoMedico) ? `<ufCRM>${ufCrmDoMedico}</ufCRM>` : '<!-- ufCRM omitido: UF do CRM do médico emitente não informada ou inválida -->'}
+        </medico>
+      </aso>
+${blocoRespMonitXml(event.client_id, aso?.exam_date || dataDeHoje(), '      ')}
+    </exMedOcup>
   </evtMonit>
   <Signature xmlns="http://www.w3.org/2000/09/xmldsig#">
     <SignedInfo>
@@ -4006,7 +4066,7 @@ ${blocoRespMonitXml(event.client_id, aso?.exam_date || dataDeHoje())}
     </infoExclusao>
   </evtExclusao>
 </eSocial>`;
-  }, [blocoRespRegXml, blocoRespMonitXml, campoDoEvento, clients, organization.document_number]);
+  }, [blocoRespRegXml, blocoRespMonitXml, campoDoEvento, novoIdDoEvento, clients, organization.document_number]);
 
   // Create eSocial Event
   const createESocialEvent = useCallback((data: Omit<ESocialEvent, 'id' | 'organization_id' | 'event_number' | 'created_at' | 'updated_at' | 'status'> & { status?: ESocialEventStatus }): ESocialEvent => {
@@ -4144,6 +4204,11 @@ ${blocoRespMonitXml(event.client_id, aso?.exam_date || dataDeHoje())}
       }
       if (!aso?.physician_crm || !aso?.physician_uf) {
         errors.push('CRM e UF do médico examinador são campos obrigatórios.');
+      }
+      // NR-07, 7.5.19.1, "e": o ASO traz a definicao de apto ou inapto. O
+      // formulario manual nao presume mais APTO.
+      if (!aso?.result) {
+        errors.push('Resultado do ASO (apto ou inapto) não informado.');
       }
       if (!aso?.exams_list || aso.exams_list.length === 0) {
         errors.push('O ASO deve conter no mínimo 1 exame clínico / complementar registrado.');
@@ -6323,7 +6388,7 @@ ${blocoRespMonitXml(event.client_id, aso?.exam_date || dataDeHoje())}
       worker_registration: cat.worker_registration,
       worker_cbo: cat.worker_cbo || undefined,
       worker_role: cat.worker_role || '',
-      xml_content: `<?xml version="1.0" encoding="UTF-8"?><eSocial xmlns="http://www.esocial.gov.br/schema/evt/evtCAT/v_S_01_02_00"><evtCAT id="ID1${cat.worker_cpf.replace(/\D/g, '')}202608"><ideEmpregador><tpInsc>${empregador.tpInsc}</tpInsc><nrInsc>${empregador.nrInsc}</nrInsc></ideEmpregador><ideTrabalhador><cpfTrab>${cat.worker_cpf.replace(/\D/g, '')}</cpfTrab></ideTrabalhador><cat><dtAcid>${cat.accident_date}</dtAcid><tpAcid>${cat.accident_type === 'TIPICO' ? 1 : 2}</tpAcid><hrAcid>${cat.accident_time.replace(':', '')}</hrAcid><localAcidente><tpLocal>${cat.location_type === 'ESTABELECIMENTO_EMPREGADOR' ? 1 : 3}</tpLocal><dscLocal>${cat.location_description}</dscLocal></localAcidente><parteAtingida><codParteAting>${cat.body_part_code}</codParteAting></parteAtingida><agenteCausador><codAgntCausador>${cat.causative_agent_code}</codAgntCausador></agenteCausador><atestado><dtAtendimento>${cat.accident_date}</dtAtendimento><codCID>${cat.cid_10}</codCID><emitente><nmEmit>${cat.medical_name}</nmEmit><ideOC>1</ideOC><nrOC>${cat.medical_crm}</nrOC><ufOC>${cat.medical_uf}</ufOC></emitente></atestado></cat></evtCAT></eSocial>`,
+      xml_content: `<?xml version="1.0" encoding="UTF-8"?><eSocial xmlns="http://www.esocial.gov.br/schema/evt/evtCAT/v_S_01_02_00"><evtCAT id="${novoIdDoEvento(empregador.tpInsc, empregador.nrInsc)}"><ideEmpregador><tpInsc>${empregador.tpInsc}</tpInsc><nrInsc>${empregador.nrInsc}</nrInsc></ideEmpregador><ideTrabalhador><cpfTrab>${cat.worker_cpf.replace(/\D/g, '')}</cpfTrab></ideTrabalhador><cat><dtAcid>${cat.accident_date}</dtAcid><tpAcid>${cat.accident_type === 'TIPICO' ? 1 : 2}</tpAcid><hrAcid>${cat.accident_time.replace(':', '')}</hrAcid><localAcidente><tpLocal>${cat.location_type === 'ESTABELECIMENTO_EMPREGADOR' ? 1 : 3}</tpLocal><dscLocal>${cat.location_description}</dscLocal></localAcidente><parteAtingida><codParteAting>${cat.body_part_code}</codParteAting></parteAtingida><agenteCausador><codAgntCausador>${cat.causative_agent_code}</codAgntCausador></agenteCausador><atestado><dtAtendimento>${cat.accident_date}</dtAtendimento><codCID>${cat.cid_10}</codCID><emitente><nmEmit>${cat.medical_name}</nmEmit><ideOC>1</ideOC><nrOC>${cat.medical_crm}</nrOC><ufOC>${cat.medical_uf}</ufOC></emitente></atestado></cat></evtCAT></eSocial>`,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
     };
@@ -6385,7 +6450,7 @@ ${blocoRespMonitXml(event.client_id, aso?.exam_date || dataDeHoje())}
       worker_registration: abs.worker_registration,
       worker_cbo: abs.worker_cbo || undefined,
       worker_role: '',
-      xml_content: `<?xml version="1.0" encoding="UTF-8"?><eSocial xmlns="http://www.esocial.gov.br/schema/evt/evtAfastTemp/v_S_01_02_00"><evtAfastTemp id="ID1${abs.worker_cpf.replace(/\D/g, '')}202608"><ideEmpregador><tpInsc>${empregador.tpInsc}</tpInsc><nrInsc>${empregador.nrInsc}</nrInsc></ideEmpregador><ideTrabalhador><cpfTrab>${abs.worker_cpf.replace(/\D/g, '')}</cpfTrab></ideTrabalhador><infoAfastamento><iniAfastamento><dtIniAfast>${abs.start_date}</dtIniAfast><codMotAfast>${abs.reason_code_table_18}</codMotAfast><infoAtestado><codCID>${abs.cid_10 || 'N/A'}</codCID><qtdDiasAfast>${abs.estimated_days}</qtdDiasAfast><emitente><nmEmit>${abs.physician_name || ''}</nmEmit><nrOC>${abs.physician_crm || ''}</nrOC><ufOC>${abs.physician_uf || ''}</ufOC></emitente></infoAtestado></iniAfastamento></infoAfastamento></evtAfastTemp></eSocial>`,
+      xml_content: `<?xml version="1.0" encoding="UTF-8"?><eSocial xmlns="http://www.esocial.gov.br/schema/evt/evtAfastTemp/v_S_01_02_00"><evtAfastTemp id="${novoIdDoEvento(empregador.tpInsc, empregador.nrInsc)}"><ideEmpregador><tpInsc>${empregador.tpInsc}</tpInsc><nrInsc>${empregador.nrInsc}</nrInsc></ideEmpregador><ideTrabalhador><cpfTrab>${abs.worker_cpf.replace(/\D/g, '')}</cpfTrab></ideTrabalhador><infoAfastamento><iniAfastamento><dtIniAfast>${abs.start_date}</dtIniAfast><codMotAfast>${abs.reason_code_table_18}</codMotAfast><infoAtestado><codCID>${abs.cid_10 || 'N/A'}</codCID><qtdDiasAfast>${abs.estimated_days}</qtdDiasAfast><emitente><nmEmit>${abs.physician_name || ''}</nmEmit><nrOC>${abs.physician_crm || ''}</nrOC><ufOC>${abs.physician_uf || ''}</ufOC></emitente></infoAtestado></iniAfastamento></infoAfastamento></evtAfastTemp></eSocial>`,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
     };
@@ -6488,7 +6553,7 @@ ${blocoRespMonitXml(event.client_id, aso?.exam_date || dataDeHoje())}
 
     const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <eSocial xmlns="http://www.esocial.gov.br/schema/evt/evtExpRisco/v_S_01_02_00">
-  <evtExpRisco id="ID1${empregador.nrInsc}${new Date().getFullYear()}${String(Date.now()).slice(-6)}">
+  <evtExpRisco id="${novoIdDoEvento(empregador.tpInsc, empregador.nrInsc)}">
     <ideEvento>
       <tpAmb>1</tpAmb>
       <procEmi>1</procEmi>
@@ -6566,45 +6631,16 @@ ${blocoRespRegXml(ghe.client_id, dataDeHoje())}
     if (!aso) return null;
 
     const montagem = montarAsoDoEvento(emp, aso);
-    const exames = montagem.dados.exams_list;
 
-    // Empregador vem do cadastro do cliente. Sem CNPJ/CPF valido nao ha evento.
-    const empregador = identificacaoDoEmpregador(emp.client_id);
-    if (!empregador) return null;
+    // Empregador vem do cadastro do cliente. Sem CNPJ/CPF valido nao ha evento
+    // (a pre-visualizacao cairia no documento da propria organizacao).
+    if (!identificacaoDoEmpregador(emp.client_id)) return null;
 
-    const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<eSocial xmlns="http://www.esocial.gov.br/schema/evt/evtMonit/v_S_01_02_00">
-  <evtMonit id="ID1${emp.cpf.replace(/\D/g, '')}202608">
-    <ideEmpregador>
-      <tpInsc>${empregador.tpInsc}</tpInsc>
-      <nrInsc>${empregador.nrInsc}</nrInsc>
-    </ideEmpregador>
-    <ideTrabalhador>
-      <cpfTrab>${emp.cpf.replace(/\D/g, '')}</cpfTrab>
-      <matricula>${emp.registration_number}</matricula>
-    </ideTrabalhador>
-    <exMedOcup>
-      <tpExame>${aso.aso_type === 'ADMISSIONAL' ? 1 : aso.aso_type === 'PERIODICO' ? 2 : aso.aso_type === 'RETORNO_TRABALHO' ? 3 : 4}</tpExame>
-      <aso>
-        <dtAso>${aso.exam_date}</dtAso>
-        <resAso>${aso.result === 'APTO' ? 1 : 2}</resAso>
-        <medico>
-          <nmMed>${aso.physician_name}</nmMed>
-          <nrCRM>${aso.physician_crm.replace(/\D/g, '')}</nrCRM>
-          <ufCRM>${aso.physician_uf}</ufCRM>
-        </medico>
-      </aso>
-${exames.map(ex => `      <exameMedico>
-        <dtExm>${ex.date}</dtExm>
-        <procRealizado>${ex.code}</procRealizado>
-        <obsProc>${ex.observation || ex.name}</obsProc>
-        <ordExame>${ex.procedure_type === 'CLINICO' ? 1 : 2}</ordExame>
-        <indResult>${ex.result === 'NORMAL' ? 1 : ex.result === 'ALTERADO' ? 2 : ex.result === 'ESTAVEL' ? 3 : 4}</indResult>
-      </exameMedico>`).join('\n')}
-    </exMedOcup>
-  </evtMonit>
-</eSocial>`;
-
+    // O XML NAO e mais montado aqui. Esta copia gravava o evento sem
+    // <ideEvento> (ocorrencia 1 no leiaute), com Id de 20 caracteres feito do
+    // CPF do trabalhador e "202608" fixo, <resAso>/<nrCRM>/<ufCRM> sempre
+    // presentes (0-1 no leiaute; saiam vazios ou "undefined") e nomes sem
+    // escape. Agora vale o montador da pre-visualizacao, logo abaixo.
     const newEvt: ESocialEvent = {
       id: novoId('evt-2220'),
       organization_id: organization.id,
@@ -6622,14 +6658,15 @@ ${exames.map(ex => `      <exameMedico>
       // Sem 'Operador' como padrao: a funcao do trabalhador vem do cadastro.
       worker_role: emp.job_title || '',
       aso_data: montagem.dados,
-      xml_content: xml,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
     };
+    // Uma regra so: o mesmo montador que a tela usa para mostrar o evento.
+    newEvt.xml_content = generateESocialXmlPreview(newEvt);
 
     setEsocialEvents(prev => [newEvt, ...prev]);
     return newEvt;
-  }, [employees, organization.id]);
+  }, [employees, organization.id, identificacaoDoEmpregador, generateESocialXmlPreview]);
 
   const generateS2210FromCat = useCallback((catId: string): ESocialEvent | null => {
     const cat = catRecords.find(c => c.id === catId);
@@ -6640,7 +6677,7 @@ ${exames.map(ex => `      <exameMedico>
     const empregador = identificacaoDoEmpregador(cat.client_id);
     if (!empregador) return null;
 
-    const xml = `<?xml version="1.0" encoding="UTF-8"?><eSocial xmlns="http://www.esocial.gov.br/schema/evt/evtCAT/v_S_01_02_00"><evtCAT id="ID1${cat.worker_cpf.replace(/\D/g, '')}202608"><ideEmpregador><tpInsc>${empregador.tpInsc}</tpInsc><nrInsc>${empregador.nrInsc}</nrInsc></ideEmpregador><ideTrabalhador><cpfTrab>${cat.worker_cpf.replace(/\D/g, '')}</cpfTrab></ideTrabalhador><cat><dtAcid>${cat.accident_date}</dtAcid><tpAcid>${cat.accident_type === 'TIPICO' ? 1 : 2}</tpAcid><hrAcid>${cat.accident_time.replace(':', '')}</hrAcid><localAcidente><tpLocal>${cat.location_type === 'ESTABELECIMENTO_EMPREGADOR' ? 1 : 3}</tpLocal><dscLocal>${cat.location_description}</dscLocal></localAcidente><parteAtingida><codParteAting>${cat.body_part_code}</codParteAting></parteAtingida><agenteCausador><codAgntCausador>${cat.causative_agent_code}</codAgntCausador></agenteCausador><atestado><dtAtendimento>${cat.accident_date}</dtAtendimento><codCID>${cat.cid_10}</codCID><emitente><nmEmit>${cat.medical_name}</nmEmit><ideOC>1</ideOC><nrOC>${cat.medical_crm}</nrOC><ufOC>${cat.medical_uf}</ufOC></emitente></atestado></cat></evtCAT></eSocial>`;
+    const xml = `<?xml version="1.0" encoding="UTF-8"?><eSocial xmlns="http://www.esocial.gov.br/schema/evt/evtCAT/v_S_01_02_00"><evtCAT id="${novoIdDoEvento(empregador.tpInsc, empregador.nrInsc)}"><ideEmpregador><tpInsc>${empregador.tpInsc}</tpInsc><nrInsc>${empregador.nrInsc}</nrInsc></ideEmpregador><ideTrabalhador><cpfTrab>${cat.worker_cpf.replace(/\D/g, '')}</cpfTrab></ideTrabalhador><cat><dtAcid>${cat.accident_date}</dtAcid><tpAcid>${cat.accident_type === 'TIPICO' ? 1 : 2}</tpAcid><hrAcid>${cat.accident_time.replace(':', '')}</hrAcid><localAcidente><tpLocal>${cat.location_type === 'ESTABELECIMENTO_EMPREGADOR' ? 1 : 3}</tpLocal><dscLocal>${cat.location_description}</dscLocal></localAcidente><parteAtingida><codParteAting>${cat.body_part_code}</codParteAting></parteAtingida><agenteCausador><codAgntCausador>${cat.causative_agent_code}</codAgntCausador></agenteCausador><atestado><dtAtendimento>${cat.accident_date}</dtAtendimento><codCID>${cat.cid_10}</codCID><emitente><nmEmit>${cat.medical_name}</nmEmit><ideOC>1</ideOC><nrOC>${cat.medical_crm}</nrOC><ufOC>${cat.medical_uf}</ufOC></emitente></atestado></cat></evtCAT></eSocial>`;
 
     const newEvt: ESocialEvent = {
       id: novoId('evt-2210'),
@@ -6674,7 +6711,7 @@ ${exames.map(ex => `      <exameMedico>
     const empregador = identificacaoDoEmpregador(abs.client_id);
     if (!empregador) return null;
 
-    const xml = `<?xml version="1.0" encoding="UTF-8"?><eSocial xmlns="http://www.esocial.gov.br/schema/evt/evtAfastTemp/v_S_01_02_00"><evtAfastTemp id="ID1${abs.worker_cpf.replace(/\D/g, '')}202608"><ideEmpregador><tpInsc>${empregador.tpInsc}</tpInsc><nrInsc>${empregador.nrInsc}</nrInsc></ideEmpregador><ideTrabalhador><cpfTrab>${abs.worker_cpf.replace(/\D/g, '')}</cpfTrab></ideTrabalhador><infoAfastamento><iniAfastamento><dtIniAfast>${abs.start_date}</dtIniAfast><codMotAfast>${abs.reason_code_table_18}</codMotAfast><infoAtestado><codCID>${abs.cid_10 || 'N/A'}</codCID><qtdDiasAfast>${abs.estimated_days}</qtdDiasAfast><emitente><nmEmit>${abs.physician_name || ''}</nmEmit><nrOC>${abs.physician_crm || ''}</nrOC><ufOC>${abs.physician_uf || ''}</ufOC></emitente></infoAtestado></iniAfastamento></infoAfastamento></evtAfastTemp></eSocial>`;
+    const xml = `<?xml version="1.0" encoding="UTF-8"?><eSocial xmlns="http://www.esocial.gov.br/schema/evt/evtAfastTemp/v_S_01_02_00"><evtAfastTemp id="${novoIdDoEvento(empregador.tpInsc, empregador.nrInsc)}"><ideEmpregador><tpInsc>${empregador.tpInsc}</tpInsc><nrInsc>${empregador.nrInsc}</nrInsc></ideEmpregador><ideTrabalhador><cpfTrab>${abs.worker_cpf.replace(/\D/g, '')}</cpfTrab></ideTrabalhador><infoAfastamento><iniAfastamento><dtIniAfast>${abs.start_date}</dtIniAfast><codMotAfast>${abs.reason_code_table_18}</codMotAfast><infoAtestado><codCID>${abs.cid_10 || 'N/A'}</codCID><qtdDiasAfast>${abs.estimated_days}</qtdDiasAfast><emitente><nmEmit>${abs.physician_name || ''}</nmEmit><nrOC>${abs.physician_crm || ''}</nrOC><ufOC>${abs.physician_uf || ''}</ufOC></emitente></infoAtestado></iniAfastamento></infoAfastamento></evtAfastTemp></eSocial>`;
 
     const newEvt: ESocialEvent = {
       id: novoId('evt-2230'),

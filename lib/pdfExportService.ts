@@ -26,7 +26,7 @@ import type { CorpoLaudo } from '@/lib/laudoDados';
 import { dataDeHoje, somarMesesISO } from '@/lib/datas';
 import { formatarCPF } from '@/lib/validacoesBr';
 import { exameSugeridosParaAso } from '@/lib/esocialDados';
-import { assinaturaDoDocumento, linhaDeResponsaveis } from '@/lib/responsabilidadeTecnica';
+import { assinaturaDoDocumento, linhaDeResponsaveis, responsaveisDoCliente, linhaDeAssinatura } from '@/lib/responsabilidadeTecnica';
 import {
   evidenciasParaImpressao,
   legendaDeImpressao,
@@ -65,6 +65,67 @@ import {
 import { calculateSesmtDimensioning } from '@/lib/nr4';
 import { descreverSituacao } from '@/lib/situacaoOperacional';
 import { acoesDoPlano } from '@/lib/planoDeAcao';
+import {
+  montarPcmso,
+  ehAsbesto,
+  funcoesDoGhe,
+  procedimentoVedado,
+  agentesDoAnexoI,
+  criterioDoExame,
+  prazoDeDispensaDoDemissional,
+  relatorioAnalitico,
+  relatorioPodeSerSimplificado,
+  MINIMO_PARA_CATEGORIZAR,
+  ehAvaliacaoClinica,
+  ehAusenciaDeRisco,
+  ehCancerigeno,
+  ehRadiacaoIonizante,
+  codigoDo,
+  OCASIOES
+} from '@/lib/pcmso';
+import {
+  PCMSO_NORMA_DE_REGENCIA,
+  PCMSO_SOBRE_A_REVISAO,
+  PCMSO_OBJETIVO,
+  PCMSO_CAMPO_DE_APLICACAO,
+  PCMSO_HARMONIZACAO,
+  PCMSO_DIRETRIZES,
+  PCMSO_ACOES_DE_VIGILANCIA,
+  PCMSO_SEM_CARATER_DE_SELECAO,
+  PCMSO_BASE_LEGAL,
+  PCMSO_VEDACOES,
+  PCMSO_RESPONSABILIDADES,
+  PCMSO_RESPONSABILIDADES_CFM,
+  PCMSO_EXAMES_E_PRAZOS,
+  PCMSO_REGRAS_DOS_COMPLEMENTARES,
+  PCMSO_IMUNIZACAO,
+  PCMSO_ANEXO_I_TEXTO,
+  PCMSO_ASO_EMISSAO,
+  PCMSO_ASO_CONTEUDO,
+  PCMSO_ASO_APTIDOES_ESPECIFICAS,
+  PCMSO_ASO_RECIBO,
+  PCMSO_ASO_CFM,
+  PCMSO_CONDUTAS,
+  PCMSO_CONDUTAS_LEGAIS,
+  PCMSO_PRONTUARIO,
+  PCMSO_PRONTUARIO_CFM,
+  PCMSO_SIGILO,
+  PCMSO_RELATORIO_CAPUT,
+  PCMSO_RELATORIO_CONTEUDO,
+  PCMSO_RELATORIO_REGRAS,
+  PCMSO_ESOCIAL,
+  PCMSO_CHECKLIST,
+  PCMSO_CHECKLIST_SITUACOES,
+  PCMSO_CHECKLIST_LEGENDA,
+  PCMSO_GUARDA_DO_PRONTUARIO,
+  PCMSO_DECLARACAO_DA_ORGANIZACAO,
+  PCMSO_NOTA_HIV_POS_EXPOSICAO,
+  PCMSO_MEI_ME_EPP,
+  PCMSO_ADVERTENCIAS
+} from '@/lib/pcmsoModelo';
+import { itemDaNr07 } from '@/lib/nr07Texto';
+import { consultarProcedimento } from '@/lib/tabela27';
+import { fonte } from '@/lib/pcmsoFontes';
 import {
   BASE_NORMATIVA_PSICOSSOCIAL,
   DEFINICAO_DO_GUIA,
@@ -293,12 +354,6 @@ const TIPO_DE_ASO: Record<string, string> = {
   RETORNO_TRABALHO: 'Retorno ao trabalho',
   MUDANCA_RISCO: 'Mudança de risco ocupacional',
   DEMISSIONAL: 'Demissional'
-};
-const RESULTADO_EXAME: Record<string, string> = {
-  NORMAL: 'Normal',
-  ALTERADO: 'Alterado',
-  ESTAVEL: 'Estável',
-  AGRAVAMENTO: 'Agravamento'
 };
 
 function technicalResponsibleLine(organization: Organization): string {
@@ -2730,18 +2785,22 @@ export function exportAdmissionKitPDF(
         { content: asoDoKit ? formatDate(asoDoKit.exam_date) : LINHA_PARA_PREENCHER }
       ],
       [
-        { content: 'Resultado:', styles: { fontStyle: 'bold' } },
+        // Alinea "e" do 7.5.19.1: a definicao de apto ou inapto e conteudo do
+        // ASO. O resultado de cada exame nao e (Res. CFM 2.323/2022, art. 6, V).
+        { content: 'Aptidão:', styles: { fontStyle: 'bold' } },
         { content: asoDoKit ? (RESULTADO_ASO[asoDoKit.result] || asoDoKit.result) : LINHA_PARA_PREENCHER },
         { content: 'Válido até:', styles: { fontStyle: 'bold' } },
         { content: asoDoKit?.valid_until ? formatDate(asoDoKit.valid_until) : LINHA_PARA_PREENCHER }
       ],
       [
         { content: 'Médico examinador:', styles: { fontStyle: 'bold' } },
+        // Havia aqui a celula "Restricoes", com asoDoKit.restrictions_notes.
+        // Restricao nao esta entre as alineas do 7.5.19.1 e e texto livre do
+        // medico, que pode carregar diagnostico: fica no prontuario (NR-07
+        // 7.6.1; CEM art. 76). Este kit vai para o RH.
         { content: asoDoKit?.physician_name
             ? `${asoDoKit.physician_name}${asoDoKit.physician_crm ? ` — CRM ${asoDoKit.physician_crm}${asoDoKit.physician_uf ? '/' + asoDoKit.physician_uf : ''}` : ''}`
-            : LINHA_PARA_PREENCHER },
-        { content: 'Restrições:', styles: { fontStyle: 'bold' } },
-        { content: asoDoKit?.restrictions_notes || (asoDoKit ? 'Nenhuma' : LINHA_PARA_PREENCHER) }
+            : LINHA_PARA_PREENCHER, colSpan: 3 }
       ]
     ],
     styles: { fontSize: 7.5, cellPadding: 2.2 }
@@ -2749,19 +2808,20 @@ export function exportAdmissionKitPDF(
 
   let exY = (doc as any).lastAutoTable.finalY + 4;
 
-  // Uma linha por exame previsto no PCMSO, com o resultado quando ja lancado.
+  // Uma linha por exame previsto no PCMSO: o exame e a data em que foi feito
+  // (NR-07 7.5.19.1, alinea "d"), e nada alem disso. A coluna "Resultado"
+  // imprimia Normal/Alterado/Estavel/Agravamento num documento que vai para o
+  // RH. Resultado e observacao do exame pertencem ao prontuario (NR-07 7.6.1;
+  // CEM arts. 76 e 85; MOS do eSocial, S-2220, item 1.9). Nao leia
+  // `realizado.result` nem `realizado.observation` aqui.
   const linhasDeExame = examesPrevistos.map((prev, i) => {
     const realizado = examesRealizados.find(
       (r: any) => r.protocol_id === prev.protocol_id || r.exam_code_table_27 === prev.exam_code_table_27
     );
-    const protocolo = examProtocols.find(p => p.id === prev.protocol_id);
     return [
       String(i + 1),
       prev.exam_code_table_27,
       prev.exam_name,
-      protocolo?.mandatory_by_standard || '',
-      protocolo?.periodicity_months ? `${protocolo.periodicity_months} meses` : '',
-      realizado ? (RESULTADO_EXAME[realizado.result] || realizado.result) : LINHA_CURTA,
       realizado?.exam_date ? formatDate(realizado.exam_date) : LINHA_CURTA
     ];
   });
@@ -2774,11 +2834,8 @@ export function exportAdmissionKitPDF(
       head: [[
         { content: '#', styles: { cellWidth: 8, halign: 'center' } },
         { content: 'Cód. Tab. 27', styles: { cellWidth: 20, halign: 'center' } },
-        { content: 'Procedimento diagnóstico (denominação oficial do eSocial)', styles: { cellWidth: 74 } },
-        { content: 'Norma', styles: { cellWidth: 18, halign: 'center' } },
-        { content: 'Periodic.', styles: { cellWidth: 18, halign: 'center' } },
-        { content: 'Resultado', styles: { cellWidth: 24, halign: 'center' } },
-        { content: 'Data', styles: { cellWidth: 20, halign: 'center' } }
+        { content: 'Procedimento diagnóstico (denominação oficial do eSocial)', styles: { cellWidth: 124 } },
+        { content: 'Realizado em', styles: { cellWidth: 30, halign: 'center' } }
       ]],
       body: linhasDeExame,
       styles: { fontSize: 6.8, cellPadding: 1.8 },
@@ -2813,7 +2870,7 @@ export function exportAdmissionKitPDF(
   doc.setFontSize(6);
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(100, 116, 139);
-  doc.text('Ciência do trabalhador quanto ao resultado', margin + (cW / 2), exY + 15, { align: 'center' });
+  doc.text('Recebimento do ASO pelo trabalhador (NR-07 item 7.5.19)', margin + (cW / 2), exY + 15, { align: 'center' });
 
   doc.line(margin + cW + 10, exY + 8, margin + (cW * 2) + 10, exY + 8);
   doc.setFontSize(7);
@@ -6274,144 +6331,916 @@ export function exportPsychosocialReportPdf({
   doc.save(`fatores-psicossociais-${(client.trade_name || client.legal_name || 'cliente').toLowerCase().replace(/[^a-z0-9]+/g, '-')}.pdf`);
 }
 
+/**
+ * PCMSO — Programa de Controle Medico de Saude Ocupacional (NR-07).
+ *
+ * Mesmo padrao do PGR: conteudo fixo em lib/pcmsoModelo.ts (a NR-07 sai de
+ * lib/nr07Texto.ts, transcrita do PDF oficial por programa), regras e
+ * pendencias em lib/pcmso.ts, e este gerador so desenha. O que falta sai
+ * IMPRESSO como pendencia, com o item da norma - nunca preenchido por padrao.
+ *
+ * O que este documento NAO faz: nao prescreve exame que o medico responsavel
+ * nao escolheu (os protocolos-modelo do sistema ficam de fora), nao traz nome,
+ * CPF ou diagnostico de empregado (o relatorio analitico e agregado), e nao
+ * afirma prazo de validade que a NR-07 nao fixa.
+ */
 export function exportPCMSODocumentPdf({
   client,
   organization,
   examProtocols = [],
   ghes = [],
+  risks = [],
   employees = [],
+  units = [],
+  sectors = [],
+  jobs = [],
+  catRecords = [],
+  trainingRequirements = [],
   technicalProfessionals = [],
   technicalResponsibilities = []
 }: {
   client: Client;
   organization: Organization;
-  examProtocols: any[];
-  ghes: any[];
-  employees: Employee[];
+  examProtocols?: any[];
+  ghes?: any[];
+  /** Inventario de riscos do PGR: o PCMSO e elaborado a partir dele (7.5.1). */
+  risks?: any[];
+  employees?: any[];
+  units?: any[];
+  sectors?: any[];
+  jobs?: any[];
+  /** CAT emitidas: alimentam as alineas "d" e "e" do relatorio analitico. */
+  catRecords?: any[];
+  /** Matriz de treinamentos: indica as atividades criticas (7.5.3). */
+  trainingRequirements?: any[];
   technicalProfessionals?: TechnicalProfessional[];
   technicalResponsibilities?: TechnicalResponsibility[];
 }) {
-  // NR-07, item 7.4.1 "c": compete ao empregador indicar medico do trabalho
-  // responsavel pelo PCMSO. O coordenador e por CLIENTE - o mesmo medico pode
-  // ser so examinador em outro contrato.
-  const coordenador = assinaturaDoCliente(
-    'PCMSO_COORD', client, organization, dataDeHoje(), technicalProfessionals, technicalResponsibilities
-  );
-
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
   const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
   const margin = 14;
+  const util = pageWidth - margin * 2;
 
+  const emissao = dataDeHoje();
+  const codigoDoDocumento = `PCMSO-${(client.document_number || 'SEM-INSCRICAO').replace(/\D/g, '') || 'SEM-INSCRICAO'}-${emissao.slice(0, 4)}-REV00`;
+
+  const unidadesDoCliente = (units || []).filter(
+    (u: any) => u?.client_id === client.id && u?.status !== 'INACTIVE'
+  );
+  const estabelecimento = unidadesDoCliente[0] || null;
+  // Uma fonte so: o grau do cadastro do cliente, o mesmo que a secao 1.1
+  // imprime e que as regras de lib/pcmso.ts usam.
+  const grauDeRisco = client?.risk_degree as any;
+
+  const pendencias: Array<{ onde: string; texto: string }> = [];
+  const pendente = (onde: string, texto: string) => {
+    pendencias.push({ onde, texto });
+    return `PENDENTE — ${texto}`;
+  };
+
+  // Item 7.4.1 "c": o medico responsavel e indicado POR CLIENTE.
+  const coordenador = assinaturaDoCliente(
+    'PCMSO_COORD', client, organization, emissao, technicalProfessionals, technicalResponsibilities
+  );
+  // So o medico ATRIBUIDO a este cliente e o responsavel. O "responsavel geral
+  // da organizacao" que assinaturaDoCliente devolve na falta de atribuicao nao
+  // e indicacao do empregador (7.4.1 "c"): no PCMSO ele nao aparece como tal.
+  const nomeDoCoordenador = coordenador.origem === 'ATRIBUICAO' ? coordenador.nome : '';
+  // Sem medico responsavel indicado (7.4.1 "c") o documento e MINUTA: sai
+  // marcado em toda pagina, sem termo e sem data de assinatura preenchida.
+  const minuta = !nomeDoCoordenador;
+  const profissionalCoordenador = responsaveisDoCliente(
+    technicalResponsibilities || [], technicalProfessionals || [], client.id, 'PCMSO_COORD', emissao
+  )[0];
+  const elaboradores = responsaveisDoCliente(
+    technicalResponsibilities || [], technicalProfessionals || [], client.id, 'PCMSO_ELABORADOR', emissao
+  );
+  const examinadores = responsaveisDoCliente(
+    technicalResponsibilities || [], technicalProfessionals || [], client.id, 'MEDICO_EXAMINADOR', emissao
+  );
+  const responsavelPgr = assinaturaDoCliente(
+    'PGR_RESP', client, organization, emissao, technicalProfessionals, technicalResponsibilities
+  );
+
+  const gheDoCliente = (ghes || []).filter((g: any) => !g?.client_id || g.client_id === client.id);
+  const colaboradoresDoCliente = (employees || []).filter((e: any) => e?.client_id === client.id);
+
+  const montado = montarPcmso({
+    cliente: client,
+    ghes: gheDoCliente,
+    riscos: risks,
+    protocolos: examProtocols,
+    colaboradores: colaboradoresDoCliente,
+    treinamentos: trainingRequirements,
+    cargos: jobs,
+    pendenciaDoCoordenador: coordenador.origem === 'ATRIBUICAO' ? (coordenador.pendencia || null) : (coordenador.pendencia || 'nenhum médico atribuído a este cliente'),
+    coordenadorSemRqe: Boolean(profissionalCoordenador) && !String(profissionalCoordenador?.rqe || '').trim(),
+    semResponsavelPeloPgr: responsavelPgr.origem !== 'ATRIBUICAO'
+  });
+  const atividades = montado.atividades;
+  const dispensa = montado.dispensa;
+  montado.faltas.forEach((f) => pendencias.push({ onde: `Seção ${f.secao}`, texto: `falta ${f.longo.replace(/\.+$/, '')}.` }));
+
+  const nomeDoGhe = (id: string) => {
+    const g = gheDoCliente.find((x: any) => x?.id === id);
+    return g?.code || g?.name || 'GHE não encontrado';
+  };
+  const nomeDoExame = (codigo: string) => consultarProcedimento(codigo)?.nome || `código ${codigo}`;
+  const ondeDe = (c: any) => {
+    const setor = (sectors || []).find((s: any) => s?.id === c?.sector_id)?.name || c?.sector_name;
+    const funcao = (jobs || []).find((j: any) => j?.id === c?.job_id)?.name || c?.job_title;
+    return [setor, funcao].filter((x) => String(x || '').trim()).join(' / ') || nomeDoGhe(c?.ghe_id);
+  };
+
+  // ------------------------------------------------------------------
+  // Auxiliares de desenho (o mesmo desenho do PGR e da AEP)
+  // ------------------------------------------------------------------
+  let curY = 0;
+
+  const novaPagina = () => {
+    doc.addPage();
+    doc.setFillColor(15, 23, 42);
+    doc.rect(0, 0, pageWidth, 16, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'bold');
+    doc.text(minuta ? 'MINUTA DE PCMSO — SEM MÉDICO RESPONSÁVEL INDICADO' : 'PCMSO — PROGRAMA DE CONTROLE MÉDICO DE SAÚDE OCUPACIONAL', margin, 10);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(148, 163, 184);
+    doc.text(
+      `${client.trade_name || client.legal_name || ''} · ${codigoDoDocumento}`,
+      pageWidth - margin, 10, { align: 'right' }
+    );
+    doc.setFillColor(8, 145, 178);
+    doc.rect(0, 16, pageWidth, 1, 'F');
+    doc.setTextColor(15, 23, 42);
+    curY = 22;
+  };
+
+  const garantirEspaco = (mm: number) => {
+    if (pageHeight - 18 - curY < mm) novaPagina();
+  };
+
+  const tabela = (opcoes: any) => {
+    autoTable(doc, {
+      startY: curY,
+      margin: { left: margin, right: margin, top: 22 },
+      theme: 'grid',
+      styles: { fontSize: 7, cellPadding: 1.8, overflow: 'linebreak' },
+      headStyles: { fillColor: [51, 65, 85], textColor: [255, 255, 255], fontStyle: 'bold' },
+      ...opcoes
+    });
+    curY = (doc as any).lastAutoTable.finalY + 4;
+  };
+
+  const secao = (texto: string) => {
+    garantirEspaco(24);
+    tabela({
+      head: [[{
+        content: texto,
+        styles: { fillColor: [15, 23, 42], textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 8.5, cellPadding: 2.4 }
+      }]],
+      body: []
+    });
+  };
+
+  const paragrafo = (texto: string, tamanho = 7.2) => {
+    garantirEspaco(14);
+    tabela({
+      body: [[{ content: texto, styles: { fontSize: tamanho, cellPadding: 2.2, fillColor: [248, 250, 252] } }]]
+    });
+  };
+
+  const lista = (itens: string[], tamanho = 7.2) => paragrafo(itens.map((t) => `• ${t}`).join('\n'), tamanho);
+
+  const duasColunas = (titulo: string, linhas: Array<[string, string]>) => {
+    garantirEspaco(20);
+    tabela({
+      head: [[{ content: titulo, colSpan: 2, styles: { fillColor: [30, 41, 59], textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 8 } }]],
+      body: linhas.map(([a, b]) => [
+        { content: a, styles: { fontStyle: 'bold', cellWidth: util * 0.34 } },
+        { content: b }
+      ])
+    });
+  };
+
+  // ==================================================================
+  // CAPA
+  // ==================================================================
   doc.setFillColor(15, 23, 42);
-  doc.rect(0, 0, pageWidth, 28, 'F');
-  doc.setTextColor(255, 255, 255);
-  doc.setFontSize(13);
+  doc.rect(0, 0, pageWidth, 46, 'F');
+  doc.setTextColor(148, 163, 184);
+  doc.setFontSize(7);
+  doc.setFont('helvetica', 'normal');
+  // A consultoria EMITE o documento; quem elabora e responde pelo PCMSO e o
+  // medico (7.4.1 "c"), que vem identificado abaixo.
+  doc.text(minuta ? 'MINUTA EMITIDA POR' : 'EMITIDO POR', margin, 13);
+  doc.setFontSize(14);
   doc.setFont('helvetica', 'bold');
-  doc.text(organization.name || 'PREVSAFE SST', margin, 12);
-  doc.setFontSize(8.5);
+  doc.setTextColor(255, 255, 255);
+  doc.text(organization.name || 'PREVSAFE SST', margin, 21);
+  doc.setFontSize(8);
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(148, 163, 184);
-  doc.text('PROGRAMA DE CONTROLE MÉDICO DE SAÚDE OCUPACIONAL (PCMSO - NR-07)', margin, 18);
-  doc.setTextColor(255, 255, 255);
-  doc.setFont('helvetica', 'bold');
-  doc.text(`VIGÊNCIA: ${new Date().getFullYear()} / ${new Date().getFullYear() + 1}`, pageWidth - margin, 12, { align: 'right' });
-  doc.setFillColor(20, 184, 166); // teal-500
-  doc.rect(0, 28, pageWidth, 2, 'F');
+  if (organization.document_number) doc.text(`CNPJ ${organization.document_number}`, margin, 27);
+  doc.text(`Emitido em ${formatDate(emissao)}`, pageWidth - margin, 27, { align: 'right' });
+  doc.setFillColor(8, 145, 178);
+  doc.rect(0, 46, pageWidth, 3, 'F');
 
-  doc.setFillColor(241, 245, 249);
-  doc.roundedRect(margin, 34, pageWidth - (margin * 2), 14, 2, 2, 'F');
   doc.setTextColor(15, 23, 42);
-  doc.setFontSize(11);
   doc.setFont('helvetica', 'bold');
-  doc.text('DOCUMENTO BASE: PLANEJAMENTO ANUAL DE SAÚDE OCUPACIONAL & ASO (NR-07)', pageWidth / 2, 41, { align: 'center' });
-  doc.setFontSize(7.5);
+  doc.setFontSize(17);
+  doc.text('PROGRAMA DE CONTROLE MÉDICO', pageWidth / 2, 76, { align: 'center' });
+  doc.text('DE SAÚDE OCUPACIONAL', pageWidth / 2, 86, { align: 'center' });
+  doc.setFontSize(40);
+  doc.setTextColor(8, 145, 178);
+  doc.text('PCMSO', pageWidth / 2, 106, { align: 'center' });
+
+  doc.setFontSize(8.5);
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(71, 85, 105);
-  doc.text('Elaborado conforme Portaria MTP nº 6.734/2020 e Diretrizes do eSocial (Evento S-2220)', pageWidth / 2, 45.5, { align: 'center' });
+  doc.text(doc.splitTextToSize(PCMSO_NORMA_DE_REGENCIA, util - 20), pageWidth / 2, 118, { align: 'center' });
+  doc.text('Elaborado considerando os riscos identificados e classificados pelo PGR (subitem 7.5.1)', pageWidth / 2, 132, { align: 'center', maxWidth: util });
 
-  autoTable(doc, {
-    startY: 52,
-    margin: { left: margin, right: margin },
-    theme: 'grid',
-    head: [[
-      { content: '1. DADOS DA EMPRESA E MÉDICO COORDENADOR DO PCMSO', colSpan: 4, styles: { fillColor: [15, 23, 42], textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 8 } }
-    ]],
-    body: [
-      [
-        { content: 'Empresa:', styles: { fontStyle: 'bold', cellWidth: 26 } },
-        { content: client.legal_name || client.trade_name },
-        { content: 'CNPJ:', styles: { fontStyle: 'bold', cellWidth: 26 } },
-        { content: clientDocumentLine(client) }
+  doc.setFontSize(8);
+  doc.setTextColor(100, 116, 139);
+  doc.text(client.legal_name || client.trade_name || '', pageWidth / 2, 168, { align: 'center', maxWidth: util });
+  doc.setFontSize(9);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(15, 23, 42);
+  doc.text(
+    (client.trade_name && client.trade_name !== client.legal_name) ? client.trade_name : '',
+    pageWidth / 2, 175, { align: 'center', maxWidth: util }
+  );
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(8);
+  doc.setTextColor(100, 116, 139);
+  doc.text(clientDocumentLine(client), pageWidth / 2, 182, { align: 'center' });
+  doc.setDrawColor(203, 213, 225);
+  doc.setLineWidth(0.4);
+  doc.line(pageWidth / 2 - 30, 192, pageWidth / 2 + 30, 192);
+  doc.text(codigoDoDocumento, pageWidth / 2, 202, { align: 'center' });
+  doc.text(
+    minuta
+      ? 'Médico responsável pelo PCMSO: PENDENTE (subitem 7.4.1, "c")'
+      : `Médico responsável pelo PCMSO: ${coordenador.linha || nomeDoCoordenador}`,
+    pageWidth / 2, 208, { align: 'center', maxWidth: util }
+  );
+  if (minuta) {
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(9);
+    doc.setTextColor(180, 83, 9);
+    doc.text(
+      doc.splitTextToSize('MINUTA — sem médico responsável indicado pelo empregador, este documento não vale como PCMSO.', util - 20),
+      pageWidth / 2, 220, { align: 'center' }
+    );
+  }
+
+  // ==================================================================
+  // CONTROLE DE REVISOES E TERMO
+  // ==================================================================
+  novaPagina();
+  secao('CONTROLE DE REVISÕES');
+  tabela({
+    head: [['Revisão', 'Data', 'Descrição', 'Responsável']],
+    body: [minuta
+      ? ['Minuta', formatDate(emissao), 'Minuta: aguarda a indicação do médico responsável (subitem 7.4.1, "c")', LINHA_PARA_PREENCHER]
+      : ['00', formatDate(emissao), 'Emissão inicial deste documento', nomeDoCoordenador]],
+    styles: { fontSize: 7, cellPadding: 1.8 }
+  });
+  paragrafo(PCMSO_SOBRE_A_REVISAO, 6.8);
+
+  secao('TERMO DE RESPONSABILIDADE');
+  if (minuta) paragrafo(
+    'Sem médico responsável indicado, não há termo de responsabilidade: este documento é minuta. '
+    + 'Ele só pode valer como PCMSO depois que o empregador indicar o médico (subitem 7.4.1, "c"), as '
+    + 'pendências da seção 11.1 forem resolvidas e o médico o revisar e assinar.'
+  );
+  else paragrafo(
+    'O médico responsável pelo PCMSO declara que este programa foi elaborado considerando os riscos '
+    + 'ocupacionais identificados e classificados no inventário do PGR da organização (subitem 7.5.1) e '
+    + 'que os demais médicos que realizarem os exames ocupacionais dos empregados devem conhecê-lo e '
+    + 'atendê-lo (alínea "d" do subitem 7.5.4). A organização declara ciência de que lhe compete '
+    + 'garantir a elaboração e efetiva implantação do PCMSO, custeá-lo sem ônus para o empregado e '
+    + 'indicar o médico responsável (subitem 7.4.1). As assinaturas estão na seção 12.'
+  );
+
+  // ==================================================================
+  // 1. IDENTIFICACAO
+  // ==================================================================
+  secao('1. IDENTIFICAÇÃO DA ORGANIZAÇÃO E DOS RESPONSÁVEIS');
+  duasColunas('1.1 ORGANIZAÇÃO E ESTABELECIMENTO', [
+    ['Razão social', client.legal_name || client.trade_name || NAO_INFORMADO],
+    ['CNPJ ou CAEPF', clientDocumentLine(client)],
+    ['Estabelecimento', estabelecimento?.name || client.trade_name || client.legal_name || NAO_INFORMADO],
+    ['Endereço', [estabelecimento?.address || client.address, (estabelecimento?.city || client.city) && `${estabelecimento?.city || client.city}/${estabelecimento?.state || client.state || ''}`]
+      .filter(Boolean).join(' — ') || NAO_INFORMADO],
+    ['CNAE principal', cnaeLine(client)],
+    ['Grau de risco (NR-04, Anexo I)', riskDegreeLine(client)],
+    ['Porte', String(client?.porte || '').trim() || NAO_INFORMADO],
+    ['Empregados ativos', String(montado.empregadosAtivos)]
+  ]);
+
+  if (dispensa.texto) {
+    paragrafo(dispensa.texto, 6.8);
+    lista(PCMSO_MEI_ME_EPP, 6.4);
+    if (montado.grupos.some((g) => g.identificados.length > 0)) {
+      paragrafo(
+        'Atenção: pelo subitem 7.7.2 a organização informa ao médico que a função "não apresenta riscos ocupacionais". '
+        + 'O inventário registra risco de outra natureza (seção 4.2), e essa informação precisa ser conciliada com ele antes de ser prestada.',
+        6.6
+      );
+    }
+  }
+
+  duasColunas('1.2 RESPONSÁVEIS', [
+    ['Médico responsável pelo PCMSO (subitem 7.4.1, "c")', coordenador.origem === 'ATRIBUICAO'
+      ? `${coordenador.linha}${profissionalCoordenador && !String(profissionalCoordenador?.rqe || '').trim() ? '\nRQE: PENDENTE — veja a seção 11' : ''}`
+      : 'PENDENTE — veja a seção 11'],
+    ['Médico(s) que elaborou(aram) o PCMSO', elaboradores.length > 0 ? elaboradores.map(linhaDeAssinatura).join('\n') : 'Nenhum médico elaborador atribuído a este cliente além do responsável'],
+    ['Médicos examinadores (emitentes do ASO)', examinadores.length > 0 ? examinadores.map(linhaDeAssinatura).join('\n') : 'Não atribuídos neste cliente: a organização garante que todo médico que examinar os empregados conheça e atenda este PCMSO (subitem 7.5.4, "d")'],
+    ['Responsável pelo PGR', responsavelPgr.origem === 'ATRIBUICAO' ? responsavelPgr.linha : 'PENDENTE — veja a seção 11']
+  ]);
+
+  secao('1.3 Abrangência');
+  tabela({
+    head: [['GHE', 'Empregados ativos', 'Riscos identificados no PGR', 'Exame clínico periódico (subitem 7.5.8)']],
+    body: montado.grupos.length > 0
+      ? montado.grupos.map((g) => [g.nome, String(g.empregados), String(g.identificados.length),
+        `no máximo a cada ${g.periodicidade.meses} meses`
+          + (dispensa.possivel && g.periodicidade.meses === 12 ? ' (a cada 24, se confirmada a dispensa: subitem 7.7.1)' : '')])
+      : [[{ content: 'PENDENTE — nenhum GHE cadastrado. Veja a seção 11.', colSpan: 4, styles: { textColor: [180, 83, 9], fontStyle: 'bold' } }]],
+    styles: { fontSize: 6.8, cellPadding: 1.6, overflow: 'linebreak' }
+  });
+
+  // ==================================================================
+  // 2. OBJETIVO, DIRETRIZES, BASE LEGAL E VEDACOES
+  // ==================================================================
+  novaPagina();
+  secao('2. OBJETIVO, CAMPO DE APLICAÇÃO, DIRETRIZES E BASE LEGAL');
+  secao('2.1 Objetivo (subitem 7.1.1)');
+  paragrafo(PCMSO_OBJETIVO);
+  secao('2.2 Campo de aplicação e harmonização (subitens 7.2.1 e 7.3.1)');
+  paragrafo(`${PCMSO_CAMPO_DE_APLICACAO}\n${PCMSO_HARMONIZACAO}`);
+  secao('2.3 Diretrizes (subitens 7.3.2, 7.3.2.1 e 7.3.2.2)');
+  lista(PCMSO_DIRETRIZES, 6.8);
+  paragrafo(`O PCMSO deve incluir ações de:\n${PCMSO_ACOES_DE_VIGILANCIA.join('\n')}`, 6.8);
+  paragrafo(PCMSO_SEM_CARATER_DE_SELECAO, 7.2);
+  paragrafo('Neste programa: nenhum exame se presta a selecionar, admitir ou recusar candidato por condição de saúde que não seja a aptidão para a função.', 6.8);
+
+  secao('2.4 Base legal e normativa');
+  tabela({
+    head: [['Norma', 'Dispositivo', 'O que determina']],
+    body: PCMSO_BASE_LEGAL.map((l) => [...l]),
+    columnStyles: { 0: { cellWidth: util * 0.2, fontStyle: 'bold' }, 1: { cellWidth: util * 0.16 } },
+    styles: { fontSize: 6.4, cellPadding: 1.5, overflow: 'linebreak' }
+  });
+
+  secao('2.5 Vedações: o que este PCMSO não prevê nem autoriza');
+  tabela({
+    head: [['Vedação', 'Texto da norma', 'Fonte']],
+    body: PCMSO_VEDACOES.map((l) => [...l]),
+    columnStyles: { 0: { cellWidth: util * 0.24, fontStyle: 'bold' }, 2: { cellWidth: util * 0.2 } },
+    styles: { fontSize: 6.4, cellPadding: 1.5, overflow: 'linebreak' }
+  });
+  paragrafo(PCMSO_NOTA_HIV_POS_EXPOSICAO, 6.6);
+
+  // ==================================================================
+  // 3. RESPONSABILIDADES
+  // ==================================================================
+  secao('3. RESPONSABILIDADES');
+  tabela({
+    head: [['Quem', 'O que a norma atribui', 'Fonte']],
+    body: [...PCMSO_RESPONSABILIDADES.map(([q, t, i]) => [q, t, `NR-07, ${i}`]), ...PCMSO_RESPONSABILIDADES_CFM.map((l) => [...l])],
+    columnStyles: { 0: { cellWidth: util * 0.2, fontStyle: 'bold' }, 2: { cellWidth: util * 0.18 } },
+    styles: { fontSize: 6.4, cellPadding: 1.5, overflow: 'linebreak' }
+  });
+
+  // ==================================================================
+  // 4. INTEGRACAO COM O PGR
+  // ==================================================================
+  novaPagina();
+  secao('4. INTEGRAÇÃO COM O PGR E RISCOS OCUPACIONAIS');
+  secao('4.1 Base do programa');
+  const datasDoInventario = montado.grupos.flatMap((g) => g.riscos)
+    .map((r: any) => String(r?.updated_at || r?.created_at || '').slice(0, 10))
+    .filter(Boolean)
+    .sort();
+  const ultimaDoInventario = datasDoInventario[datasDoInventario.length - 1];
+  paragrafo(
+    `${itemDaNr07('7.5.1')}\n${itemDaNr07('7.5.5')}\n`
+    + `Inventário considerado nesta emissão: ${montado.grupos.reduce((t, g) => t + g.identificados.length, 0)} risco(s) identificado(s) em ${montado.grupos.length} GHE, `
+    + (ultimaDoInventario ? `com última alteração registrada em ${formatDate(ultimaDoInventario)}` : 'sem data de alteração registrada no inventário')
+    + `; PGR sob a responsabilidade de ${responsavelPgr.origem === 'ATRIBUICAO' ? responsavelPgr.nome : 'responsável PENDENTE (seção 11)'}. `
+    + 'Toda alteração do inventário do PGR exige rever este programa.',
+    6.8
+  );
+
+  secao('4.2 Riscos e possíveis agravos à saúde por GHE (alínea "a" do subitem 7.5.4)');
+  if (montado.grupos.length === 0) paragrafo(pendente('4.2', 'nenhum GHE cadastrado com inventário de riscos (subitem 7.5.1).'));
+  montado.grupos.forEach((g) => {
+    garantirEspaco(30);
+    tabela({
+      head: [
+        [{ content: `${g.nome} · ${g.empregados} empregado(s)`, colSpan: 4, styles: { fillColor: [30, 41, 59], textColor: [255, 255, 255], fontStyle: 'bold' } }],
+        ['Perigo / fator de risco (PGR)', 'Classificação no PGR', 'Possíveis agravos à saúde', 'Anexo da NR-07']
       ],
-      [
-        { content: 'Médico Coordenador:', styles: { fontStyle: 'bold' } },
-        { content: coordenador.linha || RT_NAO_INFORMADO },
-        { content: 'Grau de Risco:', styles: { fontStyle: 'bold' } },
-        { content: `${riskDegreeLine(client)} - CNAE ${cnaeLine(client)}` }
-      ]
-    ],
-    styles: { fontSize: 7.2, cellPadding: 2 }
+      body: g.riscos.length === 0
+        ? [[{ content: 'PENDENTE — GHE sem inventário de riscos no PGR (subitem 7.5.1).', colSpan: 4, styles: { textColor: [180, 83, 9], fontStyle: 'bold' } }]]
+        : g.riscos.map((r: any) => {
+          // O registro de que NAO ha risco nao se classifica nem tem agravo.
+          if (ehAusenciaDeRisco(r)) {
+            return [r?.agent_name || 'Ausência de risco ocupacional', 'Ausência de risco registrada no PGR', '—', '—'];
+          }
+          const c = classificarRisco(r?.severity, r?.probability);
+          const anexos = [
+            ...(agentesDoAnexoI([r]).length > 0 ? ['Anexo I (confirmar pelo CAS)'] : []),
+            ...g.anexos.filter((a) => a.riscos.includes(r?.agent_name)).map((a) => `Anexo ${a.anexo}`)
+          ].join(', ');
+          return [
+            `${r?.agent_name || 'Risco sem nome'}\n${String(r?.risk_category || '').trim() || 'categoria não informada'}`,
+            c ? `${c.rotulo} (S${c.severidade} × P${c.probabilidade})` : 'PENDENTE — sem classificação',
+            String(r?.health_effects || '').trim() || 'PENDENTE',
+            anexos || '—'
+          ];
+        }),
+      columnStyles: { 0: { cellWidth: util * 0.3 }, 1: { cellWidth: util * 0.18 }, 3: { cellWidth: util * 0.12 } },
+      styles: { fontSize: 6.4, cellPadding: 1.4, overflow: 'linebreak' }
+    });
   });
 
-  const curY = (doc as any).lastAutoTable.finalY + 6;
-
-  // Quadro de exames: cada campo ausente e declarado ausente. Os defaults
-  // antigos (codigo 0295, periodicidade 12 meses, gatilhos e fundamentacao)
-  // faziam o PDF afirmar um protocolo medico que ninguem prescreveu.
-  const examRows = examProtocols.map((p: any) => {
-    const ghe = ghes.find((g: any) => g.id === p.ghe_id);
-    return [
-      p.exam_name?.trim() || 'Exame não identificado',
-      p.exam_code_table_27?.trim() || 'Cód. não informado',
-      ghe?.name?.trim() || 'GHE não vinculado',
-      `${p.periodicity_months ? `${p.periodicity_months} meses` : 'Periodicidade não definida'} (${p.triggers?.length ? p.triggers.join(', ') : 'gatilhos não definidos'})`,
-      p.mandatory_by_standard?.trim() || 'Fundamentação não informada'
-    ];
+  // ==================================================================
+  // 5. PLANEJAMENTO DOS EXAMES
+  // ==================================================================
+  novaPagina();
+  secao('5. PLANEJAMENTO DOS EXAMES (alínea "b" do subitem 7.5.4)');
+  secao('5.1 Exames obrigatórios e prazos (subitens 7.5.6 a 7.5.11)');
+  paragrafo(`${itemDaNr07('7.5.6')}\n${itemDaNr07('7.5.7')}`, 6.8);
+  tabela({
+    head: [['Exame', 'Prazo e periodicidade (texto da NR-07)', 'Item']],
+    body: PCMSO_EXAMES_E_PRAZOS.map((l) => [...l]),
+    columnStyles: { 0: { cellWidth: util * 0.17, fontStyle: 'bold' }, 2: { cellWidth: util * 0.12 } },
+    styles: { fontSize: 6.6, cellPadding: 1.6, overflow: 'linebreak' }
   });
+  const prazoDemissional = prazoDeDispensaDoDemissional(grauDeRisco);
+  paragrafo(
+    prazoDemissional
+      ? `Nesta organização (grau de risco ${Number(grauDeRisco)}), o exame clínico demissional pode ser dispensado se o exame clínico ocupacional mais recente tiver sido realizado há menos de ${prazoDemissional} dias (subitem 7.5.11).`
+      : pendente('5.1', 'grau de risco da organização, sem o qual não se sabe o prazo de dispensa do exame demissional (subitem 7.5.11).'),
+    6.8
+  );
+  {
+    // A dispensa do 7.5.11 e do exame CLINICO. Os complementares dos Anexos
+    // tem regra propria na demissao.
+    const anexosNaEmpresa = new Set(montado.grupos.flatMap((g) => g.anexos.map((a) => a.anexo)));
+    const naDemissao: string[] = [];
+    if (anexosNaEmpresa.has('II')) naDemissao.push(`${fonte('nr07-anexoII-4.1').texto}\n${fonte('nr07-anexoII-4.1.1').texto} (NR-07, Anexo II)`);
+    if (anexosNaEmpresa.has('III')) naDemissao.push('Radiografia de tórax na demissão, conforme o último exame, nos prazos do Quadro 1 do Anexo III (transcrito na seção 5.4).');
+    if (montado.grupos.some((g) => g.riscos.some(ehAsbesto))) naDemissao.push(`${fonte('nr15-anexo12-18').texto.split(' 18.1.')[0]} (NR-15, Anexo 12, item 18)`);
+    if (naDemissao.length > 0) {
+      paragrafo('A dispensa do subitem 7.5.11 alcança o exame clínico. Os exames complementares dos Anexos seguem a regra própria na demissão:', 6.8);
+      lista(naDemissao, 6.4);
+    }
+  }
 
-  autoTable(doc, {
-    startY: curY,
-    margin: { left: margin, right: margin },
-    theme: 'grid',
-    head: [[
-      { content: '2. QUADRO DE EXAMES MÉDICOS E PROCEDIMENTOS CLÍNICOS (TABELA 27 eSocial)', colSpan: 5, styles: { fillColor: [15, 23, 42], textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 8 } }
-    ], [
-      'Exame / Procedimento', 'Cód. Tab. 27', 'GHE / Cargo Aplicado', 'Periodicidade / Gatilhos', 'Fundamentação Legal'
-    ]],
-    // Sem protocolo cadastrado saiam tres exames de exemplo - audiometria e
-    // espirometria para GHEs que talvez nem existam no cliente.
-    body: examRows.length > 0 ? examRows : [
-      [{
-        content:
-          'NENHUM PROTOCOLO DE EXAME CADASTRADO. O quadro de exames do PCMSO não pode ser emitido sem os ' +
-          'exames definidos pelo médico coordenador para cada GHE, conforme o item 7.5 da NR-07. Cadastre ' +
-          'os protocolos antes de entregar este documento.',
-        colSpan: 5,
-        styles: { textColor: [180, 83, 9], fontStyle: 'bold' }
-      }]
-    ],
-    styles: { fontSize: 7, cellPadding: 2.2 },
-    headStyles: { fillColor: [13, 148, 136], textColor: [255, 255, 255], fontStyle: 'bold' }
+  secao('5.2 Periodicidade do exame clínico por GHE (subitem 7.5.8, II)');
+  tabela({
+    head: [['GHE', 'Regra aplicável', 'Na matriz de exames']],
+    body: montado.grupos.map((g) => {
+      const clinicos = g.protocolos.filter(ehAvaliacaoClinica);
+      return [
+        g.nome,
+        g.periodicidade.motivo,
+        clinicos.length === 0
+          ? 'PENDENTE — sem protocolo de exame clínico'
+          : clinicos.map((p: any) => `${p.periodicity_months ? `${p.periodicity_months} meses` : 'periodicidade não definida'}`).join('; ')
+      ];
+    }),
+    columnStyles: { 0: { cellWidth: util * 0.2, fontStyle: 'bold' }, 2: { cellWidth: util * 0.22 } },
+    styles: { fontSize: 6.6, cellPadding: 1.6, overflow: 'linebreak' }
   });
+  paragrafo('Portadores de doenças crônicas que aumentem a susceptibilidade aos riscos ocupacionais seguem a periodicidade dos expostos: a cada ano ou a intervalos menores, a critério do médico responsável (subitem 7.5.8, II, "a").', 6.6);
 
-  // A pendencia sai IMPRESSA. Um PCMSO sem coordenador atribuido a este
-  // cliente e um documento que nao sabe quem o coordena.
-  if (coordenador.pendencia) {
-    const yPend = (doc as any).lastAutoTable.finalY + 6;
-    autoTable(doc, {
-      startY: yPend,
-      margin: { left: margin, right: margin },
-      theme: 'grid',
-      body: [[{
-        content: `PENDÊNCIA — ${coordenador.pendencia}`,
-        styles: { textColor: [180, 83, 9], fontStyle: 'bold' }
-      }]],
-      styles: { fontSize: 7.2, cellPadding: 2.2 }
+  secao('5.3 Matriz de exames por GHE');
+  if (montado.modelosNaoAdotados > 0) {
+    paragrafo(`${montado.modelosNaoAdotados} protocolo(s)-modelo do sistema não integram este programa: só entram os exames cadastrados para este cliente.`, 6.6);
+  }
+  montado.grupos.forEach((g) => {
+    garantirEspaco(30);
+    tabela({
+      head: [
+        [{ content: g.nome, colSpan: 5, styles: { fillColor: [30, 41, 59], textColor: [255, 255, 255], fontStyle: 'bold' } }],
+        ['Exame (Tabela 27 do eSocial)', 'Ocasiões', 'Periodicidade', 'Fundamento e justificativa', 'Preparo']
+      ],
+      body: g.protocolos.length === 0
+        ? [[{ content: 'PENDENTE — nenhum exame planejado para este GHE.', colSpan: 5, styles: { textColor: [180, 83, 9], fontStyle: 'bold' } }]]
+        : g.protocolos.map((p: any) => [
+          `${codigoDo(p)} — ${String(p?.exam_name || '').trim() || nomeDoExame(codigoDo(p))}`
+            + (procedimentoVedado(codigoDo(p)) ? `\nVEDADO — ${procedimentoVedado(codigoDo(p))?.fonte}. Não integra o programa: veja a seção 11.` : ''),
+          (Array.isArray(p?.triggers) && p.triggers.length > 0)
+            ? p.triggers.map((t: string) => OCASIOES.find((o) => o.valor === t)?.sigla || t).join(', ')
+            : 'PENDENTE',
+          Array.isArray(p?.triggers) && p.triggers.includes('PERIODICO')
+            ? (Number(p?.periodicity_months) > 0 ? `${p.periodicity_months} meses` : 'PENDENTE')
+            : '—',
+          [
+            p?.mandatory_by_standard === 'CRITERIO_MEDICO' ? 'A critério do médico (subitem 7.5.18)' : (String(p?.mandatory_by_standard || '').trim() || 'PENDENTE'),
+            String(p?.technical_justification || '').trim() || (p?.mandatory_by_standard === 'CRITERIO_MEDICO' ? 'PENDENTE — justificativa técnica' : '')
+          ].filter(Boolean).join('\n'),
+          String(p?.preparation_instructions || '').trim() || '—'
+        ]),
+      columnStyles: { 0: { cellWidth: util * 0.26 }, 1: { cellWidth: util * 0.12 }, 2: { cellWidth: util * 0.12 } },
+      styles: { fontSize: 6.2, cellPadding: 1.4, overflow: 'linebreak' }
+    });
+  });
+  paragrafo('Legenda das ocasiões: ADM admissional · PER periódico · RT retorno ao trabalho · MR mudança de risco · DEM demissional (subitem 7.5.6).', 6.4);
+
+  secao('5.4 Exames exigidos pelos Anexos da NR-07, conforme o inventário');
+  const comAnexo = montado.grupos.filter((g) => g.anexos.length > 0);
+  if (comAnexo.length === 0) {
+    paragrafo('Nenhum risco do inventário aciona os Anexos II a V da NR-07 pelos critérios que o sistema confere (ruído acima do nível de ação, poeiras minerais, condições hiperbáricas, substâncias cancerígenas e radiações ionizantes). A exposição a agentes químicos com indicador biológico (Anexo I) é avaliada pelo médico responsável.', 6.8);
+  } else {
+    tabela({
+      head: [['GHE', 'Anexo', 'Riscos que o acionam', 'O que o Anexo exige']],
+      body: comAnexo.flatMap((g) => g.anexos.map((a) => [g.nome, `Anexo ${a.anexo} — ${a.titulo}`, a.riscos.join('; '), a.exigencia])),
+      columnStyles: { 0: { cellWidth: util * 0.14 }, 1: { cellWidth: util * 0.2 }, 2: { cellWidth: util * 0.2 } },
+      styles: { fontSize: 6.2, cellPadding: 1.4, overflow: 'linebreak' }
+    });
+  }
+  paragrafo(PCMSO_ANEXO_I_TEXTO, 6.6);
+  const doAnexoI = montado.grupos.flatMap((g) => agentesDoAnexoI(g.riscos).map((a) => [g.nome, a.agente, `${a.substancia} (CAS ${a.cas || 'não informado no Quadro'})`, `Quadro ${a.quadro}`]));
+  if (doAnexoI.length > 0) {
+    paragrafo('Agentes do inventário cujo nome coincide com substância dos Quadros 1 ou 2 do Anexo I. O inventário não traz o número CAS: o médico responsável confirma a substância e prevê o indicador biológico na periodicidade do subitem 7.5.13.', 6.6);
+    tabela({
+      head: [['GHE', 'Agente no inventário', 'Substância do Anexo I', 'Quadro']],
+      body: doAnexoI,
+      columnStyles: { 3: { cellWidth: 16 } },
+      styles: { fontSize: 6.2, cellPadding: 1.4, overflow: 'linebreak' }
+    });
+  }
+  if (comAnexo.some((g) => g.anexos.some((a) => a.anexo === 'III'))) {
+    paragrafo(`${fonte('nr07-anexoIII-1').texto}\n${fonte('nr07-anexoIII-3.1').texto}`, 6.4);
+    garantirEspaco(30);
+    // A Helvetica do PDF nao desenha o sinal "menor ou igual" (U+2264): o
+    // jsPDF troca a celula inteira para 16 bits e ela sai ilegivel.
+    const linhasDoQuadro = fonte('nr07-anexoIII-q1').texto.replace(/\u2264/g, 'até').split('\n').map((l) => l.split(' | '));
+    tabela({
+      head: [[{ content: fonte('nr07-anexoIII-q1-titulo').texto, colSpan: 2, styles: { fillColor: [30, 41, 59], textColor: [255, 255, 255], fontStyle: 'bold' } }],
+        linhasDoQuadro[0]],
+      body: linhasDoQuadro.slice(1),
+      columnStyles: { 0: { cellWidth: util * 0.3 } },
+      styles: { fontSize: 6.2, cellPadding: 1.4, overflow: 'linebreak' }
+    });
+    paragrafo(`${fonte('nr07-anexoIII-q1-notas').texto}\nNo Quadro, "até" corresponde ao sinal "menor ou igual" do texto oficial.`, 6);
+    lista([`${fonte('nr07-anexoIII-2.15').texto} (NR-07, Anexo III)`, `${fonte('nr07-anexoIII-2.15.1').texto} (NR-07, Anexo III)`], 6.2);
+  }
+  const temAsbesto = montado.grupos.some((g) => g.riscos.some(ehAsbesto));
+  if (temAsbesto) {
+    lista([
+      `${fonte('nr15-anexo12-18').texto} (NR-15, Anexo 12)`,
+      `${fonte('nr07-anexoIII-3.5').texto} (NR-07, Anexo III)`,
+      `${fonte('nr07-anexoIII-2.17').texto} (NR-07, Anexo III)`,
+      `${fonte('nr07-anexoIII-2.17.1').texto} (NR-07, Anexo III)`,
+      `${fonte('nr07-anexoIII-2.17.2').texto} (NR-07, Anexo III)`
+    ], 6.4);
+  }
+  const doAnexoV = montado.grupos.filter((g) => g.anexos.some((a) => a.anexo === 'V'));
+  if (doAnexoV.length > 0) {
+    secao('5.4.1 Atividades e funções com exposição a cancerígenos e radiações ionizantes (Anexo V, item 3.1)');
+    paragrafo(`${fonte('nr07-anexoV-3.1').texto}\n${fonte('nr07-anexoV-3.1.1').texto}`, 6.6);
+    tabela({
+      head: [['GHE', 'Funções (empregados ativos)', 'Exposição identificada e classificada no PGR']],
+      body: doAnexoV.map((g) => {
+        const funcoes = funcoesDoGhe(colaboradoresDoCliente, g.ghe.id, jobs);
+        return [
+          g.nome,
+          funcoes.length > 0 ? funcoes.join('; ') : 'PENDENTE — nenhuma função cadastrada (veja a seção 11)',
+          g.anexos.filter((a) => a.anexo === 'V').flatMap((a) => a.riscos).join('; ')
+        ];
+      }),
+      columnStyles: { 0: { cellWidth: util * 0.2, fontStyle: 'bold' } },
+      styles: { fontSize: 6.2, cellPadding: 1.4, overflow: 'linebreak' }
+    });
+    const riscosV = doAnexoV.flatMap((g) => g.riscos);
+    lista([
+      ...(riscosV.some(ehCancerigeno) ? [`${fonte('nr07-anexoV-4.1.1').texto} (NR-07, Anexo V)`] : []),
+      ...(riscosV.some(ehRadiacaoIonizante)
+        ? [`${fonte('nr07-anexoV-5.1.1').texto} (NR-07, Anexo V)`, `${fonte('nr07-anexoV-5.2').texto} (NR-07, Anexo V)`, `${fonte('nr07-anexoV-5.3').texto} (NR-07, Anexo V)`]
+        : [])
+    ], 6.4);
+  }
+
+  secao('5.5 Atividades críticas e aptidões específicas (subitens 7.5.3 e 7.5.19.2)');
+  paragrafo(`${itemDaNr07('7.5.3')}\n${PCMSO_ASO_APTIDOES_ESPECIFICAS}`, 6.8);
+  if (atividades.length === 0) {
+    paragrafo('Nem a matriz de treinamentos nem o inventário de riscos deste cliente indicam atividade crítica com exigência de aptidão específica. Se houver, cadastre o treinamento ou o risco correspondente para que este programa a alcance.', 6.8);
+  } else {
+    tabela({
+      head: [['Atividade', 'Alcance', 'Exigência da NR (texto literal)', 'Fonte']],
+      body: atividades.map((a) => [a.rotulo, a.alcance || 'todo o cliente', a.texto, a.fonte]),
+      columnStyles: { 0: { cellWidth: util * 0.16, fontStyle: 'bold' }, 1: { cellWidth: util * 0.16 }, 3: { cellWidth: util * 0.14 } },
+      styles: { fontSize: 6.2, cellPadding: 1.4, overflow: 'linebreak' }
     });
   }
 
-  applyPageNumbers(doc);
-  doc.save(`pcmso-nr07-${(client.trade_name || client.legal_name || 'empresa').replace(/\s+/g, '_').toLowerCase()}.pdf`);
+  secao('5.6 Regras dos exames complementares (subitens 7.5.7 e 7.5.12 a 7.5.18)');
+  lista(PCMSO_REGRAS_DOS_COMPLEMENTARES, 6.4);
+
+  secao('5.7 Imunização (alínea "l" do subitem 7.3.2)');
+  lista(PCMSO_IMUNIZACAO, 6.6);
+
+  const setoriais = montado.setoriais;
+  if (setoriais.length > 0) {
+    secao('5.8 Exigências de NR setorial');
+    setoriais.forEach((e) => {
+      paragrafo(`${e.nr} — ${e.titulo}. ${e.motivo}`, 6.8);
+      lista(e.itens, 6.2);
+      if (e.aRedigir.length > 0) {
+        paragrafo(`Conteúdo que a ${e.nr} manda constar do PCMSO e que este documento não redige — cada item está na seção 11.1 até o médico responsável redigi-lo e anexá-lo:\n${e.aRedigir.map((x) => `• ${x}`).join('\n')}`, 6.4);
+      }
+      if (e.avisos.length > 0) lista(e.avisos, 6.2);
+    });
+    if (setoriais.some((e) => e.nr === 'NR-32')) {
+      // Alinea "c" do subitem 32.2.3.1: identificacao NOMINAL dos expostos.
+      // Exposicao, e nao dado de saude: nome, funcao, local e risco.
+      const biologicos = new Map<string, string[]>();
+      montado.grupos.forEach((g) => {
+        const agentes = g.riscos.filter((r: any) => /^BIOL/i.test(String(r?.risk_category || ''))).map((r: any) => r?.agent_name || 'agente biológico');
+        if (agentes.length > 0) biologicos.set(g.ghe.id, agentes);
+      });
+      // "Local em que desempenham suas atividades": o setor do cadastro.
+      const setorDe = (c: any) =>
+        (sectors || []).find((x: any) => x?.id === c?.sector_id)?.name || String(c?.sector_name || '').trim();
+      const expostosAtivos = colaboradoresDoCliente
+        .filter((c: any) => c?.status !== 'DISMISSED' && biologicos.has(c?.ghe_id));
+      const semSetor = expostosAtivos.filter((c: any) => !setorDe(c)).length;
+      if (semSetor > 0) {
+        pendencias.push({ onde: 'Seção 5.8.1', texto: `falta o setor (local) de ${semSetor} trabalhador(es) exposto(s) a risco biológico (NR-32, subitem 32.2.3.1, "c").` });
+      }
+      const expostos = expostosAtivos
+        .map((c: any) => [
+          c?.name || 'Nome não informado',
+          (jobs || []).find((j: any) => j?.id === c?.job_id)?.name || c?.job_title || NAO_INFORMADO,
+          setorDe(c) || 'PENDENTE — setor não cadastrado',
+          (biologicos.get(c.ghe_id) || []).join('; ')
+        ]);
+      secao('5.8.1 Relação nominal dos expostos a risco biológico (NR-32, subitem 32.2.3.1, "c")');
+      paragrafo('Exigida pela NR-32. Traz só a exposição — nome, função, local e risco —, sem nenhum dado de saúde.', 6.6);
+      tabela({
+        head: [['Trabalhador', 'Função', 'Local (setor)', 'Risco biológico']],
+        body: expostos.length > 0
+          ? expostos
+          : [[{ content: pendente('5.8.1', 'nenhum empregado ativo em GHE com risco biológico no inventário: confirme o inventário de um serviço de saúde.'), colSpan: 4, styles: { textColor: [180, 83, 9] } }]],
+        styles: { fontSize: 6.2, cellPadding: 1.4, overflow: 'linebreak' }
+      });
+    }
+  }
+
+  // ==================================================================
+  // 6. CRITERIOS E CONDUTAS
+  // ==================================================================
+  novaPagina();
+  secao('6. CRITÉRIOS DE INTERPRETAÇÃO E CONDUTAS (alínea "c" do subitem 7.5.4)');
+  secao('6.1 Critérios de interpretação por exame');
+  // O exame clinico entra quando o GHE tem risco identificado: o criterio diz o
+  // que a anamnese e o exame fisico investigam diante dos agravos da 4.2.
+  const criterios = montado.grupos.flatMap((g) => g.protocolos
+    .map((p: any) => [g.nome, `${codigoDo(p)} — ${String(p?.exam_name || '').trim() || nomeDoExame(codigoDo(p))}`, criterioDoExame(p)]));
+  tabela({
+    head: [['GHE', 'Exame', 'Critério de interpretação e conduta']],
+    body: criterios.length > 0
+      ? criterios
+      : [[{ content: 'Nenhum exame com critério a declarar.', colSpan: 3 }]],
+    columnStyles: { 0: { cellWidth: util * 0.16 }, 1: { cellWidth: util * 0.3 } },
+    styles: { fontSize: 6.4, cellPadding: 1.5, overflow: 'linebreak' }
+  });
+  secao('6.2 Condutas diante de achados');
+  lista(PCMSO_CONDUTAS, 6.6);
+  lista(PCMSO_CONDUTAS_LEGAIS, 6.6);
+
+  // ==================================================================
+  // 7. ASO
+  // ==================================================================
+  secao('7. ATESTADO DE SAÚDE OCUPACIONAL — ASO (subitem 7.5.19)');
+  paragrafo(PCMSO_ASO_EMISSAO, 6.8);
+  paragrafo(`O ASO deve conter no mínimo (subitem 7.5.19.1):\n${PCMSO_ASO_CONTEUDO.join('\n')}`, 6.8);
+  paragrafo(`${PCMSO_ASO_APTIDOES_ESPECIFICAS}\n${PCMSO_ASO_RECIBO}`, 6.8);
+  lista(PCMSO_ASO_CFM, 6.6);
+
+  // ==================================================================
+  // 8. PRONTUARIO, SIGILO E DADOS
+  // ==================================================================
+  novaPagina();
+  secao('8. PRONTUÁRIO, SIGILO E PROTEÇÃO DE DADOS DE SAÚDE');
+  lista(PCMSO_PRONTUARIO, 6.6);
+  const riscosDoCliente = montado.grupos.flatMap((g) => g.riscos);
+  if (riscosDoCliente.some(ehCancerigeno)) {
+    paragrafo(`Há exposição a substância química cancerígena indicada no inventário (seção 5.4). ${fonte('nr07-anexoV-4.1').texto} (NR-07, Anexo V)`, 6.8);
+  }
+  if (riscosDoCliente.some(ehRadiacaoIonizante)) {
+    paragrafo(`Há exposição a radiação ionizante indicada no inventário (seção 5.4). ${fonte('nr07-anexoV-5.4').texto} (NR-07, Anexo V)`, 6.8);
+  }
+  lista(PCMSO_PRONTUARIO_CFM, 6.4);
+  lista(PCMSO_GUARDA_DO_PRONTUARIO, 6.4);
+  lista(PCMSO_SIGILO, 6.4);
+
+  // ==================================================================
+  // 9. RELATORIO ANALITICO
+  // ==================================================================
+  novaPagina();
+  secao('9. RELATÓRIO ANALÍTICO (subitens 7.5.4, "e", e 7.6.2 a 7.6.6)');
+  paragrafo(`${PCMSO_RELATORIO_CAPUT}\n${PCMSO_RELATORIO_CONTEUDO.join('\n')}`, 6.6);
+  lista(PCMSO_RELATORIO_REGRAS, 6.4);
+
+  // Doze meses antes da emissao. somarMesesISO nao subtrai: a conta e feita
+  // aqui, e Date ajusta 29/02 para 01/03.
+  const periodo = (() => {
+    const [a, m, d] = emissao.split('-').map(Number);
+    return { inicio: new Date(Date.UTC(a - 1, m - 1, d)).toISOString().slice(0, 10), fim: emissao };
+  })();
+  const relatorio = relatorioAnalitico({
+    colaboradores: colaboradoresDoCliente, cats: catRecords, periodo, ondeDe, nomeDoExame
+  });
+  // NR-36 (36.12.6 e 36.12.7) acrescenta conteudo ao relatorio: a forma
+  // simplificada do 7.6.6 nao serve.
+  const exigeRelatorioCompleto = setoriais.some((e) => e.relatorioCompleto);
+  const simplificado = relatorioPodeSerSimplificado(grauDeRisco, montado.empregadosAtivos) && !exigeRelatorioCompleto;
+  if (dispensa.possivel) {
+    paragrafo(`${itemDaNr07('7.7.4')}\nConfirmada a dispensa do PCMSO (seção 1.1), o relatório analítico não é exigido; não confirmada, vale o que segue.`, 6.6);
+  }
+  paragrafo(
+    `Período apurado pelo sistema: de ${formatDate(periodo.inicio)} a ${formatDate(periodo.fim)}, os 12 meses anteriores a esta emissão. O sistema não registra a data do relatório anterior: o médico responsável confere o período com ela. `
+    + 'Os números são agregados: nenhum nome, CPF ou diagnóstico individual consta desta seção. '
+    + (simplificado
+      ? 'Esta organização se enquadra no subitem 7.6.6: o relatório pode trazer só as alíneas "a" e "b", e é assim que o sistema o apresenta. O médico responsável pode optar pelo relatório completo.'
+      : `Critério de sigilo deste programa (Código de Ética Médica, art. 76): nas alíneas "c" e "d", setor ou função com menos de ${MINIMO_PARA_CATEGORIZAR} trabalhadores — na alínea "c", examinados no período — é somado aos demais pequenos; se a soma ficar abaixo de ${MINIMO_PARA_CATEGORIZAR}, a linha é omitida, assim como a linha com no máximo um resultado normal, em que quem foi examinado saberia o resultado dos demais. Resultado anormal é o alterado, o estável e o agravamento.`)
+    + (exigeRelatorioCompleto ? ' A NR-36 acrescenta conteúdo ao relatório analítico (subitens 36.12.6 e 36.12.7, seção 5.8): a forma simplificada do subitem 7.6.6 não se aplica.' : ''),
+    6.6
+  );
+  const linhasDoRelatorio: Array<[string, string]> = [
+    ['a) Exames clínicos realizados', String(relatorio.examesClinicos)],
+    ['b) Exames complementares, por tipo', relatorio.complementares.length > 0 ? relatorio.complementares.map((c) => `${c.codigo} ${c.nome}: ${c.quantidade}`).join('\n') : 'Nenhum registrado no período'],
+    ['c) Resultados anormais, por exame e setor/função', [
+      // Nota fixa: contar as linhas omitidas revelaria que ha anormal num grupo pequeno.
+      ...relatorio.anormais.map((a) => `${a.exame} — ${a.onde}: ${a.anormais} resultado(s) anormal(is) em ${a.total} exame(s)`),
+      'Linhas que o critério de sigilo acima omite não são contadas nem indicadas.'
+    ].join('\n')],
+    ['d) Doenças relacionadas ao trabalho (casos novos com CAT no período), por setor/função', relatorio.doencasNovas.length > 0 ? relatorio.doencasNovas.map((d) => `${d.chave}: ${d.quantidade}`).join('\n') : 'Nenhuma CAT de doença no período'],
+    ['e) CAT emitidas no período, por tipo', relatorio.catsPorTipo.length > 0 ? relatorio.catsPorTipo.map((c) => `${c.chave}: ${c.quantidade}`).join('\n') : 'Nenhuma CAT registrada no período'],
+    ['f) Análise comparativa e discussão', 'A cargo do médico responsável pelo PCMSO, ao apresentar e discutir o relatório com os responsáveis por SST e com a CIPA (subitem 7.6.5). O sistema não a redige.']
+  ];
+  duasColunas('9.1 DADOS APURADOS', simplificado ? linhasDoRelatorio.slice(0, 2) : linhasDoRelatorio);
+  if (relatorio.semCodigoValido > 0) {
+    paragrafo(pendente('9', `${relatorio.semCodigoValido} exame(s) complementar(es) registrado(s) em ASO sem código válido da Tabela 27, fora da contagem por tipo (alínea "b" do subitem 7.6.2).`), 6.6);
+  }
+  if (!simplificado) {
+    paragrafo('Prevalência das doenças relacionadas ao trabalho (alínea "d"): exige os prontuários, que estão sob a guarda do médico responsável (subitem 7.6.1). Ele a informa ao discutir o relatório; o sistema apura só os casos novos com CAT.', 6.4);
+  }
+  // O relatorio e do medico responsavel (7.6.2) e e apresentado e discutido
+  // com os responsaveis por SST e com a CIPA, quando existente (7.6.5): tem
+  // assinatura e data proprias, nao as da emissao do programa.
+  garantirEspaco(ASSINATURA_ALTURA_MM * 2 + 12);
+  tabela({
+    head: [['Relatório analítico', 'Nome, registro e data', 'Assinatura (manual ou digital com certificado ICP-Brasil)']],
+    body: [
+      ['Elaborado pelo médico responsável pelo PCMSO (subitem 7.6.2)',
+        `${minuta ? LINHA_PARA_PREENCHER : (coordenador.linha || nomeDoCoordenador)}\nData: ${LINHA_PARA_PREENCHER}`, ''],
+      ['Apresentado e discutido com os responsáveis por SST e com a CIPA, quando existente (subitem 7.6.5)',
+        `${LINHA_PARA_PREENCHER}\nData: ${LINHA_PARA_PREENCHER}`, '']
+    ],
+    styles: { fontSize: 6.6, cellPadding: 2.2, overflow: 'linebreak' },
+    columnStyles: {
+      0: { cellWidth: 52 },
+      1: { cellWidth: util - 52 - ASSINATURA_LARGURA_MM },
+      2: { cellWidth: ASSINATURA_LARGURA_MM, minCellHeight: ASSINATURA_ALTURA_MM }
+    }
+  });
+
+  // ==================================================================
+  // 10. ESOCIAL
+  // ==================================================================
+  secao('10. ESOCIAL — EVENTO S-2220');
+  lista(PCMSO_ESOCIAL, 6.6);
+
+  // ==================================================================
+  // 11. CHECKLIST E PENDENCIAS
+  // ==================================================================
+  novaPagina();
+  secao('11. CHECKLIST DE CONFORMIDADE E PENDÊNCIAS');
+  const secoesComPendencia = new Set(montado.faltas.map((f) => f.secao));
+  // Pendencia que so o PDF apura (setor da relacao nominal) tambem conta.
+  pendencias.forEach((p) => secoesComPendencia.add(p.onde.replace(/^Seção\s+/, '')));
+  tabela({
+    head: [['Requisito', 'Norma', 'Onde', 'Situação']],
+    // Sem NR setorial, a linha dela nao tem onde apontar.
+    body: PCMSO_CHECKLIST.filter((item) => item.onde !== '5.8' || setoriais.length > 0).map((item) => {
+      const pend = item.secoes.some((s) => secoesComPendencia.has(s));
+      const situacao = pend ? 'pendente' : (item.secoes.length === 0 ? 'atestar' : 'conferido');
+      return [item.requisito, item.norma, item.onde, {
+        content: PCMSO_CHECKLIST_SITUACOES[situacao],
+        styles: {
+          textColor: situacao === 'pendente' ? [180, 83, 9] : situacao === 'conferido' ? [21, 128, 61] : [51, 65, 85],
+          fontStyle: 'bold'
+        }
+      }];
+    }),
+    columnStyles: { 1: { cellWidth: util * 0.17 }, 2: { cellWidth: util * 0.1 }, 3: { cellWidth: util * 0.15 } },
+    styles: { fontSize: 6.4, cellPadding: 1.5, overflow: 'linebreak' }
+  });
+  paragrafo(PCMSO_CHECKLIST_LEGENDA, 6.4);
+  lista(PCMSO_ADVERTENCIAS, 6.4);
+
+  secao(`11.1 Pendências deste PCMSO (${pendencias.length})`);
+  if (pendencias.length === 0) {
+    paragrafo('Nenhuma pendência no cadastro. A conformidade se confirma pela implantação: exames feitos nos prazos, ASO entregues, prontuários guardados e relatório analítico discutido.');
+  } else {
+    paragrafo('Enquanto houver pendência, este documento não atende integralmente à NR-07. Cada linha aponta o que falta e onde.', 6.8);
+    tabela({
+      head: [['Onde', 'O que falta']],
+      body: pendencias.map((p) => [p.onde, p.texto]),
+      columnStyles: { 0: { cellWidth: util * 0.2, fontStyle: 'bold' } },
+      styles: { fontSize: 6.4, cellPadding: 1.5, overflow: 'linebreak' }
+    });
+  }
+
+  // O que nenhum cadastro comprova. O medico atesta ao assinar; a fiscalizacao
+  // confere na implantacao.
+  secao('11.2 Itens a atestar pelo médico responsável');
+  lista([
+    'O conteúdo técnico deste programa — agravos, exames, periodicidades e critérios — corresponde aos riscos do PGR (subitens 7.5.1 e 7.5.4).',
+    `Registro do médico como responsável por este PCMSO no CRM do estado em que atua (Resolução CFM nº 2.376/2024, art. 3º, transcrito na seção 3).`,
+    'Os médicos que realizam os exames foram orientados sobre os riscos e as condutas deste programa (Anexo V, item 3.1.1, quando houver exposição a cancerígeno ou radiação ionizante; Resolução CFM nº 2.323/2022, art. 5º, § 1º).',
+    ...(montado.grupos.some((g) => agentesDoAnexoI(g.riscos).length > 0)
+      ? ['Agentes do inventário com nome de substância do Anexo I (seção 5.4): substância confirmada pelo número CAS e indicador biológico decidido.']
+      : []),
+    ...setoriais.flatMap((e) => e.atestar)
+  ], 6.4);
+  paragrafo('As obrigações da organização não estão nesta lista: ela as declara na seção 12.', 6.4);
+
+  // ==================================================================
+  // 12. ASSINATURAS
+  // ==================================================================
+  secao('12. ENCERRAMENTO E ASSINATURAS');
+  paragrafo(`${fonte('nr01-1.6.2').texto} (NR-01, subitem 1.6.2)`, 6.8);
+  if (minuta) paragrafo('Minuta: as assinaturas abaixo só se colhem depois que o médico responsável for indicado e revisar o documento.', 6.8);
+  paragrafo(
+    `Declaração da organização. Ao assinar, o responsável legal declara que a organização se obriga a:\n${[
+      ...PCMSO_DECLARACAO_DA_ORGANIZACAO,
+      ...setoriais.flatMap((e) => e.organizacao.map((x) => `${x};`))
+    ].map((x) => `• ${x}`).join('\n')}`,
+    6.6
+  );
+  const identificacao = (nome: string, cargo: string, data: string) => `${nome}\nRegistro / cargo: ${cargo}\nData: ${data}`;
+  garantirEspaco(ASSINATURA_ALTURA_MM * 3 + 16);
+  tabela({
+    head: [['Função', 'Nome, registro e data', 'Assinatura (manual ou digital com certificado ICP-Brasil)']],
+    body: [
+      // A data e a da assinatura, nao a da emissao: fica em branco.
+      ['Médico responsável pelo PCMSO', identificacao(
+        nomeDoCoordenador || LINHA_PARA_PREENCHER,
+        nomeDoCoordenador ? (coordenador.registro || LINHA_PARA_PREENCHER) : LINHA_PARA_PREENCHER,
+        LINHA_PARA_PREENCHER), ''],
+      ['Responsável legal da organização (declaração acima)', identificacao(
+        estabelecimento?.legal_representative?.trim() || LINHA_PARA_PREENCHER, LINHA_PARA_PREENCHER, LINHA_PARA_PREENCHER), '']
+    ],
+    styles: { fontSize: 6.8, cellPadding: 2.4, overflow: 'linebreak' },
+    columnStyles: {
+      0: { cellWidth: 44 },
+      1: { cellWidth: util - 44 - ASSINATURA_LARGURA_MM },
+      2: { cellWidth: ASSINATURA_LARGURA_MM, minCellHeight: ASSINATURA_ALTURA_MM }
+    },
+    didDrawCell: (dados: any) => {
+      if (dados.section !== 'body' || dados.column.index !== 2) return;
+      const linhaY = dados.cell.y + dados.cell.height - 7;
+      doc.setDrawColor(148, 163, 184);
+      doc.setLineWidth(0.15);
+      doc.line(dados.cell.x + 5, linhaY, dados.cell.x + dados.cell.width - 5, linhaY);
+    }
+  });
+
+  const totalDePaginas = (doc as any).internal.getNumberOfPages();
+  for (let p = 1; p <= totalDePaginas; p++) {
+    doc.setPage(p);
+    doc.setFontSize(6.5);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(148, 163, 184);
+    doc.text(`${minuta ? 'MINUTA · ' : ''}${codigoDoDocumento} · emitido em ${formatDate(emissao)}`, margin, pageHeight - 8);
+    doc.text(`${p} / ${totalDePaginas}`, pageWidth - margin, pageHeight - 8, { align: 'right' });
+    if (minuta) {
+      // Marca d'agua translucida sobre o conteudo, em toda pagina.
+      const GState = (doc as any).GState;
+      doc.saveGraphicsState();
+      if (GState) doc.setGState(new GState({ opacity: 0.12 }));
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(72);
+      doc.setTextColor(180, 83, 9);
+      doc.text('MINUTA', pageWidth / 2 - 48, pageHeight / 2 + 30, { angle: 45 });
+      doc.restoreGraphicsState();
+    }
+  }
+
+  doc.save(`pcmso-nr07-${(client.trade_name || client.legal_name || 'cliente').toLowerCase().replace(/[^a-z0-9]+/g, '-')}.pdf`);
 }
 
 /**

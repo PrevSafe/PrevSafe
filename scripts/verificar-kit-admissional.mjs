@@ -537,7 +537,10 @@ check(
   'traz a denominação oficial da Tabela 27'
 );
 check(!completo.includes('1057'), 'NÃO traz o exame do protocolo de outro cliente');
-check(completo.includes('Alterado'), 'traz o resultado lançado do exame');
+// Exigia o resultado ("Alterado") no kit. O kit vai para o RH e o resultado
+// do exame e sigiloso (Res. CFM 2.323/2022, art. 6, V; CEM art. 85): o
+// caso agora exige a ausencia. Ver scripts/verificar-sigilo-exames.mjs.
+check(!completo.includes('Alterado'), 'NÃO traz o resultado do exame (vai para o RH)');
 check(completo.includes('Dra. Helena Rocha'), 'o anexo nomeia o médico examinador');
 check(completoCorrido.includes('Válido até'), 'o anexo traz a validade do ASO');
 

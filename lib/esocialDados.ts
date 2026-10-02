@@ -23,8 +23,9 @@
  *
  * SOBRE O S-2220 E A LISTA DE EXAMES
  *
- * O S-2220 exige a lista de procedimentos realizados (Tabela 27) com o
- * resultado de cada um. Ate a versao anterior o sistema so guardava o ASO
+ * O S-2220 exige a lista de procedimentos realizados (Tabela 27). O resultado
+ * de cada um ({indResult}) e opcional e so vai com autorizacao do trabalhador
+ * (MOS, item 1.6): o sistema nao o envia. Ate a versao anterior o sistema so guardava o ASO
  * (tipo, data, resultado, medico), e nao havia onde lancar exame: a lista saia
  * vazia e o evento ficava retido apontando a falta.
  *
@@ -48,6 +49,7 @@ import {
   CODIGO_AUSENCIA_DE_RISCO,
 } from '@/lib/tabela24';
 import { protocolosDoTrabalhador } from '@/lib/protocolosDeExame';
+import { procedimentoVedado } from '@/lib/pcmso';
 import type {
   Employee,
   EmployeeASOHistory,
@@ -352,6 +354,114 @@ export function selecionarAsoMaisRecente(colaborador: Employee): EmployeeASOHist
 }
 
 /**
+ * Codigos do S-2220 conforme o leiaute S-1.3 (cons. ate a NT 07/2026 rev.).
+ *
+ * Os dois montadores do evento usavam tabelas proprias, e erradas: o admissional
+ * saia como 1 (periodico), o demissional como 4 (monitoracao pontual), o
+ * APTO_COM_RESTRICAO como 2 (inapto) e o exame sem resultado como 4
+ * (agravamento). Agora os dois leem daqui.
+ *
+ * tpExameOcup: 0 admissional; 1 periodico; 2 retorno ao trabalho; 3 mudanca de
+ * funcao ou de risco ocupacional; 4 monitoracao pontual; 9 demissional. O 4 nao
+ * e gerado: o MOS (S-2220, item 3.1) o reserva ao exame que o medico decide
+ * fazer por necessidade especifica, e o ASO do sistema nao tem esse tipo.
+ */
+export const TP_EXAME_OCUP: Record<EmployeeASOHistory['aso_type'], string> = {
+  ADMISSIONAL: '0',
+  PERIODICO: '1',
+  RETORNO_TRABALHO: '2',
+  MUDANCA_RISCO: '3',
+  DEMISSIONAL: '9',
+};
+
+export function tpExameOcupDoAso(tipo: string | undefined): string {
+  return (TP_EXAME_OCUP as Record<string, string>)[tipo || ''] || '';
+}
+
+/** resAso: 1 apto, 2 inapto. Restricao nao torna inapto. Sem resultado, vazio. */
+export function resAsoDoAso(resultado: string | undefined): string {
+  if (resultado === 'APTO' || resultado === 'APTO_COM_RESTRICAO') return '1';
+  if (resultado === 'INAPTO') return '2';
+  return '';
+}
+
+/**
+ * Procedimentos em que o leiaute exige {obsProc}: "Preenchimento obrigatorio se
+ * procRealizado = [0583, 0998, 0999, 1128, 1230, 1992, 1993, 1994, 1995, 1996,
+ * 1997, 1998, 1999, 9999]". Fora deles o campo nao vai: a observacao que o
+ * medico escreve no exame pode conter achado clinico, e o MOS (S-2220, item
+ * 1.9) diz que a fonte do evento e o ASO, nunca o prontuario.
+ */
+export const PROCEDIMENTOS_COM_OBSPROC = new Set([
+  '0583', '0998', '0999', '1128', '1230', '1992', '1993', '1994', '1995', '1996',
+  '1997', '1998', '1999', '9999',
+]);
+
+/** Audiometria: o unico procedimento em que o leiaute exige {ordExame}. */
+export const PROCEDIMENTO_COM_ORDEXAME = '0281';
+
+const textoXml = (v: string) =>
+  String(v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+/**
+ * Grupos [exame] do S-2220.
+ *
+ * {indResult} nunca vai. MOS S-1.3, S-2220, item 1.6: "O campo {indResult} nao
+ * e de preenchimento obrigatorio e somente pode ser informado com autorizacao
+ * do trabalhador, em virtude do sigilo medico." O sistema nao registra essa
+ * autorizacao; o resultado fica no ASO e no prontuario.
+ *
+ * {obsProc} vai so nos codigos que o exigem, com o nome do procedimento - a
+ * descricao que o item 1.10 do MOS pede para o codigo 9999.
+ *
+ * {ordExame} vai so na audiometria, como o leiaute manda: 1 inicial, 2
+ * sequencial (MOS, item 2.1), conforme `order` calculado em montarAsoDoEvento.
+ */
+export function xmlDosExamesDoS2220(exames: ESocialComplementaryExam[], recuo = '      '): string {
+  // MOS S-1.3, S-2220, item 1.10: "o codigo 9999 somente pode ser informado 1
+  // vez" - os procedimentos sem codigo proprio vao juntos, descritos no obsProc.
+  const outros = (exames || []).filter((e) => String(e?.code || '').trim() === '9999');
+  const lista = outros.length > 1
+    ? [
+      ...(exames || []).filter((e) => String(e?.code || '').trim() !== '9999'),
+      { ...outros[0], name: outros.map((e) => e?.name || '').filter(Boolean).join('; ') }
+    ]
+    : (exames || []);
+  return lista.map((e) => {
+    const codigo = String(e?.code || '').trim();
+    const linhas = [
+      `${recuo}<exame>`,
+      `${recuo}  <dtExm>${textoXml(e?.date || '')}</dtExm>`,
+      `${recuo}  <procRealizado>${textoXml(codigo)}</procRealizado>`,
+    ];
+    if (PROCEDIMENTOS_COM_OBSPROC.has(codigo)) {
+      linhas.push(`${recuo}  <obsProc>${textoXml(e?.name || '')}</obsProc>`);
+    }
+    if (codigo === PROCEDIMENTO_COM_ORDEXAME && e?.order) {
+      linhas.push(`${recuo}  <ordExame>${e.order === 'SEQUENCIAL' ? '2' : '1'}</ordExame>`);
+    }
+    linhas.push(`${recuo}</exame>`);
+    return linhas.join('\n');
+  }).join('\n');
+}
+
+/**
+ * Audiometria inicial ou sequencial (MOS S-1.3, S-2220, item 2.1): inicial e a
+ * primeira realizada no declarante. O sistema so enxerga o historico que tem;
+ * audiometria feita antes dele e nao lancada aqui fica de fora.
+ */
+function ordemDaAudiometria(colaborador: Employee, aso: EmployeeASOHistory): 'INICIAL' | 'SEQUENCIAL' {
+  const historico = Array.isArray(colaborador.aso_history) ? colaborador.aso_history : [];
+  const anterior = historico.some((outro) =>
+    outro !== aso &&
+    outro?.id !== aso.id &&
+    String(outro?.exam_date || '') < String(aso.exam_date || '') &&
+    (outro?.exams || []).some((x) => x?.exam_code_table_27 === PROCEDIMENTO_COM_ORDEXAME)
+  );
+  return anterior ? 'SEQUENCIAL' : 'INICIAL';
+}
+
+/**
  * Monta o bloco de ASO do S-2220 a partir de um ASO realmente registrado.
  *
  * `APTO_COM_RESTRICAO` e mapeado para APTO porque o eSocial so tem resAso
@@ -380,14 +490,26 @@ export function montarAsoDoEvento(
   if (realizados.length === 0) {
     pendencias.push({
       motivo:
-        'Nenhum exame com resultado registrado para este ASO. O S-2220 exige a lista de ' +
-        'procedimentos realizados (Tabela 27) com o resultado de cada um. ' +
+        'Nenhum exame registrado para este ASO. O S-2220 exige a lista de ' +
+        'procedimentos realizados (Tabela 27). ' +
         'Lance os exames em SST › PCMSO › Emitir ASO.',
       onde,
     });
   }
 
-  const exams_list: ESocialComplementaryExam[] = realizados.map((e) => {
+  const vedados = realizados.filter((e) => procedimentoVedado(e?.exam_code_table_27));
+  vedados.forEach((e) => {
+    const v = procedimentoVedado(e.exam_code_table_27);
+    pendencias.push({
+      motivo: `Exame "${e.exam_name || e.exam_code_table_27}" fora do evento: ${v?.motivo} não pode integrar exame ocupacional (${v?.fonte}). Remova-o do ASO.`,
+      onde,
+    });
+  });
+  if (!aso.result) {
+    pendencias.push({ motivo: 'ASO sem conclusão de apto ou inapto (NR-07, subitem 7.5.19.1, "e").', onde });
+  }
+
+  const exams_list: ESocialComplementaryExam[] = realizados.filter((e) => !procedimentoVedado(e?.exam_code_table_27)).map((e) => {
     if (!e.exam_code_table_27) {
       pendencias.push({
         motivo: `Exame "${e.exam_name || 'sem nome'}" sem código da Tabela 27 do eSocial.`,
@@ -410,20 +532,33 @@ export function montarAsoDoEvento(
         onde,
       });
     }
+    if (PROCEDIMENTOS_COM_OBSPROC.has(String(e.exam_code_table_27 || '')) && !String(e.exam_name || '').trim()) {
+      pendencias.push({
+        motivo:
+          `O código ${e.exam_code_table_27} exige a descrição do procedimento no S-2220 ` +
+          '(campo obsProc). Dê nome ao exame.',
+        onde,
+      });
+    }
+    // A observacao do exame nao entra no evento: ela nao vai ao eSocial (ver
+    // xmlDosExamesDoS2220) e nao ha por que copiar texto clinico para la.
     return {
       code: e.exam_code_table_27 || '',
       name: e.exam_name || '',
       date: e.exam_date || '',
       procedure_type: e.procedure_type,
       result: e.result,
-      observation: e.observation || undefined,
+      order: e.exam_code_table_27 === PROCEDIMENTO_COM_ORDEXAME
+        ? ordemDaAudiometria(colaborador, aso)
+        : undefined,
     };
   });
 
   const dados: ESocialASOData = {
     aso_type: aso.aso_type,
     exam_date: aso.exam_date || '',
-    result: aso.result === 'INAPTO' ? 'INAPTO' : 'APTO',
+    // Sem conclusao nao se presume apto: o campo fica vazio e a pendencia acima retem o evento.
+    result: aso.result === 'INAPTO' ? 'INAPTO' : aso.result ? 'APTO' : ('' as any),
     physician_name: aso.physician_name || '',
     physician_crm: aso.physician_crm || '',
     physician_uf: aso.physician_uf || '',
@@ -503,6 +638,8 @@ export function exameSugeridosParaAso(
   // filtro por igualdade estrita os descartava, e a lista de exames sugeridos
   // vinha sempre vazia.
   return protocolosDoTrabalhador(protocolos, colaborador, tipoDeAso)
+    // Protocolo antigo com teste de HIV ou de gravidez nao vira exame do ASO.
+    .filter((p) => !procedimentoVedado(p?.exam_code_table_27))
     .map((p) => {
       // O codigo e normalizado pela Tabela 27 (aceita "295", "0295" e
       // "0295 - Avaliacao clinica"). Quando ele consta na tabela, o NOME vem
