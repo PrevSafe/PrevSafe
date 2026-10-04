@@ -207,18 +207,33 @@ export const PGR_CAMPOS_DO_INVENTARIO: Array<[string, string, string]> = [
   ['Data e responsável pela avaliação', 'Data da avaliação e nome de quem avaliou', '—']
 ];
 
-/** Secao 8.1 — Regras de elaboracao do plano de acao. */
+/**
+ * Secao 8.1 — Regras de elaboracao do plano de acao.
+ *
+ * O plano e REGISTRO (colecao pgrActionPlan, regra em lib/planoDeAcao.ts), e
+ * estas regras descrevem o que o quadro 8.2 imprime. Antes diziam o que o
+ * plano deveria ser enquanto o quadro saia calculado, com o responsavel
+ * tecnico e "Nao iniciada" em toda linha. Os subitens 1.5.5.x citados aqui
+ * foram conferidos no texto vigente da NR-01.
+ */
 export const PGR_REGRAS_DO_PLANO: string[] = [
-  'Hierarquia obrigatória: eliminação, proteção coletiva, medidas administrativas ou de organização do trabalho e, por último, EPI (alínea "g" do item 1.4.1). Medida administrativa ou EPI no lugar de proteção coletiva exige justificativa de inviabilidade técnica, insuficiência, fase de implantação ou caráter complementar ou emergencial (subitem 1.5.5.1.2).',
+  'O plano indica as medidas de prevenção a serem introduzidas, aprimoradas ou mantidas (subitem 1.5.5.2.1), com cronograma, responsáveis, formas de acompanhamento e aferição de resultados (subitem 1.5.5.2.2). Compõe o plano somente a ação ACEITA, com esses elementos definidos por quem a aceitou e registrados.',
+  'Sugestão não é plano: a medida sugerida pelo catálogo de riscos ou pelo estado dos controles do inventário sai no quadro 8.2 marcada como sugestão, sem responsável, prazo ou acompanhamento, e entra como pendência na seção 10.3 até ser aceita. O documento não atribui responsável nem prazo que não estejam no registro da ação.',
+  'Numeração: R-<GHE>-NN.k, em que R-<GHE>-NN é o registro do risco no inventário (seção 7.2) e k é a ordem da ação naquele risco. O registro do inventário traz, por sua vez, o número das suas ações.',
+  'Prioridade: pela classificação do risco (seção 5.7) e, no mesmo nível, pelo número de trabalhadores possivelmente atingidos (subitem 1.5.5.2.1.1). Com 10 ou mais expostos, ou 20% ou mais do efetivo, o prazo passa ao da faixa imediatamente superior (seção 5.7). O prazo aceito é conferido contra o da faixa, contado da data do aceite; prazo além dele sai como pendência.',
+  'Hierarquia obrigatória: eliminação, proteção coletiva, medidas administrativas ou de organização do trabalho e, por último, EPI (alínea "g" do item 1.4.1). Medida administrativa ou EPI no lugar de proteção coletiva exige justificativa de inviabilidade técnica comprovada, insuficiência, fase de estudo, planejamento ou implantação, ou caráter complementar ou emergencial (subitem 1.5.5.1.2).',
   'Medidas para fatores ergonômicos e psicossociais priorizam mudanças na organização do trabalho (NR-17, item 17.4), definidas com participação dos trabalhadores.',
-  'Cada medida informa aos trabalhadores procedimentos e limitações (subitem 1.5.5.1.3).',
+  'A implantação das medidas é acompanhada de informação aos trabalhadores quanto aos procedimentos a serem adotados e limitações das medidas de prevenção (subitem 1.5.5.1.3); a data em que foram informados é registrada na conclusão da ação.',
+  'A implementação e os ajustes são registrados (subitem 1.5.5.3.1): data de conclusão e evidência. A eficácia só é dada por verificada com a data e o resultado da aferição (subitem 1.5.5.3.2), e a medida ineficaz é corrigida (subitem 1.5.5.3.2.1). A seção 8.3 reproduz esses registros.',
   'Concluída a medida, o risco é reavaliado (alínea "a" do subitem 1.5.4.4.6) e o inventário atualizado.'
 ];
 
 export const PGR_STATUS_DO_PLANO =
-  'Status admitidos: Não iniciada, Em andamento, Concluída, Concluída - eficácia ' +
-  'verificada, Atrasada (com nova data justificada). A alteração de prazo mantém ' +
-  'o prazo original no histórico.';
+  'Status de ação aceita: Não iniciada, Em andamento, Concluída, Concluída - eficácia ' +
+  'verificada. "Atrasada" é apurado na emissão, para a ação não concluída com o prazo ' +
+  'vencido. Sugestão não aceita e ação descartada não compõem o plano; a descartada ' +
+  'permanece no registro com o motivo. A prorrogação de prazo exige motivo: o prazo ' +
+  'original e o motivo ficam no histórico da ação e são reproduzidos na seção 8.3.';
 
 /** Secao 9.9 — Hipoteses de revisao. */
 export const PGR_HIPOTESES_DE_REVISAO: string[] = [
@@ -268,6 +283,11 @@ export const PGR_CHECKLIST: Array<{
    * definicoes, regras), que sai em todo PGR. Derivar isto do campo "onde"
    * dava falso positivo: uma pendencia em 5.3 marcava "criterios documentados"
    * (5.4 a 5.7) como pendente, sendo que esses sao conteudo fixo.
+   *
+   * Excecao: a hierarquia (1.5.5.1.2) e conferida acao por acao, e o gerador
+   * a marca pela `norma` quando uma acao aceita nao tem a justificativa. Pela
+   * secao nao da: a 8.2 tambem tem pendencia de risco sem acao, que nao fere
+   * a hierarquia.
    */
   secoes: string[];
 }> = [
@@ -279,9 +299,11 @@ export const PGR_CHECKLIST: Array<{
   { requisito: 'Critérios de severidade, probabilidade, níveis, classificação e decisão documentados', norma: '1.5.4.4.2.2', onde: '5.4 a 5.7', secoes: [] },
   { requisito: 'Probabilidade por tipo de perigo e eficácia das medidas', norma: '1.5.4.4.5.1 a 1.5.4.4.5.4', onde: '5.5', secoes: [] },
   { requisito: 'Hipóteses de revisão, incluindo pedido da CIPA', norma: '1.5.4.4.6', onde: '9.9', secoes: [] },
-  { requisito: 'Plano de ação com cronograma, responsáveis, acompanhamento e aferição; prioridade por número de expostos', norma: '1.5.5.2', onde: '5.7, 8', secoes: ['8.2'] },
-  { requisito: 'Hierarquia de medidas com justificativa', norma: '1.4.1 "g" e 1.5.5.1.2', onde: '8.1', secoes: [] },
-  { requisito: 'Registro e acompanhamento das medidas', norma: '1.5.5.3', onde: '8.2, 9.1', secoes: ['9.1'] },
+  // Plano e registro: risco sem acao aceita (8.2) ou acao aceita com o
+  // registro incompleto (8.2 e 8.3) deixa os dois requisitos pendentes.
+  { requisito: 'Plano de ação com cronograma, responsáveis, acompanhamento e aferição; prioridade por número de expostos', norma: '1.5.5.2', onde: '5.7, 8', secoes: ['8.2', '8.3'] },
+  { requisito: 'Hierarquia de medidas com justificativa', norma: '1.4.1 "g" e 1.5.5.1.2', onde: '8.1, 8.2', secoes: [] },
+  { requisito: 'Registro e acompanhamento das medidas', norma: '1.5.5.3', onde: '8.2, 8.3, 9.1', secoes: ['8.2', '8.3', '9.1'] },
   { requisito: 'Integração com o PCMSO', norma: '1.5.5.4', onde: '9.2', secoes: [] },
   { requisito: 'Análise de acidentes e eventos perigosos', norma: '1.5.5.5', onde: '9.3', secoes: [] },
   { requisito: 'Emergências e simulados com evidências', norma: '1.5.6', onde: '9.4', secoes: ['9.4'] },

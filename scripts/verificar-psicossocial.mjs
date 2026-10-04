@@ -517,12 +517,24 @@ check(aPsico?.id === 'R-GHE-01-02', 'o número da ação vem da ordem do invent�
 
 const pdfFonte = semComentarios(ler('lib/pdfExportService.ts'));
 const corpoPgr = corpoDe(pdfFonte, 'export function exportPGRDocumentPdf(');
-check(/const acoes = acoesDoPlano\(riscosDoCliente, gheDoCliente, expostosDoGhe\)/.test(corpoPgr)
-  && !/const acoes = riscosDoCliente/.test(corpoPgr),
-  'o PGR monta o plano pela regra única (acoesDoPlano), sem cópia própria');
 const corpoRel = corpoDe(pdfFonte, 'export function exportPsychosocialReportPdf(');
-check(/acoesDoPlano\(riscosDoCliente, gheDoCliente, expostosDoGhe\)\s*\.filter\(/.test(corpoRel),
-  'o relatório usa a mesma regra e filtra DEPOIS, para manter a numeração do PGR');
+// O plano passou a ser registro: a chamada leva as opcoes (os registros, o
+// efetivo da regra dos 20% e a data da emissao). A intencao continua a
+// mesma: uma regra so, chamada uma vez, com as MESMAS opcoes nos dois
+// geradores - opcao diferente da numero ou prazo diferente.
+const CHAMADA_DO_PLANO = /acoesDoPlano\(riscosDoCliente, gheDoCliente, expostosDoGhe, (\{[^{}]*\})\)/;
+const opcoesNoPgr = (corpoPgr.match(CHAMADA_DO_PLANO) || [])[1] || '';
+const opcoesNoRel = (corpoRel.match(new RegExp(`${CHAMADA_DO_PLANO.source}\\s*\\.filter\\(`)) || [])[1] || '';
+check(/\bacoes: pgrActionPlan\b/.test(opcoesNoPgr) && /\befetivo: efetivoDoCliente\b/.test(opcoesNoPgr)
+  && (corpoPgr.match(/acoesDoPlano\(/g) || []).length === 1
+  && !/const acoes = riscosDoCliente/.test(corpoPgr),
+  'o PGR monta o plano pela regra única (acoesDoPlano), uma vez, com os registros e o efetivo, sem cópia própria');
+check(opcoesNoRel !== '' && opcoesNoRel === opcoesNoPgr && (corpoRel.match(/acoesDoPlano\(/g) || []).length === 1,
+  'o relatório usa a mesma regra com as MESMAS opções do PGR e filtra DEPOIS, para manter a numeração do PGR');
+const definicao = (corpo, nome) => (corpo.match(new RegExp(`const ${nome} = ([^;]+);`)) || [])[1];
+check(Boolean(definicao(corpoPgr, 'efetivoDoCliente')) && definicao(corpoPgr, 'efetivoDoCliente') === definicao(corpoRel, 'efetivoDoCliente')
+  && Boolean(definicao(corpoPgr, 'emissao')) && definicao(corpoPgr, 'emissao') === definicao(corpoRel, 'emissao'),
+  'as opções são o mesmo recorte nos dois geradores: o mesmo efetivo e a mesma data');
 
 // ===========================================================================
 // 6. DOCUMENTO DA AEP
@@ -605,6 +617,58 @@ const idsPsicoPgr = acoesDoPlano([RISCO_RUIDO, RISCO_SOBRECARGA_G1, RISCO_SOBREC
   .filter((a) => a.risco.origin_psychosocial_factor).map((a) => a.id);
 check(idsPsicoPgr.length === 2 && idsPsicoPgr.every((id) => tPgr.includes(id) && tRel.includes(id)),
   `as ações psicossociais têm o mesmo número no PGR e no relatório (${idsPsicoPgr.join(', ')})`);
+// Com registros do plano: uma acao aceita (rps1) e uma sugestao (rps2). O
+// PGR e o relatorio tem de dar o mesmo numero R-...k, a mesma medida, o mesmo
+// prazo e a mesma faixa - esta, com a regra dos 20% do efetivo (cada GHE tem
+// 1 dos 2 empregados), que so sobe se o efetivo chegar a regra.
+const ACAO_ACEITA = {
+  id: 'pa1', organization_id: 'org-1', client_id: 'cli-1', risk_id: 'rps1', ghe_id: 'g1', origin: 'MANUAL',
+  measure: 'Redistribuir as filas de atendimento com a equipe, com teto diario por atendente',
+  hierarchy: 'ADMINISTRATIVA', action_type: 'INTRODUZIR',
+  responsible: 'Supervisao de atendimento', deadline: '2026-10-15', original_deadline: '2026-10-15',
+  monitoring: 'Reuniao quinzenal com a equipe', measurement: 'Reavaliacao do fator na AEP',
+  status: 'EM_ANDAMENTO', accepted_at: '2026-09-20T12:00:00Z',
+  history: [], created_at: '2026-09-20T12:00:00Z', updated_at: '2026-09-20T12:00:00Z',
+};
+const SUGESTAO = {
+  id: 'pa2', organization_id: 'org-1', client_id: 'cli-1', risk_id: 'rps2', ghe_id: 'g2', origin: 'INVENTARIO',
+  measure: 'Adotar, com os trabalhadores, pausas negociadas no fechamento fiscal',
+  hierarchy: 'ADMINISTRATIVA', action_type: 'INTRODUZIR',
+  responsible: 'Quem Nao Aceitou', deadline: '2027-03-31',
+  status: 'SUGERIDA', history: [], created_at: '2026-09-21T12:00:00Z', updated_at: '2026-09-21T12:00:00Z',
+};
+const RISCOS_DO_PLANO = [RISCO_RUIDO, RISCO_SOBRECARGA_G1, RISCO_SOBRECARGA_G2, RISCO_POSTURA];
+const argsComPlano = {
+  client: CLIENTE, organization: ORG, ghes: GHES, units: [UNIDADE], employees: FUNCIONARIOS,
+  ergonomicAssessments: [AEP_COM_PRESENTES], risks: RISCOS_DO_PLANO, pgrActionPlan: [ACAO_ACEITA, SUGESTAO],
+};
+const tPgrPlano = gerar(exportPGRDocumentPdf, argsComPlano);
+const tRelPlano = gerar(exportPsychosocialReportPdf, argsComPlano);
+const esperadas = acoesDoPlano(
+  RISCOS_DO_PLANO, GHES, (g) => FUNCIONARIOS.filter((e) => e.ghe_id === g).length,
+  { acoes: [ACAO_ACEITA, SUGESTAO], efetivo: FUNCIONARIOS.length }
+);
+const eAceita = esperadas.find((a) => a.registro?.id === 'pa1');
+const eSugestao = esperadas.find((a) => a.registro?.id === 'pa2');
+check(Boolean(eAceita?.aceita) && eSugestao?.aceita === false && eSugestao?.prazoDaFaixa?.elevado === true,
+  'a regra dá a acao aceita como aceita e a sugestão como não aceita, com a faixa elevada pelos 20% do efetivo');
+check(Boolean(eAceita) && [tPgrPlano, tRelPlano].every((t) => t.includes(eAceita.numero) && t.includes(ACAO_ACEITA.measure) && t.includes('15/10/2026')),
+  `a ação aceita sai com o mesmo número (${eAceita?.numero}), a mesma medida e o mesmo prazo no PGR e no relatório`);
+check(Boolean(eSugestao) && [tPgrPlano, tRelPlano].every((t) => t.includes(eSugestao.numero) && t.includes(`Sugestão não aceita: ${SUGESTAO.measure}`)),
+  `a sugestão sai com o mesmo número (${eSugestao?.numero}) e marcada como não aceita nos dois documentos`);
+check([tPgrPlano, tRelPlano].every((t) => !t.includes('Quem Nao Aceitou') && !t.includes('31/03/2027')),
+  'o responsável e o prazo gravados na sugestão não saem em nenhum dos dois documentos');
+check(tRelPlano.includes(`a definir (faixa: ${eSugestao?.prazoDaFaixa?.rotulo}, elevada pelo nº de expostos)`)
+  && tPgrPlano.includes('elevada pelo nº de expostos'),
+  'a sugestão sai no relatório com o prazo "a definir" e a faixa elevada, como no PGR (o efetivo chega aos dois)');
+check(tRelPlano.includes(`Ações do plano sem aceite: ${eSugestao?.numero}`),
+  'a sugestão não aceita vira pendência no relatório');
+// O status vem da mesma regra (com "Atrasada" se o teste rodar depois do
+// prazo); a faixa "a definir" so pode aparecer uma vez - na sugestao.
+check(Boolean(eAceita) && tRelPlano.includes(eAceita.status)
+  && (tRelPlano.match(/a definir \(faixa:/g) || []).length === 1,
+  'a ação aceita sai no relatório com a data e o status do registro, e não com a faixa');
+
 check(tPgr.includes('Fatores psicossociais: 13/13 avaliados; presentes:'), 'a seção 7.4 do PGR resume a avaliação psicossocial');
 check(tPgr.includes('fora do inventário de riscos do GHE'), 'o PGR aponta o fator presente fora do inventário');
 check(tPgr.includes('Adotar, com os trabalhadores, medida na organização do trabalho'), 'o plano do PGR traz a medida na organização do trabalho');

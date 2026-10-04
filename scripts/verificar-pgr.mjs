@@ -2044,6 +2044,226 @@ check(sync.includes("'ergonomicAssessments'"), 'a colecao das AEP e sincronizada
 check(contexto.includes('parsed.ergonomicAssessments'), 'o snapshot carrega as AEP');
 
 // ===========================================================================
+// 3k. PLANO DE ACAO REGISTRADO (secao 8)
+// ===========================================================================
+// O plano era calculado na hora do PDF: o responsavel tecnico como
+// responsavel de toda acao, a faixa da classificacao no lugar do prazo e
+// "Nao iniciada" em toda linha - um cronograma que ninguem assumiu. Agora e
+// registro (colecao pgrActionPlan). O que este bloco persegue: so o registro
+// aceito afirma responsavel, prazo e status; sugestao e risco sem acao saem
+// como pendencia; o que foi concluido aparece na 8.3; e o checklist da 10.2
+// nao diz "Atendido" com o plano incompleto.
+console.log('');
+console.log('--- 3k. Plano de ação registrado (8.2, 8.3, 9.1 e 10.2) ---');
+
+let datas;
+try {
+  datas = require_(achar('datas.js'));
+} catch (e) {
+  inconclusivo('não foi possível carregar lib/datas compilado', e.message);
+}
+
+/** Trecho do texto corrido entre dois marcadores (o segundo, depois do primeiro). */
+const entre = (txt, de, ate) => {
+  const i = txt.indexOf(de);
+  if (i < 0) return '';
+  const j = ate ? txt.indexOf(ate, i + de.length) : -1;
+  return txt.slice(i, j < 0 ? undefined : j);
+};
+/** A situacao de um requisito no checklist da 10.2. */
+const situacaoNoChecklist = (txt, requisito) => {
+  const i = txt.indexOf(requisito, txt.indexOf('10.2 Checklist de conformidade'));
+  if (i < 0) return null;
+  return (txt.slice(i + requisito.length, i + requisito.length + 160)
+    .match(/Atendido|Com pendência|Não aplicável/) || [null])[0];
+};
+const REQ_PLANO = 'Plano de ação com cronograma, responsáveis, acompanhamento e aferição; prioridade por número de expostos';
+const REQ_HIERARQUIA = 'Hierarquia de medidas com justificativa';
+const REQ_REGISTRO = 'Registro e acompanhamento das medidas';
+
+// Riscos na ordem do inventario: R-GHE-01-01 a 05.
+const RISCO_EPI = { ...RISCO_QUIMICO, id: 'rq2', agent_name: 'Hipoclorito de sodio', generating_source: 'Limpeza' };
+const RISCO_SUGERIDO = { ...RISCO_ERGONOMICO, id: 'rerg2', agent_name: 'Levantamento de caixas de prontuarios' };
+const acaoBase = {
+  organization_id: 'o1', client_id: 'c1', ghe_id: 'g1', origin: 'MANUAL', action_type: 'INTRODUZIR',
+  history: [], updated_at: '2026-09-20T12:00:00Z',
+};
+// Aceita, completa e prorrogada com motivo. O prazo original cabe nos 30
+// dias da faixa (Muito alto) contados do aceite.
+const ACAO_ACEITA = {
+  ...acaoBase, id: 'a1', risk_id: 'r1',
+  measure: 'Enclausurar os condensadores com manta acustica', hierarchy: 'PROTECAO_COLETIVA',
+  responsible: 'Carlos Mendes - manutencao', deadline: '2026-10-18', original_deadline: '2026-10-10',
+  monitoring: 'Inspecao quinzenal da obra', measurement: 'Nova dosimetria apos a medida',
+  status: 'EM_ANDAMENTO', accepted_at: '2026-09-20T12:00:00Z', created_at: '2026-09-20T12:00:00Z',
+  history: [
+    { em: '2026-09-20T12:00:00Z', evento: 'Aceita: responsável Carlos Mendes - manutencao, prazo 10/10/2026.' },
+    { em: '2026-10-01T12:00:00Z', evento: 'Prazo alterado de 10/10/2026 para 18/10/2026. Motivo: fornecedor da manta acustica atrasou a entrega' },
+  ],
+};
+// Concluida, com eficacia verificada e o registro completo.
+const ACAO_CONCLUIDA = {
+  ...acaoBase, id: 'a2', risk_id: 'rq1',
+  measure: 'Trocar o borrifador por pano umedecido em recipiente fechado', hierarchy: 'PROTECAO_COLETIVA',
+  responsible: 'Juliana Reis', deadline: '2026-09-28', original_deadline: '2026-09-28',
+  monitoring: 'Verificacao da execucao', measurement: 'Reavaliacao do risco', status: 'EFICACIA_VERIFICADA',
+  accepted_at: '2026-09-01T12:00:00Z', created_at: '2026-09-01T12:00:00Z',
+  completed_at: '2026-09-25', evidence: 'Ordem de compra 8812 e registro fotografico da copa',
+  workers_informed_at: '2026-09-26', effectiveness_checked_at: '2026-09-30',
+  effectiveness_result: 'Sem odor perceptivel na avaliacao qualitativa; risco reclassificado',
+};
+// Aceita, mas EPI sem a justificativa do subitem 1.5.5.1.2.
+const ACAO_EPI_SEM_JUSTIFICATIVA = {
+  ...acaoBase, id: 'a3', risk_id: 'rq2',
+  measure: 'Fornecer luva nitrilica com CA valido', hierarchy: 'EPI',
+  responsible: 'Almoxarifado', deadline: '2026-11-30', original_deadline: '2026-11-30',
+  monitoring: 'Registro de entrega', measurement: 'Inspecao do uso', status: 'NAO_INICIADA',
+  accepted_at: '2026-09-20T12:00:00Z', created_at: '2026-09-20T12:00:00Z',
+};
+// Sugestao com responsavel e prazo gravados: nenhum dos dois pode sair.
+const ACAO_SUGERIDA = {
+  ...acaoBase, id: 'a4', risk_id: 'rerg2', origin: 'INVENTARIO',
+  measure: 'Implantar carrinho para o transporte de caixas', hierarchy: 'PROTECAO_COLETIVA',
+  responsible: 'Responsavel Da Sugestao', deadline: '2027-02-28',
+  status: 'SUGERIDA', created_at: '2026-09-02T12:00:00Z',
+};
+const ACAO_DE_OUTRO_CLIENTE = {
+  ...ACAO_ACEITA, id: 'a9', client_id: 'cli-9', risk_id: 'r9', responsible: 'Gestor de outra empresa',
+};
+
+const argsDoPlano = {
+  client: CLIENTE, organization: ORG, ghes: GHES,
+  risks: [RISCO_CLASSIFICADO, RISCO_QUIMICO, RISCO_ERGONOMICO, RISCO_EPI, RISCO_SUGERIDO, RISCO_DE_OUTRO_CLIENTE],
+  employees: FUNCIONARIOS, sectors: SETORES, units: [UNIDADE],
+  pgrActionPlan: [ACAO_ACEITA, ACAO_CONCLUIDA, ACAO_EPI_SEM_JUSTIFICATIVA, ACAO_SUGERIDA, ACAO_DE_OUTRO_CLIENTE],
+};
+const pdfPlano = gerar(argsDoPlano);
+const tp = corrido(pdfPlano);
+check(quebrados(pdfPlano).length === 0, 'plano registrado: nenhuma string caiu em UTF-16BE');
+
+const quadro = entre(tp, '8.2 Quadro do plano de ação', 'Situação do plano na emissão');
+const reg83 = entre(tp, '8.3 Registro da implementação e da eficácia', '9. ACOMPANHAMENTO');
+const pend103 = entre(tp, '10.3 Pendências deste PGR');
+check(quadro.length > 0 && reg83.length > 0 && pend103.length > 0, 'o PGR traz o quadro 8.2, a 8.3 e a 10.3');
+
+// --- Responsavel e prazo: so os do registro ---------------------------------
+check(tc.includes('Gean Monteiro'), 'o nome do responsável técnico está no documento (o teste abaixo tem sentido)');
+const quadroSemRegistro = entre(tc, '8.2 Quadro do plano de ação', 'Situação do plano na emissão');
+check(quadroSemRegistro.length > 0
+  && !quadroSemRegistro.includes('Gean Monteiro') && !quadroSemRegistro.includes('____'),
+  'sem registro, nenhuma linha do quadro traz o responsável técnico (nem linha em branco) como responsável');
+check(!quadroSemRegistro.includes('Não iniciada'), 'sem registro, nenhuma linha sai "Não iniciada"');
+// O travessao do PDF chega aqui como "-" (WINANSI, acima).
+check(quadroSemRegistro.includes('Ação não definida - sugestão do sistema:'),
+  'sem registro, a medida sai como sugestão do sistema');
+check((quadroSemRegistro.match(/PENDENTE - a definir no aceite/g) || []).length === 2,
+  'sem registro, responsável · prazo e acompanhamento · aferição saem como PENDENTE');
+check(!quadro.includes('Gean Monteiro'), 'com registros, o quadro também não traz o responsável técnico');
+check(quadro.includes('Carlos Mendes - manutencao') && quadro.includes('18/10/2026'),
+  'a ação aceita mostra o responsável e o prazo do registro');
+check(quadro.includes('Inspecao quinzenal da obra') && quadro.includes('Aferição: Nova dosimetria apos a medida'),
+  'a ação aceita mostra o acompanhamento e a aferição do registro');
+check(!tp.includes('Responsavel Da Sugestao') && !tp.includes('28/02/2027'),
+  'o responsável e o prazo gravados numa sugestão não saem em lugar nenhum');
+check(quadro.includes('Sugestão não aceita: Implantar carrinho para o transporte de caixas'),
+  'a sugestão sai marcada como não aceita');
+check(!tp.includes('Gestor de outra empresa'), 'ação de outro cliente não entra no plano');
+
+// --- Numeracao e pendencias -------------------------------------------------
+for (const n of ['R-GHE-01-01.1', 'R-GHE-01-02.1', 'R-GHE-01-03.1', 'R-GHE-01-04.1', 'R-GHE-01-05.1']) {
+  check(quadro.includes(n), `o quadro numera a ação ${n} pelo registro do inventário`);
+}
+const inventario72 = entre(tp, '7.2 Registros do inventário', '7.3 Registro de avaliações ambientais');
+check(inventario72.includes('Ação no plano (seção 8)')
+  && inventario72.includes('R-GHE-01-03.1 - sem ação aceita (pendência na seção 8.2)')
+  && inventario72.includes('R-GHE-01-02.1 - Concluída - eficácia verificada'),
+  'o registro do inventário (7.2) remete à ação do plano, pelo mesmo número');
+const pendAgregada = entre(pend103, 'sem ação aceita no plano', '(subitens 1.5.5.2.1 e 1.5.5.2.2)');
+check(/2 risco\(s\) do inventário sem ação aceita no plano/.test(pend103)
+  && pendAgregada.includes('Sem ação cadastrada: R-GHE-01-03.1')
+  && pendAgregada.includes('Sugestão não aceita: R-GHE-01-05.1'),
+  'risco sem ação aceita gera pendência, numa linha só, com os números');
+check(pendAgregada.length > 0 && !/R-GHE-01-0[124]\.1/.test(pendAgregada),
+  'ação aceita não entra na pendência de risco sem ação');
+check(pend103.includes('Ação R-GHE-01-04.1: Proteção individual (EPI) sem a justificativa do subitem 1.5.5.1.2'),
+  'ação aceita com falta gera pendência própria, com o número e o que falta');
+check(!/Ação R-GHE-01-0[12]\.1:/.test(pend103), 'ação aceita completa não gera pendência');
+const pendenciasDoPlanoSemRegistro = (entre(tc, '10.3 Pendências deste PGR').match(/sem ação aceita no plano/g) || []).length;
+check(pendenciasDoPlanoSemRegistro === 1, 'sem registro, o plano gera UMA pendência agregada, e não uma por risco');
+
+// --- 8.3 ---------------------------------------------------------------------
+check(reg83.includes('R-GHE-01-02.1') && reg83.includes('25/09/2026')
+  && reg83.includes('Ordem de compra 8812 e registro fotografico da copa') && reg83.includes('26/09/2026')
+  && reg83.includes('30/09/2026') && reg83.includes('Sem odor perceptivel na avaliacao qualitativa'),
+  'a ação concluída aparece na 8.3 com conclusão, evidência, informação aos trabalhadores e aferição');
+check(reg83.includes('1.5.5.3.1') && reg83.includes('1.5.5.3.2') && reg83.includes('1.5.5.1.3'),
+  'a 8.3 cita os subitens 1.5.5.3.1, 1.5.5.3.2 e 1.5.5.1.3');
+check(reg83.includes('10/10/2026') && reg83.includes('18/10/2026')
+  && reg83.includes('fornecedor da manta acustica atrasou a entrega'),
+  'a prorrogação aparece na 8.3 com o prazo original, o atual e o motivo do histórico');
+check(entre(tc, '8.3 Registro da implementação e da eficácia', '9. ACOMPANHAMENTO').includes('Nenhuma ação do plano concluída até a emissão.'),
+  'sem ação concluída, a 8.3 diz isso numa linha');
+
+// --- Situacao e indicador -----------------------------------------------------
+check(tp.includes('Situação do plano na emissão') && /3 ação\(ões\) aceita\(s\)/.test(tp)
+  && /1 concluída\(s\), das quais 1 com eficácia verificada/.test(tp)
+  && /2 de 5 risco\(s\) do inventário sem ação aceita/.test(tp),
+  'a situação do plano na emissão sai com os números dos registros');
+// O indicador conta pelo prazo ORIGINAL: o da acao aceita (10/10/2026) so
+// entra na base depois de vencido. Hoje e o do gerador.
+const hoje = datas.dataDeHoje();
+const baseEsperada = 1 + ('2026-10-10' < hoje ? 1 : 0) + ('2026-11-30' < hoje ? 1 : 0);
+check(tp.includes(`ações concluídas no prazo: 1 de ${baseEsperada} (${Math.round(100 / baseEsperada)}%)`),
+  `9.1 informa as ações concluídas no prazo pelos registros (1 de ${baseEsperada})`);
+check(tc.includes('ainda não há ação aceita concluída ou com prazo vencido'),
+  'sem registro, 9.1 diz que não há base para o indicador, em vez de um número');
+
+// --- Checklist da 10.2 ----------------------------------------------------------
+check(situacaoNoChecklist(tc, REQ_PLANO) === 'Com pendência' && situacaoNoChecklist(tc, REQ_REGISTRO) === 'Com pendência',
+  'sem ação aceita, o checklist não dá o plano (1.5.5.2) nem o registro (1.5.5.3) como atendidos');
+check(situacaoNoChecklist(tp, REQ_PLANO) === 'Com pendência' && situacaoNoChecklist(tp, REQ_REGISTRO) === 'Com pendência',
+  'com risco sem ação aceita, o checklist marca 1.5.5.2 e 1.5.5.3 com pendência');
+check(situacaoNoChecklist(tp, REQ_HIERARQUIA) === 'Com pendência',
+  'EPI aceito sem a justificativa do 1.5.5.1.2: a hierarquia sai com pendência no checklist');
+check(situacaoNoChecklist(tc, REQ_HIERARQUIA) === 'Atendido',
+  'sem ação aceita, a hierarquia não é marcada por pendência que não é dela');
+
+// Plano completo: todo risco com acao aceita e o registro em dia.
+const tpCompleto = corrido(gerar({
+  ...argsDoPlano,
+  risks: [RISCO_CLASSIFICADO, RISCO_QUIMICO],
+  pgrActionPlan: [ACAO_ACEITA, ACAO_CONCLUIDA],
+}));
+check(situacaoNoChecklist(tpCompleto, REQ_PLANO) === 'Atendido'
+  && situacaoNoChecklist(tpCompleto, REQ_HIERARQUIA) === 'Atendido'
+  && situacaoNoChecklist(tpCompleto, REQ_REGISTRO) === 'Atendido',
+  'com o plano completo, o checklist dá 1.5.5.2, a hierarquia e 1.5.5.3 como atendidos');
+check(!/sem ação aceita no plano/.test(tpCompleto) && !/Ação R-GHE-01-0\d\.\d:/.test(tpCompleto),
+  'com o plano completo, nenhuma pendência do plano');
+
+// Conclusao sem o registro da 1.5.5.3.1: pendencia na 8.3 e o checklist acusa.
+const tpSemEvidencia = corrido(gerar({
+  ...argsDoPlano,
+  risks: [RISCO_CLASSIFICADO, RISCO_QUIMICO],
+  pgrActionPlan: [ACAO_ACEITA, { ...ACAO_CONCLUIDA, evidence: '', workers_informed_at: '' }],
+}));
+const pendSemEvidencia = entre(tpSemEvidencia, '10.3 Pendências deste PGR');
+check(/8\.3 Ação R-GHE-01-02\.1: conclusão sem evidência registrada \(subitem 1\.5\.5\.3\.1\)/.test(pendSemEvidencia)
+  && pendSemEvidencia.includes('sem registro da informação aos trabalhadores (subitem 1.5.5.1.3)'),
+  'conclusão sem evidência e sem a informação aos trabalhadores: pendência na 8.3');
+check(situacaoNoChecklist(tpSemEvidencia, REQ_REGISTRO) === 'Com pendência',
+  'conclusão sem evidência: o checklist não dá o registro (1.5.5.3) como atendido');
+
+// Prorrogacao sem o motivo no historico: o ajuste nao esta registrado.
+const tpSemMotivo = corrido(gerar({
+  ...argsDoPlano,
+  risks: [RISCO_CLASSIFICADO, RISCO_QUIMICO],
+  pgrActionPlan: [{ ...ACAO_ACEITA, history: [] }, ACAO_CONCLUIDA],
+}));
+check(tpSemMotivo.includes('Ação R-GHE-01-01.1: prazo alterado de 10/10/2026 para 18/10/2026 sem o motivo no histórico'),
+  'prorrogação sem motivo no histórico vira pendência');
+
+// ===========================================================================
 // 4. UMA CLASSIFICACAO SO NO SISTEMA
 // ===========================================================================
 console.log('\n--- 4. Fonte única de classificação (conferência no código) ---');

@@ -1373,7 +1373,12 @@ export interface ESocialAmbientRiskFactor {
   limit_tolerance?: string;
   measurement_unit?: string;
   technique_used?: string;
+  /** utilizEPC. Ausente nos eventos gravados antes: ali epc_effective fazia as vezes. */
+  epc_implemented?: boolean;
+  /** eficEpc: so com EPC implantado. */
   epc_effective: boolean;
+  /** utilizEPI. Ausente nos eventos gravados antes: ali a lista de CA fazia as vezes. */
+  epi_used?: boolean;
   epi_effective: boolean;
   epi_ca_numbers?: string[];
   is_insalubre?: boolean;
@@ -2083,6 +2088,105 @@ export interface SSTEnvironmentalRisk {
   origin_psychosocial_factor?: string;
 
   status: 'ACTIVE' | 'INACTIVE';
+  created_at: string;
+  updated_at: string;
+}
+
+// ---------------------------------------------------------------------------
+// Plano de acao do PGR (NR-01, subitens 1.5.5.2 e 1.5.5.3)
+//
+// Era uma tabela calculada na hora de imprimir: uma acao generica por risco,
+// com o responsavel tecnico no lugar do responsavel e o status sempre "Nao
+// iniciada". Agora cada acao e um registro, com cronograma, responsavel,
+// acompanhamento, afericao e o historico que o subitem 1.5.5.3.1 exige. As
+// regras ficam em lib/planoDeAcao.ts.
+// ---------------------------------------------------------------------------
+
+/** Ordem de prioridade da alinea "g" do item 1.4.1 da NR-01 (I a IV). */
+export type HierarquiaDaMedida = 'ELIMINACAO' | 'PROTECAO_COLETIVA' | 'ADMINISTRATIVA' | 'EPI';
+
+/**
+ * Hipoteses do subitem 1.5.5.1.2 em que se adota medida administrativa ou EPI:
+ * inviabilidade tecnica comprovada, protecao coletiva insuficiente, em fase de
+ * estudo, planejamento ou implantacao, ou carater complementar ou emergencial.
+ */
+export type JustificativaDaHierarquia =
+  | 'INVIABILIDADE_TECNICA'
+  | 'INSUFICIENCIA'
+  | 'COLETIVA_EM_IMPLANTACAO'
+  | 'COMPLEMENTAR'
+  | 'EMERGENCIAL';
+
+/** Subitem 1.5.5.2.1: medidas a introduzir, aprimorar ou manter. */
+export type TipoDaAcaoDoPlano = 'INTRODUZIR' | 'APRIMORAR' | 'MANTER';
+
+/**
+ * SUGERIDA e DESCARTADA ficam fora do PGR. "Atrasada" nao e status gravado:
+ * e calculado do prazo (lib/planoDeAcao.ts).
+ */
+export type StatusDaAcaoDoPlano =
+  | 'SUGERIDA'
+  | 'NAO_INICIADA'
+  | 'EM_ANDAMENTO'
+  | 'CONCLUIDA'
+  | 'EFICACIA_VERIFICADA'
+  | 'DESCARTADA';
+
+/** Uma linha do registro da acao (subitem 1.5.5.3.1). */
+export interface RegistroDaAcaoDoPlano {
+  /** Data e hora ISO. */
+  em: string;
+  por?: string;
+  evento: string;
+}
+
+export interface PgrActionPlanItem {
+  id: string;
+  organization_id: string;
+  client_id: string;
+  /** SSTEnvironmentalRisk.id. */
+  risk_id: string;
+  ghe_id: string;
+  /** CATALOGO: veio do catalogo de riscos; INVENTARIO: sugerida pelo estado dos controles do risco. */
+  origin: 'CATALOGO' | 'INVENTARIO' | 'MANUAL';
+  origin_catalog_id?: string;
+
+  measure: string;
+  hierarchy: HierarquiaDaMedida;
+  /** Obrigatoria para ADMINISTRATIVA e EPI (subitem 1.5.5.1.2). */
+  hierarchy_justification?: JustificativaDaHierarquia;
+  hierarchy_justification_note?: string;
+  action_type: TipoDaAcaoDoPlano;
+
+  // Cronograma (subitem 1.5.5.2.2)
+  responsible?: string;
+  /** AAAA-MM-DD. */
+  deadline?: string;
+  /** O primeiro prazo aceito. Mudar o prazo nao apaga o original (secao 8 do PGR). */
+  original_deadline?: string;
+  /** Forma de acompanhamento. */
+  monitoring?: string;
+  /** Forma de afericao de resultados. */
+  measurement?: string;
+
+  status: StatusDaAcaoDoPlano;
+  accepted_at?: string;
+  accepted_by?: string;
+
+  // Implementacao (subitem 1.5.5.3.1)
+  /** AAAA-MM-DD. */
+  completed_at?: string;
+  evidence?: string;
+  /** AAAA-MM-DD em que os trabalhadores foram informados (subitem 1.5.5.1.3). */
+  workers_informed_at?: string;
+
+  // Afericao (subitem 1.5.5.3.2)
+  /** AAAA-MM-DD. */
+  effectiveness_checked_at?: string;
+  effectiveness_result?: string;
+
+  discard_reason?: string;
+  history: RegistroDaAcaoDoPlano[];
   created_at: string;
   updated_at: string;
 }

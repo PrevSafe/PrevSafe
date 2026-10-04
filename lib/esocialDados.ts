@@ -196,7 +196,9 @@ export function montarFatorDeRisco(risco: SSTEnvironmentalRisk): {
     limit_tolerance: risco.tolerance_limit || undefined,
     measurement_unit: risco.measurement_unit || undefined,
     technique_used: temMedicao ? risco.measurement_methodology || undefined : undefined,
-    epc_effective: !!risco.epc_effective,
+    epc_implemented: !!risco.epc_implemented,
+    epc_effective: !!risco.epc_implemented && !!risco.epc_effective,
+    epi_used: !!risco.epi_required || cas.length > 0,
     epi_effective: epis.length > 0 && epis.every((e) => e.is_effective),
     epi_ca_numbers: cas.length > 0 ? cas : undefined,
     is_insalubre: !!risco.insalubridade_applies,
@@ -402,6 +404,47 @@ export const PROCEDIMENTO_COM_ORDEXAME = '0281';
 
 const textoXml = (v: string) =>
   String(v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+/**
+ * Grupo [epcEpi] do S-2240, leiaute S-1.3:
+ *
+ *   utilizEPC  0 nao se aplica, 1 nao implementa, 2 implementa
+ *   eficEpc    S/N - "Preenchimento obrigatorio e exclusivo se utilizEPC = [2]"
+ *   utilizEPI  0 nao se aplica, 1 nao utilizado, 2 utilizado
+ *   eficEpi    S/N - "Preenchimento obrigatorio e exclusivo se utilizEPI = [2]"
+ *   epi        0-50, so com {docAval} (CA ou documento de avaliacao)
+ *
+ * As duas montagens do S-2240 diziam coisas diferentes, e as duas erravam: uma
+ * mandava utilizEPC=2 so quando o EPC era EFICAZ (implantado e nao aferido
+ * saia "nao implementa"); a outra mandava 2 quando implantado e nunca
+ * informava eficEpc. E EPI entregue cuja eficacia ninguem atestou saia
+ * utilizEPI=1, "nao utilizado".
+ *
+ * Eficacia nao verificada sai N. Declarar S sem afericao afasta a exposicao
+ * da aposentadoria especial por um fato que ninguem conferiu. A eficacia do
+ * EPC vem do plano de acao (lib/planoDeAcao.ts, efeitoNoRisco).
+ */
+export function xmlDoEpcEpi(
+  p: { epcImplementado: boolean; epcEficaz: boolean; epiUtilizado: boolean; epiEficaz: boolean; cas: string[] },
+  recuo = '          '
+): string {
+  const linhas = [`${recuo}<epcEpi>`];
+  if (p.epcImplementado) {
+    linhas.push(`${recuo}  <utilizEPC>2</utilizEPC>`, `${recuo}  <eficEpc>${p.epcEficaz ? 'S' : 'N'}</eficEpc>`);
+  } else {
+    linhas.push(`${recuo}  <utilizEPC>1</utilizEPC>`);
+  }
+  if (p.epiUtilizado) {
+    linhas.push(`${recuo}  <utilizEPI>2</utilizEPI>`, `${recuo}  <eficEpi>${p.epiEficaz ? 'S' : 'N'}</eficEpi>`);
+    (p.cas || []).filter((ca) => String(ca || '').trim()).slice(0, 50).forEach((ca) => {
+      linhas.push(`${recuo}  <epi>`, `${recuo}    <docAval>${textoXml(String(ca).trim())}</docAval>`, `${recuo}  </epi>`);
+    });
+  } else {
+    linhas.push(`${recuo}  <utilizEPI>1</utilizEPI>`);
+  }
+  linhas.push(`${recuo}</epcEpi>`);
+  return linhas.join('\n');
+}
 
 /**
  * Grupos [exame] do S-2220.

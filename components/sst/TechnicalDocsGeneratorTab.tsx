@@ -7,13 +7,11 @@ import {
   FileText, 
   Download, 
   Copy, 
-  Check, 
-  ShieldCheck, 
-  Layers, 
+  Check,
+  Layers,
   Send, 
   CheckCircle2, 
-  Building2, 
-  Sparkles,
+  Building2,
   Printer,
   Eye,
   FileCheck,
@@ -42,6 +40,9 @@ import { DocumentPreviewModal, PreviewDocType } from '@/lib/../components/sst/Do
 import { montarCorpoInsalubridade, montarCorpoPericulosidade } from '@/lib/laudoDados';
 import { PcmsoResumo } from './PcmsoResumo';
 import { avaliacaoIniciada, faltasPsicossociais, resumoPsicossocial } from '@/lib/psicossocial';
+import { acoesDoPlano, dataBR } from '@/lib/planoDeAcao';
+import { classificarRisco } from '@/lib/classificacaoDeRisco';
+import { dataDeHoje } from '@/lib/datas';
 
 interface TechnicalDocsGeneratorTabProps {
   selectedClientId: string;
@@ -68,6 +69,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
     catRecords,
     workAbsences,
     esocialEvents,
+    pgrActionPlan = [],
     generateESocialXmlPreview,
     transmitESocialEvent
   } = usePrevSafe();
@@ -117,35 +119,29 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
   const rtArt = organization?.technical_responsible_art || '';
   const rtWithCouncil = rtCouncil ? `${rtName} (${rtCouncil})` : rtName;
 
-  // Plano de ação 5W2H derivado do inventário real de riscos: entra no plano todo risco
-  // alto/crítico ou com controle coletivo ausente/ineficaz. Sem riscos cadastrados, o
-  // quadro fica vazio em vez de exibir ações fictícias.
-  const actionPlanRows = clientRisks
-    .filter(r =>
-      r.risk_level === 'ALTO' ||
-      // 'CRITICO' e o rotulo antigo; o modelo usa 'MUITO_ALTO'. Os dois
-      // aparecem porque ha riscos gravados antes da mudanca.
-      r.risk_level === 'MUITO_ALTO' ||
-      r.risk_level === 'CRITICO' ||
-      !r.epc_implemented ||
-      !r.epc_effective
-    )
-    .map(r => {
-      const ghe = clientGhes.find(g => g.id === r.ghe_id);
-      const isCritical = r.risk_level === 'MUITO_ALTO' || r.risk_level === 'CRITICO' || r.risk_level === 'ALTO';
-      return {
-        id: r.id,
-        action: !r.epc_implemented
-          ? `Implantar medida de controle coletivo para ${r.agent_name}`
-          : !r.epc_effective
-            ? `Revisar eficácia do controle coletivo de ${r.agent_name}`
-            : `Reavaliar exposição e controles de ${r.agent_name}`,
-        target: ghe?.name || 'GHE não vinculado',
-        deadline: isCritical ? 'Imediato (risco alto/crítico)' : 'Próximo ciclo anual',
-        statusLabel: r.epc_implemented && r.epc_effective ? 'Em monitoramento' : 'Pendente',
-        isPending: !(r.epc_implemented && r.epc_effective)
-      };
-    });
+  // Plano de acao: a regra e o recorte do PGR (lib/planoDeAcao.ts,
+  // acoesDoPlano), com o mesmo numero R-... e a mesma ordem do documento.
+  // Havia aqui uma TERCEIRA copia da regra, com criterio proprio (risco alto
+  // ou sem EPC eficaz), prazo pela faixa e o responsavel tecnico como
+  // responsavel de toda acao: a tela mostrava um plano e o PDF imprimia
+  // outro. O recorte repete o de exportPGRDocumentPdf, que recebe clientGhes,
+  // environmentalRisks e clientEmployees.
+  const idDoClienteDoPlano = clientObj?.id || '';
+  const ghesDoPlano = clientGhes.filter(g => !g.client_id || g.client_id === idDoClienteDoPlano);
+  const idsDeGheDoPlano = new Set(ghesDoPlano.map(g => g.id));
+  // O recorte do PGR: risco de GHE do cliente, ou com o proprio client_id.
+  // Serve tambem ao PGRTR e ao LTCAT da tela, que liam environmentalRisks
+  // inteiro - os riscos de TODOS os clientes.
+  const riscosDoCliente = environmentalRisks.filter(
+    r => idsDeGheDoPlano.has(r.ghe_id) || r.client_id === idDoClienteDoPlano
+  );
+  const actionPlanRows = acoesDoPlano(
+    riscosDoCliente,
+    ghesDoPlano,
+    (gheId: string) => clientEmployees.filter(e => e.ghe_id === gheId).length,
+    { acoes: pgrActionPlan, efetivo: clientEmployees.length }
+  );
+  const emissao = dataBR(dataDeHoje());
 
   const selectedEvent = esocialEvents.find(e => e.id === selectedXmlEventId) || esocialEvents[0];
   const xmlPayload = selectedEvent ? (selectedEvent.xml_content || generateESocialXmlPreview(selectedEvent)) : '<esocial>Nenhum evento selecionado</esocial>';
@@ -171,9 +167,17 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
 
   const handleTransmitSelectedEvent = () => {
     if (!selectedEvent) return;
-    transmitESocialEvent(selectedEvent.id);
-    setSuccessToast(`Evento ${selectedEvent.event_type} (${selectedEvent.event_number}) assinado com certificado A1 e transmitido ao eSocial!`);
-    setTimeout(() => setSuccessToast(null), 5000);
+    // Dizia "assinado com certificado A1 e transmitido ao eSocial" sempre, e
+    // ignorava a resposta. O sistema nao assina nem transmite: o contexto
+    // valida o XML e deixa o evento pronto para envio pelo canal oficial.
+    const r = transmitESocialEvent(selectedEvent.id);
+    setSuccessToast(
+      r?.success
+        ? `Evento ${selectedEvent.event_type} (${selectedEvent.event_number}) validado e pronto para envio. ` +
+          'O PrevSafe ainda não transmite: envie pelo canal oficial e registre o recibo.'
+        : `Evento ${selectedEvent.event_type} (${selectedEvent.event_number}) não validado: ${r?.error || 'erro desconhecido'}`
+    );
+    setTimeout(() => setSuccessToast(null), 8000);
   };
 
   const handlePrintDoc = () => {
@@ -199,7 +203,8 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
         jobs: clientJobs,
         ergonomicAssessments: clientAeps,
         technicalProfessionals,
-        technicalResponsibilities
+        technicalResponsibilities,
+        pgrActionPlan
       });
       setSuccessToast('PDF do PGR (NR-01) gerado com sucesso!');
     } else if (activeDocType === 'PGRTR') {
@@ -207,7 +212,9 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
         client: clientObj,
         organization,
         ghes: clientGhes,
-        risks: environmentalRisks,
+        // O PGRTR nao recorta por cliente (ao contrario do PGR): com
+        // environmentalRisks inteiro, saiam riscos de outros clientes.
+        risks: riscosDoCliente,
         employees: clientEmployees,
         technicalProfessionals,
         technicalResponsibilities
@@ -276,7 +283,9 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
         jobs: hierarchyJobs,
         units,
         technicalProfessionals,
-        technicalResponsibilities
+        technicalResponsibilities,
+        // As acoes tem de ser as mesmas do PGR, com o mesmo numero.
+        pgrActionPlan
       });
       setSuccessToast('PDF do relatório de fatores psicossociais gerado com sucesso!');
     } else if (activeDocType === 'INSALUBRIDADE') {
@@ -499,8 +508,11 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
           <p className="font-semibold text-slate-100">
             Geração Automatizada com Alimentação Cruzada e Laudos Técnicos Completos:
           </p>
+          {/* Prometia "100% de consistencia tecnica, juridica e fiscal". O
+              documento e tao bom quanto o cadastro: o que falta sai como
+              pendencia, e nao preenchido. */}
           <p className="text-slate-400">
-            Todos os documentos (<strong>PGR, PGRTR, PCMSO, LTCAT, Laudo de Insalubridade NR-15, Laudo de Periculosidade NR-16, Kit Admissional e XMLs do eSocial</strong>) são gerados em tempo real a partir do preenchimento da hierarquia, dos inventários de riscos por GHE, exames e dados cadastrais, garantindo 100% de consistência técnica, jurídica e fiscal.
+            Todos os documentos (<strong>PGR, PGRTR, PCMSO, LTCAT, Laudo de Insalubridade NR-15, Laudo de Periculosidade NR-16, Kit Admissional e XMLs do eSocial</strong>) são gerados a partir da hierarquia, dos inventários de riscos por GHE, dos exames e dos dados cadastrais. O que não estiver cadastrado sai como pendência no documento — nada é preenchido por padrão.
           </p>
         </div>
       </div>
@@ -518,11 +530,12 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
                 Inventário Geral de Riscos Ocupacionais & Plano de Ação (GRO / PGR)
               </h2>
               <p className="text-xs text-slate-400">
-                Empresa: <strong className="text-slate-200">{clientObj?.trade_name || clientObj?.legal_name || 'Empresa Cliente'}</strong> • CNPJ: <span className="font-mono">{clientObj?.document_number || 'Não informado'}</span>
+                Empresa: <strong className="text-slate-200">{clientObj?.trade_name || clientObj?.legal_name || 'Cliente não selecionado'}</strong> • CNPJ: <span className="font-mono">{clientObj?.document_number || 'Não informado'}</span>
               </p>
             </div>
             <div className="text-right text-xs text-slate-400 space-y-1">
-              <div>Vigência: <span className="text-teal-400 font-semibold">2026 / 2027</span></div>
+              {/* Era "Vigencia: 2026 / 2027", escrito no codigo. A data e a da emissao. */}
+              <div>Emissão: <span className="text-teal-400 font-semibold">{emissao}</span></div>
               <div>Grau de Risco: <span className="text-slate-200 font-bold">
                 {clientObj?.risk_degree ? `${clientObj.risk_degree} (NR-04)` : 'não classificado'}
               </span></div>
@@ -547,7 +560,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
               </div>
               <div className="bg-slate-950 p-3 rounded-lg border border-slate-800">
                 <span className="text-slate-500 font-semibold block text-[10px]">População Exposta:</span>
-                <span className="font-bold text-teal-400">{clientEmployees.length} colaboradores ativos</span>
+                <span className="font-bold text-teal-400">{clientEmployees.length} trabalhador(es) cadastrado(s)</span>
               </div>
             </div>
           </div>
@@ -572,7 +585,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
                       <p className="text-[11px] text-slate-400">{ghe.description}</p>
                     </div>
                     <span className="text-xs bg-slate-900 border border-slate-800 px-2.5 py-1 rounded text-slate-300">
-                      {gheEmps.length} expostos • {ghe.work_schedule_description || 'Jornada 44h/semana'}
+                      {gheEmps.length} expostos • {ghe.work_schedule_description || 'jornada não informada'}
                     </span>
                   </div>
 
@@ -600,18 +613,45 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
                               {r.evaluation_type} {r.measured_value ? `(${r.measured_value} ${r.measurement_unit})` : ''}
                             </td>
                             <td className="py-2 px-3">
-                              {r.epc_implemented && <div className="text-slate-300">EPC Eficaz</div>}
+                              {/* Dizia "EPC Eficaz" so por estar implantado. A eficacia
+                                  e a afericao registrada no plano de acao. */}
+                              {r.epc_implemented && <div className="text-slate-300">EPC implantado</div>}
+                              {r.epc_effective && <div className="text-emerald-300">EPC eficaz (aferido)</div>}
                               {r.epi_required && r.epis?.[0] && (
                                 <div className="text-teal-300 font-mono text-[10px]">EPI CA {r.epis[0].ca_number}</div>
                               )}
                             </td>
                             <td className="py-2 px-3">
-                              <span className="px-1.5 py-0.5 bg-slate-800 rounded font-semibold text-slate-200">
-                                {r.severity || 3} x {r.probability || 3} = {(r.severity || 3) * (r.probability || 3)}
-                              </span>
+                              {/* Era `|| 3`: risco sem classificacao aparecia 3 x 3 = 9. */}
+                              {(() => {
+                                const c = classificarRisco(r.severity, r.probability);
+                                return c ? (
+                                  <span className="px-1.5 py-0.5 bg-slate-800 rounded font-semibold text-slate-200 whitespace-nowrap">
+                                    {c.severidade} x {c.probabilidade} = {c.score} · {c.rotulo}
+                                  </span>
+                                ) : (
+                                  <span className="text-amber-300 font-semibold">não classificado</span>
+                                );
+                              })()}
                             </td>
                             <td className="py-2 px-3 text-slate-300 font-medium">
-                              {r.ltcat_technical_conclusion || 'Manter controles e monitoramento periódico'}
+                              {/* Sem conclusao do LTCAT, dizia "Manter controles e
+                                  monitoramento periodico" de qualquer risco. Agora e a
+                                  situacao do risco no plano, a mesma do PDF. */}
+                              {(() => {
+                                const linhas = actionPlanRows.filter(l => l.risco?.id === r.id);
+                                if (linhas.length === 0 || linhas.every(l => !l.registro)) {
+                                  return <span className="text-amber-300">sem ação no plano</span>;
+                                }
+                                return linhas.map(l => (
+                                  <div key={l.numero} className="whitespace-nowrap">
+                                    <span className="font-mono text-[10px] text-slate-200">{l.numero}</span>{' '}
+                                    <span className={l.atrasada ? 'text-rose-300' : l.aceita ? 'text-slate-300' : 'text-amber-300'}>
+                                      {l.aceita ? l.status : 'sugestão não aceita'}
+                                    </span>
+                                  </div>
+                                ));
+                              })()}
                             </td>
                           </tr>
                         ))}
@@ -627,14 +667,19 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
           <div className="space-y-3">
             <h3 className="text-sm font-bold text-slate-200 flex items-center gap-2">
               <FileSpreadsheet className="w-4 h-4 text-teal-400" />
-              3. Plano de Ação Anual (Cronograma 5W2H)
+              3. Plano de Ação (seção 8 do PGR)
             </h3>
+            <p className="text-[11px] text-slate-400">
+              O mesmo quadro do PDF. Ações se cadastram, aceitam e acompanham na aba 2.1 (Plano de Ação): sugestão
+              não aceita sai como pendência.
+            </p>
             <div className="bg-slate-950 border border-slate-800 rounded-xl overflow-x-auto">
-              <table className="w-full text-left text-xs text-slate-300">
+              <table className="w-full min-w-[720px] text-left text-xs text-slate-300">
                 <thead className="bg-slate-900 text-slate-400 uppercase text-[10px] border-b border-slate-800">
                   <tr>
-                    <th className="py-2.5 px-3">Ação Proposta (O que fazer)</th>
-                    <th className="py-2.5 px-3">GHE Alvo</th>
+                    <th className="py-2.5 px-3">Nº</th>
+                    <th className="py-2.5 px-3">Medida</th>
+                    <th className="py-2.5 px-3">GHE</th>
                     <th className="py-2.5 px-3">Responsável</th>
                     <th className="py-2.5 px-3">Prazo</th>
                     <th className="py-2.5 px-3">Status</th>
@@ -643,24 +688,45 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
                 <tbody className="divide-y divide-slate-800/60">
                   {actionPlanRows.length === 0 ? (
                     <tr>
-                      <td colSpan={5} className="py-6 px-3 text-center text-slate-500">
-                        Nenhuma ação pendente. O plano 5W2H é montado a partir do inventário de riscos
-                        (riscos altos/críticos ou sem controle coletivo eficaz).
+                      <td colSpan={6} className="py-6 px-3 text-center text-slate-500">
+                        Sem riscos no inventário deste cliente, não há plano de ação: o plano nasce do inventário.
                       </td>
                     </tr>
-                  ) : actionPlanRows.map(row => (
-                    <tr key={row.id} className="hover:bg-slate-900/40">
-                      <td className="py-2.5 px-3 font-semibold text-slate-100">{row.action}</td>
-                      <td className="py-2.5 px-3 text-slate-400">{row.target}</td>
-                      <td className="py-2.5 px-3">{rtName}</td>
-                      <td className="py-2.5 px-3 text-teal-400">{row.deadline}</td>
-                      <td className="py-2.5 px-3">
-                        <span className={`px-2 py-0.5 rounded font-bold text-[10px] ${row.isPending ? 'bg-amber-500/20 text-amber-300' : 'bg-emerald-500/20 text-emerald-300'}`}>
-                          {row.statusLabel}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
+                  ) : actionPlanRows.map(row => {
+                    const pendente = !row.aceita || row.faltas.length > 0;
+                    return (
+                      <tr key={row.numero} className="hover:bg-slate-900/40 align-top">
+                        <td className="py-2.5 px-3 font-mono text-[10px] text-slate-200 whitespace-nowrap">{row.numero}</td>
+                        <td className="py-2.5 px-3">
+                          <span className="font-semibold text-slate-100">{row.medida}</span>
+                          <div className="text-[10px] text-slate-500">{row.hierarquia} · {row.tipo}</div>
+                          {row.faltas.length > 0 && (
+                            <div className="text-[10px] text-amber-300 mt-0.5">{row.faltas.join('; ')}</div>
+                          )}
+                        </td>
+                        <td className="py-2.5 px-3 text-slate-400">{row.gheNome}</td>
+                        <td className="py-2.5 px-3">
+                          {row.responsavel || <span className="text-amber-300">a definir</span>}
+                        </td>
+                        <td className="py-2.5 px-3 whitespace-nowrap">
+                          {row.prazo
+                            ? <span className={row.atrasada ? 'text-rose-300 font-semibold' : 'text-teal-400'}>{dataBR(row.prazo)}</span>
+                            : <span className="text-amber-300">a definir</span>}
+                        </td>
+                        <td className="py-2.5 px-3">
+                          <span className={`px-2 py-0.5 rounded font-bold text-[10px] ${
+                            row.atrasada
+                              ? 'bg-rose-500/20 text-rose-300'
+                              : pendente
+                                ? 'bg-amber-500/20 text-amber-300'
+                                : 'bg-emerald-500/20 text-emerald-300'
+                          }`}>
+                            {row.status}
+                          </span>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
@@ -680,62 +746,82 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
                 Gestão de Segurança, Saúde e Meio Ambiente de Trabalho Rural
               </h2>
               <p className="text-xs text-slate-400">
-                Propriedade Rural: <strong className="text-slate-200">{clientObj?.trade_name || clientObj?.legal_name || 'Fazenda / Agroindústria'}</strong> • CNPJ/CAEPF: <span className="font-mono">{clientObj?.document_number || 'Não informado'}</span>
+                Propriedade Rural: <strong className="text-slate-200">{clientObj?.trade_name || clientObj?.legal_name || 'Cliente não selecionado'}</strong> • CNPJ/CAEPF: <span className="font-mono">{clientObj?.document_number || 'Não informado'}</span>
               </p>
             </div>
             <div className="text-right text-xs text-slate-400 space-y-1">
-              <div>Vigência Rural: <span className="text-emerald-400 font-semibold">2026</span></div>
+              <div>Emissão: <span className="text-emerald-400 font-semibold">{emissao}</span></div>
               <div>Norma: <span className="text-slate-200 font-bold">NR-31 (Portaria 22.677)</span></div>
             </div>
           </div>
 
+          {/* Eram quatro quadros fixos de "requisitos" (20 horas de capacitacao,
+              soro antiofidico, garrafas termicas...), iguais para toda
+              propriedade e com itens da NR-31 citados de memoria. O PDF ja
+              tinha trocado isso pelo inventario real e por uma ressalva de
+              escopo; a tela repete o PDF (exportPGRTRDocumentPdf). */}
           <div className="space-y-3">
             <h3 className="text-sm font-bold text-slate-200 flex items-center gap-2">
               <Tractor className="w-4 h-4 text-emerald-400" />
-              Requisitos Específicos do Meio Rural e Agropecuário
+              Inventário de Riscos do Estabelecimento Rural
             </h3>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-              <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
-                <span className="font-bold text-emerald-400 flex items-center gap-2">
-                  <ShieldCheck className="w-4 h-4" />
-                  Agrotóxicos, Adjuvantes e Produtos Afins (NR-31.7)
-                </span>
-                <p className="text-slate-300">
-                  Capacitação obrigatória de 20 horas para aplicadores, vestimentas hidrorrepelentes higienizadas pelo empregador, descarte de embalagens vazias com tríplice lavagem e guarda em depósito exclusivo.
-                </p>
-              </div>
-
-              <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
-                <span className="font-bold text-emerald-400 flex items-center gap-2">
-                  <Tractor className="w-4 h-4" />
-                  Máquinas, Implementos e Tratores Agrícolas (NR-31.12)
-                </span>
-                <p className="text-slate-300">
-                  Proteção completa da Tomada de Força (TDP) e eixos cardãs, estruturas de proteção contra tombamento (ROPS/EPCC), cinto de segurança e manutenção preventiva periódica.
-                </p>
-              </div>
-
-              <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
-                <span className="font-bold text-emerald-400 flex items-center gap-2">
-                  <AlertTriangle className="w-4 h-4" />
-                  Animais Peçonhentos e Biológicos (NR-31.14)
-                </span>
-                <p className="text-slate-300">
-                  Fornecimento e uso obrigatório de perneiras de couro/PVC, botas de segurança, kit de primeiros socorros em campo e protocolo de encaminhamento com soro antiofídico.
-                </p>
-              </div>
-
-              <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
-                <span className="font-bold text-emerald-400 flex items-center gap-2">
-                  <Sparkles className="w-4 h-4" />
-                  Condições Sanitárias e de Conforto no Campo (NR-31.20)
-                </span>
-                <p className="text-slate-300">
-                  Instalações sanitárias móveis ou fixas separadas por sexo, água potável fresca disponível em garrafas térmicas e locais protegidos para refeições e pausas térmicas.
-                </p>
-              </div>
+            <div className="bg-slate-950 border border-slate-800 rounded-xl overflow-x-auto">
+              <table className="w-full min-w-[640px] text-left text-xs text-slate-300">
+                <thead className="bg-slate-900 text-slate-400 uppercase text-[10px] border-b border-slate-800">
+                  <tr>
+                    <th className="py-2.5 px-3">GHE / Frente de trabalho</th>
+                    <th className="py-2.5 px-3">Perigo / Agente de risco</th>
+                    <th className="py-2.5 px-3">Medidas de controle registradas</th>
+                    <th className="py-2.5 px-3">Situação</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-800/60">
+                  {riscosDoCliente.filter(r => r.status !== 'INACTIVE').length === 0 ? (
+                    <tr>
+                      <td colSpan={4} className="py-6 px-3 text-center text-amber-300">
+                        Inventário de riscos vazio: não há agente de risco cadastrado para este estabelecimento.
+                        Levante os perigos antes de emitir o PGRTR.
+                      </td>
+                    </tr>
+                  ) : riscosDoCliente.filter(r => r.status !== 'INACTIVE').map(r => {
+                    const ghe = clientGhes.find(g => g.id === r.ghe_id);
+                    const controles = [
+                      r.epc_implemented ? `EPC: ${r.epc_description?.trim() || 'sem descrição'}` : '',
+                      r.epi_required ? 'EPI exigido' : ''
+                    ].filter(Boolean);
+                    return (
+                      <tr key={r.id} className="align-top">
+                        <td className="py-2.5 px-3 text-slate-400">
+                          {[ghe?.code, ghe?.name].filter(Boolean).join(' — ') || 'GHE não vinculado'}
+                        </td>
+                        <td className="py-2.5 px-3">
+                          <span className="font-semibold text-slate-100">{r.agent_name || 'Agente não identificado'}</span>
+                          <div className="text-[10px] text-slate-500">Fonte: {r.generating_source?.trim() || 'não informada'}</div>
+                        </td>
+                        <td className="py-2.5 px-3">
+                          {controles.length > 0 ? controles.join(' · ') : <span className="text-amber-300">Nenhuma medida de controle registrada</span>}
+                        </td>
+                        <td className="py-2.5 px-3">
+                          {r.epc_implemented && r.epc_effective
+                            ? <span className="text-emerald-300">Controle implantado e avaliado como eficaz</span>
+                            : r.epc_implemented
+                              ? <span className="text-slate-300">Controle implantado, eficácia não confirmada</span>
+                              : <span className="text-amber-300">Pendente — sem controle coletivo registrado</span>}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
             </div>
+
+            <p className="text-[11px] text-amber-200/80">
+              Escopo deste documento: o inventário acima reproduz os riscos registrados no sistema. A verificação
+              específica dos itens 31.7 (agrotóxicos), 31.10 (trabalho a céu aberto), 31.12 (máquinas, implementos e
+              tomada de força) e 31.14 (agentes biológicos e animais peçonhentos) da NR-31 depende de inspeção em campo
+              e não está registrada neste sistema — a ausência de apontamento não significa conformidade.
+            </p>
           </div>
         </div>
       )}
@@ -790,7 +876,19 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
             </div>
             <div className="text-right text-xs text-slate-400 space-y-1">
               <div>Artigo 58 da Lei nº 8.213/91</div>
-              <div>Enquadramento GFIP: <span className="text-purple-400 font-bold">Código 04 (25 Anos)</span></div>
+              {/* Era "Codigo 04 (25 Anos)" para todo cliente. Os codigos sao os
+                  informados no inventario deste cliente. */}
+              <div>
+                Enquadramento GFIP:{' '}
+                <span className="text-purple-400 font-bold">
+                  {(() => {
+                    const codigos = Array.from(new Set(
+                      riscosDoCliente.filter(r => r.special_retirement_applies && r.gfip_code).map(r => r.gfip_code)
+                    )).sort();
+                    return codigos.length > 0 ? codigos.join(', ') : 'nenhum código informado';
+                  })()}
+                </span>
+              </div>
             </div>
           </div>
 
@@ -801,16 +899,35 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
 
             <div className="bg-slate-950 border border-slate-800 rounded-xl p-4 space-y-3">
               <h4 className="font-bold text-slate-100 text-sm">Resumo dos Agentes Caracterizados para Aposentadoria Especial:</h4>
+              {/* Listava environmentalRisks inteiro (riscos de TODOS os clientes)
+                  e dava "25 Anos" a todo codigo que nao fosse 02 ou 03 - inclusive
+                  risco sem codigo informado. */}
               <div className="space-y-2">
-                {environmentalRisks.filter(r => r.special_retirement_applies).map(r => (
-                  <div key={r.id} className="p-3 bg-purple-500/10 border border-purple-500/30 rounded-lg flex justify-between items-center">
-                    <div>
+                {riscosDoCliente.filter(r => r.special_retirement_applies).length === 0 && (
+                  <p className="text-slate-500">Nenhum agente do inventário deste cliente está marcado para aposentadoria especial.</p>
+                )}
+                {riscosDoCliente.filter(r => r.special_retirement_applies).map(r => (
+                  <div key={r.id} className="p-3 bg-purple-500/10 border border-purple-500/30 rounded-lg flex flex-col sm:flex-row justify-between sm:items-center gap-2">
+                    <div className="min-w-0">
                       <span className="font-bold text-purple-300">{r.agent_name}</span>
-                      <span className="ml-2 font-mono text-[11px] text-teal-400">Tab. 24: {r.risk_code_table_24}</span>
-                      <p className="text-[11px] text-slate-400 mt-0.5">{r.generating_source} • Medição: {r.measured_value} {r.measurement_unit}</p>
+                      {r.risk_code_table_24 && (
+                        <span className="ml-2 font-mono text-[11px] text-teal-400">Tab. 24: {r.risk_code_table_24}</span>
+                      )}
+                      <p className="text-[11px] text-slate-400 mt-0.5">
+                        {r.generating_source || 'Fonte não informada'} • Medição:{' '}
+                        {r.measured_value
+                          ? `${r.measured_value} ${r.measurement_unit || ''}`
+                          : r.evaluation_type === 'QUANTITATIVA' ? 'pendente' : 'avaliação qualitativa'}
+                      </p>
                     </div>
-                    <span className="px-2 py-1 bg-purple-600 text-slate-950 font-bold rounded text-[10px]">
-                      {r.gfip_code === '02' ? 'Aposentadoria Especial 15 Anos' : r.gfip_code === '03' ? 'Aposentadoria Especial 20 Anos' : 'Aposentadoria Especial 25 Anos'} (GFIP {r.gfip_code})
+                    <span className="px-2 py-1 bg-purple-600 text-slate-950 font-bold rounded text-[10px] shrink-0">
+                      {r.gfip_code === '02'
+                        ? 'Aposentadoria Especial 15 Anos (GFIP 02)'
+                        : r.gfip_code === '03'
+                          ? 'Aposentadoria Especial 20 Anos (GFIP 03)'
+                          : r.gfip_code === '04'
+                            ? 'Aposentadoria Especial 25 Anos (GFIP 04)'
+                            : `Código GFIP ${r.gfip_code || 'não informado'}`}
                     </span>
                   </div>
                 ))}
@@ -1123,7 +1240,8 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
                       </h3>
                     </div>
                     <p className="text-xs text-slate-400 mt-1">
-                      Status: <strong className="text-slate-200">{selectedEvent.status}</strong> • Certificado: ICP-Brasil A1 (SERPRO)
+                      {/* Dizia "Certificado: ICP-Brasil A1 (SERPRO)": o sistema nao assina nem transmite. */}
+                      Status: <strong className="text-slate-200">{selectedEvent.status}</strong> • Envio: pelo canal oficial do eSocial (o PrevSafe ainda não assina nem transmite)
                     </p>
                   </div>
 
@@ -1151,7 +1269,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
                         className="px-3.5 py-1.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 shadow-md"
                       >
                         <Send className="w-4 h-4" />
-                        Transmitir ao eSocial
+                        Validar para envio
                       </button>
                     )}
                   </div>

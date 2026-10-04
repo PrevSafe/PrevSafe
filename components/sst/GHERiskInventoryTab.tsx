@@ -6,6 +6,19 @@ import { SSTGroupHomogeneousExposure, SSTEnvironmentalRisk, RiskCategoryType, Oc
 import { SeletorTabela27 } from './SeletorTabela27';
 import { consultarProcedimento, codigoExisteNaTabela27 } from '@/lib/tabela27';
 import { classificarRisco } from '@/lib/classificacaoDeRisco';
+import { acaoAceita, estaAtrasada } from '@/lib/planoDeAcao';
+import { dataDeHoje } from '@/lib/datas';
+import { ehRiscoPsicossocial } from '@/lib/psicossocial';
+import {
+  PGR_SEVERIDADE,
+  PGR_SEVERIDADE_CABECALHO,
+  PGR_PROBABILIDADE_REGRAS,
+  PGR_PROBABILIDADE_REFERENCIAS,
+  PGR_PROBABILIDADE_FISICO_QUIMICO,
+  PGR_PROBABILIDADE_BIOLOGICO,
+  PGR_PROBABILIDADE_ACIDENTE,
+  PGR_PROBABILIDADE_ERGONOMICO
+} from '@/lib/pgrModelo';
 import {
   SITUACOES_OPERACIONAIS,
   normalizarSituacoes,
@@ -43,6 +56,71 @@ interface GHERiskInventoryTabProps {
   selectedClientId: string;
 }
 
+// ---------------------------------------------------------------------------
+// Escalas de severidade e probabilidade do MODELO de PGR (secoes 5.4 e 5.5)
+//
+// As linhas vem de lib/pgrModelo.ts, as mesmas que o PDF imprime; os
+// cabecalhos das colunas repetem os das tabelas do PDF. O formulario nao
+// tinha os dois campos: risco novo nunca salvava, e ao editar o risco sem
+// classificacao ganhava S3 x P3 - um "Medio" que ninguem avaliou.
+// ---------------------------------------------------------------------------
+
+type GrupoDaEscala = 'FISICO_QUIMICO' | 'BIOLOGICO' | 'ACIDENTE' | 'ERGONOMICO';
+
+const semAcento = (s: string) =>
+  String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toUpperCase();
+
+/** Qual tabela de probabilidade vale para o tipo de perigo. null: o modelo nao gradua. */
+function grupoDaEscala(categoria: string, psicossocial: boolean): GrupoDaEscala | null {
+  if (psicossocial) return 'ERGONOMICO';
+  const c = semAcento(categoria);
+  if (c.startsWith('FISIC') || c.startsWith('QUIMIC')) return 'FISICO_QUIMICO';
+  if (c.startsWith('BIOLOG')) return 'BIOLOGICO';
+  if (c.startsWith('ACIDENT')) return 'ACIDENTE';
+  if (c.startsWith('ERGONOM')) return 'ERGONOMICO';
+  return null;
+}
+
+const ESCALA_DE_PROBABILIDADE: Record<GrupoDaEscala, { titulo: string; colunas: string[]; linhas: string[][] }> = {
+  FISICO_QUIMICO: {
+    titulo: 'Agentes físicos e químicos (NA = nível de ação; LEO = limite de exposição)',
+    colunas: ['Critério quantitativo', 'Critério qualitativo (item 9.4.1 da NR-09)'],
+    linhas: PGR_PROBABILIDADE_FISICO_QUIMICO
+  },
+  BIOLOGICO: {
+    titulo: 'Agentes biológicos',
+    colunas: ['Critério'],
+    linhas: PGR_PROBABILIDADE_BIOLOGICO
+  },
+  ACIDENTE: {
+    titulo: 'Acidentes (exposição ao perigo + eficácia, subitem 1.5.4.4.5.4)',
+    colunas: ['Exposição', 'Medidas existentes'],
+    linhas: PGR_PROBABILIDADE_ACIDENTE
+  },
+  ERGONOMICO: {
+    titulo: 'Fatores ergonômicos e psicossociais (exigências = duração x intensidade + eficácia, subitem 1.5.4.4.5.3)',
+    colunas: ['Duração da exigência', 'Intensidade', 'Medidas existentes'],
+    linhas: PGR_PROBABILIDADE_ERGONOMICO
+  }
+};
+
+/** Coluna da tabela de severidade (secao 5.4) para o tipo de perigo. */
+const COLUNA_DA_SEVERIDADE: Record<GrupoDaEscala, { indice: number; rotulo: string }> = {
+  FISICO_QUIMICO: { indice: 3, rotulo: 'Físicos, químicos e biológicos' },
+  BIOLOGICO: { indice: 3, rotulo: 'Físicos, químicos e biológicos' },
+  ACIDENTE: { indice: 2, rotulo: 'Acidentes' },
+  ERGONOMICO: { indice: 4, rotulo: 'Ergonômicos e psicossociais' }
+};
+
+/** 1 a 5, ou 0 (nao classificado). Nunca um valor "medio" no lugar do que falta. */
+const gradacao = (v: unknown): number => {
+  const n = Number(v);
+  return n === 1 || n === 2 || n === 3 || n === 4 || n === 5 ? n : 0;
+};
+
+/** Os codigos 02, 03 e 04 do select de GFIP desta tela sao os que ensejam aposentadoria especial. */
+const GFIP_QUE_ENSEJA = ['02', '03', '04'];
+
 export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ selectedClientId }) => {
   const {
     ghes,
@@ -60,8 +138,27 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
     generateS2240FromGhe,
     applyRisksToTargets,
     applyExamsToTargets,
-    units
+    units,
+    pgrActionPlan = []
   } = usePrevSafe();
+
+  const hoje = dataDeHoje();
+
+  /**
+   * A situacao do risco no plano de acao do PGR (lib/planoDeAcao.ts). Risco
+   * sem acao aceita sai no PGR como pendencia; o selo avisa aqui, onde o
+   * risco e cadastrado, em vez de so no documento.
+   */
+  const situacaoNoPlano = (riskId: string) => {
+    const doRisco = pgrActionPlan.filter((a) => a?.risk_id === riskId && a.status !== 'DESCARTADA');
+    const aceitas = doRisco.filter(acaoAceita);
+    return {
+      total: doRisco.length,
+      aceitas: aceitas.length,
+      sugeridas: doRisco.filter((a) => a.status === 'SUGERIDA').length,
+      atrasadas: aceitas.filter((a) => estaAtrasada(a, hoje)).length
+    };
+  };
 
   const clientGhes = ghes.filter(g => !selectedClientId || g.client_id === selectedClientId);
   // As listas de cargos mostravam `hierarchyJobs` inteiro: davam para marcar o
@@ -103,12 +200,15 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
     target_job_ids: string[];
     target_sector_ids: string[];
   }>({
-    exam_name: 'Audiometria Tonal Ocupacional',
-    exam_code_table_27: '0295',
+    // O mesmo estado vazio de handleOpenMultiExamModal. Aqui ainda morava
+    // "Audiometria" com o codigo 0295 (avaliacao clinica) e uma instrucao de
+    // preparo que nenhum medico escreveu.
+    exam_name: '',
+    exam_code_table_27: '',
     periodicity_months: 12,
     triggers: ['ADMISSIONAL', 'PERIODICO', 'DEMISSIONAL'],
     mandatory_by_standard: 'NR-07',
-    preparation_instructions: 'Repouso auditivo de no mínimo 14 horas prévias ao exame.',
+    preparation_instructions: '',
     target_mode: 'MULTI_GHE',
     target_ghe_ids: [],
     target_job_ids: [],
@@ -133,8 +233,11 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
     description: '',
     sector_ids: [],
     job_ids: [],
-    work_schedule_description: 'Jornada regular: 44h semanais, 07:00 às 17:00 com 1h intervalo',
-    environment_description: 'Galpão industrial fechado, piso nivelado, ventilação natural e exaustão mecânica'
+    // Jornada e ambiente vinham escritos ("44h semanais", "galpao industrial
+    // fechado... exaustao mecanica") e iam para o PGR e o LTCAT como descricao
+    // do local. So quem foi la descreve.
+    work_schedule_description: '',
+    environment_description: ''
   });
 
   // Risk Modal
@@ -155,18 +258,20 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
     tolerance_limit: string;
     action_level: string;
     measurement_methodology: string;
-    severity: 1 | 2 | 3 | 4 | 5;
-    probability: 1 | 2 | 3 | 4 | 5;
+    /** 1 a 5; 0 = ainda nao classificado. */
+    severity: number;
+    probability: number;
     epc_implemented: boolean;
     epc_description: string;
     epi_required: boolean;
     ca_number_input: string;
     epi_name_input: string;
     special_retirement_applies: boolean;
-    gfip_code: '00' | '01' | '02' | '03' | '04';
+    /** '' = nao informado: '00' afirmaria "sem exposicao a agente nocivo". */
+    gfip_code: '' | '00' | '01' | '02' | '03' | '04';
     ltcat_technical_conclusion: string;
     insalubridade_applies: boolean;
-    insalubridade_degree: '10%' | '20%' | '40%';
+    insalubridade_degree: '' | '10%' | '20%' | '40%';
     periculosidade_applies: boolean;
   }>({
     // Segunda copia do mesmo risco pre-preenchido, aqui no estado inicial.
@@ -187,24 +292,34 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
     tolerance_limit: '',
     action_level: '',
     measurement_methodology: '',
-    severity: 0 as any,
-    probability: 0 as any,
+    severity: 0,
+    probability: 0,
     epc_implemented: false,
     epc_description: '',
     epi_required: false,
     ca_number_input: '',
     epi_name_input: '',
     special_retirement_applies: false,
-    gfip_code: '00',
+    gfip_code: '',
     ltcat_technical_conclusion: '',
     insalubridade_applies: false,
-    insalubridade_degree: '20%',
+    insalubridade_degree: '',
     periculosidade_applies: false
   });
 
   const [generatedS2240Success, setGeneratedS2240Success] = useState<string | null>(null);
   // O motivo de NAO ter gerado. Antes o clique nao produzia nada.
   const [generatedS2240Erro, setGeneratedS2240Erro] = useState<string | null>(null);
+
+  // A eficacia aferida pelo plano de acao so continua valendo para o MESMO
+  // EPC, ainda implantado. Uma regra so para o salvar e para o texto de
+  // leitura do formulario: os dois tem de dizer a mesma coisa.
+  const eficaciaDoEpcPreservada =
+    !!editingRisk
+    && !!editingRisk.epc_effective
+    && !!editingRisk.epc_implemented
+    && riskForm.epc_implemented
+    && (riskForm.epc_description || '').trim() === (editingRisk.epc_description || '').trim();
 
   const activeGhe = clientGhes.find(g => g.id === selectedGheId) || clientGhes[0];
   const gheRisks = environmentalRisks.filter(r => r.ghe_id === activeGhe?.id);
@@ -229,7 +344,8 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
         description: ghe.description || '',
         sector_ids: ghe.sector_ids || [],
         job_ids: ghe.job_ids || [],
-        work_schedule_description: ghe.work_schedule_description || '44h semanais',
+        // Era `|| '44h semanais'`: GHE sem jornada ganhava uma ao ser editado.
+        work_schedule_description: ghe.work_schedule_description || '',
         environment_description: ghe.environment_description || ''
       });
     } else {
@@ -243,8 +359,10 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
         // marcados - de qualquer cliente. Vinculo de cargo a GHE define quem
         // recebe risco e exame: nao se marca por conta propria.
         job_ids: [],
-        work_schedule_description: 'Jornada regular: 44h semanais, 07:00 às 17:00 com 1h intervalo',
-        environment_description: 'Galpão industrial fechado, piso nivelado, iluminação adequada conforme NR-17'
+        // Nascia com jornada de 44h e "galpao industrial fechado... iluminacao
+        // adequada conforme NR-17": uma conformidade declarada sem avaliacao.
+        work_schedule_description: '',
+        environment_description: ''
       });
     }
     setIsGheModalOpen(true);
@@ -279,16 +397,16 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
     }
 
     const unidadeDoCliente = units.find(u => u.client_id === selectedClientId);
-    const expostos = employees.filter(emp => emp.client_id === selectedClientId).length;
 
     const created = addGhe({
       client_id: selectedClientId,
       // Era 'unit-01' fixo, um id que pode nao existir para este cliente.
       client_unit_id: unidadeDoCliente?.id || '',
       ...gheForm,
-      // Era `|| 5`: um GHE sem colaborador cadastrado nascia dizendo que havia
-      // 5 expostos. Zero e a resposta correta.
-      total_exposed_workers: expostos
+      // Era `|| 5`, e depois o efetivo INTEIRO do cliente: um GHE recem-criado
+      // nao tem ninguem vinculado. Os expostos se contam pelos trabalhadores
+      // com este ghe_id, como no PGR (expostosDoGhe); aqui nasce com zero.
+      total_exposed_workers: 0
     });
     setSelectedGheId(created.id);
     setIsGheModalOpen(false);
@@ -302,7 +420,8 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
         agent_name: risk.agent_name,
         risk_code_table_24: risk.risk_code_table_24,
         generating_source: risk.generating_source,
-        propagation_path: risk.propagation_path || 'Aérea',
+        // Era `|| 'Aérea'`: risco sem via de propagacao ganhava uma ao ser editado.
+        propagation_path: risk.propagation_path || '',
         operational_situation: normalizarSituacoes(risk.operational_situation),
         operational_situation_note: risk.operational_situation_note || '',
         health_effects: risk.health_effects || '',
@@ -312,18 +431,23 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
         tolerance_limit: risk.tolerance_limit || '',
         action_level: risk.action_level || '',
         measurement_methodology: risk.measurement_methodology || '',
-        severity: risk.severity || 3,
-        probability: risk.probability || 3,
+        // Era `|| 3`: o risco sem classificacao virava S3 x P3, "Medio", ao
+        // abrir para editar - e salvava assim. Sem S ou P o campo fica vazio e
+        // o salvar exige a classificacao.
+        severity: gradacao(risk.severity),
+        probability: gradacao(risk.probability),
         epc_implemented: risk.epc_implemented,
         epc_description: risk.epc_description || '',
         epi_required: risk.epi_required,
         ca_number_input: risk.epis?.[0]?.ca_number || '',
         epi_name_input: risk.epis?.[0]?.epi_name || '',
         special_retirement_applies: risk.special_retirement_applies,
-        gfip_code: risk.gfip_code || '00',
+        // `|| '00'` afirmava "sem exposicao a agente nocivo"; `|| '20%'`, o
+        // grau de insalubridade. Sem valor gravado, fica sem valor.
+        gfip_code: risk.gfip_code || '',
         ltcat_technical_conclusion: risk.ltcat_technical_conclusion || '',
         insalubridade_applies: risk.insalubridade_applies,
-        insalubridade_degree: risk.insalubridade_degree || '20%',
+        insalubridade_degree: risk.insalubridade_degree || '',
         periculosidade_applies: risk.periculosidade_applies
       });
     } else {
@@ -352,18 +476,19 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
         measurement_methodology: '',
         // 0 = ainda nao classificado. Com 3 e 3 o risco ja nascia "MEDIO",
         // uma classificacao que nenhum profissional tinha feito.
-        severity: 0 as any,
-        probability: 0 as any,
+        severity: 0,
+        probability: 0,
         epc_implemented: false,
         epc_description: '',
         epi_required: false,
         ca_number_input: '',
         epi_name_input: '',
         special_retirement_applies: false,
-        gfip_code: '00',
+        // '00' afirmava "sem exposicao a agente nocivo" antes de qualquer avaliacao.
+        gfip_code: '',
         ltcat_technical_conclusion: '',
         insalubridade_applies: false,
-        insalubridade_degree: '20%',
+        insalubridade_degree: '',
         periculosidade_applies: false
       });
     }
@@ -418,10 +543,38 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
     }
     const risk_level = classificacao.nivel;
 
-    const epis = riskForm.epi_required && riskForm.ca_number_input ? [
+    // EPI. Ao EDITAR, a lista era refeita do zero com o primeiro EPI e as
+    // cinco condicoes em false: os demais EPIs do risco (o catalogo grava
+    // varios) sumiam, e EPI do catalogo sem CA era apagado a cada correcao de
+    // outro campo. Agora o mesmo EPI fica como estava; EPI novo, ou com outro
+    // CA, entra com as condicoes nao verificadas.
+    const caDoForm = riskForm.ca_number_input.trim();
+    const nomeDoForm = riskForm.epi_name_input.trim();
+    const episAnteriores = editingRisk?.epis || [];
+    const primeiroAnterior = episAnteriores[0];
+    const mesmoEpi =
+      !!primeiroAnterior
+      && (primeiroAnterior.ca_number || '').trim() === caDoForm
+      && (primeiroAnterior.epi_name || '').trim() === nomeDoForm;
+    const mesmoCa = !!primeiroAnterior && !!caDoForm && (primeiroAnterior.ca_number || '').trim() === caDoForm;
+    // EPI novo so se grava com CA (a regra que ja existia). Antes ele sumia em
+    // silencio e o risco ficava "EPI exigido" sem EPI nenhum.
+    if (riskForm.epi_required && !caDoForm && !mesmoEpi) {
+      alert('Informe o número do C.A. do EPI exigido, ou desmarque "EPI exigido".');
+      return;
+    }
+
+    const epis = !riskForm.epi_required
+      ? []
+      : mesmoEpi
+        ? episAnteriores
+        : mesmoCa
+          // Mesmo CA, nome corrigido: e o mesmo EPI, e o que foi verificado nele vale.
+          ? [{ ...primeiroAnterior, epi_name: nomeDoForm }, ...episAnteriores.slice(1)]
+          : caDoForm ? [
       {
-        ca_number: riskForm.ca_number_input,
-        epi_name: riskForm.epi_name_input || '',
+        ca_number: caDoForm,
+        epi_name: nomeDoForm,
         // AS CINCO CONDICOES VINHAM `true`, SEM CAMPO NENHUM NA TELA.
         //
         // Sao elas que decidem se a exposicao conta para APOSENTADORIA
@@ -438,8 +591,18 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
         uninterrupted_use: false,
         periodic_replacement: false,
         hygienic_conditions: false
-      }
+      },
+      ...episAnteriores.slice(1)
     ] : [];
+
+    // O select de GFIP desta tela diz quais codigos ensejam aposentadoria
+    // especial (02, 03 e 04). O campo special_retirement_applies nao tinha
+    // entrada no formulario e ficava false em todo risco manual, mesmo com
+    // GFIP 04 - o card dizia "Sem Aposentadoria" e o LTCAT nao o listava.
+    // Sem GFIP informado, fica o que estava.
+    const aposentadoriaEspecial = riskForm.gfip_code
+      ? GFIP_QUE_ENSEJA.includes(riskForm.gfip_code)
+      : riskForm.special_retirement_applies;
 
     const riskPayload = {
       client_id: activeGhe.client_id,
@@ -460,22 +623,29 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
       tolerance_limit: riskForm.tolerance_limit || undefined,
       action_level: riskForm.action_level || undefined,
       measurement_methodology: riskForm.measurement_methodology || undefined,
-      probability: riskForm.probability,
-      severity: riskForm.severity,
+      probability: classificacao.probabilidade,
+      severity: classificacao.severidade,
       risk_level,
       epc_implemented: riskForm.epc_implemented,
       epc_description: riskForm.epc_description || undefined,
       // Implantado e eficaz sao coisas diferentes: a NR-01 exige o
       // acompanhamento da EFICACIA das medidas (subitem 1.5.5.3). Copiar um
       // no outro dava por aferida uma eficacia que ninguem mediu.
-      epc_effective: false,
+      //
+      // A eficacia e registrada pelo plano de acao: e a afericao gravada la
+      // que marca o EPC como eficaz (lib/planoDeAcao.ts, efeitoNoRisco). Este
+      // formulario gravava false sempre, inclusive ao EDITAR, e apagava a
+      // eficacia aferida a cada correcao de outro campo. Fica a anterior
+      // enquanto o EPC continuar implantado e for o mesmo; EPC novo, trocado
+      // ou retirado volta a "nao verificado".
+      epc_effective: eficaciaDoEpcPreservada,
       epi_required: riskForm.epi_required,
       epis,
-      special_retirement_applies: riskForm.special_retirement_applies,
-      gfip_code: riskForm.gfip_code,
+      special_retirement_applies: aposentadoriaEspecial,
+      gfip_code: riskForm.gfip_code || undefined,
       ltcat_technical_conclusion: riskForm.ltcat_technical_conclusion,
       insalubridade_applies: riskForm.insalubridade_applies,
-      insalubridade_degree: riskForm.insalubridade_degree,
+      insalubridade_degree: riskForm.insalubridade_degree || undefined,
       periculosidade_applies: riskForm.periculosidade_applies,
       status: 'ACTIVE' as const
     };
@@ -706,7 +876,11 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
                           </span>
                           <span className="font-bold text-xs">{ghe.name}</span>
                         </div>
-                        <p className="text-[11px] text-slate-400 line-clamp-2">{ghe.description || 'Ambiente fabril com riscos físicos e químicos mapeados.'}</p>
+                        {/* Sem descricao, dizia "Ambiente fabril com riscos fisicos e
+                            quimicos mapeados" - de qualquer GHE, mapeado ou nao. */}
+                        <p className="text-[11px] text-slate-400 line-clamp-2">
+                          {ghe.description || <span className="italic text-slate-500">Sem descrição</span>}
+                        </p>
                       </div>
 
                       <div className="flex items-center gap-1">
@@ -846,10 +1020,14 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
                     >
                       <div className="flex items-start justify-between">
                         <div className="space-y-1">
-                          <div className="flex items-center gap-2">
-                            <span className="px-2 py-0.5 bg-amber-500/10 border border-amber-500/30 text-amber-300 text-[10px] font-bold font-mono rounded">
-                              Tabela 24: {risk.risk_code_table_24}
-                            </span>
+                          <div className="flex items-center gap-2 flex-wrap">
+                            {/* Ergonomico e acidente nao tem codigo na Tabela 24: o selo
+                                saia "Tabela 24:" vazio. */}
+                            {risk.risk_code_table_24 && (
+                              <span className="px-2 py-0.5 bg-amber-500/10 border border-amber-500/30 text-amber-300 text-[10px] font-bold font-mono rounded">
+                                Tabela 24: {risk.risk_code_table_24}
+                              </span>
+                            )}
                             <span className="px-2 py-0.5 bg-slate-800 text-slate-300 text-[10px] font-semibold rounded">
                               {risk.risk_category}
                             </span>
@@ -858,6 +1036,36 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
                           <p className="text-xs text-slate-400">
                             <strong>Fonte Geradora:</strong> {risk.generating_source}
                           </p>
+                          {(() => {
+                            const plano = situacaoNoPlano(risk.id);
+                            return (
+                              <div className="flex items-center gap-1.5 flex-wrap pt-0.5" title="Situação do risco no plano de ação do PGR (aba 2.1)">
+                                {plano.total === 0 ? (
+                                  <span className="px-1.5 py-0.5 bg-amber-500/10 border border-amber-500/30 text-amber-300 text-[10px] font-semibold rounded">
+                                    sem ação no plano
+                                  </span>
+                                ) : (
+                                  <>
+                                    {plano.aceitas > 0 && (
+                                      <span className="px-1.5 py-0.5 bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-[10px] font-semibold rounded">
+                                        {plano.aceitas} ação(ões) aceita(s)
+                                      </span>
+                                    )}
+                                    {plano.sugeridas > 0 && (
+                                      <span className="px-1.5 py-0.5 bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 text-[10px] font-semibold rounded">
+                                        {plano.sugeridas} sugestão(ões)
+                                      </span>
+                                    )}
+                                    {plano.atrasadas > 0 && (
+                                      <span className="px-1.5 py-0.5 bg-rose-500/10 border border-rose-500/30 text-rose-300 text-[10px] font-semibold rounded">
+                                        {plano.atrasadas} atrasada(s)
+                                      </span>
+                                    )}
+                                  </>
+                                )}
+                              </div>
+                            );
+                          })()}
                         </div>
 
                         <div className="flex items-center gap-1">
@@ -890,27 +1098,56 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
                           )}
                         </div>
 
-                        <div className="bg-slate-900/60 p-2 rounded border border-slate-800">
-                          <span className="text-[10px] text-slate-500 block font-semibold">Matriz de Risco</span>
-                          <span className="font-bold text-amber-400">{risk.risk_level}</span>
-                          <span className="text-[10px] text-slate-400 block">P{risk.probability} x S{risk.severity}</span>
-                        </div>
+                        {(() => {
+                          // A classificacao sai da matriz do modelo, e nao do
+                          // risk_level gravado: sem S ou P, "nao classificado".
+                          const c = classificarRisco(risk.severity, risk.probability);
+                          return (
+                            <div className="bg-slate-900/60 p-2 rounded border border-slate-800">
+                              <span className="text-[10px] text-slate-500 block font-semibold">Matriz de Risco</span>
+                              {c ? (
+                                <>
+                                  <span className="font-bold text-amber-400">{c.rotulo}</span>
+                                  <span className="text-[10px] text-slate-400 block">
+                                    S{c.severidade} × P{c.probabilidade} = {c.score}
+                                  </span>
+                                </>
+                              ) : (
+                                <span className="font-bold text-amber-300 block text-[11px]">não classificado</span>
+                              )}
+                            </div>
+                          );
+                        })()}
 
                         <div className="bg-slate-900/60 p-2 rounded border border-slate-800">
                           <span className="text-[10px] text-slate-500 block font-semibold">EPI / EPC</span>
                           <span className="text-slate-200 block text-[11px]">
-                            {risk.epi_required ? `EPI: CA ${risk.epis?.[0]?.ca_number || 'Sim'}` : 'EPI: Não'}
+                            {/* `|| 'Sim'` saia como "CA Sim". */}
+                            {risk.epi_required
+                              ? `EPI: CA ${risk.epis?.[0]?.ca_number || 'não informado'}`
+                              : 'EPI: Não'}
                           </span>
                           <span className="text-[10px] text-slate-400 block">
-                            EPC: {risk.epc_implemented ? 'Ativo' : 'Não'}
+                            {/* "Ativo" nao dizia se a eficacia foi aferida. */}
+                            EPC: {risk.epc_implemented
+                              ? (risk.epc_effective ? 'implantado, eficaz (aferido)' : 'implantado')
+                              : 'Não'}
                           </span>
                         </div>
 
                         <div className="bg-slate-900/60 p-2 rounded border border-slate-800">
                           <span className="text-[10px] text-slate-500 block font-semibold">LTCAT / GFIP</span>
-                          <span className="font-mono text-slate-200 block text-[11px]">GFIP: {risk.gfip_code || '00'}</span>
-                          <span className="text-[10px] text-emerald-400 block font-semibold">
-                            {risk.special_retirement_applies ? 'Aposentadoria Especial' : 'Sem Aposentadoria'}
+                          {/* `|| '00'` dizia "sem exposicao" de risco sem codigo informado,
+                              e "Sem Aposentadoria" saia para todo risco sem o campo. */}
+                          <span className="font-mono text-slate-200 block text-[11px]">
+                            GFIP: {risk.gfip_code || <span className="font-sans text-amber-300">não informado</span>}
+                          </span>
+                          <span className="text-[10px] block font-semibold">
+                            {risk.special_retirement_applies || GFIP_QUE_ENSEJA.includes(risk.gfip_code || '')
+                              ? <span className="text-rose-300">Aposentadoria especial</span>
+                              : risk.gfip_code
+                                ? <span className="text-emerald-400">Sem aposentadoria especial</span>
+                                : <span className="text-amber-300">enquadramento não informado</span>}
                           </span>
                         </div>
                       </div>
@@ -999,6 +1236,7 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
                   type="text"
                   value={gheForm.work_schedule_description}
                   onChange={(e) => setGheForm({ ...gheForm, work_schedule_description: e.target.value })}
+                  placeholder="Ex.: 44h semanais, 07:00 às 17:00, 1h de intervalo"
                   className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 focus:outline-none focus:border-teal-500"
                 />
               </div>
@@ -1042,7 +1280,7 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
             </div>
 
             <form onSubmit={handleSaveRisk} className="space-y-4 text-xs">
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
                   <label className="block text-slate-400 font-semibold mb-1">Categoria do Risco</label>
                   <select
@@ -1106,7 +1344,7 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
                     subitem 1.5.7.3.2 da NR-01).
                   </p>
                 </div>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                   {SITUACOES_OPERACIONAIS.map((op) => {
                     const marcada = riskForm.operational_situation.includes(op.valor);
                     return (
@@ -1163,7 +1401,7 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
                   <Activity className="w-4 h-4 text-teal-400" />
                   Avaliação e Métricas de Exposição
                 </h4>
-                <div className="grid grid-cols-4 gap-3">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                   <div>
                     <label className="block text-slate-400 font-semibold mb-1">Tipo de Avaliação</label>
                     <select
@@ -1214,32 +1452,232 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
                   <HardHat className="w-4 h-4 text-teal-400" />
                   Medidas de Proteção e EPIs (eSocial)
                 </h4>
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-slate-400 font-semibold mb-1">Nº do C.A. do EPI</label>
+                {/* EPC: implantado e qual. A eficacia nao se marca aqui: quem a
+                    sustenta e a afericao registrada no plano de acao. */}
+                <div className="space-y-2">
+                  <label className="flex items-center gap-2 cursor-pointer">
                     <input
-                      type="text"
-                      placeholder="14235"
-                      value={riskForm.ca_number_input}
-                      onChange={(e) => setRiskForm({ ...riskForm, ca_number_input: e.target.value })}
-                      className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 font-mono"
+                      type="checkbox"
+                      checked={riskForm.epc_implemented}
+                      onChange={(e) => setRiskForm({ ...riskForm, epc_implemented: e.target.checked })}
+                      className="rounded border-slate-700 text-teal-500 focus:ring-teal-500"
                     />
-                  </div>
-                  <div>
-                    <label className="block text-slate-400 font-semibold mb-1">Descrição do EPI</label>
+                    <span className="text-slate-200 font-semibold">EPC implantado no local</span>
+                  </label>
+                  {riskForm.epc_implemented && (
+                    <div>
+                      <label className="block text-slate-400 font-semibold mb-1">Descrição do EPC</label>
+                      <input
+                        type="text"
+                        placeholder="Qual proteção coletiva existe no local"
+                        value={riskForm.epc_description}
+                        onChange={(e) => setRiskForm({ ...riskForm, epc_description: e.target.value })}
+                        className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                      />
+                    </div>
+                  )}
+                  <p className={`text-[11px] ${eficaciaDoEpcPreservada ? 'text-emerald-300' : 'text-amber-300'}`}>
+                    Eficácia do EPC:{' '}
+                    {eficaciaDoEpcPreservada
+                      ? 'verificada pelo plano de ação'
+                      : 'não verificada — registre a aferição no plano de ação'}
+                    {!eficaciaDoEpcPreservada && editingRisk?.epc_effective && (
+                      <span className="text-slate-400">
+                        {' '}(o EPC foi alterado ou retirado: a aferição anterior não vale para ele)
+                      </span>
+                    )}
+                  </p>
+                </div>
+                {/* "EPI exigido" nao tinha campo: so o risco vindo do catalogo
+                    tinha EPI, e o CA digitado aqui era descartado em silencio. */}
+                <div className="space-y-2 pt-2 border-t border-slate-800/60">
+                  <label className="flex items-center gap-2 cursor-pointer">
                     <input
-                      type="text"
-                      placeholder="Protetor Auricular tipo Plug"
-                      value={riskForm.epi_name_input}
-                      onChange={(e) => setRiskForm({ ...riskForm, epi_name_input: e.target.value })}
-                      className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                      type="checkbox"
+                      checked={riskForm.epi_required}
+                      onChange={(e) => setRiskForm({ ...riskForm, epi_required: e.target.checked })}
+                      className="rounded border-slate-700 text-teal-500 focus:ring-teal-500"
                     />
-                  </div>
+                    <span className="text-slate-200 font-semibold">EPI exigido para este risco</span>
+                  </label>
+                  {riskForm.epi_required ? (
+                    <>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-slate-400 font-semibold mb-1">
+                            Nº do C.A. do EPI <span className="text-rose-400">*</span>
+                          </label>
+                          <input
+                            type="text"
+                            placeholder="Número do certificado de aprovação"
+                            value={riskForm.ca_number_input}
+                            onChange={(e) => setRiskForm({ ...riskForm, ca_number_input: e.target.value })}
+                            className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 font-mono"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-slate-400 font-semibold mb-1">Descrição do EPI</label>
+                          <input
+                            type="text"
+                            placeholder="Ex.: protetor auditivo tipo plugue"
+                            value={riskForm.epi_name_input}
+                            onChange={(e) => setRiskForm({ ...riskForm, epi_name_input: e.target.value })}
+                            className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                          />
+                        </div>
+                      </div>
+                      <p className="text-[11px] text-slate-400">
+                        As condições de eficácia do EPI (uso ininterrupto, troca periódica, higienização) começam como
+                        não verificadas: o EPI não neutraliza a exposição até alguém declará-las.
+                        {(editingRisk?.epis || []).length > 1 &&
+                          ` Este risco tem mais ${(editingRisk?.epis || []).length - 1} EPI(s) registrado(s), que são mantidos.`}
+                      </p>
+                    </>
+                  ) : (
+                    (editingRisk?.epis || []).length > 0 && (
+                      <p className="text-[11px] text-amber-300">
+                        Desmarcado, os {(editingRisk?.epis || []).length} EPI(s) registrados neste risco saem ao salvar.
+                      </p>
+                    )
+                  )}
                 </div>
               </div>
 
+              {/* Classificacao do risco: secoes 5.4 a 5.6 do modelo de PGR */}
+              {(() => {
+                const psicossocial = !!editingRisk && ehRiscoPsicossocial(editingRisk);
+                const grupo = grupoDaEscala(riskForm.risk_category, psicossocial);
+                const escala = grupo ? ESCALA_DE_PROBABILIDADE[grupo] : null;
+                const colunaS = grupo ? COLUNA_DA_SEVERIDADE[grupo] : null;
+                const linhaS = PGR_SEVERIDADE.find((l) => Number(l[0]) === riskForm.severity);
+                const linhaP = escala?.linhas.find((l) => Number(l[0]) === riskForm.probability);
+                const resultado = classificarRisco(riskForm.severity, riskForm.probability);
+                // Fisico ou quimico: a opcao mostra o criterio do tipo de avaliacao do risco.
+                const rotuloDaProbabilidade = (l: string[]) => {
+                  if (grupo === 'FISICO_QUIMICO') return riskForm.evaluation_type === 'QUANTITATIVA' ? l[1] : l[2];
+                  if (grupo === 'ERGONOMICO') return `${l[1]}; intensidade ${String(l[2]).toLowerCase()}`;
+                  return l[1];
+                };
+                return (
+                  <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 space-y-3">
+                    <div>
+                      <h4 className="font-bold text-slate-200 text-xs">
+                        Classificação do Risco <span className="text-rose-400">*</span>
+                      </h4>
+                      <p className="text-[11px] text-slate-500 mt-0.5">
+                        Escalas do modelo de PGR (seções 5.4 e 5.5). A classificação define a prioridade e o prazo do
+                        plano de ação: o sistema não a atribui.
+                      </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div className="min-w-0">
+                        <label className="block text-slate-400 font-semibold mb-1">Severidade (S)</label>
+                        <select
+                          value={riskForm.severity}
+                          onChange={(e) => setRiskForm({ ...riskForm, severity: Number(e.target.value) })}
+                          className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                        >
+                          <option value={0}>Selecione</option>
+                          {PGR_SEVERIDADE.map((l) => (
+                            <option key={l[0]} value={Number(l[0])}>
+                              S{l[0]} — {l[1]}
+                            </option>
+                          ))}
+                        </select>
+                        {linhaS ? (
+                          <div className="text-[11px] text-slate-300 mt-1 space-y-0.5 break-words">
+                            {colunaS ? (
+                              <p>
+                                <span className="text-slate-500">{colunaS.rotulo}:</span> {linhaS[colunaS.indice]}
+                              </p>
+                            ) : (
+                              <>
+                                <p><span className="text-slate-500">Acidentes:</span> {linhaS[2]}</p>
+                                <p><span className="text-slate-500">Físicos, químicos e biológicos:</span> {linhaS[3]}</p>
+                                <p><span className="text-slate-500">Ergonômicos e psicossociais:</span> {linhaS[4]}</p>
+                              </>
+                            )}
+                          </div>
+                        ) : (
+                          <p className="text-[10px] text-slate-500 mt-1">{PGR_SEVERIDADE_CABECALHO}</p>
+                        )}
+                      </div>
+
+                      <div className="min-w-0">
+                        <label className="block text-slate-400 font-semibold mb-1">Probabilidade (P)</label>
+                        <select
+                          value={riskForm.probability}
+                          onChange={(e) => setRiskForm({ ...riskForm, probability: Number(e.target.value) })}
+                          className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                        >
+                          <option value={0}>Selecione</option>
+                          {escala
+                            ? escala.linhas.map((l) => (
+                                <option key={l[0]} value={Number(l[0])}>
+                                  P{l[0]} — {rotuloDaProbabilidade(l)}
+                                </option>
+                              ))
+                            : [1, 2, 3, 4, 5].map((n) => (
+                                <option key={n} value={n}>P{n}</option>
+                              ))}
+                        </select>
+                        {escala ? (
+                          <>
+                            <p className="text-[10px] text-slate-500 mt-1">Tabela: {escala.titulo}</p>
+                            {linhaP && (
+                              <div className="text-[11px] text-slate-300 mt-1 space-y-0.5 break-words">
+                                {escala.colunas.map((col, i) => (
+                                  <p key={col}>
+                                    <span className="text-slate-500">{col}:</span> {linhaP[i + 1]}
+                                  </p>
+                                ))}
+                              </div>
+                            )}
+                          </>
+                        ) : (
+                          <p className="text-[11px] text-amber-300 mt-1">
+                            O modelo não tem escala de probabilidade para esta categoria (seção 5.5). Escolha a
+                            categoria do perigo para usar a tabela correspondente.
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    <details className="text-[11px] text-slate-400">
+                      <summary className="cursor-pointer text-slate-300 font-semibold">
+                        Regras comuns da probabilidade (seção 5.5)
+                      </summary>
+                      <ul className="mt-1 space-y-1 list-disc list-inside">
+                        {PGR_PROBABILIDADE_REGRAS.map((r) => (
+                          <li key={r} className="break-words">{r}</li>
+                        ))}
+                      </ul>
+                      {grupo === 'FISICO_QUIMICO' && (
+                        <p className="mt-1 break-words">{PGR_PROBABILIDADE_REFERENCIAS}</p>
+                      )}
+                    </details>
+
+                    {resultado ? (
+                      <div className="p-2.5 rounded-lg border border-teal-500/30 bg-teal-500/5 text-[11px] space-y-0.5">
+                        <p className="text-slate-100 font-bold">
+                          {resultado.rotulo} — S{resultado.severidade} × P{resultado.probabilidade} = {resultado.score}
+                          <span className="text-slate-400 font-normal"> · {resultado.classificacao}</span>
+                        </p>
+                        <p className="text-slate-300"><span className="text-slate-500">Prazo:</span> {resultado.prazo}</p>
+                        <p className="text-slate-400 break-words">{resultado.decisao}</p>
+                      </div>
+                    ) : (
+                      <p className="text-[11px] text-amber-300">
+                        Não classificado: escolha a severidade e a probabilidade (matriz da seção 5.6).
+                      </p>
+                    )}
+                  </div>
+                );
+              })()}
+
               {/* Special Enquadramentos */}
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-slate-400 font-semibold mb-1">Código GFIP (SEFIP / eSocial)</label>
                   <select
@@ -1247,6 +1685,7 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
                     onChange={(e) => setRiskForm({ ...riskForm, gfip_code: e.target.value as any })}
                     className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 font-mono"
                   >
+                    <option value="">Não informado</option>
                     <option value="00">00 - Sem exposição a agente nocivo</option>
                     <option value="01">01 - Não enseja aposentadoria especial</option>
                     <option value="02">02 - Enseja aposentadoria especial (15 anos)</option>
@@ -1626,14 +2065,29 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
                 </label>
               </div>
 
-              {/* Feedback Alert */}
-              {catalogFeedback && (
-                <div className="p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-xl flex items-center gap-2 text-xs text-emerald-300 font-medium animate-in fade-in">
-                  <CheckCircle2 className="w-5 h-5 text-emerald-400 flex-shrink-0" />
-                  <span>{catalogFeedback.message}</span>
-                </div>
-              )}
             </div>
+
+            {/* A mensagem de applyRisksToTargets diz o que foi aplicado, as
+                sugestoes que entraram no plano de acao e o que ficou de fora.
+                Ficava no fim do corpo rolavel, abaixo da lista do catalogo:
+                quem clicava em aplicar nao a via. Fora da rolagem ela aparece
+                inteira, e em ambar quando nada foi aplicado. */}
+            {catalogFeedback && (
+              <div
+                className={`mx-4 sm:mx-6 my-3 shrink-0 p-3 rounded-xl border flex items-start gap-2 text-xs font-medium animate-in fade-in ${
+                  catalogFeedback.count > 0
+                    ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
+                    : 'bg-amber-500/10 border-amber-500/30 text-amber-200'
+                }`}
+              >
+                {catalogFeedback.count > 0 ? (
+                  <CheckCircle2 className="w-5 h-5 text-emerald-400 flex-shrink-0" />
+                ) : (
+                  <AlertTriangle className="w-5 h-5 text-amber-400 flex-shrink-0" />
+                )}
+                <span className="min-w-0 break-words whitespace-pre-line">{catalogFeedback.message}</span>
+              </div>
+            )}
 
             {/* Modal Footer */}
             <div className="px-6 py-4 border-t border-slate-800 flex items-center justify-between bg-slate-950/60">

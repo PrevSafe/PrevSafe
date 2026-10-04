@@ -49,6 +49,8 @@ import { SSTElectronicSignatureModal } from './SSTElectronicSignatureModal';
 import { SSTDocumentSignature } from '@/types';
 import { DECLARACAO_DE_INTEGRIDADE } from '@/lib/documentoHash';
 import { montarCorpoInsalubridade, montarCorpoPericulosidade } from '@/lib/laudoDados';
+import { acoesDoPlano, dataBR } from '@/lib/planoDeAcao';
+import { classificarRisco } from '@/lib/classificacaoDeRisco';
 
 export type PreviewDocType = 
   | 'PGR' 
@@ -110,7 +112,8 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
     createSSTSignatureEnvelope,
     technicalProfessionals,
     technicalResponsibilities,
-    catRecords
+    catRecords,
+    pgrActionPlan = []
   } = usePrevSafe();
 
   // Responsabilidade técnica vem das Configurações da empresa: um laudo assinado
@@ -143,8 +146,9 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
   // SESMT e de CIPA - nao e um rotulo cosmetico.
   const clientCnae = client?.main_cnae || 'Não informado';
   const clientRiskDegree = client?.risk_degree || null;
-  const issueDate = new Date().toLocaleDateString('pt-BR');
-  const validityYear = `${new Date().getFullYear()} / ${new Date().getFullYear() + 1}`;
+  const issueDate = dataBR(dataDeHoje());
+  // "Vigencia Tecnica: <ano> / <ano + 1>" saia em todo documento - inclusive
+  // no PCMSO, cuja validade a NR-07 nao fixa. A folha mostra so a emissao.
   // Este numero era fixo no codigo: o MESMO "SHA256: 7f8a9e2d..." em todo
   // documento, de todo cliente, exibido sob o texto "Autenticidade e Integridade
   // Criptografica Garantida" e com um botao de copiar. Nao era hash de nada.
@@ -174,6 +178,26 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
       : docType === 'PERICULOSIDADE'
         ? montarCorpoPericulosidade(risks, ghes)
         : null;
+
+  // O quadro do plano de acao e o do PDF: a regra de lib/planoDeAcao.ts
+  // (acoesDoPlano) com o recorte de exportPGRDocumentPdf, que recebe estes
+  // mesmos ghes, risks e employees. Eram quatro atividades escritas no codigo,
+  // iguais para todo cliente, e o cliente aprovaria um plano que nao existe.
+  const gheDoCliente = client ? ghes.filter((g: any) => !g?.client_id || g.client_id === client.id) : [];
+  const idsDeGheDoCliente = new Set(gheDoCliente.map((g: any) => g?.id));
+  // `risks` chega com o inventario de TODOS os clientes. O PGR recorta por
+  // dentro; o PGRTR nao, e por isso recebe este recorte.
+  const riscosDoCliente = client
+    ? risks.filter((r: any) => idsDeGheDoCliente.has(r?.ghe_id) || r?.client_id === client.id)
+    : [];
+  const linhasDoPlano = docType === 'PGR' && client
+    ? acoesDoPlano(
+        riscosDoCliente,
+        gheDoCliente,
+        (gheId: string) => employees.filter((e: any) => e?.ghe_id === gheId).length,
+        { acoes: pgrActionPlan, efetivo: employees.length }
+      )
+    : [];
 
   const handleOpenSignature = () => {
     setIsSignatureModalOpen(true);
@@ -223,10 +247,10 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
     if (!client) return;
 
     if (docType === 'PGR') {
-      exportPGRDocumentPdf({ client, organization, ghes, risks, employees, sectors, units, contractedOrganizations, machinesEquipment, chemicalProducts, trainingRequirements, jobs, ergonomicAssessments, technicalProfessionals, technicalResponsibilities });
+      exportPGRDocumentPdf({ client, organization, ghes, risks, employees, sectors, units, contractedOrganizations, machinesEquipment, chemicalProducts, trainingRequirements, jobs, ergonomicAssessments, technicalProfessionals, technicalResponsibilities, pgrActionPlan });
       setDownloadSuccess('PGR gerado e baixado em PDF com sucesso!');
     } else if (docType === 'PGRTR') {
-      exportPGRTRDocumentPdf({ client, organization, ghes, risks, employees, technicalProfessionals, technicalResponsibilities });
+      exportPGRTRDocumentPdf({ client, organization, ghes, risks: riscosDoCliente, employees, technicalProfessionals, technicalResponsibilities });
       setDownloadSuccess('PGRTR Rural gerado e baixado em PDF com sucesso!');
     } else if (docType === 'PCMSO') {
       exportPCMSODocumentPdf({ client, organization, examProtocols, ghes, risks, employees, units, sectors, jobs, catRecords, trainingRequirements, technicalProfessionals, technicalResponsibilities });
@@ -435,15 +459,16 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
                   <h1 className="text-xl sm:text-2xl font-black tracking-tight text-slate-950 uppercase">
                     {getDocTitle()}
                   </h1>
+                  {/* Afirmava "CONFORMIDADE LEGAL MTE / INSS / ESOCIAL" de qualquer
+                      conteudo, inclusive com pendencias. */}
                   <p className="text-xs text-slate-600 font-medium">
-                    DOCUMENTO TÉCNICO AUDITÁVEL • CONFORMIDADE LEGAL MTE / INSS / ESOCIAL
+                    PRÉ-VISUALIZAÇÃO • O DOCUMENTO OFICIAL É O PDF, GERADO DOS MESMOS REGISTROS
                   </p>
                 </div>
                 
+                {/* "Versao: 2.4.0 (MOS)" era fixa e nao correspondia a nada. */}
                 <div className="bg-slate-100 p-3 rounded-lg border border-slate-300 text-right text-xs space-y-1 shrink-0">
-                  <div className="font-bold text-slate-800">Vigência Técnica: <span className="text-teal-700">{validityYear}</span></div>
                   <div className="text-slate-600">Emissão: <strong>{issueDate}</strong></div>
-                  <div className="text-[10px] font-mono text-slate-500">Versão: 2.4.0 (MOS)</div>
                 </div>
               </div>
 
@@ -462,7 +487,11 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
                       <strong>CNAE Principal:</strong> {clientCnae} • <strong>Grau de Risco:</strong>{' '}
                       {clientRiskDegree ? `${clientRiskDegree} (NR-04)` : 'não classificado (NR-04)'}
                     </div>
-                    <div><strong>Endereço:</strong> {client?.address || 'Av. Industrial'}, {client?.city || 'São Paulo'}/{client?.state || 'SP'}</div>
+                    {/* O fallback era "Av. Industrial, Sao Paulo/SP": um endereco que ninguem cadastrou. */}
+                    <div>
+                      <strong>Endereço:</strong>{' '}
+                      {[client?.address, [client?.city, client?.state].filter(Boolean).join('/')].filter(Boolean).join(', ') || 'não informado'}
+                    </div>
                   </div>
                 </div>
 
@@ -476,7 +505,7 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
                     <div><strong>Qualificação:</strong> {rtTitle}{rtCouncil ? ` • ${rtCouncil}` : ''}</div>
                     <div><strong>ART de Cargo / Função:</strong> <span className="font-mono font-bold text-teal-800">{rtArt || '—'}</span></div>
                     <div><strong>Coordenação PCMSO:</strong> {coordenadorDoCliente.origem === 'ATRIBUICAO' ? coordenadorDoCliente.linha : 'Não atribuída a este cliente'}</div>
-                    <div><strong>População Coberta:</strong> {employees.length} trabalhadores ativos</div>
+                    <div><strong>População Coberta:</strong> {employees.length} trabalhador(es) cadastrado(s)</div>
                   </div>
                 </div>
               </div>
@@ -510,43 +539,73 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
                           {ghes.map((ghe) => {
                             const gheRisks = risks.filter(r => r.ghe_id === ghe.id);
                             if (gheRisks.length === 0) {
+                              // Saia "Ausencia de riscos especificos", "Trivial" e
+                              // "Recomendacoes posturais (NR-17)": uma classificacao e
+                              // uma recomendacao para um GHE que ninguem avaliou.
                               return (
-                                <tr key={ghe.id} className="hover:bg-slate-50">
+                                <tr key={ghe.id}>
                                   <td className="p-2.5 font-bold border-r border-slate-200">{ghe.name}</td>
-                                  <td className="p-2.5 text-slate-600 border-r border-slate-200">Ausência de riscos específicos / Fatores ergonômicos gerais</td>
-                                  <td className="p-2.5 border-r border-slate-200">Qualitativa</td>
-                                  <td className="p-2.5 border-r border-slate-200"><span className="px-2 py-0.5 bg-emerald-100 text-emerald-800 font-bold rounded text-[10px]">Trivial</span></td>
-                                  <td className="p-2.5 text-slate-600">Recomendações posturais (NR-17)</td>
+                                  <td colSpan={4} className="p-2.5 text-amber-800 font-semibold">
+                                    Pendente: nenhum risco inventariado neste GHE.
+                                  </td>
                                 </tr>
                               );
                             }
-                            return gheRisks.map((r, rIdx) => (
+                            return gheRisks.map((r, rIdx) => {
+                              const c = classificarRisco(r.severity, r.probability);
+                              return (
                               <tr key={r.id || rIdx} className="hover:bg-slate-50">
                                 <td className="p-2.5 font-bold border-r border-slate-200">{ghe.name}</td>
                                 <td className="p-2.5 border-r border-slate-200">
                                   <div className="font-bold text-slate-900">{r.agent_name}</div>
-                                  <div className="text-[10px] text-slate-500 font-mono">Cód: {r.risk_code_table_24} • Fonte: {r.generating_source || 'Processo produtivo'}</div>
+                                  <div className="text-[10px] text-slate-500 font-mono">
+                                    {r.risk_code_table_24 ? `Cód: ${r.risk_code_table_24} • ` : ''}Fonte: {r.generating_source || 'não informada'}
+                                  </div>
                                 </td>
                                 <td className="p-2.5 border-r border-slate-200">
                                   {r.evaluation_type}
                                   {r.measured_value && <div className="font-mono text-[10px] font-bold text-teal-700">{r.measured_value} {r.measurement_unit}</div>}
                                 </td>
                                 <td className="p-2.5 border-r border-slate-200">
-                                  <span className={`px-2 py-0.5 font-bold rounded text-[10px] ${
-                                    r.risk_level === 'CRITICAL' ? 'bg-rose-100 text-rose-800' :
-                                    r.risk_level === 'HIGH' ? 'bg-amber-100 text-amber-800' :
-                                    'bg-teal-100 text-teal-800'
-                                  }`}>
-                                    {r.risk_level || 'MODERADO'}
-                                  </span>
+                                  {/* Era `r.risk_level || 'MODERADO'`, com cores para CRITICAL e
+                                      HIGH, niveis que o modelo nao usa. A classificacao sai da
+                                      matriz da secao 5.6, ou "nao classificado". */}
+                                  {c ? (
+                                    <span className={`px-2 py-0.5 font-bold rounded text-[10px] whitespace-nowrap ${
+                                      c.nivel === 'MUITO_ALTO' ? 'bg-rose-100 text-rose-800' :
+                                      c.nivel === 'ALTO' ? 'bg-orange-100 text-orange-800' :
+                                      c.nivel === 'MEDIO' ? 'bg-amber-100 text-amber-800' :
+                                      'bg-teal-100 text-teal-800'
+                                    }`}>
+                                      {c.rotulo} ({c.score})
+                                    </span>
+                                  ) : (
+                                    <span className="text-amber-800 font-semibold text-[10px]">não classificado</span>
+                                  )}
                                 </td>
                                 <td className="p-2.5 text-slate-700">
-                                  {r.epi_required && <div className="font-semibold text-teal-900">• EPI Eficaz (CA {r.epi_ca_number || 'não informado'})</div>}
-                                  {r.epc_implemented && <div>• EPC Instalado no ambiente</div>}
-                                  <div className="text-[10px] text-slate-500">{r.ltcat_technical_conclusion || 'Plano PrevSafe em vigor'}</div>
+                                  {/* Implantado nao e eficaz: "EPI Eficaz" saia so por o EPI ser
+                                      exigido. Eficacia de EPC e a afericao registrada no plano de
+                                      acao; a do EPI, a declarada no proprio EPI. */}
+                                  {r.epi_required && (
+                                    <div className="font-semibold text-teal-900">
+                                      • EPI exigido (CA {r.epis?.[0]?.ca_number || r.epi_ca_number || 'não informado'})
+                                      {r.epis?.[0]?.is_effective ? ' — eficaz' : ''}
+                                    </div>
+                                  )}
+                                  {r.epc_implemented && <div>• EPC implantado</div>}
+                                  {r.epc_effective && <div>• EPC eficaz (aferido)</div>}
+                                  {!r.epi_required && !r.epc_implemented && (
+                                    <div className="text-amber-800 font-semibold">Nenhuma medida de controle registrada</div>
+                                  )}
+                                  {/* Sem conclusao, dizia "Plano PrevSafe em vigor". */}
+                                  {r.ltcat_technical_conclusion && (
+                                    <div className="text-[10px] text-slate-500">{r.ltcat_technical_conclusion}</div>
+                                  )}
                                 </td>
                               </tr>
-                            ));
+                              );
+                            });
                           })}
                         </tbody>
                       </table>
@@ -557,29 +616,45 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
                   <div className="border border-slate-300 rounded-lg overflow-hidden">
                     <div className="bg-slate-900 text-white px-4 py-2 flex items-center justify-between">
                       <span className="font-bold text-xs uppercase tracking-wide">
-                        2. Plano de Ação Anual e Cronograma de Prevenção (5W2H)
+                        2. Plano de Ação (NR-01, subitem 1.5.5.2.2)
                       </span>
-                      <span className="text-[10px] text-teal-400 font-bold">Vigência 2026</span>
+                      <span className="text-[10px] text-teal-400 font-bold">Seção 8 do PGR</span>
                     </div>
-                    <div className="p-4 bg-slate-50 space-y-2 text-xs text-slate-700">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        <div className="p-2.5 bg-white border border-slate-200 rounded">
-                          <strong className="text-slate-900 block">• Gestão e Manutenção do PCA (Proteção Auditiva):</strong>
-                          Treinamentos semestrais, controle de atenuação dos protetores auriculares e audiometrias seriadas.
-                        </div>
-                        <div className="p-2.5 bg-white border border-slate-200 rounded">
-                          <strong className="text-slate-900 block">• Treinamento Admissional e Integração (NR-01 item 1.7):</strong>
-                          Capacitação de todos os novos colaboradores com emissão de certificado e ata de presença.
-                        </div>
-                        <div className="p-2.5 bg-white border border-slate-200 rounded">
-                          <strong className="text-slate-900 block">• Avaliação Ergonômica Preliminar (AEP - NR-17):</strong>
-                          Mapeamento dos postos administrativos e operacionais com ajustes de mobiliário e iluminação.
-                        </div>
-                        <div className="p-2.5 bg-white border border-slate-200 rounded">
-                          <strong className="text-slate-900 block">• Revisão Bienal do Inventário Geral de Riscos:</strong>
-                          Revisão completa das medições quantitativas e atualizações do eSocial S-2240.
-                        </div>
-                      </div>
+                    <div className="overflow-x-auto bg-slate-50">
+                      <table className="w-full min-w-[640px] text-left text-xs border-collapse">
+                        <thead className="bg-slate-100 text-slate-700 text-[11px] font-bold border-b border-slate-300">
+                          <tr>
+                            <th className="p-2.5 border-r border-slate-200">Nº</th>
+                            <th className="p-2.5 border-r border-slate-200">Medida</th>
+                            <th className="p-2.5 border-r border-slate-200">Responsável</th>
+                            <th className="p-2.5 border-r border-slate-200">Prazo</th>
+                            <th className="p-2.5">Status</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-200 text-slate-800">
+                          {linhasDoPlano.length === 0 ? (
+                            <tr>
+                              <td colSpan={5} className="p-3 text-center text-amber-800 font-semibold">
+                                Sem inventário de riscos não há plano de ação.
+                              </td>
+                            </tr>
+                          ) : linhasDoPlano.map((a) => (
+                            <tr key={a.numero} className="align-top">
+                              <td className="p-2.5 border-r border-slate-200 font-mono text-[10px] whitespace-nowrap">{a.numero}</td>
+                              <td className="p-2.5 border-r border-slate-200">
+                                <div className="font-semibold text-slate-900">{a.medida}</div>
+                                <div className="text-[10px] text-slate-500">{a.hierarquia} · {a.tipo} · {a.gheNome}</div>
+                                {a.faltas.length > 0 && (
+                                  <div className="text-[10px] text-amber-800 mt-0.5">Pendente: {a.faltas.join('; ')}</div>
+                                )}
+                              </td>
+                              <td className="p-2.5 border-r border-slate-200">{a.responsavel || 'a definir'}</td>
+                              <td className="p-2.5 border-r border-slate-200 whitespace-nowrap">{a.prazo ? dataBR(a.prazo) : 'a definir'}</td>
+                              <td className="p-2.5">{a.status}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
                     </div>
                   </div>
                 </div>
@@ -598,24 +673,65 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
                     </p>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-                    <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg space-y-1.5">
-                      <strong className="text-slate-900 block text-xs">1. Agrotóxicos e Defensivos (NR-31.7):</strong>
-                      <p className="text-slate-700">Capacitação obrigatória de 20h para aplicadores, vestimenta hidrorrepelente com CA, descarte via tríplice lavagem e depósito exclusivo ventilado.</p>
-                    </div>
-                    <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg space-y-1.5">
-                      <strong className="text-slate-900 block text-xs">2. Tratores e Máquinas Agrícolas (NR-31.12):</strong>
-                      <p className="text-slate-700">Proteção total da Tomada de Força (TDP), estrutura ROPS/FOPS contra tombamento, cinto de segurança e habilitação de operadores.</p>
-                    </div>
-                    <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg space-y-1.5">
-                      <strong className="text-slate-900 block text-xs">3. Trabalho a Céu Aberto e Calor (NR-31.10):</strong>
-                      <p className="text-slate-700">Abrigos rurais móveis com mesas/bancos para pausas térmicas, fornecimento de água potável fresca e protetor solar FPS 50.</p>
-                    </div>
-                    <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg space-y-1.5">
-                      <strong className="text-slate-900 block text-xs">4. Animais Peçonhentos e Primeiros Socorros (NR-31.14):</strong>
-                      <p className="text-slate-700">Uso obrigatório de perneiras de couro e botinas de segurança, kit de primeiros socorros em campo e protocolo de encaminhamento médico.</p>
-                    </div>
+                  {/* Eram quatro quadros fixos de medidas ("20h", "FPS 50",
+                      "perneiras de couro") iguais para toda propriedade, como se
+                      fossem o programa dela. A previa repete o PDF
+                      (exportPGRTRDocumentPdf): o inventario e a ressalva de escopo. */}
+                  <div className="overflow-x-auto border border-slate-300 rounded-lg">
+                    <table className="w-full min-w-[600px] text-left text-xs border-collapse">
+                      <thead className="bg-slate-100 text-slate-700 text-[11px] font-bold border-b border-slate-300">
+                        <tr>
+                          <th className="p-2.5 border-r border-slate-200">GHE / Frente de trabalho</th>
+                          <th className="p-2.5 border-r border-slate-200">Perigo / Agente de risco inventariado</th>
+                          <th className="p-2.5 border-r border-slate-200">Medidas de controle registradas</th>
+                          <th className="p-2.5">Situação</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-200 text-slate-800">
+                        {riscosDoCliente.filter((r: any) => r?.status !== 'INACTIVE').length === 0 ? (
+                          <tr>
+                            <td colSpan={4} className="p-3 text-amber-800 font-semibold">
+                              Inventário de riscos vazio. Não há agente de risco cadastrado para este estabelecimento
+                              rural. Levante os perigos antes de emitir o PGRTR.
+                            </td>
+                          </tr>
+                        ) : riscosDoCliente.filter((r: any) => r?.status !== 'INACTIVE').map((r: any, i: number) => {
+                          const ghe = gheDoCliente.find((g: any) => g?.id === r?.ghe_id);
+                          const controles = [
+                            r.epc_implemented ? `EPC: ${r.epc_description?.trim() || 'sem descrição'}` : '',
+                            r.epi_required ? 'EPI exigido' : ''
+                          ].filter(Boolean);
+                          return (
+                            <tr key={r.id || i} className="align-top">
+                              <td className="p-2.5 border-r border-slate-200">
+                                {[ghe?.code, ghe?.name].filter(Boolean).join(' — ') || 'GHE não vinculado'}
+                              </td>
+                              <td className="p-2.5 border-r border-slate-200">
+                                <div className="font-bold text-slate-900">{r.agent_name || 'Agente não identificado'}</div>
+                                <div className="text-[10px] text-slate-500">Fonte: {r.generating_source?.trim() || 'não informada'}</div>
+                              </td>
+                              <td className="p-2.5 border-r border-slate-200">
+                                {controles.length > 0 ? controles.join(' · ') : 'Nenhuma medida de controle registrada'}
+                              </td>
+                              <td className="p-2.5">
+                                {r.epc_implemented && r.epc_effective
+                                  ? 'Controle implantado e avaliado como eficaz'
+                                  : r.epc_implemented
+                                    ? 'Controle implantado, eficácia não confirmada'
+                                    : <span className="text-amber-800 font-semibold">PENDENTE — sem controle coletivo registrado</span>}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
                   </div>
+                  <p className="text-[11px] text-amber-900 italic">
+                    Escopo deste documento: o inventário acima reproduz os riscos registrados no sistema. A verificação
+                    específica dos itens 31.7 (agrotóxicos), 31.10 (trabalho a céu aberto), 31.12 (máquinas, implementos e
+                    tomada de força) e 31.14 (agentes biológicos e animais peçonhentos) da NR-31 depende de inspeção em
+                    campo e não está registrada neste sistema — a ausência de apontamento não significa conformidade.
+                  </p>
                 </div>
               )}
 
@@ -663,15 +779,36 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
                               <tr key={r.id || idx} className="hover:bg-slate-50">
                                 <td className="p-2.5 font-bold border-r border-slate-200">{ghe.name}</td>
                                 <td className="p-2.5 border-r border-slate-200">{r.agent_name} ({r.risk_code_table_24})</td>
-                                <td className="p-2.5 border-r border-slate-200">{r.measured_value ? `${r.measured_value} ${r.measurement_unit}` : 'Qualitativa'}</td>
+                                {/* Sem medicao dizia "Qualitativa" mesmo em avaliacao
+                                    quantitativa ainda nao feita. */}
+                                <td className="p-2.5 border-r border-slate-200">
+                                  {r.measured_value
+                                    ? `${r.measured_value} ${r.measurement_unit || ''}`
+                                    : r.evaluation_type === 'QUANTITATIVA'
+                                      ? <span className="text-amber-800 font-semibold">medição pendente</span>
+                                      : 'Qualitativa'}
+                                </td>
+                                {/* Era `GFIP || '04'` (25 anos) e "NAO ENSEJA" para todo
+                                    risco sem o campo, avaliado ou nao. */}
                                 <td className="p-2.5 border-r border-slate-200 font-bold">
                                   {r.special_retirement_applies ? (
-                                    <span className="text-rose-700">SIM (GFIP {r.gfip_code || '04'})</span>
+                                    <span className="text-rose-700">SIM (GFIP {r.gfip_code || 'não informado'})</span>
+                                  ) : r.gfip_code ? (
+                                    <span className="text-emerald-700">NÃO ENSEJA (GFIP {r.gfip_code})</span>
                                   ) : (
-                                    <span className="text-emerald-700">NÃO ENSEJA</span>
+                                    <span className="text-amber-800">Enquadramento não informado</span>
                                   )}
                                 </td>
-                                <td className="p-2.5 text-slate-700">{r.epi_required ? 'EPI Eficaz (CA Mitigado)' : 'Sem EPI'}</td>
+                                {/* "EPI Eficaz (CA Mitigado)" saia so por o EPI ser exigido:
+                                    e a eficacia que decide se a exposicao conta para a
+                                    aposentadoria especial. */}
+                                <td className="p-2.5 text-slate-700">
+                                  {!r.epi_required
+                                    ? 'Sem EPI'
+                                    : r.epis?.[0]?.is_effective
+                                      ? `EPI declarado eficaz (CA ${r.epis[0].ca_number || 'não informado'})`
+                                      : <span className="text-amber-800">EPI exigido — eficácia não comprovada</span>}
+                                </td>
                               </tr>
                             ));
                           })}
@@ -858,7 +995,16 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
               <div className="pt-8 border-t-2 border-slate-900 space-y-6">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 text-center text-xs text-slate-800">
                   <div className="space-y-1">
-                    <div className="font-mono text-[10px] text-teal-800 font-bold">ASSINADO DIGITALMENTE (ICP-BRASIL)</div>
+                    {/* Dizia "ASSINADO DIGITALMENTE (ICP-BRASIL)" antes de qualquer
+                        assinatura - e a assinatura do sistema e eletronica simples,
+                        sem certificado ICP-Brasil (SSTElectronicSignatureModal). */}
+                    <div className="font-mono text-[10px] text-teal-800 font-bold">
+                      {existingEnvelope?.status === 'SIGNED'
+                        ? 'ASSINATURA ELETRÔNICA SIMPLES (LEI 14.063/2020)'
+                        : existingEnvelope?.status === 'PARTIALLY_SIGNED'
+                          ? 'ASSINATURA EM ANDAMENTO'
+                          : 'AGUARDANDO ASSINATURA'}
+                    </div>
                     <div className="w-48 h-0.5 bg-slate-900 mx-auto mt-6"></div>
                     <div className="font-bold text-slate-950">{rtName}</div>
                     <div className="text-slate-600">{rtTitle}{rtCouncil ? ` • ${rtCouncil}` : ''}</div>
@@ -914,7 +1060,9 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
         <div className="bg-slate-950 border-t border-slate-800 px-5 py-3 flex flex-col sm:flex-row items-center justify-between gap-3 shrink-0 text-xs text-slate-400">
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-teal-400"></span>
-            <span>Relatório Dinâmico validado em conformidade com as Normas Regulamentadoras MTE e eSocial MOS.</span>
+            {/* Dizia "validado em conformidade com as Normas Regulamentadoras".
+                Nada valida conformidade aqui: o que falta sai como pendencia. */}
+            <span>Pré-visualização montada dos registros do sistema. O que não estiver cadastrado sai como pendência.</span>
           </div>
 
           <div className="flex items-center gap-2">

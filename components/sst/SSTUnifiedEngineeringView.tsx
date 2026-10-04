@@ -40,11 +40,12 @@ import { ChemicalProductsTab } from './ChemicalProductsTab';
 import { TrainingMatrixTab } from './TrainingMatrixTab';
 import { ErgonomicAssessmentTab } from './ErgonomicAssessmentTab';
 import { TechnicalResponsibilityTab } from './TechnicalResponsibilityTab';
-import { PenTool, Handshake, Cog, FlaskConical, Activity, BadgeCheck } from 'lucide-react';
+import { PlanoDeAcaoTab } from './PlanoDeAcaoTab';
+import { PenTool, Handshake, Cog, FlaskConical, Activity, BadgeCheck, ClipboardList } from 'lucide-react';
 
 interface SSTUnifiedEngineeringViewProps {
   onNavigate?: (view: string) => void;
-  initialTab?: 'HIERARCHY' | 'GHE_RISKS' | 'EXAMS_PCMSO' | 'EMPLOYEES' | 'WORK_ORDERS_OS' | 'DOCS_XML' | 'INTEGRATION_TRAINING' | 'SIGNATURES' | 'CONTRACTED' | 'MACHINES' | 'CHEMICALS' | 'TRAINING_MATRIX' | 'ERGONOMICS' | 'TECHNICAL_RESPONSIBILITY';
+  initialTab?: 'HIERARCHY' | 'GHE_RISKS' | 'ACTION_PLAN' | 'EXAMS_PCMSO' | 'EMPLOYEES' | 'WORK_ORDERS_OS' | 'DOCS_XML' | 'INTEGRATION_TRAINING' | 'SIGNATURES' | 'CONTRACTED' | 'MACHINES' | 'CHEMICALS' | 'TRAINING_MATRIX' | 'ERGONOMICS' | 'TECHNICAL_RESPONSIBILITY';
 }
 
 export const SSTUnifiedEngineeringView: React.FC<SSTUnifiedEngineeringViewProps> = ({ onNavigate, initialTab }) => {
@@ -63,7 +64,7 @@ export const SSTUnifiedEngineeringView: React.FC<SSTUnifiedEngineeringViewProps>
   } = usePrevSafe();
 
   const [selectedClientId, setSelectedClientId] = useState<string>(clients?.[0]?.id || '');
-  const [activeTab, setActiveTab] = useState<'HIERARCHY' | 'GHE_RISKS' | 'EXAMS_PCMSO' | 'EMPLOYEES' | 'WORK_ORDERS_OS' | 'DOCS_XML' | 'INTEGRATION_TRAINING' | 'SIGNATURES' | 'CONTRACTED' | 'MACHINES' | 'CHEMICALS' | 'TRAINING_MATRIX' | 'ERGONOMICS' | 'TECHNICAL_RESPONSIBILITY'>(initialTab || 'HIERARCHY');
+  const [activeTab, setActiveTab] = useState<'HIERARCHY' | 'GHE_RISKS' | 'ACTION_PLAN' | 'EXAMS_PCMSO' | 'EMPLOYEES' | 'WORK_ORDERS_OS' | 'DOCS_XML' | 'INTEGRATION_TRAINING' | 'SIGNATURES' | 'CONTRACTED' | 'MACHINES' | 'CHEMICALS' | 'TRAINING_MATRIX' | 'ERGONOMICS' | 'TECHNICAL_RESPONSIBILITY'>(initialTab || 'HIERARCHY');
 
   // Sync when initialTab prop updates from external navigation
   React.useEffect(() => {
@@ -235,6 +236,23 @@ export const SSTUnifiedEngineeringView: React.FC<SSTUnifiedEngineeringViewProps>
         >
           <ShieldAlert className="w-4 h-4" />
           2. GHE & Inventário de Riscos (PGR/LTCAT)
+        </button>
+
+        {/* 2.1, e nao 3: o plano e a continuacao do inventario no PGR, e as
+            outras abas sao citadas pelo numero em mensagens do sistema (ex.:
+            "aba 2" em lib/ghesDoCargo.ts). */}
+        <button
+          type="button"
+          id="main-tab-action-plan-btn"
+          onClick={() => setActiveTab('ACTION_PLAN')}
+          className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 shrink-0 ${
+            activeTab === 'ACTION_PLAN'
+              ? 'bg-teal-500 text-slate-950 shadow-lg shadow-teal-500/20'
+              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
+          }`}
+        >
+          <ClipboardList className="w-4 h-4" />
+          2.1 Plano de Ação (PGR, NR-01 1.5.5)
         </button>
 
         <button
@@ -416,6 +434,9 @@ export const SSTUnifiedEngineeringView: React.FC<SSTUnifiedEngineeringViewProps>
         )}
         {activeTab === 'GHE_RISKS' && (
           <GHERiskInventoryTab selectedClientId={selectedClientId} />
+        )}
+        {activeTab === 'ACTION_PLAN' && (
+          <PlanoDeAcaoTab selectedClientId={selectedClientId} />
         )}
         {activeTab === 'EXAMS_PCMSO' && (
           <ExamPCMSOTab selectedClientId={selectedClientId} />

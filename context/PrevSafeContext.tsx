@@ -97,6 +97,7 @@ import {
   CipaMeetingRecord,
   CipaVoteVerificationMethod,
   OccupationalRiskCatalogItem,
+  PgrActionPlanItem,
   RiskLevelType
 } from '@/types';
 
@@ -170,6 +171,23 @@ import { hashDoDocumento, hashDaAssinatura } from '@/lib/documentoHash';
 import { dataDeHoje, dataEmDias, formatarDataISO, novoId } from '@/lib/datas';
 import { limparOrdensDeServico, AVISO_SEM_INVENTARIO } from '@/lib/limpezaDeOrdensDeServico';
 import { classificarRisco } from '@/lib/classificacaoDeRisco';
+import {
+  acaoAceita,
+  conferirAcao,
+  dataBR,
+  efeitoNoRisco,
+  EVENTO_PRAZO_ALTERADO,
+  novaAcaoDoInventario,
+  prazoDaClassificacao,
+  registroDaAfericao,
+  registroDaConclusao,
+  ROTULO_DA_HIERARQUIA,
+  ROTULO_DA_JUSTIFICATIVA,
+  ROTULO_DO_STATUS,
+  somarDias,
+  sugestoesDoCatalogo,
+  type NovaAcaoDoPlano
+} from '@/lib/planoDeAcao';
 import { ghesDosCargos, avisoDeCargosSemGhe } from '@/lib/ghesDoCargo';
 import { substituirEvidencia, descartarEvidencia } from '@/lib/evidenciasFotograficas';
 import { codigoExisteNaTabela24 } from '@/lib/tabela24';
@@ -205,6 +223,7 @@ import {
   tpExameOcupDoAso,
   resAsoDoAso,
   xmlDosExamesDoS2220,
+  xmlDoEpcEpi,
   type PendenciaESocial,
 } from '@/lib/esocialDados';
 import { validarCPF } from '@/lib/validacoesBr';
@@ -356,6 +375,22 @@ interface PrevSafeContextType {
   deleteErgonomicAssessment: (id: string) => { ok: boolean; message: string };
   /** Leva um fator psicossocial presente ao inventario de um GHE (17.3.5). */
   levarFatorAoInventario: (pedido: PedidoDeInventario) => { ok: boolean; message: string };
+  /**
+   * Plano de acao do PGR (NR-01, subitens 1.5.5.2 e 1.5.5.3). As regras, e o
+   * que cada funcao recusa, estao em lib/planoDeAcao.ts (conferirAcao).
+   */
+  pgrActionPlan: PgrActionPlanItem[];
+  addPgrActionPlanItem: (data: NovaAcaoDoPlano) => { ok: boolean; message: string; item?: PgrActionPlanItem };
+  /** `motivo`: exigido para mudar o prazo de acao aceita e para reabrir acao concluida. */
+  updatePgrActionPlanItem: (
+    id: string,
+    updates: Partial<PgrActionPlanItem>,
+    motivo?: string
+  ) => { ok: boolean; message: string };
+  /** So remove sugestao. Acao aceita se descarta, com motivo: o registro fica (1.5.5.3.1). */
+  deletePgrActionPlanItem: (id: string) => { ok: boolean; message: string };
+  /** Uma acao SUGERIDA para cada risco do cliente que ainda nao tem acao no plano. */
+  sugerirAcoesParaRiscosSemPlano: (clientId: string) => { ok: boolean; message: string; criadas: number };
   /** Anexa uma fotografia ja enviada ao armazenamento. */
   registrarEvidenciaDaAEP: (aepId: string, evidencia: EvidenciaFotografica) => void;
   /** Troca uma foto por outra; a antiga continua guardada. */
@@ -938,6 +973,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
   const [chemicalProducts, setChemicalProducts] = useState<ChemicalProduct[]>([]);
   const [trainingRequirements, setTrainingRequirements] = useState<TrainingRequirement[]>([]);
   const [ergonomicAssessments, setErgonomicAssessments] = useState<ErgonomicAssessment[]>([]);
+  const [pgrActionPlan, setPgrActionPlan] = useState<PgrActionPlanItem[]>([]);
   const [occupationalRisksCatalog, setOccupationalRisksCatalog] = useState<OccupationalRiskCatalogItem[]>(INITIAL_OCCUPATIONAL_RISKS_CATALOG);
 
   // Estado da sincronizacao com o Supabase, exposto na barra superior.
@@ -1042,6 +1078,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     apply(setChemicalProducts, list(parsed.chemicalProducts, []));
     apply(setTrainingRequirements, list(parsed.trainingRequirements, []));
     apply(setErgonomicAssessments, list(parsed.ergonomicAssessments, []));
+    apply(setPgrActionPlan, list(parsed.pgrActionPlan, []));
     apply(setOccupationalRisksCatalog, list(parsed.occupationalRisksCatalog, INITIAL_OCCUPATIONAL_RISKS_CATALOG, 'occupationalRisksCatalog'));
   }, []);
 
@@ -1113,7 +1150,8 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     machinesEquipment,
     chemicalProducts,
     trainingRequirements,
-    ergonomicAssessments
+    ergonomicAssessments,
+    pgrActionPlan
   }), [
     organization,
     esocialConfig,
@@ -1161,7 +1199,8 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     machinesEquipment,
     chemicalProducts,
     trainingRequirements,
-    ergonomicAssessments
+    ergonomicAssessments,
+    pgrActionPlan
   ]);
 
   // Cache local: nao e mais a fonte da verdade, e sim a copia que permite abrir
@@ -3803,14 +3842,18 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
           ${r.limit_tolerance ? `<limTol>${r.limit_tolerance}</limTol>` : ''}
           ${r.measurement_unit ? `<unMed>${r.measurement_unit}</unMed>` : ''}
           ${r.technique_used ? `<tecMedicao>${r.technique_used}</tecMedicao>` : ''}
-          <epcEpi>
-            <utilizEPC>${r.epc_effective ? '2' : '1'}</utilizEPC>
-            <utilizEPI>${r.epi_effective ? '2' : '1'}</utilizEPI>
-            ${(r.epi_ca_numbers || []).map(ca => `
-            <epi>
-              <docAval>${ca}</docAval>
-            </epi>`).join('')}
-          </epcEpi>
+${r.risk_code_table_24 === '09.01.001'
+            // MOS S-2240, item 1.5: com 09.01.001 o grupo [epcEpi] nao e preenchido.
+            ? ''
+            : xmlDoEpcEpi({
+              // Eventos gravados antes nao tem epc_implemented: ali o
+              // epc_effective era o que decidia o utilizEPC.
+              epcImplementado: r.epc_implemented ?? r.epc_effective,
+              epcEficaz: r.epc_effective,
+              epiUtilizado: r.epi_used ?? (r.epi_ca_numbers || []).length > 0,
+              epiEficaz: r.epi_effective,
+              cas: r.epi_ca_numbers || []
+            })}
         </fatRisco>`).join('');
 
       return `<?xml version="1.0" encoding="UTF-8"?>
@@ -5893,8 +5936,237 @@ ${blocoRespMonitXml(event.client_id, aso?.exam_date || dataDeHoje(), '      ')}
 
   const deleteEnvironmentalRisk = useCallback((id: string) => {
     setEnvironmentalRisks(prev => prev.filter(r => r.id !== id));
+    // O plano do risco nao some com ele. Sugestao sai; acao aceita fica,
+    // descartada e com o motivo - o subitem 1.5.5.3.1 manda registrar.
+    const agora = new Date().toISOString();
+    setPgrActionPlan(prev => prev
+      .filter(a => !(a.risk_id === id && a.status === 'SUGERIDA'))
+      .map(a => (a.risk_id === id && a.status !== 'DESCARTADA'
+        ? {
+            ...a,
+            status: 'DESCARTADA' as const,
+            discard_reason: 'Risco excluído do inventário.',
+            updated_at: agora,
+            history: [
+              ...(a.history || []),
+              { em: agora, por: currentProfile.full_name, evento: 'Descartada: o risco foi excluído do inventário.' }
+            ]
+          }
+        : a)));
     logAudit('DELETE_ENVIRONMENTAL_RISK' as any, 'CLIENT' as any, id, 'Risco ambiental excluído');
+  }, [logAudit, currentProfile]);
+
+  // ==========================================
+  // Plano de acao do PGR (NR-01, 1.5.5.2 e 1.5.5.3)
+  // ==========================================
+
+  /** Um registro novo do plano, com a primeira linha do historico. */
+  const montarAcaoDoPlano = useCallback((n: NovaAcaoDoPlano, evento: string): PgrActionPlanItem => {
+    const agora = new Date().toISOString();
+    const aceita = acaoAceita(n);
+    return {
+      ...n,
+      id: novoId('acao-pgr'),
+      organization_id: organization.id,
+      original_deadline: aceita ? n.deadline : undefined,
+      accepted_at: aceita ? agora : undefined,
+      accepted_by: aceita ? currentProfile.full_name : undefined,
+      created_at: agora,
+      updated_at: agora,
+      history: [{ em: agora, por: currentProfile.full_name, evento }]
+    };
+  }, [organization.id, currentProfile]);
+
+  /** Prazo sugerido: hoje + o prazo da faixa, com a regra dos expostos (secao 5.7 do PGR). */
+  const prazoSugeridoDoRisco = useCallback((risco: { severity: any; probability: any; ghe_id: string; client_id: string }) => {
+    const classificado = classificarRisco(risco.severity, risco.probability);
+    const expostos = employees.filter(e => e.ghe_id === risco.ghe_id).length;
+    const efetivo = employees.filter(e => e.client_id === risco.client_id).length;
+    const prazo = prazoDaClassificacao(classificado, expostos, efetivo);
+    return prazo?.dias != null ? somarDias(dataDeHoje(), prazo.dias) : null;
+  }, [employees]);
+
+  /**
+   * Leva ao inventario o que o plano registrou: medida de controle concluida
+   * marca o EPC como implantado; eficacia aferida, como eficaz; eficacia que
+   * deixou de estar verificada desmarca. A regra e `efeitoNoRisco`.
+   */
+  const aplicarEfeitoNoRisco = useCallback((
+    risco: SSTEnvironmentalRisk | undefined,
+    antes: PgrActionPlanItem[],
+    depois: PgrActionPlanItem[]
+  ) => {
+    if (!risco) return;
+    const efeito = efeitoNoRisco(risco, antes, depois);
+    if (!efeito) return;
+    setEnvironmentalRisks(prev => prev.map(r => (
+      r.id === risco.id ? { ...r, ...efeito, updated_at: new Date().toISOString() } : r
+    )));
+    logAudit('UPDATE_ENVIRONMENTAL_RISK' as any, 'CLIENT' as any, risco.id,
+      `Controles de "${risco.agent_name}" atualizados pelo plano de ação`, efeito);
   }, [logAudit]);
+
+  const addPgrActionPlanItem = useCallback((data: NovaAcaoDoPlano): { ok: boolean; message: string; item?: PgrActionPlanItem } => {
+    const risco = environmentalRisks.find(r => r.id === data.risk_id);
+    if (!risco) return { ok: false, message: 'Risco não encontrado no inventário.' };
+    // Cliente e GHE vem do risco, nao da tela.
+    const proposta: NovaAcaoDoPlano = { ...data, client_id: risco.client_id, ghe_id: risco.ghe_id };
+    const erro = conferirAcao(proposta, { risco });
+    if (erro) return { ok: false, message: erro };
+
+    const item = montarAcaoDoPlano(
+      proposta,
+      [
+        acaoAceita(proposta)
+          ? `Cadastrada e aceita (${ROTULO_DO_STATUS[proposta.status]}): responsável ${proposta.responsible}, prazo ${dataBR(proposta.deadline)}.`
+          : `Cadastrada (${ROTULO_DO_STATUS[proposta.status]}).`,
+        proposta.status === 'CONCLUIDA' || proposta.status === 'EFICACIA_VERIFICADA' ? registroDaConclusao(proposta as PgrActionPlanItem) : '',
+        proposta.status === 'EFICACIA_VERIFICADA' ? registroDaAfericao(proposta as PgrActionPlanItem) : ''
+      ].filter(Boolean).join(' ')
+    );
+    setPgrActionPlan(prev => [...prev, item]);
+    aplicarEfeitoNoRisco(risco, pgrActionPlan, [...pgrActionPlan, item]);
+    logAudit('CREATE_PGR_ACTION' as any, 'CLIENT' as any, item.id, item.measure, { risk_id: item.risk_id, status: item.status });
+    return { ok: true, message: 'Ação cadastrada no plano.', item };
+  }, [environmentalRisks, pgrActionPlan, montarAcaoDoPlano, aplicarEfeitoNoRisco, logAudit]);
+
+  const updatePgrActionPlanItem = useCallback((
+    id: string,
+    updates: Partial<PgrActionPlanItem>,
+    motivo?: string
+  ): { ok: boolean; message: string } => {
+    const anterior = pgrActionPlan.find(a => a.id === id);
+    if (!anterior) return { ok: false, message: 'Ação não encontrada.' };
+    const risco = environmentalRisks.find(r => r.id === anterior.risk_id);
+
+    // O que identifica a acao e o registro nao se edita por aqui.
+    const proposta: PgrActionPlanItem = {
+      ...anterior,
+      ...updates,
+      id: anterior.id,
+      organization_id: anterior.organization_id,
+      client_id: anterior.client_id,
+      risk_id: anterior.risk_id,
+      ghe_id: anterior.ghe_id,
+      origin: anterior.origin,
+      origin_catalog_id: anterior.origin_catalog_id,
+      original_deadline: anterior.original_deadline,
+      accepted_at: anterior.accepted_at,
+      accepted_by: anterior.accepted_by,
+      created_at: anterior.created_at,
+      history: anterior.history || []
+    };
+    const erro = conferirAcao(proposta, { risco, anterior, motivo });
+    if (erro) return { ok: false, message: erro };
+
+    const agora = new Date().toISOString();
+    const quem = currentProfile.full_name;
+    const eventos: string[] = [];
+    const mesmo = (x: unknown, y: unknown) => String(x ?? '').trim() === String(y ?? '').trim();
+
+    if (!acaoAceita(anterior) && acaoAceita(proposta)) {
+      proposta.accepted_at = agora;
+      proposta.accepted_by = quem;
+      proposta.original_deadline = proposta.deadline;
+      eventos.push(`Aceita: responsável ${proposta.responsible}, prazo ${dataBR(proposta.deadline)}.`);
+    }
+    if (anterior.status !== proposta.status) {
+      eventos.push(`Status: de "${ROTULO_DO_STATUS[anterior.status]}" para "${ROTULO_DO_STATUS[proposta.status]}".`);
+    }
+    if (acaoAceita(anterior) && !mesmo(anterior.deadline, proposta.deadline)) {
+      eventos.push(`${EVENTO_PRAZO_ALTERADO} de ${dataBR(anterior.deadline)} para ${dataBR(proposta.deadline)}. Motivo: ${String(motivo).trim()}`);
+    }
+    if (acaoAceita(anterior) && !mesmo(anterior.responsible, proposta.responsible)) {
+      eventos.push(`Responsável: de "${anterior.responsible || ''}" para "${proposta.responsible || ''}".`);
+    }
+    if (!mesmo(anterior.measure, proposta.measure)) eventos.push(`Medida ajustada: "${proposta.measure}".`);
+    if (anterior.hierarchy !== proposta.hierarchy) {
+      eventos.push(`Hierarquia: de "${ROTULO_DA_HIERARQUIA[anterior.hierarchy]}" para "${ROTULO_DA_HIERARQUIA[proposta.hierarchy]}".`);
+    }
+    if ((anterior.hierarchy_justification || '') !== (proposta.hierarchy_justification || '')
+      || !mesmo(anterior.hierarchy_justification_note, proposta.hierarchy_justification_note)) {
+      eventos.push(`Justificativa (1.5.5.1.2): ${proposta.hierarchy_justification
+        ? ROTULO_DA_JUSTIFICATIVA[proposta.hierarchy_justification] : 'nenhuma'}`
+        + `${proposta.hierarchy_justification_note?.trim() ? ` - ${proposta.hierarchy_justification_note.trim()}` : ''}.`);
+    }
+    // Os campos guardam a conclusao vigente; o historico, cada uma delas.
+    const concluidaAgora = proposta.status === 'CONCLUIDA' || proposta.status === 'EFICACIA_VERIFICADA';
+    const concluidaAntes = anterior.status === 'CONCLUIDA' || anterior.status === 'EFICACIA_VERIFICADA';
+    if (concluidaAgora && (!concluidaAntes || !mesmo(anterior.completed_at, proposta.completed_at)
+      || !mesmo(anterior.evidence, proposta.evidence) || !mesmo(anterior.workers_informed_at, proposta.workers_informed_at))) {
+      eventos.push(registroDaConclusao(proposta));
+    }
+    if (proposta.status === 'EFICACIA_VERIFICADA' && (anterior.status !== 'EFICACIA_VERIFICADA'
+      || !mesmo(anterior.effectiveness_checked_at, proposta.effectiveness_checked_at)
+      || !mesmo(anterior.effectiveness_result, proposta.effectiveness_result))) {
+      eventos.push(registroDaAfericao(proposta));
+    }
+    if (proposta.status === 'DESCARTADA') eventos.push(`Motivo do descarte: ${proposta.discard_reason}`);
+    if (motivo?.trim() && !eventos.some(e => e.includes(motivo.trim()))) eventos.push(`Motivo: ${motivo.trim()}`);
+    if (eventos.length === 0) eventos.push('Dados da ação atualizados.');
+
+    proposta.updated_at = agora;
+    proposta.history = [...proposta.history, ...eventos.map(evento => ({ em: agora, por: quem, evento }))];
+
+    setPgrActionPlan(prev => prev.map(a => (a.id === id ? proposta : a)));
+    aplicarEfeitoNoRisco(risco, pgrActionPlan, pgrActionPlan.map(a => (a.id === id ? proposta : a)));
+    logAudit('UPDATE_PGR_ACTION' as any, 'CLIENT' as any, id, proposta.measure, { status: proposta.status, eventos });
+    return { ok: true, message: eventos.join(' ') };
+  }, [pgrActionPlan, environmentalRisks, currentProfile, aplicarEfeitoNoRisco, logAudit]);
+
+  const deletePgrActionPlanItem = useCallback((id: string): { ok: boolean; message: string } => {
+    const alvo = pgrActionPlan.find(a => a.id === id);
+    if (!alvo) return { ok: false, message: 'Ação não encontrada.' };
+    if (alvo.status !== 'SUGERIDA') {
+      return {
+        ok: false,
+        message: 'Ação aceita não se apaga: descarte-a com o motivo, e o registro fica (subitem 1.5.5.3.1 da NR-01).'
+      };
+    }
+    setPgrActionPlan(prev => prev.filter(a => a.id !== id));
+    logAudit('DELETE_PGR_ACTION' as any, 'CLIENT' as any, id, 'Sugestão do plano de ação removida');
+    return { ok: true, message: 'Sugestão removida.' };
+  }, [pgrActionPlan, logAudit]);
+
+  const sugerirAcoesParaRiscosSemPlano = useCallback((clientId: string): { ok: boolean; message: string; criadas: number } => {
+    if (!clientId) return { ok: false, message: 'Selecione o cliente.', criadas: 0 };
+    // O mesmo recorte do PGR (exportPGRDocumentPdf): GHE do cliente, ou o
+    // proprio client_id no risco. Sem filtrar status: o PGR lista o risco, e
+    // risco listado sem acao vira pendencia que este botao precisa alcancar.
+    const idsDeGhe = new Set(ghes.filter(g => g.client_id === clientId).map(g => g.id));
+    const riscos = environmentalRisks.filter(r => idsDeGhe.has(r.ghe_id) || r.client_id === clientId);
+    const comAcao = new Set(pgrActionPlan.filter(a => a.status !== 'DESCARTADA').map(a => a.risk_id));
+
+    const novas: PgrActionPlanItem[] = [];
+    riscos.filter(r => !comAcao.has(r.id)).forEach(r => {
+      const prazo = prazoSugeridoDoRisco(r);
+      // Risco que veio do catalogo recebe as medidas recomendadas para o
+      // agente; o resto, a sugestao pelo estado dos controles.
+      const doCatalogo = occupationalRisksCatalog.find(cat =>
+        cat.name === r.agent_name && (cat.code_table_24 || '') === (r.risk_code_table_24 || ''));
+      const sugestoes = doCatalogo ? sugestoesDoCatalogo(r, doCatalogo, prazo) : [];
+      (sugestoes.length > 0 ? sugestoes : [novaAcaoDoInventario(r, prazo)]).forEach(n => {
+        novas.push(montarAcaoDoPlano(
+          n,
+          n.origin === 'CATALOGO'
+            ? 'Sugerida a partir das medidas recomendadas no catálogo de riscos.'
+            : 'Sugerida a partir do estado dos controles do risco no inventário.'
+        ));
+      });
+    });
+
+    if (novas.length === 0) {
+      return { ok: true, message: 'Todos os riscos do cliente já têm ação no plano.', criadas: 0 };
+    }
+    setPgrActionPlan(prev => [...prev, ...novas]);
+    logAudit('CREATE_PGR_ACTION' as any, 'CLIENT' as any, clientId,
+      `${novas.length} ação(ões) sugerida(s) para riscos sem plano`, { criadas: novas.length });
+    return {
+      ok: true,
+      message: `${novas.length} ação(ões) sugerida(s). Sugestão não entra no PGR: aceite cada uma com responsável, prazo, acompanhamento e aferição.`,
+      criadas: novas.length
+    };
+  }, [ghes, environmentalRisks, pgrActionPlan, occupationalRisksCatalog, prazoSugeridoDoRisco, montarAcaoDoPlano, logAudit]);
 
   /**
    * Leva um fator psicossocial presente ao inventario de um GHE (item 17.3.5
@@ -6029,6 +6301,7 @@ ${blocoRespMonitXml(event.client_id, aso?.exam_date || dataDeHoje(), '      ')}
     const now = new Date().toISOString();
     const newRisks: SSTEnvironmentalRisk[] = [];
     const newExams: SSTExamProtocol[] = [];
+    const newActions: PgrActionPlanItem[] = [];
 
     resolvedGheIds.forEach(gheId => {
       const targetGhe = ghes.find(g => g.id === gheId);
@@ -6071,9 +6344,15 @@ ${blocoRespMonitXml(event.client_id, aso?.exam_date || dataDeHoje(), '      ')}
           severity: severityValue,
           probability: probabilityValue,
           risk_level: payload.custom_risk_data?.risk_level || derivedRiskLevel,
-          epc_implemented: true,
-          epc_description: catRisk.suggested_controls_summary || catRisk.recommended_epcs || 'Ventilação e enclausuramento quando aplicável.',
-          epc_effective: true,
+          // Gravava EPC implantado e EFICAZ, com a recomendacao do catalogo
+          // como descricao - antes de alguem ir ao local. O PGR dizia "manter
+          // e monitorar" um controle que talvez nem exista, e o S-2240
+          // declarava EPC eficaz. A recomendacao agora vira acao SUGERIDA no
+          // plano (sugestoesDoCatalogo, abaixo), e o controle so passa a
+          // implantado e eficaz pelo plano (lib/planoDeAcao.ts, efeitoNoRisco).
+          epc_implemented: false,
+          epc_description: undefined,
+          epc_effective: false,
           special_retirement_applies: catRisk.special_retirement_eligible,
           gfip_code: catRisk.gfip_code_suggested,
           // Dizia "Exposicao ... CARACTERIZADA conforme criterios tecnicos e
@@ -6121,6 +6400,10 @@ ${blocoRespMonitXml(event.client_id, aso?.exam_date || dataDeHoje(), '      ')}
         };
         newRisks.push(riskObj);
 
+        sugestoesDoCatalogo(riskObj, catRisk, prazoSugeridoDoRisco(riskObj)).forEach(n => {
+          newActions.push(montarAcaoDoPlano(n, 'Sugerida pelo catálogo de riscos ao aplicar o risco ao GHE.'));
+        });
+
         // Include suggested exams if requested
         if (payload.include_suggested_exams && catRisk.suggested_exams_pcmso.length > 0) {
           catRisk.suggested_exams_pcmso.forEach(suggExam => {
@@ -6154,6 +6437,9 @@ ${blocoRespMonitXml(event.client_id, aso?.exam_date || dataDeHoje(), '      ')}
     if (newExams.length > 0) {
       setExamProtocols(prev => [...newExams, ...prev]);
     }
+    if (newActions.length > 0) {
+      setPgrActionPlan(prev => [...prev, ...newActions]);
+    }
 
     logAudit('CREATE_ENVIRONMENTAL_RISK' as any, 'CLIENT' as any, payload.client_id, `Aplicação em lote de ${newRisks.length} riscos e ${newExams.length} exames em ${resolvedGheIds.length} GHE(s)`, {
       target_mode: payload.target_mode,
@@ -6168,9 +6454,13 @@ ${blocoRespMonitXml(event.client_id, aso?.exam_date || dataDeHoje(), '      ')}
       // sucesso e a forma mais silenciosa de perder um cargo.
       message: `Sucesso: ${newRisks.length} risco(s) e ${newExams.length} exame(s) aplicados em `
         + `${resolvedGheIds.length} GHE(s).`
+        + (newActions.length > 0
+          ? ` ${newActions.length} medida(s) recomendada(s) pelo catálogo entraram no plano de ação como `
+            + 'sugestão: o risco fica sem controle implantado até a medida ser aceita, concluída e aferida.'
+          : '')
         + (cargosSemGhe.length > 0 ? ` ${avisoDeCargosSemGhe(cargosSemGhe)}` : '')
     };
-  }, [occupationalRisksCatalog, ghes, hierarchyJobs, examProtocols, organization.id, logAudit]);
+  }, [occupationalRisksCatalog, ghes, hierarchyJobs, examProtocols, organization.id, logAudit, prazoSugeridoDoRisco, montarAcaoDoPlano]);
 
   const applyExamsToTargets = useCallback((payload: {
     client_id: string;
@@ -6539,16 +6829,13 @@ ${blocoRespMonitXml(event.client_id, aso?.exam_date || dataDeHoje(), '      ')}
             <dscAgNoc>${r.agent_name}</dscAgNoc>
             <tpAval>${r.evaluation_type === 'QUANTITATIVA' ? 1 : 2}</tpAval>
             ${r.measured_value ? `<intConc>${r.measured_value}</intConc><unMed>${r.measurement_unit === 'dB(A)' ? 1 : 2}</unMed>` : ''}
-            <epcEpi>
-              <utilizEPC>${r.epc_implemented ? 2 : 0}</utilizEPC>
-              <utilizEPI>${r.epi_required ? 2 : 0}</utilizEPI>
-              ${r.epis?.map(epi => `
-              <epi>
-                <docAval>${epi.ca_number}</docAval>
-                <dscEPI>${epi.epi_name}</dscEPI>
-                <eficEpi>${epi.is_effective ? 'S' : 'N'}</eficEpi>
-              </epi>`).join('') || ''}
-            </epcEpi>
+${r.risk_code_table_24 === '09.01.001' ? '' : xmlDoEpcEpi({
+              epcImplementado: !!r.epc_implemented,
+              epcEficaz: !!r.epc_implemented && !!r.epc_effective,
+              epiUtilizado: !!r.epi_required || (r.epis || []).some(e => !!e.ca_number?.trim()),
+              epiEficaz: (r.epis || []).length > 0 && (r.epis || []).every(e => e.is_effective),
+              cas: (r.epis || []).map(e => e.ca_number)
+            }, '            ')}
           </fatRisco>`).join('');
 
     const xml = `<?xml version="1.0" encoding="UTF-8"?>
@@ -8010,6 +8297,7 @@ ${blocoRespRegXml(ghe.client_id, dataDeHoje())}
     setAccidentsIncidents(INITIAL_ACCIDENTS_INCIDENTS);
     setSstSignatures(INITIAL_SST_DOCUMENT_SIGNATURES);
     setCipaProcesses(INITIAL_CIPA_PROCESSES);
+    setPgrActionPlan([]);
     setEsocialConfig(INITIAL_ESOCIAL_CONFIG);
     setActiveTenantContext(null);
     if (typeof localStorage !== 'undefined') {
@@ -8138,6 +8426,11 @@ ${blocoRespRegXml(ghe.client_id, dataDeHoje())}
     updateErgonomicAssessment,
     deleteErgonomicAssessment,
     levarFatorAoInventario,
+    pgrActionPlan,
+    addPgrActionPlanItem,
+    updatePgrActionPlanItem,
+    deletePgrActionPlanItem,
+    sugerirAcoesParaRiscosSemPlano,
     registrarEvidenciaDaAEP,
     substituirEvidenciaDaAEP,
     descartarEvidenciaDaAEP,
@@ -8444,6 +8737,11 @@ ${blocoRespRegXml(ghe.client_id, dataDeHoje())}
     updateErgonomicAssessment,
     deleteErgonomicAssessment,
     levarFatorAoInventario,
+    pgrActionPlan,
+    addPgrActionPlanItem,
+    updatePgrActionPlanItem,
+    deletePgrActionPlanItem,
+    sugerirAcoesParaRiscosSemPlano,
     registrarEvidenciaDaAEP,
     substituirEvidenciaDaAEP,
     descartarEvidenciaDaAEP,

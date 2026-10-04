@@ -35,7 +35,7 @@ import {
 } from '@/lib/evidenciasFotograficas';
 import type { ImagemParaImpressao } from '@/lib/evidenciasFotograficas';
 import type { AssinaturaDoDocumento } from '@/lib/responsabilidadeTecnica';
-import type { TechnicalProfessional, TechnicalResponsibility, TechnicalRoleCode } from '@/types';
+import type { PgrActionPlanItem, TechnicalProfessional, TechnicalResponsibility, TechnicalRoleCode } from '@/types';
 import { VERSAO_DO_DOCUMENTO } from '@/lib/versaoDoDocumento';
 import { GATILHOS_DE_TREINAMENTO_EVENTUAL, BASE_POR_EXTENSO } from '@/lib/catalogoDeTreinamentos';
 import {
@@ -64,7 +64,15 @@ import {
 } from '@/lib/classificacaoDeRisco';
 import { calculateSesmtDimensioning } from '@/lib/nr4';
 import { descreverSituacao } from '@/lib/situacaoOperacional';
-import { acoesDoPlano } from '@/lib/planoDeAcao';
+import {
+  acoesDoPlano,
+  alteracoesDePrazo,
+  dataBR,
+  dataValida,
+  indicadorNoPrazo as indicadorNoPrazoDoPlano,
+  prazoAlterado
+} from '@/lib/planoDeAcao';
+import type { AcaoDoPlano } from '@/lib/planoDeAcao';
 import {
   montarPcmso,
   ehAsbesto,
@@ -3002,7 +3010,8 @@ export function exportPGRDocumentPdf({
   jobs = [],
   ergonomicAssessments = [],
   technicalProfessionals = [],
-  technicalResponsibilities = []
+  technicalResponsibilities = [],
+  pgrActionPlan = []
 }: {
   client: Client;
   organization: Organization;
@@ -3019,6 +3028,8 @@ export function exportPGRDocumentPdf({
   ergonomicAssessments?: any[];
   technicalProfessionals?: TechnicalProfessional[];
   technicalResponsibilities?: TechnicalResponsibility[];
+  /** Colecao pgrActionPlan (lib/planoDeAcao.ts). Pode vir com todos os clientes. */
+  pgrActionPlan?: PgrActionPlanItem[];
 }) {
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
   const pageWidth = doc.internal.pageSize.getWidth();
@@ -3048,6 +3059,24 @@ export function exportPGRDocumentPdf({
     d.setUTCMonth(d.getUTCMonth() + 24);
     return d.toISOString().slice(0, 10);
   })();
+
+  // Plano de acao (secao 8): os registros da colecao pgrActionPlan, pela
+  // regra unica de lib/planoDeAcao.ts - a mesma do relatorio psicossocial,
+  // com as mesmas opcoes, ou a numeracao e os prazos divergem. O efetivo e o
+  // recorte das outras secoes (os empregados que a tela passa); e dele que
+  // sai a regra dos 20% da secao 5.7. Calculado aqui porque o registro do
+  // inventario (7.2) remete as suas acoes.
+  const efetivoDoCliente = (employees || []).length;
+  const acoesDoPlanoDoCliente = acoesDoPlano(riscosDoCliente, gheDoCliente, expostosDoGhe, { acoes: pgrActionPlan, efetivo: efetivoDoCliente, hoje: emissao });
+
+  /** O campo "Acao no plano" do registro do inventario (7.2). */
+  const acaoNoPlanoDoRisco = (r: any): string => {
+    const doRisco = acoesDoPlanoDoCliente.filter((a) => a.risco === r);
+    if (doRisco.length === 0) return 'não consta do plano';
+    return doRisco.some((a) => a.aceita)
+      ? doRisco.map((a) => `${a.numero} — ${a.status}`).join('; ')
+      : `${doRisco.map((a) => a.numero).join(', ')} — sem ação aceita (pendência na seção 8.2)`;
+  };
 
   // O estabelecimento e a unidade de emissao do PGR (subitem 1.5.3.1.1.1) e
   // guarda a caracterizacao (secao 6.1) e os campos das secoes 1.1 a 1.3.
@@ -3099,6 +3128,14 @@ export function exportPGRDocumentPdf({
    * cumprido algo que nunca foi exigido.
    */
   const naoAplicaveis = new Set<string>();
+
+  /**
+   * Requisitos com pendencia apurada registro a registro, pela `norma` do
+   * checklist. A hierarquia (1.5.5.1.2) e conferida em cada acao aceita; pela
+   * secao 8.2 nao da, porque la tambem cai o risco sem acao, que nao fere a
+   * hierarquia (ver PGR_CHECKLIST).
+   */
+  const requisitosComPendencia = new Set<string>();
 
   // Vencimento a partir de uma data qualquer, com o fim de mes tratado:
   // 31/01 + 1 mes e 28/02, e nao 03/03 (lib/datas.ts).
@@ -4230,7 +4267,10 @@ Data: ${data}`;
           ['Avaliação / monitoramento', avaliacao || 'Sem avaliação registrada'],
           ['Severidade (S)', classificado ? String(classificado.severidade) : 'não avaliada'],
           ['Probabilidade (P)', classificado ? String(classificado.probabilidade) : 'não avaliada'],
-          ['Nível e classificação', nivel]
+          ['Nível e classificação', nivel],
+          // Alinea "i" e campo "Acao no plano" da secao 7.1: o inventario
+          // remete as acoes da secao 8, pelo mesmo numero do quadro 8.2.
+          ['Ação no plano (seção 8)', acaoNoPlanoDoRisco(r)]
         ].map(([a, b]) => [
           { content: a, styles: { fontStyle: 'bold' as const, cellWidth: util * 0.28 } },
           { content: b }
@@ -4412,49 +4452,224 @@ Data: ${data}`;
   // ==================================================================
   // 8. PLANO DE ACAO
   // ==================================================================
+  // O plano e o registro (acoesDoPlanoDoCliente, apurado no inicio). Era
+  // calculado aqui, com o responsavel tecnico como responsavel e "Nao
+  // iniciada" em toda linha: um cronograma que ninguem tinha assumido. O
+  // quadro agora so afirma o que esta no registro; o que falta e pendencia.
   novaPagina();
   secao('8. PLANO DE AÇÃO');
   paragrafo(
-    'O plano de ação indica as medidas a introduzir, aprimorar ou manter para cada risco ' +
-    'classificado (subitem 1.5.5.2.1), com cronograma, responsáveis, forma de acompanhamento e ' +
-    'aferição de resultados (subitem 1.5.5.2.2). Todo risco do inventário tem ao menos uma ação, ' +
-    'inclusive os toleráveis (ação "manter").'
+    'O plano de ação indica as medidas de prevenção a serem introduzidas, aprimoradas ou mantidas ' +
+    '(subitem 1.5.5.2.1), com cronograma, responsáveis, formas de acompanhamento e aferição de ' +
+    'resultados (subitem 1.5.5.2.2). Cada ação é um registro, e compõe o plano somente a ação ' +
+    'aceita, com responsável e prazo definidos por quem a aceitou. A medida sugerida pelo catálogo ' +
+    'de riscos ou pelo inventário aparece no quadro como pendência, sem responsável e sem prazo, até ' +
+    'ser aceita. Todo risco do inventário tem ao menos uma linha no quadro, inclusive os toleráveis ' +
+    '(ação "manter"), na ordem de prioridade da seção 5.7.'
   );
   secao('8.1 Regras de elaboração');
   lista(PGR_REGRAS_DO_PLANO);
 
   secao('8.2 Quadro do plano de ação');
 
-  // Uma acao por risco. A regra esta em lib/planoDeAcao.ts, a mesma que o
-  // relatorio de fatores psicossociais usa - os dois tem de dar o mesmo numero.
-  const acoes = acoesDoPlano(riscosDoCliente, gheDoCliente, expostosDoGhe);
+  const AMBAR = { textColor: [180, 83, 9] as [number, number, number], fontStyle: 'bold' as const };
+  const pendenteNaCelula = (content: string) => ({ content, styles: AMBAR });
+
+  /** Prazo da faixa da classificacao, ja com a regra do numero de expostos (5.7). */
+  const prazoDaFaixaNoQuadro = (a: AcaoDoPlano) => {
+    if (!a.prazoDaFaixa) return 'Prazo da faixa: depende da classificação';
+    const elevado = a.prazoDaFaixa.elevado
+      ? ` (faixa ${DECISAO_POR_NIVEL[a.prazoDaFaixa.nivel].rotulo}, elevada pelo nº de expostos — seção 5.7)`
+      : '';
+    return `Prazo da faixa: ${a.prazoDaFaixa.rotulo}${elevado}`;
+  };
+
+  const linhaDoQuadro = (a: AcaoDoPlano) => {
+    const risco = [
+      a.risco?.agent_name || 'Perigo não identificado',
+      a.classificado ? `${a.classificado.rotulo} (${a.classificado.score})` : 'não classificado',
+      prazoDaFaixaNoQuadro(a)
+    ].join('\n');
+    const marca = a.aceita
+      ? ''
+      : a.registro ? 'Sugestão não aceita: ' : 'Ação não definida — sugestão do sistema: ';
+    const medida = `${marca}${a.medida}\n${a.hierarquia} · ${a.tipo}`;
+
+    if (!a.aceita) {
+      // Sugestao nao tem dono nem data: nem o prazo gravado na sugestao (o
+      // da faixa, contado do dia em que foi sugerida) e de alguem.
+      return [
+        a.numero, risco, String(a.expostos), medida,
+        pendenteNaCelula('PENDENTE — a definir no aceite'),
+        pendenteNaCelula('PENDENTE — a definir no aceite'),
+        pendenteNaCelula(a.status)
+      ];
+    }
+
+    const prazo = dataBR(a.prazo);
+    const responsavelEPrazo = `${a.responsavel || 'PENDENTE — responsável'}\n${prazo || 'PENDENTE — prazo'}`;
+    const acompanhamento = `${a.acompanhamento || 'PENDENTE — acompanhamento'}\nAferição: ${a.afericao || 'PENDENTE'}`;
+    const status = a.faltas.length > 0 ? `${a.status}\nCom pendência (seção 10.3)` : a.status;
+    return [
+      a.numero, risco, String(a.expostos), medida,
+      a.responsavel && prazo ? responsavelEPrazo : pendenteNaCelula(responsavelEPrazo),
+      a.acompanhamento && a.afericao ? acompanhamento : pendenteNaCelula(acompanhamento),
+      a.atrasada || a.faltas.length > 0 ? pendenteNaCelula(status) : status
+    ];
+  };
 
   tabela({
-    head: [['Nº', 'Risco / nível', 'Exp.', 'Medida · hierarquia · tipo', 'Responsável · prazo', 'Acompanhamento · aferição', 'Status']],
-    body: acoes.length > 0
-      ? acoes.map((a, i) => [
-          `A-${String(i + 1).padStart(2, '0')}`,
-          `${a.id}\n${a.classificado ? `${a.classificado.rotulo} (${a.classificado.score})` : 'não classificado'}`,
-          String(a.expostos),
-          `${a.medida}\n${a.hierarquia} · ${a.tipo}`,
-          `${assinaturaPGR.nome || LINHA_PARA_PREENCHER}\n${a.classificado ? a.classificado.prazo : 'prazo depende da classificação'}`,
-          'Revisão do status e das evidências do plano\nAferição: reavaliação do risco após a medida (alínea "a" do subitem 1.5.4.4.6)',
-          'Não iniciada'
-        ])
+    head: [['Nº', 'Risco · nível · prazo da faixa', 'Exp.', 'Medida · hierarquia · tipo', 'Responsável · prazo', 'Acompanhamento · aferição', 'Status']],
+    body: acoesDoPlanoDoCliente.length > 0
+      ? acoesDoPlanoDoCliente.map(linhaDoQuadro)
       : [[{
           content: pendente('8.2', 'Plano de ação vazio: sem inventário não há plano, e sem os dois não há PGR (subitem 1.5.7.1).'),
           colSpan: 7,
-          styles: { textColor: [180, 83, 9], fontStyle: 'bold' }
+          styles: AMBAR
         }]],
     columnStyles: {
-      0: { cellWidth: 12 },
-      1: { cellWidth: util * 0.14 },
-      2: { cellWidth: 10, halign: 'center' },
-      6: { cellWidth: util * 0.1 }
+      0: { cellWidth: 19 },
+      1: { cellWidth: util * 0.17 },
+      2: { cellWidth: 8, halign: 'center' },
+      4: { cellWidth: util * 0.14 },
+      6: { cellWidth: util * 0.11 }
     },
-    styles: { fontSize: 6, cellPadding: 1.3, overflow: 'linebreak' }
+    styles: { fontSize: 5.8, cellPadding: 1.2, overflow: 'linebreak' }
   });
+
+  // Pendencias do plano. Risco sem acao aceita vira UMA pendencia com os
+  // numeros: um inventario de cem riscos nao pode virar cem linhas iguais na
+  // 10.3. Acao aceita incompleta tem pendencia propria, com o que falta.
+  const semAceite = acoesDoPlanoDoCliente.filter((a) => !a.aceita);
+  const riscosSemAceite = new Set(semAceite.map((a) => a.id)).size;
+  if (semAceite.length > 0) {
+    const semAcao = semAceite.filter((a) => !a.registro).map((a) => a.numero);
+    const sugeridas = semAceite.filter((a) => a.registro).map((a) => a.numero);
+    pendente(
+      '8.2',
+      `${riscosSemAceite} risco(s) do inventário sem ação aceita no plano` +
+      (semAcao.length > 0 ? `. Sem ação cadastrada: ${semAcao.join(', ')}` : '') +
+      (sugeridas.length > 0 ? `. Sugestão não aceita: ${sugeridas.join(', ')}` : '') +
+      '. Cada risco precisa de medida aceita, com responsável, prazo, forma de acompanhamento e ' +
+      'de aferição de resultados (subitens 1.5.5.2.1 e 1.5.5.2.2).'
+    );
+  }
+  // A falta so de registro da implementacao vai a 8.3, onde a acao aparece.
+  // O grupo vem de faltasDetalhadasDaAcao (lib/planoDeAcao.ts).
+  acoesDoPlanoDoCliente
+    .filter((a) => a.aceita && a.faltas.length > 0)
+    .forEach((a) => {
+      pendente(
+        a.faltasDetalhadas.every((f) => f.grupo === 'REGISTRO') ? '8.3' : '8.2',
+        `Ação ${a.numero}: ${a.faltas.join('; ')}.`
+      );
+      if (a.faltasDetalhadas.some((f) => f.grupo === 'HIERARQUIA')) {
+        requisitosComPendencia.add('1.4.1 "g" e 1.5.5.1.2');
+      }
+    });
+
+  const aceitas = acoesDoPlanoDoCliente.filter((a) => a.aceita);
+  const comStatus = (...status: string[]) =>
+    aceitas.filter((a) => status.includes(String(a.registro?.status))).length;
+  if (acoesDoPlanoDoCliente.length > 0) {
+    paragrafo(
+      `Situação do plano na emissão (${formatDate(emissao)}): ${aceitas.length} ação(ões) aceita(s) — ` +
+      `${comStatus('NAO_INICIADA')} não iniciada(s), ${comStatus('EM_ANDAMENTO')} em andamento e ` +
+      `${comStatus('CONCLUIDA', 'EFICACIA_VERIFICADA')} concluída(s), das quais ` +
+      `${comStatus('EFICACIA_VERIFICADA')} com eficácia verificada; ` +
+      `${aceitas.filter((a) => a.atrasada).length} atrasada(s); ` +
+      `${aceitas.filter((a) => a.faltas.length > 0).length} com o registro incompleto. ` +
+      `${riscosSemAceite} de ${riscosDoCliente.length} risco(s) do inventário sem ação aceita.`,
+      6.8
+    );
+  }
   paragrafo(PGR_STATUS_DO_PLANO, 6.4);
+
+  // 8.3: o registro que o subitem 1.5.5.3.1 exige, tirado da propria acao.
+  secao('8.3 Registro da implementação e da eficácia');
+  paragrafo(
+    'A implementação das medidas de prevenção e respectivos ajustes são registrados (subitem ' +
+    '1.5.5.3.1). O desempenho das medidas é acompanhado de forma planejada e contempla a ' +
+    'verificação da execução das ações planejadas e da continuidade de sua aplicação, as inspeções ' +
+    'dos locais e equipamentos de trabalho, o monitoramento das condições ambientais e exposições a ' +
+    'agentes nocivos, quando aplicável, e a participação dos trabalhadores e da CIPA, quando houver ' +
+    '(subitem 1.5.5.3.2). As medidas são corrigidas quando os dados do acompanhamento indicarem ' +
+    'ineficácia em seu desempenho (subitem 1.5.5.3.2.1).',
+    6.8
+  );
+
+  const concluidas = aceitas.filter(
+    (a) => a.registro?.status === 'CONCLUIDA' || a.registro?.status === 'EFICACIA_VERIFICADA'
+  );
+  if (concluidas.length === 0) {
+    paragrafo('Nenhuma ação do plano concluída até a emissão.', 7);
+  } else {
+    tabela({
+      head: [['Nº', 'Medida', 'Conclusão · evidência (1.5.5.3.1)', 'Trabalhadores informados (1.5.5.1.3)', 'Aferição da eficácia (1.5.5.3.2)']],
+      body: concluidas.map((a) => {
+        const r = a.registro as PgrActionPlanItem;
+        const dataDeConclusao = dataBR(r.completed_at);
+        const evidencia = String(r.evidence || '').trim();
+        const informados = dataBR(r.workers_informed_at);
+        const conclusao = `${dataDeConclusao || 'PENDENTE — data'}\n${evidencia || 'PENDENTE — evidência'}`;
+        let afericao: string | { content: string; styles: typeof AMBAR };
+        if (r.status === 'EFICACIA_VERIFICADA') {
+          const dataDaAfericao = dataBR(r.effectiveness_checked_at);
+          const resultado = String(r.effectiveness_result || '').trim();
+          const txt = `${dataDaAfericao || 'PENDENTE — data'}: ${resultado || 'PENDENTE — resultado'}`;
+          afericao = dataDaAfericao && resultado ? txt : pendenteNaCelula(txt);
+        } else {
+          afericao = 'Não aferida até a emissão. O risco é reavaliado após a implementação, para ' +
+            'avaliação de riscos residuais (alínea "a" do subitem 1.5.4.4.6).';
+        }
+        return [
+          a.numero,
+          a.medida,
+          dataDeConclusao && evidencia ? conclusao : pendenteNaCelula(conclusao),
+          informados || pendenteNaCelula('PENDENTE'),
+          afericao
+        ];
+      }),
+      columnStyles: {
+        0: { cellWidth: 19 },
+        2: { cellWidth: util * 0.24 },
+        3: { cellWidth: util * 0.13 },
+        4: { cellWidth: util * 0.24 }
+      },
+      styles: { fontSize: 6.2, cellPadding: 1.3, overflow: 'linebreak' }
+    });
+  }
+
+  // Prorrogacao: o prazo original e o motivo ficam no historico da acao
+  // (contexto, updatePgrActionPlanItem). Sem o motivo, o ajuste nao esta
+  // registrado como o subitem 1.5.5.3.1 manda.
+  const prorrogadas = aceitas.filter((a) => a.registro && prazoAlterado(a.registro));
+  if (prorrogadas.length === 0) {
+    paragrafo('Nenhuma ação com prazo prorrogado.', 7);
+  } else {
+    tabela({
+      head: [['Nº', 'Prazo original', 'Prazo atual', 'Alterações de prazo registradas no histórico (data, prazos e motivo)']],
+      body: prorrogadas.map((a) => {
+        const r = a.registro as PgrActionPlanItem;
+        const alteracoes = alteracoesDePrazo(r).map((h) => `${formatDate(h.em)} — ${h.evento}`);
+        return [
+          a.numero,
+          dataBR(r.original_deadline),
+          dataBR(r.deadline) || pendenteNaCelula('PENDENTE'),
+          alteracoes.length > 0
+            ? alteracoes.join('\n')
+            // A pendencia ja entrou pelas faltas da acao (faltasDetalhadasDaAcao).
+            : pendenteNaCelula('PENDENTE — alteração sem o motivo no histórico (subitem 1.5.5.3.1)')
+        ];
+      }),
+      columnStyles: {
+        0: { cellWidth: 19 },
+        1: { cellWidth: 18 },
+        2: { cellWidth: 18 }
+      },
+      styles: { fontSize: 6.2, cellPadding: 1.3, overflow: 'linebreak' }
+    });
+  }
 
   // ==================================================================
   // 9. ACOMPANHAMENTO E GESTAO
@@ -4481,11 +4696,24 @@ Data: ${data}`;
     ],
     styles: { fontSize: 6.6, cellPadding: 1.6, overflow: 'linebreak' }
   });
+  // "Acoes concluidas no prazo", dos registros do plano. Base: acao aceita ja
+  // concluida ou com o prazo original vencido; no prazo: concluida ate o
+  // prazo original aceito. Pelo prazo prorrogado, prorrogar viraria
+  // pontualidade.
+  const indicadorNoPrazo = (() => {
+    const ind = indicadorNoPrazoDoPlano(aceitas, emissao);
+    return ind
+      ? `Na emissão, ações concluídas no prazo: ${ind.noPrazo} de ${ind.base} (${ind.percentual}%), ` +
+        'contadas as ações aceitas já concluídas ou com o prazo original vencido, e como no prazo a ' +
+        'concluída até o prazo original aceito.'
+      : 'Na emissão, ainda não há ação aceita concluída ou com prazo vencido para calcular as ações ' +
+        'concluídas no prazo.';
+  })();
   paragrafo(
     'Indicadores de desempenho em SST (subitem 1.5.3.4): ações concluídas no prazo (%); riscos ' +
     'altos e muito altos abertos; taxa de frequência e gravidade de acidentes; eventos perigosos ' +
     'registrados; afastamentos por doença relacionada ao trabalho. Medida ineficaz é corrigida ' +
-    '(subitem 1.5.5.3.2.1) e o risco reavaliado.',
+    `(subitem 1.5.5.3.2.1) e o risco reavaliado. ${indicadorNoPrazo}`,
     6.8
   );
 
@@ -4965,7 +5193,8 @@ Data: ${data}`;
     head: [['Requisito', 'NR-01', 'Onde está', 'Situação']],
     body: PGR_CHECKLIST.map((item) => {
       const naoAplicavel = naoAplicaveis.has(item.norma);
-      const pendente_ = !naoAplicavel && item.secoes.some((sec) => secoesComPendencia.has(sec));
+      const pendente_ = !naoAplicavel
+        && (item.secoes.some((sec) => secoesComPendencia.has(sec)) || requisitosComPendencia.has(item.norma));
       return [
         item.requisito,
         item.norma,
@@ -5897,7 +6126,8 @@ export function exportPsychosocialReportPdf({
   jobs = [],
   units = [],
   technicalProfessionals = [],
-  technicalResponsibilities = []
+  technicalResponsibilities = [],
+  pgrActionPlan = []
 }: {
   client: Client;
   organization: Organization;
@@ -5909,6 +6139,8 @@ export function exportPsychosocialReportPdf({
   units?: any[];
   technicalProfessionals?: TechnicalProfessional[];
   technicalResponsibilities?: TechnicalResponsibility[];
+  /** Colecao pgrActionPlan: as acoes tem de ser as mesmas do PGR. */
+  pgrActionPlan?: PgrActionPlanItem[];
 }) {
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
   const pageWidth = doc.internal.pageSize.getWidth();
@@ -5936,6 +6168,9 @@ export function exportPsychosocialReportPdf({
   );
   const expostosDoGhe = (gheId: string) =>
     (employees || []).filter((e: any) => e?.ghe_id === gheId).length;
+  // O mesmo efetivo do PGR (exportPGRDocumentPdf): sem ele a regra dos 20%
+  // da secao 5.7 nao sobe a faixa, e o prazo daqui divergiria do de la.
+  const efetivoDoCliente = (employees || []).length;
 
   const nomeDoGhe = (id: string) => {
     const g = gheDoCliente.find((x: any) => x?.id === id);
@@ -6211,15 +6446,21 @@ export function exportPsychosocialReportPdf({
   secao('4. INVENTÁRIO E PLANO DE AÇÃO');
   paragrafo(
     'Os números, a classificação e as ações abaixo são os do inventário e do plano de ação do '
-    + 'PGR, gerados pela mesma regra. Para fatores psicossociais, a medida é na organização do '
+    + 'PGR, gerados pela mesma regra. Compõe o plano somente a ação aceita, com responsável e '
+    + 'prazo; a sugestão aparece marcada, com a faixa de prazo da classificação, e entra nas '
+    + 'pendências até ser aceita. Para fatores psicossociais, a medida é na organização do '
     + 'trabalho e definida com os trabalhadores: o Guia do MTE manda preferir mudanças nas '
     + 'condições de trabalho a intervenções individuais ou comportamentais.',
     6.8
   );
 
-  const acoes = acoesDoPlano(riscosDoCliente, gheDoCliente, expostosDoGhe)
+  // A lista inteira do cliente, com as MESMAS opcoes do PGR, e o filtro
+  // depois: o numero R-... e a regra dos 20% dependem do inventario e do
+  // efetivo inteiros.
+  const acoes = acoesDoPlano(riscosDoCliente, gheDoCliente, expostosDoGhe, { acoes: pgrActionPlan, efetivo: efetivoDoCliente, hoje: emissao })
     .filter((x) => ehRiscoPsicossocial(x.risco) && x.risco?.status !== 'INACTIVE');
   const avaliacaoIncompleta = aeps.length === 0 || aeps.some((a: any) => faltasPsicossociais(a).length > 0);
+  const AMBAR = { textColor: [180, 83, 9] as [number, number, number], fontStyle: 'bold' as const };
 
   if (acoes.length === 0) {
     paragrafo(
@@ -6231,25 +6472,52 @@ export function exportPsychosocialReportPdf({
   } else {
     tabela({
       head: [['Nº', 'Risco · GHE', 'Nível (S × P)', 'Exp.', 'Medida · hierarquia · tipo', 'Prazo']],
-      body: acoes.map((x) => [
-        x.id,
-        `${x.risco?.agent_name || ''}\n${x.gheNome}`,
-        x.classificado
-          ? `${x.classificado.rotulo} (S${x.classificado.severidade} × P${x.classificado.probabilidade})`
-          : pendente('Seção 4', `"${x.risco?.agent_name}" sem severidade e probabilidade no inventário.`),
-        String(x.expostos),
-        `${x.medida}\n${x.hierarquia} · ${x.tipo}`,
-        x.classificado ? x.classificado.prazo : 'depende da classificação'
-      ]),
+      body: acoes.map((x) => {
+        const marca = x.aceita
+          ? ''
+          : x.registro ? 'Sugestão não aceita: ' : 'Ação não definida — sugestão do sistema: ';
+        // Sugestao nao tem prazo: so a faixa, de onde o prazo sai no aceite.
+        const faixa = x.prazoDaFaixa
+          ? `${x.prazoDaFaixa.rotulo}${x.prazoDaFaixa.elevado ? ', elevada pelo nº de expostos' : ''}`
+          : 'depende da classificação';
+        const prazo = x.aceita
+          ? (dataBR(x.prazo) ? `${dataBR(x.prazo)}\n${x.status}` : { content: 'PENDENTE', styles: AMBAR })
+          : { content: `a definir (faixa: ${faixa})`, styles: AMBAR };
+        return [
+          x.numero,
+          `${x.risco?.agent_name || ''}\n${x.gheNome}`,
+          x.classificado
+            ? `${x.classificado.rotulo} (S${x.classificado.severidade} × P${x.classificado.probabilidade})`
+            : pendente('Seção 4', `"${x.risco?.agent_name}" sem severidade e probabilidade no inventário.`),
+          String(x.expostos),
+          `${marca}${x.medida}\n${x.hierarquia} · ${x.tipo}`,
+          prazo
+        ];
+      }),
       columnStyles: {
         0: { cellWidth: 20 },
-        1: { cellWidth: util * 0.24 },
-        2: { cellWidth: util * 0.14 },
+        1: { cellWidth: util * 0.22 },
+        2: { cellWidth: util * 0.13 },
         3: { cellWidth: 9, halign: 'center' },
-        5: { cellWidth: util * 0.13 }
+        5: { cellWidth: util * 0.17 }
       },
       styles: { fontSize: 6.2, cellPadding: 1.4, overflow: 'linebreak' }
     });
+
+    // As mesmas pendencias do plano que o PGR aponta, no recorte: o relatorio
+    // nao pode dar por resolvido o que o PGR da por pendente.
+    const semAceite = acoes.filter((x) => !x.aceita);
+    if (semAceite.length > 0) {
+      pendente(
+        'Seção 4',
+        `Ações do plano sem aceite: ${semAceite.map((x) => x.numero).join(', ')}. Cada uma precisa ` +
+        'de medida aceita, com responsável, prazo, forma de acompanhamento e de aferição de ' +
+        'resultados (subitens 1.5.5.2.1 e 1.5.5.2.2 da NR-01).'
+      );
+    }
+    acoes
+      .filter((x) => x.aceita && x.faltas.length > 0)
+      .forEach((x) => pendente('Seção 4', `Ação ${x.numero}: ${x.faltas.join('; ')}.`));
   }
 
   // ==================================================================
@@ -6264,8 +6532,9 @@ export function exportPsychosocialReportPdf({
     );
   } else {
     paragrafo(
-      'Enquanto houver pendência, a avaliação dos fatores psicossociais não atende integralmente ao '
-      + 'subitem 1.5.3.2.1 da NR-01. Cada linha aponta o que falta e onde.'
+      'Enquanto houver pendência da avaliação (seção 3), ela não atende integralmente ao subitem '
+      + '1.5.3.2.1 da NR-01; as do plano de ação (seção 4) são as mesmas que o PGR aponta (subitens '
+      + '1.5.5.2.1 e 1.5.5.2.2). Cada linha aponta o que falta e onde.'
     );
     tabela({
       head: [['Onde', 'O que falta']],
