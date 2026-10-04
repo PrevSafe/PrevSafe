@@ -305,7 +305,7 @@ function applyPageNumbers(doc: jsPDF) {
     // navegador - foi exatamente o que aconteceu depois da primeira correcao.
     // Vai junto do texto da esquerda: centralizado colidiria com ele.
     doc.text(
-      `PrevSafe SST - Plataforma Integrada de Saúde e Segurança do Trabalho  |  ${VERSAO_DO_DOCUMENTO}`,
+      `PrevSafe – G Monteiro Empreendimentos Ltda  |  ${VERSAO_DO_DOCUMENTO}`,
       14, pageHeight - 7
     );
     doc.text(`Página ${i} de ${pageCount}`, pageWidth - 14, pageHeight - 7, { align: 'right' });
@@ -3101,6 +3101,46 @@ export function exportPGRDocumentPdf({
   const dimensionamento = client?.risk_degree
     ? calculateSesmtDimensioning(client.risk_degree, (employees || []).length)
     : null;
+  // Decide o termo de aprovacao (linha de ciencia da CIPA) e a secao 9.8.
+  const enquadramentoCipa = dimensionamento?.cipa?.status || 'NAO_DIMENSIONADO';
+
+  // Contratadas (secao 9.5), produtos quimicos (6.4) e emergencias (9.4) sao
+  // apurados aqui porque a abrangencia (1.3) e a integracao (4.2) dizem a
+  // situacao deles antes das secoes proprias. As duas linhas saiam como
+  // PENDENTE fixo, com a declaracao de inexistencia feita e o cadastro
+  // preenchido.
+  const contratadasDoCliente = (contractedOrganizations || []).filter(
+    (o: any) => o?.client_id === client.id && o?.status !== 'INACTIVE'
+  );
+  const quimicosDoCliente = (chemicalProducts || []).filter(
+    (q: any) => q?.client_id === client.id && q?.status !== 'INACTIVE'
+  );
+
+  /**
+   * "Nao aplicavel" escrito num campo da secao 9.4.
+   *
+   * So a alinea "b" do subitem 1.5.6.2 tem a ressalva "quando aplicavel". O
+   * abandono (alinea "a") e os simulados (subitem 1.5.6.3) nao: ali o texto
+   * nao e declaracao, e lacuna - e saia impresso como se fosse a definicao
+   * da organizacao.
+   */
+  const declaraNaoAplicavel = (texto: string) =>
+    /^(n[ãa]o\s+(se\s+)?aplic|inaplic|n\/a\b|n[ãa]o\s+h[áa]\b)/i.test(texto.trim());
+  const emergencia = {
+    cenarios: estabelecimento?.emergency_scenarios?.trim() || '',
+    socorros: estabelecimento?.emergency_resources?.trim() || '',
+    abandono: estabelecimento?.emergency_evacuation?.trim() || '',
+    grandeMagnitude: estabelecimento?.emergency_large_scale?.trim() || '',
+    periodicidade: estabelecimento?.emergency_drills?.trim() || '',
+    ultimoSimulado: estabelecimento?.emergency_drill_last_date?.trim() || ''
+  };
+  const emergenciaDefinida = Boolean(
+    emergencia.cenarios && emergencia.socorros && emergencia.grandeMagnitude
+    && emergencia.abandono && !declaraNaoAplicavel(emergencia.abandono)
+    && emergencia.periodicidade && !declaraNaoAplicavel(emergencia.periodicidade)
+    && emergencia.ultimoSimulado
+  );
+  const emergenciaEmBranco = Object.values(emergencia).every((v) => !v);
 
   const codigoDoDocumento = `PGR-${(client.document_number || 'SEM-INSCRICAO').replace(/\D/g, '') || 'SEM-INSCRICAO'}-${emissao.slice(0, 4)}-REV00`;
 
@@ -3371,9 +3411,18 @@ export function exportPGRDocumentPdf({
 Cargo / registro: ${cargo}
 Data: ${data}`;
 
+  // Ciencia da CIPA: so onde ha CIPA a constituir. Fora do Quadro I da NR-05
+  // (representante nomeado, item 5.4.13) a linha sai; sem dimensionamento ela
+  // fica, porque a dispensa nao se presume (a 9.8 cobra o dado que falta).
+  const linhaDaCipa = enquadramentoCipa === 'REPRESENTANTE_NR05'
+    ? []
+    : [[enquadramentoCipa === 'CIPA' ? 'Ciência — CIPA (NR-05)' : 'Ciência — CIPA ou nomeado NR-05',
+        identificacaoDoSignatario(
+          LINHA_PARA_PREENCHER, LINHA_PARA_PREENCHER, LINHA_PARA_PREENCHER), '']];
+
   // O quadro inteiro fica na mesma pagina: um campo de assinatura cortado ao
   // meio pela quebra de pagina nao serve para assinar.
-  garantirEspaco(ASSINATURA_ALTURA_MM * 4 + 16);
+  garantirEspaco(ASSINATURA_ALTURA_MM * (3 + linhaDaCipa.length) + 16);
   tabela({
     head: [['Função', 'Nome, cargo e data', 'Assinatura (manual ou eletrônica)']],
     body: [
@@ -3392,9 +3441,7 @@ Data: ${data}`;
         identificacaoDoSignatario(
           estabelecimento?.pgr_coordinator?.trim() || LINHA_PARA_PREENCHER,
           LINHA_PARA_PREENCHER, LINHA_PARA_PREENCHER), ''],
-      ['Ciência — CIPA ou nomeado NR-05',
-        identificacaoDoSignatario(
-          LINHA_PARA_PREENCHER, LINHA_PARA_PREENCHER, LINHA_PARA_PREENCHER), '']
+      ...linhaDaCipa
     ],
     styles: { fontSize: 6.8, cellPadding: 2.4, overflow: 'linebreak' },
     columnStyles: {
@@ -3457,9 +3504,33 @@ Data: ${data}`;
       || pendente('1.2', 'Responsável legal da organização não cadastrado (Hierarquia > Estabelecimentos).')],
     ['Responsável técnico pela elaboração', assinaturaPGR.linha],
     ['Coordenador da implementação', estabelecimento?.pgr_coordinator?.trim()
-      || pendente('1.2', 'Coordenador da implementação do PGR não cadastrado (Hierarquia > Estabelecimentos).')],
-    ['Médico responsável pelo PCMSO', pcmsoPhysicianLine(organization)]
+      || pendente('1.2', 'Coordenador da implementação do PGR não cadastrado (Hierarquia > Estabelecimentos).')]
+    // Sem o medico do PCMSO: a NR-01 nao o pede no PGR, e ele responde pelo
+    // PCMSO, documento proprio (subitem 7.4.1, "c", da NR-07).
   ]);
+
+  // A pendencia, quando ha, e da 9.5 e sai listada la: repetida aqui, a 10.3
+  // contaria duas vezes a mesma lacuna.
+  const contratadasNaAbrangencia = (() => {
+    const nome = (o: any) => o?.legal_name || 'sem nome';
+    if (contratadasDoCliente.length === 0) {
+      const declarado = estabelecimento?.no_contracted_organizations_declared_at?.trim();
+      return declarado
+        ? `Nenhuma — declarado em ${formatDate(declarado)} (seção 9.5)`
+        : 'Com pendência na seção 9.5: nenhuma contratada cadastrada e nenhuma declaração de que não há';
+    }
+    const atuam = contratadasDoCliente.filter(
+      (o: any) => o?.work_location === 'DEPENDENCIAS' || o?.work_location === 'LOCAL_CONVENCIONADO'
+    );
+    const semLocal = contratadasDoCliente.filter((o: any) => !o?.work_location);
+    const partes: string[] = [];
+    if (atuam.length > 0) partes.push(`${atuam.map(nome).join('; ')} (seção 9.5)`);
+    if (semLocal.length > 0) {
+      partes.push(`Com pendência na seção 9.5: local de atuação não informado de ${semLocal.map(nome).join('; ')}`);
+    }
+    return partes.join('. ')
+      || 'Nenhuma: as contratadas cadastradas não atuam nas dependências nem em local convencionado (seção 9.5)';
+  })();
 
   secao('1.3 Abrangência');
   paragrafo(PGR_ABRANGENCIA);
@@ -3476,7 +3547,7 @@ Data: ${data}`;
           : pendente('1.3', 'Nenhum GHE cadastrado: sem GES não há inventário por grupo de exposição.')],
       ['Frentes de trabalho e locais externos', estabelecimento?.external_work_fronts?.trim()
         || pendente('1.3', 'Frentes de trabalho e locais externos não cadastrados (Hierarquia > Estabelecimentos).')],
-      ['Contratadas que atuam no local', pendente('1.3', 'Relação de contratadas não cadastrada (seção 9.5).')],
+      ['Contratadas que atuam no local', contratadasNaAbrangencia],
       ['Exclusões', 'Nenhuma']
     ],
     columnStyles: { 0: { cellWidth: util * 0.34, fontStyle: 'bold' } }
@@ -3541,6 +3612,27 @@ Data: ${data}`;
     styles: { fontSize: 6.4, cellPadding: 1.5, overflow: 'linebreak' }
   });
 
+  // A situacao vem do cadastro. Lacuna aqui e a da secao propria, e e la que
+  // ela entra na 10.3, uma vez so.
+  const situacaoDaAep = aepsDoCliente.length > 0
+    ? `${aepsDoCliente.length} AEP registrada(s) no sistema (seções 5.3 e 7.4)`
+    : 'Com pendência na seção 7.4: nenhuma AEP registrada';
+  const situacaoDaEmergencia = emergenciaDefinida
+    ? 'Definidos na seção 9.4'
+    : emergenciaEmBranco
+      ? 'Com pendência na seção 9.4: procedimentos não cadastrados'
+      : 'Com pendência na seção 9.4: procedimentos definidos em parte';
+  const situacaoDasFds = (() => {
+    if (quimicosDoCliente.length === 0) {
+      const declarado = estabelecimento?.no_chemical_products_declared_at?.trim();
+      return declarado
+        ? `Declarado em ${formatDate(declarado)} que não se utiliza produto químico (seção 6.4)`
+        : 'Com pendência na seção 6.4: nenhum produto químico cadastrado';
+    }
+    const comFds = quimicosDoCliente.filter((q: any) => q?.sds_status === 'DISPONIVEL').length;
+    return `${quimicosDoCliente.length} produto(s) na seção 6.4, ${comFds} com FDS disponível`;
+  })();
+
   secao('4.2 Integração com outros documentos');
   tabela({
     head: [['Documento', 'Relação com o PGR', 'Situação neste cliente']],
@@ -3548,9 +3640,9 @@ Data: ${data}`;
       ['PCMSO (NR-07)', 'Recebe o inventário e a classificação de riscos; devolve dados de saúde',
         'Emitido pelo mesmo sistema — conferir vigência'],
       ['AEP e AET (NR-17)', 'AEP compõe o inventário; recomendações da AET entram no plano de ação',
-        pendente('4.2', 'AEP da NR-17 não registrada no sistema (seções 5.3 e 7.4).')],
+        situacaoDaAep],
       ['Procedimentos de emergência e simulados', 'Parte do PGR (seção 9.4)',
-        pendente('4.2', 'Procedimentos de resposta a emergências não cadastrados (seção 9.4).')],
+        situacaoDaEmergencia],
       ['Controle de EPI e fichas de entrega (NR-06)', 'Evidência da última camada de proteção',
         'Registrado no sistema (módulo de EPI)'],
       ['Registros de treinamento (NR-01, 1.7)', 'Evidência das medidas administrativas',
@@ -3560,7 +3652,7 @@ Data: ${data}`;
       ['Eventos de SST do eSocial', 'Informações declaradas devem ser coerentes com o inventário',
         'Emitidos pelo mesmo sistema'],
       ['FDS dos produtos químicos (ABNT NBR 14725)', 'Base para identificar agentes químicos',
-        pendente('4.2', 'Inventário de produtos químicos e FDS não cadastrados (seção 6.4).')]
+        situacaoDasFds]
     ],
     columnStyles: { 0: { cellWidth: util * 0.26, fontStyle: 'bold' } },
     styles: { fontSize: 6.6, cellPadding: 1.6, overflow: 'linebreak' }
@@ -3816,9 +3908,13 @@ Data: ${data}`;
     ['Utilidades', campoDoEstabelecimento(
       estabelecimento?.utilities_description,
       'Utilidades (energia, caldeira, compressores, GLP, geradores) não cadastradas (Hierarquia > Estabelecimentos).')],
-    ['Entorno e perigos externos', campoDoEstabelecimento(
-      estabelecimento?.external_hazards,
-      'Entorno e perigos externos previsíveis não cadastrados (subitem 1.5.4.3.2, em Hierarquia > Unidades).')],
+    ['Entorno e perigos externos', estabelecimento?.external_hazards?.trim() || (() => {
+      // So este campo responde ao requisito 1.5.4.3.2 do checklist. Pela
+      // secao 6.1 inteira, a area construida em branco marcava "perigos
+      // externos" como pendente.
+      requisitosComPendencia.add('1.5.4.3.2');
+      return pendente('6.1', 'Entorno e perigos externos previsíveis não cadastrados (subitem 1.5.4.3.2, em Hierarquia > Estabelecimentos).');
+    })()],
     ['Recursos de emergência', campoDoEstabelecimento(
       estabelecimento?.emergency_resources,
       'Recursos de emergência não cadastrados (extintores, hidrantes, rotas, hospital de referência).')]
@@ -3889,10 +3985,6 @@ Data: ${data}`;
     'torna disponível a ficha com dados de segurança (subitem 26.4.3.1), e a organização ' +
     'assegura o acesso dos trabalhadores a ela (subitem 26.5.1) e os treina para compreender a ' +
     'rotulagem e a ficha e para atuar em emergência com o produto (subitem 26.5.2).'
-  );
-
-  const quimicosDoCliente = (chemicalProducts || []).filter(
-    (q: any) => q?.client_id === client.id && q?.status !== 'INACTIVE'
   );
 
   if (quimicosDoCliente.length === 0) {
@@ -4032,14 +4124,17 @@ Data: ${data}`;
     }
 
     // Consistencia com a secao 7: produto perigoso sem agente quimico no
-    // inventario e contradicao entre duas secoes do mesmo documento.
-    const temPerigoso = quimicosDoCliente.some((q: any) => q?.ghs_classification === 'PERIGOSO');
+    // inventario e contradicao entre duas secoes do mesmo documento. A saida
+    // e uma so - inventariar o agente -, porque e so ela que o teste abaixo
+    // reconhece. A mensagem oferecia tambem "registrar a ausencia de risco",
+    // que no sistema e o codigo 09.01.001 do GHE inteiro e nao fecha isto.
+    const perigosos = quimicosDoCliente.filter((q: any) => q?.ghs_classification === 'PERIGOSO');
     const temAgenteQuimico = riscosDoCliente.some(
       (r: any) => String(r?.risk_category || '').toUpperCase().startsWith('QU')
     );
-    if (temPerigoso && !temAgenteQuimico) {
+    if (perigosos.length > 0 && !temAgenteQuimico) {
       paragrafo(
-        pendente('6.4', 'Há produto classificado como perigoso pelo GHS e nenhum agente químico no inventário da seção 7. Avalie a exposição e inventarie o agente, ou registre no inventário a ausência de risco com a justificativa.'),
+        pendente('6.4', `Produto classificado como perigoso pelo GHS (${perigosos.map((q: any) => q?.name || 'sem nome').join('; ')}) e nenhum agente químico no inventário da seção 7. Avalie a exposição de quem usa o produto e inventarie o agente químico no GHE dessa pessoa (Engenharia SST > 2. GHE & Inventário de Riscos), ainda que a avaliação resulte em risco baixo.`),
         6.8
       );
     }
@@ -4747,18 +4842,24 @@ Data: ${data}`;
   // Periodicidade e ultima realizacao andam juntas: a periodicidade e a
   // promessa (subitem 1.5.6.3) e a data e a evidencia (subitem 1.5.6.3.1).
   // A NR-01 nao fixa prazo, entao nada aqui compara a data com um prazo legal.
+  // Mas tambem nao dispensa o simulado: o 1.5.6.3 nao tem o "quando
+  // aplicavel" da alinea "b" do 1.5.6.2.
   const simuladosDoEstabelecimento = (() => {
-    const periodicidade = estabelecimento?.emergency_drills?.trim();
-    const ultimo = estabelecimento?.emergency_drill_last_date?.trim();
+    const { periodicidade, ultimoSimulado: ultimo } = emergencia;
     if (!periodicidade && !ultimo) {
       return pendente('9.4', 'Periodicidade e evidências dos exercícios simulados não cadastradas (subitens 1.5.6.3 e 1.5.6.3.1) (Hierarquia > Estabelecimentos).');
     }
     const partes: string[] = [];
-    partes.push(periodicidade
-      || pendente('9.4', 'Periodicidade dos exercícios simulados não cadastrada: o subitem 1.5.6.3 exige que o próprio procedimento a defina (Hierarquia > Estabelecimentos).'));
+    if (!periodicidade) {
+      partes.push(pendente('9.4', 'Periodicidade dos exercícios simulados não cadastrada: o subitem 1.5.6.3 exige que o próprio procedimento a defina (Hierarquia > Estabelecimentos).'));
+    } else if (declaraNaoAplicavel(periodicidade)) {
+      partes.push(pendente('9.4', `Periodicidade dos exercícios simulados declarada como "${periodicidade}": o subitem 1.5.6.3 obriga a organização a realizar exercícios simulados, com a periodicidade definida no procedimento de resposta a emergências, e não tem a ressalva "quando aplicável" da alínea "b" do subitem 1.5.6.2. Defina a periodicidade (Hierarquia > Estabelecimentos).`));
+    } else {
+      partes.push(periodicidade);
+    }
     partes.push(ultimo
       ? `Último simulado realizado em ${formatDate(ultimo)}.`
-      : pendente('9.4', 'Data do último exercício simulado não cadastrada: o subitem 1.5.6.3.1 exige evidência do exercício realizado (Hierarquia > Estabelecimentos).'));
+      : pendente('9.4', 'Nenhum exercício simulado registrado: o subitem 1.5.6.3 obriga a realizá-los na periodicidade do procedimento, e o 1.5.6.3.1 exige evidência de cada exercício realizado. Informe a data do último (Hierarquia > Estabelecimentos).'));
     return partes.join(' ');
   })();
 
@@ -4772,8 +4873,11 @@ Data: ${data}`;
         estabelecimento?.emergency_resources?.trim()
           || pendente('9.4', 'Recursos de primeiros socorros e hospital de referência não cadastrados (Hierarquia > Estabelecimentos).')],
       ['Abandono dos locais afetados (1.5.6.2 "a")',
-        estabelecimento?.emergency_evacuation?.trim()
-          || pendente('9.4', 'Alarme, rotas de fuga, ponto de encontro e responsáveis pelo abandono não cadastrados (Hierarquia > Estabelecimentos).')],
+        !emergencia.abandono
+          ? pendente('9.4', 'Alarme, rotas de fuga, ponto de encontro e responsáveis pelo abandono não cadastrados (Hierarquia > Estabelecimentos).')
+          : declaraNaoAplicavel(emergencia.abandono)
+            ? pendente('9.4', `Abandono dos locais afetados declarado como "${emergencia.abandono}": a alínea "a" do subitem 1.5.6.2 exige, sem ressalva, os meios, responsáveis e recursos para o abandono — alarme, rotas, ponto de encontro e quem coordena (Hierarquia > Estabelecimentos).`)
+            : emergencia.abandono],
       ['Emergências de grande magnitude (1.5.6.2 "b")',
         estabelecimento?.emergency_large_scale?.trim()
           || pendente('9.4', 'Medidas para emergências de grande magnitude não declaradas. A alínea "b" vale quando aplicável: se não for o caso, declare por que (Hierarquia > Estabelecimentos).')],
@@ -4792,10 +4896,6 @@ Data: ${data}`;
     'possam impactar as atividades da outra (subitens 1.5.8.2 e 1.5.8.3). Quando os riscos ' +
     'resultam da interação das atividades, as medidas de prevenção são definidas em conjunto, ' +
     'sob a coordenação da organização contratante (subitem 1.5.8.4).'
-  );
-
-  const contratadasDoCliente = (contractedOrganizations || []).filter(
-    (o: any) => o?.client_id === client.id && o?.status !== 'INACTIVE'
   );
 
   if (contratadasDoCliente.length === 0) {
@@ -5081,9 +5181,8 @@ Data: ${data}`;
 
   // O subitem 1.4.1.1 obriga as organizacoes OBRIGADAS A CONSTITUIR CIPA nos
   // termos da NR-05, e a CIPA e dimensionada por estabelecimento (Quadro I).
-  // Por isso a aplicabilidade sai do dimensionamento, e nao de uma suposicao.
-  const enquadramentoCipa = dimensionamento?.cipa?.status || 'NAO_DIMENSIONADO';
-
+  // Por isso a aplicabilidade sai do dimensionamento (enquadramentoCipa, na
+  // apuracao), e nao de uma suposicao.
   if (enquadramentoCipa === 'CIPA') {
     paragrafo(
       'A organização é obrigada a constituir CIPA neste estabelecimento ' +

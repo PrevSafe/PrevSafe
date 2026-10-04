@@ -295,7 +295,9 @@ export const PGR_CHECKLIST: Array<{
   { requisito: 'Condições de trabalho da NR-17 consideradas', norma: '1.5.3.2.1', onde: '5.3, 7.4', secoes: ['5.3', '7.4'] },
   { requisito: 'Mecanismos de participação, consulta e comunicação', norma: '1.5.3.3', onde: '9.6', secoes: ['9.6'] },
   { requisito: 'Levantamento preliminar e riscos evidentes', norma: '1.5.4.2', onde: '5.1', secoes: [] },
-  { requisito: 'Perigos externos previsíveis', norma: '1.5.4.3.2', onde: '5.2, 6.1', secoes: ['6.1'] },
+  // Pela norma, e nao pela secao: a 6.1 tem area, edificacoes e utilidades,
+  // e a lacuna de qualquer uma marcava este requisito.
+  { requisito: 'Perigos externos previsíveis', norma: '1.5.4.3.2', onde: '5.2, 6.1', secoes: [] },
   { requisito: 'Critérios de severidade, probabilidade, níveis, classificação e decisão documentados', norma: '1.5.4.4.2.2', onde: '5.4 a 5.7', secoes: [] },
   { requisito: 'Probabilidade por tipo de perigo e eficácia das medidas', norma: '1.5.4.4.5.1 a 1.5.4.4.5.4', onde: '5.5', secoes: [] },
   { requisito: 'Hipóteses de revisão, incluindo pedido da CIPA', norma: '1.5.4.4.6', onde: '9.9', secoes: [] },

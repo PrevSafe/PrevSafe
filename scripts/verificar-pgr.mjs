@@ -2264,6 +2264,140 @@ check(tpSemMotivo.includes('Ação R-GHE-01-01.1: prazo alterado de 10/10/2026 p
   'prorrogação sem motivo no histórico vira pendência');
 
 // ===========================================================================
+// 3l. REVISAO DO PGR EMITIDO (Correcoes no PGR.pdf, 04/10/2026)
+// ===========================================================================
+// O usuario apontou PENDENTE em cima de cadastro feito: a 1.3 e tres linhas
+// da 4.2 eram texto fixo, e a area construida em branco marcava "perigos
+// externos" no checklist. O WINANSI traduz travessao para "-": as asercoes
+// usam o hifen.
+console.log('');
+console.log('--- 3l. Revisão do PGR emitido (termo, 1.2, 1.3, 4.2, 9.4, 10.2, rodapé) ---');
+
+// Rodape: o nome da empresa que responde pelo sistema.
+check(
+  tc.includes('PrevSafe - G Monteiro Empreendimentos Ltda') && !tc.includes('Plataforma Integrada'),
+  'o rodapé traz "PrevSafe - G Monteiro Empreendimentos Ltda"'
+);
+
+// Termo: a ciencia da CIPA so onde ha CIPA a constituir.
+check(!tc.includes('Ciência - CIPA'), 'fora do Quadro I da NR-05 (nomeado), o termo não tem a linha de ciência da CIPA');
+check(comCipa.includes('Ciência - CIPA (NR-05)'), 'obrigada a CIPA, o termo tem a linha de ciência da CIPA');
+check(
+  semGrau.includes('Ciência - CIPA ou nomeado NR-05'),
+  'sem dimensionamento da CIPA, a linha fica: a dispensa não se presume'
+);
+
+// 1.2: a NR-01 nao pede o medico do PCMSO no PGR.
+check(
+  !tc.includes('Médico responsável pelo PCMSO') && !tc.includes('Dra. Helena Rocha'),
+  '1.2 não traz o médico responsável pelo PCMSO'
+);
+
+// 1.3: contratadas a partir do cadastro ou da declaracao.
+check(
+  tc.includes('Alfa Conservacao e Limpeza Ltda; Joao Eletricista MEI; Beta Manutencao Predial Ltda (seção 9.5)'),
+  '1.3 lista as contratadas que atuam no local'
+);
+check(!tc.includes('Relação de contratadas não cadastrada'), '1.3 não tem mais a pendência fixa de contratadas');
+const contratadaDeclarada = corrido(gerar({
+  client: CLIENTE, organization: ORG, ghes: GHES, risks: [RISCO_CLASSIFICADO],
+  employees: FUNCIONARIOS, sectors: SETORES, units: [UNIDADE_SEM_CONTRATADA],
+  contractedOrganizations: [],
+}));
+check(
+  contratadaDeclarada.includes('Contratadas que atuam no local Nenhuma - declarado em 15/09/2026 (seção 9.5)'),
+  'declarado que não há contratada, a 1.3 diz "Nenhuma" com a data'
+);
+const contratadaNaoDeclarada = corrido(gerar({
+  client: CLIENTE, organization: ORG, ghes: GHES, risks: [RISCO_CLASSIFICADO],
+  employees: FUNCIONARIOS, sectors: SETORES, units: [UNIDADE],
+  contractedOrganizations: [],
+}));
+check(
+  contratadaNaoDeclarada.includes('Com pendência na seção 9.5: nenhuma contratada cadastrada')
+  && contratadaNaoDeclarada.includes('Nenhuma organização contratada cadastrada e nenhuma declaração'),
+  'sem cadastro nem declaração, a 1.3 remete à pendência da 9.5'
+);
+
+// 4.2: situacao apurada, nao texto fixo.
+check(/\d AEP registrada\(s\) no sistema \(seções 5\.3 e 7\.4\)/.test(tc), '4.2 reconhece a AEP registrada');
+check(!tc.includes('AEP da NR-17 não registrada no sistema'), '4.2 não diz mais que a AEP falta quando ela existe');
+check(tc.includes('Procedimentos de emergência e simulados Parte do PGR (seção 9.4) Definidos na seção 9.4'),
+  '4.2 reconhece os procedimentos de emergência cadastrados');
+check(/\d+ produto\(s\) na seção 6\.4, \d+ com FDS disponível/.test(tc), '4.2 reconhece os produtos químicos cadastrados');
+check(!tc.includes('Inventário de produtos químicos e FDS não cadastrados'), '4.2 não diz mais que os químicos faltam');
+check(semQuimico.includes('Com pendência na seção 6.4: nenhum produto químico cadastrado'),
+  'sem químico nem declaração, a 4.2 remete à 6.4');
+check(quimicoDeclarado.includes('Declarado em 17/09/2026 que não se utiliza produto químico (seção 6.4)'),
+  'declarado que não se usa químico, a 4.2 diz com a data');
+
+// 9.4: "nao aplicavel" so vale para a alinea "b" do 1.5.6.2.
+const simuladoNaoAplicavel = corrido(gerar({
+  client: CLIENTE, organization: ORG, ghes: GHES, risks: [RISCO_CLASSIFICADO],
+  employees: FUNCIONARIOS, sectors: SETORES,
+  units: [{ ...UNIDADE, emergency_drills: 'Não aplicável', emergency_drill_last_date: '', emergency_evacuation: 'Não aplicável' }],
+}));
+check(
+  simuladoNaoAplicavel.includes('Periodicidade dos exercícios simulados declarada como "Não aplicável": o subitem 1.5.6.3 obriga'),
+  'simulado "não aplicável" vira pendência do subitem 1.5.6.3'
+);
+check(
+  simuladoNaoAplicavel.includes('Abandono dos locais afetados declarado como "Não aplicável": a alínea "a" do subitem 1.5.6.2 exige'),
+  'abandono "não aplicável" vira pendência da alínea "a"'
+);
+check(simuladoNaoAplicavel.includes('Nenhum exercício simulado registrado'), 'sem data do último simulado, a pendência fica');
+check(
+  simuladoNaoAplicavel.includes('Com pendência na seção 9.4: procedimentos definidos em parte')
+  && simuladoNaoAplicavel.includes('Emergências e simulados com evidências 1.5.6 9.4 Com pendência'),
+  'a 4.2 e o checklist acompanham a pendência da 9.4'
+);
+check(
+  !tc.includes('Medidas para emergências de grande magnitude não declaradas')
+  && tc.includes('Nao aplicavel: sem processo de grande porte'),
+  'grande magnitude "não aplicável" com o motivo continua aceita (alínea "b")'
+);
+check(
+  hierarquia.includes('o simulado') && hierarquia.includes('subitem 1.5.6.3'),
+  'a tela avisa que o simulado é obrigatório'
+);
+
+// 10.2: perigos externos pela norma, nao pela secao 6.1 inteira.
+const semArea = (() => {
+  const u = { ...UNIDADE };
+  delete u.built_area_m2;
+  delete u.total_area_m2;
+  return corrido(gerar({
+    client: CLIENTE, organization: ORG, ghes: GHES, risks: [RISCO_CLASSIFICADO],
+    employees: FUNCIONARIOS, sectors: SETORES, units: [u],
+  }));
+})();
+check(
+  semArea.includes('Área construída e área total não cadastradas')
+  && semArea.includes('Perigos externos previsíveis 1.5.4.3.2 5.2, 6.1 Atendido'),
+  'área em branco é pendência da 6.1, mas não marca "perigos externos"'
+);
+const semEntorno = corrido(gerar({
+  client: CLIENTE, organization: ORG, ghes: GHES, risks: [RISCO_CLASSIFICADO],
+  employees: FUNCIONARIOS, sectors: SETORES, units: [{ ...UNIDADE, external_hazards: '' }],
+}));
+check(
+  semEntorno.includes('Perigos externos previsíveis 1.5.4.3.2 5.2, 6.1 Com pendência'),
+  'entorno em branco marca "perigos externos" no checklist'
+);
+
+// 6.4: a coerencia com a secao 7 nomeia o produto e oferece so a saida que
+// fecha a pendencia.
+check(
+  tc.includes('Produto classificado como perigoso pelo GHS (Alcool etilico 70% INPM')
+  && tc.includes('inventarie o agente químico no GHE dessa pessoa (Engenharia SST > 2. GHE & Inventário de Riscos)'),
+  '6.4 nomeia o produto perigoso e a tela onde inventariar o agente'
+);
+check(
+  !tc.includes('registre no inventário a ausência de risco com a justificativa'),
+  '6.4 não oferece mais uma saída que não fecha a pendência'
+);
+
+// ===========================================================================
 // 4. UMA CLASSIFICACAO SO NO SISTEMA
 // ===========================================================================
 console.log('\n--- 4. Fonte única de classificação (conferência no código) ---');

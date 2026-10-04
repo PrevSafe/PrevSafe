@@ -33,7 +33,7 @@ A ordem abaixo é a de menor retrabalho: cada tela depende só das anteriores.
 | O que preencher | Alimenta |
 |---|---|
 | Nome, título e registro do responsável técnico | Capa, termo de responsabilidade, 4.1, 9.1 |
-| Médico responsável pelo PCMSO e CRM | 9.2, integração com o PCMSO |
+| Médico responsável pelo PCMSO e CRM | PCMSO (não sai no PGR: a NR-01 não o pede) |
 
 Sem isto os documentos saem marcados como "não informado".
 
@@ -53,13 +53,17 @@ seções do PGR.
 A tabela de estabelecimentos mostra um contador `n/19` por linha: é quantos
 desses campos já estão preenchidos.
 
-**Duas regras de preenchimento que mudam o resultado:**
+**Três regras de preenchimento que mudam o resultado:**
 
 - **Frentes de trabalho:** se ninguém trabalha fora, escreva "nenhuma". Declarar
   é diferente de deixar em branco, e o auditor lê as duas coisas de forma
   diferente.
 - **Grande magnitude:** a alínea "b" do subitem 1.5.6.2 vale "quando aplicável".
   Se não for o caso, escreva "não aplicável" e o motivo.
+- **Abandono e simulados:** aqui "não aplicável" sai como pendência. A alínea "a"
+  do 1.5.6.2 e o subitem 1.5.6.3 não têm a ressalva da alínea "b": todo
+  estabelecimento define o abandono, realiza simulados na periodicidade do seu
+  procedimento e registra a data do último (evidência, subitem 1.5.6.3.1).
 
 ### 4. Engenharia SST › 1. Hierarquia › **Setores**
 
@@ -163,13 +167,13 @@ cada um. Alimenta a **9.7**.
 
 | Seção | De onde vêm os dados |
 |---|---|
-| Capa, controle de revisões, termo | Cliente; Configurações › Responsabilidade Técnica; Estabelecimentos (responsável legal e coordenador) |
+| Capa, controle de revisões, termo | Cliente; Configurações › Responsabilidade Técnica; Estabelecimentos (responsável legal e coordenador). A linha de ciência da CIPA só sai onde há CIPA a constituir (Quadro I da NR-05) |
 | 1.1 Identificação | Cliente; Estabelecimentos; Trabalhadores |
 | 1.2 Responsáveis | Estabelecimentos; Configurações |
-| 1.3 Abrangência | Setores; GHE; Estabelecimentos; Contratadas |
+| 1.3 Abrangência | Setores; GHE; Estabelecimentos; Contratadas (ou a declaração de que não há) |
 | 2 e 3 | Conteúdo fixo do modelo — nada a preencher |
 | 4.1 Responsabilidades | Conteúdo fixo; o RT vem de Configurações |
-| 4.2 Integração | Apontamentos automáticos das seções 5.3, 6.4, 7.4 e 9.4 |
+| 4.2 Integração | Situação apurada do cadastro de AEP (7.4), produtos químicos (6.4) e emergências (9.4); a lacuna entra na 10.3 pela seção própria |
 | 5.1 a 5.7 Metodologia | Conteúdo fixo: critérios, matriz 5×5 e regras de decisão |
 | 5.3 Avaliação ergonômica | Conteúdo fixo da NR-17 + **porte do cliente** (dispensa da AET) |
 | 6.1 Caracterização | Estabelecimentos |
@@ -182,9 +186,9 @@ cada um. Alimenta a **9.7**.
 | 7.3 Avaliações ambientais | GHE & Inventário de Riscos (medições) |
 | 7.4 Resultados da AEP | 13. Avaliação Ergonômica |
 | 8.1 Regras | Conteúdo fixo |
-| 8.2 Plano de ação | Gerado do inventário: um risco classificado gera uma linha |
+| 8.2 Plano de ação | 2.1 Plano de Ação: as ações aceitas, com responsável, prazo, acompanhamento e aferição; sugestão não aceita sai marcada como sugestão |
 | 9.1 Acompanhamento | Estabelecimentos (coordenador); dimensionamento da CIPA |
-| 9.2 Saúde ocupacional | Configurações (médico do PCMSO) |
+| 9.2 Saúde ocupacional | Conteúdo fixo |
 | 9.3 Análise de acidentes | Conteúdo fixo |
 | 9.4 Emergências | Estabelecimentos |
 | 9.5 Contratadas | 9. Contratadas |
@@ -227,8 +231,13 @@ declaração ou escreva a negativa por extenso.
 | Máquinas (6.5) | botão *Declarar que não há máquina com requisito* |
 | Produtos químicos (6.4) | botão *Declarar que não se utiliza produto químico* |
 
-E em três não cabe declaração de inexistência nenhuma, por determinação da
+E em cinco não cabe declaração de inexistência nenhuma, por determinação da
 própria norma:
+
+- **Abandono dos locais afetados (9.4)** — a alínea "a" do subitem 1.5.6.2 não
+  tem a ressalva "quando aplicável".
+- **Exercícios simulados (9.4)** — o subitem 1.5.6.3 obriga a realizá-los; a
+  NR-01 só deixa a periodicidade para o procedimento definir.
 
 - **Inventário de riscos** — sem ele não há PGR (subitem 1.5.7.1).
 - **Matriz de capacitação** — todo trabalhador tem treinamento inicial antes de

@@ -1538,7 +1538,8 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
                   />
                   <p className="text-[10px] text-slate-500 mt-1">
                     A alínea &quot;a&quot; pede meios, responsáveis e recursos — as três coisas,
-                    com nome de quem responde.
+                    com nome de quem responde. Não cabe &quot;não aplicável&quot;: ao contrário
+                    da alínea &quot;b&quot;, a &quot;a&quot; não tem essa ressalva.
                   </p>
                 </div>
 
@@ -1573,7 +1574,8 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
                     />
                     <p className="text-[10px] text-slate-500 mt-1">
                       A NR-01 não fixa prazo: a periodicidade é a que o seu próprio
-                      procedimento definir — e é essa que o auditor cobra.
+                      procedimento definir — e é essa que o auditor cobra. Mas o simulado
+                      é obrigatório (subitem 1.5.6.3): &quot;não aplicável&quot; sai como pendência.
                     </p>
                   </div>
                   <div>
