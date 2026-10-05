@@ -6806,7 +6806,8 @@ export function exportPCMSODocumentPdf({
     cargos: jobs,
     pendenciaDoCoordenador: coordenador.origem === 'ATRIBUICAO' ? (coordenador.pendencia || null) : (coordenador.pendencia || 'nenhum médico atribuído a este cliente'),
     coordenadorSemRqe: Boolean(profissionalCoordenador) && !String(profissionalCoordenador?.rqe || '').trim(),
-    semResponsavelPeloPgr: responsavelPgr.origem !== 'ATRIBUICAO'
+    semResponsavelPeloPgr: responsavelPgr.origem !== 'ATRIBUICAO',
+    hoje: emissao
   });
   const atividades = montado.atividades;
   const dispensa = montado.dispensa;
@@ -7327,7 +7328,23 @@ export function exportPCMSODocumentPdf({
       paragrafo(`${e.nr} — ${e.titulo}. ${e.motivo}`, 6.8);
       lista(e.itens, 6.2);
       if (e.aRedigir.length > 0) {
-        paragrafo(`Conteúdo que a ${e.nr} manda constar do PCMSO e que este documento não redige — cada item está na seção 11.1 até o médico responsável redigi-lo e anexá-lo:\n${e.aRedigir.map((x) => `• ${x}`).join('\n')}`, 6.4);
+        paragrafo(`Conteúdo que a ${e.nr} manda constar do PCMSO e que este documento não redige. Sai abaixo o que o médico registrou, atribuído a ele e com a data; o item sem registro completo fica na seção 11.1 como pendência.`, 6.4);
+        // Impresso como foi registrado: o sistema nao completa, nao resume e
+        // nao poe texto no lugar do que falta.
+        tabela({
+          head: [['Exigência da NR', 'Conteúdo registrado']],
+          body: e.aRedigir.map((item) => {
+            const r = montado.conteudosSetoriais[item.chave];
+            if (!r) {
+              return [item.texto, { content: 'PENDENTE — sem registro completo (seção 11.1).', styles: { textColor: [180, 83, 9], fontStyle: 'bold' } }];
+            }
+            return [item.texto, r.forma === 'ANEXO'
+              ? `Documento anexo a este PCMSO: ${String(r.anexo_titulo).trim()}, de ${formatDate(r.data)}.\nArquivado em: ${String(r.anexo_local).trim()}.\nRedigido por ${String(r.autor).trim()}.`
+              : `${String(r.texto).trim()}\n\nRedigido por ${String(r.autor).trim()} em ${formatDate(r.data)}.`];
+          }),
+          columnStyles: { 0: { cellWidth: util * 0.3, fontStyle: 'bold' } },
+          styles: { fontSize: 6.4, cellPadding: 1.8, overflow: 'linebreak' }
+        });
       }
       if (e.avisos.length > 0) lista(e.avisos, 6.2);
     });

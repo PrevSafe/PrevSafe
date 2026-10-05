@@ -31,7 +31,8 @@ import {
   CalendarClock
 } from 'lucide-react';
 import { PcmsoPendencias } from './PcmsoResumo';
-import { procedimentoVedado, PROCEDIMENTOS_QUE_EXIGEM_JUSTIFICATIVA } from '@/lib/pcmso';
+import { PcmsoConteudoSetorial } from './PcmsoConteudoSetorial';
+import { procedimentoVedado, PROCEDIMENTOS_QUE_EXIGEM_JUSTIFICATIVA, exigenciasSetoriais } from '@/lib/pcmso';
 
 interface ExamPCMSOTabProps {
   selectedClientId: string;
@@ -55,7 +56,7 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
     generateS2220FromEmployeeAso
   } = usePrevSafe();
 
-  const [activeSubTab, setActiveSubTab] = useState<'PROTOCOLS' | 'APPLICATIONS'>('PROTOCOLS');
+  const [activeSubTab, setActiveSubTab] = useState<'PROTOCOLS' | 'APPLICATIONS' | 'SETORIAIS'>('PROTOCOLS');
   const [searchTerm, setSearchTerm] = useState('');
   
   // Protocol Modal
@@ -129,6 +130,13 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
   const clientExams = protocolosDoCliente(examProtocols, ghes, selectedClientId);
 
   const clientEmployees = employees.filter(emp => !selectedClientId || emp.client_id === selectedClientId);
+
+  // Conteudo das NR setoriais (NR-32, NR-36, NR-38): a sub-aba so existe quando
+  // o CNAE do cliente indica NR que acrescenta conteudo ao PCMSO. Trocar para um
+  // cliente sem ela volta a matriz de exames.
+  const itensSetoriais = exigenciasSetoriais(clients.find((c) => c.id === selectedClientId)?.main_cnae)
+    .reduce((n, e) => n + e.aRedigir.length, 0);
+  const subAba = activeSubTab === 'SETORIAIS' && itensSetoriais === 0 ? 'PROTOCOLS' : activeSubTab;
 
   // O select de GHE listava TODOS os GHEs, de todos os clientes: dava para
   // vincular um protocolo de exame ao GHE de outra empresa.
@@ -454,13 +462,13 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
 
       {/* Sub Tabs and Actions */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900/80 p-4 rounded-xl border border-slate-800">
-        <div className="flex items-center space-x-2">
+        <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"
             id="subtab-protocols-btn"
             onClick={() => setActiveSubTab('PROTOCOLS')}
             className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-2 ${
-              activeSubTab === 'PROTOCOLS'
+              subAba === 'PROTOCOLS'
                 ? 'bg-teal-500 text-slate-950 shadow-md shadow-teal-500/20'
                 : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
             }`}
@@ -473,7 +481,7 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
             id="subtab-applications-btn"
             onClick={() => setActiveSubTab('APPLICATIONS')}
             className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-2 ${
-              activeSubTab === 'APPLICATIONS'
+              subAba === 'APPLICATIONS'
                 ? 'bg-teal-500 text-slate-950 shadow-md shadow-teal-500/20'
                 : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
             }`}
@@ -481,8 +489,26 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
             <HeartPulse className="w-4 h-4" />
             Aplicação de ASOs & Monitoramento eSocial ({clientEmployees.length})
           </button>
+          {/* O rotulo e o fim do caminho que a pendencia do PDF cita
+              (TELA_DO_CONTEUDO_SETORIAL, em lib/pcmso.ts). */}
+          {itensSetoriais > 0 && (
+            <button
+              type="button"
+              id="subtab-setoriais-btn"
+              onClick={() => setActiveSubTab('SETORIAIS')}
+              className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-2 ${
+                subAba === 'SETORIAIS'
+                  ? 'bg-teal-500 text-slate-950 shadow-md shadow-teal-500/20'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+              }`}
+            >
+              <FileCheck2 className="w-4 h-4" />
+              Conteúdo das NR setoriais ({itensSetoriais})
+            </button>
+          )}
         </div>
 
+        {subAba !== 'SETORIAIS' && (
         <div className="flex items-center gap-3">
           <div className="relative">
             <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
@@ -496,7 +522,7 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
             />
           </div>
 
-          {activeSubTab === 'PROTOCOLS' ? (
+          {subAba === 'PROTOCOLS' ? (
             <button
               type="button"
               id="add-protocol-btn"
@@ -521,9 +547,15 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
             </button>
           )}
         </div>
+        )}
       </div>
 
+      {subAba === 'SETORIAIS' && (
+        <PcmsoConteudoSetorial selectedClientId={selectedClientId} />
+      )}
+
       {/* Info Card explaining PCMSO & S-2220 Flow */}
+      {subAba !== 'SETORIAIS' && (
       <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-4 flex items-start gap-3">
         <Info className="w-5 h-5 text-teal-400 shrink-0 mt-0.5" />
         <div className="text-xs text-slate-300 space-y-1">
@@ -535,9 +567,10 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
           </p>
         </div>
       </div>
+      )}
 
       {/* Protocols View */}
-      {activeSubTab === 'PROTOCOLS' && (
+      {subAba === 'PROTOCOLS' && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="protocols-grid">
           {filteredProtocols.map((protocol) => {
             const ghe = ghes.find(g => g.id === protocol.ghe_id);
@@ -657,7 +690,7 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
       )}
 
       {/* Applications (ASO / S-2220) View */}
-      {activeSubTab === 'APPLICATIONS' && (
+      {subAba === 'APPLICATIONS' && (
         <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-lg" id="aso-applications-table">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs text-slate-300">

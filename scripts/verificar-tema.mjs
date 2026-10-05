@@ -84,7 +84,8 @@ const TELAS = [
   'components/sst/MachinesEquipmentTab.tsx',
   'components/sst/ChemicalProductsTab.tsx',
   'components/sst/TrainingMatrixTab.tsx',
-  'components/sst/ErgonomicAssessmentTab.tsx'
+  'components/sst/ErgonomicAssessmentTab.tsx',
+  'components/sst/PcmsoConteudoSetorial.tsx'
 ];
 
 /**

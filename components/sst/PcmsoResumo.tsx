@@ -58,7 +58,8 @@ export function usePcmsoMontado({
     cargos: jobs,
     pendenciaDoCoordenador: coordenador.origem === 'ATRIBUICAO' ? (coordenador.pendencia || null) : (coordenador.pendencia || 'nenhum médico atribuído a este cliente'),
     coordenadorSemRqe: Boolean(profissionalCoordenador) && !String(profissionalCoordenador?.rqe || '').trim(),
-    semResponsavelPeloPgr: responsavelPgr.origem !== 'ATRIBUICAO'
+    semResponsavelPeloPgr: responsavelPgr.origem !== 'ATRIBUICAO',
+    hoje
   });
   return { coordenador, montado };
 }

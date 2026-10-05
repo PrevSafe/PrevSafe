@@ -218,6 +218,40 @@ export interface Client {
   notes?: string;
   created_at: string;
   updated_at: string;
+
+  /**
+   * Conteudo que NR setorial (NR-32, NR-36, NR-38) manda constar do PCMSO e
+   * que o sistema nao redige, pela chave estavel do item (ItemARedigir.chave,
+   * em lib/pcmso.ts). Fica no cliente porque o PCMSO e emitido por cliente.
+   * Ausente ou incompleto = pendencia no documento.
+   */
+  pcmso_sectoral_content?: Record<string, ConteudoSetorialDoPcmso>;
+}
+
+/**
+ * Um conteudo de NR setorial registrado para o PCMSO.
+ *
+ * E ato medico: o medico redige, o sistema guarda o que foi informado e o
+ * imprime atribuido a ele, com a data. Nada aqui tem valor padrao. E conteudo
+ * do PROGRAMA: nome, CPF ou resultado de trabalhador nao entram (o registro
+ * da vacina de cada um vai para o prontuario, NR-32, 32.2.4.17.6).
+ */
+export interface ConteudoSetorialDoPcmso {
+  /** TEXTO: o conteudo redigido, impresso no PCMSO. ANEXO: documento anexo ao PCMSO, identificado. */
+  forma?: 'TEXTO' | 'ANEXO';
+  texto?: string;
+  anexo_titulo?: string;
+  /** Onde o documento anexo fica arquivado. */
+  anexo_local?: string;
+  /** AAAA-MM-DD: data da redacao (TEXTO) ou do documento anexo (ANEXO). */
+  data?: string;
+  /** TechnicalProfessional.id do medico que redigiu. */
+  autor_id?: string;
+  /** Nome e registro do medico como estavam ao registrar: e o que sai impresso. */
+  autor?: string;
+  /** Data e hora ISO do registro no sistema, e o usuario que registrou. */
+  registrado_em?: string;
+  registrado_por?: string;
 }
 
 // 19. Client Contacts

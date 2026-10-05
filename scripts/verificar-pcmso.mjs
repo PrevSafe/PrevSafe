@@ -614,6 +614,196 @@ check(tem(me, 'precisa ser conciliada com ele antes de ser prestada'), 'ME com r
 check(tem(me, '(a cada 24, se confirmada a dispensa: subitem 7.7.1)'), 'ME: a periodicidade da abrangência (1.3) diz que vale o 7.7.1 se a dispensa for confirmada');
 
 // ===========================================================================
+// 3.1 CONTEUDO DAS NR SETORIAIS REGISTRADO PELO MEDICO
+// ===========================================================================
+// O que a NR-32, a NR-36 e a NR-38 mandam constar do PCMSO e o sistema nao
+// redige. O medico redige; o sistema registra e imprime, atribuido a ele e com
+// a data. Sem registro completo, o item continua pendencia - e nada no lugar.
+console.log('\n— conteúdo das NR setoriais registrado pelo médico');
+
+// As chaves ja estao gravadas nos clientes (Client.pcmso_sectoral_content):
+// renomear uma faz o conteudo registrado sumir do documento sem ninguem apagar.
+const CHAVES_SETORIAIS = [
+  'nr32-riscos-biologicos', 'nr32-vigilancia-medica', 'nr32-programa-de-vacinacao', 'nr32-exposicao-acidental',
+  'nr36-instrumental-clinico-epidemiologico', 'nr36-conservacao-auditiva', 'nr36-relatorio-analitico',
+  'nr38-imunizacao', 'nr38-perfurocortante'
+];
+// Citacoes conferidas no texto oficial: a chave e que muda de lugar, nao elas.
+const CITACOES_SETORIAIS = [
+  'NR-32, 32.2.3.1, "a" e "b": reconhecimento e avaliação dos riscos biológicos e localização das áreas de risco',
+  'NR-32, 32.2.3.1, "d": vigilância médica dos trabalhadores potencialmente expostos',
+  'NR-32, 32.2.3.1, "e", e 32.2.4.17.1: programa de vacinação (tétano, difteria, hepatite B e as estabelecidas no PCMSO)',
+  'NR-32, 32.2.3.3, "a" a "g": procedimentos para a possibilidade de exposição acidental a agentes biológicos',
+  'NR-36, 36.12.3: instrumental clínico-epidemiológico que oriente as medidas do PGR e das melhorias ergonômicas',
+  'NR-36, 36.12.5: Programa de Conservação Auditiva para os expostos acima do nível de ação',
+  'NR-36, 36.12.7: conteúdo que a NR-36 acrescenta ao relatório analítico',
+  'NR-38, 38.4.1: programa de imunização ativa, principalmente contra tétano e hepatite B',
+  'NR-38, 38.4.3: procedimento específico para acidente com perfurocortante, se houver esse risco no PGR'
+];
+const itensSetoriais = ['86.10-1-01', '10.11-2-01', '38.11-4-00'].flatMap((c) => P.exigenciasSetoriais(c).flatMap((e) => e.aRedigir));
+check(JSON.stringify(itensSetoriais.map((i) => i.chave)) === JSON.stringify(CHAVES_SETORIAIS),
+  `chave estável: cada item a redigir mantém a chave já gravada (veio ${itensSetoriais.map((i) => i.chave).join(', ')})`);
+check(JSON.stringify(itensSetoriais.map((i) => i.texto)) === JSON.stringify(CITACOES_SETORIAIS),
+  'as citações dos itens a redigir continuam as conferidas no texto oficial');
+
+const itens32 = P.exigenciasSetoriais('86.10-1-01')[0].aRedigir;
+// Com a chave renomeada o find falha; o caso da lista de chaves acusa, e o
+// resto do verificador continua rodando.
+const ITEM_VAC = itens32.find((i) => i.chave === 'nr32-programa-de-vacinacao') || { chave: 'nr32-programa-de-vacinacao', texto: CITACOES_SETORIAIS[2] };
+const MEDICO = 'Dra. Ana Coordenadora (Medicina do Trabalho - CRM 12345/BA)';
+const regTexto = (texto, o = {}) => ({
+  forma: 'TEXTO', texto, autor_id: 'm1', autor: MEDICO, data: '2025-03-10',
+  registrado_em: '2025-03-11T10:00:00.000Z', registrado_por: 'Usuário de teste', ...o
+});
+const REG = {
+  'nr32-riscos-biologicos': regTexto('Marcador RB-01: reconhecimento escrito pelo médico.'),
+  'nr32-vigilancia-medica': regTexto('Marcador VM-02: vigilância escrita pelo médico.'),
+  'nr32-programa-de-vacinacao': { forma: 'ANEXO', anexo_titulo: 'Programa de imunização, marcador PV-03', anexo_local: 'Arquivo do SESMT, pasta 4', data: '2025-08-15', autor_id: 'm1', autor: MEDICO },
+  'nr32-exposicao-acidental': regTexto('Marcador EA-04: procedimentos escritos pelo médico.')
+};
+const BIO = R({ ghe_id: 'g1', client_id: 'c1', risk_category: 'BIOLÓGICO', agent_name: 'Material biológico', health_effects: 'Hepatite B', severity: 3, probability: 3 });
+// Com setor: a pendencia da relacao nominal (5.8.1) nao se mistura com a do conteudo.
+const COM_SETOR = EMPREGADOS.map((e) => ({ ...e, sector_name: 'Enfermagem' }));
+const CLINICA = { ...CLIENTE, main_cnae: '86.10-1-01' };
+const clinicaCom = (registros) => gerar({ ...args, employees: COM_SETOR, risks: [...RISCOS, BIO], client: { ...CLINICA, pcmso_sectoral_content: registros } });
+const montarClinica = (registros, o = {}) => P.montarPcmso({
+  cliente: { ...CLINICA, pcmso_sectoral_content: registros }, ghes: GHES.filter((g) => g.client_id === 'c1'),
+  riscos: [...RISCOS, BIO], protocolos: PROTOCOLOS, colaboradores: COM_SETOR, ...o
+});
+const faltas58 = (m) => m.faltas.filter((f) => f.secao === '5.8');
+const NAO_REDIGE = 'e que este documento não redige:';
+const pendenteNoPdf = (pdf, item) => tem(pdf, `${NAO_REDIGE} ${item.texto}`);
+const situacaoNoChecklist = (pdf) =>
+  (pdf.match(/Conteúdo exigido por NR setorial NR-32, NR-36, NR-38 5\.8 (Pendente|Cadastro conferido|A atestar pelo médico)/) || [])[1] || 'linha não encontrada';
+
+// Tudo registrado.
+const pdfTudo = clinicaCom(REG);
+check(tem(pdfTudo, 'Marcador RB-01: reconhecimento escrito pelo médico.') && tem(pdfTudo, 'Marcador EA-04: procedimentos escritos pelo médico.')
+  && tem(pdfTudo, `Redigido por ${MEDICO} em 10/03/2025.`),
+  'conteúdo registrado como texto: sai impresso na seção 5.8, atribuído ao médico e com a data');
+check(tem(pdfTudo, 'Documento anexo a este PCMSO: Programa de imunização, marcador PV-03, de 15/08/2025.')
+  && tem(pdfTudo, 'Arquivado em: Arquivo do SESMT, pasta 4.') && tem(pdfTudo, `Redigido por ${MEDICO}.`),
+  'conteúdo registrado como documento anexo: sai o título, a data, onde fica arquivado e quem redigiu');
+check(itens32.every((i) => !pendenteNoPdf(pdfTudo, i)) && faltas58(montarClinica(REG)).length === 0,
+  'com os quatro itens da NR-32 registrados, a pendência de cada um some');
+check(situacaoNoChecklist(pdfTudo) === 'Cadastro conferido',
+  `checklist: com todos os itens registrados, a linha da NR setorial sai "Cadastro conferido" (veio "${situacaoNoChecklist(pdfTudo)}")`);
+check(pdfTudo.includes('MINUTA DE PCMSO'), 'conteúdo setorial registrado não tira a MINUTA de quem não tem médico responsável indicado');
+
+// Nada registrado.
+const pdfNada = clinicaCom(undefined);
+check(itens32.every((i) => pendenteNoPdf(pdfNada, i)) && faltas58(montarClinica(undefined)).length === 4,
+  'sem registro, cada item da NR-32 continua pendência, com a citação');
+check(P.TELA_DO_CONTEUDO_SETORIAL.startsWith('Engenharia SST > 3. Aplicação de Exames > ')
+  && faltas58(montarClinica(undefined)).every((f) => f.longo.endsWith(`(${P.TELA_DO_CONTEUDO_SETORIAL})`))
+  && tem(pdfNada, `(${P.TELA_DO_CONTEUDO_SETORIAL}).`),
+  'a pendência aponta a tela em que se resolve (Engenharia SST > 3. Aplicação de Exames > ...)');
+check(situacaoNoChecklist(pdfNada) === 'Pendente', `checklist: sem registro, a linha da NR setorial sai "Pendente" (veio "${situacaoNoChecklist(pdfNada)}")`);
+{
+  // Sem registro, a tabela da 5.8 so pode ter o cabecalho, as citacoes e o
+  // PENDENTE. Qualquer outra coisa ali foi escrita pelo sistema.
+  const i = pdfNada.indexOf('Exigência da NR Conteúdo registrado');
+  const f = pdfNada.indexOf('Testagem para HIV', i);
+  let sobra = i < 0 || f < 0 ? null : compacto(pdfNada.slice(i, f));
+  if (sobra !== null) {
+    for (const t of ['Exigência da NR Conteúdo registrado', 'PENDENTE — sem registro completo (seção 11.1).', ...itens32.map((x) => x.texto)]) {
+      sobra = sobra.split(compacto(t)).join('');
+    }
+    // Moldura da pagina, quando a tabela atravessa a quebra: rodape, marca
+    // d'agua e cabecalho da minuta. E o marcador da lista que vem depois.
+    sobra = sobra
+      .replace(/MINUTA·PCMSO-\d+-\d{4}-REV\d+·emitidoem\d{2}\/\d{2}\/\d{4}\d+\/\d+/g, '')
+      .split(compacto('MINUTA DE PCMSO — SEM MÉDICO RESPONSÁVEL INDICADO')).join('')
+      .split(compacto(`${CLIENTE.trade_name} · `)).join('')
+      .replace(/PCMSO-\d+-\d{4}-REV\d+/g, '')
+      .replace(/MINUTA/g, '')
+      .replace(/\*$/, '');
+  }
+  check(sobra === '', `nada inventado: sem registro, a tabela da 5.8 só traz as citações e "PENDENTE" (sobrou: ${JSON.stringify(sobra)})`);
+}
+
+// Registro parcial: alguns itens, ou um item incompleto.
+const metade = { 'nr32-riscos-biologicos': REG['nr32-riscos-biologicos'], 'nr32-programa-de-vacinacao': REG['nr32-programa-de-vacinacao'] };
+const pdfMetade = clinicaCom(metade);
+check(tem(pdfMetade, 'Marcador RB-01') && tem(pdfMetade, 'marcador PV-03') && !tem(pdfMetade, 'Marcador VM-02')
+  && !pendenteNoPdf(pdfMetade, itens32[0]) && !pendenteNoPdf(pdfMetade, itens32[2])
+  && pendenteNoPdf(pdfMetade, itens32[1]) && pendenteNoPdf(pdfMetade, itens32[3]),
+  'registro parcial: os dois itens registrados saem impressos, e só os outros dois continuam pendência');
+check(situacaoNoChecklist(pdfMetade) === 'Pendente', `checklist: com dois de quatro itens registrados, a linha continua "Pendente" (veio "${situacaoNoChecklist(pdfMetade)}")`);
+const pdfSemAutor = clinicaCom({ ...REG, 'nr32-vigilancia-medica': regTexto('Marcador VM-02: vigilância escrita pelo médico.', { autor: '', autor_id: '' }) });
+check(!tem(pdfSemAutor, 'Marcador VM-02') && tem(pdfSemAutor, 'O registro está incompleto e não sai impresso; falta o médico que redigiu')
+  && situacaoNoChecklist(pdfSemAutor) === 'Pendente',
+  'registro sem o médico que redigiu: não sai impresso, a pendência diz o que falta e o checklist fica "Pendente"');
+{
+  const incompletos = [
+    ['texto em branco', regTexto('   ')],
+    ['sem data', regTexto('x', { data: '' })],
+    ['data fora do formato', regTexto('x', { data: '10/03/2025' })],
+    ['anexo sem onde fica arquivado', { ...REG['nr32-programa-de-vacinacao'], anexo_local: ' ' }],
+    ['anexo sem título', { ...REG['nr32-programa-de-vacinacao'], anexo_titulo: '' }],
+    ['sem a forma', { texto: 'x', autor: MEDICO, data: '2025-03-10' }],
+    ['vazio', {}]
+  ];
+  const aceitos = incompletos.filter(([, r]) => P.faltasDoConteudoSetorial(r).length === 0).map(([n]) => n);
+  check(aceitos.length === 0, `registro incompleto não vale (aceitos: ${aceitos.join(', ') || 'nenhum'})`);
+  check(P.faltasDoConteudoSetorial(REG['nr32-riscos-biologicos']).length === 0 && P.faltasDoConteudoSetorial(REG['nr32-programa-de-vacinacao']).length === 0,
+    'registro completo vale, como texto e como documento anexo');
+  check(faltas58(montarClinica({ ...REG, 'nr32-riscos-biologicos': regTexto('Marcador futuro', { data: '2026-12-31' }) }, { hoje: '2026-10-04' })).length === 1
+    && faltas58(montarClinica(REG, { hoje: '2026-10-04' })).length === 0,
+    'conteúdo datado depois da emissão não vale');
+}
+
+// Chave estavel: o registro e achado pela chave, e nao pela citacao.
+check(P.registroDoItem({ ...ITEM_VAC, texto: 'NR-32: outra redação da mesma exigência' }, REG) === REG['nr32-programa-de-vacinacao'],
+  'chave estável: corrigir a redação da citação não perde o conteúdo registrado');
+{
+  const pelaCitacao = Object.fromEntries(itens32.map((i) => [i.texto, REG[i.chave]]));
+  check(P.registroDoItem(ITEM_VAC, pelaCitacao) === null && faltas58(montarClinica(pelaCitacao)).length === 4,
+    'registro guardado pelo texto da citação não vale: a chave é a do item');
+}
+
+// Conteudo do programa, e nao de pessoa.
+const pdfCpf = clinicaCom({ ...REG, 'nr32-vigilancia-medica': regTexto('Marcador VM-02: vigilância de 529.982.247-25.') });
+check(!tem(pdfCpf, 'Marcador VM-02') && !pdfCpf.includes('529.982.247-25') && tem(pdfCpf, 'retirar um número de CPF: o conteúdo é do programa, e não de pessoa'),
+  'conteúdo com CPF não sai impresso, e a pendência não repete o número');
+const pdfNome = clinicaCom({ ...REG, 'nr32-vigilancia-medica': regTexto('Marcador VM-02: acompanhar o trabalhador numero 3 de perto.') });
+check(!tem(pdfNome, 'Marcador VM-02') && tem(pdfNome, 'retirar o nome de um trabalhador deste cliente'),
+  'conteúdo com o nome de empregado do cliente não sai impresso');
+check(P.dadoDeTrabalhadorNoTexto('Pronto-socorro: (71) 3333-4444; plantão 71987654321.', COM_SETOR) === null
+  && P.dadoDeTrabalhadorNoTexto('Avisar o Trabalhador Numero 10.', COM_SETOR) !== null
+  && P.dadoDeTrabalhadorNoTexto('Avisar o Trabalhador Numero 100.', COM_SETOR) === null,
+  'telefone não é confundido com CPF, e nome se compara por palavra inteira');
+
+// O que a Helvetica nao desenha deixaria a celula ilegivel.
+const pdfSimbolo = clinicaCom({ ...REG, 'nr32-vigilancia-medica': regTexto('Marcador VM-02: anti-HBs ≥ 10 mUI/mL.') });
+check(!tem(pdfSimbolo, 'Marcador VM-02') && tem(pdfSimbolo, 'trocar caractere que o PDF não imprime (U+2265)'),
+  'conteúdo com caractere que o PDF não imprime: não sai (sairia ilegível), e a pendência diz qual trocar');
+// A lista da regra, e nao uma copia: caractere acrescentado a ela tem de sair legivel.
+const pdfAceitos = clinicaCom({ ...REG, 'nr32-vigilancia-medica': regTexto(`Marcador VM-02: ${P.EXTRAS_DO_WINANSI} ºª°§½ çãõ.`) });
+check(tem(pdfAceitos, 'Marcador VM-02') && !pdfAceitos.includes('\u0000'),
+  'os caracteres que a regra aceita saem legíveis no PDF');
+
+// A NR continua valendo pelo CNAE: registro guardado nao a faz aplicar.
+const pdfComercio = gerar({ ...args, client: { ...CLIENTE, main_cnae: '47.61-0-03', pcmso_sectoral_content: REG } });
+check(!tem(pdfComercio, 'Marcador RB-01') && !pdfComercio.includes('5.8 Exigências de NR setorial'),
+  'conteúdo registrado não faz a NR setorial valer: quem a indica é o CNAE, e quem confirma é o responsável');
+
+// O formulario nao sugere nada.
+check(Object.values(P.RASCUNHO_VAZIO_DO_CONTEUDO_SETORIAL).every((v) => v === '') && Object.isFrozen(P.RASCUNHO_VAZIO_DO_CONTEUDO_SETORIAL),
+  'nada inventado: o rascunho do formulário tem todos os campos vazios');
+{
+  const tela = semComentarios(ler('components/sst/PcmsoConteudoSetorial.tsx'));
+  check(!/\bplaceholder\s*=|\bdefaultValue\s*=/.test(tela), 'nada inventado: nenhum campo do formulário tem placeholder ou valor padrão');
+  const valores = (tela.match(/\bvalue=\{[^}]*\}/g) || []).filter((v) => !/^value=\{(rascunho\.\w+|m\.id|antigo\.autor_id)\}$/.test(v));
+  check(valores.length === 0, `nada inventado: todo campo mostra o rascunho, sem valor alternativo (fora: ${valores.join(' ') || 'nenhum'})`);
+  check(/useState<RascunhoDoConteudoSetorial>\(\{\s*\.\.\.RASCUNHO_VAZIO_DO_CONTEUDO_SETORIAL\s*\}\)/.test(tela)
+    && /:\s*\{\s*\.\.\.RASCUNHO_VAZIO_DO_CONTEUDO_SETORIAL\s*\}\);/.test(tela),
+    'o formulário parte do rascunho vazio, ao abrir a tela e ao registrar item novo');
+  check(/faltasDoConteudoSetorial\(registro,/.test(tela) && /updateClient\(cliente\.id, \{ pcmso_sectoral_content: \{ \.\.\.registros, \[item\.chave\]: registro \} \}\)/.test(tela),
+    'a tela confere o registro com a mesma regra do PDF e o grava no cliente, pela chave do item');
+}
+
+// ===========================================================================
 // 4. TELAS E LIGACOES
 // ===========================================================================
 console.log('\n— telas e ligações');
@@ -645,6 +835,19 @@ for (const arg of ['treinamentos:', 'cargos:', 'coordenadorSemRqe:', 'semRespons
   check(resumo.includes(arg) && pdfFonte.includes(arg), `a tela e o PDF passam ${arg.slice(0, -1)} a montarPcmso`);
 }
 check(!/faltasExtras:\s*faltasDasAtividadesCriticas/.test(resumo + pdfFonte), 'as faltas das atividades críticas não são somadas duas vezes');
+{
+  // A pendencia do conteudo setorial cita um caminho; ele tem de existir.
+  const [, abaNumerada, subAba] = P.TELA_DO_CONTEUDO_SETORIAL.split(' > ');
+  const painel = semComentarios(ler('components/sst/SSTUnifiedEngineeringView.tsx'));
+  check(painel.includes(`${abaNumerada} (PCMSO & ASO)`) && aba.includes(`${subAba} (`) && /<PcmsoConteudoSetorial\b/.test(aba),
+    `o caminho da pendência existe: aba "${abaNumerada}", sub-aba "${subAba}", com o formulário`);
+  const chamadaDe = (fonteTsx) => {
+    const i = fonteTsx.indexOf('montarPcmso({');
+    return i < 0 ? '' : fonteTsx.slice(i, fonteTsx.indexOf('});', i));
+  };
+  check(/\bhoje\b/.test(chamadaDe(resumo)) && /\bhoje: emissao\b/.test(chamadaDe(pdfFonte)),
+    'a tela e o PDF passam a data a montarPcmso (conteúdo datado depois dela não vale)');
+}
 
 console.log(`\n${casos - falhas}/${casos} casos passaram.`);
 if (falhas > 0) {

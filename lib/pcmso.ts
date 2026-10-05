@@ -18,6 +18,8 @@ import { classificarRisco } from '@/lib/classificacaoDeRisco';
 import { codigoExisteNaTabela27, normalizarCodigoTabela27 } from '@/lib/tabela27';
 import { ehProtocoloModelo } from '@/lib/protocolosDeExame';
 import { fonte, trecho } from '@/lib/pcmsoFontes';
+import { validarCPF } from '@/lib/validacoesBr';
+import type { ConteudoSetorialDoPcmso } from '@/types';
 
 /** Tabela 27 do eSocial: 0295 = "Avaliacao clinica ocupacional (anamnese e exame fisico)". */
 export const CODIGO_AVALIACAO_CLINICA = '0295';
@@ -617,6 +619,18 @@ export function faltasDasAtividadesCriticas(
 // EXIGENCIAS DE NR SETORIAL, PELO CNAE
 // ===========================================================================
 
+/** Um conteudo que a NR manda constar do PCMSO e que o documento nao redige. */
+export interface ItemARedigir {
+  /**
+   * Chave estavel. O conteudo registrado (Client.pcmso_sectoral_content) e
+   * guardado por ela, e nao pelo `texto`: corrigir a redacao da citacao nao
+   * pode fazer sumir do documento o que o medico ja registrou.
+   */
+  chave: string;
+  /** Citacao conferida no texto oficial da NR. */
+  texto: string;
+}
+
 export interface ExigenciaSetorial {
   nr: string;
   titulo: string;
@@ -624,10 +638,10 @@ export interface ExigenciaSetorial {
   itens: string[];
   /**
    * Conteudo que a NR manda constar DO PCMSO e que este documento nao redige.
-   * Vira pendencia: o medico responsavel o redige e anexa. Nunca "a atestar",
-   * porque nao se atesta o que o documento nao contem.
+   * Vira pendencia ate o conteudo redigido pelo medico ser registrado. Nunca
+   * "a atestar", porque nao se atesta o que o documento nao contem.
    */
-  aRedigir: string[];
+  aRedigir: ItemARedigir[];
   /** O que o medico atesta ter considerado ao elaborar o programa. */
   atestar: string[];
   /** O que cabe ao empregador declarar. */
@@ -663,10 +677,10 @@ export function exigenciasSetoriais(cnae: any, riscos: any[] = []): ExigenciaSet
           : [])
       ],
       aRedigir: [
-        'NR-32, 32.2.3.1, "a" e "b": reconhecimento e avaliação dos riscos biológicos e localização das áreas de risco',
-        'NR-32, 32.2.3.1, "d": vigilância médica dos trabalhadores potencialmente expostos',
-        'NR-32, 32.2.3.1, "e", e 32.2.4.17.1: programa de vacinação (tétano, difteria, hepatite B e as estabelecidas no PCMSO)',
-        'NR-32, 32.2.3.3, "a" a "g": procedimentos para a possibilidade de exposição acidental a agentes biológicos'
+        { chave: 'nr32-riscos-biologicos', texto: 'NR-32, 32.2.3.1, "a" e "b": reconhecimento e avaliação dos riscos biológicos e localização das áreas de risco' },
+        { chave: 'nr32-vigilancia-medica', texto: 'NR-32, 32.2.3.1, "d": vigilância médica dos trabalhadores potencialmente expostos' },
+        { chave: 'nr32-programa-de-vacinacao', texto: 'NR-32, 32.2.3.1, "e", e 32.2.4.17.1: programa de vacinação (tétano, difteria, hepatite B e as estabelecidas no PCMSO)' },
+        { chave: 'nr32-exposicao-acidental', texto: 'NR-32, 32.2.3.3, "a" a "g": procedimentos para a possibilidade de exposição acidental a agentes biológicos' }
       ],
       atestar: [
         ...(comQuimico ? ['NR-32, 32.3.5.1: as fichas descritivas dos produtos químicos (32.3.4.1.1) foram consideradas na elaboração deste programa.'] : []),
@@ -686,9 +700,9 @@ export function exigenciasSetoriais(cnae: any, riscos: any[] = []): ExigenciaSet
       motivo: 'O CNAE principal indica abate ou fabricação de produtos de carne: confirme a aplicação da NR-36.',
       itens: ['nr36-36.12.1-4', 'nr36-36.12.5', 'nr36-36.12.6-7', 'nr36-36.12.8'].map((id) => fonte(id).texto),
       aRedigir: [
-        'NR-36, 36.12.3: instrumental clínico-epidemiológico que oriente as medidas do PGR e das melhorias ergonômicas',
-        'NR-36, 36.12.5: Programa de Conservação Auditiva para os expostos acima do nível de ação',
-        'NR-36, 36.12.7: conteúdo que a NR-36 acrescenta ao relatório analítico'
+        { chave: 'nr36-instrumental-clinico-epidemiologico', texto: 'NR-36, 36.12.3: instrumental clínico-epidemiológico que oriente as medidas do PGR e das melhorias ergonômicas' },
+        { chave: 'nr36-conservacao-auditiva', texto: 'NR-36, 36.12.5: Programa de Conservação Auditiva para os expostos acima do nível de ação' },
+        { chave: 'nr36-relatorio-analitico', texto: 'NR-36, 36.12.7: conteúdo que a NR-36 acrescenta ao relatório analítico' }
       ],
       atestar: [],
       organizacao: [],
@@ -702,8 +716,8 @@ export function exigenciasSetoriais(cnae: any, riscos: any[] = []): ExigenciaSet
       motivo: 'O CNAE principal (divisão 38) indica coleta, tratamento ou disposição de resíduos: confirme a aplicação da NR-38.',
       itens: ['nr38-38.4.1', 'nr38-38.4.3'].map((id) => fonte(id).texto),
       aRedigir: [
-        'NR-38, 38.4.1: programa de imunização ativa, principalmente contra tétano e hepatite B',
-        'NR-38, 38.4.3: procedimento específico para acidente com perfurocortante, se houver esse risco no PGR'
+        { chave: 'nr38-imunizacao', texto: 'NR-38, 38.4.1: programa de imunização ativa, principalmente contra tétano e hepatite B' },
+        { chave: 'nr38-perfurocortante', texto: 'NR-38, 38.4.3: procedimento específico para acidente com perfurocortante, se houver esse risco no PGR' }
       ],
       atestar: ['NR-38, 38.4.2: os protocolos de saúde deste programa seguem os perigos e riscos do PGR.'],
       organizacao: [],
@@ -711,6 +725,123 @@ export function exigenciasSetoriais(cnae: any, riscos: any[] = []): ExigenciaSet
     });
   }
   return lista;
+}
+
+// ===========================================================================
+// CONTEUDO DAS NR SETORIAIS REGISTRADO PELO MEDICO
+// ===========================================================================
+
+/**
+ * Onde o conteudo se registra. A pendencia do PDF cita este caminho: quem le a
+ * pendencia precisa saber a tela em que ela se resolve.
+ */
+export const TELA_DO_CONTEUDO_SETORIAL = 'Engenharia SST > 3. Aplicação de Exames > Conteúdo das NR setoriais';
+
+/** O formulario do conteudo setorial, como a tela o edita. */
+export interface RascunhoDoConteudoSetorial {
+  forma: '' | 'TEXTO' | 'ANEXO';
+  texto: string;
+  anexo_titulo: string;
+  anexo_local: string;
+  data: string;
+  autor_id: string;
+  autor: string;
+}
+
+/**
+ * O formulario abre com isto. Tudo vazio: o conteudo e ato medico, e um texto
+ * ou uma data pre-preenchidos sairiam no PCMSO como se o medico os tivesse
+ * escrito.
+ */
+export const RASCUNHO_VAZIO_DO_CONTEUDO_SETORIAL: Readonly<RascunhoDoConteudoSetorial> = Object.freeze({
+  forma: '', texto: '', anexo_titulo: '', anexo_local: '', data: '', autor_id: '', autor: ''
+});
+
+/**
+ * Fora do ASCII e do Latin-1, os caracteres que a Helvetica do PDF desenha
+ * (WinAnsi). Exportado para o verificador imprimir exatamente esta lista.
+ */
+export const EXTRAS_DO_WINANSI = '€‚ƒ„…†‡ˆ‰Š‹ŒŽ‘’“”•–—˜™š›œžŸ';
+
+/**
+ * Caracteres do texto que o PDF nao imprime, como "U+2265".
+ *
+ * Um so caractere fora do WinAnsi faz o jsPDF trocar a celula inteira para 16
+ * bits, e ela sai ilegivel (ver o comentario no topo de lib/pdfExportService.ts).
+ * O texto do medico nao se altera para caber: a tela recusa e diz qual trocar.
+ */
+export function caracteresQueOPdfNaoImprime(texto: any): string[] {
+  const fora = new Set<string>();
+  for (const ch of String(texto || '')) {
+    const c = ch.codePointAt(0) as number;
+    if (c === 0x09 || c === 0x0a || c === 0x0d) continue;
+    if ((c >= 0x20 && c <= 0x7e) || (c >= 0xa0 && c <= 0xff) || EXTRAS_DO_WINANSI.includes(ch)) continue;
+    fora.add(`U+${c.toString(16).toUpperCase().padStart(4, '0')}`);
+  }
+  return [...fora];
+}
+
+const normalizado = (t: any) => String(t || '')
+  .normalize('NFD').replace(/[̀-ͯ]/g, '')
+  .toLowerCase().replace(/\s+/g, ' ').trim();
+
+/**
+ * O texto traz dado de trabalhador? Devolve o motivo, sem repetir o dado.
+ *
+ * O conteudo e do programa, e nao de pessoa: CPF valido ou nome completo de
+ * empregado do cliente nao entram. Nome de uma palavra so fica de fora da
+ * busca, porque casaria com palavra comum.
+ */
+export function dadoDeTrabalhadorNoTexto(texto: any, colaboradores: any[] = []): string | null {
+  const bruto = String(texto || '');
+  const candidatos = bruto.match(/(?<![\d.])\d{3}\.?\d{3}\.?\d{3}-?\d{2}(?!\d)/g) || [];
+  if (candidatos.some((c) => validarCPF(c))) return 'um número de CPF';
+  const alvo = ` ${normalizado(bruto).replace(/[^a-z0-9]+/g, ' ')} `;
+  const comNome = (colaboradores || []).some((c) => {
+    const nome = normalizado(c?.name).replace(/[^a-z0-9]+/g, ' ').trim();
+    return nome.split(' ').length >= 2 && alvo.includes(` ${nome} `);
+  });
+  return comNome ? 'o nome de um trabalhador deste cliente' : null;
+}
+
+const DATA_ISO = /^\d{4}-\d{2}-\d{2}$/;
+
+/**
+ * O que falta para o registro valer. Lista vazia = completo, e so entao ele
+ * sai impresso e a pendencia do item some. `hoje`, quando informado, recusa
+ * data posterior (o documento nao cita redacao que ainda nao existe).
+ */
+export function faltasDoConteudoSetorial(
+  registro: ConteudoSetorialDoPcmso | null | undefined,
+  opcoes: { colaboradores?: any[]; hoje?: string } = {}
+): string[] {
+  const r = registro || {};
+  const falta: string[] = [];
+  if (r.forma === 'TEXTO') {
+    if (!temTexto(r.texto)) falta.push('o conteúdo redigido');
+  } else if (r.forma === 'ANEXO') {
+    if (!temTexto(r.anexo_titulo)) falta.push('o título do documento anexo');
+    if (!temTexto(r.anexo_local)) falta.push('onde o documento anexo fica arquivado');
+  } else {
+    falta.push('a forma (texto redigido ou documento anexo)');
+  }
+  if (!temTexto(r.autor)) falta.push('o médico que redigiu');
+  const data = String(r.data || '').trim();
+  if (!DATA_ISO.test(data)) falta.push(r.forma === 'ANEXO' ? 'a data do documento' : 'a data da redação');
+  else if (opcoes.hoje && data > opcoes.hoje) falta.push('uma data que não seja posterior à de hoje');
+  // So os campos que a forma imprime: texto guardado de uma forma anterior nao sai no documento.
+  const impressos = r.forma === 'ANEXO' ? [r.anexo_titulo, r.anexo_local, r.autor] : [r.texto, r.autor];
+  const ilegiveis = caracteresQueOPdfNaoImprime(impressos.join('\n'));
+  if (ilegiveis.length > 0) falta.push(`trocar caractere que o PDF não imprime (${ilegiveis.join(', ')})`);
+  const pessoal = dadoDeTrabalhadorNoTexto(impressos.slice(0, -1).join('\n'), opcoes.colaboradores);
+  if (pessoal) falta.push(`retirar ${pessoal}: o conteúdo é do programa, e não de pessoa`);
+  return falta;
+}
+
+/** O registro do item, pela chave estavel - nunca pelo texto da citacao. */
+export function registroDoItem(item: ItemARedigir, registros: Record<string, ConteudoSetorialDoPcmso> | null | undefined) {
+  const r = registros && Object.prototype.hasOwnProperty.call(registros, item.chave) ? registros[item.chave] : null;
+  return r || null;
 }
 
 // ===========================================================================
@@ -939,6 +1070,11 @@ export interface PcmsoMontado {
   atividades: AtividadeCritica[];
   dispensa: ReturnType<typeof dispensaDoPcmso>;
   setoriais: ExigenciaSetorial[];
+  /**
+   * Conteudo das NR setoriais registrado E completo, pela chave do item. So
+   * o que esta aqui sai impresso; o item ausente e pendencia da secao 5.8.
+   */
+  conteudosSetoriais: Record<string, ConteudoSetorialDoPcmso>;
   faltas: FaltaNoPcmso[];
 }
 
@@ -963,6 +1099,8 @@ export function montarPcmso(entrada: {
   coordenadorSemRqe?: boolean;
   /** Nenhum responsavel pelo PGR atribuido a este cliente. */
   semResponsavelPeloPgr?: boolean;
+  /** AAAA-MM-DD da emissao: conteudo setorial com data posterior nao vale. */
+  hoje?: string;
   faltasExtras?: FaltaNoPcmso[];
 }): PcmsoMontado {
   const clienteId = entrada.cliente?.id;
@@ -993,10 +1131,31 @@ export function montarPcmso(entrada: {
   const atividades = atividadesCriticasDoCliente(entrada.treinamentos || [], clienteId, ghes, entrada.cargos || [], riscos);
   const dispensa = dispensaDoPcmso(entrada.cliente, { grupos });
   const setoriais = exigenciasSetoriais(entrada.cliente?.main_cnae, riscos);
-  const dasSetoriais: FaltaNoPcmso[] = setoriais.flatMap((e) => e.aRedigir.map((x) => ({
-    secao: '5.8', curto: `${e.nr}: conteúdo a redigir`,
-    longo: `conteúdo que a ${e.nr} manda constar do PCMSO e que este documento não redige: ${x}. O médico responsável o redige e anexa a este programa`
-  })));
+  // Cada item vale sozinho: registrar o programa de vacinacao tira so a
+  // pendencia dele. A linha do checklist so deixa de ser pendente quando
+  // nenhum item da 5.8 sobra aqui.
+  const conteudosSetoriais: Record<string, ConteudoSetorialDoPcmso> = {};
+  const dasSetoriais: FaltaNoPcmso[] = [];
+  setoriais.forEach((e) => e.aRedigir.forEach((item) => {
+    const registro = registroDoItem(item, entrada.cliente?.pcmso_sectoral_content);
+    const exigido = `conteúdo que a ${e.nr} manda constar do PCMSO e que este documento não redige: ${item.texto}`;
+    if (!registro) {
+      dasSetoriais.push({
+        secao: '5.8', curto: `${e.nr}: conteúdo a redigir`,
+        longo: `${exigido}. O médico responsável o redige; registre o texto ou a referência ao documento anexo (${TELA_DO_CONTEUDO_SETORIAL})`
+      });
+      return;
+    }
+    const faltam = faltasDoConteudoSetorial(registro, { colaboradores, hoje: entrada.hoje });
+    if (faltam.length === 0) {
+      conteudosSetoriais[item.chave] = registro;
+      return;
+    }
+    dasSetoriais.push({
+      secao: '5.8', curto: `${e.nr}: registro incompleto`,
+      longo: `${exigido}. O registro está incompleto e não sai impresso; falta ${faltam.join('; ')} (${TELA_DO_CONTEUDO_SETORIAL})`
+    });
+  }));
 
   const dosResponsaveis: FaltaNoPcmso[] = [];
   if (!entrada.pendenciaDoCoordenador && entrada.coordenadorSemRqe) {
@@ -1020,6 +1179,7 @@ export function montarPcmso(entrada: {
     atividades,
     dispensa,
     setoriais,
+    conteudosSetoriais,
     faltas: [
       ...faltasDoCadastro({ ...base, colaboradores, pendenciaDoCoordenador: entrada.pendenciaDoCoordenador, dispensaPossivel: dispensa.possivel }),
       ...dosResponsaveis,
