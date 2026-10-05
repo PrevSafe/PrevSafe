@@ -183,6 +183,13 @@ const semEmerg = OS.conteudoDaOS({ trabalhador: TRAB, riscos: RISCOS, cargo: CAR
 check(semEmerg.emergency_accident_conduct.length === 0 && semEmerg.pendencias.some((p) => p.startsWith('Procedimentos de emergência')),
   'sem procedimentos de emergência: pendência, e não texto genérico');
 check(c.job_description === CARGO.activities_description, 'a descrição de atividades vem do cargo');
+check(Array.isArray(c.prohibitions_unsafe_acts) && c.prohibitions_unsafe_acts.length === 0, 'cargo sem proibições: a OS não inventa nenhuma');
+const comProibicoes = OS.conteudoDaOS({
+  trabalhador: TRAB, riscos: RISCOS, estabelecimento: ESTAB,
+  cargo: { ...CARGO, os_prohibitions: '- Não manusear o autoclave\n\n• Não atender paciente em maca sem auxílio\n' },
+});
+check(JSON.stringify(comProibicoes.prohibitions_unsafe_acts) === JSON.stringify(['Não manusear o autoclave', 'Não atender paciente em maca sem auxílio']),
+  'as proibições do cargo vão para a OS, uma por linha, sem o marcador de lista');
 const semCargo = OS.conteudoDaOS({ trabalhador: TRAB, riscos: RISCOS, cargo: { name: 'Recepcionista' }, estabelecimento: ESTAB });
 check(semCargo.job_description === '' && semCargo.pendencias.some((p) => p.startsWith('Descrição das atividades do cargo')),
   'cargo sem descrição: pendência, e não "atividades conforme especificações da empresa"');
@@ -270,6 +277,16 @@ check(/PEND[ÊE]NCIAS/.test(tpend) && tpend.includes('Procedimentos de emergênc
 for (const inventado of ['GHE Padrão', 'Matriz Operacional', 'Executar tarefas operacionais', 'Riscos inerentes às atividades normais', 'C.A. Válido', 'Sede da Empresa', 'Biometria Facial', 'devidamente treinado']) {
   check(!tpdf.includes(inventado), `o PDF não traz "${inventado}"`);
 }
+
+let tProib = '';
+try {
+  tProib = textoDoPdf(Buffer.from(PDF.exportWorkOrderOSPDF({ ...ORDEM, prohibitions_unsafe_acts: comProibicoes.prohibitions_unsafe_acts }, { name: 'PrevSafe' }, { saveFile: false }).output('arraybuffer')));
+} catch { /* acusado abaixo */ }
+check(tProib.includes('Não manusear o autoclave') && !tpdf.includes('Não manusear o autoclave'), 'o PDF imprime as proibições do cargo, e só quando existem');
+check(/prohibitions_unsafe_acts: conteudo\.prohibitions_unsafe_acts/.test(corpo), 'o gerador leva as proibições do cargo à OS');
+const hierarquia = ler('components/sst/HierarchyTab.tsx');
+check(/os_prohibitions: job\.os_prohibitions/.test(hierarquia) && /os_prohibitions: jobForm\.os_prohibitions/.test(hierarquia),
+  'o cadastro do cargo grava e recarrega as proibições');
 
 const tela = ler('components/sst/WorkOrderOSTab.tsx');
 check(!/employer_risk_grade \|\| 2/.test(tela), 'a tela não mostra grau 2 quando o grau não foi informado');

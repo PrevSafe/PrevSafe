@@ -1969,6 +1969,12 @@ export interface SSTHierarchyJob {
   cbo_title: string;
   activities_description: string; // Descrição pormenorizada das atividades e tarefas exigida pelo MOS eSocial
   requirements_notes?: string;
+  /**
+   * Proibicoes e instrucoes especificas da funcao, uma por linha. Vao para a
+   * ordem de servico de quem ocupa o cargo (lib/ordemDeServico.ts). Quem conhece
+   * o posto escreve; o sistema nao tem lista padrao.
+   */
+  os_prohibitions?: string;
   total_workers: number;
   status: 'ACTIVE' | 'INACTIVE';
   created_at: string;

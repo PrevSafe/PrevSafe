@@ -7332,10 +7332,10 @@ ${blocoRespRegXml(ghe.client_id, dataDeHoje())}
       mandatory_epis: conteudo.mandatory_epis,
       // Eram listas fixas, iguais para todo cargo. Procedimento e emergencia
       // saem do cadastro; obrigacoes, do texto da NR-01 e da CLT; proibicao
-      // especifica, quem conhece o posto acrescenta na OS.
+      // especifica, do cargo (escrita por quem conhece o posto).
       safe_work_procedures: conteudo.safe_work_procedures,
       mandatory_employee_obligations: OBRIGACOES_DO_TRABALHADOR,
-      prohibitions_unsafe_acts: [],
+      prohibitions_unsafe_acts: conteudo.prohibitions_unsafe_acts,
       emergency_accident_conduct: conteudo.emergency_accident_conduct,
       pendencias: conteudo.pendencias,
       disciplinary_sanctions_text: ATO_FALTOSO,

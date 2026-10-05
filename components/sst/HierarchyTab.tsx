@@ -80,6 +80,7 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
     name: string;
     activities_description: string;
     requirements_notes: string;
+    os_prohibitions: string;
   }>({
     sector_id: '',
     client_unit_id: '',
@@ -87,7 +88,8 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
     cbo_title: '',
     name: '',
     activities_description: '',
-    requirements_notes: 'Treinamento de integração NR-01, NR-06, e procedimentos operacionais'
+    requirements_notes: 'Treinamento de integração NR-01, NR-06, e procedimentos operacionais',
+    os_prohibitions: ''
   });
 
   // CBO Search & Auto-complete state
@@ -299,7 +301,8 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
         cbo_title: job.cbo_title || job.name,
         name: job.name,
         activities_description: job.activities_description || '',
-        requirements_notes: job.requirements_notes || ''
+        requirements_notes: job.requirements_notes || '',
+        os_prohibitions: job.os_prohibitions || ''
       });
     } else {
       setEditingJob(null);
@@ -311,7 +314,8 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
         cbo_title: initialCbo.title,
         name: initialCbo.title,
         activities_description: initialCbo.description_mos,
-        requirements_notes: initialCbo.requirements_notes ? `${initialCbo.requirements_notes}. Sugestão de EPIs: ${initialCbo.suggested_epis?.join(', ')}` : 'Treinamento de integração NR-01, NR-06'
+        requirements_notes: initialCbo.requirements_notes ? `${initialCbo.requirements_notes}. Sugestão de EPIs: ${initialCbo.suggested_epis?.join(', ')}` : 'Treinamento de integração NR-01, NR-06',
+        os_prohibitions: ''
       });
       setCboAutoFilledMessage(`CBO ${initialCbo.code} (${initialCbo.title}) carregado como sugestão inicial. Você pode buscar outro CBO ou editar todos os dados livremente abaixo.`);
     }
@@ -369,6 +373,7 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
         cbo_title: jobForm.cbo_title || jobForm.name,
         activities_description: jobForm.activities_description,
         requirements_notes: jobForm.requirements_notes,
+        os_prohibitions: jobForm.os_prohibitions,
         total_workers: employees.filter(emp => emp.job_id === editingJob?.id).length || 0,
         status: 'ACTIVE'
       });
@@ -1119,6 +1124,24 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
                       </button>
                     ))}
                   </div>
+                </div>
+
+                {/* Proibicoes do posto: vao para a OS de quem ocupa o cargo (NR-01,
+                    1.4.1, "c"). Nao ha lista padrao: so quem conhece o posto escreve. */}
+                <div className="space-y-1.5">
+                  <label className="block text-slate-400 font-semibold">
+                    Proibições e instruções específicas da função (Ordem de Serviço)
+                  </label>
+                  <textarea
+                    rows={3}
+                    value={jobForm.os_prohibitions}
+                    onChange={(e) => setJobForm({ ...jobForm, os_prohibitions: e.target.value })}
+                    className="w-full bg-slate-950 border border-slate-700 rounded-lg p-3 text-slate-100 leading-relaxed focus:outline-none focus:border-teal-500 text-xs"
+                  />
+                  <p className="text-[10px] text-slate-400 flex items-center gap-1">
+                    <Info className="w-3 h-3 text-slate-500 flex-shrink-0" />
+                    Uma por linha. Saem na seção de proibições da OS de cada trabalhador deste cargo, ao gerar ou atualizar a OS.
+                  </p>
                 </div>
               </form>
             </div>

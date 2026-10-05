@@ -91,6 +91,8 @@ export interface ConteudoDaOS {
   /** Medidas administrativas e de organizacao do trabalho ja adotadas (plano de acao concluido). */
   safe_work_procedures: string[];
   emergency_accident_conduct: string[];
+  /** Proibicoes do posto, escritas no cargo; vazio quando o cargo nao as tem. */
+  prohibitions_unsafe_acts: string[];
   routine_activities: string[];
   job_description: string;
   pendencias: string[];
@@ -226,6 +228,12 @@ export function conteudoDaOS(dados: {
     mandatory_epis: [...epis.values()],
     safe_work_procedures: administrativas,
     emergency_accident_conduct: emergencia,
+    // Uma por linha no cadastro do cargo; marcador de lista no inicio sai,
+    // porque o PDF poe o seu.
+    prohibitions_unsafe_acts: String(cargo?.os_prohibitions || '')
+      .split(/\r?\n/)
+      .map((l) => l.replace(/^\s*[-*•]\s*/, '').trim())
+      .filter(Boolean),
     routine_activities: atividades ? [atividades] : [],
     job_description: atividades,
     pendencias
