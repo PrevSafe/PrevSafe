@@ -17,6 +17,7 @@
 
 import { Client, Contract, Organization, PlanoDePagamento, Proposal } from '@/types';
 import { formatCurrency, formatDate } from './utils';
+import { dataDoRegistro } from './datas';
 import {
   cronogramaDoPlano,
   descreverPlano,
@@ -164,7 +165,7 @@ export function montarTermosDoContrato(dados: DadosDaMinuta = {}): string {
   const servicos = resumirServicos(proposal);
   const origem = proposal
     ? `A presente contratação decorre da Proposta Comercial ${proposal.proposal_number}` +
-      `${proposal.approved_at ? `, aceita pela CONTRATANTE em ${formatDate(proposal.approved_at)}` : ''}` +
+      `${proposal.approved_at ? `, aceita pela CONTRATANTE em ${dataDoRegistro(proposal.approved_at)}` : ''}` +
       ', que integra este instrumento para todos os fins.'
     : '';
 

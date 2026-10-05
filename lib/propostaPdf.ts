@@ -39,7 +39,7 @@ import autoTable from 'jspdf-autotable';
 import type { CellDef, CellHookData, RowInput, UserOptions } from 'jspdf-autotable';
 import type { Client, Organization, Proposal, ProposalItem } from '@/types';
 import { formatCurrency, formatDate } from '@/lib/utils';
-import { formatarDataISO } from '@/lib/datas';
+import { dataDoRegistro } from '@/lib/datas';
 import { VERSAO_DO_DOCUMENTO } from '@/lib/versaoDoDocumento';
 import {
   ROTULO_DA_FORMA,
@@ -222,13 +222,9 @@ function numeroLegivel(n: number): string {
  * 2026-10-06T01:30Z, e o dia do aceite e 05/10.
  */
 function dataDoDocumento(valor: unknown): string {
-  const s = typeof valor === 'string' ? valor.trim() : '';
-  if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return formatDate(s);
-  if (/^\d{4}-\d{2}-\d{2}T/.test(s)) {
-    const dia = formatarDataISO(s);
-    return /^\d{4}-\d{2}-\d{2}$/.test(dia) ? formatDate(dia) : '';
-  }
-  return '';
+  // A regra e a de lib/datas.ts, a mesma da tela e do contrato: os tres
+  // mostravam dias diferentes para o registro feito depois das 21h.
+  return dataDoRegistro(valor);
 }
 
 /** "Aceita em dd/mm/aaaa", ou a situacao que encerra a proposta, ou ''. */

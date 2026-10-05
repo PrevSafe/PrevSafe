@@ -62,6 +62,56 @@ export function formatarDataISO(data: Date | string | number, fuso: string = FUS
 }
 
 /**
+ * O dia de um registro, como AAAA-MM-DD, ou '' se nao houver data.
+ *
+ * "AAAA-MM-DD" ja e dia de calendario e volta como esta. Carimbo com hora
+ * (created_at, approved_at, valid_until, signed_at) vira o dia no fuso: o
+ * aceite as 22h30 de 05/10 e gravado 2026-10-06T01:30Z, e o dia do aceite e
+ * 05/10. Cortar os 10 primeiros caracteres, como fazia a tela, dava 06/10.
+ *
+ * NAO use em dia de calendario gravado como meia-noite UTC - o inicio e o fim
+ * de vigencia do contrato (`new Date('2026-10-05').toISOString()`): ali o fuso
+ * o levaria para o dia anterior.
+ */
+export function diaDoRegistro(valor: unknown, fuso: string = FUSO_PADRAO): string {
+  const s = typeof valor === 'string' ? valor.trim() : '';
+  if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+  if (!/^\d{4}-\d{2}-\d{2}T/.test(s)) return '';
+  const dia = formatarDataISO(s, fuso);
+  return /^\d{4}-\d{2}-\d{2}$/.test(dia) ? dia : '';
+}
+
+/** O dia de um registro como dd/mm/aaaa (ver diaDoRegistro), ou ''. */
+export function dataDoRegistro(valor: unknown, fuso: string = FUSO_PADRAO): string {
+  const dia = diaDoRegistro(valor, fuso);
+  if (!dia) return '';
+  const [a, m, d] = dia.split('-');
+  return `${d}/${m}/${a}`;
+}
+
+/**
+ * Data e hora de um carimbo como dd/mm/aaaa hh:mm no fuso, ou ''. A tela de
+ * contratos mostrava a hora da assinatura em UTC, tres horas adiantada.
+ */
+export function dataHoraDoRegistro(valor: unknown, fuso: string = FUSO_PADRAO): string {
+  const s = typeof valor === 'string' ? valor.trim() : '';
+  if (!/^\d{4}-\d{2}-\d{2}T/.test(s)) return dataDoRegistro(s, fuso);
+  const d = new Date(s);
+  if (Number.isNaN(d.getTime())) return '';
+  try {
+    const partes = Object.fromEntries(
+      new Intl.DateTimeFormat('en-CA', {
+        timeZone: fuso, year: 'numeric', month: '2-digit', day: '2-digit',
+        hour: '2-digit', minute: '2-digit', hourCycle: 'h23'
+      }).formatToParts(d).map((p) => [p.type, p.value])
+    );
+    return `${partes.day}/${partes.month}/${partes.year} ${partes.hour}:${partes.minute}`;
+  } catch {
+    return dataDoRegistro(s, fuso);
+  }
+}
+
+/**
  * Data daqui a N dias, como AAAA-MM-DD no fuso local.
  *
  * Soma em dias de calendario, nao em milissegundos: `Date.now() + 365 * 86400000`

@@ -262,6 +262,37 @@ check(/exportProposalPdf\(/.test(propostas), 'a proposta tem PDF para baixar e i
 const editor = ler('components/commercial/PlanoDePagamentoEditor.tsx');
 check(!/placeholder=/.test(editor), 'o editor do plano não tem placeholder com cara de valor');
 
+// ===========================================================================
+// 6. DATAS: O MESMO DIA NA TELA, NO CONTRATO E NO PDF
+// ===========================================================================
+// O aceite as 22h30 de 05/10 (Brasilia) e gravado 2026-10-06T01:30Z. A tela e
+// o contrato cortavam os 10 primeiros caracteres e diziam 06/10; o PDF da
+// proposta dizia 05/10.
+console.log('\n--- 6. Datas ---');
+
+const D = require_(achar('datas.js'));
+check(D.diaDoRegistro('2026-10-06T01:30:00.000Z') === '2026-10-05', 'carimbo das 22h30 de Brasília é do dia 05/10, e não 06/10');
+check(D.diaDoRegistro('2026-10-05') === '2026-10-05', 'dia de calendário volta como está');
+check(D.dataDoRegistro('2026-10-06T01:30:00.000Z') === '05/10/2026', 'dd/mm/aaaa do dia de Brasília');
+check(D.dataHoraDoRegistro('2026-10-06T01:30:00.000Z') === '05/10/2026 22:30', 'hora da assinatura em Brasília, e não em UTC');
+check(D.dataDoRegistro('') === '' && D.dataDoRegistro(undefined) === '', 'sem data: vazio, e não "Invalid Date"');
+
+const aceiteNoite = T.montarTermosDoContrato({
+  proposal: { ...PROPOSTA, approved_at: '2026-10-06T01:30:00.000Z' },
+  valorTotal: 11800,
+  inicioVigencia: '2026-10-05T00:00:00.000Z',
+  fimVigencia: '2027-10-05T00:00:00.000Z'
+});
+check(aceiteNoite.includes('aceita pela CONTRATANTE em 05/10/2026'), 'o contrato diz o dia do aceite em Brasília');
+check(aceiteNoite.includes('Vigência de 05/10/2026 a 05/10/2027'), 'a vigência (dia gravado como meia-noite UTC) não volta um dia');
+
+check(!/formatDate\((prop|selectedProposal)\.(valid_until|created_at|approved_at)\)/.test(propostas), 'a tela da proposta não corta o carimbo em UTC');
+check(!/formatDate\(proposal\.approved_at\)/.test(termosFonte), 'a minuta não corta o aceite em UTC');
+check(!/formatDateTime\([^)]*signed_at/.test(contratos), 'a tela do contrato não mostra a assinatura em UTC');
+check(!/formatDate\(proposal\.approved_at\)/.test(ler('lib/pdfExportService.ts')), 'o PDF do contrato não corta o aceite em UTC');
+check(!/toLocale(Date|Time)String\('pt-BR'/.test(ler('lib/pdfExportService.ts').slice(ler('lib/pdfExportService.ts').indexOf('export function exportContractPdf'))),
+  'o PDF do contrato não usa o relógio de quem o gera');
+
 console.log(`\n${casos - falhas}/${casos} casos passaram.`);
 if (falhas > 0) {
   console.log(`${falhas} FALHA(S).`);

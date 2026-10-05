@@ -7,7 +7,7 @@ import { formatDate, formatCurrency } from '@/lib/utils';
 import { shareViaChannel } from '@/lib/shareLinks';
 import { cronogramaDoPlano, descreverPlano, faltasDoPlano, planoInformado, planoVazio } from '@/lib/planoDePagamento';
 import { exportProposalPdf } from '@/lib/propostaPdf';
-import { dataDeHoje } from '@/lib/datas';
+import { dataDeHoje, dataDoRegistro, diaDoRegistro } from '@/lib/datas';
 import { PlanoDePagamentoEditor } from './PlanoDePagamentoEditor';
 import { 
   FileSpreadsheet, 
@@ -151,7 +151,7 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
 
   /** Dias que faltam ate a validade gravada: editar nao estende a proposta. */
   const diasAteAValidade = (validade: string) => {
-    const fim = String(validade || '').slice(0, 10);
+    const fim = diaDoRegistro(validade);
     const hoje = dataDeHoje();
     if (!/^\d{4}-\d{2}-\d{2}$/.test(fim)) return 30;
     const dias = Math.round((Date.parse(`${fim}T12:00:00Z`) - Date.parse(`${hoje}T12:00:00Z`)) / 86400000);
@@ -428,7 +428,7 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
       ...(planoInformado(prop.payment_plan) && faltasDoPlano(prop.payment_plan, prop.total).length === 0
         ? ['Forma de pagamento:', ...descreverPlano(prop.payment_plan).map((l) => `• ${l}`)]
         : []),
-      `Validade: ${formatDate(prop.valid_until)}`,
+      `Validade: ${dataDoRegistro(prop.valid_until)}`,
       '',
       `Qualquer dúvida estou à disposição.`,
       `${currentProfile.full_name} — ${organization.name}`,
@@ -562,7 +562,7 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
                       </span>
                     )}
                     <span className="text-[10px] text-slate-500 mt-1 block">
-                      Validade: {formatDate(prop.valid_until)}
+                      Validade: {dataDoRegistro(prop.valid_until)}
                     </span>
                   </div>
                 </div>
@@ -582,7 +582,7 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
                     <span>Proposta Nº</span>
                     <span className="font-bold text-slate-200">{selectedProposal.proposal_number}</span>
                     <span>•</span>
-                    <span>{formatDate(selectedProposal.created_at)}</span>
+                    <span>{dataDoRegistro(selectedProposal.created_at)}</span>
                   </div>
                   <h2 className="text-lg font-bold text-white mt-1 break-words">{selectedProposal.title}</h2>
                   <p className="text-xs text-slate-400 mt-0.5">
@@ -723,7 +723,7 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
                   </div>
                 )}
                 <div className="text-[11px] text-slate-500">
-                  Validade da Proposta: Até {formatDate(selectedProposal.valid_until)}
+                  Validade da Proposta: Até {dataDoRegistro(selectedProposal.valid_until)}
                 </div>
               </div>
             </div>

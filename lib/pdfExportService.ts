@@ -23,7 +23,7 @@ import { formatDate } from '@/lib/utils';
 import { DECLARACAO_DE_INTEGRIDADE } from '@/lib/documentoHash';
 import { ANEXOS_NR16, montarCorpoInsalubridade, montarCorpoPericulosidade, ehFatorErgonomico, ehRiscoDeAcidente } from '@/lib/laudoDados';
 import type { CorpoLaudo } from '@/lib/laudoDados';
-import { dataDeHoje, somarMesesISO } from '@/lib/datas';
+import { dataDeHoje, somarMesesISO, dataDoRegistro, dataHoraDoRegistro } from '@/lib/datas';
 import { formatarCPF } from '@/lib/validacoesBr';
 import { exameSugeridosParaAso } from '@/lib/esocialDados';
 import { assinaturaDoDocumento, linhaDeResponsaveis, responsaveisDoCliente, linhaDeAssinatura } from '@/lib/responsabilidadeTecnica';
@@ -8160,7 +8160,7 @@ export function exportContractPdf({
       ],
       [
         { content: 'Proposta:', styles: { fontStyle: 'bold' } },
-        { content: proposal ? `${proposal.proposal_number} — aceita em ${proposal.approved_at ? formatDate(proposal.approved_at) : 'data não registrada'}` : 'Contrato sem proposta vinculada' },
+        { content: proposal ? `${proposal.proposal_number} — aceita em ${proposal.approved_at ? dataDoRegistro(proposal.approved_at) : 'data não registrada'}` : 'Contrato sem proposta vinculada' },
         { content: 'Resp. Técnico:', styles: { fontStyle: 'bold' } },
         // O contrato cobre varios servicos ao mesmo tempo, entao nao tem UM
         // papel proprio: lista quem responde por este cliente e por que papel.
@@ -8316,7 +8316,7 @@ export function exportContractPdf({
       body: assinaturas.map(a => [
         `${a.signer_name || '-'}\n${a.signer_email || ''}`,
         a.signer_document || '-',
-        a.signed_at ? formatDateTimeBR(a.signed_at) : '-',
+        a.signed_at ? dataHoraDoRegistro(a.signed_at) : '-',
         formatHashParaImpressao(a.document_hash),
         formatHashParaImpressao(a.signature_hash)
       ]),
@@ -8395,9 +8395,5 @@ function formatHashParaImpressao(hash?: string): string {
   return (limpo.match(/.{1,16}/g) || [limpo]).join('\n');
 }
 
-/** Data e hora no formato brasileiro, para o quadro de assinaturas. */
-function formatDateTimeBR(iso: string): string {
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return '-';
-  return `${d.toLocaleDateString('pt-BR')} ${d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
-}
+// O quadro de assinaturas usa dataHoraDoRegistro (lib/datas.ts): a hora de
+// Brasilia, e nao a do relogio de quem gera o PDF.

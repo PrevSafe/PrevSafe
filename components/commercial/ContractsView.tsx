@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { usePrevSafe } from '@/context/PrevSafeContext';
 import { Contract, PlanoDePagamento } from '@/types';
-import { formatDate, formatDateTime, formatCurrency } from '@/lib/utils';
+import { formatDate, formatCurrency } from '@/lib/utils';
 import {
   clausulaDoPagamento,
   divergenciasDaClausulaDoPagamento,
@@ -32,7 +32,7 @@ import {
   Trash2
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import { dataDeHoje, dataEmDias } from '@/lib/datas';
+import { dataDeHoje, dataEmDias, dataHoraDoRegistro } from '@/lib/datas';
 
 export const ContractsView: React.FC<{ onNavigate: (view: string) => void }> = ({ onNavigate }) => {
   const { 
@@ -505,7 +505,7 @@ export const ContractsView: React.FC<{ onNavigate: (view: string) => void }> = (
                 {(selectedContract.status === 'ACTIVE' || selectedContract.status === 'SIGNED') && selectedContract.signatures && selectedContract.signatures.length > 0 ? (
                   <div className="text-xs text-slate-300 space-y-1 pt-1 font-mono">
                     <div>Assinado por: <strong className="text-white">{selectedContract.signatures[0].signer_name}</strong></div>
-                    <div>Data/Hora: {formatDateTime(selectedContract.signatures[0].signed_at)}</div>
+                    <div>Data/Hora: {dataHoraDoRegistro(selectedContract.signatures[0].signed_at)}</div>
                     <div className="text-[10px] text-slate-500 break-all">
                       Hash SHA-256: {selectedContract.signatures[0].signature_hash || 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'}
                     </div>
