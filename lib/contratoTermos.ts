@@ -15,8 +15,15 @@
  * editaveis, e nao fixos no texto.
  */
 
-import { Client, Contract, Organization, Proposal } from '@/types';
+import { Client, Contract, Organization, PlanoDePagamento, Proposal } from '@/types';
 import { formatCurrency, formatDate } from './utils';
+import {
+  cronogramaDoPlano,
+  descreverPlano,
+  faltasDoPlano,
+  linhaDoCronograma,
+  planoInformado
+} from './planoDePagamento';
 
 export interface DadosDaMinuta {
   client?: Client | null;
@@ -26,16 +33,98 @@ export interface DadosDaMinuta {
   valorTotal?: number;
   inicioVigencia?: string;
   fimVigencia?: string;
+  /** Mantido por compatibilidade: a clausula 7 sai do plano, e nao daqui. */
   recorrencia?: Contract['recurrence'];
+  /**
+   * Plano de pagamento do contrato. Sem ele, vale o da proposta. Era a
+   * recorrencia - 'ANNUAL' por padrao - que escrevia "parcelas anuais".
+   */
+  plano?: PlanoDePagamento | null;
 }
 
-const PERIODICIDADE: Record<string, string> = {
-  MONTHLY: 'mensais',
-  QUARTERLY: 'trimestrais',
-  SEMIANNUAL: 'semestrais',
-  ANNUAL: 'anuais',
-  ONE_TIME: 'em parcela única',
-};
+const TITULO_DA_CLAUSULA_7 = 'CLÁUSULA 7ª — DO VALOR E DA FORMA DE PAGAMENTO';
+const INICIO_DA_CLAUSULA_7 = /CL[ÁA]USULA 7[ªa]/;
+const INICIO_DA_CLAUSULA_8 = /CL[ÁA]USULA 8[ªa]/;
+
+/**
+ * Clausula 7 inteira, do titulo ao 7.5. Com o plano completo e somando o
+ * total, ela traz as formas (alineas) e o cronograma (7.2). Sem plano, ou com
+ * plano incompleto, a forma de pagamento fica entre colchetes: lacuna visivel,
+ * como as outras da minuta, e nunca uma periodicidade presumida.
+ */
+export function clausulaDoPagamento(valorTotal: number | undefined, plano?: PlanoDePagamento | null): string {
+  const valor = typeof valorTotal === 'number' && valorTotal > 0 ? formatCurrency(valorTotal) : '[valor]';
+  const completo = planoInformado(plano)
+    && typeof valorTotal === 'number' && valorTotal > 0
+    && faltasDoPlano(plano, valorTotal).length === 0;
+
+  let formaECronograma: string;
+  if (completo) {
+    const partes = descreverPlano(plano);
+    const alineas = partes.map((p, i) => `${String.fromCharCode(97 + i)}) ${p}${i === partes.length - 1 ? '.' : ';'}`);
+    const obs = plano?.observacoes?.trim();
+    formaECronograma =
+      `7.1. Valor total de ${valor}, pago da seguinte forma:\n${alineas.join('\n')}` +
+      `${obs ? `\nCondição acordada: ${obs}` : ''}\n` +
+      `7.2. Cronograma de vencimentos:\n${cronogramaDoPlano(plano).map(linhaDoCronograma).join('\n')}`;
+  } else {
+    formaECronograma =
+      `7.1. Valor total de ${valor}, [forma de pagamento — defina o plano de pagamento na proposta ou no contrato].\n` +
+      '7.2. Vencimentos: [cronograma de pagamento].';
+  }
+
+  return `${TITULO_DA_CLAUSULA_7}
+${formaECronograma}
+7.3. Atraso superior a 30 (trinta) dias faculta à CONTRATADA suspender os serviços, mediante aviso prévio de 5 (cinco) dias úteis, sem prejuízo da cobrança.
+7.4. Reajuste anual pelo [índice de reajuste — ex.: IPCA/IBGE], ou por outro índice que venha a substituí-lo.
+7.5. Serviços não previstos na Cláusula 1ª serão orçados à parte.`;
+}
+
+/**
+ * Troca so a clausula 7 de uma minuta ja editada, preservando o resto do
+ * texto. null quando a minuta nao tem as clausulas 7 e 8 para delimitar o
+ * trecho - ai a troca e manual.
+ */
+export function substituirClausulaDoPagamento(termos: string, novaClausula: string): string | null {
+  const texto = String(termos || '');
+  const i7 = texto.search(INICIO_DA_CLAUSULA_7);
+  if (i7 < 0) return null;
+  const resto = texto.slice(i7 + 1);
+  const rel8 = resto.search(INICIO_DA_CLAUSULA_8);
+  if (rel8 < 0) return null;
+  const i8 = i7 + 1 + rel8;
+  return `${texto.slice(0, i7)}${novaClausula.trimEnd()}\n\n${texto.slice(i8)}`;
+}
+
+/**
+ * A clausula 7 da minuta reflete o plano? Devolve o que nao confere: cada
+ * parcela (data e valor) e o total tem de estar escritos nela. A assinatura
+ * usa isto - o Financeiro lanca as parcelas do plano, e o texto assinado tem
+ * de dizer o mesmo.
+ */
+export function divergenciasDaClausulaDoPagamento(
+  termos: string,
+  plano: PlanoDePagamento | null | undefined,
+  valorTotal: number
+): string[] {
+  if (!planoInformado(plano)) return [];
+  const texto = String(termos || '');
+  const i7 = texto.search(INICIO_DA_CLAUSULA_7);
+  if (i7 < 0) return ['A minuta não tem a Cláusula 7ª, onde a forma de pagamento é escrita.'];
+  const rel8 = texto.slice(i7 + 1).search(INICIO_DA_CLAUSULA_8);
+  const trecho = rel8 < 0 ? texto.slice(i7) : texto.slice(i7, i7 + 1 + rel8);
+
+  const problemas: string[] = [];
+  if (!trecho.includes(formatCurrency(valorTotal))) {
+    problemas.push(`A Cláusula 7ª não traz o valor total de ${formatCurrency(valorTotal)}.`);
+  }
+  cronogramaDoPlano(plano).forEach((p) => {
+    if (!trecho.includes(linhaDoCronograma(p))) {
+      problemas.push(`A Cláusula 7ª não traz a ${p.numero}ª parcela do plano (${formatDate(p.vencimento)}, ${formatCurrency(p.valor)}).`);
+    }
+  });
+  return problemas;
+}
 
 /** Lista os servicos da proposta aceita, para a clausula do objeto. */
 export function resumirServicos(proposal?: Proposal | null): string {
@@ -64,13 +153,13 @@ export function montarTermosDoContrato(dados: DadosDaMinuta = {}): string {
   const contratante = client?.legal_name || client?.trade_name || '[CONTRATANTE]';
   const cnpjContratante = client?.document_number || '[CNPJ do contratante]';
 
-  const valor = typeof dados.valorTotal === 'number' && dados.valorTotal > 0
-    ? formatCurrency(dados.valorTotal)
-    : (proposal?.total ? formatCurrency(proposal.total) : '[valor]');
+  const valorTotal = typeof dados.valorTotal === 'number' && dados.valorTotal > 0
+    ? dados.valorTotal
+    : (proposal?.total || undefined);
+  const plano = planoInformado(dados.plano) ? dados.plano : (proposal?.payment_plan || null);
 
   const inicio = dados.inicioVigencia ? formatDate(dados.inicioVigencia) : '[data de início]';
   const fim = dados.fimVigencia ? formatDate(dados.fimVigencia) : '[data de término]';
-  const parcelas = PERIODICIDADE[dados.recorrencia || 'ANNUAL'] || 'anuais';
 
   const servicos = resumirServicos(proposal);
   const origem = proposal
@@ -128,12 +217,7 @@ CLÁUSULA 5ª — DOS LIMITES DA RESPONSABILIDADE
 CLÁUSULA 6ª — DO PRAZO E DA VIGÊNCIA
 Vigência de ${inicio} a ${fim}, renovável mediante termo aditivo. Documentos com validade legal própria — PGR, PCMSO, LTCAT, laudos de insalubridade e periculosidade — observam os prazos das respectivas Normas Regulamentadoras, independentemente da vigência deste contrato.
 
-CLÁUSULA 7ª — DO VALOR E DA FORMA DE PAGAMENTO
-7.1. Valor total de ${valor}, em parcelas ${parcelas}.
-7.2. Vencimento conforme cronograma acordado entre as partes.
-7.3. Atraso superior a 30 (trinta) dias faculta à CONTRATADA suspender os serviços, mediante aviso prévio de 5 (cinco) dias úteis, sem prejuízo da cobrança.
-7.4. Reajuste anual pelo [índice de reajuste — ex.: IPCA/IBGE], ou por outro índice que venha a substituí-lo.
-7.5. Serviços não previstos na Cláusula 1ª serão orçados à parte.
+${clausulaDoPagamento(valorTotal, plano)}
 
 CLÁUSULA 8ª — DA CONFIDENCIALIDADE E DA PROTEÇÃO DE DADOS (LGPD)
 8.1. As partes obrigam-se a manter sigilo sobre as informações trocadas, durante a vigência e após o seu término.

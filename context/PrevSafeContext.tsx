@@ -21,6 +21,7 @@ import {
   Opportunity, 
   Proposal, 
   ProposalItem,
+  PlanoDePagamento,
   Contract, 
   ServiceTemplate, 
   ServiceOrder, 
@@ -166,7 +167,8 @@ import {
   type SyncedCollection,
   type RemoteSnapshot
 } from '@/lib/supabaseSync';
-import { montarTermosDoContrato, resumirServicos } from '@/lib/contratoTermos';
+import { montarTermosDoContrato, resumirServicos, divergenciasDaClausulaDoPagamento } from '@/lib/contratoTermos';
+import { contasAReceberDoContrato, faltasDoPlano, planoInformado, recorrenciaDoPlano } from '@/lib/planoDePagamento';
 import { hashDoDocumento, hashDaAssinatura } from '@/lib/documentoHash';
 import { dataDeHoje, dataEmDias, formatarDataISO, novoId } from '@/lib/datas';
 import { limparOrdensDeServico, AVISO_SEM_INVENTARIO } from '@/lib/limpezaDeOrdensDeServico';
@@ -419,6 +421,7 @@ interface PrevSafeContextType {
     items: Omit<ProposalItem, 'id' | 'proposal_id'>[];
     discount?: number;
     valid_until: string;
+    payment_plan?: PlanoDePagamento;
   }) => Proposal;
   updateProposal: (id: string, updates: Partial<Proposal>) => void;
   deleteProposal: (id: string) => void;
@@ -437,10 +440,15 @@ interface PrevSafeContextType {
     services_summary?: string;
     proposal_id?: string;
     terms?: string;
+    payment_plan?: PlanoDePagamento;
   }) => Contract;
   updateContract: (id: string, updates: Partial<Contract>) => void;
   deleteContract: (id: string) => void;
-  signContract: (contractId: string, signerName: string, signerEmail: string, signerDoc?: string) => void;
+  /**
+   * Assina e lanca as parcelas do plano em Contas a Receber. ok: false (sem
+   * assinar) quando o plano esta incompleto ou a clausula 7 nao o reflete.
+   */
+  signContract: (contractId: string, signerName: string, signerEmail: string, signerDoc?: string) => { ok: boolean; erro?: string; parcelasLancadas?: number };
 
   // Service Templates
   addServiceTemplate: (tmpl: Omit<ServiceTemplate, 'id' | 'organization_id'>) => ServiceTemplate;
@@ -626,7 +634,11 @@ interface PrevSafeContextType {
     }>;
   };
   sendFinancialReminder: (transactionId: string, channel?: ChannelType) => { success: boolean; message: string };
-  generateReceivableFromContract: (contractId: string, referenceMonth?: string) => FinancialTransaction | null;
+  /**
+   * Lanca as parcelas do plano do contrato que ainda nao estao em Contas a
+   * Receber. Contrato sem plano nao lanca nada: o valor total nao e parcela.
+   */
+  generateReceivableFromContract: (contractId: string) => { criadas: FinancialTransaction[]; motivo?: string };
   generateReceivableFromServiceOrder: (serviceOrderId: string) => FinancialTransaction | null;
 
   // SaaS Multi-Tenancy & Subscriptions (Super Admin)
@@ -2628,6 +2640,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     items: Omit<ProposalItem, 'id' | 'proposal_id'>[];
     discount?: number;
     valid_until: string;
+    payment_plan?: PlanoDePagamento;
   }): Proposal => {
     const count = proposals.length + 1;
     const propNumber = `PROP-${new Date().getFullYear()}-${String(count).padStart(6, '0')}`;
@@ -2655,6 +2668,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
       subtotal,
       discount,
       total,
+      payment_plan: planoInformado(data.payment_plan) ? data.payment_plan : undefined,
       valid_until: data.valid_until,
       status: 'DRAFT',
       created_by: currentProfile.id,
@@ -2770,11 +2784,18 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
       contract_number: contractNumber,
       title: `Contrato de Prestação de Serviços SST - ${proposal.title}`,
       status: 'SENT',
-      recurrence: 'ANNUAL',
+      // Do plano da proposta. Era 'ANNUAL' fixo, e a clausula 7 dizia
+      // "parcelas anuais" a cliente que pagaria por mes.
+      recurrence: recorrenciaDoPlano(proposal.payment_plan) || 'CUSTOM',
       total_value: proposal.total,
       start_date: startDate,
       end_date: endDate,
       services_summary: resumirServicos(proposal),
+      // Copia, e nao referencia: ajustar o plano no contrato nao altera a
+      // proposta que o cliente aceitou.
+      payment_plan: planoInformado(proposal.payment_plan)
+        ? JSON.parse(JSON.stringify(proposal.payment_plan))
+        : undefined,
       terms: montarTermosDoContrato({
         client,
         organization,
@@ -2782,7 +2803,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
         valorTotal: proposal.total,
         inicioVigencia: startDate,
         fimVigencia: endDate,
-        recorrencia: 'ANNUAL',
+        plano: proposal.payment_plan,
       }),
       signatures: [],
       created_at: new Date().toISOString(),
@@ -2805,10 +2826,12 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     services_summary?: string;
     proposal_id?: string;
     terms?: string;
+    payment_plan?: PlanoDePagamento;
   }): Contract => {
     const count = contracts.length + 1;
     const contractNumber = `CONT-${new Date().getFullYear()}-${String(count).padStart(6, '0')}`;
     const client = clients.find(c => c.id === data.client_id) || null;
+    const plano = planoInformado(data.payment_plan) ? data.payment_plan : undefined;
     const newContract: Contract = {
       id: novoId('cont'),
       organization_id: organization.id,
@@ -2817,11 +2840,12 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
       contract_number: contractNumber,
       title: data.title,
       total_value: data.total_value,
-      recurrence: data.recurrence || 'ANNUAL',
+      recurrence: recorrenciaDoPlano(plano) || data.recurrence || 'CUSTOM',
       status: 'SENT',
       start_date: data.start_date,
       end_date: data.end_date,
       services_summary: data.services_summary,
+      payment_plan: plano,
       // Sem minuta informada, gera a padrao ja preenchida com o cliente e os
       // valores desta contratacao - nao uma frase generica.
       terms: data.terms || montarTermosDoContrato({
@@ -2830,7 +2854,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
         valorTotal: data.total_value,
         inicioVigencia: data.start_date,
         fimVigencia: data.end_date,
-        recorrencia: data.recurrence || 'ANNUAL',
+        plano,
       }),
       signatures: [],
       created_at: new Date().toISOString(),
@@ -2869,9 +2893,26 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     setServiceTemplates(prev => prev.filter(t => t.id !== id));
   }, []);
 
-  const signContract = useCallback((contractId: string, signerName: string, signerEmail: string, signerDoc?: string) => {
+  const signContract = useCallback((contractId: string, signerName: string, signerEmail: string, signerDoc?: string): { ok: boolean; erro?: string; parcelasLancadas?: number } => {
     const contract = contracts.find(c => c.id === contractId);
-    if (!contract) return;
+    if (!contract) return { ok: false, erro: 'Contrato não encontrado.' };
+
+    // O Financeiro lanca as parcelas do PLANO; o texto assinado tem de dizer o
+    // mesmo. Plano incompleto, ou clausula 7 que nao o reflete, nao se assina.
+    if (planoInformado(contract.payment_plan)) {
+      const faltas = faltasDoPlano(contract.payment_plan, contract.total_value);
+      if (faltas.length > 0) {
+        return { ok: false, erro: `O plano de pagamento do contrato está incompleto:\n• ${faltas.join('\n• ')}` };
+      }
+      const divergencias = divergenciasDaClausulaDoPagamento(contract.terms || '', contract.payment_plan, contract.total_value);
+      if (divergencias.length > 0) {
+        return {
+          ok: false,
+          erro: 'A Cláusula 7ª da minuta não reflete o plano de pagamento. Edite o contrato e use "Atualizar Cláusula 7ª" antes de assinar.\n• ' +
+            divergencias.slice(0, 5).join('\n• ') + (divergencias.length > 5 ? `\n• e mais ${divergencias.length - 5}.` : '')
+        };
+      }
+    }
 
     // Hash do que esta sendo assinado, calculado sobre o conteudo. Antes era
     // `SHA256:` + Math.random() - um rotulo de hash sobre um numero aleatorio.
@@ -2921,6 +2962,24 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
 
     logAudit('CONTRACT_SIGNED', 'CONTRACT', contract.id, contract.contract_number, { signerName, hash: signature.signature_hash });
 
+    // Cada parcela do plano vira uma conta a receber, com o seu vencimento,
+    // valor e forma. A chave (contract_id + contract_installment) impede que
+    // uma segunda assinatura lance tudo de novo.
+    let parcelasLancadas = 0;
+    if (isFullySigned) {
+      const cliente = clients.find(c => c.id === contract.client_id);
+      const novas = contasAReceberDoContrato(contract, {
+        organizationId: organization.id,
+        nomeDoCliente: cliente?.trade_name || cliente?.legal_name || '',
+        existentes: transactions
+      });
+      if (novas.length > 0) {
+        setTransactions(prev => [...novas, ...prev]);
+        parcelasLancadas = novas.length;
+        logAudit('FINANCIAL_RECEIVABLE_CREATED' as any, 'CONTRACT', contract.id, contract.contract_number, { parcelas: novas.length });
+      }
+    }
+
     dispatchNotification({
       recipient_user_id: currentProfile.id,
       recipient_name: 'Equipe Operacional',
@@ -2931,7 +2990,8 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
       related_entity_type: 'CONTRACT',
       related_entity_id: contract.id
     });
-  }, [contracts, currentProfile, logAudit, dispatchNotification]);
+    return { ok: true, parcelasLancadas };
+  }, [contracts, clients, transactions, organization.id, currentProfile, logAudit, dispatchNotification]);
 
   // RN002 & Engine 50: Create Service Order from Contract & Template
   const createServiceOrderFromContract = useCallback((contractId: string, templateId: string, customTitle?: string): ServiceOrder => {
@@ -5499,42 +5559,34 @@ ${xmlDoIdeEmpregador(empregador, '    ')}
     };
   }, [transactions, currentProfile.id, dispatchNotification, logAudit]);
 
-  const generateReceivableFromContract = useCallback((contractId: string, referenceMonth?: string): FinancialTransaction | null => {
+  // Lancava o valor TOTAL do contrato como "mensalidade", a cada clique e a
+  // cada mes do faturamento em lote, com vencimento em 10 dias e boleto - um
+  // contrato anual de R$ 12.000 virava R$ 12.000 por mes. Agora lanca as
+  // parcelas do plano (lib/planoDePagamento.ts) que ainda faltam.
+  const generateReceivableFromContract = useCallback((contractId: string): { criadas: FinancialTransaction[]; motivo?: string } => {
     const contract = contracts.find(c => c.id === contractId);
-    if (!contract) return null;
+    if (!contract) return { criadas: [], motivo: 'Contrato não encontrado.' };
+    if (!planoInformado(contract.payment_plan)) {
+      return { criadas: [], motivo: `O contrato ${contract.contract_number} não tem plano de pagamento: defina-o em Contratos antes de faturar.` };
+    }
+    const faltas = faltasDoPlano(contract.payment_plan, contract.total_value);
+    if (faltas.length > 0) {
+      return { criadas: [], motivo: `O plano de pagamento do contrato ${contract.contract_number} está incompleto: ${faltas[0]}` };
+    }
 
     const client = clients.find(c => c.id === contract.client_id);
-    const clientName = client?.trade_name || client?.legal_name || 'Cliente PrevSafe';
-    const ref = referenceMonth || new Date().toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
-    const amount = contract.total_value;
-
-    const newTx: FinancialTransaction = {
-      id: novoId('fin-rec'),
-      organization_id: organization.id,
-      type: 'RECEIVABLE',
-      status: 'PENDING',
-      title: `Mensalidade SST Contratual (${ref}) - ${contract.contract_number}`,
-      description: `Faturamento recorrente referente ao contrato de prestação de serviços de SST (${contract.title}).`,
-      client_id: contract.client_id,
-      client_name: clientName,
-      contract_id: contract.id,
-      category: 'MENSALIDADE_SST',
-      category_name: 'Mensalidade de Gestão SST',
-      amount,
-      discount: 0,
-      fine_interest: 0,
-      final_amount: amount,
-      due_date: dataEmDias(10),
-      payment_method: 'BOLETO',
-      document_number: `FAT-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    };
-
-    setTransactions(prev => [newTx, ...prev]);
-    logAudit('FINANCIAL_RECEIVABLE_CREATED' as any, 'FINANCIAL_TRANSACTION' as any, newTx.id, `Faturamento Contrato ${contract.contract_number}`);
-    return newTx;
-  }, [contracts, clients, organization.id, logAudit]);
+    const criadas = contasAReceberDoContrato(contract, {
+      organizationId: organization.id,
+      nomeDoCliente: client?.trade_name || client?.legal_name || '',
+      existentes: transactions
+    });
+    if (criadas.length === 0) {
+      return { criadas, motivo: `Todas as parcelas do contrato ${contract.contract_number} já estão em Contas a Receber.` };
+    }
+    setTransactions(prev => [...criadas, ...prev]);
+    logAudit('FINANCIAL_RECEIVABLE_CREATED' as any, 'CONTRACT', contract.id, contract.contract_number, { parcelas: criadas.length });
+    return { criadas };
+  }, [contracts, clients, transactions, organization.id, logAudit]);
 
   const generateReceivableFromServiceOrder = useCallback((serviceOrderId: string): FinancialTransaction | null => {
     const os = serviceOrders.find(o => o.id === serviceOrderId);

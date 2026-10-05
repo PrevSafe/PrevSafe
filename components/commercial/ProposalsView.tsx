@@ -2,9 +2,13 @@
 
 import React, { useState, useMemo } from 'react';
 import { usePrevSafe } from '@/context/PrevSafeContext';
-import { Proposal, ProposalItem, ServiceTemplate, Client } from '@/types';
+import { Proposal, ProposalItem, ServiceTemplate, Client, PlanoDePagamento } from '@/types';
 import { formatDate, formatCurrency } from '@/lib/utils';
 import { shareViaChannel } from '@/lib/shareLinks';
+import { cronogramaDoPlano, descreverPlano, faltasDoPlano, planoInformado, planoVazio } from '@/lib/planoDePagamento';
+import { exportProposalPdf } from '@/lib/propostaPdf';
+import { dataDeHoje } from '@/lib/datas';
+import { PlanoDePagamentoEditor } from './PlanoDePagamentoEditor';
 import { 
   FileSpreadsheet, 
   Plus, 
@@ -27,7 +31,9 @@ import {
   Clock,
   ArrowRight,
   SlidersHorizontal,
-  Check
+  Check,
+  Download,
+  Printer
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
@@ -66,50 +72,28 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
   const [showSendModal, setShowSendModal] = useState(false);
 
   // Proposal Builder State
-  const [builderClientId, setBuilderClientId] = useState(clients?.[0]?.id || '');
+  // Sem cliente pre-selecionado: com dados reais, o primeiro da lista virava o
+  // cliente de uma proposta que o usuario nao percebeu que era de outro.
+  const [builderClientId, setBuilderClientId] = useState('');
   const [builderTitle, setBuilderTitle] = useState('');
   const [builderValidityDays, setBuilderValidityDays] = useState(30);
   const [builderNotes, setBuilderNotes] = useState('');
+  // Condicao de pagamento (lib/planoDePagamento.ts): vira a clausula 7 do contrato.
+  const [builderPlano, setBuilderPlano] = useState<PlanoDePagamento>(planoVazio());
   
   // Catalog Search & Filter in Builder
   const [catalogSearch, setCatalogSearch] = useState('');
   const [catalogCategory, setCatalogCategory] = useState<string>('ALL');
 
   // Selected Items Grid State
-  const [builderItems, setBuilderItems] = useState<BuilderProposalItem[]>([
-    {
-      id: 'item-1',
-      proposal_id: 'prop-draft',
-      service_template_id: 'tmpl-pgr-01',
-      service_name: 'PGR — Programa de Gerenciamento de Riscos (NR-01)',
-      description: 'Inventário de Riscos Ocupacionais + Plano de Ação 5W2H conforme Portaria SEPRT 6.730 da NR-01 com levantamento de GHEs.',
-      quantity: 1,
-      unit_price: 6500,
-      original_price: 6500,
-      discount_type: 'PERCENT',
-      discount_value: 0,
-      discount: 0,
-      total: 6500
-    },
-    {
-      id: 'item-2',
-      proposal_id: 'prop-draft',
-      service_template_id: 'tmpl-pcmso-01',
-      service_name: 'PCMSO — Programa de Controle Médico de Saúde Ocupacional (NR-07)',
-      description: 'Planejamento médico, definição do cronograma de exames clínicos, complementares e audiometrias ocupacionais.',
-      quantity: 1,
-      unit_price: 5200,
-      original_price: 5200,
-      discount_type: 'FIXED',
-      discount_value: 500,
-      discount: 500,
-      total: 4700
-    }
-  ]);
+  // Comeca vazio. Antes nascia com PGR a R$ 6.500, PCMSO a R$ 5.200 com R$ 500
+  // de desconto e mais R$ 200 de desconto geral - valores de exemplo que
+  // podiam ir para uma proposta real.
+  const [builderItems, setBuilderItems] = useState<BuilderProposalItem[]>([]);
 
   // Global Proposal Discount State
   const [globalDiscountType, setGlobalDiscountType] = useState<'FIXED' | 'PERCENT'>('FIXED');
-  const [globalDiscountValue, setGlobalDiscountValue] = useState<number>(200);
+  const [globalDiscountValue, setGlobalDiscountValue] = useState<number>(0);
 
   // Financial Calculations
   const grossSubtotal = useMemo(() => {
@@ -146,66 +130,42 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
     });
   }, [serviceTemplates, catalogCategory, catalogSearch]);
 
+  // Proposta nova abre vazia: cliente, titulo, servicos e condicoes sao
+  // escolhidos por quem faz a proposta. Antes abria com o primeiro cliente da
+  // lista, os dois primeiros servicos do catalogo e "Condicao padrao de
+  // pagamento em parcelas mensais" - nada disso tinha sido combinado.
   const handleOpenNewProposal = () => {
     setEditingProposal(null);
-    setBuilderClientId(clients[0]?.id || '');
-    setBuilderTitle('Proposta de Gestão SST e Laudos Regulamentares');
+    setBuilderClientId('');
+    setBuilderTitle('');
     setBuilderValidityDays(30);
     setCatalogSearch('');
     setCatalogCategory('ALL');
-    
-    // Default initial selected items from catalog
-    const initialTmpl1 = serviceTemplates[0];
-    const initialTmpl2 = serviceTemplates[1] || serviceTemplates[0];
-
-    const initialItems: BuilderProposalItem[] = [];
-    if (initialTmpl1) {
-      initialItems.push({
-        id: generateUniqueItemId('item-init'),
-        proposal_id: 'prop-draft',
-        service_template_id: initialTmpl1.id,
-        service_name: initialTmpl1.name,
-        description: initialTmpl1.description,
-        quantity: 1,
-        unit_price: initialTmpl1.default_price,
-        original_price: initialTmpl1.default_price,
-        discount_type: 'PERCENT',
-        discount_value: 0,
-        discount: 0,
-        total: initialTmpl1.default_price
-      });
-    }
-    if (initialTmpl2 && initialTmpl2.id !== initialTmpl1?.id) {
-      initialItems.push({
-        id: generateUniqueItemId('item-init'),
-        proposal_id: 'prop-draft',
-        service_template_id: initialTmpl2.id,
-        service_name: initialTmpl2.name,
-        description: initialTmpl2.description,
-        quantity: 1,
-        unit_price: initialTmpl2.default_price,
-        original_price: initialTmpl2.default_price,
-        discount_type: 'PERCENT',
-        discount_value: 0,
-        discount: 0,
-        total: initialTmpl2.default_price
-      });
-    }
-
-    setBuilderItems(initialItems);
+    setBuilderItems([]);
     setGlobalDiscountType('FIXED');
     setGlobalDiscountValue(0);
-    setBuilderNotes('Condição padrão de pagamento em parcelas mensais.');
+    setBuilderNotes('');
+    setBuilderPlano(planoVazio());
     setShowBuilderModal(true);
+  };
+
+  /** Dias que faltam ate a validade gravada: editar nao estende a proposta. */
+  const diasAteAValidade = (validade: string) => {
+    const fim = String(validade || '').slice(0, 10);
+    const hoje = dataDeHoje();
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(fim)) return 30;
+    const dias = Math.round((Date.parse(`${fim}T12:00:00Z`) - Date.parse(`${hoje}T12:00:00Z`)) / 86400000);
+    return Math.max(1, dias);
   };
 
   const handleOpenEditProposal = (prop: Proposal) => {
     setEditingProposal(prop);
     setBuilderClientId(prop.client_id);
     setBuilderTitle(prop.title);
-    setBuilderValidityDays(30);
+    setBuilderValidityDays(diasAteAValidade(prop.valid_until));
     setCatalogSearch('');
     setCatalogCategory('ALL');
+    setBuilderPlano(planoInformado(prop.payment_plan) ? JSON.parse(JSON.stringify(prop.payment_plan)) : planoVazio());
 
     const formattedItems: BuilderProposalItem[] = prop.items.map((it, idx) => {
       const tmpl = serviceTemplates.find(t => t.id === it.service_template_id);
@@ -384,9 +344,20 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
 
   const handleSaveProposal = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!builderClientId || builderItems.length === 0) {
-      alert('Selecione um cliente e inclua ao menos um serviço no escopo.');
+    if (!builderClientId || builderItems.length === 0 || !builderTitle.trim()) {
+      alert('Selecione o cliente, dê um título à proposta e inclua ao menos um serviço no escopo.');
       return;
+    }
+
+    // Plano incompleto pode ser salvo (e rascunho), mas sem surpresa: o PDF e
+    // o contrato nao o tratam como condicao combinada enquanto faltar algo.
+    const plano = planoInformado(builderPlano) ? builderPlano : undefined;
+    if (plano) {
+      const faltas = faltasDoPlano(plano, netTotal);
+      if (faltas.length > 0 && !confirm(
+        `As condições de pagamento estão incompletas:\n\n• ${faltas.join('\n• ')}\n\n` +
+        'Enquanto isso, o PDF da proposta e o contrato saem com a forma de pagamento em aberto. Salvar assim mesmo?'
+      )) return;
     }
 
     const validDate = new Date();
@@ -416,6 +387,7 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
         subtotal: grossSubtotal,
         discount: totalDiscount,
         total: netTotal,
+        payment_plan: plano,
         valid_until: validDate.toISOString()
       });
       setShowBuilderModal(false);
@@ -427,6 +399,7 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
         description: builderNotes,
         items: finalItems,
         discount: totalDiscount,
+        payment_plan: plano,
         valid_until: validDate.toISOString()
       });
 
@@ -450,6 +423,11 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
       '',
       `Segue nossa proposta comercial ${prop.proposal_number} — ${prop.title}.`,
       `Valor total: ${formatCurrency(prop.total)}`,
+      // So a condicao completa vai na mensagem: incompleta seria prometer o
+      // que ainda nao foi definido.
+      ...(planoInformado(prop.payment_plan) && faltasDoPlano(prop.payment_plan, prop.total).length === 0
+        ? ['Forma de pagamento:', ...descreverPlano(prop.payment_plan).map((l) => `• ${l}`)]
+        : []),
       `Validade: ${formatDate(prop.valid_until)}`,
       '',
       `Qualquer dúvida estou à disposição.`,
@@ -478,6 +456,14 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
   };
 
   const handleApprove = (prop: Proposal) => {
+    // Aprovar sem condicao de pagamento e permitido, mas o contrato nasce com a
+    // clausula 7 em aberto - quem aprova fica sabendo antes.
+    const faltasDoPagamento = faltasDoPlano(prop.payment_plan, prop.total);
+    if (faltasDoPagamento.length > 0 && !confirm(
+      `${planoInformado(prop.payment_plan) ? 'As condições de pagamento desta proposta estão incompletas' : 'Esta proposta não tem condições de pagamento'}.\n\n` +
+      'O contrato será gerado com a forma de pagamento em aberto (Cláusula 7ª) e precisará do plano antes da assinatura. Aprovar assim mesmo?'
+    )) return;
+
     approveProposal(prop.id);
 
     // O botao promete "Aprovar & Gerar Contrato" e o aviso dizia que o contrato
@@ -709,9 +695,33 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
                     R$ {selectedProposal.total.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                   </span>
                 </div>
-                <div className="text-[11px] text-slate-400 pt-2 border-t border-slate-800/60 leading-relaxed">
-                  <strong className="text-slate-300">Observações & Faturamento:</strong> {selectedProposal.description || 'Condição padrão.'}
+                {/* Era "Condicao padrao." quando nao havia observacao: uma
+                    condicao que ninguem definiu. */}
+                <div className="text-[11px] text-slate-400 pt-2 border-t border-slate-800/60 leading-relaxed space-y-0.5">
+                  <strong className="text-slate-300 block">Forma de pagamento:</strong>
+                  {!planoInformado(selectedProposal.payment_plan) ? (
+                    <span className="text-amber-300">Não definida. Edite a proposta para incluir as condições de pagamento.</span>
+                  ) : faltasDoPlano(selectedProposal.payment_plan, selectedProposal.total).length > 0 ? (
+                    <span className="text-amber-300">
+                      Em definição: {faltasDoPlano(selectedProposal.payment_plan, selectedProposal.total)[0]}
+                    </span>
+                  ) : (
+                    <>
+                      {descreverPlano(selectedProposal.payment_plan).map((linha, i) => (
+                        <span key={i} className="block text-slate-300">{String.fromCharCode(97 + i)}) {linha}</span>
+                      ))}
+                      {selectedProposal.payment_plan?.observacoes?.trim() && (
+                        <span className="block">Condição acordada: {selectedProposal.payment_plan.observacoes.trim()}</span>
+                      )}
+                      <span className="block text-slate-500">{cronogramaDoPlano(selectedProposal.payment_plan).length} parcela(s) no cronograma.</span>
+                    </>
+                  )}
                 </div>
+                {selectedProposal.description?.trim() && (
+                  <div className="text-[11px] text-slate-400 leading-relaxed">
+                    <strong className="text-slate-300">Observações:</strong> {selectedProposal.description}
+                  </div>
+                )}
                 <div className="text-[11px] text-slate-500">
                   Validade da Proposta: Até {formatDate(selectedProposal.valid_until)}
                 </div>
@@ -720,7 +730,7 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
 
             {/* Actions Bar */}
             <div className="pt-4 border-t border-slate-800/80 flex flex-wrap gap-2 justify-between items-center">
-              <div className="flex space-x-2">
+              <div className="flex flex-wrap gap-2">
                 <button
                   id="btn-send-proposal"
                   onClick={() => setShowSendModal(true)}
@@ -729,13 +739,42 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
                   <Share2 className="w-3.5 h-3.5" />
                   <span>Enviar ao Cliente (WhatsApp / E-mail)</span>
                 </button>
+                {(['baixar', 'imprimir'] as const).map((acao) => (
+                  <button
+                    key={acao}
+                    id={`btn-proposal-${acao}`}
+                    onClick={() => {
+                      try {
+                        const r = exportProposalPdf({
+                          proposal: selectedProposal,
+                          client: clients.find(c => c.id === selectedProposal.client_id) || null,
+                          organization,
+                          acao
+                        });
+                        if (!r.ok && r.mensagem) alert(r.mensagem);
+                      } catch (err: any) {
+                        alert(`Não foi possível gerar o PDF da proposta.\n\n${err?.message || 'Erro desconhecido'}`);
+                      }
+                    }}
+                    className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-xl border border-slate-700 transition flex items-center space-x-1.5"
+                  >
+                    {acao === 'baixar' ? <Download className="w-3.5 h-3.5" /> : <Printer className="w-3.5 h-3.5" />}
+                    <span>{acao === 'baixar' ? 'Baixar PDF' : 'Imprimir'}</span>
+                  </button>
+                ))}
               </div>
 
               {selectedProposal.status !== 'APPROVED' && (
                 <div className="flex space-x-2">
                   <button
                     id="btn-reject-proposal"
-                    onClick={() => rejectProposal(selectedProposal.id, 'Preço acima do orçamento')}
+                    onClick={() => {
+                      // Era o motivo fixo "Preco acima do orcamento", gravado em
+                      // toda recusa. O motivo e o que o cliente disse.
+                      const motivo = window.prompt(`Motivo da recusa da proposta ${selectedProposal.proposal_number} (opcional):`, '');
+                      if (motivo === null) return;
+                      rejectProposal(selectedProposal.id, motivo.trim() || undefined);
+                    }}
                     className="px-3.5 py-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 text-xs font-semibold rounded-xl border border-rose-500/30 transition"
                   >
                     Recusar
@@ -795,6 +834,7 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
                     onChange={(e) => setBuilderClientId(e.target.value)}
                     className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500"
                   >
+                    <option value="">Selecione o cliente</option>
                     {clients.map(c => (
                       <option key={c.id} value={c.id}>{c.trade_name} ({c.document_number})</option>
                     ))}
@@ -1203,18 +1243,21 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
                     </span>
                   </div>
 
-                  {/* Payment Notes */}
+                  {/* Observacoes. A forma de pagamento tem secao propria abaixo:
+                      aqui ela era texto livre, que o contrato nao lia. */}
                   <div>
                     <label className="block font-semibold text-slate-300 mb-1 text-xs">
-                      Condições de Faturamento & Observações
+                      Observações da proposta
                     </label>
                     <textarea
                       rows={2}
                       value={builderNotes}
                       onChange={(e) => setBuilderNotes(e.target.value)}
-                      className="w-full px-3 py-2 bg-slate-900 border border-slate-800 rounded-xl text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-indigo-500"
-                      placeholder="Ex: Pagamento 50% na contratação e 50% na emissão do relatório final..."
+                      className="w-full px-3 py-2 bg-slate-900 border border-slate-800 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-indigo-500"
                     />
+                    <span className="text-[10px] text-slate-500 mt-1 block">
+                      Escopo, premissas ou exclusões. A forma de pagamento vai em Condições de pagamento, abaixo do total.
+                    </span>
                   </div>
                 </div>
 
@@ -1248,6 +1291,11 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
                     </span>
                   </div>
                 </div>
+              </div>
+
+              {/* Condicoes de pagamento: distribuem o total liquido acima */}
+              <div className="p-4 bg-slate-950/60 rounded-2xl border border-slate-800">
+                <PlanoDePagamentoEditor plano={builderPlano} onChange={setBuilderPlano} total={netTotal} />
               </div>
 
               {/* Modal Actions Footer */}

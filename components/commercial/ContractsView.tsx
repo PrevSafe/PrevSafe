@@ -2,9 +2,17 @@
 
 import React, { useState } from 'react';
 import { usePrevSafe } from '@/context/PrevSafeContext';
-import { Contract } from '@/types';
+import { Contract, PlanoDePagamento } from '@/types';
 import { formatDate, formatDateTime, formatCurrency } from '@/lib/utils';
-import { montarTermosDoContrato, resumirServicos } from '@/lib/contratoTermos';
+import {
+  clausulaDoPagamento,
+  divergenciasDaClausulaDoPagamento,
+  montarTermosDoContrato,
+  resumirServicos,
+  substituirClausulaDoPagamento
+} from '@/lib/contratoTermos';
+import { cronogramaDoPlano, descreverPlano, planoInformado, planoVazio, recorrenciaDoPlano } from '@/lib/planoDePagamento';
+import { PlanoDePagamentoEditor } from './PlanoDePagamentoEditor';
 import { exportContractPdf } from '@/lib/pdfExportService';
 import { 
   FileSignature, 
@@ -72,8 +80,17 @@ export const ContractsView: React.FC<{ onNavigate: (view: string) => void }> = (
     start_date: dataDeHoje(),
     end_date: dataEmDias(365),
     services_summary: '',
-    terms: ''
+    terms: '',
+    payment_plan: planoVazio() as PlanoDePagamento
   }));
+
+  /** Copia: ajustar o plano aqui nao altera a proposta que o cliente aceitou. */
+  const copiarPlano = (p?: PlanoDePagamento | null): PlanoDePagamento =>
+    planoInformado(p) ? JSON.parse(JSON.stringify(p)) : planoVazio();
+
+  // Contrato assinado nao muda de plano: o hash da assinatura cobre a minuta,
+  // e as parcelas ja estao no Financeiro. Mudanca e por termo aditivo.
+  const contratoAssinado = !!editingContract && (editingContract.status === 'ACTIVE' || (editingContract.signatures || []).length > 0);
 
   // `proposta` opcional: quando vem, o formulario abre com os dados dela. Antes
   // abria sempre com o primeiro cliente da lista, titulo "...SST 2026" e valor
@@ -94,6 +111,7 @@ export const ContractsView: React.FC<{ onNavigate: (view: string) => void }> = (
       start_date: inicio,
       end_date: fim,
       services_summary: alvo ? resumirServicos(alvo) : '',
+      payment_plan: copiarPlano(alvo?.payment_plan),
       terms: montarTermosDoContrato({
         client,
         organization,
@@ -101,7 +119,7 @@ export const ContractsView: React.FC<{ onNavigate: (view: string) => void }> = (
         valorTotal: alvo?.total,
         inicioVigencia: inicio,
         fimVigencia: fim,
-        recorrencia: 'ANNUAL',
+        plano: alvo?.payment_plan,
       }),
     });
     setShowNewContractModal(true);
@@ -120,6 +138,10 @@ export const ContractsView: React.FC<{ onNavigate: (view: string) => void }> = (
   const handleOpenEditContract = (c: Contract) => {
     setEditingContract(c);
     const client = clients.find(cl => cl.id === c.client_id) || null;
+    const proposta = proposals.find(pr => pr.id === c.proposal_id) || null;
+    // Contrato gerado antes do plano existir: abre com o da proposta, se ela
+    // tiver, para o usuario conferir e atualizar a clausula 7.
+    const plano = copiarPlano(planoInformado(c.payment_plan) ? c.payment_plan : proposta?.payment_plan);
     setContractForm({
       client_id: c.client_id,
       proposal_id: c.proposal_id || '',
@@ -128,16 +150,17 @@ export const ContractsView: React.FC<{ onNavigate: (view: string) => void }> = (
       start_date: c.start_date.split('T')[0],
       end_date: c.end_date.split('T')[0],
       services_summary: c.services_summary || '',
+      payment_plan: plano,
       // Contratos criados antes deste campo existir nao tem minuta gravada:
       // geramos a padrao ja preenchida em vez de abrir o campo vazio.
       terms: c.terms || montarTermosDoContrato({
         client,
         organization,
-        proposal: proposals.find(pr => pr.id === c.proposal_id) || null,
+        proposal: proposta,
         valorTotal: c.total_value,
         inicioVigencia: c.start_date,
         fimVigencia: c.end_date,
-        recorrencia: c.recurrence,
+        plano,
       }),
     });
   };
@@ -149,16 +172,33 @@ export const ContractsView: React.FC<{ onNavigate: (view: string) => void }> = (
       return;
     }
 
+    const plano = planoInformado(contractForm.payment_plan) ? contractForm.payment_plan : undefined;
+    const valor = Number(contractForm.total_value) || 0;
+    // Salvar com a clausula 7 diferente do plano e permitido (a minuta e
+    // rascunho), mas o usuario fica sabendo: a assinatura vai recusar.
+    if (plano && !contratoAssinado) {
+      const divergencias = divergenciasDaClausulaDoPagamento(contractForm.terms, plano, valor);
+      if (divergencias.length > 0 && !confirm(
+        'A Cláusula 7ª da minuta não reflete o plano de pagamento.\n\n' +
+        'Use "Atualizar Cláusula 7ª" para reescrevê-la a partir do plano. O contrato não poderá ser assinado enquanto isso não for feito.\n\n' +
+        'Salvar assim mesmo?'
+      )) return;
+    }
+
     if (editingContract) {
       updateContract(editingContract.id, {
         client_id: contractForm.client_id,
         title: contractForm.title,
-        total_value: Number(contractForm.total_value) || 0,
+        total_value: valor,
         start_date: new Date(contractForm.start_date).toISOString(),
         end_date: new Date(contractForm.end_date).toISOString(),
         // Faltava: o que fosse digitado em Termos e Condicoes era descartado.
         terms: contractForm.terms,
-        services_summary: contractForm.services_summary
+        services_summary: contractForm.services_summary,
+        ...(contratoAssinado ? {} : {
+          payment_plan: plano,
+          recurrence: recorrenciaDoPlano(plano) || editingContract.recurrence
+        })
       });
       setEditingContract(null);
     } else {
@@ -166,12 +206,12 @@ export const ContractsView: React.FC<{ onNavigate: (view: string) => void }> = (
         client_id: contractForm.client_id,
         proposal_id: contractForm.proposal_id || undefined,
         title: contractForm.title,
-        total_value: Number(contractForm.total_value) || 0,
-        recurrence: 'ANNUAL',
+        total_value: valor,
         start_date: new Date(contractForm.start_date).toISOString(),
         end_date: new Date(contractForm.end_date).toISOString(),
         services_summary: contractForm.services_summary,
-        terms: contractForm.terms
+        terms: contractForm.terms,
+        payment_plan: plano
       });
       setSelectedContract(created);
       setShowNewContractModal(false);
@@ -191,11 +231,24 @@ export const ContractsView: React.FC<{ onNavigate: (view: string) => void }> = (
     if (!selectedContract) return;
 
     // RN002: Assinatura de contrato ativa e gera automaticamente a Ordem de Serviço
-    signContract(selectedContract.id, signerName, `${signerName.toLowerCase().replace(/\s+/g, '.')}@empresa.com`, signerCpf);
+    const resultado = signContract(selectedContract.id, signerName, `${signerName.toLowerCase().replace(/\s+/g, '.')}@empresa.com`, signerCpf);
+    if (!resultado.ok) {
+      alert(`O contrato ${selectedContract.contract_number} não foi assinado.\n\n${resultado.erro || ''}`);
+      return;
+    }
     confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
     setShowSignModal(false);
 
-    alert(`✅ Contrato ${selectedContract.contract_number} assinado digitalmente com sucesso!\n\n📋 Ordem de Serviço gerada automaticamente com 15 etapas e tarefas técnicas (RN002)!`);
+    const parcelas = resultado.parcelasLancadas || 0;
+    alert(
+      `✅ Contrato ${selectedContract.contract_number} assinado digitalmente com sucesso!\n\n` +
+      (parcelas > 0
+        ? `💰 ${parcelas} parcela(s) do plano de pagamento lançada(s) em Contas a Receber.\n\n`
+        : (planoInformado(selectedContract.payment_plan)
+          ? ''
+          : '⚠️ O contrato não tem plano de pagamento: nenhuma parcela foi lançada no Financeiro.\n\n')) +
+      `📋 Ordem de Serviço gerada automaticamente com 15 etapas e tarefas técnicas (RN002)!`
+    );
     onNavigate('service-orders');
   };
 
@@ -410,6 +463,28 @@ export const ContractsView: React.FC<{ onNavigate: (view: string) => void }> = (
                 </div>
               </div>
 
+              {/* Condicao de pagamento: a mesma da clausula 7 e das contas a receber */}
+              <div className="p-3.5 bg-slate-950/60 border border-slate-800 rounded-2xl text-xs space-y-1">
+                <span className="text-slate-400 block text-[10px] uppercase font-semibold">Forma de pagamento</span>
+                {planoInformado(selectedContract.payment_plan) && descreverPlano(selectedContract.payment_plan).length > 0 ? (
+                  <>
+                    {descreverPlano(selectedContract.payment_plan).map((linha, i) => (
+                      <p key={i} className="text-slate-200">{String.fromCharCode(97 + i)}) {linha}</p>
+                    ))}
+                    <p className="text-[10px] text-slate-500">
+                      {cronogramaDoPlano(selectedContract.payment_plan).length} parcela(s) no cronograma
+                      {divergenciasDaClausulaDoPagamento(selectedContract.terms || '', selectedContract.payment_plan, selectedContract.total_value).length > 0
+                        && selectedContract.status !== 'ACTIVE'
+                        && ' · a Cláusula 7ª ainda não reflete este plano: edite o contrato e atualize-a antes de assinar'}
+                    </p>
+                  </>
+                ) : (
+                  <p className="text-amber-300">
+                    Plano de pagamento não definido: a Cláusula 7ª está em aberto e nenhuma parcela irá ao Financeiro. Edite o contrato para defini-lo.
+                  </p>
+                )}
+              </div>
+
               {/* Digital Signature Box */}
               <div className="p-4 rounded-2xl border border-slate-800 bg-slate-950/50 space-y-2">
                 <div className="flex items-center justify-between">
@@ -501,7 +576,9 @@ export const ContractsView: React.FC<{ onNavigate: (view: string) => void }> = (
       {/* New / Edit Contract Modal */}
       {(showNewContractModal || editingContract) && (
         <div id="modal-contract-form" className="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-900 rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-800 text-slate-100">
+          {/* Largura em valor arbitrario: max-w-lg colide com os tokens de
+              espacamento do projeto. Rola, porque o plano de pagamento cresce. */}
+          <div className="bg-slate-900 rounded-3xl max-w-[760px] w-full max-h-[92vh] overflow-y-auto p-6 shadow-2xl border border-slate-800 text-slate-100">
             <div className="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
               <h3 className="text-base font-bold text-white">
                 {editingContract ? 'Editar Contrato SST' : 'Novo Contrato Comercial SST'}
@@ -572,6 +649,41 @@ export const ContractsView: React.FC<{ onNavigate: (view: string) => void }> = (
                 </div>
               </div>
 
+              <div className="p-3 bg-slate-950/60 rounded-2xl border border-slate-800 space-y-2.5">
+                <PlanoDePagamentoEditor
+                  plano={contractForm.payment_plan}
+                  total={Number(contractForm.total_value) || 0}
+                  somenteLeitura={contratoAssinado}
+                  onChange={(plano) => setContractForm(f => ({ ...f, payment_plan: plano }))}
+                />
+                {contratoAssinado ? (
+                  <p className="text-[10px] text-slate-500">
+                    Contrato assinado: o plano de pagamento não muda aqui. Uma nova condição se formaliza por termo aditivo.
+                  </p>
+                ) : (
+                  <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
+                    <p className="text-[10px] text-slate-500">
+                      O plano vira a Cláusula 7ª. Mudou o plano? Atualize a cláusula: a assinatura confere uma com o outro.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const nova = clausulaDoPagamento(Number(contractForm.total_value) || 0, contractForm.payment_plan);
+                        const termos = substituirClausulaDoPagamento(contractForm.terms, nova);
+                        if (termos === null) {
+                          alert('Não encontrei a Cláusula 7ª e a 8ª na minuta para delimitar o trecho. Use "Regerar minuta padrão" ou edite a cláusula à mão.');
+                          return;
+                        }
+                        setContractForm(f => ({ ...f, terms: termos }));
+                      }}
+                      className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-[11px] font-semibold shrink-0"
+                    >
+                      Atualizar Cláusula 7ª com o plano
+                    </button>
+                  </div>
+                )}
+              </div>
+
               <div>
                 <div className="flex items-center justify-between gap-2 mb-1">
                   <label className="block font-semibold text-slate-300">Termos e Condições (minuta do contrato)</label>
@@ -588,7 +700,7 @@ export const ContractsView: React.FC<{ onNavigate: (view: string) => void }> = (
                           valorTotal: Number(f.total_value) || 0,
                           inicioVigencia: f.start_date,
                           fimVigencia: f.end_date,
-                          recorrencia: 'ANNUAL',
+                          plano: f.payment_plan,
                         }),
                       }));
                     }}

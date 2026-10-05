@@ -346,27 +346,24 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
     setSelectedTxForSettlement(null);
   };
 
+  // As parcelas entram em Contas a Receber na assinatura do contrato. O lote
+  // so completa o que faltar - contrato assinado antes do plano existir, por
+  // exemplo. Antes ele lancava o valor TOTAL de cada contrato a cada mes.
   const handleBatchContractBilling = () => {
-    let count = 0;
-    const refMonth = new Date().toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
-
-    contracts.forEach(contract => {
-      // Check if already billed this month
-      const alreadyBilled = transactions.some(
-        t => t.contract_id === contract.id && t.title.includes(refMonth)
-      );
-
-      if (!alreadyBilled && contract.status === 'ACTIVE') {
-        generateReceivableFromContract(contract.id, refMonth);
-        count++;
-      }
+    let parcelas = 0;
+    const semPlano: string[] = [];
+    contracts.filter(contract => contract.status === 'ACTIVE').forEach(contract => {
+      const r = generateReceivableFromContract(contract.id);
+      parcelas += r.criadas.length;
+      if (r.criadas.length === 0 && r.motivo && !r.motivo.startsWith('Todas as parcelas')) semPlano.push(contract.contract_number);
     });
 
-    if (count > 0) {
-      showNotification(`🚀 Faturamento em lote concluído! ${count} faturas de contratos (MRR) geradas.`);
-    } else {
-      showNotification(`ℹ️ Todos os contratos ativos já possuem faturamento emitido para este mês.`);
-    }
+    const partes: string[] = [];
+    partes.push(parcelas > 0
+      ? `${parcelas} parcela(s) de contratos lançada(s) em Contas a Receber.`
+      : 'Nenhuma parcela a lançar: as dos contratos ativos já estão em Contas a Receber.');
+    if (semPlano.length > 0) partes.push(`Sem plano de pagamento completo: ${semPlano.join(', ')}.`);
+    showNotification(partes.join(' '));
   };
 
   const copyPixToClipboard = (text: string) => {
@@ -1422,12 +1419,14 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
 
                       <button
                         onClick={() => {
-                          const tx = generateReceivableFromContract(contract.id);
-                          if (tx) showNotification(`Fatura avulsa gerada para o contrato ${contract.contract_number}!`);
+                          const r = generateReceivableFromContract(contract.id);
+                          showNotification(r.criadas.length > 0
+                            ? `${r.criadas.length} parcela(s) do contrato ${contract.contract_number} lançada(s) em Contas a Receber.`
+                            : (r.motivo || 'Nada a lançar.'));
                         }}
                         className="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium border border-slate-700 transition"
                       >
-                        Emitir Fatura
+                        Lançar parcelas
                       </button>
                     </div>
                   </div>

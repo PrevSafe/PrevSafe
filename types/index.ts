@@ -974,6 +974,45 @@ export interface ProposalApproval {
   created_at: string;
 }
 
+/**
+ * Periodicidade das parcelas fixas. Mensal e a do cartao de credito, que a
+ * operadora repassa mes a mes.
+ */
+export type PeriodicidadeDasParcelas = 'MENSAL' | 'BIMESTRAL' | 'TRIMESTRAL' | 'SEMESTRAL' | 'ANUAL';
+
+/**
+ * Uma parte da forma de pagamento: a entrada no Pix, as parcelas no boleto, o
+ * restante no cartao. As regras estao em lib/planoDePagamento.ts.
+ *
+ * Campo vazio e campo nao informado: nada aqui tem valor padrao, porque a
+ * condicao de pagamento sai no contrato como se tivesse sido combinada.
+ */
+export interface ParteDoPlanoDePagamento {
+  id: string;
+  /** UNICA: um pagamento so. FIXAS: parcelas iguais. VARIAVEIS: cada parcela com valor e vencimento proprios. */
+  tipo: 'UNICA' | 'FIXAS' | 'VARIAVEIS';
+  forma?: FinancialPaymentMethod;
+  /** Rotulo opcional, como "Entrada". */
+  descricao?: string;
+  /** UNICA: o valor. FIXAS: o valor somado das parcelas desta parte. */
+  valor?: number;
+  /** UNICA: o vencimento. FIXAS: o primeiro vencimento. YYYY-MM-DD. */
+  vencimento?: string;
+  /** FIXAS: quantas parcelas. */
+  quantidade?: number;
+  /** FIXAS: de quanto em quanto tempo vence a parcela seguinte. */
+  periodicidade?: PeriodicidadeDasParcelas;
+  /** VARIAVEIS: as parcelas, cada uma com o seu vencimento e valor. */
+  parcelas?: Array<{ vencimento?: string; valor?: number }>;
+}
+
+/** Condicao de pagamento combinada na proposta e levada ao contrato. */
+export interface PlanoDePagamento {
+  partes: ParteDoPlanoDePagamento[];
+  /** Condicao acessoria combinada (desconto por pontualidade, dia fixo etc.). */
+  observacoes?: string;
+}
+
 export interface Proposal {
   id: string;
   organization_id: string;
@@ -986,6 +1025,8 @@ export interface Proposal {
   subtotal: number;
   discount: number;
   total: number;
+  /** Condicao de pagamento proposta. Vira a clausula 7 do contrato. */
+  payment_plan?: PlanoDePagamento;
   valid_until: string;
   status: ProposalStatus;
   created_by: string;
@@ -1030,6 +1071,11 @@ export interface Contract {
   terms?: string;
   /** Servicos contratados, copiados dos itens da proposta na geracao. */
   services_summary?: string;
+  /**
+   * Plano de pagamento: copiado da proposta na geracao e ajustavel ate a
+   * assinatura. Na assinatura, cada parcela vira uma conta a receber.
+   */
+  payment_plan?: PlanoDePagamento;
   signatures: ContractSignature[];
   created_at: string;
   updated_at: string;
@@ -1654,6 +1700,11 @@ export interface FinancialTransaction {
   client_name?: string;
   supplier_name?: string; // Fornecedor / Profissional Credenciado (para Contas a Pagar)
   contract_id?: string;
+  /**
+   * Numero da parcela no cronograma do contrato (lib/planoDePagamento.ts).
+   * Com o contract_id, identifica a parcela: lancar de novo nao a duplica.
+   */
+  contract_installment?: number;
   service_order_id?: string;
   category: FinancialCategoryKey;
   category_name: string;
