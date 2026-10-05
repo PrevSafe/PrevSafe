@@ -21,6 +21,8 @@ import {
 import * as XLSX from 'xlsx';
 import { formatDate } from '@/lib/utils';
 import { DECLARACAO_DE_INTEGRIDADE } from '@/lib/documentoHash';
+import { paraWinAnsi } from '@/lib/propostaPdf';
+import { localEDataDaOS } from '@/lib/ordemDeServico';
 import { ANEXOS_NR16, montarCorpoInsalubridade, montarCorpoPericulosidade, ehFatorErgonomico, ehRiscoDeAcidente } from '@/lib/laudoDados';
 import type { CorpoLaudo } from '@/lib/laudoDados';
 import { dataDeHoje, somarMesesISO, dataDoRegistro, dataHoraDoRegistro } from '@/lib/datas';
@@ -893,19 +895,76 @@ export function exportESocialEventLogsPdf({
 }
 
 /**
- * Generates an official Ordem de Serviço (OS) Document PDF complying with NR-01 and Art. 157/158 CLT
+ * Ordem de servico de SST (NR-01, 1.4.1, "c"; CLT, art. 157, II) em PDF.
+ *
+ * O conteudo vem da OS gravada, montada por lib/ordemDeServico.ts: os riscos
+ * do inventario do GHE (risks_detail), as medidas de prevencao adotadas, a
+ * emergencia do estabelecimento e as pendencias do cadastro. Nada e escrito
+ * aqui no lugar de um dado que falta: campo vazio sai "Nao informado" ou
+ * remete as pendencias, que abrem o documento numa caixa de destaque.
+ *
+ * Os fallbacks antigos eram texto plausivel - "Matriz Operacional", "GHE
+ * Padrao", "C.A. Valido", "Riscos inerentes as atividades normais", "Sede da
+ * Empresa" -, a assinatura saia como "Biometria Facial" qualquer que fosse o
+ * metodo, e a declaracao dizia que o trabalhador "foi devidamente treinado":
+ * a OS informa, nao comprova treinamento.
+ *
+ * OS gravadas antes de risks_detail existir saem com a tabela por categoria.
+ * Com options.doc, desenha no documento recebido (o lote) e nao numera as
+ * paginas nem salva: quem chamou faz isso no fim.
  */
 export function exportWorkOrderOSPDF(
-  os: SSTWorkOrderOS, 
+  os: SSTWorkOrderOS,
   organization: Organization,
-  options?: { returnBlob?: boolean; saveFile?: boolean }
+  options?: { returnBlob?: boolean; saveFile?: boolean; doc?: jsPDF }
 ): jsPDF {
-  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+  const emLote = !!options?.doc;
+  const doc = options?.doc || new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
   const margin = 14;
+  const TOPO = 32;
+  // O rodape de applyPageNumbers ocupa os ultimos 12 mm da pagina.
+  const MARGEM_INFERIOR = 18;
+  type Cor = [number, number, number];
+  const BRANCO: Cor = [255, 255, 255];
 
-  const renderOSPageHeader = (pageNumber: number) => {
+  // A Helvetica do jsPDF so desenha WinAnsi (comentario no topo deste
+  // arquivo). Fonte, danos, avaliacao, EPI e emergencia sao digitados no
+  // cadastro: um "menor ou igual" num limite de tolerancia, ou um emoji,
+  // faria a celula inteira sair ilegivel. Todo texto passa por paraWinAnsi,
+  // a mesma troca do PDF da proposta.
+  const escrever = (t: unknown, x: number, y: number, opcoes?: { align?: 'left' | 'center' | 'right' }) => {
+    doc.text(paraWinAnsi(t), x, y, opcoes);
+  };
+  const texto = (v: unknown) => String(v ?? '').trim();
+  // O gerador grava "Nao informado" (com til) quando o cadastro nao tem o dado.
+  const informado = (v: unknown) => {
+    const t = texto(v);
+    return /^n[ãa]o informad[oa]$/i.test(t) ? '' : t;
+  };
+  const lista = (v: unknown): string[] => (Array.isArray(v) ? v : []).map(texto).filter(Boolean);
+  const comMarcador = (itens: string[]) => itens.map((i) => `• ${i}`).join('\n');
+
+  const pendencias = lista(os.pendencias);
+  const temPendencia = (inicio: string) => pendencias.some((p) => p.startsWith(inicio));
+  const VER_PENDENCIAS = 'Não informado (ver PENDÊNCIAS no início desta OS).';
+
+  // Endereco gravado como "rua, numero, cidade/UF". Cidade ou UF ausentes no
+  // cadastro chegavam como "undefined/undefined": saem do texto, e o local da
+  // declaracao fica em branco para preencher, sem cidade presumida.
+  const partesDoEndereco = informado(os.establishment_address).split(',').map((p) => p.trim());
+  const ultimaParte = partesDoEndereco.length > 1 ? partesDoEndereco[partesDoEndereco.length - 1] : '';
+  const cidadeGravada = ultimaParte.includes('/') ? ultimaParte.split('/')[0].trim() : '';
+  const cidade = /^(undefined|null)?$/i.test(cidadeGravada) ? '' : cidadeGravada;
+  const endereco = partesDoEndereco
+    .map((p) => p.replace(/\b(undefined|null)\b/g, '').replace(/^\s*\/|\/\s*$/g, '').trim())
+    .filter(Boolean)
+    .join(', ');
+
+  const paginasComCabecalho = new Set<number>();
+  const renderOSPageHeader = () => {
+    paginasComCabecalho.add(doc.getCurrentPageInfo().pageNumber);
     // Header Bar
     doc.setFillColor(15, 23, 42); // slate-900
     doc.rect(0, 0, pageWidth, 24, 'F');
@@ -913,29 +972,68 @@ export function exportWorkOrderOSPDF(
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(11);
     doc.setFont('helvetica', 'bold');
-    doc.text(organization.name || 'PREVSAFE SST - GESTÃO OCUPACIONAL', margin, 10);
+    escrever(organization?.name || 'PREVSAFE SST - GESTÃO OCUPACIONAL', margin, 10);
 
     doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(148, 163, 184);
-    doc.text('ORDEM DE SERVIÇO DE SEGURANÇA E SAÚDE NO TRABALHO - NR-01 & ART. 157 CLT', margin, 16);
+    escrever('ORDEM DE SERVIÇO DE SEGURANÇA E SAÚDE NO TRABALHO - NR-01 & ART. 157 CLT', margin, 16);
 
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(8);
     doc.setFont('helvetica', 'bold');
-    doc.text(`CÓD: ${os.os_code} | REV: ${String(os.revision).padStart(2, '0')}`, pageWidth - margin, 10, { align: 'right' });
+    escrever(`CÓD: ${texto(os.os_code) || NAO_INFORMADO} | REV: ${texto(os.revision).padStart(2, '0')}`, pageWidth - margin, 10, { align: 'right' });
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(148, 163, 184);
-    doc.text(`Emissão: ${formatDate(os.issue_date)}`, pageWidth - margin, 16, { align: 'right' });
+    escrever(`Emissão: ${formatDate(os.issue_date) || NAO_INFORMADO}`, pageWidth - margin, 16, { align: 'right' });
 
     // Indigo accent line
     doc.setFillColor(79, 70, 229);
     doc.rect(0, 24, pageWidth, 1.5, 'F');
   };
 
-  renderOSPageHeader(1);
+  let currentY = TOPO;
 
-  let currentY = 32;
+  /**
+   * autoTable com as margens da OS e a troca para WinAnsi em toda celula.
+   * Tabela que passa de pagina leva o cabecalho da OS a pagina nova: a folha
+   * solta precisa dizer de que OS e de quem e. Devolve onde a tabela terminou.
+   */
+  const tabela = (opcoes: UserOptions): number => {
+    autoTable(doc, {
+      theme: 'grid',
+      rowPageBreak: 'avoid',
+      ...opcoes,
+      margin: { left: margin, right: margin, top: TOPO, bottom: MARGEM_INFERIOR },
+      didParseCell: (data) => {
+        data.cell.text = (data.cell.text || []).map((linha) => paraWinAnsi(linha));
+      },
+      didDrawPage: () => {
+        if (!paginasComCabecalho.has(doc.getCurrentPageInfo().pageNumber)) renderOSPageHeader();
+      }
+    });
+    return (doc as any).lastAutoTable.finalY;
+  };
+
+  const novaPaginaSeFaltar = (altura: number) => {
+    if (currentY + altura > pageHeight - MARGEM_INFERIOR) {
+      doc.addPage();
+      renderOSPageHeader();
+      currentY = TOPO;
+    }
+  };
+
+  // Secoes numeradas na ordem em que saem: a do ato faltoso so aparece com texto.
+  let secao = 0;
+  const titulo = (t: string, colSpan = 1, cor: Cor = [30, 41, 59]): any => ({
+    content: `${++secao}. ${t}`,
+    colSpan,
+    styles: { fillColor: cor, textColor: BRANCO, fontStyle: 'bold', fontSize: 8.5 }
+  });
+  const rotulo = (t: string): any => ({ content: t, styles: { fontStyle: 'bold', cellWidth: 44, fillColor: [248, 250, 252] } });
+  const BORDA = { lineColor: [203, 213, 225] as Cor, lineWidth: 0.2 };
+
+  renderOSPageHeader();
 
   // Title Box
   doc.setFillColor(241, 245, 249);
@@ -943,291 +1041,308 @@ export function exportWorkOrderOSPDF(
   doc.setTextColor(15, 23, 42);
   doc.setFontSize(11);
   doc.setFont('helvetica', 'bold');
-  doc.text('ORDEM DE SERVIÇO - SEGURANÇA E MEDICINA DO TRABALHO (NR-01)', pageWidth / 2, currentY + 6, { align: 'center' });
+  escrever('ORDEM DE SERVIÇO - SEGURANÇA E MEDICINA DO TRABALHO (NR-01)', pageWidth / 2, currentY + 6, { align: 'center' });
   doc.setFontSize(7.5);
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(71, 85, 105);
-  doc.text('Em cumprimento ao Art. 157, inciso II da CLT e item 1.4.1 da Norma Regulamentadora nº 01 do MTE', pageWidth / 2, currentY + 10.5, { align: 'center' });
+  escrever('Em cumprimento ao Art. 157, inciso II da CLT e item 1.4.1 da Norma Regulamentadora nº 01 do MTE', pageWidth / 2, currentY + 10.5, { align: 'center' });
 
   currentY += 18;
 
-  // 1. DADOS DA EMPRESA E DO EMPREGADO
-  autoTable(doc, {
+  // 1. IDENTIFICACAO
+  const grau = os.employer_risk_grade
+    ? `Grau de risco ${os.employer_risk_grade} (NR-04)`
+    : 'grau de risco não classificado';
+  const estabelecimento = [informado(os.employee_unit), endereco].filter(Boolean).join(' - ') || NAO_INFORMADO;
+  const ghe = informado(os.employee_ghe_name);
+  const gheTexto = !ghe ? 'GHE não atribuído' : /^GHE\b/i.test(ghe) ? ghe : `GHE: ${ghe}`;
+
+  currentY = tabela({
     startY: currentY,
-    margin: { left: margin, right: margin },
-    theme: 'grid',
-    head: [[
-      { content: '1. IDENTIFICAÇÃO DO EMPREGADOR E DO COLABORADOR', colSpan: 4, styles: { fillColor: [30, 41, 59], textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 8.5 } }
-    ]],
+    head: [[titulo('IDENTIFICAÇÃO DO EMPREGADOR E DO TRABALHADOR', 4)]],
     body: [
       [
         { content: 'Razão Social:', styles: { fontStyle: 'bold', cellWidth: 26 } },
-        { content: os.employer_name, styles: { cellWidth: 65 } },
-        { content: 'CNPJ:', styles: { fontStyle: 'bold', cellWidth: 22 } },
-        { content: `${os.employer_document || 'DOCUMENTO NAO INFORMADO'} | CNAE: ${os.employer_cnae || 'NAO INFORMADO'} (${os.employer_risk_grade ? `Grau ${os.employer_risk_grade}` : 'GRAU DE RISCO NAO CLASSIFICADO'})`, styles: { cellWidth: 69 } }
+        { content: informado(os.employer_name) || NAO_INFORMADO, styles: { cellWidth: 65 } },
+        { content: 'CNPJ / CNAE:', styles: { fontStyle: 'bold', cellWidth: 22 } },
+        { content: `${informado(os.employer_document) || 'CNPJ não informado'} | CNAE: ${informado(os.employer_cnae) || 'não informado'} (${grau})`, styles: { cellWidth: 69 } }
       ],
       [
         { content: 'Estabelecimento:', styles: { fontStyle: 'bold' } },
-        { content: `${os.employee_unit} - ${os.establishment_address || 'Matriz Operacional'}`, colSpan: 3 }
+        { content: estabelecimento, colSpan: 3 }
       ],
       [
-        { content: 'Colaborador:', styles: { fontStyle: 'bold' } },
-        { content: os.employee_name, styles: { fontStyle: 'bold', textColor: [15, 23, 42] } },
+        { content: 'Trabalhador:', styles: { fontStyle: 'bold' } },
+        { content: informado(os.employee_name) || NAO_INFORMADO, styles: { fontStyle: 'bold', textColor: [15, 23, 42] } },
         { content: 'CPF / Matrícula:', styles: { fontStyle: 'bold' } },
-        { content: `${os.employee_cpf} | Matr: ${os.employee_registration || 'S/N'}` }
+        { content: `${informado(os.employee_cpf) || 'CPF não informado'} | Matrícula: ${informado(os.employee_registration) || 'não informada'}` }
       ],
       [
         { content: 'Cargo / Função:', styles: { fontStyle: 'bold' } },
-        { content: `${os.employee_job_title} (CBO: ${os.employee_cbo})`, styles: { fontStyle: 'bold' } },
+        { content: `${informado(os.employee_job_title) || NAO_INFORMADO} (CBO: ${informado(os.employee_cbo) || 'não informado'})`, styles: { fontStyle: 'bold' } },
         { content: 'Setor / GHE:', styles: { fontStyle: 'bold' } },
-        { content: `${os.employee_sector} | GHE: ${os.employee_ghe_name || 'GHE Padrão'}` }
+        { content: `${informado(os.employee_sector) || 'Setor não informado'} | ${gheTexto}` }
       ],
       [
         { content: 'Admissão:', styles: { fontStyle: 'bold' } },
-        { content: formatDate(os.employee_admission_date) },
+        { content: formatDate(os.employee_admission_date) || NAO_INFORMADO },
         { content: 'Vigência OS:', styles: { fontStyle: 'bold' } },
-        { content: `A partir de ${formatDate(os.validity_start_date)}` }
+        { content: formatDate(os.validity_start_date) ? `A partir de ${formatDate(os.validity_start_date)}` : NAO_INFORMADO }
       ]
     ],
-    styles: {
-      fontSize: 7.5,
-      cellPadding: 2.2,
-      lineColor: [203, 213, 225],
-      lineWidth: 0.2
-    }
-  });
+    styles: { fontSize: 7.5, cellPadding: 2.2, ...BORDA }
+  }) + 4;
 
-  currentY = (doc as any).lastAutoTable.finalY + 4;
-
-  // 2. DESCRIÇÃO SUMÁRIA DAS ATIVIDADES
-  const activitiesList = os.routine_activities?.length > 0 
-    ? os.routine_activities.map((a, i) => `${i + 1}. ${a}`).join('\n')
-    : os.job_description;
-
-  autoTable(doc, {
-    startY: currentY,
-    margin: { left: margin, right: margin },
-    theme: 'grid',
-    head: [[
-      { content: '2. ATIVIDADES HABITUAIS E ROTINA DO POSTO DE TRABALHO', styles: { fillColor: [51, 65, 85], textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 8.5 } }
-    ]],
-    body: [[
-      { content: activitiesList || 'Executar tarefas operacionais e administrativas conforme rotina do cargo.' }
-    ]],
-    styles: {
-      fontSize: 7.5,
-      cellPadding: 2.5,
-      lineColor: [203, 213, 225],
-      lineWidth: 0.2
-    }
-  });
-
-  currentY = (doc as any).lastAutoTable.finalY + 4;
-
-  // 3. IDENTIFICAÇÃO DOS RISCOS AMBIENTAIS E OCUPACIONAIS
-  const risksBody: any[] = [];
-  if (os.physical_risks?.length) risksBody.push(['Físicos', os.physical_risks.join('; ')]);
-  if (os.chemical_risks?.length) risksBody.push(['Químicos', os.chemical_risks.join('; ')]);
-  if (os.biological_risks?.length) risksBody.push(['Biológicos', os.biological_risks.join('; ')]);
-  if (os.ergonomic_risks?.length) risksBody.push(['Ergonômicos', os.ergonomic_risks.join('; ')]);
-  if (os.accident_mechanical_risks?.length) risksBody.push(['Acidentes / Mecânicos', os.accident_mechanical_risks.join('; ')]);
-
-  if (risksBody.length === 0) {
-    risksBody.push(['Geral', 'Riscos inerentes às atividades normais de trabalho monitorados no PGR/PCMSO.']);
-  }
-
-  autoTable(doc, {
-    startY: currentY,
-    margin: { left: margin, right: margin },
-    theme: 'grid',
-    head: [[
-      { content: 'Grupo de Risco', styles: { cellWidth: 40, fontStyle: 'bold' } },
-      { content: 'Agentes Identificados / Fontes Geradoras / Intensidade', styles: { fontStyle: 'bold' } }
-    ]],
-    body: risksBody,
-    styles: {
-      fontSize: 7.5,
-      cellPadding: 2.2,
-      lineColor: [203, 213, 225],
-      lineWidth: 0.2
-    },
-    headStyles: {
-      fillColor: [71, 85, 105],
-      textColor: [255, 255, 255],
-      fontSize: 8
-    },
-    columnStyles: {
-      0: { fontStyle: 'bold', fillColor: [248, 250, 252] }
-    }
-  });
-
-  currentY = (doc as any).lastAutoTable.finalY + 4;
-
-  // 4. EQUIPAMENTOS DE PROTEÇÃO (EPC E EPI)
-  const epiBody: any[] = [];
-  if (os.collective_protections_epc && os.collective_protections_epc.length > 0) {
-    epiBody.push([
-      { content: 'EPC (Proteção Coletiva):', styles: { fontStyle: 'bold', cellWidth: 40, fillColor: [248, 250, 252] } },
-      { content: os.collective_protections_epc.join(' • ') }
-    ]);
-  }
-  if (os.mandatory_epis && os.mandatory_epis.length > 0) {
-    const epiFormatted = os.mandatory_epis.map(e => `• ${e.epi_name} (C.A. ${e.ca_number || 'Válido'}) - ${e.usage_recommendation || 'Uso contínuo'}`).join('\n');
-    epiBody.push([
-      { content: 'EPIs Obrigatórios (NR-06):', styles: { fontStyle: 'bold', cellWidth: 40, fillColor: [248, 250, 252] } },
-      { content: epiFormatted }
-    ]);
-  }
-
-  if (epiBody.length > 0) {
-    autoTable(doc, {
+  // PENDENCIAS logo apos a identificacao: quem imprime ve, antes de entregar,
+  // o que falta no cadastro para a OS sair completa.
+  if (pendencias.length > 0) {
+    currentY = tabela({
       startY: currentY,
-      margin: { left: margin, right: margin },
-      theme: 'grid',
-      head: [[
-        { content: '3. MEDIDAS DE PROTEÇÃO COLETIVA (EPC) E INDIVIDUAL (EPI - NR-06)', colSpan: 2, styles: { fillColor: [51, 65, 85], textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 8.5 } }
-      ]],
-      body: epiBody,
-      styles: {
-        fontSize: 7.5,
-        cellPadding: 2.5,
-        lineColor: [203, 213, 225],
-        lineWidth: 0.2
-      }
-    });
-    currentY = (doc as any).lastAutoTable.finalY + 4;
+      head: [[{ content: 'PENDÊNCIAS — resolva antes de entregar esta OS ao trabalhador', styles: { fillColor: [180, 83, 9], textColor: BRANCO, fontStyle: 'bold', fontSize: 8.5 } }]],
+      body: pendencias.map((p) => [{ content: `• ${p}` }]),
+      styles: { fontSize: 7.5, cellPadding: 2.2, fillColor: [255, 251, 235], textColor: [120, 53, 15], lineColor: [245, 158, 11], lineWidth: 0.3 }
+    }) + 4;
   }
 
-  // Check if we need page break for obligations & procedures
-  if (currentY > pageHeight - 80) {
-    doc.addPage();
-    renderOSPageHeader(2);
-    currentY = 32;
-  }
+  // 2. ATIVIDADES DO CARGO: a descricao do cadastro do cargo, ou nada.
+  const atividades = lista(os.routine_activities);
+  const atividadesTexto = atividades.length > 1
+    ? atividades.map((a, i) => `${i + 1}. ${a}`).join('\n')
+    : atividades[0] || texto(os.job_description);
 
-  // 5. PROCEDIMENTOS DE SEGURANÇA E OBRIGAÇÕES DO EMPREGADO
-  const proceduresText = (os.safe_work_procedures || []).map((p, i) => `${i + 1}. ${p}`).join('\n');
-  const obligationsText = (os.mandatory_employee_obligations || []).map((o, i) => `• ${o}`).join('\n');
-  const prohibitionsText = (os.prohibitions_unsafe_acts || []).map((pr, i) => `• ${pr}`).join('\n');
-  const emergencyText = (os.emergency_accident_conduct || []).map((em, i) => `! ${em}`).join('\n');
-
-  autoTable(doc, {
+  currentY = tabela({
     startY: currentY,
-    margin: { left: margin, right: margin },
-    theme: 'grid',
-    head: [[
-      { content: '4. NORMAS, PROCEDIMENTOS E OBRIGAÇÕES LEGAIS (ART. 158 CLT & NR-01)', styles: { fillColor: [30, 41, 59], textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 8.5 } }
-    ]],
+    head: [[titulo('ATIVIDADES DO CARGO', 1, [51, 65, 85])]],
+    body: [[{ content: atividadesTexto || (temPendencia('Descrição das atividades') ? VER_PENDENCIAS : NAO_INFORMADO) }]],
+    styles: { fontSize: 7.5, cellPadding: 2.5, ...BORDA }
+  }) + 4;
+
+  // 3. RISCOS: um por linha, com o que o inventario registra (1.4.1, "b", I e
+  // IV). Celula sem registro diz isso; nao ha texto que preencha a lacuna.
+  const detalhe = Array.isArray(os.risks_detail)
+    ? os.risks_detail.filter((r) => r && typeof r === 'object')
+    : null;
+
+  if (detalhe) {
+    const linhas: any[] = detalhe.map((r) => {
+      const fonte = texto(r.fonte);
+      const danos = texto(r.danos);
+      const avaliacao = texto(r.avaliacao);
+      const epc = texto(r.epc);
+      const epis = lista(r.epis);
+      // "Ausencia de risco" registrada no inventario: uma linha so, sem as
+      // colunas de fonte, avaliacao e medida, que nao se aplicam.
+      if (/^aus[êe]ncia/i.test(texto(r.categoria)) && !fonte && !danos && !avaliacao && !epc && epis.length === 0) {
+        return [{ content: texto(r.agente) || texto(r.categoria), colSpan: 4 }];
+      }
+      return [
+        `${texto(r.categoria) || 'Sem categoria'}\n${texto(r.agente) || 'Agente sem nome no inventário'}`,
+        fonte || danos
+          ? `Fonte: ${fonte || 'não registrada no inventário'}\nPossíveis danos: ${danos || 'não registrados no inventário'}`
+          : 'Não registrados no inventário',
+        avaliacao || 'Não registrada no inventário',
+        [epc ? `EPC: ${epc}` : '', epis.length ? `EPI: ${epis.join('; ')}` : ''].filter(Boolean).join('\n')
+          || 'Nenhuma registrada no inventário'
+      ];
+    });
+    if (linhas.length === 0) {
+      linhas.push([{
+        content: temPendencia('Trabalhador sem GHE') || temPendencia('Inventário de riscos')
+          ? 'Nenhum risco do inventário nesta OS (ver PENDÊNCIAS no início desta OS).'
+          : 'Nenhum risco do inventário nesta OS.',
+        colSpan: 4
+      }]);
+    }
+
+    currentY = tabela({
+      startY: currentY,
+      head: [
+        [titulo('RISCOS OCUPACIONAIS DO INVENTÁRIO (NR-01, 1.4.1, "b", I E IV)', 4, [51, 65, 85])],
+        ['Risco (categoria e agente)', 'Fonte e possíveis danos', 'Avaliação ambiental', 'Medidas de proteção (EPC/EPI)']
+      ],
+      body: linhas,
+      styles: { fontSize: 7.2, cellPadding: 2.2, valign: 'top', ...BORDA },
+      headStyles: { fillColor: [71, 85, 105], textColor: BRANCO, fontSize: 7.5, fontStyle: 'bold' },
+      columnStyles: {
+        0: { cellWidth: 40, fontStyle: 'bold' },
+        1: { cellWidth: 52 },
+        2: { cellWidth: 32 },
+        3: { cellWidth: 58 }
+      }
+    }) + 4;
+  } else {
+    // OS gravada antes de risks_detail: as listas por categoria, como eram.
+    const risksBody: any[] = [];
+    if (lista(os.physical_risks).length) risksBody.push(['Físicos', lista(os.physical_risks).join('; ')]);
+    if (lista(os.chemical_risks).length) risksBody.push(['Químicos', lista(os.chemical_risks).join('; ')]);
+    if (lista(os.biological_risks).length) risksBody.push(['Biológicos', lista(os.biological_risks).join('; ')]);
+    if (lista(os.ergonomic_risks).length) risksBody.push(['Ergonômicos', lista(os.ergonomic_risks).join('; ')]);
+    if (lista(os.accident_mechanical_risks).length) risksBody.push(['Acidentes / Mecânicos', lista(os.accident_mechanical_risks).join('; ')]);
+    if (risksBody.length === 0) {
+      risksBody.push([{ content: 'Nenhum risco registrado nesta OS.', colSpan: 2 }]);
+    }
+
+    currentY = tabela({
+      startY: currentY,
+      head: [
+        [titulo('RISCOS OCUPACIONAIS', 2, [51, 65, 85])],
+        ['Grupo de risco', 'Agentes registrados nesta OS']
+      ],
+      body: risksBody,
+      styles: { fontSize: 7.5, cellPadding: 2.2, ...BORDA },
+      headStyles: { fillColor: [71, 85, 105], textColor: BRANCO, fontSize: 8, fontStyle: 'bold' },
+      columnStyles: { 0: { cellWidth: 40, fontStyle: 'bold', fillColor: [248, 250, 252] } }
+    }) + 4;
+  }
+
+  // 4. MEDIDAS DE PREVENCAO ADOTADAS (1.4.1, "b", II): EPC implantado, EPI
+  // com CA e as medidas administrativas ja concluidas no plano de acao. Na
+  // OS antiga, safe_work_procedures eram boas praticas genericas, e nao
+  // medidas adotadas: saem com o rotulo do que sao.
+  const novo = !!detalhe;
+  const epcs = lista(os.collective_protections_epc);
+  const episDaOS = (Array.isArray(os.mandatory_epis) ? os.mandatory_epis : []).filter((e) => texto(e?.epi_name));
+  const administrativas = lista(os.safe_work_procedures);
+
+  currentY = tabela({
+    startY: currentY,
+    head: [[titulo('MEDIDAS DE PREVENÇÃO ADOTADAS (NR-01, 1.4.1, "b", II)', 2, [51, 65, 85])]],
     body: [
       [
-        { content: 'A. PROCEDIMENTOS PREVENTIVOS E BOAS PRÁTICAS OPERACIONAIS:\n' + proceduresText, styles: { fillColor: [255, 255, 255] } }
+        rotulo('Proteção coletiva (EPC)'),
+        epcs.length
+          ? comMarcador(epcs)
+          : novo ? 'Nenhuma medida de proteção coletiva implantada no inventário ou concluída no plano de ação.' : 'Nenhuma registrada nesta OS.'
       ],
       [
-        { content: 'B. DEVERES E OBRIGAÇÕES DO EMPREGADO (Art. 158 CLT):\n' + obligationsText, styles: { fillColor: [248, 250, 252] } }
+        rotulo('Proteção individual (EPI, NR-06)'),
+        episDaOS.length
+          ? episDaOS.map((e) => {
+              const uso = texto(e.usage_recommendation);
+              return `• ${texto(e.epi_name)} — CA ${texto(e.ca_number) || 'não informado'}${uso ? ` — ${uso}` : ''}`;
+            }).join('\n')
+          : novo ? 'Nenhum EPI com CA definido no inventário de riscos.' : 'Nenhum EPI registrado nesta OS.'
       ],
       [
-        { content: 'C. PROIBIÇÕES EXPRESSAS E ATOS INSEGUROS:\n' + prohibitionsText, styles: { fillColor: [255, 241, 242], textColor: [159, 18, 57] } }
-      ],
-      [
-        { content: 'D. CONDUTA EM CASO DE ACIDENTES, INCÊNDIO OU EMERGÊNCIAS:\n' + emergencyText, styles: { fillColor: [254, 243, 199], textColor: [146, 64, 14] } }
+        rotulo(novo ? 'Medidas administrativas e de organização do trabalho' : 'Procedimentos registrados nesta OS'),
+        administrativas.length
+          ? comMarcador(administrativas)
+          : novo ? 'Nenhuma medida administrativa concluída no plano de ação.' : NAO_INFORMADO
       ]
     ],
-    styles: {
-      fontSize: 7.2,
-      cellPadding: 2.5,
-      lineColor: [203, 213, 225],
-      lineWidth: 0.2
-    }
-  });
+    styles: { fontSize: 7.5, cellPadding: 2.5, ...BORDA }
+  }) + 4;
 
-  currentY = (doc as any).lastAutoTable.finalY + 4;
-
-  // Check if we need page break for Sanctions and Signatures
-  if (currentY > pageHeight - 65) {
-    doc.addPage();
-    renderOSPageHeader(doc.getNumberOfPages());
-    currentY = 32;
+  // 5. OBRIGACOES, EMERGENCIA E PROIBICOES
+  const obrigacoes = lista(os.mandatory_employee_obligations);
+  const emergencia = lista(os.emergency_accident_conduct);
+  const proibicoes = lista(os.prohibitions_unsafe_acts);
+  const corpoDasObrigacoes: any[] = [
+    [{ content: `A. OBRIGAÇÕES DO TRABALHADOR:\n${obrigacoes.length ? comMarcador(obrigacoes) : NAO_INFORMADO}`, styles: { fillColor: [248, 250, 252] } }],
+    [{
+      content: `B. EM CASO DE ACIDENTE OU EMERGÊNCIA (NR-01, 1.4.1, "e"):\n${
+        emergencia.length
+          ? comMarcador(emergencia)
+          : temPendencia('Procedimentos de emergência') ? VER_PENDENCIAS : NAO_INFORMADO
+      }`,
+      styles: { fillColor: [254, 243, 199], textColor: [146, 64, 14] }
+    }]
+  ];
+  // Proibicao especifica so quem conhece o posto escreve. A lista fixa antiga,
+  // igual para todo cargo, saiu; sem itens, a secao nao aparece.
+  if (proibicoes.length > 0) {
+    corpoDasObrigacoes.push([{ content: `C. PROIBIÇÕES EXPRESSAS E ATOS INSEGUROS:\n${comMarcador(proibicoes)}`, styles: { fillColor: [255, 241, 242], textColor: [159, 18, 57] } }]);
   }
 
-  // 6. DISPOSIÇÕES DISCIPLINARES E PENALIDADES (CLT ART. 482)
-  autoTable(doc, {
+  currentY = tabela({
     startY: currentY,
-    margin: { left: margin, right: margin },
-    theme: 'grid',
-    head: [[
-      { content: '5. PENALIDADES DISCIPLINARES (ART. 158 C/C ART. 482 DA CLT)', styles: { fillColor: [159, 18, 57], textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 8 } }
-    ]],
-    body: [[
-      { content: os.disciplinary_sanctions_text || 'O descumprimento injustificado das diretrizes desta OS e das normas de segurança constitui ato faltoso passível das sanções da CLT (Advertência, Suspensão e Demissão por Justa Causa).' }
-    ]],
-    styles: {
-      fontSize: 7,
-      cellPadding: 2,
-      lineColor: [254, 205, 211],
-      lineWidth: 0.2,
-      fillColor: [255, 245, 245],
-      textColor: [136, 19, 55]
-    }
-  });
+    head: [[titulo('OBRIGAÇÕES DO TRABALHADOR E PROCEDIMENTOS EM CASO DE ACIDENTE')]],
+    body: corpoDasObrigacoes,
+    styles: { fontSize: 7.2, cellPadding: 2.5, ...BORDA }
+  }) + 4;
 
-  currentY = (doc as any).lastAutoTable.finalY + 4;
+  // 6. ATO FALTOSO: o texto gravado na OS (CLT, art. 158, paragrafo unico).
+  // O fallback era uma lista de sancoes que a OS nao trazia.
+  const atoFaltoso = texto(os.disciplinary_sanctions_text);
+  if (atoFaltoso) {
+    currentY = tabela({
+      startY: currentY,
+      head: [[titulo('ATO FALTOSO (CLT, ART. 158)', 1, [159, 18, 57])]],
+      body: [[atoFaltoso]],
+      styles: { fontSize: 7, cellPadding: 2, lineColor: [254, 205, 211], lineWidth: 0.2, fillColor: [255, 245, 245], textColor: [136, 19, 55] }
+    }) + 4;
+  }
 
-  // 7. TERMO DE RECEBIMENTO, CIÊNCIA E COMPROMISSO
-  autoTable(doc, {
+  // 7. DECLARACAO: o trabalhador declara o que a OS faz - informar os riscos
+  // e as medidas - e o compromisso de cumpri-la. Treinamento se comprova com
+  // o registro do treinamento (NR-01, 1.7), nao com a OS.
+  const empregador = informado(os.employer_name);
+  const emissao = formatDate(os.issue_date);
+  const localEData = emissao
+    ? (cidade ? localEDataDaOS(cidade, os.issue_date) : `${LINHA_PARA_PREENCHER}, ${emissao}`)
+    : `${cidade || LINHA_PARA_PREENCHER}, ${LINHA_CURTA}`;
+
+  // Declaracao e assinaturas na mesma pagina.
+  novaPaginaSeFaltar(62);
+  currentY = tabela({
     startY: currentY,
-    margin: { left: margin, right: margin },
-    theme: 'grid',
-    head: [[
-      { content: '6. DECLARAÇÃO DE RECEBIMENTO, CIÊNCIA E COMPROMISSO', styles: { fillColor: [30, 41, 59], textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 8 } }
-    ]],
+    head: [[titulo('DECLARAÇÃO DE RECEBIMENTO, CIÊNCIA E COMPROMISSO')]],
     body: [[
-      { content: `Declaro para todos os efeitos legais que recebi da empresa ${os.employer_name} a presente ORDEM DE SERVIÇO DE SEGURANÇA E SAÚDE NO TRABALHO, redigida de forma clara e objetiva. Declaro ainda que fui devidamente treinado(a) e orientado(a) quanto aos riscos de minha função, medidas preventivas e uso obrigatório de EPIs, comprometendo-me a cumprir integralmente todas as orientações nela constantes durante toda a vigência do meu contrato de trabalho.\n\nLocal e Data: ${os.establishment_address?.split(',')[0] || 'Sede da Empresa'}, ${formatDate(os.issue_date)}.` }
+      `Declaro que recebi ${empregador ? `da empresa ${empregador}` : 'do empregador'} esta Ordem de Serviço de Segurança e Saúde no Trabalho, ` +
+      'que fui informado(a) dos riscos ocupacionais e das medidas de prevenção nela descritos e que me comprometo a cumpri-la.' +
+      `\n\nLocal e data: ${localEData}.`
     ]],
-    styles: {
-      fontSize: 7.2,
-      cellPadding: 2.5,
-      lineColor: [203, 213, 225],
-      lineWidth: 0.2
-    }
-  });
+    styles: { fontSize: 7.2, cellPadding: 2.5, ...BORDA }
+  }) + 12;
 
-  currentY = (doc as any).lastAutoTable.finalY + 12;
+  novaPaginaSeFaltar(28);
 
   // Signatures section
   const colWidth = (pageWidth - (margin * 2) - 10) / 2;
+  const centroDoTrabalhador = margin + (colWidth / 2);
 
   // Employee Signature Box
   doc.setDrawColor(100, 116, 139);
   doc.setLineWidth(0.3);
   doc.line(margin, currentY + 12, margin + colWidth, currentY + 12);
-  
+
   doc.setFontSize(7.5);
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(15, 23, 42);
-  doc.text(os.employee_name, margin + (colWidth / 2), currentY + 16, { align: 'center' });
-  
+  escrever(informado(os.employee_name) || 'Trabalhador não informado', centroDoTrabalhador, currentY + 16, { align: 'center' });
+
   doc.setFontSize(6.5);
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(100, 116, 139);
-  doc.text(`CPF: ${os.employee_cpf} | Matr: ${os.employee_registration || 'S/N'}`, margin + (colWidth / 2), currentY + 20, { align: 'center' });
-  
+  escrever(`CPF: ${informado(os.employee_cpf) || 'não informado'} | Matrícula: ${informado(os.employee_registration) || 'não informada'}`, centroDoTrabalhador, currentY + 20, { align: 'center' });
+
   if (os.employee_signed) {
+    // O rotulo segue o metodo gravado. Saia "Biometria Facial" ate para a
+    // assinatura em papel, e a data de emissao quando a da assinatura faltava.
+    const METODO_DA_ASSINATURA: Record<string, string> = {
+      PHYSICAL_MANUAL: 'Assinatura manual',
+      DIGITAL_BIOMETRIC: 'Assinatura eletrônica com biometria facial',
+      ELECTRONIC_TOKEN: 'Assinatura eletrônica por token'
+    };
+    const metodo = METODO_DA_ASSINATURA[os.signature_method] || 'Assinatura (método não registrado)';
+    const assinadaEm = dataDoRegistro(os.signed_at);
     doc.setTextColor(22, 163, 74);
     doc.setFont('helvetica', 'bold');
-    doc.text(`[Assinado Eletronicamente / Biometria Facial - ${formatDate(os.signed_at || os.issue_date)}]`, margin + (colWidth / 2), currentY + 8, { align: 'center' });
+    escrever(`[${metodo} registrada ${assinadaEm ? `em ${assinadaEm}` : '- data não registrada'}]`, centroDoTrabalhador, currentY + 8, { align: 'center' });
     if (os.signature_hash) {
       doc.setFontSize(5.5);
       doc.setFont('helvetica', 'normal');
       doc.setTextColor(148, 163, 184);
-      doc.text(`Hash: ${os.signature_hash.substring(0, 32)}...`, margin + (colWidth / 2), currentY + 24, { align: 'center' });
+      escrever(`Hash: ${os.signature_hash.substring(0, 32)}...`, centroDoTrabalhador, currentY + 24, { align: 'center' });
     }
   } else {
     doc.setTextColor(148, 163, 184);
-    doc.text('Assinatura do Colaborador (ou Coleta Biométrica)', margin + (colWidth / 2), currentY + 8, { align: 'center' });
+    escrever('Assinatura do trabalhador', centroDoTrabalhador, currentY + 8, { align: 'center' });
   }
 
   // Engineer Signature Box
   const engX = margin + colWidth + 10;
+  const centroDoResponsavel = engX + (colWidth / 2);
   doc.setDrawColor(100, 116, 139);
   doc.setLineWidth(0.3);
   doc.line(engX, currentY + 12, engX + colWidth, currentY + 12);
@@ -1235,20 +1350,21 @@ export function exportWorkOrderOSPDF(
   doc.setFontSize(7.5);
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(15, 23, 42);
-  doc.text(os.responsible_engineer_name?.trim() || 'RESPONSAVEL TECNICO NAO INFORMADO', engX + (colWidth / 2), currentY + 16, { align: 'center' });
-  
+  escrever(texto(os.responsible_engineer_name) || 'Responsável técnico não informado', centroDoResponsavel, currentY + 16, { align: 'center' });
+
   doc.setFontSize(6.5);
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(100, 116, 139);
-  doc.text(os.responsible_engineer_registration?.trim() || 'REGISTRO PROFISSIONAL NAO INFORMADO', engX + (colWidth / 2), currentY + 20, { align: 'center' });
+  escrever(texto(os.responsible_engineer_registration) || 'Registro profissional não informado', centroDoResponsavel, currentY + 20, { align: 'center' });
+  const emitente = texto(organization?.name) || texto(organization?.legal_name);
   doc.setTextColor(79, 70, 229);
   doc.setFont('helvetica', 'bold');
-  doc.text(`[Responsável Técnico SST - ${organization.name}]`, engX + (colWidth / 2), currentY + 8, { align: 'center' });
+  escrever(`[Responsável técnico SST${emitente ? ` - ${emitente}` : ''}]`, centroDoResponsavel, currentY + 8, { align: 'center' });
 
-  applyPageNumbers(doc);
+  if (!emLote) applyPageNumbers(doc);
 
-  if (options?.saveFile !== false) {
-    const cleanEmpName = os.employee_name.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase();
+  if (!emLote && options?.saveFile !== false) {
+    const cleanEmpName = texto(os.employee_name).replace(/[^a-zA-Z0-9]/g, '_').toLowerCase();
     const filename = `ordem-de-servico-nr01-${cleanEmpName}-${os.os_code}.pdf`;
     doc.save(filename);
   }
@@ -1257,145 +1373,25 @@ export function exportWorkOrderOSPDF(
 }
 
 /**
- * Batch Generates and downloads all Work Orders OS in a single consolidated PDF
+ * Lote de OS num PDF so, cada uma com o mesmo conteudo da OS avulsa.
+ *
+ * O lote tinha leiaute proprio, resumido: sem as medidas de prevencao e sem a
+ * emergencia, "Monitorado no PGR" e "Conforme NR-06" no lugar dos riscos e
+ * dos EPI, "Engenharia de Seguranca" e "SESMT PrevSafe" no lugar do
+ * responsavel, e uma declaracao de que o trabalhador recebeu treinamento -
+ * que a OS nao comprova. Tambem gerava cada OS duas vezes e descartava a
+ * primeira.
  */
 export function exportBatchWorkOrdersOSPDF(
-  workOrders: SSTWorkOrderOS[], 
+  workOrders: SSTWorkOrderOS[],
   organization: Organization
 ): void {
   if (!workOrders || workOrders.length === 0) return;
 
-  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-  const totalItems = workOrders.length;
-
-  workOrders.forEach((os, index) => {
-    if (index > 0) {
-      doc.addPage();
-    }
-    
-    // Render individual OS into this document stream
-    const tempDoc = exportWorkOrderOSPDF(os, organization, { saveFile: false });
-    // In jspdf we can clone or re-execute; for simplicity and clean multi-doc, we render sequentially
-  });
-
-  // Re-generate multi-document clean bundle
   const masterDoc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-  
   workOrders.forEach((os, idx) => {
     if (idx > 0) masterDoc.addPage();
-    
-    const pageWidth = masterDoc.internal.pageSize.getWidth();
-    const margin = 14;
-
-    // Header
-    masterDoc.setFillColor(15, 23, 42);
-    masterDoc.rect(0, 0, pageWidth, 24, 'F');
-    masterDoc.setTextColor(255, 255, 255);
-    masterDoc.setFontSize(11);
-    masterDoc.setFont('helvetica', 'bold');
-    masterDoc.text(organization.name || 'PREVSAFE SST', margin, 10);
-    masterDoc.setFontSize(8);
-    masterDoc.setFont('helvetica', 'normal');
-    masterDoc.setTextColor(148, 163, 184);
-    masterDoc.text(`ORDEM DE SERVIÇO NR-01 & ART. 157 CLT | ${os.employee_name}`, margin, 16);
-    masterDoc.setTextColor(255, 255, 255);
-    masterDoc.setFont('helvetica', 'bold');
-    masterDoc.text(`OS: ${os.os_code}`, pageWidth - margin, 10, { align: 'right' });
-    masterDoc.setFillColor(79, 70, 229);
-    masterDoc.rect(0, 24, pageWidth, 1.5, 'F');
-
-    // Body table 1
-    autoTable(masterDoc, {
-      startY: 30,
-      margin: { left: margin, right: margin },
-      theme: 'grid',
-      head: [[
-        { content: `ORDEM DE SERVIÇO (NR-01) - ${os.employee_name.toUpperCase()} (LOTE ${idx + 1}/${totalItems})`, colSpan: 4, styles: { fillColor: [30, 41, 59], textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 8 } }
-      ]],
-      body: [
-        [
-          { content: 'Empresa:', styles: { fontStyle: 'bold', cellWidth: 24 } },
-          { content: `${os.employer_name} (${os.employer_document})` },
-          { content: 'Função / CBO:', styles: { fontStyle: 'bold', cellWidth: 26 } },
-          { content: `${os.employee_job_title} (CBO ${os.employee_cbo})` }
-        ],
-        [
-          { content: 'Colaborador:', styles: { fontStyle: 'bold' } },
-          { content: `${os.employee_name} - CPF: ${os.employee_cpf}` },
-          { content: 'Setor / GHE:', styles: { fontStyle: 'bold' } },
-          { content: `${os.employee_sector} | ${os.employee_ghe_name}` }
-        ]
-      ],
-      styles: { fontSize: 7, cellPadding: 2 }
-    });
-
-    let cY = (masterDoc as any).lastAutoTable.finalY + 3;
-
-    // Risks table
-    const rRows: any[] = [];
-    if (os.physical_risks?.length) rRows.push(['Físicos', os.physical_risks.join('; ')]);
-    if (os.chemical_risks?.length) rRows.push(['Químicos', os.chemical_risks.join('; ')]);
-    if (os.biological_risks?.length) rRows.push(['Biológicos', os.biological_risks.join('; ')]);
-    if (os.ergonomic_risks?.length) rRows.push(['Ergonômicos', os.ergonomic_risks.join('; ')]);
-    if (os.accident_mechanical_risks?.length) rRows.push(['Acidentes', os.accident_mechanical_risks.join('; ')]);
-
-    autoTable(masterDoc, {
-      startY: cY,
-      margin: { left: margin, right: margin },
-      theme: 'grid',
-      head: [[
-        { content: 'Grupo de Risco', styles: { cellWidth: 35, fontStyle: 'bold' } },
-        { content: 'Agentes / Fontes Identificadas', styles: { fontStyle: 'bold' } }
-      ]],
-      body: rRows.length > 0 ? rRows : [['Geral', 'Monitorado no PGR']],
-      styles: { fontSize: 7, cellPadding: 2 },
-      headStyles: { fillColor: [71, 85, 105], textColor: [255, 255, 255] }
-    });
-
-    cY = (masterDoc as any).lastAutoTable.finalY + 3;
-
-    // Obligations and EPI
-    const epiStr = os.mandatory_epis?.map(e => `• ${e.epi_name} (CA ${e.ca_number})`).join('\n') || 'Conforme NR-06';
-    const dutiesStr = os.mandatory_employee_obligations?.slice(0, 3).map(d => `• ${d}`).join('\n') || 'Cumprir as NRs';
-
-    autoTable(masterDoc, {
-      startY: cY,
-      margin: { left: margin, right: margin },
-      theme: 'grid',
-      body: [
-        [
-          { content: 'EPIs Obrigatórios (NR-06):', styles: { fontStyle: 'bold', cellWidth: 40, fillColor: [248, 250, 252] } },
-          { content: epiStr }
-        ],
-        [
-          { content: 'Deveres (Art. 158 CLT):', styles: { fontStyle: 'bold', fillColor: [248, 250, 252] } },
-          { content: dutiesStr }
-        ],
-        [
-          { content: 'Declaração e Ciência:', styles: { fontStyle: 'bold', fillColor: [248, 250, 252] } },
-          { content: `Declaro ter recebido treinamento e cópia da presente Ordem de Serviço em ${formatDate(os.issue_date)}.` }
-        ]
-      ],
-      styles: { fontSize: 7, cellPadding: 2.2 }
-    });
-
-    cY = (masterDoc as any).lastAutoTable.finalY + 14;
-
-    // Signatures
-    const cW = (pageWidth - (margin * 2) - 10) / 2;
-    masterDoc.setLineWidth(0.3);
-    masterDoc.line(margin, cY + 8, margin + cW, cY + 8);
-    masterDoc.setFontSize(7);
-    masterDoc.setFont('helvetica', 'bold');
-    masterDoc.text(os.employee_name, margin + (cW / 2), cY + 12, { align: 'center' });
-    masterDoc.setFont('helvetica', 'normal');
-    masterDoc.text(`CPF: ${os.employee_cpf}`, margin + (cW / 2), cY + 15, { align: 'center' });
-
-    masterDoc.line(margin + cW + 10, cY + 8, margin + (cW * 2) + 10, cY + 8);
-    masterDoc.setFont('helvetica', 'bold');
-    masterDoc.text(os.responsible_engineer_name || 'Engenharia de Segurança', margin + cW + 10 + (cW / 2), cY + 12, { align: 'center' });
-    masterDoc.setFont('helvetica', 'normal');
-    masterDoc.text(os.responsible_engineer_registration || 'SESMT PrevSafe', margin + cW + 10 + (cW / 2), cY + 15, { align: 'center' });
+    exportWorkOrderOSPDF(os, organization, { saveFile: false, doc: masterDoc });
   });
 
   applyPageNumbers(masterDoc);

@@ -719,8 +719,12 @@ check(
   limpezaFonte.includes('Inventário de riscos não elaborado para este GHE'),
   'a frase de inventário pendente está acentuada e numa fonte única'
 );
+// O gerador passou a montar a OS por lib/ordemDeServico.ts, que poe a falta
+// de inventario na lista de pendencias da OS (com o GHE e a tela). A frase
+// acima continua sendo a da limpeza das OS antigas.
+const ordemFonte = fs.readFileSync(path.join(RAIZ, 'lib/ordemDeServico.ts'), 'utf8');
 check(
-  contexto.includes('const semInventario = AVISO_SEM_INVENTARIO;'),
+  contexto.includes('conteudoDaOS(') && ordemFonte.includes('Inventário de riscos não elaborado para o GHE'),
   'sem inventário, a OS declara a pendência em vez de inventar risco'
 );
 

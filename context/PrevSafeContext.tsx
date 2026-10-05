@@ -171,7 +171,8 @@ import { montarTermosDoContrato, resumirServicos, divergenciasDaClausulaDoPagame
 import { contasAReceberDoContrato, faltasDoPlano, planoInformado, recorrenciaDoPlano } from '@/lib/planoDePagamento';
 import { hashDoDocumento, hashDaAssinatura } from '@/lib/documentoHash';
 import { dataDeHoje, dataEmDias, formatarDataISO, novoId } from '@/lib/datas';
-import { limparOrdensDeServico, AVISO_SEM_INVENTARIO } from '@/lib/limpezaDeOrdensDeServico';
+import { limparOrdensDeServico } from '@/lib/limpezaDeOrdensDeServico';
+import { conteudoDaOS, OBRIGACOES_DO_TRABALHADOR, ATO_FALTOSO } from '@/lib/ordemDeServico';
 import { classificarRisco } from '@/lib/classificacaoDeRisco';
 import {
   acaoAceita,
@@ -791,6 +792,8 @@ interface PrevSafeContextType {
   deleteWorkOrderOS: (id: string) => void;
   generateWorkOrderOSForEmployee: (employeeId: string, customOptions?: Partial<SSTWorkOrderOS>) => SSTWorkOrderOS;
   generateBatchWorkOrdersOS: (employeeIds: string[]) => { created: SSTWorkOrderOS[]; count: number };
+  /** Refaz a OS pelo inventario: rascunho no lugar; assinada vira revisao nova. */
+  atualizarOSComOInventario: (osId: string) => { ok: boolean; mensagem: string; os?: SSTWorkOrderOS };
   signWorkOrderOS: (id: string, signatureData?: { method: 'PHYSICAL_MANUAL' | 'DIGITAL_BIOMETRIC' | 'ELECTRONIC_TOKEN'; photoUrl?: string; hash?: string }) => void;
 
   // SST Capacitação & Treinamento de Integração (NR-01 item 1.7)
@@ -7223,13 +7226,26 @@ ${blocoRespRegXml(ghe.client_id, dataDeHoje())}
           signature_photo_url: signatureData?.photoUrl || os.signature_photo_url,
           // Hash sobre o conteudo da OS entregue ao trabalhador, nao um
           // identificador aleatorio com prefixo "HASH-SHA256-".
+          // Sobre o que o trabalhador leu. Os campos antigos (os_number,
+          // job_title, risks, required_epis) nao existem na OS: o hash cobria
+          // so o id e a data, e nao o conteudo assinado.
           signature_hash: signatureData?.hash || hashDoDocumento({
             os: os.id,
-            numero: (os as any).os_number || null,
-            trabalhador: (os as any).employee_id || null,
-            funcao: (os as any).job_title || null,
-            riscos: (os as any).risks || null,
-            epis: (os as any).required_epis || null,
+            codigo: os.os_code,
+            revisao: os.revision,
+            trabalhador: os.employee_id,
+            cpf: os.employee_cpf || null,
+            funcao: os.employee_job_title || null,
+            ghe: os.employee_ghe_id || null,
+            atividades: os.job_description || null,
+            riscos: os.risks_detail || [os.physical_risks, os.chemical_risks, os.biological_risks, os.ergonomic_risks, os.accident_mechanical_risks],
+            epc: os.collective_protections_epc || null,
+            epis: os.mandatory_epis || null,
+            medidas: os.safe_work_procedures || null,
+            proibicoes: os.prohibitions_unsafe_acts || null,
+            emergencia: os.emergency_accident_conduct || null,
+            obrigacoes: os.mandatory_employee_obligations || null,
+            metodo: signatureData?.method || null,
             assinado_em: now,
           }),
           updated_at: now
@@ -7251,74 +7267,21 @@ ${blocoRespRegXml(ghe.client_id, dataDeHoje())}
     const job = hierarchyJobs.find(j => j.id === emp.job_id);
     const ghe = ghes.find(g => g.id === emp.ghe_id);
 
-    // Filter relevant risks for this GHE/Sector
-    const risksForGhe = environmentalRisks.filter(r => r.ghe_id === emp.ghe_id || r.sector_id === emp.sector_id);
-
-    const physicalRisks: string[] = [];
-    const chemicalRisks: string[] = [];
-    const biologicalRisks: string[] = [];
-    const ergonomicRisks: string[] = [];
-    const accidentRisks: string[] = [];
-
-    risksForGhe.forEach(r => {
-      const riskDesc = `${r.agent_name} (${r.measured_value || 'Avaliação de campo'}) - Fonte: ${r.generating_source || 'Processo produtivo'}`;
-      if (r.risk_category === 'FISICO') physicalRisks.push(riskDesc);
-      else if (r.risk_category === 'QUIMICO') chemicalRisks.push(riskDesc);
-      else if (r.risk_category === 'BIOLOGICO') biologicalRisks.push(riskDesc);
-      else if (r.risk_category === 'ERGONOMICO') ergonomicRisks.push(riskDesc);
-      else if (r.risk_category === 'ACIDENTES') accidentRisks.push(riskDesc);
+    // O conteudo sai do cadastro (lib/ordemDeServico.ts): os riscos do
+    // inventario do GHE, as medidas adotadas e a emergencia do estabelecimento.
+    // O gerador antigo comparava a categoria sem acento e o inventario grava
+    // com acento: todo risco fisico, quimico, biologico e ergonomico sumia.
+    const estabelecimentoDaOS = unit
+      || units.find(u => u.client_id === emp.client_id && u.status !== 'INACTIVE')
+      || null;
+    const conteudo = conteudoDaOS({
+      trabalhador: emp,
+      riscos: environmentalRisks,
+      ghe,
+      cargo: job,
+      estabelecimento: estabelecimentoDaOS,
+      acoes: pgrActionPlan
     });
-
-    // AQUI NASCIA A OS COM RISCOS INVENTADOS.
-    //
-    // Quando o GHE nao tinha inventario, as cinco categorias eram preenchidas
-    // com um texto fixo - "Ruido de fundo operacional e iluminacao de area de
-    // trabalho", "Queda em mesmo nivel, tropecos e contato com quinas de
-    // moveis" - e o trabalhador assinava a OS dando ciencia de riscos que
-    // ninguem levantou. A OS e prova de cumprimento do Art. 157 da CLT: o que
-    // ela afirma tem que vir do inventario (NR-01 item 1.5.4).
-    if (risksForGhe.length === 0) {
-      const semInventario = AVISO_SEM_INVENTARIO;
-      physicalRisks.push(semInventario);
-      chemicalRisks.push(semInventario);
-      biologicalRisks.push(semInventario);
-      ergonomicRisks.push(semInventario);
-      accidentRisks.push(semInventario);
-    }
-
-    // Protecoes coletivas: eram quatro afirmacoes fixas sobre o local de
-    // trabalho - extintores e hidrantes em dia, protecao diferencial nos
-    // quadros, iluminacao conforme a NHO-11 - declaradas para todo cliente
-    // sem que ninguem tivesse ido ao local conferir.
-    const collectiveProtections: string[] = [];
-    if (ghe?.environment_description) {
-      collectiveProtections.push(ghe.environment_description);
-    }
-
-    // Mandatory EPIs with CA
-    const mandatoryEpisList: Array<{ epi_name: string; ca_number: string; protection_type: string; usage_recommendation: string }> = [];
-    if (emp.epis && emp.epis.length > 0) {
-      emp.epis.forEach(ep => {
-        mandatoryEpisList.push({
-          epi_name: ep.epi_name,
-          ca_number: ep.ca_number,
-          protection_type: 'PROTECAO_ESPECIFICA',
-          usage_recommendation: 'Uso obrigatório contínuo durante a jornada'
-        });
-      });
-    }
-    // Nao havendo EPI no cadastro do colaborador, a versao anterior pegava o
-    // PRIMEIRO ITEM DO CATALOGO e o declarava obrigatorio. Era dai que vinha o
-    // "Protetor Auditivo tipo Plug (CA 14235)" na OS de uma recepcionista, com
-    // zero entregas registradas na mesma pagina. Lista vazia e a resposta
-    // correta: a OS entao diz que nenhum EPI foi definido.
-
-    // Acrescentava "5S", "inspecao visual de maquinas" e "DDS" a rotina de
-    // qualquer cargo - inclusive administrativo -, e a OS descreve o que a
-    // pessoa faz de fato. Fica so o que o cadastro do cargo informa.
-    const routineActivities: string[] = job?.activities_description
-      ? [job.activities_description]
-      : [];
 
     const osNumberCount = workOrdersOS.length + 1;
     const osCode = `OS-NR01-${new Date().getFullYear()}-${String(osNumberCount).padStart(4, '0')}`;
@@ -7340,7 +7303,11 @@ ${blocoRespRegXml(ghe.client_id, dataDeHoje())}
       employer_document: client?.document_number || 'Não informado',
       employer_cnae: client?.main_cnae || 'Não informado',
       employer_risk_grade: client?.risk_degree || null,
-      establishment_address: unit?.address ? `${unit.address}, ${unit.city}/${unit.state}` : (client?.address ? `${client.address}, ${client.city}/${client.state}` : 'Não informado'),
+      // Sem cidade ou UF saia "undefined/undefined" no endereco da OS.
+      establishment_address: (() => {
+        const montar = (x: any) => [x?.address, [x?.city, x?.state].filter(Boolean).join('/')].filter(Boolean).join(', ');
+        return (unit?.address ? montar(unit) : montar(client)) || 'Não informado';
+      })(),
       employee_name: emp.name,
       employee_cpf: emp.cpf,
       employee_registration: emp.registration_number,
@@ -7353,43 +7320,28 @@ ${blocoRespRegXml(ghe.client_id, dataDeHoje())}
       employee_admission_date: emp.admission_date,
       employee_ghe_id: emp.ghe_id,
       employee_ghe_name: ghe?.name || 'GHE não atribuído',
-      job_description: job?.activities_description || `Atividades desempenhadas no cargo de ${emp.job_title} conforme especificações da empresa e CBO.`,
-      routine_activities: routineActivities,
-      physical_risks: physicalRisks,
-      chemical_risks: chemicalRisks,
-      biological_risks: biologicalRisks,
-      ergonomic_risks: ergonomicRisks,
-      accident_mechanical_risks: accidentRisks,
-      collective_protections_epc: collectiveProtections,
-      mandatory_epis: mandatoryEpisList,
-      safe_work_procedures: [
-        'Inspecione o ambiente de trabalho e as ferramentas antes de iniciar qualquer atividade',
-        'Não execute tarefas para as quais não tenha recebido instrução formal ou treinamento',
-        'Mantenha passagens e vias de circulação desobstruídas e sinalizadas',
-        'Reporte qualquer anomalia em quadros de energia, fiação ou vazamentos imediatamente ao SESMT'
-      ],
-      mandatory_employee_obligations: [
-        'Cumprir as disposições legais e regulamentares sobre segurança e saúde no trabalho, inclusive as ordens de serviço expedidas pelo empregador (Art. 158 da CLT e item 1.4.2 da NR-01)',
-        'Submeter-se aos exames médicos previstos no PCMSO (NR-07)',
-        'Colaborar com a organização na aplicação das Normas Regulamentadoras (NRs)',
-        'Usar o EPI fornecido pela organização conforme a NR-06 e responsabilizar-se por sua guarda e conservação',
-        'Comunicar imediatamente ao superior hierárquico e ao SESMT qualquer situação que apresente risco grave e iminente à sua integridade física ou de terceiros'
-      ],
-      prohibitions_unsafe_acts: [
-        'É proibido operar máquinas e equipamentos sem a devida capacitação e autorização formal (NR-12)',
-        'É proibido retirar proteções coletivas ou dispositivos de segurança de máquinas e ferramentas',
-        'É proibido fumar em locais não autorizados e nas proximidades de produtos inflamáveis/químicos',
-        'É proibido o uso de calçados abertos, anéis ou adornos em áreas operacionais',
-        'É proibido ingressar no trabalho sob efeito de álcool, drogas ou medicamentos que alterem a atenção'
-      ],
-      emergency_accident_conduct: [
-        'Em caso de acidente de trabalho: prestar socorro imediato acionando o ramal interno de emergência da Brigada e o SAMU (192)',
-        'Isolar a área do acidente para preservar as evidências e permitir a investigação técnica pelo SESMT',
-        'Comunicar à administração da empresa para emissão da CAT (Comunicação de Acidente de Trabalho) em até 24 horas (S-2210 eSocial)',
-        'Em caso de princípio de incêndio: acionar o alarme, utilizar o extintor portátil compatível e seguir as rotas de fuga até o Ponto de Encontro'
-      ],
-      disciplinary_sanctions_text: 'Constitui ato faltoso a recusa injustificada do empregado ao cumprimento das disposições desta Ordem de Serviço, bem como a recusa ao uso dos Equipamentos de Proteção Individual fornecidos pela empresa, sujeitando o infrator às sanções disciplinares previstas no Artigo 158 da CLT c/c Artigo 482 da CLT (Advertência Verbal, Advertência Escrita, Suspensão Disciplinar e Demissão por Justa Causa).',
-      legal_framework: 'NR-01 (Portaria MTP nº 4.219/2022, subitem 1.4.1 e 1.4.2), NR-06, NR-07, NR-09, NR-12 e Artigo 157, inciso II c/c Artigo 158 da Consolidação das Leis do Trabalho (CLT).',
+      job_description: conteudo.job_description,
+      routine_activities: conteudo.routine_activities,
+      physical_risks: conteudo.physical_risks,
+      chemical_risks: conteudo.chemical_risks,
+      biological_risks: conteudo.biological_risks,
+      ergonomic_risks: conteudo.ergonomic_risks,
+      accident_mechanical_risks: conteudo.accident_mechanical_risks,
+      risks_detail: conteudo.risks_detail,
+      collective_protections_epc: conteudo.collective_protections_epc,
+      mandatory_epis: conteudo.mandatory_epis,
+      // Eram listas fixas, iguais para todo cargo. Procedimento e emergencia
+      // saem do cadastro; obrigacoes, do texto da NR-01 e da CLT; proibicao
+      // especifica, quem conhece o posto acrescenta na OS.
+      safe_work_procedures: conteudo.safe_work_procedures,
+      mandatory_employee_obligations: OBRIGACOES_DO_TRABALHADOR,
+      prohibitions_unsafe_acts: [],
+      emergency_accident_conduct: conteudo.emergency_accident_conduct,
+      pendencias: conteudo.pendencias,
+      disciplinary_sanctions_text: ATO_FALTOSO,
+      // Citava a Portaria 4.219/2022 para o 1.4.1 e o 1.4.2 (que nao vieram
+      // dela) e a NR-12 e a NR-09 em toda OS, inclusive a de uma recepcao.
+      legal_framework: 'NR-01, itens 1.4.1 e 1.4.2; CLT, arts. 157, II, e 158.',
       employee_signed: false,
       signature_method: 'PHYSICAL_MANUAL',
       // A OS e assinada pelo trabalhador e nomeia quem responde tecnicamente
@@ -7398,12 +7350,36 @@ ${blocoRespRegXml(ghe.client_id, dataDeHoje())}
       responsible_engineer_name: organization.technical_responsible_name || '',
       responsible_engineer_registration: organization.technical_responsible_council || '',
       status: 'ACTIVE',
-      notes: 'Ordem de Serviço gerada automaticamente pelo motor de conformidade NR-01 PrevSafe.',
+      notes: 'Gerada a partir do inventário de riscos do GHE, do plano de ação e do cadastro do estabelecimento.',
       ...customOptions
     };
 
     return addWorkOrderOS(newOSData);
-  }, [employees, clients, units, hierarchySectors, hierarchyJobs, ghes, environmentalRisks, epiCatalog, workOrdersOS.length, addWorkOrderOS]);
+  }, [employees, clients, units, hierarchySectors, hierarchyJobs, ghes, environmentalRisks, pgrActionPlan, workOrdersOS.length, organization, addWorkOrderOS]);
+
+  /**
+   * Refaz o conteudo de uma OS a partir do inventario e do cadastro de hoje.
+   * Nao assinada: substitui o rascunho, com o mesmo codigo e revisao.
+   * Assinada: o trabalhador deu ciencia DAQUELE texto, que fica como esta; sai
+   * uma revisao nova, a assinar.
+   */
+  const atualizarOSComOInventario = useCallback((osId: string): { ok: boolean; mensagem: string; os?: SSTWorkOrderOS } => {
+    const os = workOrdersOS.find(o => o.id === osId);
+    if (!os) return { ok: false, mensagem: 'Ordem de serviço não encontrada.' };
+    if (!employees.some(e => e.id === os.employee_id)) {
+      return { ok: false, mensagem: `O trabalhador da ${os.os_code} não está mais no cadastro.` };
+    }
+    if (os.employee_signed) {
+      const revisao = (Number(os.revision) || 1) + 1;
+      const nova = generateWorkOrderOSForEmployee(os.employee_id, { os_code: os.os_code, revision: revisao });
+      // A anterior deixa de valer, mas fica: e a prova da ciencia que o trabalhador deu.
+      setWorkOrdersOS(prev => prev.map(o => o.id === os.id ? { ...o, status: 'REVISED' as const, updated_at: new Date().toISOString() } : o));
+      return { ok: true, mensagem: `A ${os.os_code} já estava assinada: criada a revisão ${String(revisao).padStart(2, '0')}, a ser assinada.`, os: nova };
+    }
+    const nova = generateWorkOrderOSForEmployee(os.employee_id, { os_code: os.os_code, revision: os.revision });
+    setWorkOrdersOS(prev => prev.filter(o => o.id !== os.id));
+    return { ok: true, mensagem: `${os.os_code} atualizada com o inventário.`, os: nova };
+  }, [workOrdersOS, employees, generateWorkOrderOSForEmployee]);
 
   const generateBatchWorkOrdersOS = useCallback((employeeIds: string[]): { created: SSTWorkOrderOS[]; count: number } => {
     const createdList: SSTWorkOrderOS[] = [];
@@ -8624,6 +8600,7 @@ ${blocoRespRegXml(ghe.client_id, dataDeHoje())}
     deleteWorkOrderOS,
     generateWorkOrderOSForEmployee,
     generateBatchWorkOrdersOS,
+    atualizarOSComOInventario,
     signWorkOrderOS,
     // SST Capacitação & Treinamento de Integração (NR-01 item 1.7)
     integrationTrainings,
@@ -8917,6 +8894,7 @@ ${blocoRespRegXml(ghe.client_id, dataDeHoje())}
     deleteWorkOrderOS,
     generateWorkOrderOSForEmployee,
     generateBatchWorkOrdersOS,
+    atualizarOSComOInventario,
     signWorkOrderOS,
     integrationTrainings,
     addIntegrationTraining,

@@ -2477,14 +2477,39 @@ export interface SSTWorkOrderOS {
   signature_hash?: string;
   responsible_engineer_name: string;
   responsible_engineer_registration: string;
-  
+
+  /**
+   * Os riscos do inventario do GHE, um por linha, como a OS os informa (NR-01,
+   * 1.4.1, "b", I e IV). As listas por categoria acima continuam, com o nome
+   * do agente, para as OS antigas e para o Excel. Regra em lib/ordemDeServico.ts.
+   */
+  risks_detail?: RiscoDaOrdemDeServico[];
+  /** O que faltou no cadastro para a OS sair completa. Vazio = completa. */
+  pendencias?: string[];
+
   status: SSTWorkOrderStatus;
   notes?: string;
   created_at: string;
   updated_at: string;
 }
 
-export type EPITypeProtection = 
+/** Um risco do inventario na OS, so com o que esta registrado nele. */
+export interface RiscoDaOrdemDeServico {
+  /** Fisico, Quimico, Biologico, Ergonomico, Psicossocial, Acidentes. */
+  categoria: string;
+  agente: string;
+  fonte?: string;
+  /** Possiveis lesoes ou agravos a saude. */
+  danos?: string;
+  /** Resultado da avaliacao ambiental (1.4.1, "b", IV), quando houve medicao. */
+  avaliacao?: string;
+  /** EPC implantado contra este risco. */
+  epc?: string;
+  /** EPI exigido para este risco, com o CA. */
+  epis?: string[];
+}
+
+export type EPITypeProtection =
   | 'CABECA' // Capacete, touca
   | 'OLHOS_FACE' // Óculos, protetor facial, máscara de solda
   | 'AUDITIVA' // Protetor auricular plug, concha
