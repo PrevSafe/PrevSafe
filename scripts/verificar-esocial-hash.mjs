@@ -58,6 +58,8 @@ fs.writeFileSync(
       path.join(RAIZ, 'lib/documentoHash.ts'),
       // validarCPF: o montador do [respMonit] o usa para decidir se {cpfResp} vai.
       path.join(RAIZ, 'lib/validacoesBr.ts'),
+      // <ideEmpregador>, namespace e Id: a regra unica dos montadores.
+      path.join(RAIZ, 'lib/esocialEmpregador.ts'),
     ],
   })
 );
@@ -86,10 +88,12 @@ const require_ = createRequire(import.meta.url);
 let esocial;
 let hashLib;
 let validacoesBr;
+let empregadorLib;
 try {
   esocial = require_(path.join(SAIDA, 'esocialDados.js'));
   hashLib = require_(path.join(SAIDA, 'documentoHash.js'));
   validacoesBr = require_(path.join(SAIDA, 'validacoesBr.js'));
+  empregadorLib = require_(path.join(SAIDA, 'esocialEmpregador.js'));
 } catch (e) {
   inconclusivo('não foi possível carregar os módulos compilados', e.message);
 }
@@ -616,8 +620,10 @@ console.log('\n--- S-2220: um montador só, Id de 36 caracteres, grupos do leiau
   const view = semComentarios(fs.readFileSync(path.join(RAIZ, 'components/esocial/ESocialEventsView.tsx'), 'utf8'));
 
   // ---- forma dos defeitos no fonte ----
-  check(!/\bid="ID/.test(ctx), 'nenhum Id de evento é montado à mão no template (era ID1 + CPF do trabalhador + 202608)');
-  const idsNosTemplates = [...ctx.matchAll(/<evt\w+ id="([^"]*)"/g)].map((x) => x[1].trim());
+  // O atributo e "Id" (XSD do S-1.3); o codigo escrevia "id". Os dois nomes
+  // contam aqui: Id montado a mao e defeito com qualquer grafia.
+  check(!/\b[Ii]d="ID/.test(ctx), 'nenhum Id de evento é montado à mão no template (era ID1 + CPF do trabalhador + 202608)');
+  const idsNosTemplates = [...ctx.matchAll(/<evt\w+ [Ii]d="([^"]*)"/g)].map((x) => x[1].trim());
   check(idsNosTemplates.length > 0 && idsNosTemplates.every((x) => /^\$\{(idEvt|novoIdDoEvento\([^)]*\))\}$/.test(x)),
     `todo <evt... id> vem da regra do leiaute (${idsNosTemplates.length} templates)`);
   check((ctx.match(/<evtMonit[\s>]/g) || []).length === 1, 'há um só template do evtMonit (S-2220) no contexto');
@@ -627,8 +633,9 @@ console.log('\n--- S-2220: um montador só, Id de 36 caracteres, grupos do leiau
     && !/<\?xml|<evtMonit|xml_content:\s*xml\b/.test(corpoDaCriacao),
   'a criação a partir do ASO grava o XML do montador da pré-visualização, sem template próprio');
 
-  const templateS2220 = (ctx.match(/<evtMonit id="\$\{idEvt\}">[\s\S]*?<\/evtMonit>/) || [''])[0];
-  check(/^<evtMonit id="\$\{idEvt\}">\s*<ideEvento>\s*<indRetif>[\s\S]*?<tpAmb>[\s\S]*?<procEmi>[\s\S]*?<verProc>[\s\S]*?<\/ideEvento>\s*<ideEmpregador>/.test(templateS2220),
+  const templateS2220 = (ctx.match(/<evtMonit Id="\$\{idEvt\}">[\s\S]*?<\/evtMonit>/) || [''])[0];
+  // <ideEmpregador> agora sai de xmlDoIdeEmpregador (lib/esocialEmpregador.ts).
+  check(/^<evtMonit Id="\$\{idEvt\}">\s*<ideEvento>\s*<indRetif>[\s\S]*?<tpAmb>[\s\S]*?<procEmi>[\s\S]*?<verProc>[\s\S]*?<\/ideEvento>\s*(<ideEmpregador>|\$\{xmlDoIdeEmpregador\()/.test(templateS2220),
     'o template abre com <ideEvento> (ocorrência 1), antes de <ideEmpregador>');
   check(templateS2220 !== '' && !/^\s*<(resAso|nrCRM|ufCRM)>/m.test(templateS2220),
     'resAso e nrCRM/ufCRM do médico (0-1) não são escritos incondicionalmente');
@@ -666,28 +673,37 @@ console.log('\n--- S-2220: um montador só, Id de 36 caracteres, grupos do leiau
     const fonte = [
       pegar(/^const textoXml = [\s\S]*?;\s*$/m, 'textoXml'),
       pegar(/^const UFS_DO_CRM = new Set\(\[[\s\S]*?\]\);$/m, 'UFS_DO_CRM'),
-      pegar(/^function idDoEventoESocial\([\s\S]*?\n\}$/m, 'idDoEventoESocial'),
+      // idDoEventoESocial saiu do contexto para lib/esocialEmpregador.ts e
+      // entra abaixo como parametro, com as demais regras do empregador.
       `const novoIdDoEvento = ${pegar(/const novoIdDoEvento = useCallback\(([\s\S]*?), \[\]\);/, 'novoIdDoEvento')};`,
       `const campoDoEvento = ${pegar(/const campoDoEvento = useCallback\(([\s\S]*?), \[\]\);/, 'campoDoEvento')};`,
       `const blocoRespMonitXml = ${pegar(/const blocoRespMonitXml = useCallback\(([\s\S]*?\n  \}), \[technicalResponsibilities/, 'blocoRespMonitXml')};`,
       `const generateESocialXmlPreview = ${pegar(/const generateESocialXmlPreview = useCallback\(([\s\S]*?\n  \}), \[blocoRespRegXml/, 'generateESocialXmlPreview')};`,
     ].join('\n');
-    const ts = require_(path.join(RAIZ, 'node_modules', 'typescript'));
+    // Resolucao normal de modulo, e nao <RAIZ>/node_modules: num git worktree
+    // o node_modules fica num diretorio acima, e o caminho fixo nao o achava.
+    const ts = require_('typescript');
     const js = ts.transpileModule(fonte, {
       compilerOptions: { target: ts.ScriptTarget.ES2020, module: ts.ModuleKind.CommonJS },
     }).outputText;
 
     let respAtual = null;
+    const {
+      idDoEventoESocial, inscricaoDoEmpregador, inscricaoDoAmbiente, xmlDoIdeEmpregador,
+      xmlDaInscricaoDoAmbiente, namespaceDoEvento,
+    } = empregadorLib;
     const fns = new Function(
       'clients', 'organization', 'respMonitDoCliente', 'technicalResponsibilities', 'technicalProfessionals',
       'validarCPF', 'xmlDosExamesDoS2220', 'tpExameOcupDoAso', 'resAsoDoAso', 'dataDeHoje', 'sequenciaDoId', 'blocoRespRegXml',
+      'idDoEventoESocial', 'inscricaoDoEmpregador', 'inscricaoDoAmbiente', 'xmlDoIdeEmpregador', 'xmlDaInscricaoDoAmbiente', 'namespaceDoEvento',
       `${js}\nreturn { idDoEventoESocial, novoIdDoEvento, blocoRespMonitXml, generateESocialXmlPreview };`
     )(
       [{ id: 'cli-1', document_type: 'CNPJ', document_number: '11.222.333/0001-81' }],
       { document_number: '99.888.777/0001-66' },
       () => respAtual, [], [],
       validacoesBr.validarCPF, xmlDosExamesDoS2220, tpExameOcupDoAso, resAsoDoAso,
-      () => '2026-10-02', { current: { segundo: 0, usados: {} } }, () => ''
+      () => '2026-10-02', { current: { segundo: 0, usados: {} } }, () => '',
+      idDoEventoESocial, inscricaoDoEmpregador, inscricaoDoAmbiente, xmlDoIdeEmpregador, xmlDaInscricaoDoAmbiente, namespaceDoEvento
     );
 
     // REGRA_VALIDA_ID_EVENTO: IDTNNNNNNNNNNNNNNAAAAMMDDHHMMSSQQQQQ
@@ -726,12 +742,17 @@ console.log('\n--- S-2220: um montador só, Id de 36 caracteres, grupos do leiau
 
     respAtual = { nome: 'Dra. Ana & Cia', cpf: '', crm: 'CRM 12345', uf: 'BA' };
     const xml = fns.generateESocialXmlPreview(evento(dados));
-    const idXml = (xml.match(/<evtMonit id="([^"]*)">/) || [])[1] || '';
-    check(/^ID1\d{33}$/.test(idXml) && idXml.startsWith('ID1' + '11222333000181'),
+    const idXml = (xml.match(/<evtMonit Id="([^"]*)">/) || [])[1] || '';
+    // EXPECTATIVA CORRIGIDA. Este caso exigia o CNPJ de 14 digitos no Id. O
+    // cliente da fixture nao tem natureza juridica de administracao publica
+    // federal, entao o {ideEmpregador/nrInsc} e a raiz (leiaute S-1.3, S-1000) e
+    // o Id leva a raiz completada com zeros a direita (REGRA_VALIDA_ID_EVENTO).
+    // Os casos dessa regra estao em scripts/verificar-esocial-leiaute.mjs.
+    check(/^ID1\d{33}$/.test(idXml) && idXml.startsWith('ID1' + '11222333' + '000000'),
       `o Id do XML tem 36 caracteres e a inscrição do empregador: ${idXml}`);
     check(!idXml.includes('52998224725'), 'o Id não leva o CPF do trabalhador');
     check(xml.includes(`<Reference URI="#${idXml}">`), 'a assinatura referencia o mesmo Id');
-    check(/<evtMonit id="[^"]*">\s*<ideEvento>\s*<indRetif>1<\/indRetif>\s*<tpAmb>1<\/tpAmb>\s*<procEmi>1<\/procEmi>\s*<verProc>[^<]+<\/verProc>\s*<\/ideEvento>\s*<ideEmpregador>/.test(xml),
+    check(/<evtMonit Id="[^"]*">\s*<ideEvento>\s*<indRetif>1<\/indRetif>\s*<tpAmb>1<\/tpAmb>\s*<procEmi>1<\/procEmi>\s*<verProc>[^<]+<\/verProc>\s*<\/ideEvento>\s*<ideEmpregador>/.test(xml),
       'o XML gerado tem <ideEvento> completo antes de <ideEmpregador>');
     check(/<resAso>1<\/resAso>/.test(xml) && (xml.match(/<exame>/g) || []).length === 1, 'resAso e o exame do ASO vão quando existem');
     const medico = (xml.match(/<medico>[\s\S]*?<\/medico>/) || [''])[0];
@@ -742,7 +763,7 @@ console.log('\n--- S-2220: um montador só, Id de 36 caracteres, grupos do leiau
     check(!/undefined/.test(xml) && bemFormado(xml), 'o XML não tem "undefined" e as tags fecham');
 
     const xmlOutro = fns.generateESocialXmlPreview(evento(dados));
-    check((xmlOutro.match(/<evtMonit id="([^"]*)">/) || [])[1] !== idXml, 'dois eventos gerados em seguida têm Ids diferentes');
+    check((xmlOutro.match(/<evtMonit Id="([^"]*)">/) || [])[1] !== idXml, 'dois eventos gerados em seguida têm Ids diferentes');
 
     respAtual = { nome: 'Dra. Ana', cpf: '529.982.247-25', crm: '', uf: 'BA' };
     const vazio = { ...dados, result: '', physician_name: '', physician_crm: '', physician_uf: '', exams_list: [] };

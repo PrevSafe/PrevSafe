@@ -69,6 +69,7 @@ import { exportESocialEventLogsPdf } from '@/lib/pdfExportService';
 import { dataDeHoje, novoId } from '@/lib/datas';
 import { conferirDocumento } from '@/lib/validacoesBr';
 import { riscosDoColaborador, montarFatorDeRisco } from '@/lib/esocialDados';
+import { inscricaoDoEmpregador, namespaceDoEvento, VERSAO_DO_LEIAUTE_ESOCIAL } from '@/lib/esocialEmpregador';
 
 interface ESocialEventsViewProps {
   onNavigate?: (view: string) => void;
@@ -135,6 +136,14 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
   const [editingEvent, setEditingEvent] = useState<ESocialEvent | null>(null);
   const [xmlModalEvent, setXmlModalEvent] = useState<ESocialEvent | null>(null);
   const [xmlActiveTab, setXmlActiveTab] = useState<'xml' | 'receipt' | 'history'>('xml');
+  // Lacuna na identificacao do empregador do evento aberto (natureza juridica
+  // sem codigo, CNPJ invalido, CAEPF no lugar do CNPJ). No XML ela vai como
+  // comentario; aqui fica na frente do usuario, antes de ele copiar o arquivo.
+  const avisoDoEmpregadorNoXml = useMemo(() => {
+    if (!xmlModalEvent) return '';
+    const r = inscricaoDoEmpregador(clients.find(c => c.id === xmlModalEvent.client_id));
+    return r.ok === false ? r.motivo : r.aviso;
+  }, [xmlModalEvent, clients]);
   const [isBatchModalOpen, setIsBatchModalOpen] = useState(false);
   const [isExtractModalOpen, setIsExtractModalOpen] = useState(false);
   const [isPdfModalOpen, setIsPdfModalOpen] = useState(false);
@@ -1623,7 +1632,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                     : 'border-transparent text-slate-400 hover:text-slate-200'
                 }`}
               >
-                XML Assinado (eSocial v.S-1.2)
+                XML do evento (leiaute {VERSAO_DO_LEIAUTE_ESOCIAL})
               </button>
 
               <button
@@ -1654,7 +1663,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
               {xmlActiveTab === 'xml' && (
                 <div className="space-y-3">
                   <div className="flex items-center justify-between text-slate-400 pb-2 border-b border-slate-800">
-                    <span className="text-[11px]">Schema XSD: http://www.esocial.gov.br/schema/evt/{xmlModalEvent.event_type}</span>
+                    <span className="text-[11px]">Schema XSD: {namespaceDoEvento(xmlModalEvent.event_type)}</span>
                     <div className="flex items-center space-x-2">
                       <button
                         onClick={() => handleCopyText(xmlModalEvent.xml_content || generateESocialXmlPreview(xmlModalEvent), 'xml')}
@@ -1673,6 +1682,13 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                       </button>
                     </div>
                   </div>
+
+                  {avisoDoEmpregadorNoXml && (
+                    <div className="flex items-start gap-2 p-3 rounded-lg bg-amber-950/40 border border-amber-700/50 text-amber-200 font-sans text-[11px] leading-relaxed">
+                      <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5 text-amber-400" />
+                      <span><strong>Identificação do empregador:</strong> {avisoDoEmpregadorNoXml}</span>
+                    </div>
+                  )}
 
                   <pre className="p-4 rounded-xl bg-slate-950 border border-slate-800 text-emerald-300/90 overflow-x-auto text-[11px] leading-relaxed max-h-[50vh]">
                     {xmlModalEvent.xml_content || generateESocialXmlPreview(xmlModalEvent)}

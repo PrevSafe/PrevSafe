@@ -226,6 +226,16 @@ import {
   xmlDoEpcEpi,
   type PendenciaESocial,
 } from '@/lib/esocialDados';
+import {
+  idDoEventoESocial,
+  inscricaoDoAmbiente,
+  inscricaoDoEmpregador,
+  namespaceDoEvento,
+  VERSAO_DO_LEIAUTE_ESOCIAL,
+  xmlDaInscricaoDoAmbiente,
+  xmlDoIdeEmpregador,
+  type InscricaoDoEmpregador,
+} from '@/lib/esocialEmpregador';
 import { validarCPF } from '@/lib/validacoesBr';
 
 /** Texto de usuario dentro de elemento XML: nome com "&" ou "<" quebrava o evento. */
@@ -238,27 +248,15 @@ const UFS_DO_CRM = new Set([
   'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO',
 ]);
 
-/**
- * Id do evento eSocial - REGRA_VALIDA_ID_EVENTO do leiaute S-1.3: "composta
- * por 36 caracteres, conforme o que segue: IDTNNNNNNNNNNNNNNAAAAMMDDHHMMSSQQQQQ".
- * T e o tipo de inscricao do EMPREGADOR (1 CNPJ, 2 CPF); N, o numero dele
- * "completar com zeros a direita", com as mesmas 8 ou 14 posicoes do
- * {ideEmpregador/nrInsc}; AAAAMMDDHHMMSS, o instante da geracao; QQQQQ, o
- * sequencial, "completando com zeros a esquerda".
+/*
+ * Id do evento eSocial (REGRA_VALIDA_ID_EVENTO): idDoEventoESocial, em
+ * lib/esocialEmpregador.ts, junto da regra do nrInsc - o Id leva o mesmo
+ * numero do <ideEmpregador>, e as duas regras nao podem divergir.
  *
  * Antes era `ID1` + CPF do TRABALHADOR + "202608" (20 caracteres, ano e mes
  * fixos) no S-2220 criado do ASO, e `ID1` + inscricao + ano + 6 digitos do
  * relogio + "00001" (32) na pre-visualizacao.
  */
-function idDoEventoESocial(tpInsc: string, nrInsc: string, geradoEm: Date, sequencial: number): string {
-  const d2 = (n: number) => String(n).padStart(2, '0');
-  return 'ID'
-    + String(tpInsc).slice(0, 1)
-    + String(nrInsc || '').replace(/\D/g, '').slice(0, 14).padEnd(14, '0')
-    + String(geradoEm.getFullYear()).padStart(4, '0') + d2(geradoEm.getMonth() + 1) + d2(geradoEm.getDate())
-    + d2(geradoEm.getHours()) + d2(geradoEm.getMinutes()) + d2(geradoEm.getSeconds())
-    + String(sequencial).padStart(5, '0').slice(-5);
-}
 
 /**
  * Por que a sessao terminou.
@@ -1441,23 +1439,17 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
   /**
    * <ideEmpregador> do evento, a partir do cadastro do cliente.
    *
-   * tpInsc segue a tabela 05 do eSocial: 1 = CNPJ, 2 = CPF. Cliente sem
-   * documento cadastrado NAO gera evento - a funcao devolve null e quem chama
-   * avisa. Antes o codigo preenchia um CNPJ fixo e seguia em frente.
+   * A regra mora em lib/esocialEmpregador.ts (raiz do CNPJ, excecao da
+   * administracao publica federal, CPF, CAEPF/CNO, aviso de natureza nao
+   * informada); aqui so se acha o cliente. Sem inscricao valida o resultado
+   * traz `ok: false` e o motivo, e quem chama nao gera o evento. Antes o codigo
+   * preenchia um CNPJ fixo e seguia em frente; depois, mandava os 14 digitos
+   * para todo cliente e lia CAEPF de 14 digitos como CNPJ.
    */
-  const identificacaoDoEmpregador = useCallback((clientId: string): { tpInsc: '1' | '2'; nrInsc: string } | null => {
-    const client = clients.find(c => c.id === clientId);
-    const digitos = (client?.document_number || '').replace(/\D/g, '');
-    if (!digitos) return null;
-
-    if (digitos.length === 14) return { tpInsc: '1', nrInsc: digitos };
-    if (digitos.length === 11) return { tpInsc: '2', nrInsc: digitos };
-    return null;
-  }, [clients]);
-
-  /** Mensagem unica para quando o empregador nao pode ser identificado. */
-  const ERRO_EMPREGADOR_SEM_DOCUMENTO =
-    'Este cliente nao possui CNPJ ou CPF valido cadastrado. O evento do eSocial nao pode ser gerado sem a identificacao do empregador.';
+  const identificacaoDoEmpregador = useCallback(
+    (clientId: string): InscricaoDoEmpregador => inscricaoDoEmpregador(clients.find(c => c.id === clientId)),
+    [clients]
+  );
 
   // Log Audit helper (RN011)
   const logAudit = useCallback((action: AuditLog['action'], entity_type: AuditLog['entity_type'], entity_id: string, entity_number?: string, newData?: Record<string, any>, oldData?: Record<string, any>) => {
@@ -3768,7 +3760,8 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     return newEval;
   }, [organization.id, logAudit]);
 
-  // eSocial SST Events XML Generator (v.S-1.2 Layout)
+  // XML dos eventos de SST. Leiaute S-1.3: namespace, <ideEmpregador> e Id
+  // saem de lib/esocialEmpregador.ts, os mesmos para todos os montadores.
   /**
    * Elemento do evento com o valor real, ou vazio com o motivo ao lado.
    *
@@ -3806,30 +3799,17 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
 
   const generateESocialXmlPreview = useCallback((event: ESocialEvent): string => {
     const client = clients.find(c => c.id === event.client_id);
-    const employerDocType = client?.document_type || 'CNPJ';
-    const employerRaw = (client?.document_number || organization.document_number).replace(/\D/g, '');
     const workerCpf = event.worker_cpf.replace(/\D/g, '');
 
-    // eSocial Technical Rules:
-    // ideEmpregador: tpInsc 1 = CNPJ (14 dígitos), 2 = CPF (11 dígitos, aplicável inclusive se produtor rural com CAEPF)
-    const isPessoaFisica = employerDocType === 'CPF' || employerDocType === 'CAEPF';
-    const tpInscEmpregador = isPessoaFisica ? '2' : '1';
-    const nrInscEmpregador = isPessoaFisica 
-      ? employerRaw.slice(0, 11).padEnd(11, '0') 
-      : employerRaw.slice(0, 14).padEnd(14, '0');
+    // <ideEmpregador> pela regra unica: raiz do CNPJ (8), CNPJ completo so nas
+    // naturezas da administracao publica federal, CPF para pessoa fisica.
+    // Sem cliente com CNPJ/CPF valido os campos saem vazios com o motivo ao
+    // lado. Antes caiam no CNPJ da propria organizacao - a consultoria, que
+    // nao e o empregador - e o CAEPF virava CPF cortado em 11 digitos.
+    const empregador = inscricaoDoEmpregador(client);
 
-    // ideEstab (Lotação / Estabelecimento): 1 = CNPJ, 2 = CPF, 3 = CAEPF, 4 = CNO
-    const hasCaepf = Boolean(client?.caepf || employerDocType === 'CAEPF');
-    const hasCno = Boolean(client?.cno || employerDocType === 'CNO');
-    const tpInscEstab = hasCaepf ? '3' : hasCno ? '4' : isPessoaFisica ? '2' : '1';
-    const nrInscEstab = hasCaepf 
-      ? (client?.caepf ? client.caepf.replace(/\D/g, '') : employerRaw) 
-      : hasCno 
-        ? (client?.cno ? client.cno.replace(/\D/g, '') : employerRaw)
-        : nrInscEmpregador;
-
-    // 36 caracteres, com a inscricao do empregador que vai em <ideEmpregador>.
-    const idEvt = novoIdDoEvento(tpInscEmpregador, nrInscEmpregador);
+    // 36 caracteres, com o mesmo nrInsc que vai em <ideEmpregador>.
+    const idEvt = empregador.ok ? novoIdDoEvento(empregador.tpInsc, empregador.nrInsc) : '';
 
     if (event.event_type === 'S-2240') {
       const amb = event.ambient_data;
@@ -3857,8 +3837,8 @@ ${r.risk_code_table_24 === '09.01.001'
         </fatRisco>`).join('');
 
       return `<?xml version="1.0" encoding="UTF-8"?>
-<eSocial xmlns="http://www.esocial.gov.br/schema/evt/evtExpRisco/v_S_01_02_00">
-  <evtExpRisco id="${idEvt}">
+<eSocial xmlns="${namespaceDoEvento('S-2240')}">
+  <evtExpRisco Id="${idEvt}">
     <ideEvento>
       <indRetif>${event.is_rectification ? '2' : '1'}</indRetif>
       ${event.rectified_receipt_number ? `<nrRecibo>${event.rectified_receipt_number}</nrRecibo>` : ''}
@@ -3866,10 +3846,7 @@ ${r.risk_code_table_24 === '09.01.001'
       <procEmi>1</procEmi>
       <verProc>PrevSafe-v2.6</verProc>
     </ideEvento>
-    <ideEmpregador>
-      <tpInsc>${tpInscEmpregador}</tpInsc>
-      <nrInsc>${nrInscEmpregador}</nrInsc>
-    </ideEmpregador>
+${xmlDoIdeEmpregador(empregador, '    ')}
     <ideVinculo>
       <cpfTrab>${workerCpf}</cpfTrab>
       <matricula>${event.worker_registration}</matricula>
@@ -3877,13 +3854,10 @@ ${r.risk_code_table_24 === '09.01.001'
     <infoExpRisco>
       ${campoDoEvento('dtIniCondic', amb?.start_date, 'data de início da condição não informada')}
       ${amb?.end_date ? `<dtFimCondic>${amb.end_date}</dtFimCondic>` : ''}
-      <ideEstab>
-        <tpInsc>${tpInscEstab}</tpInsc>
-        <nrInsc>${nrInscEstab}</nrInsc>
-      </ideEstab>
       <infoAmb>
         <localAmb>1</localAmb>
         ${campoDoEvento('dscSetor', amb?.work_environment, 'ambiente de trabalho não descrito')}
+${xmlDaInscricaoDoAmbiente(inscricaoDoAmbiente(client), '        ')}
       </infoAmb>
       <infoAtiv>
         ${campoDoEvento('dscAtivDes', amb?.description_activities, 'atividades desempenhadas não descritas')}
@@ -3926,8 +3900,8 @@ ${blocoRespRegXml(event.client_id, amb?.start_date || dataDeHoje())}
       const ufCrmDoMedico = String(aso?.physician_uf || '').trim().toUpperCase();
 
       return `<?xml version="1.0" encoding="UTF-8"?>
-<eSocial xmlns="http://www.esocial.gov.br/schema/evt/evtMonit/v_S_01_02_00">
-  <evtMonit id="${idEvt}">
+<eSocial xmlns="${namespaceDoEvento('S-2220')}">
+  <evtMonit Id="${idEvt}">
     <ideEvento>
       <indRetif>${event.is_rectification ? '2' : '1'}</indRetif>
       ${event.rectified_receipt_number ? `<nrRecibo>${event.rectified_receipt_number}</nrRecibo>` : ''}
@@ -3935,10 +3909,7 @@ ${blocoRespRegXml(event.client_id, amb?.start_date || dataDeHoje())}
       <procEmi>1</procEmi>
       <verProc>PrevSafe-v2.6</verProc>
     </ideEvento>
-    <ideEmpregador>
-      <tpInsc>${tpInscEmpregador}</tpInsc>
-      <nrInsc>${nrInscEmpregador}</nrInsc>
-    </ideEmpregador>
+${xmlDoIdeEmpregador(empregador, '    ')}
     <ideVinculo>
       <cpfTrab>${workerCpf}</cpfTrab>
       <matricula>${textoXml(event.worker_registration)}</matricula>
@@ -3975,18 +3946,15 @@ ${blocoRespMonitXml(event.client_id, aso?.exam_date || dataDeHoje(), '      ')}
     if (event.event_type === 'S-2210') {
       const cat = event.cat_data;
       return `<?xml version="1.0" encoding="UTF-8"?>
-<eSocial xmlns="http://www.esocial.gov.br/schema/evt/evtCAT/v_S_01_02_00">
-  <evtCAT id="${idEvt}">
+<eSocial xmlns="${namespaceDoEvento('S-2210')}">
+  <evtCAT Id="${idEvt}">
     <ideEvento>
       <indRetif>${event.is_rectification ? '2' : '1'}</indRetif>
       <tpAmb>${event.environment === 'PRODUCAO' ? '1' : '2'}</tpAmb>
       <procEmi>1</procEmi>
       <verProc>PrevSafe-v2.6</verProc>
     </ideEvento>
-    <ideEmpregador>
-      <tpInsc>${tpInscEmpregador}</tpInsc>
-      <nrInsc>${nrInscEmpregador}</nrInsc>
-    </ideEmpregador>
+${xmlDoIdeEmpregador(empregador, '    ')}
     <ideVinculo>
       <cpfTrab>${workerCpf}</cpfTrab>
       <matricula>${event.worker_registration}</matricula>
@@ -4051,17 +4019,14 @@ ${blocoRespMonitXml(event.client_id, aso?.exam_date || dataDeHoje(), '      ')}
     if (event.event_type === 'S-2230') {
       const abs = event.absence_data;
       return `<?xml version="1.0" encoding="UTF-8"?>
-<eSocial xmlns="http://www.esocial.gov.br/schema/evt/evtAfastTemp/v_S_01_02_00">
-  <evtAfastTemp id="${idEvt}">
+<eSocial xmlns="${namespaceDoEvento('S-2230')}">
+  <evtAfastTemp Id="${idEvt}">
     <ideEvento>
       <tpAmb>${event.environment === 'PRODUCAO' ? '1' : '2'}</tpAmb>
       <procEmi>1</procEmi>
       <verProc>PrevSafe-v2.6</verProc>
     </ideEvento>
-    <ideEmpregador>
-      <tpInsc>${tpInscEmpregador}</tpInsc>
-      <nrInsc>${nrInscEmpregador}</nrInsc>
-    </ideEmpregador>
+${xmlDoIdeEmpregador(empregador, '    ')}
     <ideVinculo>
       <cpfTrab>${workerCpf}</cpfTrab>
       <matricula>${event.worker_registration}</matricula>
@@ -4089,17 +4054,14 @@ ${blocoRespMonitXml(event.client_id, aso?.exam_date || dataDeHoje(), '      ')}
     // S-3000
     const excl = event.exclusion_data;
     return `<?xml version="1.0" encoding="UTF-8"?>
-<eSocial xmlns="http://www.esocial.gov.br/schema/evt/evtExclusao/v_S_01_02_00">
-  <evtExclusao id="${idEvt}">
+<eSocial xmlns="${namespaceDoEvento('S-3000')}">
+  <evtExclusao Id="${idEvt}">
     <ideEvento>
       <tpAmb>${event.environment === 'PRODUCAO' ? '1' : '2'}</tpAmb>
       <procEmi>1</procEmi>
       <verProc>PrevSafe-v2.6</verProc>
     </ideEvento>
-    <ideEmpregador>
-      <tpInsc>${tpInscEmpregador}</tpInsc>
-      <nrInsc>${nrInscEmpregador}</nrInsc>
-    </ideEmpregador>
+${xmlDoIdeEmpregador(empregador, '    ')}
     <infoExclusao>
       <tpEvento>${excl?.target_event_type || 'S-2240'}</tpEvento>
       <nrRecEvt>${excl?.target_receipt_number || '1.2.202600.0000000000000000000-00'}</nrRecEvt>
@@ -4109,7 +4071,7 @@ ${blocoRespMonitXml(event.client_id, aso?.exam_date || dataDeHoje(), '      ')}
     </infoExclusao>
   </evtExclusao>
 </eSocial>`;
-  }, [blocoRespRegXml, blocoRespMonitXml, campoDoEvento, novoIdDoEvento, clients, organization.document_number]);
+  }, [blocoRespRegXml, blocoRespMonitXml, campoDoEvento, novoIdDoEvento, clients]);
 
   // Create eSocial Event
   const createESocialEvent = useCallback((data: Omit<ESocialEvent, 'id' | 'organization_id' | 'event_number' | 'created_at' | 'updated_at' | 'status'> & { status?: ESocialEventStatus }): ESocialEvent => {
@@ -4197,6 +4159,18 @@ ${blocoRespMonitXml(event.client_id, aso?.exam_date || dataDeHoje(), '      ')}
     if (!evt) return { success: false, errors: ['Evento não encontrado.'] };
 
     const errors: string[] = [];
+
+    // Empregador: mesma regra do XML (lib/esocialEmpregador.ts). Sem inscricao
+    // valida o <ideEmpregador> sai vazio, e o evento nao pode ficar pronto. O
+    // aviso (natureza sem codigo) nao bloqueia, mas vai na mensagem de retorno.
+    const clienteDoEvento = clients.find(c => c.id === evt.client_id);
+    const empregador = inscricaoDoEmpregador(clienteDoEvento);
+    if (empregador.ok === false) errors.push(empregador.motivo);
+    if (evt.event_type === 'S-2240') {
+      // {infoAmb/tpInsc} e {infoAmb/nrInsc} tem ocorrencia 1 no leiaute.
+      const ambiente = inscricaoDoAmbiente(clienteDoEvento);
+      if (ambiente.ok === false && empregador.ok) errors.push(ambiente.motivo);
+    }
 
     // General Worker Validations
     if (!evt.worker_name || evt.worker_name.trim().length < 3) {
@@ -4310,7 +4284,12 @@ ${blocoRespMonitXml(event.client_id, aso?.exam_date || dataDeHoje(), '      ')}
         status: newStatus,
         validation_errors: isValid ? [] : errors,
         return_code: isValid ? undefined : '422',
-        return_message: isValid ? 'Validação de schema XSD v.S-1.2 concluída com êxito.' : `Erros de validação encontrados (${errors.length}).`,
+        // Nao ha validacao contra o XSD aqui: a mensagem dizia "schema XSD
+        // v.S-1.2", versao que nem e mais a do leiaute.
+        return_message: isValid
+          ? `Conferência de campos do PrevSafe concluída (leiaute ${VERSAO_DO_LEIAUTE_ESOCIAL}). O esquema XSD só é aplicado pelo eSocial na recepção.`
+            + (empregador.ok && empregador.aviso ? ` Atenção: ${empregador.aviso}` : '')
+          : `Erros de validação encontrados (${errors.length}).`,
         updated_at: new Date().toISOString(),
         history: [
           ...(e.history || []),
@@ -4331,7 +4310,7 @@ ${blocoRespMonitXml(event.client_id, aso?.exam_date || dataDeHoje(), '      ')}
     });
 
     return { success: isValid, errors };
-  }, [esocialEvents, currentProfile.full_name, logAudit]);
+  }, [esocialEvents, clients, currentProfile.full_name, logAudit]);
 
   // Transmit Single eSocial Event
   const transmitESocialEvent = useCallback((id: string, certificateType: 'A1_DIGITAL' | 'A3_TOKEN_SMARTCARD' = 'A1_DIGITAL'): { success: boolean; receipt?: string; protocol?: string; error?: string } => {
@@ -6648,10 +6627,11 @@ ${blocoRespMonitXml(event.client_id, aso?.exam_date || dataDeHoje(), '      ')}
     const cat = catRecords.find(c => c.id === id);
     if (!cat) return { success: false, error: 'Registro CAT não encontrado.' };
 
-    // Empregador vem do cadastro do cliente. Sem CNPJ/CPF valido nao ha evento:
-    // o XML antes saia com o CNPJ 12345678000199 fixo no codigo.
+    // Empregador vem do cadastro do cliente, pela regra de
+    // lib/esocialEmpregador.ts. Sem CNPJ/CPF valido nao ha evento: o XML antes
+    // saia com o CNPJ 12345678000199 fixo no codigo.
     const empregador = identificacaoDoEmpregador(cat.client_id);
-    if (!empregador) return { success: false, error: ERRO_EMPREGADOR_SEM_DOCUMENTO };
+    if (empregador.ok === false) return { success: false, error: empregador.motivo };
 
     // Recibo e protocolo nao sao gerados aqui: eles so existem quando o
     // eSocial os emite. Antes eram Math.random() e o registro nascia como
@@ -6678,7 +6658,7 @@ ${blocoRespMonitXml(event.client_id, aso?.exam_date || dataDeHoje(), '      ')}
       worker_registration: cat.worker_registration,
       worker_cbo: cat.worker_cbo || undefined,
       worker_role: cat.worker_role || '',
-      xml_content: `<?xml version="1.0" encoding="UTF-8"?><eSocial xmlns="http://www.esocial.gov.br/schema/evt/evtCAT/v_S_01_02_00"><evtCAT id="${novoIdDoEvento(empregador.tpInsc, empregador.nrInsc)}"><ideEmpregador><tpInsc>${empregador.tpInsc}</tpInsc><nrInsc>${empregador.nrInsc}</nrInsc></ideEmpregador><ideTrabalhador><cpfTrab>${cat.worker_cpf.replace(/\D/g, '')}</cpfTrab></ideTrabalhador><cat><dtAcid>${cat.accident_date}</dtAcid><tpAcid>${cat.accident_type === 'TIPICO' ? 1 : 2}</tpAcid><hrAcid>${cat.accident_time.replace(':', '')}</hrAcid><localAcidente><tpLocal>${cat.location_type === 'ESTABELECIMENTO_EMPREGADOR' ? 1 : 3}</tpLocal><dscLocal>${cat.location_description}</dscLocal></localAcidente><parteAtingida><codParteAting>${cat.body_part_code}</codParteAting></parteAtingida><agenteCausador><codAgntCausador>${cat.causative_agent_code}</codAgntCausador></agenteCausador><atestado><dtAtendimento>${cat.accident_date}</dtAtendimento><codCID>${cat.cid_10}</codCID><emitente><nmEmit>${cat.medical_name}</nmEmit><ideOC>1</ideOC><nrOC>${cat.medical_crm}</nrOC><ufOC>${cat.medical_uf}</ufOC></emitente></atestado></cat></evtCAT></eSocial>`,
+      xml_content: `<?xml version="1.0" encoding="UTF-8"?><eSocial xmlns="${namespaceDoEvento('S-2210')}"><evtCAT Id="${novoIdDoEvento(empregador.tpInsc, empregador.nrInsc)}">${xmlDoIdeEmpregador(empregador)}<ideTrabalhador><cpfTrab>${cat.worker_cpf.replace(/\D/g, '')}</cpfTrab></ideTrabalhador><cat><dtAcid>${cat.accident_date}</dtAcid><tpAcid>${cat.accident_type === 'TIPICO' ? 1 : 2}</tpAcid><hrAcid>${cat.accident_time.replace(':', '')}</hrAcid><localAcidente><tpLocal>${cat.location_type === 'ESTABELECIMENTO_EMPREGADOR' ? 1 : 3}</tpLocal><dscLocal>${cat.location_description}</dscLocal></localAcidente><parteAtingida><codParteAting>${cat.body_part_code}</codParteAting></parteAtingida><agenteCausador><codAgntCausador>${cat.causative_agent_code}</codAgntCausador></agenteCausador><atestado><dtAtendimento>${cat.accident_date}</dtAtendimento><codCID>${cat.cid_10}</codCID><emitente><nmEmit>${cat.medical_name}</nmEmit><ideOC>1</ideOC><nrOC>${cat.medical_crm}</nrOC><ufOC>${cat.medical_uf}</ufOC></emitente></atestado></cat></evtCAT></eSocial>`,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
     };
@@ -6687,7 +6667,7 @@ ${blocoRespMonitXml(event.client_id, aso?.exam_date || dataDeHoje(), '      ')}
     logAudit('TRANSMIT_ESOCIAL_EVENT' as any, 'ESOCIAL' as any, id, `CAT ${cat.cat_number} validada para envio (S-2210)`, { resultado: 'VALIDADO_PARA_ENVIO' });
 
     return { success: true };
-  }, [catRecords, organization.id, logAudit]);
+  }, [catRecords, organization.id, logAudit, identificacaoDoEmpregador, novoIdDoEvento]);
 
   const addWorkAbsence = useCallback((data: Omit<SSTWorkAbsence, 'id' | 'organization_id' | 'created_at'>): SSTWorkAbsence => {
     const newAbs: SSTWorkAbsence = {
@@ -6710,10 +6690,11 @@ ${blocoRespMonitXml(event.client_id, aso?.exam_date || dataDeHoje(), '      ')}
     const abs = workAbsences.find(a => a.id === id);
     if (!abs) return { success: false, error: 'Registro de afastamento não encontrado.' };
 
-    // Empregador vem do cadastro do cliente. Sem CNPJ/CPF valido nao ha evento:
-    // o XML antes saia com o CNPJ 12345678000199 fixo no codigo.
+    // Empregador vem do cadastro do cliente, pela regra de
+    // lib/esocialEmpregador.ts. Sem CNPJ/CPF valido nao ha evento: o XML antes
+    // saia com o CNPJ 12345678000199 fixo no codigo.
     const empregador = identificacaoDoEmpregador(abs.client_id);
-    if (!empregador) return { success: false, error: ERRO_EMPREGADOR_SEM_DOCUMENTO };
+    if (empregador.ok === false) return { success: false, error: empregador.motivo };
 
     // Recibo e protocolo nao sao gerados aqui: eles so existem quando o
     // eSocial os emite. Antes eram Math.random() e o registro nascia como
@@ -6740,14 +6721,14 @@ ${blocoRespMonitXml(event.client_id, aso?.exam_date || dataDeHoje(), '      ')}
       worker_registration: abs.worker_registration,
       worker_cbo: abs.worker_cbo || undefined,
       worker_role: '',
-      xml_content: `<?xml version="1.0" encoding="UTF-8"?><eSocial xmlns="http://www.esocial.gov.br/schema/evt/evtAfastTemp/v_S_01_02_00"><evtAfastTemp id="${novoIdDoEvento(empregador.tpInsc, empregador.nrInsc)}"><ideEmpregador><tpInsc>${empregador.tpInsc}</tpInsc><nrInsc>${empregador.nrInsc}</nrInsc></ideEmpregador><ideTrabalhador><cpfTrab>${abs.worker_cpf.replace(/\D/g, '')}</cpfTrab></ideTrabalhador><infoAfastamento><iniAfastamento><dtIniAfast>${abs.start_date}</dtIniAfast><codMotAfast>${abs.reason_code_table_18}</codMotAfast><infoAtestado><codCID>${abs.cid_10 || 'N/A'}</codCID><qtdDiasAfast>${abs.estimated_days}</qtdDiasAfast><emitente><nmEmit>${abs.physician_name || ''}</nmEmit><nrOC>${abs.physician_crm || ''}</nrOC><ufOC>${abs.physician_uf || ''}</ufOC></emitente></infoAtestado></iniAfastamento></infoAfastamento></evtAfastTemp></eSocial>`,
+      xml_content: `<?xml version="1.0" encoding="UTF-8"?><eSocial xmlns="${namespaceDoEvento('S-2230')}"><evtAfastTemp Id="${novoIdDoEvento(empregador.tpInsc, empregador.nrInsc)}">${xmlDoIdeEmpregador(empregador)}<ideTrabalhador><cpfTrab>${abs.worker_cpf.replace(/\D/g, '')}</cpfTrab></ideTrabalhador><infoAfastamento><iniAfastamento><dtIniAfast>${abs.start_date}</dtIniAfast><codMotAfast>${abs.reason_code_table_18}</codMotAfast><infoAtestado><codCID>${abs.cid_10 || 'N/A'}</codCID><qtdDiasAfast>${abs.estimated_days}</qtdDiasAfast><emitente><nmEmit>${abs.physician_name || ''}</nmEmit><nrOC>${abs.physician_crm || ''}</nrOC><ufOC>${abs.physician_uf || ''}</ufOC></emitente></infoAtestado></iniAfastamento></infoAfastamento></evtAfastTemp></eSocial>`,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
     };
     setEsocialEvents(prev => [evt, ...prev]);
 
     return { success: true };
-  }, [workAbsences, organization.id]);
+  }, [workAbsences, organization.id, identificacaoDoEmpregador, novoIdDoEvento]);
 
   const generateS2240FromGhe = useCallback((gheId: string): { evento: ESocialEvent | null; motivo: string } => {
     const ghe = ghes.find(g => g.id === gheId);
@@ -6813,14 +6794,11 @@ ${blocoRespMonitXml(event.client_id, aso?.exam_date || dataDeHoje(), '      ')}
       };
     }
 
-    // Empregador vem do cadastro do cliente. Sem CNPJ/CPF valido nao ha evento.
+    // Empregador vem do cadastro do cliente, pela regra de
+    // lib/esocialEmpregador.ts. Sem CNPJ/CPF valido nao ha evento.
     const empregador = identificacaoDoEmpregador(ghe.client_id);
-    if (!empregador) {
-      return {
-        evento: null,
-        motivo: 'Cliente sem CNPJ, CPF, CAEPF ou CNO válido no cadastro. Sem inscrição do '
-          + 'empregador não há evento a transmitir.'
-      };
+    if (empregador.ok === false) {
+      return { evento: null, motivo: empregador.motivo };
     }
 
     const risksXml = risks.map(r => `
@@ -6839,17 +6817,14 @@ ${r.risk_code_table_24 === '09.01.001' ? '' : xmlDoEpcEpi({
           </fatRisco>`).join('');
 
     const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<eSocial xmlns="http://www.esocial.gov.br/schema/evt/evtExpRisco/v_S_01_02_00">
-  <evtExpRisco id="${novoIdDoEvento(empregador.tpInsc, empregador.nrInsc)}">
+<eSocial xmlns="${namespaceDoEvento('S-2240')}">
+  <evtExpRisco Id="${novoIdDoEvento(empregador.tpInsc, empregador.nrInsc)}">
     <ideEvento>
       <tpAmb>1</tpAmb>
       <procEmi>1</procEmi>
       <verProc>PrevSafe_SST_v1.0</verProc>
     </ideEvento>
-    <ideEmpregador>
-      <tpInsc>${empregador.tpInsc}</tpInsc>
-      <nrInsc>${empregador.nrInsc}</nrInsc>
-    </ideEmpregador>
+${xmlDoIdeEmpregador(empregador, '    ')}
     <ideTrabalhador>
       <cpfTrab>${cpfDoTrabalhador}</cpfTrab>
       <matricula>${trabalhador.registration_number || ''}</matricula>
@@ -6859,6 +6834,7 @@ ${r.risk_code_table_24 === '09.01.001' ? '' : xmlDoEpcEpi({
       <infoAmb>
         <localAmb>1</localAmb>
         <dscSetor>${ghe.name}</dscSetor>
+${xmlDaInscricaoDoAmbiente(inscricaoDoAmbiente(clients.find(c => c.id === ghe.client_id)), '        ')}
         <dscAtiv>${ghe.description}</dscAtiv>
       </infoAmb>
       <agNoc>${risksXml}
@@ -6891,7 +6867,7 @@ ${blocoRespRegXml(ghe.client_id, dataDeHoje())}
 
     setEsocialEvents(prev => [newEvt, ...prev]);
     return { evento: newEvt, motivo: '' };
-  }, [blocoRespRegXml, ghes, environmentalRisks, employees, organization.id]);
+  }, [blocoRespRegXml, ghes, environmentalRisks, employees, organization.id, clients, identificacaoDoEmpregador, novoIdDoEvento]);
 
   /**
    * Monta o S-2220 a partir de um ASO registrado.
@@ -6920,8 +6896,8 @@ ${blocoRespRegXml(ghe.client_id, dataDeHoje())}
     const montagem = montarAsoDoEvento(emp, aso);
 
     // Empregador vem do cadastro do cliente. Sem CNPJ/CPF valido nao ha evento
-    // (a pre-visualizacao cairia no documento da propria organizacao).
-    if (!identificacaoDoEmpregador(emp.client_id)) return null;
+    // (a pre-visualizacao sairia com o <ideEmpregador> vazio e o motivo).
+    if (!identificacaoDoEmpregador(emp.client_id).ok) return null;
 
     // O XML NAO e mais montado aqui. Esta copia gravava o evento sem
     // <ideEvento> (ocorrencia 1 no leiaute), com Id de 20 caracteres feito do
@@ -6959,12 +6935,13 @@ ${blocoRespRegXml(ghe.client_id, dataDeHoje())}
     const cat = catRecords.find(c => c.id === catId);
     if (!cat) return null;
 
-    // Empregador vem do cadastro do cliente. Sem CNPJ/CPF valido nao ha evento:
-    // o XML antes saia com o CNPJ 12345678000199 fixo no codigo.
+    // Empregador vem do cadastro do cliente, pela regra de
+    // lib/esocialEmpregador.ts. Sem CNPJ/CPF valido nao ha evento: o XML antes
+    // saia com o CNPJ 12345678000199 fixo no codigo.
     const empregador = identificacaoDoEmpregador(cat.client_id);
-    if (!empregador) return null;
+    if (!empregador.ok) return null;
 
-    const xml = `<?xml version="1.0" encoding="UTF-8"?><eSocial xmlns="http://www.esocial.gov.br/schema/evt/evtCAT/v_S_01_02_00"><evtCAT id="${novoIdDoEvento(empregador.tpInsc, empregador.nrInsc)}"><ideEmpregador><tpInsc>${empregador.tpInsc}</tpInsc><nrInsc>${empregador.nrInsc}</nrInsc></ideEmpregador><ideTrabalhador><cpfTrab>${cat.worker_cpf.replace(/\D/g, '')}</cpfTrab></ideTrabalhador><cat><dtAcid>${cat.accident_date}</dtAcid><tpAcid>${cat.accident_type === 'TIPICO' ? 1 : 2}</tpAcid><hrAcid>${cat.accident_time.replace(':', '')}</hrAcid><localAcidente><tpLocal>${cat.location_type === 'ESTABELECIMENTO_EMPREGADOR' ? 1 : 3}</tpLocal><dscLocal>${cat.location_description}</dscLocal></localAcidente><parteAtingida><codParteAting>${cat.body_part_code}</codParteAting></parteAtingida><agenteCausador><codAgntCausador>${cat.causative_agent_code}</codAgntCausador></agenteCausador><atestado><dtAtendimento>${cat.accident_date}</dtAtendimento><codCID>${cat.cid_10}</codCID><emitente><nmEmit>${cat.medical_name}</nmEmit><ideOC>1</ideOC><nrOC>${cat.medical_crm}</nrOC><ufOC>${cat.medical_uf}</ufOC></emitente></atestado></cat></evtCAT></eSocial>`;
+    const xml = `<?xml version="1.0" encoding="UTF-8"?><eSocial xmlns="${namespaceDoEvento('S-2210')}"><evtCAT Id="${novoIdDoEvento(empregador.tpInsc, empregador.nrInsc)}">${xmlDoIdeEmpregador(empregador)}<ideTrabalhador><cpfTrab>${cat.worker_cpf.replace(/\D/g, '')}</cpfTrab></ideTrabalhador><cat><dtAcid>${cat.accident_date}</dtAcid><tpAcid>${cat.accident_type === 'TIPICO' ? 1 : 2}</tpAcid><hrAcid>${cat.accident_time.replace(':', '')}</hrAcid><localAcidente><tpLocal>${cat.location_type === 'ESTABELECIMENTO_EMPREGADOR' ? 1 : 3}</tpLocal><dscLocal>${cat.location_description}</dscLocal></localAcidente><parteAtingida><codParteAting>${cat.body_part_code}</codParteAting></parteAtingida><agenteCausador><codAgntCausador>${cat.causative_agent_code}</codAgntCausador></agenteCausador><atestado><dtAtendimento>${cat.accident_date}</dtAtendimento><codCID>${cat.cid_10}</codCID><emitente><nmEmit>${cat.medical_name}</nmEmit><ideOC>1</ideOC><nrOC>${cat.medical_crm}</nrOC><ufOC>${cat.medical_uf}</ufOC></emitente></atestado></cat></evtCAT></eSocial>`;
 
     const newEvt: ESocialEvent = {
       id: novoId('evt-2210'),
@@ -6987,18 +6964,19 @@ ${blocoRespRegXml(ghe.client_id, dataDeHoje())}
 
     setEsocialEvents(prev => [newEvt, ...prev]);
     return newEvt;
-  }, [catRecords, organization.id]);
+  }, [catRecords, organization.id, identificacaoDoEmpregador, novoIdDoEvento]);
 
   const generateS2230FromAbsence = useCallback((absenceId: string): ESocialEvent | null => {
     const abs = workAbsences.find(a => a.id === absenceId);
     if (!abs) return null;
 
-    // Empregador vem do cadastro do cliente. Sem CNPJ/CPF valido nao ha evento:
-    // o XML antes saia com o CNPJ 12345678000199 fixo no codigo.
+    // Empregador vem do cadastro do cliente, pela regra de
+    // lib/esocialEmpregador.ts. Sem CNPJ/CPF valido nao ha evento: o XML antes
+    // saia com o CNPJ 12345678000199 fixo no codigo.
     const empregador = identificacaoDoEmpregador(abs.client_id);
-    if (!empregador) return null;
+    if (!empregador.ok) return null;
 
-    const xml = `<?xml version="1.0" encoding="UTF-8"?><eSocial xmlns="http://www.esocial.gov.br/schema/evt/evtAfastTemp/v_S_01_02_00"><evtAfastTemp id="${novoIdDoEvento(empregador.tpInsc, empregador.nrInsc)}"><ideEmpregador><tpInsc>${empregador.tpInsc}</tpInsc><nrInsc>${empregador.nrInsc}</nrInsc></ideEmpregador><ideTrabalhador><cpfTrab>${abs.worker_cpf.replace(/\D/g, '')}</cpfTrab></ideTrabalhador><infoAfastamento><iniAfastamento><dtIniAfast>${abs.start_date}</dtIniAfast><codMotAfast>${abs.reason_code_table_18}</codMotAfast><infoAtestado><codCID>${abs.cid_10 || 'N/A'}</codCID><qtdDiasAfast>${abs.estimated_days}</qtdDiasAfast><emitente><nmEmit>${abs.physician_name || ''}</nmEmit><nrOC>${abs.physician_crm || ''}</nrOC><ufOC>${abs.physician_uf || ''}</ufOC></emitente></infoAtestado></iniAfastamento></infoAfastamento></evtAfastTemp></eSocial>`;
+    const xml = `<?xml version="1.0" encoding="UTF-8"?><eSocial xmlns="${namespaceDoEvento('S-2230')}"><evtAfastTemp Id="${novoIdDoEvento(empregador.tpInsc, empregador.nrInsc)}">${xmlDoIdeEmpregador(empregador)}<ideTrabalhador><cpfTrab>${abs.worker_cpf.replace(/\D/g, '')}</cpfTrab></ideTrabalhador><infoAfastamento><iniAfastamento><dtIniAfast>${abs.start_date}</dtIniAfast><codMotAfast>${abs.reason_code_table_18}</codMotAfast><infoAtestado><codCID>${abs.cid_10 || 'N/A'}</codCID><qtdDiasAfast>${abs.estimated_days}</qtdDiasAfast><emitente><nmEmit>${abs.physician_name || ''}</nmEmit><nrOC>${abs.physician_crm || ''}</nrOC><ufOC>${abs.physician_uf || ''}</ufOC></emitente></infoAtestado></iniAfastamento></infoAfastamento></evtAfastTemp></eSocial>`;
 
     const newEvt: ESocialEvent = {
       id: novoId('evt-2230'),
@@ -7021,7 +6999,7 @@ ${blocoRespRegXml(ghe.client_id, dataDeHoje())}
 
     setEsocialEvents(prev => [newEvt, ...prev]);
     return newEvt;
-  }, [workAbsences, organization.id]);
+  }, [workAbsences, organization.id, identificacaoDoEmpregador, novoIdDoEvento]);
 
   // ==========================================
   // EPI Management Implementations (NR-06, Biometria & eSocial)
