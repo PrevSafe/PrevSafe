@@ -516,7 +516,14 @@ check(aRuido && /Manter e monitorar/.test(aRuido.medida), 'o risco de ruído con
 check(aPsico?.id === 'R-GHE-01-02', 'o número da ação vem da ordem do inventário (R-GHE-01-02)');
 
 const pdfFonte = semComentarios(ler('lib/pdfExportService.ts'));
-const corpoPgr = corpoDe(pdfFonte, 'export function exportPGRDocumentPdf(');
+// O PGR e montado por montarPgr (duas passagens: a segunda, como MINUTA, quando
+// ha pendencia); exportPGRDocumentPdf so decide e salva. O corpo que importa e
+// o de montarPgr, ate a exportada que vem logo depois dele.
+const corpoPgr = (() => {
+  const i = pdfFonte.indexOf('function montarPgr(');
+  const j = pdfFonte.indexOf('export function exportPGRDocumentPdf(', i);
+  return i >= 0 && j > i ? pdfFonte.slice(i, j) : '';
+})();
 const corpoRel = corpoDe(pdfFonte, 'export function exportPsychosocialReportPdf(');
 // O plano passou a ser registro: a chamada leva as opcoes (os registros, o
 // efetivo da regra dos 20% e a data da emissao). A intencao continua a

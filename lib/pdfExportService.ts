@@ -2991,7 +2991,7 @@ export function exportTrainingAttendanceExcel(
  * reaparecem no checklist da secao 10.2. Um PGR com lacuna declarada e
  * auditavel; um PGR com lacuna preenchida por exemplo e um problema.
  */
-export function exportPGRDocumentPdf({
+function montarPgr({
   client,
   organization,
   ghes = [],
@@ -3026,8 +3026,11 @@ export function exportPGRDocumentPdf({
   technicalResponsibilities?: TechnicalResponsibility[];
   /** Colecao pgrActionPlan (lib/planoDeAcao.ts). Pode vir com todos os clientes. */
   pgrActionPlan?: PgrActionPlanItem[];
-}) {
+}, pendenciasDaMinuta = 0): { doc: jsPDF; pendencias: number; arquivo: string } {
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+  // Com pendencia o documento e MINUTA: capa, cabecalho, termo e marca
+  // d'agua dizem isso desde a primeira pagina (ver exportPGRDocumentPdf).
+  const minuta = pendenciasDaMinuta > 0;
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
   const margin = 14;
@@ -3189,7 +3192,7 @@ export function exportPGRDocumentPdf({
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(8);
     doc.setFont('helvetica', 'bold');
-    doc.text('PGR — PROGRAMA DE GERENCIAMENTO DE RISCOS', margin, 10);
+    doc.text(minuta ? 'MINUTA DE PGR — COM PENDÊNCIAS (SEÇÃO 10.3)' : 'PGR — PROGRAMA DE GERENCIAMENTO DE RISCOS', margin, 10);
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(148, 163, 184);
     doc.text(
@@ -3344,6 +3347,15 @@ export function exportPGRDocumentPdf({
     `Próxima revisão periódica: ${formatDate(proximaRevisao)}`,
     pageWidth / 2, 212, { align: 'center' }
   );
+  if (minuta) {
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(9);
+    doc.setTextColor(180, 83, 9);
+    doc.text(
+      `MINUTA — ${pendenciasDaMinuta} pendência(s) na seção 10.3. Não entregar como PGR concluído.`,
+      pageWidth / 2, 224, { align: 'center', maxWidth: util }
+    );
+  }
 
   novaPagina();
   duasColunas('ORGANIZAÇÃO E ESTABELECIMENTO', [
@@ -3416,45 +3428,56 @@ Data: ${data}`;
         identificacaoDoSignatario(
           LINHA_PARA_PREENCHER, LINHA_PARA_PREENCHER, LINHA_PARA_PREENCHER), '']];
 
-  // O quadro inteiro fica na mesma pagina: um campo de assinatura cortado ao
-  // meio pela quebra de pagina nao serve para assinar.
-  garantirEspaco(ASSINATURA_ALTURA_MM * (3 + linhaDaCipa.length) + 16);
-  tabela({
-    head: [['Função', 'Nome, cargo e data', 'Assinatura (manual ou eletrônica)']],
-    body: [
-      ['Responsável legal da organização',
-        identificacaoDoSignatario(
-          estabelecimento?.legal_representative?.trim() || LINHA_PARA_PREENCHER,
-          LINHA_PARA_PREENCHER, LINHA_PARA_PREENCHER), ''],
-      ['Responsável técnico pela elaboração',
-        identificacaoDoSignatario(
-          assinaturaPGR.nome || LINHA_PARA_PREENCHER,
-          assinaturaPGR.registro
-            || organization?.technical_responsible_council?.trim()
-            || LINHA_PARA_PREENCHER,
-          formatDate(emissao)), ''],
-      ['Responsável pela implementação do PGR',
-        identificacaoDoSignatario(
-          estabelecimento?.pgr_coordinator?.trim() || LINHA_PARA_PREENCHER,
-          LINHA_PARA_PREENCHER, LINHA_PARA_PREENCHER), ''],
-      ...linhaDaCipa
-    ],
-    styles: { fontSize: 6.8, cellPadding: 2.4, overflow: 'linebreak' },
-    columnStyles: {
-      0: { cellWidth: 40 },
-      1: { cellWidth: pageWidth - margin * 2 - 40 - ASSINATURA_LARGURA_MM },
-      2: { cellWidth: ASSINATURA_LARGURA_MM, minCellHeight: ASSINATURA_ALTURA_MM }
-    },
-    didDrawCell: (dados: any) => {
-      if (dados.section !== 'body' || dados.column.index !== 2) return;
-      // Linha de base para a assinatura a mao, no terco inferior do quadro: o
-      // espaco acima dela e onde cabe o carimbo de uma assinatura digital.
-      const linhaY = dados.cell.y + dados.cell.height - 7;
-      doc.setDrawColor(148, 163, 184);
-      doc.setLineWidth(0.15);
-      doc.line(dados.cell.x + 5, linhaY, dados.cell.x + dados.cell.width - 5, linhaY);
-    }
-  });
+  // O mesmo quadro sai no termo (inicio) e na conclusao (fim, 10.3): o
+  // usuario quis os dois lugares de assinatura.
+  const quadroDeAssinaturas = () => {
+    // O quadro inteiro fica na mesma pagina: um campo de assinatura cortado ao
+    // meio pela quebra de pagina nao serve para assinar.
+    garantirEspaco(ASSINATURA_ALTURA_MM * (3 + linhaDaCipa.length) + 16);
+    tabela({
+      head: [['Função', 'Nome, cargo e data', 'Assinatura (manual ou eletrônica)']],
+      body: [
+        ['Responsável legal da organização',
+          identificacaoDoSignatario(
+            estabelecimento?.legal_representative?.trim() || LINHA_PARA_PREENCHER,
+            LINHA_PARA_PREENCHER, LINHA_PARA_PREENCHER), ''],
+        ['Responsável técnico pela elaboração',
+          identificacaoDoSignatario(
+            assinaturaPGR.nome || LINHA_PARA_PREENCHER,
+            assinaturaPGR.registro
+              || organization?.technical_responsible_council?.trim()
+              || LINHA_PARA_PREENCHER,
+            formatDate(emissao)), ''],
+        ['Responsável pela implementação do PGR',
+          identificacaoDoSignatario(
+            estabelecimento?.pgr_coordinator?.trim() || LINHA_PARA_PREENCHER,
+            LINHA_PARA_PREENCHER, LINHA_PARA_PREENCHER), ''],
+        ...linhaDaCipa
+      ],
+      styles: { fontSize: 6.8, cellPadding: 2.4, overflow: 'linebreak' },
+      columnStyles: {
+        0: { cellWidth: 40 },
+        1: { cellWidth: pageWidth - margin * 2 - 40 - ASSINATURA_LARGURA_MM },
+        2: { cellWidth: ASSINATURA_LARGURA_MM, minCellHeight: ASSINATURA_ALTURA_MM }
+      },
+      didDrawCell: (dados: any) => {
+        if (dados.section !== 'body' || dados.column.index !== 2) return;
+        // Linha de base para a assinatura a mao, no terco inferior do quadro: o
+        // espaco acima dela e onde cabe o carimbo de uma assinatura digital.
+        const linhaY = dados.cell.y + dados.cell.height - 7;
+        doc.setDrawColor(148, 163, 184);
+        doc.setLineWidth(0.15);
+        doc.line(dados.cell.x + 5, linhaY, dados.cell.x + dados.cell.width - 5, linhaY);
+      }
+    });
+  };
+  quadroDeAssinaturas();
+  if (minuta) {
+    paragrafo(
+      'MINUTA: este PGR tem pendências (seção 10.3). Não o assine nem o entregue como concluído: ' +
+      'resolva as pendências e emita o documento de novo, que sai com a conclusão e as assinaturas.'
+    );
+  }
   paragrafo(
     'As NR não definem um profissional específico para elaborar o PGR; a responsabilidade é da ' +
     'organização, que deve escolher profissional com competência técnica (Orientação Técnica SIT ' +
@@ -5314,10 +5337,71 @@ Data: ${data}`;
     styles: { fontSize: 6.4, cellPadding: 1.5, overflow: 'linebreak' }
   });
 
-  secao(`10.3 Pendências deste PGR (${pendencias.length})`);
   if (pendencias.length === 0) {
-    paragrafo('Nenhuma pendência: todos os campos exigidos pelo modelo foram preenchidos.');
+    // Sem pendencia, o documento fecha: conclusao tirada dos dados - nenhuma
+    // frase sobre o estabelecimento que nao venha do inventario e do plano - e
+    // o quadro de assinaturas do termo, repetido para a entrega.
+    secao('10.3 Conclusão e encerramento');
+    const niveis = { MUITO_ALTO: 0, ALTO: 0, MEDIO: 0, BAIXO: 0 } as Record<string, number>;
+    let ausencias = 0;
+    riscosDoCliente.forEach((r: any) => {
+      if (ehAusenciaDeRisco(r)) { ausencias++; return; }
+      const c = classificarRisco(r?.severity, r?.probability);
+      if (c && c.nivel in niveis) niveis[c.nivel]++;
+    });
+    const comRisco = riscosDoCliente.length - ausencias;
+    const porNivel = [
+      [niveis.MUITO_ALTO, 'muito alto'], [niveis.ALTO, 'alto'], [niveis.MEDIO, 'médio'], [niveis.BAIXO, 'baixo']
+    ].filter(([n]) => (n as number) > 0).map(([n, rotulo]) => `${n} de nível ${rotulo}`);
+    // "a, b e c": a enumeracao em portugues, e nao uma lista de virgulas.
+    const emFrase = (itens: string[]) =>
+      itens.length <= 1 ? (itens[0] || '') : `${itens.slice(0, -1).join(', ')} e ${itens[itens.length - 1]}`;
+    const aceitasNaConclusao = acoesDoPlanoDoCliente.filter((a) => a.aceita);
+    const concluidas = aceitasNaConclusao.filter(
+      (a) => a.registro?.status === 'CONCLUIDA' || a.registro?.status === 'EFICACIA_VERIFICADA'
+    );
+    // Prazo so das que estao em aberto: o da acao concluida ja passou e nao
+    // diz nada a quem recebe o documento.
+    const prazosEmAberto = aceitasNaConclusao
+      .filter((a) => !concluidas.includes(a))
+      .map((a) => a.prazo).filter(Boolean).sort();
+    const situacaoDoPlano = (() => {
+      if (aceitasNaConclusao.length === 0) return 'nenhuma medida a introduzir ou aprimorar no inventário desta emissão';
+      const emAberto = aceitasNaConclusao.length - concluidas.length;
+      // As concluidas e as em execucao sao PARTE das aceitas: "2 aceitas: 1
+      // concluida e 1 em execucao", e nao uma soma.
+      const partes: string[] = [];
+      if (concluidas.length > 0) partes.push(`${concluidas.length} concluída(s)`);
+      if (emAberto > 0) {
+        const ate = prazosEmAberto.length
+          ? (prazosEmAberto[0] === prazosEmAberto[prazosEmAberto.length - 1]
+            ? `, com prazo em ${formatDate(prazosEmAberto[0])}`
+            : `, com prazos de ${formatDate(prazosEmAberto[0])} a ${formatDate(prazosEmAberto[prazosEmAberto.length - 1])}`)
+          : '';
+        partes.push(`${emAberto} em execução${ate}`);
+      }
+      return `${aceitasNaConclusao.length} ação(ões) aceita(s): ${emFrase(partes)}`;
+    })();
+    const nomeDoEstabelecimento = estabelecimento?.name || client.trade_name || client.legal_name || '';
+    paragrafo(
+      `Este Programa de Gerenciamento de Riscos${nomeDoEstabelecimento ? ` do estabelecimento ${nomeDoEstabelecimento}` : ''}, ` +
+      `da organização ${client.legal_name || client.trade_name || ''}, foi emitido em ${formatDate(emissao)} com todos os ` +
+      'campos exigidos por este modelo preenchidos (seções 10.2 e 10.3).'
+    );
+    lista([
+      comRisco > 0
+        ? `Inventário de riscos (seção 7): ${comRisco} risco(s) em ${gheDoCliente.length} grupo(s) de exposição${porNivel.length ? `, sendo ${emFrase(porNivel)}` : ''}.`
+        : `Inventário de riscos (seção 7): ausência de risco ocupacional registrada em ${gheDoCliente.length} grupo(s) de exposição.`,
+      `Plano de ação (seção 8): ${situacaoDoPlano}.`,
+      `Revisão: a avaliação de riscos é revista até ${formatDate(proximaRevisao)} (subitem 1.5.4.4.6.1), ou antes, em qualquer das hipóteses do subitem 1.5.4.4.6 (seção 9.9).`,
+      'A organização implementa o gerenciamento de riscos ocupacionais no estabelecimento (subitem 1.5.3.1), executa e acompanha o plano de ação da seção 8 e mantém este PGR disponível aos trabalhadores interessados, aos sindicatos representantes das categorias profissionais e à Inspeção do Trabalho (subitem 1.5.7.2.1).'
+    ]);
+    paragrafo('Os documentos integrantes do PGR são datados e assinados (subitem 1.5.7.2):', 7);
+    quadroDeAssinaturas();
+    const cidadeDaEmissao = estabelecimento?.city?.trim() || client.city?.trim() || '';
+    paragrafo(`Local e data: ${cidadeDaEmissao ? `${cidadeDaEmissao}${(estabelecimento?.state || client.state) ? `/${estabelecimento?.state || client.state}` : ''}` : LINHA_PARA_PREENCHER}, ${formatDate(emissao)}.`, 7);
   } else {
+    secao(`10.3 Pendências deste PGR (${pendencias.length})`);
     tabela({
       head: [['Seção', 'O que falta']],
       body: pendencias.map((p) => [p.secao, p.texto]),
@@ -5333,7 +5417,39 @@ Data: ${data}`;
   }
 
   applyPageNumbers(doc);
-  doc.save(`pgr-nr01-${(client.trade_name || client.legal_name || 'empresa').replace(/\s+/g, '_').toLowerCase()}.pdf`);
+  if (minuta) {
+    // Marca d'agua translucida em toda pagina, como no PCMSO sem medico.
+    const GState = (doc as any).GState;
+    for (let p = 1; p <= doc.getNumberOfPages(); p++) {
+      doc.setPage(p);
+      doc.saveGraphicsState();
+      if (GState) doc.setGState(new GState({ opacity: 0.12 }));
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(72);
+      doc.setTextColor(180, 83, 9);
+      doc.text('MINUTA', pageWidth / 2 - 48, pageHeight / 2 + 30, { angle: 45 });
+      doc.restoreGraphicsState();
+    }
+  }
+  return {
+    doc,
+    pendencias: pendencias.length,
+    arquivo: `${minuta ? 'minuta-' : ''}pgr-nr01-${(client.trade_name || client.legal_name || 'empresa').replace(/\s+/g, '_').toLowerCase()}.pdf`
+  };
+}
+
+/**
+ * PGR — Programa de Gerenciamento de Riscos (NR-01, item 1.5).
+ *
+ * Monta duas vezes quando precisa: as pendencias so se conhecem no fim, e a
+ * capa, o cabecalho e o termo - que saem antes - tem de dizer MINUTA desde a
+ * primeira pagina. Sem pendencia, a primeira montagem ja e o documento final,
+ * com a conclusao e as assinaturas na 10.3.
+ */
+export function exportPGRDocumentPdf(dados: Parameters<typeof montarPgr>[0]) {
+  let montado = montarPgr(dados);
+  if (montado.pendencias > 0) montado = montarPgr(dados, montado.pendencias);
+  montado.doc.save(montado.arquivo);
 }
 
 

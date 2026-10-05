@@ -2398,6 +2398,75 @@ check(
 );
 
 // ===========================================================================
+// 3m. CONCLUSAO (SEM PENDENCIA) E MINUTA (COM PENDENCIA)
+// ===========================================================================
+// O usuario pediu que o PGR sem pendencia fechasse com a conclusao e as
+// assinaturas, para entrega - mantidos tambem os campos do termo do inicio -,
+// e que o PGR com pendencia saisse como MINUTA, como o PCMSO sem medico.
+console.log('');
+console.log('--- 3m. Conclusão e encerramento / minuta ---');
+
+// Cenario completo: nenhuma pendencia em secao nenhuma. As acoes estao
+// concluidas e com eficacia verificada para nao ficarem "atrasadas" quando o
+// teste rodar em outra data.
+const acaoConcluidaCompleta = (id, riskId, medida) => ({
+  id, organization_id: 'o1', client_id: 'c1', ghe_id: 'g1', risk_id: riskId, origin: 'MANUAL', action_type: 'INTRODUZIR',
+  measure: medida, hierarchy: 'PROTECAO_COLETIVA', responsible: 'Juliana Reis',
+  deadline: '2026-09-28', original_deadline: '2026-09-28', monitoring: 'Verificacao da execucao',
+  measurement: 'Reavaliacao do risco', status: 'EFICACIA_VERIFICADA',
+  accepted_at: '2026-09-01T12:00:00Z', created_at: '2026-09-01T12:00:00Z', updated_at: '2026-09-30T12:00:00Z',
+  completed_at: '2026-09-25', evidence: 'Ordem de compra e registro fotografico', workers_informed_at: '2026-09-26',
+  effectiveness_checked_at: '2026-09-30', effectiveness_result: 'Risco reavaliado apos a medida', history: [],
+});
+const ARGS_SEM_PENDENCIA = {
+  client: { ...CLIENTE, porte: 'MICROEMPRESA' },
+  organization: ORG,
+  ghes: [{ ...GHES[0], work_schedule_description: '07h-17h, seg-sex', environment_description: 'Atendimento ao publico em posto informatizado' }],
+  risks: [RISCO_CLASSIFICADO, { ...RISCO_ERGONOMICO, health_effects: 'Dor lombar e cervical' }],
+  employees: FUNCIONARIOS,
+  sectors: [{ ...SETORES[0], environment_type: 'ADMINISTRATIVO', building_features: 'Sala terrea em alvenaria', description: 'Recepcao e agendamento de pacientes' }],
+  units: [{ ...UNIDADE, no_contracted_organizations_declared_at: '2026-09-15', no_chemical_products_declared_at: '2026-09-17', no_specific_machines_declared_at: '2026-09-16' }],
+  jobs: [{ id: 'cargo-1', client_id: 'c1', name: 'Recepcionista', status: 'ACTIVE' }],
+  ergonomicAssessments: [AEP_COMPLETA],
+  technicalProfessionals: [{ id: 'prof-eng', full_name: 'Gean Monteiro', cpf: '529.982.247-25', council: 'CREA', council_number: '201812345', council_uf: 'BA', specialty: 'Engenharia de Segurança do Trabalho', status: 'ACTIVE' }],
+  technicalResponsibilities: [{ id: 'atr-1', organization_id: 'o1', client_id: 'c1', professional_id: 'prof-eng', role: 'PGR_RESP', start_date: '2026-01-01', status: 'ACTIVE' }],
+  trainingRequirements: [{
+    id: 'cp1', client_id: 'c1', status: 'ACTIVE', name: 'Treinamento inicial em SST', norm: 'NR-01',
+    norm_reference: 'subitem 1.7.1.2.1', basis: 'EMPREGADOR', initial_hours: '2 h', periodic_months: 24,
+    audience_note: 'Todos os trabalhadores, antes de iniciar as funções',
+  }],
+  pgrActionPlan: [
+    acaoConcluidaCompleta('a1', 'r1', 'Enclausurar os condensadores com manta acustica'),
+    acaoConcluidaCompleta('a2', 'rerg', 'Substituir as cadeiras por modelos com regulagem e apoio lombar'),
+  ],
+};
+const pdfFechado = gerar(ARGS_SEM_PENDENCIA);
+const tFechado = corrido(pdfFechado);
+const contar = (txt, agulha) => txt.split(agulha).length - 1;
+
+check(tFechado.includes('10.3 Conclusão e encerramento') && !tFechado.includes('Pendências deste PGR'),
+  'sem pendência: a 10.3 é a conclusão, e não "Nenhuma pendência"');
+check(!tFechado.includes('Nenhuma pendência: todos os campos'), 'a frase "Nenhuma pendência" não sai mais');
+check(!tFechado.includes('MINUTA'), 'sem pendência: nenhuma marca de minuta');
+check(contar(tFechado, 'Assinatura (manual ou eletrônica)') === 2,
+  'os campos de assinatura saem no termo do início e se repetem na conclusão');
+check(tFechado.includes('2 risco(s) em 1 grupo(s) de exposição, sendo 1 de nível muito alto e 1 de nível médio'),
+  'a conclusão resume o inventário pela classificação da seção 5.7');
+check(tFechado.includes('2 ação(ões) aceita(s): 2 concluída(s)'), 'a conclusão resume o plano de ação pelo registro');
+check(/revista até \d{2}\/\d{2}\/\d{4} \(subitem 1\.5\.4\.4\.6\.1\)/.test(tFechado), 'a conclusão dá a próxima revisão periódica');
+check(tFechado.includes('Local e data: Eunapolis/BA,'), 'local e data na cidade do estabelecimento');
+check(tFechado.includes('datados e assinados (subitem 1.5.7.2)'), 'o encerramento cita o subitem 1.5.7.2');
+
+// Com pendencia: MINUTA desde a capa, sem conclusao.
+const minutaCheia = corrido(pdfCheio);
+check(minutaCheia.includes('MINUTA DE PGR - COM PENDÊNCIAS (SEÇÃO 10.3)'), 'com pendência: o cabeçalho de cada página diz MINUTA');
+check(/MINUTA - \d+ pendência\(s\) na seção 10\.3\. Não entregar como PGR concluído\./.test(minutaCheia), 'a capa da minuta diz quantas pendências e que não se entrega');
+check(minutaCheia.includes('Não o assine nem o entregue como concluído'), 'o termo da minuta avisa para não assinar');
+check(minutaCheia.includes('Pendências deste PGR (') && !minutaCheia.includes('Conclusão e encerramento'), 'a minuta lista as pendências e não tem conclusão');
+check(contar(minutaCheia, 'Assinatura (manual ou eletrônica)') === 1, 'a minuta mantém só os campos do termo');
+check(trechosDoPdf(pdfCheio).filter((x) => x === 'MINUTA').length === paginas(pdfCheio), "marca d'água MINUTA em todas as páginas");
+
+// ===========================================================================
 // 4. UMA CLASSIFICACAO SO NO SISTEMA
 // ===========================================================================
 console.log('\n--- 4. Fonte única de classificação (conferência no código) ---');
