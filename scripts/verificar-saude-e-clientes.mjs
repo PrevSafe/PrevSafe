@@ -412,6 +412,10 @@ const sql = semComentariosSql(sqlBruto);
     }
     check(naoIdempotentes.length === 0, 'idempotente: create or replace, drop ... if exists, if not exists'
       + (naoIdempotentes.length ? ` — ${naoIdempotentes.join('; ')}` : ''));
+    // Visto no ensaio em producao (06/10/2026): o authenticated tinha UPDATE em
+    // prevsafe_members e so a falta de politica barrava a troca do client_id.
+    check(/revoke\s+insert\s*,\s*update\s*,\s*delete\s+on\s+public\.prevsafe_members\s+from\s+anon\s*,\s*authenticated/i.test(sql),
+      'o vínculo em prevsafe_members só é gravado pela service role (a migração revoga a escrita do authenticated)');
   }
 
   const rb = semComentariosSql(ler(ROLLBACK));

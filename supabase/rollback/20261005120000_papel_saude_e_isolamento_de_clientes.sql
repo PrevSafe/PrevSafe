@@ -254,6 +254,11 @@ drop function if exists public.prevsafe_papel_de_cliente(text);
 alter table public.prevsafe_members drop constraint if exists prevsafe_members_cliente_coerente;
 alter table public.prevsafe_members drop constraint if exists prevsafe_members_papel_conhecido;
 
+-- O revoke de INSERT/UPDATE/DELETE em prevsafe_members (authenticated e anon)
+-- FICA: o app nunca gravou o vinculo por esses papeis, so pela service role,
+-- e devolver o privilegio so reabriria a dependencia de nao haver politica de
+-- escrita na tabela.
+
 -- ---------------------------------------------------------------------------
 -- 5. OPCIONAL E DESTRUTIVO - apaga o vinculo das contas de cliente
 -- ---------------------------------------------------------------------------

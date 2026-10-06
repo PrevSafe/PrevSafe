@@ -77,6 +77,14 @@ alter table public.prevsafe_members add column if not exists client_id text;
 comment on column public.prevsafe_members.client_id is
   'Cliente (record_id na colecao clients) a que a conta CLIENTE_ADMIN/CLIENTE_USER pertence. Gravado so pela service role. Conta de cliente sem client_id nao ve nada.';
 
+-- So a service role grava o vinculo (rotas app/api/admin/*). O authenticated
+-- tinha INSERT/UPDATE/DELETE na tabela e era barrado so por nao haver politica
+-- de escrita: o UPDATE da propria linha (trocar o client_id, subir o papel)
+-- afetava zero linhas em silencio. Sem o privilegio, a tentativa vira erro de
+-- permissao, e a protecao deixa de depender de ninguem criar uma politica de
+-- escrita por engano. Visto no ensaio desta migracao em producao (06/10/2026).
+revoke insert, update, delete on public.prevsafe_members from anon, authenticated;
+
 -- NOT VALID: as contas de cliente que ja existem ainda estao sem client_id e
 -- nao podem impedir a migracao. A regra vale para toda linha nova ou alterada,
 -- entao a rota de criacao de usuario e a de troca de papel nao conseguem
