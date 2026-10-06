@@ -775,6 +775,22 @@ console.log('\n--- rótulos das telas, do PDF e do tutorial ---');
   const pdf = ler('lib/esocialPdfGenerator.ts');
   check(/NÃO ASSINADO E NÃO VALIDADO CONTRA O XSD/.test(pdf) && /VERSAO_DO_LEIAUTE_ESOCIAL/.test(pdf),
     'o espelho em PDF diz "pré-visualização", "não assinado" e "não validado contra o XSD", com a versão do leiaute da regra única');
+
+  // O espelho em PDF preenchia o que faltava: afastamento com CID M54.5,
+  // "Dr. Ortopedista" CRM 77890/SP e 5 dias; ASO "APTO"; exame clinico
+  // "NORMAL" que ninguem lancou; e imprimia o resultado de cada exame. Busca-se
+  // a forma no codigo: o literal como valor padrao, a leitura do campo.
+  const pdfSem = semComentarios(pdf);
+  check(!/e\.result\b/.test(pdfSem) && !/Parecer Clínico/.test(pdfSem), 'o espelho do S-2220 não imprime o resultado de cada exame');
+  check(!/aso\?\.result \|\| 'APTO'/.test(pdfSem), 'ASO sem resultado não sai "APTO"');
+  check(!/<td><strong>0001<\/strong><\/td>/.test(pdfSem), 'ASO sem exames não ganha um exame clínico "NORMAL" inventado');
+  check(!/\|\| 'M54\.5'/.test(pdfSem) && !/\|\| 'Dr\. Ortopedista'/.test(pdfSem) && !/\|\| '77890'/.test(pdfSem) && !/days_count \|\| 5\b/.test(pdfSem),
+    'afastamento sem dados não ganha CID, médico, CRM nem duração inventados');
+  check(!/abs\?\.cid_code/.test(pdfSem), 'o espelho do S-2230 não imprime o CID (dado de saúde que o evento S-1.3 não leva)');
+  check(!/\|\| '7152-10'/.test(pdfSem) && !/\|\| 'Setor de Produção/.test(pdfSem) && !/\|\| 'Válido'\)/.test(pdfSem),
+    'sem CBO, local ou CA inventados no espelho');
+  check(!/new Date\([^)]*\)\.toLocaleDateString/.test(pdfSem.replace(/const today = new Date\(\)\.toLocaleDateString\('pt-BR'\);/, '')),
+    'as datas do espelho não voltam um dia (formatDate, e não new Date(...).toLocaleDateString)');
 }
 
 rodarXsd();

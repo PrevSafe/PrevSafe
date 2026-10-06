@@ -3,6 +3,7 @@ import { ESocialEvent, ESocialReportOptions, Client, Organization } from '@/type
 // v.S-1.2)" e "Certificado A1 ICP-Brasil": o leiaute e o S-1.3, o XML nao e
 // assinado nem validado contra o XSD pelo PrevSafe, e nao ha certificado.
 import { VERSAO_DO_LEIAUTE_ESOCIAL } from '@/lib/esocialEmpregador';
+import { formatDate } from '@/lib/utils';
 
 /**
  * Generates an official, beautifully formatted HTML report ready for printing/PDF export
@@ -30,11 +31,11 @@ export function generateESocialReportHtml(
         <table class="data-table">
           <tr>
             <td style="width: 30%"><strong>Ambiente de Trabalho:</strong></td>
-            <td>${event.ambient_data?.work_environment || 'Instalações do Empregador'}</td>
+            <td>${event.ambient_data?.work_environment || 'Não informado'}</td>
           </tr>
           <tr>
             <td><strong>Descrição das Atividades:</strong></td>
-            <td>${event.ambient_data?.description_activities || 'Atividades operacionais conforme CBO ' + (event.worker_cbo || '7152-10')}</td>
+            <td>${event.ambient_data?.description_activities || 'Não informada'}</td>
           </tr>
         </table>
 
@@ -57,8 +58,8 @@ export function generateESocialReportHtml(
                 <td><strong>${r.risk_code_table_24}</strong></td>
                 <td>${r.description}</td>
                 <td>${r.category}</td>
-                <td>${r.intensity_concentration || 'Avaliação Qualitativa'} (${r.measurement_unit || '-'})</td>
-                <td>${r.epi_effective ? 'EPI Eficaz (CA: ' + (r.epi_ca_numbers?.join(', ') || 'Válido') + ')' : 'Sem EPI / Não aplicável'}</td>
+                <td>${r.intensity_concentration ? `${r.intensity_concentration}${r.measurement_unit ? ` ${r.measurement_unit}` : ''}` : 'Sem medição registrada'}</td>
+                <td>${r.epi_ca_numbers?.length ? `EPI CA ${r.epi_ca_numbers.join(', ')}${r.epi_effective ? ' (eficácia declarada)' : ''}` : 'Nenhum EPI com CA registrado'}</td>
               </tr>
             `).join('') : `
               <tr>
@@ -87,13 +88,13 @@ export function generateESocialReportHtml(
         <table class="data-table">
           <tr>
             <td style="width: 25%"><strong>Tipo de Exame:</strong></td>
-            <td>${aso?.aso_type || 'PERIODICO'}</td>
+            <td>${aso?.aso_type || 'Não informado'}</td>
             <td style="width: 20%"><strong>Data do ASO:</strong></td>
-            <td>${aso?.exam_date ? new Date(aso.exam_date).toLocaleDateString('pt-BR') : today}</td>
+            <td>${aso?.exam_date ? formatDate(aso.exam_date) : 'Não informada'}</td>
           </tr>
           <tr>
             <td><strong>Resultado ASO:</strong></td>
-            <td><strong style="color: ${aso?.result === 'APTO' ? '#16a34a' : '#dc2626'}">${aso?.result || 'APTO'}</strong></td>
+            <td><strong style="color: ${aso?.result === 'APTO' ? '#16a34a' : aso?.result === 'INAPTO' ? '#dc2626' : '#64748b'}">${aso?.result || 'Não informado'}</strong></td>
             <td><strong>Médico Examinador:</strong></td>
             <td>${aso?.physician_name || 'Nao informado'}${aso?.physician_crm ? ` (CRM ${aso.physician_crm}${aso?.physician_uf ? '/' + aso.physician_uf : ''})` : ''}</td>
           </tr>
@@ -112,7 +113,6 @@ export function generateESocialReportHtml(
               <th>Código Tabela 27</th>
               <th>Procedimento Diagnóstico</th>
               <th>Data Realização</th>
-              <th>Parecer Clínico</th>
             </tr>
           </thead>
           <tbody>
@@ -120,15 +120,11 @@ export function generateESocialReportHtml(
               <tr>
                 <td><strong>${e.code}</strong></td>
                 <td>${e.name}</td>
-                <td>${new Date(e.date).toLocaleDateString('pt-BR')}</td>
-                <td><span class="badge ${e.result === 'NORMAL' ? 'badge-success' : 'badge-danger'}">${e.result}</span></td>
+                <td>${e.date ? formatDate(e.date) : 'Não informada'}</td>
               </tr>
             `).join('') : `
               <tr>
-                <td><strong>0001</strong></td>
-                <td>Exame Clínico Ocupacional / Anamnese Dirigida</td>
-                <td>${aso?.exam_date ? new Date(aso.exam_date).toLocaleDateString('pt-BR') : today}</td>
-                <td><span class="badge badge-success">NORMAL</span></td>
+                <td colspan="3">Nenhum exame registrado neste evento.</td>
               </tr>
             `}
           </tbody>
@@ -145,19 +141,19 @@ export function generateESocialReportHtml(
         <table class="data-table">
           <tr>
             <td style="width: 25%"><strong>Tipo de CAT:</strong></td>
-            <td>${cat?.cat_type || 'INICIAL'}</td>
+            <td>${cat?.cat_type || 'Não informado'}</td>
             <td style="width: 25%"><strong>Tipo de Acidente:</strong></td>
-            <td>${cat?.accident_type || 'TÍPICO'}</td>
+            <td>${cat?.accident_type || 'Não informado'}</td>
           </tr>
           <tr>
             <td><strong>Data e Hora:</strong></td>
-            <td>${cat?.accident_date ? new Date(cat.accident_date).toLocaleDateString('pt-BR') : 'DATA NÃO INFORMADA'} às ${cat?.accident_time || 'HORA NÃO INFORMADA'}</td>
+            <td>${cat?.accident_date ? formatDate(cat.accident_date) : 'DATA NÃO INFORMADA'} às ${cat?.accident_time || 'HORA NÃO INFORMADA'}</td>
             <td><strong>Houve Óbito:</strong></td>
             <td>${cat?.death_occurred ? 'SIM' : 'NÃO'}</td>
           </tr>
           <tr>
             <td><strong>Local do Acidente:</strong></td>
-            <td colspan="3">${cat?.location_description || 'Setor de Produção / Máquinas'} (${cat?.location_type || 'ESTABELECIMENTO_EMPREGADOR'})</td>
+            <td colspan="3">${cat?.location_description || 'Local não informado'}${cat?.location_type ? ` (${cat.location_type})` : ''}</td>
           </tr>
           <tr>
             <td><strong>Parte Atingida:</strong></td>
@@ -169,7 +165,7 @@ export function generateESocialReportHtml(
             <td><strong>Diagnóstico Provável:</strong></td>
             <td>CID-10: <strong>${cat?.cid_code || 'NÃO INFORMADO'}</strong></td>
             <td><strong>Dias de Afastamento:</strong></td>
-            <td>${cat?.days_away || 0} dias</td>
+            <td>${typeof cat?.days_away === 'number' ? `${cat.days_away} dias` : 'Não informado'}</td>
           </tr>
           <tr>
             <td><strong>Atestado Médico:</strong></td>
@@ -196,19 +192,17 @@ export function generateESocialReportHtml(
         <table class="data-table">
           <tr>
             <td style="width: 25%"><strong>Motivo Afastamento:</strong></td>
-            <td>Código <strong>${abs?.reason_code_table_18 || '01'}</strong> (Tabela 18 do eSocial)</td>
+            <td>${abs?.reason_code_table_18 ? `Código <strong>${abs.reason_code_table_18}</strong> (Tabela 18 do eSocial)` : 'Não informado'}</td>
             <td style="width: 25%"><strong>Data de Início:</strong></td>
-            <td>${abs?.start_date ? new Date(abs.start_date).toLocaleDateString('pt-BR') : today}</td>
+            <td>${abs?.start_date ? formatDate(abs.start_date) : 'Não informada'}</td>
           </tr>
           <tr>
             <td><strong>Duração Prevista:</strong></td>
-            <td>${abs?.days_count || 5} dias (${abs?.end_date ? 'Até ' + new Date(abs.end_date).toLocaleDateString('pt-BR') : 'Indeterminado'})</td>
-            <td><strong>CID-10:</strong></td>
-            <td><strong>${abs?.cid_code || 'M54.5'}</strong></td>
+            <td colspan="3">${abs?.days_count ? `${abs.days_count} dias` : 'Não informada'}${abs?.end_date ? ` (até ${formatDate(abs.end_date)})` : ''}</td>
           </tr>
           <tr>
             <td><strong>Médico Emitente:</strong></td>
-            <td colspan="3">${abs?.physician_name || 'Dr. Ortopedista'} (CRM ${abs?.medical_crm || '77890'}/${abs?.medical_uf || 'SP'})</td>
+            <td colspan="3">${abs?.physician_name || 'Não informado'}${abs?.medical_crm ? ` (CRM ${abs.medical_crm}${abs?.medical_uf ? `/${abs.medical_uf}` : ''})` : ''}</td>
           </tr>
         </table>
       </div>
@@ -255,7 +249,7 @@ export function generateESocialReportHtml(
               <td><strong>Matrícula eSocial:</strong></td>
               <td>${event.worker_registration}</td>
               <td><strong>CBO:</strong></td>
-              <td>${event.worker_cbo || '7152-10'} - ${event.worker_role || 'Trabalhador'}</td>
+              <td>${event.worker_cbo || 'CBO não informado'} - ${event.worker_role || 'Função não informada'}</td>
             </tr>
           </table>
         </div>
