@@ -33,6 +33,7 @@ import {
   exportAdmissionKitPDF,
   exportBatchAdmissionKitsPDF
 } from '@/lib/pdfExportService';
+import { ResultadosDoAso } from './ResultadosDoAso';
 
 interface EmployeesTabProps {
   selectedClientId: string;
@@ -973,9 +974,9 @@ export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) 
                             deixar a impressao de que nenhum exame foi feito. */}
                         {/* So o exame e a data. Resultado e observacao do
                             exame pertencem ao prontuario (CEM art. 85) e esta
-                            ficha abre para qualquer usuario. PENDENCIA DE
-                            ARQUITETURA: controle de acesso por perfil medico,
-                            para o medico ver o resultado aqui. */}
+                            ficha abre para qualquer usuario: eles ficam em
+                            examResults e aparecem em ResultadosDoAso, que so
+                            os mostra aos papeis Saude e Administrador. */}
                         {aso.exams && aso.exams.length > 0 ? (
                           <ul className="pl-3 border-l border-slate-800 space-y-0.5">
                             {aso.exams.map(ex => (
@@ -995,6 +996,8 @@ export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) 
                             Sem exames lançados — o S-2220 deste ASO fica retido até serem registrados.
                           </p>
                         )}
+
+                        <ResultadosDoAso employee={viewingEmpDossier} aso={aso} />
                       </div>
                     ))}
                   </div>

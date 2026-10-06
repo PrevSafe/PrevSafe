@@ -591,14 +591,14 @@ export function montarAsoDoEvento(
         onde,
       });
     }
-    // A observacao do exame nao entra no evento: ela nao vai ao eSocial (ver
-    // xmlDosExamesDoS2220) e nao ha por que copiar texto clinico para la.
+    // Nem a observacao nem o resultado do exame entram no evento: nao vao ao
+    // eSocial (ver xmlDosExamesDoS2220), o evento e lido por toda a equipe e o
+    // cadastro do funcionario ja nao os tem - ficam em examResults.
     return {
       code: e.exam_code_table_27 || '',
       name: e.exam_name || '',
       date: e.exam_date || '',
       procedure_type: e.procedure_type,
-      result: e.result,
       order: e.exam_code_table_27 === PROCEDIMENTO_COM_ORDEXAME
         ? ordemDaAudiometria(colaborador, aso)
         : undefined,

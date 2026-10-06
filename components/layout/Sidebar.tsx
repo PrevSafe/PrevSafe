@@ -146,7 +146,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
     },
     {
       title: 'ENGENHARIA & HIGIENE OCUPACIONAL',
-      roles: ['ADMIN', 'GESTOR', 'TÉCNICO'],
+      // SAUDE: exames, PCMSO e ficha do colaborador ficam aqui.
+      roles: ['ADMIN', 'GESTOR', 'TÉCNICO', 'SAUDE'],
       items: [
         { 
           id: 'sst-engineering', 
@@ -197,7 +198,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     },
     {
       title: 'SINISTRALIDADE & EVENTOS eSOCIAL',
-      roles: ['ADMIN', 'GESTOR', 'TÉCNICO'],
+      roles: ['ADMIN', 'GESTOR', 'TÉCNICO', 'SAUDE'],
       items: [
         { 
           id: 'cat-absences', 
@@ -228,7 +229,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     },
     {
       title: 'DEMANDAS & INTELIGÊNCIA OPERACIONAL',
-      roles: ['ADMIN', 'GESTOR', 'TÉCNICO'],
+      roles: ['ADMIN', 'GESTOR', 'TÉCNICO', 'SAUDE'],
       items: [
         { 
           id: 'reports', 
@@ -288,7 +289,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     },
     {
       title: 'SUPORTE & APRENDIZADO',
-      roles: ['ADMIN', 'GESTOR', 'COMERCIAL', 'TÉCNICO', 'FINANCEIRO', 'CLIENTE_ADMIN', 'CLIENTE_USER'],
+      roles: ['ADMIN', 'GESTOR', 'COMERCIAL', 'TÉCNICO', 'FINANCEIRO', 'SAUDE', 'CLIENTE_ADMIN', 'CLIENTE_USER'],
       items: [
         { 
           id: 'help-center', 
@@ -303,7 +304,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     },
     {
       title: 'EXPERIÊNCIA DEDICADA',
-      roles: ['ADMIN', 'GESTOR', 'COMERCIAL', 'TÉCNICO', 'FINANCEIRO', 'CLIENTE_ADMIN', 'CLIENTE_USER'],
+      roles: ['ADMIN', 'GESTOR', 'COMERCIAL', 'TÉCNICO', 'FINANCEIRO', 'SAUDE', 'CLIENTE_ADMIN', 'CLIENTE_USER'],
       items: [
         { id: 'client-portal', label: 'Portal do Cliente (Visão Externa)', icon: UserCheck, code: '700', highlight: true },
         { id: 'technician-field', label: 'PWA de Campo (Técnico)', icon: Smartphone, code: '710', highlight: true },

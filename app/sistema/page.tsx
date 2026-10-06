@@ -219,6 +219,10 @@ export default function Home() {
       setActiveView('client-portal');
     } else if (currentRole === 'TÉCNICO') {
       setActiveView('technician-field');
+    } else if (currentRole === 'SAUDE') {
+      // O medico entra direto nos exames e no PCMSO, nao no painel financeiro.
+      setSstInitialTab('EXAMS_PCMSO');
+      setActiveView('sst-engineering');
     } else {
       setActiveView('dashboard-exec');
     }

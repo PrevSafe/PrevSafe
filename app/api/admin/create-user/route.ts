@@ -1,5 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { exigirAdminDaOrganizacao, autorizacaoNegada, organizacaoUnica } from '@/lib/autorizacaoApi';
+import {
+  exigirAdminDaOrganizacao,
+  autorizacaoNegada,
+  organizacaoUnica,
+  conferirPapelECliente,
+  conferenciaRecusada
+} from '@/lib/autorizacaoApi';
 
 export const dynamic = 'force-dynamic';
 
@@ -32,11 +38,19 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: false, message: 'Nome completo é obrigatório.' }, { status: 400 });
   }
 
+  // Papel e cliente conferidos ANTES de criar o login: uma conta de cliente
+  // sem empresa vinculada nao enxergaria nada, e criada assim ficaria um login
+  // que ninguem consegue usar.
+  const vinculo = await conferirPapelECliente(supabaseAdmin, organizationId, role || 'TÉCNICO', client_id);
+  if (conferenciaRecusada(vinculo)) return vinculo.resposta;
+
   const { data, error } = await supabaseAdmin.auth.admin.createUser({
     email: email.trim().toLowerCase(),
     password,
     email_confirm: true,
-    user_metadata: { full_name, role, phone, whatsapp, department, job_title, professional_register, client_id },
+    // user_metadata e so informativo: o proprio usuario o altera. O que vale
+    // para a RLS e o vinculo gravado abaixo.
+    user_metadata: { full_name, role: vinculo.role, phone, whatsapp, department, job_title, professional_register, client_id: vinculo.clientId },
   });
 
   if (error || !data.user) {
@@ -48,11 +62,13 @@ export async function POST(req: NextRequest) {
 
   // Sem o vinculo em prevsafe_members o usuario loga mas a RLS bloqueia todos
   // os dados da organizacao — ele veria o sistema vazio. O vinculo herda a
-  // organizacao de quem esta criando, ja confirmada na autorizacao acima.
+  // organizacao de quem esta criando, ja confirmada na autorizacao acima. O
+  // client_id liga a conta de cliente a empresa dela: e o que a RLS usa para
+  // isola-la dos demais clientes.
   const { error: memberError } = await supabaseAdmin
     .from('prevsafe_members')
     .upsert(
-      { auth_user_id: data.user.id, organization_id: organizationId, role: role || 'TÉCNICO' },
+      { auth_user_id: data.user.id, organization_id: organizationId, role: vinculo.role, client_id: vinculo.clientId },
       { onConflict: 'auth_user_id,organization_id' }
     );
 

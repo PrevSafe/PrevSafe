@@ -77,6 +77,7 @@ import {
 } from '@/lib/reportPdfService';
 
 import { formatDate } from '@/lib/utils';
+import { conclusaoDoAso, registroParaExibir } from '@/lib/resultadosDeExame';
 import type { 
   Employee, 
   EmployeeASOHistory, 
@@ -1866,7 +1867,8 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
                           )}
                         </td>
                         <td className="p-3.5">
-                          <span className="text-emerald-400 font-bold">{aso?.result || (aso as any)?.aptitude || 'PENDENTE'}</span>
+                          {/* So apto ou inapto: o cadastro antigo ainda pode trazer APTO_COM_RESTRICAO. */}
+                          <span className="text-emerald-400 font-bold">{aso ? (conclusaoDoAso(aso) || 'SEM CONCLUSÃO') : 'PENDENTE'}</span>
                         </td>
                         <td className="p-3.5 text-right">
                           <button
@@ -2002,7 +2004,9 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-              {Object.entries(selectedRowDetail).map(([key, val]) => (
+              {/* O detalhe mostra o registro inteiro: sem o dado clinico que
+                  o cadastro e o evento S-2220 antigos ainda carregam. */}
+              {Object.entries(registroParaExibir(selectedRowDetail)).map(([key, val]) => (
                 <div key={key} className="bg-slate-950 p-3 rounded-xl border border-slate-800/60">
                   <span className="text-[10px] font-bold uppercase text-slate-400 block tracking-wider mb-0.5">
                     {key.replace(/_/g, ' ')}

@@ -68,6 +68,7 @@ import {
   SSTWorkAbsence,
   EmployeeEPI,
   EmployeeASO,
+  ExamResultRecord,
   EPICatalogItem,
   EPIDeliveryRecord,
   SSTWorkOrderOS,
@@ -159,7 +160,6 @@ import {
   SYNCED_COLLECTIONS,
   SINGLETON_COLLECTIONS,
   SINGLETON_ID,
-  fetchMemberOrganizationId,
   fetchMemberVinculo,
   fetchRemoteSnapshot,
   pushRecords,
@@ -167,6 +167,8 @@ import {
   type SyncedCollection,
   type RemoteSnapshot
 } from '@/lib/supabaseSync';
+import { envioPermitido, ehPapelDeCliente, podeLerResultadosDeExame, type AcessoDaConta } from '@/lib/acessoPorPapel';
+import { asoParaOCadastro, conclusaoCompativel, conclusaoDoAso, semDadoClinico } from '@/lib/resultadosDeExame';
 import { montarTermosDoContrato, resumirServicos, divergenciasDaClausulaDoPagamento } from '@/lib/contratoTermos';
 import { contasAReceberDoContrato, faltasDoPlano, planoInformado, recorrenciaDoPlano } from '@/lib/planoDePagamento';
 import { hashDoDocumento, hashDaAssinatura } from '@/lib/documentoHash';
@@ -764,6 +766,23 @@ interface PrevSafeContextType {
   addEmployeeEpi: (employeeId: string, epi: Omit<EmployeeEPI, 'id'>) => void;
   addEmployeeAso: (employeeId: string, aso: Omit<EmployeeASO, 'id'> & { id?: string }) => EmployeeASO;
 
+  /**
+   * Resultados de exame (colecao examResults). O servidor so os entrega aos
+   * papeis SAUDE e ADMIN; para os demais a lista vem vazia, e a tela diz
+   * "resultado restrito ao papel Saude" - nunca "sem resultado".
+   */
+  examResults: ExamResultRecord[];
+  /** A conta (e o papel em uso) pode ler e gravar examResults. */
+  acessoAResultadosDeExame: boolean;
+  /**
+   * Grava ou substitui os resultados de um ASO. Recusa quem nao tem o papel e
+   * conclusao clinica que contradiga o ASO. `asoRecemCriado`: o ASO registrado
+   * na mesma acao, que `employees` ainda nao tem.
+   */
+  salvarResultadosDoAso: (registro: ExamResultRecord, asoRecemCriado?: EmployeeASO) => { ok: boolean; motivo?: string };
+  /** Cliente da conta de cliente (prevsafe_members.client_id). Nulo para a equipe. */
+  clienteDaConta: string | null;
+
   addCatRecord: (data: Omit<SSTCATRecord, 'id' | 'organization_id' | 'created_at'>) => SSTCATRecord;
   updateCatRecord: (id: string, updates: Partial<SSTCATRecord>) => void;
   transmitCatRecord: (id: string) => { success: boolean; receipt?: string; protocol?: string; error?: string };
@@ -888,6 +907,11 @@ interface PrevSafeContextType {
 const STORAGE_KEY = 'prevsafe_sst_v2_database';
 const LEGACY_STORAGE_KEYS = ['prevsafe_sst_v1_database'];
 
+/** Papeis que o app reconhece em prevsafe_members.role (o banco os confere na gravacao). */
+const PAPEIS_RECONHECIDOS: RoleType[] = [
+  'ADMIN', 'GESTOR', 'COMERCIAL', 'FINANCEIRO', 'TÉCNICO', 'SAUDE', 'CLIENTE_ADMIN', 'CLIENTE_USER'
+];
+
 /**
  * IDLE     sem sessao ou sem nada pendente ainda
  * LOADING  baixando os dados da organizacao
@@ -928,6 +952,14 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
    * carregou; ate la nenhuma elevacao e permitida.
    */
   const [papelDaConta, setPapelDaConta] = useState<RoleType | null>(null);
+  /**
+   * Vinculo lido de prevsafe_members: o papel como o banco o ve (mesmo um
+   * papel que o app nao reconhece) e, so na conta de cliente, o client_id que
+   * a liga ao cliente. Nulo ate carregar - e ate la nada sobe: o envio filtra
+   * pelo que a RLS aceita (lib/acessoPorPapel.ts).
+   */
+  const [acessoDaConta, setAcessoDaConta] = useState<AcessoDaConta | null>(null);
+  const clienteDaConta = acessoDaConta?.clienteId || null;
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [isAuthLoading, setIsAuthLoading] = useState<boolean>(true);
   const [encerradaPorInatividade, setEncerradaPorInatividade] = useState<boolean>(false);
@@ -982,6 +1014,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
   const [environmentalRisks, setEnvironmentalRisks] = useState<SSTEnvironmentalRisk[]>(INITIAL_ENVIRONMENTAL_RISKS);
   const [examProtocols, setExamProtocols] = useState<SSTExamProtocol[]>(INITIAL_EXAM_PROTOCOLS);
   const [employees, setEmployees] = useState<Employee[]>(INITIAL_EMPLOYEES);
+  const [examResults, setExamResults] = useState<ExamResultRecord[]>([]);
   const [catRecords, setCatRecords] = useState<SSTCATRecord[]>(INITIAL_CAT_RECORDS);
   const [workAbsences, setWorkAbsences] = useState<SSTWorkAbsence[]>(INITIAL_WORK_ABSENCES);
   const [epiCatalog, setEpiCatalog] = useState<EPICatalogItem[]>(INITIAL_EPI_CATALOG);
@@ -1085,6 +1118,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     apply(setEnvironmentalRisks, list(parsed.environmentalRisks, []));
     apply(setExamProtocols, list(parsed.examProtocols, INITIAL_EXAM_PROTOCOLS, 'examProtocols'));
     apply(setEmployees, list(parsed.employees, []));
+    apply(setExamResults, list(parsed.examResults, []));
     apply(setCatRecords, list(parsed.catRecords, []));
     apply(setWorkAbsences, list(parsed.workAbsences, []));
     apply(setEpiCatalog, list(parsed.epiCatalog, INITIAL_EPI_CATALOG, 'epiCatalog'));
@@ -1161,6 +1195,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     environmentalRisks,
     examProtocols,
     employees,
+    examResults,
     catRecords,
     workAbsences,
     epiCatalog,
@@ -1210,6 +1245,7 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     environmentalRisks,
     examProtocols,
     employees,
+    examResults,
     catRecords,
     workAbsences,
     epiCatalog,
@@ -1281,6 +1317,8 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     if (!isAuthenticated) {
       setSyncOrganizationId(null);
       setSyncStatus('IDLE');
+      setPapelDaConta(null);
+      setAcessoDaConta(null);
       return;
     }
 
@@ -1290,8 +1328,25 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
       setSyncStatus('LOADING');
       setSyncMessage(null);
 
-      const orgId = await fetchMemberOrganizationId();
+      // Um pedido so traz organizacao, papel e cliente. O papel real vem daqui,
+      // e nao de user_metadata, que o proprio usuario altera
+      // (auth.updateUser({ data: { role: 'ADMIN' } })). Com ele o front-end
+      // fica com exatamente o que o servidor reconhece - nem mais, nem menos.
+      const vinculo = await fetchMemberVinculo();
       if (!active) return;
+
+      const orgId = vinculo?.organizationId || null;
+      if (vinculo) {
+        const papel = (vinculo.role || '').trim().toUpperCase();
+        const reconhecido = (PAPEIS_RECONHECIDOS as string[]).includes(papel) ? (papel as RoleType) : null;
+        setPapelDaConta(reconhecido);
+        if (reconhecido) {
+          setCurrentProfile(prev => (prev.role === reconhecido ? prev : { ...prev, role: reconhecido }));
+        }
+        setAcessoDaConta({ papel, clienteId: vinculo.clientId });
+        // A conta de cliente so ve a propria empresa: o portal abre nela.
+        if (ehPapelDeCliente(papel)) setActiveClientId(vinculo.clientId || undefined);
+      }
 
       if (!orgId) {
         setSyncStatus('ERROR');
@@ -1322,6 +1377,10 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
       }
 
       if (isEmpty) {
+        // Conta de cliente sem nada visivel (vinculo ainda sem client_id): o
+        // que esta em memoria veio do cache deste navegador e pode ser de outra
+        // conta. Zera, em vez de tratar como "servidor vazio" e exibir o cache.
+        if (ehPapelDeCliente(vinculo?.role)) applySnapshot({}, true, new Set());
         resetShadowFrom({});
         setSyncStatus('IDLE');
         setSyncMessage(null);
@@ -1340,7 +1399,8 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
 
   // Envia o delta para o Supabase, com debounce para agrupar rajadas de edicao.
   useEffect(() => {
-    if (!isLoaded || !isAuthenticated || !syncOrganizationId) return;
+    // Sem o vinculo nao se sabe o que a RLS aceita desta conta.
+    if (!isLoaded || !isAuthenticated || !syncOrganizationId || !acessoDaConta) return;
 
     if (pendingSync.current) clearTimeout(pendingSync.current);
 
@@ -1352,20 +1412,20 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
         return;
       }
 
-      const changes: Array<{ collection: SyncedCollection; rows: any[]; deletedIds: string[] }> = [];
+      const changes: Array<{ collection: SyncedCollection; rows: any[]; deletedIds: string[]; somenteInclusao?: boolean }> = [];
       const nextShadow: Record<string, Map<string, string>> = {};
 
       for (const collection of SYNCED_COLLECTIONS) {
         const previous = syncedShadow.current[collection] || new Map<string, string>();
         const current = new Map<string, string>();
-        const rows: any[] = [];
+        const emMemoria = new Map<string, { registro: any; json: string }>();
         const value = (liveState as Record<string, any>)[collection];
 
         if ((SINGLETON_COLLECTIONS as readonly string[]).includes(collection)) {
           if (value) {
             const serialized = JSON.stringify(value);
             current.set(SINGLETON_ID, serialized);
-            if (previous.get(SINGLETON_ID) !== serialized) rows.push(value);
+            emMemoria.set(SINGLETON_ID, { registro: value, json: serialized });
           }
         } else if (Array.isArray(value)) {
           for (const row of value) {
@@ -1373,18 +1433,19 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
             const id = String(row.id);
             const serialized = JSON.stringify(row);
             current.set(id, serialized);
-            if (previous.get(id) !== serialized) rows.push(row);
+            emMemoria.set(id, { registro: row, json: serialized });
           }
         }
 
-        const deletedIds: string[] = [];
-        for (const id of previous.keys()) {
-          if (!current.has(id)) deletedIds.push(id);
-        }
+        // So o que a RLS aceita desta conta (lib/acessoPorPapel.ts). O resto -
+        // o protocolo-modelo na memoria do TECNICO, a colecao de resultados
+        // para o GESTOR, o registro de outro cliente no cache - fica neste
+        // dispositivo. Um registro recusado derrubava o lote inteiro.
+        const { rows, deletedIds, somenteInclusao } = envioPermitido(acessoDaConta, collection, previous, emMemoria);
 
         nextShadow[collection] = current;
         if (rows.length > 0 || deletedIds.length > 0) {
-          changes.push({ collection, rows, deletedIds });
+          changes.push({ collection, rows, deletedIds, somenteInclusao });
         }
       }
 
@@ -1417,34 +1478,11 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     return () => {
       if (pendingSync.current) clearTimeout(pendingSync.current);
     };
-  }, [isLoaded, isAuthenticated, syncOrganizationId, liveState, retryTick]);
+  }, [isLoaded, isAuthenticated, syncOrganizationId, acessoDaConta, liveState, retryTick]);
 
-  // Carrega o papel real da conta assim que ha sessao. Sem isto o front-end
-  // ficaria com o papel mais restrito para sempre, e com ele o usuario recebe
-  // exatamente o que o servidor reconhece - nem mais, nem menos.
-  useEffect(() => {
-    if (!isAuthenticated) {
-      setPapelDaConta(null);
-      return;
-    }
-
-    let ativo = true;
-    (async () => {
-      const vinculo = await fetchMemberVinculo();
-      if (!ativo) return;
-
-      const papel = (vinculo?.role || '').trim().toUpperCase();
-      const reconhecido = (['ADMIN', 'GESTOR', 'COMERCIAL', 'FINANCEIRO', 'TÉCNICO', 'CLIENTE_ADMIN', 'CLIENTE_USER'] as string[])
-        .includes(papel) ? (papel as RoleType) : null;
-
-      setPapelDaConta(reconhecido);
-      if (reconhecido) {
-        setCurrentProfile(prev => (prev.role === reconhecido ? prev : { ...prev, role: reconhecido }));
-      }
-    })();
-
-    return () => { ativo = false; };
-  }, [isAuthenticated]);
+  // O papel real da conta e lido junto com a organizacao, no efeito que baixa
+  // o snapshot (fetchMemberVinculo): um pedido so, e o envio ja sabe o que a
+  // RLS aceita quando a sombra e montada.
 
   // Busca o IP publico uma vez por sessao autenticada. getCachedClientIp() e
   // sincrono e e usado nos registros de auditoria; sem esta chamada ele ficaria
@@ -1523,6 +1561,10 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     COMERCIAL: 4,
     FINANCEIRO: 4,
     'TÉCNICO': 3,
+    // Papel lateral: le menos que o GESTOR (CRM, financeiro), mas le o que
+    // nenhum outro le (examResults). O nivel so serve para a SAUDE descer;
+    // assumi-la e tratado a parte em switchRole.
+    SAUDE: 3,
     CLIENTE_ADMIN: 2,
     CLIENTE_USER: 1,
   } as Record<RoleType, number>;
@@ -1543,7 +1585,12 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     const nivelAtual = NIVEL_DO_PAPEL[teto] ?? 0;
     const nivelDesejado = NIVEL_DO_PAPEL[role] ?? 0;
 
-    if (nivelDesejado > nivelAtual) {
+    // SAUDE so para quem ja le os resultados (a propria SAUDE ou o ADMIN). Pelo
+    // nivel, TECNICO, COMERCIAL e FINANCEIRO poderiam assumi-la e veriam a
+    // tela de resultados vazia como se nao houvesse resultado.
+    const assumeSaudeSemTer = role === 'SAUDE' && !podeLerResultadosDeExame(teto);
+
+    if (nivelDesejado > nivelAtual || assumeSaudeSemTer) {
       console.warn(
         `[PrevSafe] Troca de perfil recusada: a conta tem papel ${teto} e nao pode assumir ${role}.`
       );
@@ -6437,7 +6484,10 @@ ${blocoRespMonitXml(event.client_id, aso?.exam_date || dataDeHoje(), '      ')}
 
   const updateEmployee = useCallback((id: string, updates: Partial<Employee>) => {
     setEmployees(prev => prev.map(e => e.id === id ? { ...e, ...updates, updated_at: new Date().toISOString() } : e));
-    logAudit('UPDATE_EMPLOYEE' as any, 'CLIENT' as any, id, updates.name, updates);
+    // A trilha de auditoria e lida por toda a equipe: o historico de ASO entra
+    // nela sem campo clinico, mesmo que o cadastro ainda traga o resultado
+    // legado (antes de scripts/migrar-resultados-de-exame.mjs).
+    logAudit('UPDATE_EMPLOYEE' as any, 'CLIENT' as any, id, updates.name, semDadoClinico(updates));
   }, [logAudit]);
 
   const deleteEmployee = useCallback((id: string) => {
@@ -6475,10 +6525,14 @@ ${blocoRespMonitXml(event.client_id, aso?.exam_date || dataDeHoje(), '      ')}
    * conseguia reencontrar o registro.
    */
   const addEmployeeAso = useCallback((employeeId: string, asoData: Omit<EmployeeASO, 'id'> & { id?: string }): EmployeeASO => {
-    const newAso: EmployeeASO = {
+    // No cadastro entra so o que o ASO entregue ao empregador traz: tipo,
+    // datas, medico, apto ou inapto e os exames feitos. Resultado, observacao
+    // e restricao, se vierem, ficam de fora - o lugar deles e examResults
+    // (salvarResultadosDoAso), que a RLS so entrega a SAUDE e ADMIN.
+    const newAso: EmployeeASO = asoParaOCadastro({
       ...asoData,
       id: asoData.id || novoId('aso')
-    };
+    });
     setEmployees(prev => prev.map(e => {
       if (e.id === employeeId) {
         return {
@@ -6498,6 +6552,45 @@ ${blocoRespMonitXml(event.client_id, aso?.exam_date || dataDeHoje(), '      ')}
     });
     return newAso;
   }, [logAudit]);
+
+  /**
+   * Leitura e gravacao de examResults. O teto e o papel REAL da conta (o que o
+   * banco confere) e o papel em uso precisa tambem te-la: quem visualiza o
+   * sistema como GESTOR ve "restrito", como o GESTOR veria.
+   */
+  const acessoAResultadosDeExame = Boolean(acessoDaConta)
+    && podeLerResultadosDeExame(acessoDaConta?.papel)
+    && podeLerResultadosDeExame(currentProfile.role);
+
+  /**
+   * Grava os resultados de um ASO em examResults. `asoRecemCriado` serve a
+   * quem acabou de registrar o ASO na mesma acao: `employees` ainda tem o
+   * estado anterior.
+   */
+  const salvarResultadosDoAso = useCallback((
+    registro: ExamResultRecord,
+    asoRecemCriado?: EmployeeASO
+  ): { ok: boolean; motivo?: string } => {
+    if (!acessoAResultadosDeExame) {
+      return { ok: false, motivo: 'Resultado de exame só é registrado pelos papéis Saúde e Administrador.' };
+    }
+    const aso = asoRecemCriado && asoRecemCriado.id === registro.aso_id
+      ? asoRecemCriado
+      : employees.find(e => e.id === registro.employee_id)?.aso_history.find(a => a.id === registro.aso_id);
+    if (!aso) return { ok: false, motivo: 'ASO não encontrado no cadastro do funcionário.' };
+    // O cadastro diz apto ou inapto; a conclusao clinica nao pode contradize-lo.
+    if (!conclusaoCompativel(conclusaoDoAso(aso), registro.aso_result)) {
+      return { ok: false, motivo: 'A conclusão clínica não confere com a do ASO (apto ou inapto).' };
+    }
+
+    setExamResults(prev => [registro, ...prev.filter(r => r.id !== registro.id)]);
+    // Sem conteudo clinico: a auditoria e lida por toda a equipe.
+    logAudit('EXAM_RESULTS_RECORDED' as any, 'CLIENT' as any, registro.employee_id, `Resultados do ASO ${aso.aso_type} registrados`, {
+      aso_id: registro.aso_id,
+      exames: registro.results.length
+    });
+    return { ok: true };
+  }, [acessoAResultadosDeExame, employees, logAudit]);
 
   const addCatRecord = useCallback((data: Omit<SSTCATRecord, 'id' | 'organization_id' | 'created_at'>): SSTCATRecord => {
     const count = catRecords.length + 1;
@@ -8142,6 +8235,7 @@ ${blocoRespMonitXml(event.client_id, aso?.exam_date || dataDeHoje(), '      ')}
     setEnvironmentalRisks(INITIAL_ENVIRONMENTAL_RISKS);
     setExamProtocols(INITIAL_EXAM_PROTOCOLS);
     setEmployees(INITIAL_EMPLOYEES);
+    setExamResults([]);
     setCatRecords(INITIAL_CAT_RECORDS);
     setWorkAbsences(INITIAL_WORK_ABSENCES);
     setEpiCatalog(INITIAL_EPI_CATALOG);
@@ -8420,6 +8514,10 @@ ${blocoRespMonitXml(event.client_id, aso?.exam_date || dataDeHoje(), '      ')}
     deleteEmployee,
     addEmployeeEpi,
     addEmployeeAso,
+    examResults,
+    acessoAResultadosDeExame,
+    salvarResultadosDoAso,
+    clienteDaConta,
     addCatRecord,
     updateCatRecord,
     transmitCatRecord,
@@ -8716,6 +8814,10 @@ ${blocoRespMonitXml(event.client_id, aso?.exam_date || dataDeHoje(), '      ')}
     deleteEmployee,
     addEmployeeEpi,
     addEmployeeAso,
+    examResults,
+    acessoAResultadosDeExame,
+    salvarResultadosDoAso,
+    clienteDaConta,
     addCatRecord,
     updateCatRecord,
     transmitCatRecord,

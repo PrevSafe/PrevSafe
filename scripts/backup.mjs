@@ -114,7 +114,10 @@ try {
   console.log('Lendo dados do Supabase...');
   const [records, members, evidence] = await Promise.all([
     fetchAll('prevsafe_records', 'organization_id, collection, record_id, data, updated_at, updated_by, deleted_at'),
-    fetchAll('prevsafe_members', 'auth_user_id, organization_id, role, created_at'),
+    // '*' e nao a lista: depois da migracao 20261005120000 o vinculo tem
+    // client_id, que liga a conta de cliente a empresa dela. Sem ele no
+    // backup, a restauracao deixaria toda conta de cliente sem ver nada.
+    fetchAll('prevsafe_members', '*'),
     listEvidence(),
   ]);
 

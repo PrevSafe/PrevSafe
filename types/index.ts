@@ -1,9 +1,14 @@
-export type RoleType = 
+export type RoleType =
   | 'ADMIN'
   | 'GESTOR'
   | 'COMERCIAL'
   | 'TÉCNICO'
   | 'FINANCEIRO'
+  // Medico do trabalho e a equipe que ele supervisiona. Com o ADMIN, e o unico
+  // papel que le e grava resultado de exame, observacao clinica e restricao do
+  // ASO (colecao examResults; RLS em
+  // supabase/migrations/20261005120000_papel_saude_e_isolamento_de_clientes.sql).
+  | 'SAUDE'
   | 'CLIENTE_ADMIN'
   | 'CLIENTE_USER';
 
@@ -174,6 +179,7 @@ export type PermissionModule =
   | 'FIELD_PWA'
   | 'ESOCIAL'
   | 'DOCUMENTS'
+  | 'OCCUPATIONAL_HEALTH'
   | 'CLIENT_PORTAL'
   | 'USERS_ACCESS'
   | 'SETTINGS_AUDIT';
@@ -1429,7 +1435,12 @@ export interface ESocialComplementaryExam {
   name: string;
   date: string;
   procedure_type: 'CLINICO' | 'AUDIOMETRIA' | 'ESPIROMETRIA' | 'RX_TORAX_OIT' | 'HEMOGRAMA' | 'GLICEMIA' | 'ACUIDADE_VISUAL' | 'OUTRO';
-  result: 'NORMAL' | 'ALTERADO' | 'ESTAVEL' | 'AGRAVAMENTO';
+  /**
+   * Nao e mais preenchido: {indResult} nao vai ao eSocial sem autorizacao do
+   * trabalhador (MOS S-2220, item 1.6), e o evento e lido por toda a equipe.
+   * O resultado fica em examResults. Opcional para ler eventos antigos.
+   */
+  result?: 'NORMAL' | 'ALTERADO' | 'ESTAVEL' | 'AGRAVAMENTO';
   observation?: string;
   /** Audiometria: inicial ou sequencial (S-2220, {ordExame}). */
   order?: 'INICIAL' | 'SEQUENCIAL';
@@ -1837,15 +1848,23 @@ export interface EmployeeEPIItem {
 
 export type EmployeeEPI = EmployeeEPIItem;
 
+/** Resultado de um exame conforme a tabela do eSocial. So existe em examResults. */
+export type ResultadoDeExame = 'NORMAL' | 'ALTERADO' | 'ESTAVEL' | 'AGRAVAMENTO';
+
 /**
- * Um exame efetivamente REALIZADO, com o resultado que o médico anotou.
+ * Um exame efetivamente REALIZADO, como fica no cadastro do funcionario:
+ * codigo, nome, data e tipo do procedimento.
  *
  * Nao confundir com SSTExamProtocol: aquele e o planejamento do PCMSO (quais
  * exames o GHE exige e com que periodicidade). Este e o registro do que foi
  * feito. O sistema so tinha o planejamento, e por isso o S-2220 saia sem a
  * lista de procedimentos - que o eSocial exige.
+ *
+ * Sem resultado e sem observacao, de proposito: o cadastro do funcionario e
+ * lido por toda a equipe, e a RLS separa por colecao. O que o medico anotou
+ * fica em ExamResultRecord (colecao examResults), que so SAUDE e ADMIN leem.
  */
-export interface EmployeeExamResult {
+export interface EmployeeExamRecord {
   id: string;
   /** Codigo da Tabela 27 do eSocial, como cadastrado no protocolo do PCMSO. */
   exam_code_table_27: string;
@@ -1861,20 +1880,27 @@ export interface EmployeeExamResult {
     | 'GLICEMIA'
     | 'ACUIDADE_VISUAL'
     | 'OUTRO';
-  /** Resultado conforme a Tabela do eSocial: normal, alterado, estavel, agravamento. */
-  result: 'NORMAL' | 'ALTERADO' | 'ESTAVEL' | 'AGRAVAMENTO';
-  observation?: string;
   /** Protocolo do PCMSO que originou a linha, quando veio de um. */
   protocol_id?: string;
 }
+
+/**
+ * Nome antigo, mantido porque lib/esocialDados.ts e o S-2220 o importam. Desde
+ * a colecao examResults ele nao tem mais resultado.
+ */
+export type EmployeeExamResult = EmployeeExamRecord;
 
 export interface EmployeeASOHistory {
   id: string;
   aso_type: 'ADMISSIONAL' | 'PERIODICO' | 'RETORNO_TRABALHO' | 'MUDANCA_RISCO' | 'DEMISSIONAL';
   exam_date: string;
   valid_until: string;
-  result: 'APTO' | 'INAPTO' | 'APTO_COM_RESTRICAO';
-  restrictions_notes?: string;
+  /**
+   * So apto ou inapto (NR-07, 7.5.19.1, "e"). "Apto com restricao" e a
+   * restricao anotada pelo medico ficam em examResults: a existencia da
+   * restricao ja e dado de saude.
+   */
+  result: 'APTO' | 'INAPTO';
   physician_name: string;
   physician_crm: string;
   physician_uf: string;
@@ -1883,9 +1909,41 @@ export interface EmployeeASOHistory {
    * campo existir nao os tem - e nesses casos o S-2220 continua apontando a
    * pendencia, em vez de a lista ser preenchida por suposicao.
    */
-  exams?: EmployeeExamResult[];
+  exams?: EmployeeExamRecord[];
   document_url?: string;
   esocial_event_id?: string;
+}
+
+/** O que o medico anotou sobre um exame do ASO. */
+export interface ExamResultItem {
+  /** id do exame no ASO do funcionario (EmployeeExamRecord.id). */
+  exam_id: string;
+  exam_code_table_27: string;
+  result: ResultadoDeExame;
+  observation?: string;
+}
+
+/**
+ * Resultado clinico de um ASO: um registro por ASO, na colecao examResults.
+ *
+ * A RLS so o entrega aos papeis SAUDE e ADMIN. Quem nao tem o papel nao recebe
+ * a linha do servidor: a tela diz "resultado restrito ao papel Saude", e nunca
+ * trata a ausencia como "sem resultado".
+ */
+export interface ExamResultRecord {
+  /** Deterministico (lib/resultadosDeExame.ts): o script de migracao pode rodar duas vezes. */
+  id: string;
+  organization_id: string;
+  client_id: string;
+  employee_id: string;
+  aso_id: string;
+  /** Conclusao do medico. APTO_COM_RESTRICAO so existe aqui; no cadastro vira APTO. */
+  aso_result: 'APTO' | 'INAPTO' | 'APTO_COM_RESTRICAO';
+  restrictions_notes?: string;
+  results: ExamResultItem[];
+  recorded_by_name?: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export type EmployeeASO = EmployeeASOHistory;

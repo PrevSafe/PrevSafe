@@ -40,6 +40,7 @@ import {
 import confetti from 'canvas-confetti';
 import { RequestItem, Evaluation, Document as DocumentType, SSTDocumentSignature } from '@/types';
 import { SSTElectronicSignatureModal } from '@/components/sst/SSTElectronicSignatureModal';
+import { ehPapelDeCliente } from '@/lib/acessoPorPapel';
 
 export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> = ({ onNavigate }) => {
   const { 
@@ -59,10 +60,24 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
     createRequest, 
     deleteRequest 
   } = usePrevSafe();
+  const { currentRole, clienteDaConta, activeClientId } = usePrevSafe();
+
+  // Conta de cliente ve a propria empresa e nenhuma outra. O banco ja so
+  // entrega as linhas dela (RLS por prevsafe_members.client_id); a tela tambem
+  // fixa o cliente, para nao depender do que estiver em memoria - o cache do
+  // navegador pode ter vindo de outra conta. Quem fixa e o vinculo da conta;
+  // activeClientId so vale para a equipe que visualiza o portal como cliente.
+  const contaDeCliente = ehPapelDeCliente(currentRole);
+  const clienteFixo = contaDeCliente ? (clienteDaConta || activeClientId || '') : '';
+  const clientesDoPortal = contaDeCliente
+    ? (clients || []).filter(c => c?.id === clienteFixo)
+    : (clients || []);
 
   // Active client selector state
-  const [selectedClientId, setSelectedClientId] = useState<string>(clients?.[0]?.id || '');
-  const currentClient = (clients || []).find(c => c?.id === selectedClientId) || clients?.[0] || {
+  const [selectedClientId, setSelectedClientId] = useState<string>(clienteFixo || clientesDoPortal?.[0]?.id || '');
+  const currentClient = (contaDeCliente
+    ? clientesDoPortal[0]
+    : (clientesDoPortal.find(c => c?.id === selectedClientId) || clientesDoPortal[0])) || {
     id: '',
     trade_name: 'Nenhum cliente cadastrado',
     legal_name: '',
@@ -139,6 +154,8 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
 
   // Sync selectedOS when client changes
   const handleClientChange = (clientId: string) => {
+    // A conta de cliente nao troca de empresa.
+    if (contaDeCliente) return;
     setSelectedClientId(clientId);
     const osList = serviceOrders.filter(o => o.client_id === clientId);
     setSelectedOS(osList[0] || null);
@@ -272,17 +289,26 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 bg-slate-950 p-3 rounded-2xl border border-slate-800 relative z-10">
           <div className="text-xs">
             <span className="text-slate-400 block text-[10px] font-bold uppercase">Empresa Autenticada:</span>
-            <select
-              value={selectedClientId}
-              onChange={(e) => handleClientChange(e.target.value)}
-              className="bg-slate-900 text-white text-xs font-bold rounded-xl border border-slate-800 px-3 py-1.5 focus:outline-none focus:border-emerald-500 mt-1 cursor-pointer"
-            >
-              {clients.map(c => (
-                <option key={c.id} value={c.id}>
-                  {c.trade_name} ({c.document_number})
-                </option>
-              ))}
-            </select>
+            {contaDeCliente ? (
+              // Sem seletor: a conta so tem a propria empresa.
+              <span className="block text-white font-bold mt-1">
+                {clientesDoPortal[0]
+                  ? `${clientesDoPortal[0].trade_name} (${clientesDoPortal[0].document_number})`
+                  : 'Conta sem empresa vinculada — peça ao administrador para vinculá-la'}
+              </span>
+            ) : (
+              <select
+                value={selectedClientId}
+                onChange={(e) => handleClientChange(e.target.value)}
+                className="bg-slate-900 text-white text-xs font-bold rounded-xl border border-slate-800 px-3 py-1.5 focus:outline-none focus:border-emerald-500 mt-1 cursor-pointer"
+              >
+                {clientesDoPortal.map(c => (
+                  <option key={c.id} value={c.id}>
+                    {c.trade_name} ({c.document_number})
+                  </option>
+                ))}
+              </select>
+            )}
           </div>
           <div className="h-8 w-px bg-slate-800 hidden sm:block" />
           <div className="flex items-center space-x-2 text-tenant-primary text-xs font-bold">

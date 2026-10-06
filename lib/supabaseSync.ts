@@ -51,6 +51,9 @@ export const SYNCED_COLLECTIONS = [
   'environmentalRisks',
   'examProtocols',
   'employees',
+  // Resultado de exame, observacao e restricao do ASO. Fora de employees porque
+  // a RLS separa por colecao: so SAUDE e ADMIN recebem estas linhas.
+  'examResults',
   'catRecords',
   'workAbsences',
   'epiCatalog',
@@ -128,20 +131,34 @@ export async function fetchMemberOrganizationId(): Promise<string | null> {
  * de administracao podiam ser escaladas. A tabela prevsafe_members so aceita
  * escrita da service role; a RLS deixa o usuario apenas LER a propria linha.
  */
-export async function fetchMemberVinculo(): Promise<{ organizationId: string; role: string } | null> {
+export async function fetchMemberVinculo(): Promise<{ organizationId: string; role: string; clientId: string | null } | null> {
   const supabase = getSupabaseClient();
   if (!supabase) return null;
 
-  const { data, error } = await supabase
+  // client_id liga a conta de cliente ao cliente; so a service role o grava.
+  let { data, error } = await supabase
     .from('prevsafe_members')
-    .select('organization_id, role')
+    .select('organization_id, role, client_id')
     .limit(1)
     .maybeSingle();
 
+  // Banco ainda sem a migracao 20261005120000 (coluna inexistente, 42703): le
+  // sem ela. Sem isto, publicar o app antes da migracao deixaria todo mundo
+  // "sem vinculo".
+  if (error && /42703|client_id/i.test(`${(error as any).code || ''} ${error.message || ''}`)) {
+    ({ data, error } = await supabase
+      .from('prevsafe_members')
+      .select('organization_id, role')
+      .limit(1)
+      .maybeSingle() as any);
+  }
+
   if (error || !data) return null;
+  const clientId = String((data as any).client_id || '').trim();
   return {
     organizationId: data.organization_id as string,
     role: (data.role as string) || '',
+    clientId: clientId || null,
   };
 }
 
@@ -207,25 +224,37 @@ export async function fetchRemoteSnapshot(organizationId: string): Promise<{
 }
 
 /**
+ * Colecoes so de inclusao para qualquer conta: o registro nunca muda depois de
+ * criado. A auditoria e o caso: reenviar o mesmo evento (fila de sessao,
+ * nova tentativa depois de falha parcial) vira ON CONFLICT DO NOTHING, e nao
+ * uma reescrita - que o banco recusa para a conta de cliente.
+ */
+const SEMPRE_SO_INCLUSAO = new Set<string>(['auditLogs']);
+
+/**
  * Grava um conjunto de registros. `rows` traz somente o que mudou desde o
  * ultimo envio; `deletedIds` traz o que sumiu da memoria e precisa ser
- * marcado como excluido no servidor.
+ * marcado como excluido no servidor. `somenteInclusao` envia as linhas com
+ * ON CONFLICT DO NOTHING (lib/acessoPorPapel.ts, modo INCLUSAO).
  */
 export async function pushRecords(
   organizationId: string,
-  changes: Array<{ collection: SyncedCollection; rows: any[]; deletedIds: string[] }>
+  changes: Array<{ collection: SyncedCollection; rows: any[]; deletedIds: string[]; somenteInclusao?: boolean }>
 ): Promise<SyncOutcome> {
   const supabase = getSupabaseClient();
   if (!supabase) return { ok: false, message: 'Supabase não configurado.' };
 
-  const upserts: Array<{ organization_id: string; collection: string; record_id: string; data: any; deleted_at: null }> = [];
+  type Linha = { organization_id: string; collection: string; record_id: string; data: any; deleted_at: null };
+  const upserts: Linha[] = [];
+  const inclusoes: Linha[] = [];
   const deletions: Array<{ collection: string; ids: string[] }> = [];
 
   for (const change of changes) {
+    const destino = change.somenteInclusao || SEMPRE_SO_INCLUSAO.has(change.collection) ? inclusoes : upserts;
     for (const row of change.rows) {
       const recordId = isSingleton(change.collection) ? SINGLETON_ID : row?.id;
       if (!recordId) continue; // registro sem id nao tem como ser reconciliado depois
-      upserts.push({
+      destino.push({
         organization_id: organizationId,
         collection: change.collection,
         record_id: String(recordId),
@@ -238,13 +267,20 @@ export async function pushRecords(
     }
   }
 
-  if (upserts.length === 0 && deletions.length === 0) return { ok: true, writes: 0 };
+  if (upserts.length === 0 && inclusoes.length === 0 && deletions.length === 0) return { ok: true, writes: 0 };
 
   try {
     for (const batch of chunk(upserts, UPSERT_CHUNK)) {
       const { error } = await supabase
         .from('prevsafe_records')
         .upsert(batch, { onConflict: 'organization_id,collection,record_id' });
+      if (error) throw error;
+    }
+
+    for (const batch of chunk(inclusoes, UPSERT_CHUNK)) {
+      const { error } = await supabase
+        .from('prevsafe_records')
+        .upsert(batch, { onConflict: 'organization_id,collection,record_id', ignoreDuplicates: true });
       if (error) throw error;
     }
 
@@ -260,7 +296,7 @@ export async function pushRecords(
       }
     }
 
-    return { ok: true, writes: upserts.length + deletions.reduce((acc, d) => acc + d.ids.length, 0) };
+    return { ok: true, writes: upserts.length + inclusoes.length + deletions.reduce((acc, d) => acc + d.ids.length, 0) };
   } catch (error: any) {
     return { ok: false, message: describeError(error) };
   }

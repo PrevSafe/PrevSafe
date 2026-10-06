@@ -129,7 +129,27 @@ export const PERMISSIONS_CATALOG: PermissionDefinition[] = [
     code: 'PUBLISH_SST_DOCUMENTS',
     name: 'Aprovar e Liberar Documentos (PGR/PCMSO)',
     description: 'Revisar laudos técnicos e liberar versão oficial no portal do cliente.',
-    default_roles: ['ADMIN', 'GESTOR', 'TÉCNICO']
+    default_roles: ['ADMIN', 'GESTOR', 'TÉCNICO', 'SAUDE']
+  },
+
+  // 3.1 Saude ocupacional. Estas duas linhas espelham a RLS do banco
+  // (supabase/migrations/20261005120000_papel_saude_e_isolamento_de_clientes.sql):
+  // la elas valem pela API, nao so na tela.
+  {
+    id: 'perm-health-records',
+    module: 'OCCUPATIONAL_HEALTH',
+    code: 'ACCESS_HEALTH_RECORDS',
+    name: 'Protocolos do PCMSO, CAT e Afastamentos (CID-10)',
+    description: 'Coleções de saúde: protocolos de exame, CAT e afastamentos. O banco recusa os demais papéis.',
+    default_roles: ['ADMIN', 'GESTOR', 'SAUDE']
+  },
+  {
+    id: 'perm-health-results',
+    module: 'OCCUPATIONAL_HEALTH',
+    code: 'READ_WRITE_EXAM_RESULTS',
+    name: 'Ler e Lançar Resultado de Exame (Prontuário)',
+    description: 'Resultado e observação de cada exame, conclusão "apto com restrição" e a restrição do ASO. Os demais papéis veem só tipo, data, validade e apto/inapto.',
+    default_roles: ['ADMIN', 'SAUDE']
   },
 
   // 4. PWA de Campo
@@ -157,7 +177,7 @@ export const PERMISSIONS_CATALOG: PermissionDefinition[] = [
     code: 'VIEW_ESOCIAL_EVENTS',
     name: 'Consultar Eventos S-2210, S-2220 e S-2240',
     description: 'Visualizar status de transmissão, protocolo do governo e recibos.',
-    default_roles: ['ADMIN', 'GESTOR', 'TÉCNICO', 'CLIENTE_ADMIN']
+    default_roles: ['ADMIN', 'GESTOR', 'TÉCNICO', 'SAUDE']
   },
   {
     id: 'perm-esocial-transmit',
@@ -192,7 +212,7 @@ export const PERMISSIONS_CATALOG: PermissionDefinition[] = [
     module: 'CLIENT_PORTAL',
     code: 'ACCESS_CLIENT_PORTAL',
     name: 'Acesso ao Portal Corporativo do Cliente',
-    description: 'Consulta de laudos liberados, agenda de exames ocupacionais e ASOs.',
+    description: 'Laudos liberados, OS, contratos, pendências, assinaturas e avaliações da própria empresa. Sem dado de saúde nem de outros clientes.',
     default_roles: ['CLIENTE_ADMIN', 'CLIENTE_USER', 'ADMIN', 'GESTOR']
   },
   {
@@ -244,8 +264,8 @@ export const ROLE_INFO: Record<RoleType, {
     badgeColor: 'text-cyan-400',
     bgBadge: 'bg-cyan-500/10',
     borderBadge: 'border-cyan-500/20',
-    description: 'Coordenação de equipes de campo, controle de SLA RN004, validação de laudos e eSocial.',
-    targetAudience: 'Coordenadores de SST, Médicos do Trabalho e Engenheiros Chefes'
+    description: 'Coordenação de equipes de campo, controle de SLA RN004, validação de laudos e eSocial. Vê tipo, data, validade e apto/inapto do ASO; o resultado de exame é do papel Saúde.',
+    targetAudience: 'Coordenadores de SST e Engenheiros Chefes'
   },
   COMERCIAL: {
     label: 'Executivo Comercial',
@@ -254,6 +274,14 @@ export const ROLE_INFO: Record<RoleType, {
     borderBadge: 'border-amber-500/20',
     description: 'Gestão de funil de vendas, elaboração de propostas e acompanhamento de assinaturas.',
     targetAudience: 'Consultores de Vendas e Gerentes de Contas'
+  },
+  SAUDE: {
+    label: 'Saúde Ocupacional (Médico)',
+    badgeColor: 'text-pink-400',
+    bgBadge: 'bg-pink-500/10',
+    borderBadge: 'border-pink-500/20',
+    description: 'PCMSO, ASO e prontuário: único papel, além do Administrador, que lê e lança resultado de exame, observação clínica e restrição.',
+    targetAudience: 'Médico do Trabalho coordenador do PCMSO e a equipe que ele supervisiona'
   },
   TÉCNICO: {
     label: 'Engenheiro / Técnico de Campo',
@@ -276,7 +304,7 @@ export const ROLE_INFO: Record<RoleType, {
     badgeColor: 'text-purple-400',
     bgBadge: 'bg-purple-500/10',
     borderBadge: 'border-purple-500/20',
-    description: 'Portal do cliente com visão completa da empresa, aceite de laudos, agendamentos e eSocial.',
+    description: 'Portal do cliente da própria empresa: aceite de OS, laudos liberados, pendências e assinaturas.',
     targetAudience: 'Diretores de RH, Coordenadores SESMT e Gestores da Contratante'
   },
   CLIENTE_USER: {
@@ -284,7 +312,7 @@ export const ROLE_INFO: Record<RoleType, {
     badgeColor: 'text-blue-400',
     bgBadge: 'bg-blue-500/10',
     borderBadge: 'border-blue-500/20',
-    description: 'Acesso simplificado para consulta de ASO individual, agendamentos e entrega de EPIs.',
+    description: 'Portal do cliente da própria empresa, com o mesmo alcance do Gestor/RH do cliente.',
     targetAudience: 'Supervisores de setor, CIPA e Colaboradores da empresa'
   }
 };
@@ -479,7 +507,41 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
     }
 
     if (editingProfile) {
-      // Update existing (local profile data only — does not change the real login e-mail/password)
+      // O papel que a RLS confere esta em prevsafe_members, nao neste cadastro.
+      // Sem gravar la, promover alguem a Saude nao lhe daria os resultados, e
+      // rebaixar nao tiraria nada: a troca seria so visual.
+      const clienteNovo = formData.role.startsWith('CLIENTE_') ? (formData.client_id || '') : '';
+      const vinculoMudou = formData.role !== editingProfile.role || clienteNovo !== (editingProfile.client_id || '');
+      if (vinculoMudou && editingProfile.auth_user_id) {
+        setIsSavingUser(true);
+        try {
+          const token = await getAuthToken();
+          if (!token) {
+            showToast('Sessão expirada. Faça login novamente antes de trocar o perfil de acesso.', 'error');
+            return;
+          }
+          const res = await fetch('/api/admin/update-member', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+            body: JSON.stringify({
+              auth_user_id: editingProfile.auth_user_id,
+              role: formData.role,
+              client_id: clienteNovo || undefined
+            })
+          });
+          const json = await res.json().catch(() => ({}));
+          if (!res.ok || !json.success) {
+            showToast(json.message || 'Não foi possível trocar o perfil de acesso no servidor.', 'error');
+            return;
+          }
+        } finally {
+          setIsSavingUser(false);
+        }
+      } else if (vinculoMudou) {
+        showToast('Este usuário não tem login real: o perfil muda só no cadastro e não altera o que ele acessa.', 'error');
+      }
+
+      // Dados do cadastro (nao muda o e-mail nem a senha do login real).
       updateProfile(editingProfile.id, {
         full_name: formData.full_name.trim(),
         email: formData.email.trim().toLowerCase(),
@@ -887,6 +949,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
                 <option value="COMERCIAL">Executivo Comercial</option>
                 <option value="TÉCNICO">Engenheiro / Técnico SST</option>
                 <option value="FINANCEIRO">Financeiro</option>
+                <option value="SAUDE">Saúde Ocupacional (Médico)</option>
                 <option value="CLIENTE_ADMIN">Cliente Admin (RH)</option>
                 <option value="CLIENTE_USER">Cliente Colaborador</option>
               </select>
@@ -1288,6 +1351,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
                       <th className="py-3.5 px-2 text-center text-amber-400">COMERCIAL</th>
                       <th className="py-3.5 px-2 text-center text-emerald-400">TÉCNICO</th>
                       <th className="py-3.5 px-2 text-center text-emerald-400">FINANCEIRO</th>
+                      <th className="py-3.5 px-2 text-center text-pink-400">SAÚDE</th>
                       <th className="py-3.5 px-2 text-center text-purple-400">CLIENTE ADMIN</th>
                       <th className="py-3.5 px-2 text-center text-blue-400">CLIENTE USER</th>
                     </tr>
@@ -1301,7 +1365,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
                           <div className="font-mono text-[9px] text-slate-500 mt-0.5">{perm.code}</div>
                         </td>
 
-                        {(['ADMIN', 'GESTOR', 'COMERCIAL', 'TÉCNICO', 'FINANCEIRO', 'CLIENTE_ADMIN', 'CLIENTE_USER'] as RoleType[]).map((role) => {
+                        {(['ADMIN', 'GESTOR', 'COMERCIAL', 'TÉCNICO', 'FINANCEIRO', 'SAUDE', 'CLIENTE_ADMIN', 'CLIENTE_USER'] as RoleType[]).map((role) => {
                           const isAllowed = perm.default_roles.includes(role);
                           return (
                             <td key={role} className="py-3 px-2 text-center">
@@ -1507,6 +1571,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
                     <option value="COMERCIAL">Executivo Comercial (CRM / Propostas / Contratos)</option>
                     <option value="TÉCNICO">Engenheiro / Técnico de Campo (PWA / Vistorias / eSocial)</option>
                     <option value="FINANCEIRO">Financeiro & Controladoria (Faturamento / Cobrança)</option>
+                    <option value="SAUDE">Saúde Ocupacional - Médico e equipe (PCMSO / ASO / Resultados de Exame)</option>
                     <option value="CLIENTE_ADMIN">Cliente - Gestor / RH (Portal do Cliente / Aprovações)</option>
                     <option value="CLIENTE_USER">Cliente - Colaborador (Consulta ASO / EPIs)</option>
                   </select>
@@ -1530,7 +1595,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
                       ))}
                     </select>
                     <p className="text-[10px] text-purple-400 mt-1">
-                      Este usuário terá acesso restrito (RLS) apenas aos laudos, exames e OS da empresa selecionada.
+                      O banco (RLS) limita esta conta à empresa selecionada: OS, contratos, laudos liberados, pendências e assinaturas. Nenhum dado de saúde, de outro cliente ou interno.
                     </p>
                   </div>
                 )}

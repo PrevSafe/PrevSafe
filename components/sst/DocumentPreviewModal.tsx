@@ -113,7 +113,9 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
     technicalProfessionals,
     technicalResponsibilities,
     catRecords,
-    pgrActionPlan = []
+    pgrActionPlan = [],
+    examResults = [],
+    acessoAResultadosDeExame
   } = usePrevSafe();
 
   // Responsabilidade técnica vem das Configurações da empresa: um laudo assinado
@@ -253,7 +255,8 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
       exportPGRTRDocumentPdf({ client, organization, ghes, risks: riscosDoCliente, employees, technicalProfessionals, technicalResponsibilities });
       setDownloadSuccess('PGRTR Rural gerado e baixado em PDF com sucesso!');
     } else if (docType === 'PCMSO') {
-      exportPCMSODocumentPdf({ client, organization, examProtocols, ghes, risks, employees, units, sectors, jobs, catRecords, trainingRequirements, technicalProfessionals, technicalResponsibilities });
+      // Alinea "c" do relatorio analitico so com o papel Saude.
+      exportPCMSODocumentPdf({ client, organization, examProtocols, ghes, risks, employees, units, sectors, jobs, catRecords, trainingRequirements, technicalProfessionals, technicalResponsibilities, examResults: acessoAResultadosDeExame ? examResults : null });
       setDownloadSuccess('PCMSO gerado e baixado em PDF com sucesso!');
     } else if (docType === 'LTCAT') {
       exportLTCATDocumentPdf({ client, organization, risks, ghes, employees, technicalProfessionals, technicalResponsibilities });

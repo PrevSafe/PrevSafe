@@ -115,6 +115,7 @@ export const Navbar: React.FC<NavbarProps> = ({
     { role: 'COMERCIAL', label: 'Executivo Comercial', desc: 'Leads, oportunidades e propostas' },
     { role: 'TÉCNICO', label: 'Técnico de Campo', desc: 'Visitas, tarefas, checklists e evidências' },
     { role: 'FINANCEIRO', label: 'Financeiro', desc: 'Contratos, valores e faturamento' },
+    { role: 'SAUDE', label: 'Saúde Ocupacional', desc: 'PCMSO, ASO e resultados de exame' },
     { role: 'CLIENTE_ADMIN', label: 'Cliente (Diretoria/RH)', desc: 'Portal simplificado e aceite formal' },
     { role: 'CLIENTE_USER', label: 'Cliente (Colaborador)', desc: 'Consulta de documentos autorizados' },
   ];

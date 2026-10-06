@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { supabaseUrl } from '@/lib/supabase';
+import { ehPapelDeCliente } from '@/lib/acessoPorPapel';
 
 /**
  * Autorizacao das rotas administrativas.
@@ -125,4 +126,66 @@ export function organizacaoUnica(auth: AdminAutorizado): { organizationId: strin
     };
   }
   return { organizationId: auth.organizationIds[0] };
+}
+
+/**
+ * Papeis que a rota aceita gravar em prevsafe_members. A mesma lista da
+ * restricao prevsafe_members_papel_conhecido (migracao 20261005120000).
+ */
+export const PAPEIS_DO_VINCULO = [
+  'ADMIN', 'GESTOR', 'COMERCIAL', 'TÉCNICO', 'FINANCEIRO', 'SAUDE', 'CLIENTE_ADMIN', 'CLIENTE_USER',
+] as const;
+
+export type ConferenciaDoVinculo =
+  | { ok: true; role: string; clientId: string | null }
+  | { ok: false; resposta: NextResponse };
+
+/**
+ * Confere papel e cliente antes de gravar o vinculo.
+ *
+ * O client_id de prevsafe_members e o que a RLS usa para isolar a conta de
+ * cliente: ele so e gravado aqui, com a service role, e so com um cliente
+ * vivo da propria organizacao. Conta de cliente sem cliente nao e criada (o
+ * banco tambem recusa); membro da equipe nao leva cliente.
+ */
+export async function conferirPapelECliente(
+  supabaseAdmin: SupabaseClient,
+  organizationId: string,
+  role: unknown,
+  clientId: unknown
+): Promise<ConferenciaDoVinculo> {
+  const papel = String(role || '').trim().toUpperCase();
+  if (!(PAPEIS_DO_VINCULO as readonly string[]).includes(papel)) {
+    return negar('Perfil de acesso inválido.', 400);
+  }
+
+  if (!ehPapelDeCliente(papel)) return { ok: true, role: papel, clientId: null };
+
+  const cliente = String(clientId || '').trim();
+  if (!cliente) {
+    return negar('Conta de cliente precisa da empresa cliente vinculada: é ela que limita o que a conta vê.', 400);
+  }
+
+  const { data, error } = await supabaseAdmin
+    .from('prevsafe_records')
+    .select('record_id')
+    .eq('organization_id', organizationId)
+    .eq('collection', 'clients')
+    .eq('record_id', cliente)
+    .is('deleted_at', null)
+    .maybeSingle();
+
+  if (error) {
+    // Falha fechada: sem confirmar o cliente, o vinculo nao e gravado.
+    return negar('Não foi possível confirmar a empresa cliente agora. Tente novamente.', 503);
+  }
+  if (!data) {
+    return negar('Empresa cliente não encontrada nesta organização.', 400);
+  }
+  return { ok: true, role: papel, clientId: cliente };
+}
+
+/** Type guard da conferencia, pelo mesmo motivo de autorizacaoNegada. */
+export function conferenciaRecusada(c: ConferenciaDoVinculo): c is { ok: false; resposta: NextResponse } {
+  return !c.ok;
 }

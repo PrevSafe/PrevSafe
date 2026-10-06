@@ -134,6 +134,7 @@ import {
   PCMSO_ADVERTENCIAS
 } from '@/lib/pcmsoModelo';
 import { itemDaNr07 } from '@/lib/nr07Texto';
+import { RESULTADO_RESTRITO } from '@/lib/resultadosDeExame';
 import { consultarProcedimento } from '@/lib/tabela27';
 import { fonte } from '@/lib/pcmsoFontes';
 import {
@@ -6839,10 +6840,16 @@ export function exportPCMSODocumentPdf({
   catRecords = [],
   trainingRequirements = [],
   technicalProfessionals = [],
-  technicalResponsibilities = []
+  technicalResponsibilities = [],
+  examResults = null
 }: {
   client: Client;
   organization: Organization;
+  /**
+   * Registros de examResults, para a alinea "c" do relatorio analitico. null
+   * quando quem emite nao tem o papel Saude: a alinea sai como restrita.
+   */
+  examResults?: any[] | null;
   examProtocols?: any[];
   ghes?: any[];
   /** Inventario de riscos do PGR: o PCMSO e elaborado a partir dele (7.5.1). */
@@ -7559,7 +7566,7 @@ export function exportPCMSODocumentPdf({
     return { inicio: new Date(Date.UTC(a - 1, m - 1, d)).toISOString().slice(0, 10), fim: emissao };
   })();
   const relatorio = relatorioAnalitico({
-    colaboradores: colaboradoresDoCliente, cats: catRecords, periodo, ondeDe, nomeDoExame
+    colaboradores: colaboradoresDoCliente, cats: catRecords, periodo, ondeDe, nomeDoExame, resultados: examResults
   });
   // NR-36 (36.12.6 e 36.12.7) acrescenta conteudo ao relatorio: a forma
   // simplificada do 7.6.6 nao serve.
@@ -7580,11 +7587,18 @@ export function exportPCMSODocumentPdf({
   const linhasDoRelatorio: Array<[string, string]> = [
     ['a) Exames clínicos realizados', String(relatorio.examesClinicos)],
     ['b) Exames complementares, por tipo', relatorio.complementares.length > 0 ? relatorio.complementares.map((c) => `${c.codigo} ${c.nome}: ${c.quantidade}`).join('\n') : 'Nenhum registrado no período'],
-    ['c) Resultados anormais, por exame e setor/função', [
-      // Nota fixa: contar as linhas omitidas revelaria que ha anormal num grupo pequeno.
-      ...relatorio.anormais.map((a) => `${a.exame} — ${a.onde}: ${a.anormais} resultado(s) anormal(is) em ${a.total} exame(s)`),
-      'Linhas que o critério de sigilo acima omite não são contadas nem indicadas.'
-    ].join('\n')],
+    ['c) Resultados anormais, por exame e setor/função', relatorio.resultadosDisponiveis
+      ? [
+        // Nota fixa: contar as linhas omitidas revelaria que ha anormal num grupo pequeno.
+        ...relatorio.anormais.map((a) => `${a.exame} — ${a.onde}: ${a.anormais} resultado(s) anormal(is) em ${a.total} exame(s)`),
+        'Linhas que o critério de sigilo acima omite não são contadas nem indicadas.',
+        ...(relatorio.semResultado > 0
+          ? [`${relatorio.semResultado} exame(s) complementar(es) do período sem resultado lançado no prontuário ficam fora desta contagem.`]
+          : [])
+      ].join('\n')
+      // Quem emite sem o papel Saude nao recebe os resultados: dizer "nenhum
+      // anormal" afirmaria o que o documento nao apurou.
+      : `${RESULTADO_RESTRITO}: esta via foi emitida por conta sem esse papel e não apura a alínea. O médico responsável (papel Saúde) emite a via com ela.`],
     ['d) Doenças relacionadas ao trabalho (casos novos com CAT no período), por setor/função', relatorio.doencasNovas.length > 0 ? relatorio.doencasNovas.map((d) => `${d.chave}: ${d.quantidade}`).join('\n') : 'Nenhuma CAT de doença no período'],
     ['e) CAT emitidas no período, por tipo', relatorio.catsPorTipo.length > 0 ? relatorio.catsPorTipo.map((c) => `${c.chave}: ${c.quantidade}`).join('\n') : 'Nenhuma CAT registrada no período'],
     ['f) Análise comparativa e discussão', 'A cargo do médico responsável pelo PCMSO, ao apresentar e discutir o relatório com os responsáveis por SST e com a CIPA (subitem 7.6.5). O sistema não a redige.']

@@ -529,9 +529,12 @@ console.log('\n--- lançamento de exames realizados ---');
   const m = montarAsoDoEvento(comExames, aso3);
 
   check(m.dados.exams_list.length === 2, `os 2 exames lançados vão para o evento (${m.dados.exams_list.length})`);
+  // O resultado de cada exame mora em examResults (papel Saude) e nao vai ao
+  // eSocial (indResult, MOS 1.6). Mesmo com o resultado legado ainda no
+  // cadastro, o evento - lido por toda a equipe - nao o copia.
   check(
-    m.dados.exams_list[0].code === '0295' && m.dados.exams_list[0].result === 'ALTERADO',
-    'código e resultado vêm do que foi lançado'
+    m.dados.exams_list[0].code === '0295' && m.dados.exams_list.every((e) => !('result' in e)),
+    'o código vem do que foi lançado; o resultado do exame não é copiado para o evento'
   );
   check(
     m.dados.exams_list[0].date === '2026-03-01',

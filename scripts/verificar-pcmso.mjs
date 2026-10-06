@@ -290,7 +290,36 @@ check(P.relatorioPodeSerSimplificado(2, 25) && !P.relatorioPodeSerSimplificado(2
 
 const colab = (id, onde, asos) => ({ id, client_id: 'c1', ghe_id: 'g1', job_title: onde, status: 'ACTIVE', aso_history: asos });
 const aso = (data, exames) => ({ aso_type: 'PERIODICO', exam_date: data, exams: exames });
-const rel = P.relatorioAnalitico({
+// O resultado saiu do cadastro do funcionario e foi para examResults (papel
+// Saude). Os cenarios continuam escritos com o resultado junto do exame, por
+// clareza; `separar` faz o que scripts/migrar-resultados-de-exame.mjs faz:
+// tira o resultado do cadastro e o devolve como registro de examResults.
+function separar(colaboradores) {
+  const resultados = [];
+  const limpos = colaboradores.map((c) => ({
+    ...c,
+    aso_history: (c.aso_history || []).map((a, i) => {
+      const asoId = a.id || `aso-${c.id}-${i}`;
+      const itens = [];
+      const exams = (a.exams || []).map((e, j) => {
+        const exameId = e.id || `exm-${c.id}-${i}-${j}`;
+        const copia = { ...e, id: exameId };
+        if (copia.result) itens.push({ exam_id: exameId, exam_code_table_27: copia.exam_code_table_27, result: copia.result });
+        delete copia.result;
+        delete copia.observation;
+        return copia;
+      });
+      if (itens.length) resultados.push({ id: `exres-${c.id}-${asoId}`, employee_id: c.id, aso_id: asoId, aso_result: 'APTO', results: itens });
+      return { ...a, id: asoId, exams };
+    })
+  }));
+  return { colaboradores: limpos, resultados };
+}
+const relatorio = (entrada) => {
+  const s = separar(entrada.colaboradores);
+  return P.relatorioAnalitico({ ...entrada, colaboradores: s.colaboradores, resultados: s.resultados });
+};
+const rel = relatorio({
   colaboradores: [
     colab('a', 'Soldador', [aso('2026-05-01', [{ exam_code_table_27: '0295' }, { exam_code_table_27: '0281', result: 'ALTERADO' }])]),
     colab('b', 'Soldador', [aso('2026-05-02', [{ exam_code_table_27: '0281', result: 'NORMAL' }]), aso('2020-01-01', [{ exam_code_table_27: '0281' }])]),
@@ -311,7 +340,7 @@ check(!rel.anormais.some((a) => a.onde === 'Soldador') && !rel.anormais.some((a)
   'conta quem foi EXAMINADO: 3 soldadores no quadro, 2 com audiometria → somados aos pequenos; 2 anormais em 3 → linha omitida');
 check(!rel.anormais.some((a) => a.onde === 'Vigia'), 'função com menos de 3 examinados não aparece como categoria');
 check(rel.doencasNovas.length === 0 && rel.suprimidas >= 1, 'CAT de doença num grupo pequeno que somado fica abaixo de 3: omitida');
-const relDe = (resultados) => P.relatorioAnalitico({
+const relDe = (resultados) => relatorio({
   colaboradores: resultados.map((r, i) => colab(`s${i}`, 'Soldador', [aso('2026-05-01', [{ exam_code_table_27: '0281', result: r }])])),
   cats: [], periodo: { inicio: '2025-10-02', fim: '2026-10-02' }, ondeDe: (c) => c.job_title, nomeDoExame: (c) => c
 });
@@ -320,12 +349,30 @@ check(r3.anormais.length === 1 && r3.anormais[0].anormais === 1 && r3.anormais[0
 const rTodos = relDe(['ALTERADO', 'ALTERADO', 'AGRAVAMENTO']);
 check(rTodos.anormais.length === 0 && rTodos.suprimidas === 1, 'linha em que todos os examinados são anormais é omitida (revelaria cada resultado)');
 check(relDe(['ALTERADO', 'ESTAVEL', 'NORMAL']).anormais.length === 0, 'linha com um só resultado normal é omitida (o normal saberia o resultado dos outros)');
-const rUm = P.relatorioAnalitico({
+const rUm = relatorio({
   colaboradores: [colab('v', 'Vigia', [aso('2026-05-01', [{ exam_code_table_27: '0281', result: 'ALTERADO' }])])],
   cats: [], periodo: { inicio: '2025-10-02', fim: '2026-10-02' }, ondeDe: (c) => c.job_title, nomeDoExame: (c) => c
 });
 check(rUm.anormais.length === 0 && rUm.suprimidas === 1, 'grupo pequeno que somado fica abaixo de 3 examinados: omitido');
 check(rel.catsPorTipo.length === 1, 'CAT de quem não é do cliente fica de fora');
+{
+  // Quem emite sem o papel Saude nao recebe examResults: a alinea "c" nao pode
+  // sair como "nenhum anormal".
+  const base = { cats: [], periodo: { inicio: '2025-10-02', fim: '2026-10-02' }, ondeDe: (c) => c.job_title, nomeDoExame: (c) => c };
+  const tres = [['a', 'ALTERADO'], ['b', 'NORMAL'], ['c', 'NORMAL']]
+    .map(([id, r]) => colab(id, 'Soldador', [aso('2026-05-01', [{ exam_code_table_27: '0281', result: r }])]));
+  const sep = separar(tres);
+  const semPapel = P.relatorioAnalitico({ ...base, colaboradores: sep.colaboradores });
+  check(!semPapel.resultadosDisponiveis && semPapel.anormais.length === 0
+    && semPapel.complementares.find((x) => x.codigo === '0281')?.quantidade === 3,
+    'sem examResults (conta sem o papel Saúde): a alínea "c" fica indisponível, e a "b" continua contada');
+  const comPapel = P.relatorioAnalitico({ ...base, colaboradores: sep.colaboradores, resultados: sep.resultados });
+  check(comPapel.resultadosDisponiveis && comPapel.anormais.length === 1 && comPapel.anormais[0].total === 3,
+    'com examResults, a alínea "c" é apurada');
+  const legado = P.relatorioAnalitico({ ...base, colaboradores: tres, resultados: [] });
+  check(legado.anormais.length === 0 && legado.semResultado === 3,
+    'resultado deixado no cadastro do funcionário não é lido: só examResults conta, e o exame sem registro fica fora da alínea "c"');
+}
 
 const at = P.atividadesCriticasDoCliente([
   R({ client_id: 'c1', catalog_key: 'nr35-altura', ghe_ids: ['g1'] }),
@@ -442,9 +489,11 @@ const EMPREGADOS = Array.from({ length: 12 }, (_, i) => ({
   job_title: i < 10 ? 'Soldador' : 'Assistente', status: 'ACTIVE',
   aso_history: [{ aso_type: 'PERIODICO', exam_date: '2026-04-1' + (i % 9), result: 'APTO', exams: [{ exam_code_table_27: '0295' }, ...(i < 10 ? [{ exam_code_table_27: '0281', result: i === 0 ? 'ALTERADO' : 'NORMAL' }] : [])] }]
 }));
+const EMPREGADOS_SEPARADOS = separar(EMPREGADOS);
 const args = {
   client: CLIENTE, organization: ORG, examProtocols: PROTOCOLOS, ghes: GHES, risks: RISCOS,
-  employees: EMPREGADOS, units: [], catRecords: [], trainingRequirements: []
+  employees: EMPREGADOS_SEPARADOS.colaboradores, units: [], catRecords: [], trainingRequirements: [],
+  examResults: EMPREGADOS_SEPARADOS.resultados
 };
 const pdf = gerar(args);
 for (const s of ['1. IDENTIFICAÇÃO', '2. OBJETIVO', '2.4 Base legal', '2.5 Vedações', '3. RESPONSABILIDADES', '4. INTEGRAÇÃO COM O PGR', '5. PLANEJAMENTO DOS EXAMES',
@@ -478,6 +527,11 @@ check(tem(pdf, 'nos exames médicos por ocasião da admissão, mudança de funç
 check(pdf.includes('a) Exames clínicos realizados 12'), 'relatório analítico: 12 exames clínicos no período');
 check(pdf.includes('c) Resultados anormais'), 'organização acima do 7.6.6: o relatório traz as alíneas "c" a "f"');
 check(tem(pdf, 'Soldador: 1 resultado(s) anormal(is) em 10 exame(s)'), 'resultado anormal por função, com 10 examinados');
+{
+  const pdfSemPapel = gerar({ ...args, examResults: null });
+  check(tem(pdfSemPapel, 'Resultado restrito ao papel Saúde') && !tem(pdfSemPapel, 'resultado(s) anormal(is) em'),
+    'emitido sem o papel Saúde, o PCMSO diz que a alínea "c" é restrita, e não "nenhum anormal"');
+}
 check(tem(pdf, 'Critério de sigilo deste programa') && tem(pdf, 'examinados no período'), 'o documento explica o critério de sigilo, por examinados');
 check(tem(pdf, fontesMod.fonte('nr01-1.6.2').texto), 'assinatura digital: o texto literal do subitem 1.6.2 da NR-01');
 check(!tem(pdf, 'devem ficar à disposição da inspeção do trabalho'), 'nada de regra da NR-01 parafraseada de memória');

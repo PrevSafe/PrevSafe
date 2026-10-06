@@ -6,7 +6,14 @@ import { SSTExamProtocol, Employee } from '@/types';
 import { dataDeHoje } from '@/lib/datas';
 import { exameSugeridosParaAso, sugerirTipoDeProcedimento } from '@/lib/esocialDados';
 import { novoId } from '@/lib/datas';
-import type { EmployeeExamResult } from '@/types';
+import type { EmployeeExamRecord, ResultadoDeExame } from '@/types';
+import {
+  exameParaOCadastro,
+  montarResultadosDoAso,
+  RESULTADO_RESTRITO,
+  RESULTADOS_DE_EXAME,
+  ROTULO_DO_RESULTADO
+} from '@/lib/resultadosDeExame';
 import { SeletorTabela27 } from './SeletorTabela27';
 import { consultarProcedimento, codigoExisteNaTabela27 } from '@/lib/tabela27';
 import {
@@ -40,6 +47,13 @@ interface ExamPCMSOTabProps {
 
 const todayISO = () => dataDeHoje();
 
+/**
+ * Linha do formulario. Resultado e observacao existem so aqui e, ao salvar,
+ * vao para examResults (papel Saude); no cadastro do funcionario o exame entra
+ * por exameParaOCadastro, sem eles.
+ */
+type ExameNoFormulario = EmployeeExamRecord & { result?: ResultadoDeExame | ''; observation?: string };
+
 export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) => {
   const {
     clients,
@@ -53,7 +67,10 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
     updateExamProtocol,
     deleteExamProtocol,
     addEmployeeAso,
-    generateS2220FromEmployeeAso
+    generateS2220FromEmployeeAso,
+    acessoAResultadosDeExame,
+    salvarResultadosDoAso,
+    currentProfile
   } = usePrevSafe();
 
   const [activeSubTab, setActiveSubTab] = useState<'PROTOCOLS' | 'APPLICATIONS' | 'SETORIAIS'>('PROTOCOLS');
@@ -121,7 +138,7 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
    * GHE exige. Nao havia onde lancar o que foi de fato realizado, e por isso o
    * S-2220 saia sem a lista de procedimentos, que o eSocial exige.
    */
-  const [examesDoAso, setExamesDoAso] = useState<EmployeeExamResult[]>([]);
+  const [examesDoAso, setExamesDoAso] = useState<ExameNoFormulario[]>([]);
 
   const [generatedS2220Success, setGeneratedS2220Success] = useState<string | null>(null);
 
@@ -336,11 +353,11 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
     ]);
   };
 
-  const alterarExame = (id: string, campo: keyof EmployeeExamResult, valor: string) => {
+  const alterarExame = (id: string, campo: keyof ExameNoFormulario, valor: string) => {
     setExamesDoAso(prev =>
       prev.map(ex => {
         if (ex.id !== id) return ex;
-        const atualizado = { ...ex, [campo]: valor } as EmployeeExamResult;
+        const atualizado = { ...ex, [campo]: valor } as ExameNoFormulario;
         // Ao digitar o nome de um exame avulso, sugere o tipo de procedimento.
         if (campo === 'exam_name' && !ex.protocol_id) {
           atualizado.procedure_type = sugerirTipoDeProcedimento(valor);
@@ -393,17 +410,30 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
       return;
     }
 
-    const incompletos = examesDoAso.filter(ex => !ex.exam_name || !ex.result || !ex.exam_date);
+    // Quem tem o papel Saude lanca o resultado junto; os demais registram o ASO
+    // (o documento administrativo) e o resultado fica para a Saude.
+    const incompletos = examesDoAso.filter(ex =>
+      !ex.exam_name || !ex.exam_date || (acessoAResultadosDeExame && !ex.result)
+    );
     if (incompletos.length > 0) {
       alert(
-        `${incompletos.length} exame(s) sem nome, data ou resultado. Preencha os três campos, ` +
-        'ou remova a linha do exame que não foi realizado.'
+        acessoAResultadosDeExame
+          ? `${incompletos.length} exame(s) sem nome, data ou resultado. Preencha os três campos, ` +
+            'ou remova a linha do exame que não foi realizado.'
+          : `${incompletos.length} exame(s) sem nome ou data. Preencha os dois campos, ` +
+            'ou remova a linha do exame que não foi realizado.'
       );
+      return;
+    }
+    if (acessoAResultadosDeExame && asoForm.result === 'APTO_COM_RESTRICAO' && !asoForm.restrictions_description.trim()) {
+      alert('Descreva a restrição. Ela fica no prontuário (papel Saúde) e não sai no ASO nem no cadastro do funcionário.');
       return;
     }
 
     const asoId = novoId('aso');
+    const colaborador = employees.find(x => x.id === selectedEmployeeId);
 
+    // No cadastro: apto ou inapto e os exames sem resultado (NR-07, 7.5.19.1).
     const asoCriado = addEmployeeAso(selectedEmployeeId, {
       id: asoId,
       aso_type: asoForm.aso_type,
@@ -412,10 +442,32 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
       physician_name: asoForm.doctor_name,
       physician_crm: asoForm.doctor_crm,
       physician_uf: asoForm.doctor_crm_state,
-      result: asoForm.result,
-      restrictions_notes: asoForm.restrictions_description || undefined,
-      exams: examesDoAso
-    } as any);
+      result: asoForm.result === 'INAPTO' ? 'INAPTO' : 'APTO',
+      exams: examesDoAso.map(exameParaOCadastro)
+    });
+
+    // Em examResults: o que so a Saude le.
+    if (acessoAResultadosDeExame && colaborador) {
+      const gravacao = salvarResultadosDoAso(
+        montarResultadosDoAso({
+          organizationId: colaborador.organization_id,
+          clientId: colaborador.client_id,
+          employeeId: colaborador.id,
+          asoId,
+          conclusao: asoForm.result,
+          restricao: asoForm.restrictions_description,
+          exames: examesDoAso.map(ex => ({
+            exam_id: ex.id,
+            exam_code_table_27: ex.exam_code_table_27,
+            result: ex.result,
+            observation: ex.observation
+          })),
+          autor: currentProfile.full_name
+        }),
+        asoCriado
+      );
+      if (!gravacao.ok) alert(`O ASO foi registrado, mas os resultados não: ${gravacao.motivo}`);
+    }
     
     // Passa o ASO recem-criado: `employees` ainda tem o estado anterior aqui,
     // entao buscar pelo id encontraria o ASO ANTERIOR do trabalhador - ou
@@ -980,10 +1032,27 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
                   >
                     <option value="APTO">1 - APTO</option>
                     <option value="INAPTO">2 - INAPTO</option>
-                    <option value="APTO_COM_RESTRICAO">3 - Apto com Restrições</option>
+                    {/* A existencia da restricao ja e dado de saude: so a Saude a registra. */}
+                    {acessoAResultadosDeExame && (
+                      <option value="APTO_COM_RESTRICAO">3 - Apto com Restrições (prontuário)</option>
+                    )}
                   </select>
                 </div>
               </div>
+
+              {acessoAResultadosDeExame && asoForm.result === 'APTO_COM_RESTRICAO' && (
+                <div>
+                  <label className="block text-slate-400 font-semibold mb-1">
+                    Restrição <span className="text-slate-500 font-normal">(prontuário: o ASO e o cadastro dizem só &quot;Apto&quot;)</span>
+                  </label>
+                  <textarea
+                    rows={2}
+                    value={asoForm.restrictions_description}
+                    onChange={(e) => setAsoForm({ ...asoForm, restrictions_description: e.target.value })}
+                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 focus:outline-none focus:border-teal-500"
+                  />
+                </div>
+              )}
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
@@ -1083,6 +1152,7 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
                     <p className="text-[10px] text-slate-500 mt-0.5">
                       As linhas vêm do protocolo do PCMSO do GHE — o que <em>deveria</em> ser feito.
                       Data e resultado são de quem realizou. Remova o que não foi feito.
+                      {!acessoAResultadosDeExame && ' O resultado de cada exame é lançado pelo papel Saúde.'}
                     </p>
                   </div>
                   <button
@@ -1138,19 +1208,25 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
                           <option value="ACUIDADE_VISUAL">Acuidade Visual</option>
                           <option value="OUTRO">Outro</option>
                         </select>
-                        <select
-                          value={ex.result || ''}
-                          onChange={e => alterarExame(ex.id, 'result', e.target.value)}
-                          className={`col-span-2 bg-slate-950 border rounded px-1.5 py-1.5 text-[11px] ${
-                            ex.result ? 'border-slate-700 text-slate-100' : 'border-amber-600/70 text-amber-400'
-                          }`}
-                        >
-                          <option value="">Resultado…</option>
-                          <option value="NORMAL">Normal</option>
-                          <option value="ALTERADO">Alterado</option>
-                          <option value="ESTAVEL">Estável</option>
-                          <option value="AGRAVAMENTO">Agravamento</option>
-                        </select>
+                        {acessoAResultadosDeExame ? (
+                          <select
+                            value={ex.result || ''}
+                            onChange={e => alterarExame(ex.id, 'result', e.target.value)}
+                            className={`col-span-2 bg-slate-950 border rounded px-1.5 py-1.5 text-[11px] ${
+                              ex.result ? 'border-slate-700 text-slate-100' : 'border-amber-600/70 text-amber-400'
+                            }`}
+                          >
+                            <option value="">Resultado…</option>
+                            {RESULTADOS_DE_EXAME.map(r => (
+                              <option key={r} value={r}>{ROTULO_DO_RESULTADO[r]}</option>
+                            ))}
+                          </select>
+                        ) : (
+                          // Restrito, e nao vazio: um campo em branco pareceria "sem resultado".
+                          <span className="col-span-2 text-[10px] leading-tight text-slate-500 italic" title={RESULTADO_RESTRITO}>
+                            {RESULTADO_RESTRITO}
+                          </span>
+                        )}
                         <button
                           type="button"
                           onClick={() => removerExame(ex.id)}
@@ -1160,7 +1236,7 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
 
-                        {(ex.result === 'ALTERADO' || ex.result === 'AGRAVAMENTO') && (
+                        {acessoAResultadosDeExame && (ex.result === 'ALTERADO' || ex.result === 'AGRAVAMENTO') && (
                           <input
                             type="text"
                             placeholder="Observação do achado (prontuário; não vai ao eSocial)"

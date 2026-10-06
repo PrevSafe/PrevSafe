@@ -19,6 +19,7 @@ import { codigoExisteNaTabela27, normalizarCodigoTabela27 } from '@/lib/tabela27
 import { ehProtocoloModelo } from '@/lib/protocolosDeExame';
 import { fonte, trecho } from '@/lib/pcmsoFontes';
 import { validarCPF } from '@/lib/validacoesBr';
+import { chaveDoResultado, indiceDeResultados } from '@/lib/resultadosDeExame';
 import type { ConteudoSetorialDoPcmso } from '@/types';
 
 /** Tabela 27 do eSocial: 0295 = "Avaliacao clinica ocupacional (anamnese e exame fisico)". */
@@ -1241,6 +1242,14 @@ export interface RelatorioAnalitico {
   catsPorTipo: LinhaAgrupada[];
   /** Exames complementares sem codigo valido da Tabela 27: nao entram na contagem por tipo. */
   semCodigoValido: number;
+  /**
+   * false quando quem emite nao recebe os resultados (examResults e so dos
+   * papeis Saude e Administrador). A alinea "c" entao sai como restrita - e
+   * nunca como "nenhum anormal", que seria falso.
+   */
+  resultadosDisponiveis: boolean;
+  /** Exames complementares do periodo sem resultado lancado: fora da alinea "c". */
+  semResultado: number;
 }
 
 /**
@@ -1287,8 +1296,16 @@ export function relatorioAnalitico(entrada: {
   periodo: PeriodoDoRelatorio;
   ondeDe: (colaborador: any) => string;
   nomeDoExame: (codigo: string) => string;
+  /**
+   * Registros de examResults. O resultado nao esta mais no cadastro do
+   * funcionario. Ausente ou null: quem emite nao tem o papel Saude.
+   */
+  resultados?: any[] | null;
 }): RelatorioAnalitico {
   const { colaboradores, cats, periodo, ondeDe, nomeDoExame } = entrada;
+  const resultadosDisponiveis = Array.isArray(entrada.resultados);
+  const indice = resultadosDisponiveis ? indiceDeResultados(entrada.resultados) : null;
+  let semResultado = 0;
   const lista = Array.isArray(colaboradores) ? colaboradores : [];
   const ondeBruto = (c: any) => ondeDe(c) || 'não informado';
   const k = MINIMO_PARA_CATEGORIZAR;
@@ -1317,12 +1334,20 @@ export function relatorioAnalitico(entrada: {
         return;
       }
       complementares.set(codigo, (complementares.get(codigo) || 0) + 1);
+      // c) conta so o exame com resultado lancado: sem ele, o exame nao e
+      // normal nem anormal, e entraria no total como se fosse normal.
+      if (!indice) return;
+      const resultado = indice.get(chaveDoResultado(colaborador?.id, aso?.id, e?.id));
+      if (!resultado) {
+        semResultado++;
+        return;
+      }
       const locais = porExame.get(codigo) || new Map<string, Celula>();
       const onde = ondeBruto(colaborador);
       const celula = locais.get(onde) || { pessoas: new Set<string>(), total: 0, anormais: 0 };
       celula.pessoas.add(String(colaborador?.id || ''));
       celula.total++;
-      if (ANORMAL.has(String(e?.result || ''))) celula.anormais++;
+      if (ANORMAL.has(resultado)) celula.anormais++;
       locais.set(onde, celula);
       porExame.set(codigo, locais);
     });
@@ -1385,6 +1410,8 @@ export function relatorioAnalitico(entrada: {
     suprimidas,
     doencasNovas,
     catsPorTipo: agrupar(catsDoPeriodo.map((c) => TIPO_DE_CAT[c?.accident_type] || 'Tipo não informado')),
-    semCodigoValido
+    semCodigoValido,
+    resultadosDisponiveis,
+    semResultado
   };
 }

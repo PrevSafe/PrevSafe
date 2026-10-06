@@ -21,6 +21,7 @@ import {
   Contract
 } from '@/types';
 import { formatDate } from '@/lib/utils';
+import { conclusaoDoAso } from '@/lib/resultadosDeExame';
 
 // Helper to format currency
 const formatCurrency = (val: number) => {
@@ -401,7 +402,8 @@ export function exportAsosHealthPdf({
             aso.exam_date ? formatDate(aso.exam_date) : '-',
             aso.valid_until ? formatDate(aso.valid_until) : '-',
             situation,
-            aso.result || (aso as any).aptitude || 'APTO',
+            // So apto ou inapto, e sem conclusao nao se presume apto.
+            conclusaoDoAso(aso) || 'SEM CONCLUSÃO',
             (aso.esocial_event_id || (aso as any).esocial_transmitted) ? 'TRANSMITIDO' : 'PENDENTE'
           ]);
       });

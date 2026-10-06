@@ -71,7 +71,9 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
     esocialEvents,
     pgrActionPlan = [],
     generateESocialXmlPreview,
-    transmitESocialEvent
+    transmitESocialEvent,
+    examResults = [],
+    acessoAResultadosDeExame
   } = usePrevSafe();
 
 
@@ -234,7 +236,10 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
         catRecords,
         trainingRequirements,
         technicalProfessionals,
-        technicalResponsibilities
+        technicalResponsibilities,
+        // Alinea "c" do relatorio analitico: so com o papel Saude. Sem ele o
+        // PDF diz que a alinea e restrita, em vez de "nenhum anormal".
+        examResults: acessoAResultadosDeExame ? examResults : null
       });
       setSuccessToast('PDF do PCMSO (NR-07) gerado com sucesso!');
     } else if (activeDocType === 'LTCAT') {
