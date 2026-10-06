@@ -118,7 +118,16 @@ export const CatAndAbsenceTab: React.FC<CatAndAbsenceTabProps> = ({ selectedClie
     cid_10: ''
   });
 
-  const [notificationMsg, setNotificationMsg] = useState<string | null>(null);
+  // `erro`: o evento nao foi montado e o texto diz o que falta. A faixa era
+  // sempre verde e dizia "transmitido ... com recibo gerado" - o sistema nao
+  // transmite, e o evento podia nem ter sido criado.
+  const [notificationMsg, setNotificationMsg] = useState<{ texto: string; erro: boolean } | null>(null);
+  const avisar = (texto: string, erro = false) => {
+    setNotificationMsg({ texto, erro });
+    setTimeout(() => setNotificationMsg(null), erro ? 15000 : 6000);
+  };
+  const comPendencias = (evento: string, pendencias: string[]) =>
+    `${evento} não foi gerado. Falta: ${pendencias.join(' | ')}`;
 
   const clientEmployees = employees.filter(e => !selectedClientId || e.client_id === selectedClientId);
 
@@ -181,12 +190,17 @@ export const CatAndAbsenceTab: React.FC<CatAndAbsenceTabProps> = ({ selectedClie
       cid_10: catForm.cid_10,
       days_away: catForm.days_away,
       treatment_type: catForm.treatment_type,
-      status: 'READY_TO_SEND'
+      // DRAFT: so fica pronta para envio depois de o S-2210 passar na conferencia.
+      status: 'DRAFT'
     });
 
-    generateS2210FromCat(newCat.id);
-    setNotificationMsg(`CAT ${newCat.cat_number} registrada com sucesso! Evento eSocial S-2210 pronto para envio imediato.`);
-    setTimeout(() => setNotificationMsg(null), 5000);
+    // A CAT recem-gravada vai junto: o estado ainda nao a tem.
+    const { evento, pendencias } = generateS2210FromCat(newCat.id, newCat);
+    if (evento) {
+      avisar(`CAT ${newCat.cat_number} registrada. S-2210 montado com os campos conferidos; não validado contra o XSD, não assinado e não transmitido.`);
+    } else {
+      avisar(`CAT ${newCat.cat_number} registrada. ${comPendencias('O S-2210', pendencias)}`, true);
+    }
     setIsCatModalOpen(false);
   };
 
@@ -215,33 +229,42 @@ export const CatAndAbsenceTab: React.FC<CatAndAbsenceTabProps> = ({ selectedClie
       status: 'ACTIVE_AWAY'
     });
 
-    generateS2230FromAbsence(newAbs.id);
-    setNotificationMsg(`Afastamento registrado! Evento eSocial S-2230 gerado com sucesso.`);
-    setTimeout(() => setNotificationMsg(null), 5000);
+    const { evento, pendencias } = generateS2230FromAbsence(newAbs.id, newAbs);
+    if (evento) {
+      avisar('Afastamento registrado. S-2230 montado com os campos conferidos; não validado contra o XSD, não assinado e não transmitido.');
+    } else {
+      avisar(`Afastamento registrado. ${comPendencias('O S-2230', pendencias)}`, true);
+    }
     setIsAbsenceModalOpen(false);
   };
 
+  // O PrevSafe nao transmite: monta o evento, confere os campos e o deixa
+  // pronto para quem envia pelo canal oficial.
   const handleTransmitCat = (catId: string) => {
-    transmitCatRecord(catId);
-    setNotificationMsg('Evento S-2210 transmitido ao Ambiente Nacional do eSocial com recibo gerado!');
-    setTimeout(() => setNotificationMsg(null), 5000);
+    const r = transmitCatRecord(catId);
+    if (r.success) avisar('S-2210 pronto para envio: campos conferidos, não validado contra o XSD, não assinado e não transmitido.');
+    else avisar(`O S-2210 não ficou pronto. Falta: ${r.error}`, true);
   };
 
   const handleTransmitAbsence = (absId: string) => {
-    transmitWorkAbsence(absId);
-    setNotificationMsg('Evento S-2230 transmitido ao eSocial com sucesso!');
-    setTimeout(() => setNotificationMsg(null), 5000);
+    const r = transmitWorkAbsence(absId);
+    if (r.success) avisar('S-2230 pronto para envio: campos conferidos, não validado contra o XSD, não assinado e não transmitido.');
+    else avisar(`O S-2230 não ficou pronto. Falta: ${r.error}`, true);
   };
 
   return (
     <div className="space-y-6" id="cat-absence-tab-container">
       {notificationMsg && (
-        <div className="p-4 bg-teal-500/10 border border-teal-500/30 rounded-xl flex items-center justify-between text-xs text-teal-300 animate-in fade-in">
+        <div className={`p-4 rounded-xl flex items-center justify-between gap-3 text-xs animate-in fade-in ${notificationMsg.erro ? 'bg-amber-500/10 border border-amber-500/30 text-amber-200' : 'bg-teal-500/10 border border-teal-500/30 text-teal-300'}`}>
           <div className="flex items-center gap-2">
-            <CheckCircle2 className="w-5 h-5 text-teal-400" />
-            <span className="font-semibold">{notificationMsg}</span>
+            {notificationMsg.erro
+              ? <AlertOctagon className="w-5 h-5 text-amber-400 shrink-0" />
+              : <CheckCircle2 className="w-5 h-5 text-teal-400 shrink-0" />}
+            <span className="font-semibold">{notificationMsg.texto}</span>
           </div>
-          <span className="text-[11px] bg-teal-500 text-slate-950 font-bold px-2 py-1 rounded">eSocial Notificado</span>
+          <span className={`text-[11px] font-bold px-2 py-1 rounded shrink-0 ${notificationMsg.erro ? 'bg-amber-500 text-slate-950' : 'bg-teal-500 text-slate-950'}`}>
+            {notificationMsg.erro ? 'Com pendências' : 'Não transmitido'}
+          </span>
         </div>
       )}
 
@@ -393,7 +416,7 @@ export const CatAndAbsenceTab: React.FC<CatAndAbsenceTabProps> = ({ selectedClie
                       className="px-3 py-1.5 bg-rose-500 hover:bg-rose-400 text-slate-950 font-bold rounded-lg transition-all flex items-center gap-1 text-xs"
                     >
                       <Send className="w-3.5 h-3.5" />
-                      Transmitir S-2210
+                      Preparar S-2210 para envio
                     </button>
                   ) : (
                     <span className="text-emerald-400 flex items-center gap-1 font-semibold text-[11px]">
@@ -459,7 +482,7 @@ export const CatAndAbsenceTab: React.FC<CatAndAbsenceTabProps> = ({ selectedClie
                           onClick={() => handleTransmitAbsence(abs.id)}
                           className="px-2.5 py-1 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded text-[11px] transition-colors"
                         >
-                          Enviar S-2230
+                          Preparar S-2230 para envio
                         </button>
                       </td>
                     </tr>

@@ -116,7 +116,7 @@ export const HelpCenterView: React.FC<HelpCenterViewProps> = ({ onNavigate }) =>
     },
     {
       title: '🛡️ Trilha de Mensageria eSocial',
-      desc: 'Validação de esquemas XSD, envio de lotes S-2240 e recibos da RFB.',
+      desc: 'Montagem e conferência dos eventos S-2210, S-2220, S-2230 e S-2240 (sem envio ao eSocial).',
       tutId: 'tut-esocial-batch-transmission',
       badge: 'Compliance'
     }

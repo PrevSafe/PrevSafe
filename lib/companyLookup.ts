@@ -7,6 +7,7 @@
  */
 
 import { lookupRiskDegreeByCnae, formatCnaeCode } from './nr4';
+import { codigoDaNaturezaJuridica } from '@/lib/esocialEmpregador';
 import { DocumentType } from '@/types';
 
 export interface CompanyLookupResult {
@@ -64,6 +65,34 @@ export function porteDaReceita(data: any): string {
   return String(data?.porte || '').trim();
 }
 
+/**
+ * Natureza juridica no formato "NNN-D - descricao", o que
+ * codigoDaNaturezaJuridica (lib/esocialEmpregador.ts) le.
+ *
+ * A BrasilAPI devolve as duas coisas em campos separados: `natureza_juridica`
+ * so com a descricao e `codigo_natureza_juridica` com o codigo em 4
+ * algarismos, como numero. Conferido na resposta real para o CNPJ
+ * 00.000.000/0001-91 (Banco do Brasil) em 05/10/2026:
+ * "natureza_juridica":"Sociedade de Economia Mista",
+ * "codigo_natureza_juridica":2038. O sistema gravava so a descricao, e por
+ * isso o aviso de "natureza sem codigo" do eSocial saia em quase todo cliente.
+ *
+ * Os 4 algarismos sao o codigo com o digito verificador no fim: a mesma
+ * natureza aparece como "203-8" no leiaute S-1.3 (S-1000, campo indSiafi).
+ * Aqui so se poe o hifen. Codigo ausente ou fora do formato nao e deduzido da
+ * descricao: sem ele, grava-se a descricao e o aviso continua aparecendo.
+ */
+export function naturezaJuridicaDaReceita(data: any): string {
+  const descricao = String(data?.natureza_juridica ?? '').trim();
+  // A descricao ja com o codigo (outra fonte, ou cadastro antigo) fica como esta.
+  if (codigoDaNaturezaJuridica(descricao)) return descricao;
+  const bruto = data?.codigo_natureza_juridica;
+  const digitos = typeof bruto === 'number' || typeof bruto === 'string' ? String(bruto).trim() : '';
+  if (!/^\d{4}$/.test(digitos)) return descricao;
+  const codigo = `${digitos.slice(0, 3)}-${digitos.slice(3)}`;
+  return descricao ? `${codigo} - ${descricao}` : codigo;
+}
+
 // Base de entidades verificadas para demonstração instantânea e fallback de alta confiabilidade
 const VERIFIED_ENTITIES_MOCK: Record<string, Partial<CompanyLookupResult>> = {};
 
@@ -104,7 +133,9 @@ export function detectDocumentTypeAndESocial(digits: string, requestedType?: Doc
     return {
       type: 'CAEPF',
       tpInsc: '3',
-      explanation: 'eSocial <tpInsc: 3> - CAEPF (Cadastro de Atividade Econômica da Pessoa Física - Produtor Rural / Autônomo / Cartório)'
+      // tpInsc 3 e o codigo do CAEPF na Tabela 05, que so vale para o
+      // estabelecimento: em ideEmpregador o leiaute S-1.3 aceita 1 e 2.
+      explanation: 'CAEPF (Tabela 05, código 3): identifica o estabelecimento da pessoa física, não o empregador. No eSocial o empregador é o CPF (ideEmpregador/tpInsc 2).'
     };
   }
 
@@ -112,7 +143,7 @@ export function detectDocumentTypeAndESocial(digits: string, requestedType?: Doc
     return {
       type: 'CNO',
       tpInsc: '4',
-      explanation: 'eSocial <tpInsc: 4> - CNO (Cadastro Nacional de Obras de Construção Civil)'
+      explanation: 'CNO (Tabela 05, código 4): identifica a obra, não o empregador. No eSocial o empregador é o CNPJ ou o CPF a que a obra está vinculada.'
     };
   }
 
@@ -120,7 +151,7 @@ export function detectDocumentTypeAndESocial(digits: string, requestedType?: Doc
     return {
       type: 'CPF',
       tpInsc: '2',
-      explanation: 'eSocial <tpInsc: 2> - CPF (Pessoa Física Empregadora)'
+      explanation: 'eSocial ideEmpregador/tpInsc 2 - CPF (Pessoa Física Empregadora)'
     };
   }
 
@@ -128,7 +159,7 @@ export function detectDocumentTypeAndESocial(digits: string, requestedType?: Doc
   return {
     type: 'CNPJ',
     tpInsc: '1',
-    explanation: 'eSocial <tpInsc: 1> - CNPJ (Pessoa Jurídica Empregadora / Estabelecimento Matriz ou Filial)'
+    explanation: 'eSocial ideEmpregador/tpInsc 1 - CNPJ (Pessoa Jurídica Empregadora; nrInsc com a raiz de 8 dígitos, salvo administração pública federal)'
   };
 }
 
@@ -175,7 +206,9 @@ export async function lookupCompanyData(
       email: mock.email || 'contato@empresa.com.br',
       status_receita: mock.status_receita || 'ATIVA',
       porte: mock.porte || '',
-      natureza_juridica: mock.natureza_juridica || 'Sociedade Empresária',
+      // Sem natureza no registro, fica vazia: "Sociedade Empresaria" escolhida
+      // aqui decidiria o nrInsc do eSocial (raiz ou CNPJ completo).
+      natureza_juridica: mock.natureza_juridica || '',
       esocial_tp_insc: tpInsc,
       esocial_explanation: explanation,
       source: 'BASE_LOCAL_VERIFICADA'
@@ -224,10 +257,10 @@ export async function lookupCompanyData(
           email: data.email ? data.email.toLowerCase() : '',
           status_receita: data.descricao_situacao_cadastral === 'ATIVA' ? 'ATIVA' : 'INAPTA',
           porte: porteDaReceita(data),
-          natureza_juridica: data.natureza_juridica || '',
+          natureza_juridica: naturezaJuridicaDaReceita(data),
           opening_date: data.data_inicio_atividade || '',
           esocial_tp_insc: '1',
-          esocial_explanation: 'eSocial <tpInsc: 1> - CNPJ Pessoa Jurídica validada na Receita Federal',
+          esocial_explanation: 'eSocial ideEmpregador/tpInsc 1 - CNPJ localizado na Receita Federal',
           source: 'RECEITA_FEDERAL_ONLINE'
         };
       }

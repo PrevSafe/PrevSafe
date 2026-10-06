@@ -220,22 +220,34 @@ import {
 import {
   montarCondicoesAmbientais,
   montarAsoDoEvento,
+  montarFatorDeRisco,
   riscosDoColaborador,
   selecionarAsoMaisRecente,
   resumirPendencias,
   tpExameOcupDoAso,
   resAsoDoAso,
   xmlDosExamesDoS2220,
-  xmlDoEpcEpi,
   type PendenciaESocial,
 } from '@/lib/esocialDados';
+import {
+  COMENTARIO_SEM_ASSINATURA,
+  VERSAO_DO_APLICATIVO_EMISSOR,
+  dadosDoS2210DaCat,
+  dadosDoS2230DoAfastamento,
+  montarXmlDoS2210,
+  montarXmlDoS2230,
+  montarXmlDoS2240,
+  montarXmlDoS3000,
+  type CabecalhoDoEvento,
+  type MontagemDoEvento,
+  type ResponsavelPeloRegistroAmbiental,
+} from '@/lib/esocialEventos';
 import {
   idDoEventoESocial,
   inscricaoDoAmbiente,
   inscricaoDoEmpregador,
   namespaceDoEvento,
   VERSAO_DO_LEIAUTE_ESOCIAL,
-  xmlDaInscricaoDoAmbiente,
   xmlDoIdeEmpregador,
   type InscricaoDoEmpregador,
 } from '@/lib/esocialEmpregador';
@@ -770,8 +782,10 @@ interface PrevSafeContextType {
    * registrado na mesma acao.
    */
   generateS2220FromEmployeeAso: (employeeId: string, asoId: string, asoRecemCriado?: EmployeeASO) => ESocialEvent | null;
-  generateS2210FromCat: (catId: string) => ESocialEvent | null;
-  generateS2230FromAbsence: (absenceId: string) => ESocialEvent | null;
+  /** `catRecemCriada`: a CAT que acabou de ser gravada, que ainda nao esta em `catRecords`. */
+  generateS2210FromCat: (catId: string, catRecemCriada?: SSTCATRecord) => { evento: ESocialEvent | null; pendencias: string[] };
+  /** `afastamentoRecemCriado`: idem, para o afastamento. */
+  generateS2230FromAbsence: (absenceId: string, afastamentoRecemCriado?: SSTWorkAbsence) => { evento: ESocialEvent | null; pendencias: string[] };
 
   // Comprehensive EPI Management (NR-06, Biometria Facial, Ficha Impressa & eSocial)
   epiCatalog: EPICatalogItem[];
@@ -2034,27 +2048,15 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
    * responsavel pelos registros ambientais e quem elaborou o LTCAT, e que o
    * grupo aceita ate 99 deles.
    *
-   * Sem ninguem atribuido, sai um comentario dizendo isso — e nao um CPF que
-   * o eSocial vai aceitar como verdadeiro.
+   * Sem ninguem atribuido, a lista sai vazia e o montador do S-2240
+   * (lib/esocialEventos.ts) deixa a pendencia - e nao um CPF que o eSocial vai
+   * aceitar como verdadeiro. O XML do grupo, com a ordem e as condicoes do
+   * leiaute, e montado la; aqui so se acha quem responde pelo cliente.
    */
-  const blocoRespRegXml = useCallback((clientId: string, data: string, recuo = '      '): string => {
-    const lista = responsaveisDoCliente(
+  const responsaveisPeloRegistroAmbiental = useCallback((clientId: string, data: string): ResponsavelPeloRegistroAmbiental[] => {
+    return responsaveisDoCliente(
       technicalResponsibilities, technicalProfessionals, clientId, 'REG_AMBIENTAIS', data
-    );
-    if (lista.length === 0) {
-      return `${recuo}<!-- respReg ausente: nenhum responsável pelos registros ambientais `
-        + `atribuído a este cliente (Engenharia SST > Responsabilidade Técnica) -->`;
-    }
-    return lista.map((p) => {
-      const oc = codigoDoOrgaoDeClasse(p);
-      return `${recuo}<respReg>\n`
-        + `${recuo}  <cpfResp>${String(p.cpf || '').replace(/\D/g, '')}</cpfResp>\n`
-        + `${recuo}  <ideOC>${oc.ideOC}</ideOC>\n`
-        + (oc.dscOC ? `${recuo}  <dscOC>${oc.dscOC}</dscOC>\n` : '')
-        + (oc.nrOC ? `${recuo}  <nrOC>${oc.nrOC}</nrOC>\n` : '')
-        + (oc.ufOC ? `${recuo}  <ufOC>${oc.ufOC}</ufOC>\n` : '')
-        + `${recuo}</respReg>`;
-    }).join('\n');
+    ).map((p) => ({ nome: p.full_name, cpf: String(p.cpf || ''), ...codigoDoOrgaoDeClasse(p) }));
   }, [technicalResponsibilities, technicalProfessionals]);
 
   /**
@@ -3860,7 +3862,24 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     return v ? `<${tag}>${v}</${tag}>` : `<${tag}></${tag}><!-- ${oQueFalta} -->`;
   }, []);
 
-  const generateESocialXmlPreview = useCallback((event: ESocialEvent): string => {
+  /**
+   * Montagem de um evento de SST: o XML e o que falta para ele ir ao eSocial.
+   *
+   * A pre-visualizacao, a validacao e os geradores da CAT, do afastamento e do
+   * S-2240 por GHE passam todos por aqui. Antes cada um tinha a sua copia do
+   * XML - os de CAT e afastamento numa linha so, sem <ideEvento> e com
+   * <ideTrabalhador> no lugar de <ideVinculo> - e a validacao conferia outros
+   * campos que nao os do XML. Agora o que o XML mostra vazio e o que a
+   * validacao cobra.
+   *
+   * S-2210, S-2230, S-2240 e S-3000 saem de lib/esocialEventos.ts, com a ordem,
+   * a ocorrencia e as condicoes do leiaute S-1.3. O S-2220 continua aqui, com
+   * os grupos de lib/esocialDados.ts.
+   *
+   * `idInformado` (inclusive '') evita gerar Id novo: a validacao so precisa
+   * das pendencias, e cada Id gerado consome o sequencial do segundo.
+   */
+  const montarEventoESocial = useCallback((event: ESocialEvent, idInformado?: string): MontagemDoEvento => {
     const client = clients.find(c => c.id === event.client_id);
     const workerCpf = event.worker_cpf.replace(/\D/g, '');
 
@@ -3872,97 +3891,80 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     const empregador = inscricaoDoEmpregador(client);
 
     // 36 caracteres, com o mesmo nrInsc que vai em <ideEmpregador>.
-    const idEvt = empregador.ok ? novoIdDoEvento(empregador.tpInsc, empregador.nrInsc) : '';
+    const idEvt = idInformado !== undefined
+      ? idInformado
+      : empregador.ok ? novoIdDoEvento(empregador.tpInsc, empregador.nrInsc) : '';
+
+    const cabecalho: CabecalhoDoEvento = {
+      id: idEvt,
+      empregador,
+      retificacao: event.is_rectification,
+      reciboRetificado: event.rectified_receipt_number,
+      ambiente: event.environment,
+    };
+    const trabalhador = { cpf: event.worker_cpf, matricula: event.worker_registration };
 
     if (event.event_type === 'S-2240') {
-      const amb = event.ambient_data;
-      const risksXml = (amb?.ambient_risks || []).map((r) => `
-        <fatRisco>
-          <codFatRis>${r.risk_code_table_24}</codFatRis>
-          <dscFatRis>${r.description}</dscFatRis>
-          <tpAval>${r.intensity_concentration ? '1' : '2'}</tpAval>
-          ${r.intensity_concentration ? `<intConc>${r.intensity_concentration}</intConc>` : ''}
-          ${r.limit_tolerance ? `<limTol>${r.limit_tolerance}</limTol>` : ''}
-          ${r.measurement_unit ? `<unMed>${r.measurement_unit}</unMed>` : ''}
-          ${r.technique_used ? `<tecMedicao>${r.technique_used}</tecMedicao>` : ''}
-${r.risk_code_table_24 === '09.01.001'
-            // MOS S-2240, item 1.5: com 09.01.001 o grupo [epcEpi] nao e preenchido.
-            ? ''
-            : xmlDoEpcEpi({
-              // Eventos gravados antes nao tem epc_implemented: ali o
-              // epc_effective era o que decidia o utilizEPC.
-              epcImplementado: r.epc_implemented ?? r.epc_effective,
-              epcEficaz: r.epc_effective,
-              epiUtilizado: r.epi_used ?? (r.epi_ca_numbers || []).length > 0,
-              epiEficaz: r.epi_effective,
-              cas: r.epi_ca_numbers || []
-            })}
-        </fatRisco>`).join('');
-
-      return `<?xml version="1.0" encoding="UTF-8"?>
-<eSocial xmlns="${namespaceDoEvento('S-2240')}">
-  <evtExpRisco Id="${idEvt}">
-    <ideEvento>
-      <indRetif>${event.is_rectification ? '2' : '1'}</indRetif>
-      ${event.rectified_receipt_number ? `<nrRecibo>${event.rectified_receipt_number}</nrRecibo>` : ''}
-      <tpAmb>${event.environment === 'PRODUCAO' ? '1' : '2'}</tpAmb>
-      <procEmi>1</procEmi>
-      <verProc>PrevSafe-v2.6</verProc>
-    </ideEvento>
-${xmlDoIdeEmpregador(empregador, '    ')}
-    <ideVinculo>
-      <cpfTrab>${workerCpf}</cpfTrab>
-      <matricula>${event.worker_registration}</matricula>
-    </ideVinculo>
-    <infoExpRisco>
-      ${campoDoEvento('dtIniCondic', amb?.start_date, 'data de início da condição não informada')}
-      ${amb?.end_date ? `<dtFimCondic>${amb.end_date}</dtFimCondic>` : ''}
-      <infoAmb>
-        <localAmb>1</localAmb>
-        ${campoDoEvento('dscSetor', amb?.work_environment, 'ambiente de trabalho não descrito')}
-${xmlDaInscricaoDoAmbiente(inscricaoDoAmbiente(client), '        ')}
-      </infoAmb>
-      <infoAtiv>
-        ${campoDoEvento('dscAtivDes', amb?.description_activities, 'atividades desempenhadas não descritas')}
-      </infoAtiv>
-      <agNoc>${risksXml}
-      </agNoc>
-${blocoRespRegXml(event.client_id, amb?.start_date || dataDeHoje())}
-    </infoExpRisco>
-  </evtExpRisco>
-  <Signature xmlns="http://www.w3.org/2000/09/xmldsig#">
-    <SignedInfo>
-      <CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>
-      <SignatureMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"/>
-      <Reference URI="#${idEvt}">
-        <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"/>
-        <DigestValue>d41d8cd98f00b204e9800998ecf8427e==</DigestValue>
-      </Reference>
-    </SignedInfo>
-    <SignatureValue>MEQCIA...ICP-Brasil-A1-Signature-PrevSafe...</SignatureValue>
-  </Signature>
-</eSocial>`;
+      return montarXmlDoS2240({
+        cabecalho,
+        trabalhador,
+        dados: event.ambient_data,
+        ambiente: inscricaoDoAmbiente(client),
+        responsaveis: responsaveisPeloRegistroAmbiental(event.client_id, event.ambient_data?.start_date || dataDeHoje()),
+      });
     }
 
-    if (event.event_type === 'S-2220') {
-      const aso = event.aso_data;
-      // Unico montador do S-2220: o evento criado do ASO
-      // (generateS2220FromEmployeeAso) tambem grava este XML.
-      // Codigos e campos dos exames: lib/esocialDados.ts (leiaute S-1.3).
-      const exames = aso?.exams_list || [];
-      // [exame] tem ocorrencia 1-99, e o MOS (S-2220, item 1.5) manda informar
-      // "todos os exames realizados pelo trabalhador que constam no ASO". Sem
-      // nenhum, fica a pendencia - nunca um exame de exemplo.
-      const examsXml = exames.length > 0
-        ? xmlDosExamesDoS2220(exames, '        ')
-        : '        <!-- exame ausente: nenhum exame do ASO neste evento; o leiaute exige ao menos 1 grupo '
-          + '[exame] e o MOS (S-2220, item 1.5) manda informar todos os exames que constam no ASO -->';
-      // resAso, nrCRM e ufCRM do medico tem ocorrencia 0-1: vazios, nao vao.
-      const resAso = resAsoDoAso(aso?.result);
-      const nrCrmDoMedico = String(aso?.physician_crm || '').replace(/\D/g, '');
-      const ufCrmDoMedico = String(aso?.physician_uf || '').trim().toUpperCase();
+    if (event.event_type === 'S-2210') {
+      return montarXmlDoS2210({ cabecalho, trabalhador, cat: dadosDoS2210DaCat(event.cat_data) });
+    }
 
-      return `<?xml version="1.0" encoding="UTF-8"?>
+    if (event.event_type === 'S-2230') {
+      const afastamento = dadosDoS2230DoAfastamento(event.absence_data);
+      // {infoMesmoMtv} passa a ser exigido em 26/10/2026 quando o mesmo
+      // trabalhador teve outro afastamento pelo mesmo motivo nos 60 dias
+      // anteriores (evtAfastTemp.xsd do pacote de 26/10/2026). So o
+      // historico de afastamentos responde isso.
+      const inicio = afastamento.dtIniAfast || '';
+      const anterior = !!inicio && workAbsences.some(a =>
+        String(a.worker_cpf || '').replace(/\D/g, '') === workerCpf
+        && String(a.reason_code_table_18 || '').slice(0, 2) === afastamento.codMotAfast
+        && String(a.start_date || '') < inicio
+        && (Date.parse(inicio) - Date.parse(String(a.start_date))) / 86400000 <= 60
+      );
+      return montarXmlDoS2230({
+        cabecalho,
+        trabalhador,
+        afastamento,
+        naturezaJuridica: client?.natureza_juridica,
+        afastamentoAnteriorNoMesmoMotivo: anterior,
+      });
+    }
+
+    if (event.event_type === 'S-3000') {
+      return montarXmlDoS3000({ cabecalho, exclusao: event.exclusion_data, cpfTrabalhador: event.worker_cpf });
+    }
+
+    // S-2220
+    const aso = event.aso_data;
+    // Unico montador do S-2220: o evento criado do ASO
+    // (generateS2220FromEmployeeAso) tambem grava este XML.
+    // Codigos e campos dos exames: lib/esocialDados.ts (leiaute S-1.3).
+    const exames = aso?.exams_list || [];
+    // [exame] tem ocorrencia 1-99, e o MOS (S-2220, item 1.5) manda informar
+    // "todos os exames realizados pelo trabalhador que constam no ASO". Sem
+    // nenhum, fica a pendencia - nunca um exame de exemplo.
+    const examsXml = exames.length > 0
+      ? xmlDosExamesDoS2220(exames, '        ')
+      : '        <!-- exame ausente: nenhum exame do ASO neste evento; o leiaute exige ao menos 1 grupo '
+        + '[exame] e o MOS (S-2220, item 1.5) manda informar todos os exames que constam no ASO -->';
+    // resAso, nrCRM e ufCRM do medico tem ocorrencia 0-1: vazios, nao vao.
+    const resAso = resAsoDoAso(aso?.result);
+    const nrCrmDoMedico = String(aso?.physician_crm || '').replace(/\D/g, '');
+    const ufCrmDoMedico = String(aso?.physician_uf || '').trim().toUpperCase();
+
+    // Sem <Signature>: o bloco que saia aqui tinha DigestValue e SignatureValue
+    // de enfeite ("ICP-Brasil-A1-Signature-PrevSafe") e parecia assinatura.
+    const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <eSocial xmlns="${namespaceDoEvento('S-2220')}">
   <evtMonit Id="${idEvt}">
     <ideEvento>
@@ -3970,7 +3972,7 @@ ${blocoRespRegXml(event.client_id, amb?.start_date || dataDeHoje())}
       ${event.rectified_receipt_number ? `<nrRecibo>${event.rectified_receipt_number}</nrRecibo>` : ''}
       <tpAmb>${event.environment === 'PRODUCAO' ? '1' : '2'}</tpAmb>
       <procEmi>1</procEmi>
-      <verProc>PrevSafe-v2.6</verProc>
+      <verProc>${VERSAO_DO_APLICATIVO_EMISSOR}</verProc>
     </ideEvento>
 ${xmlDoIdeEmpregador(empregador, '    ')}
     <ideVinculo>
@@ -3992,149 +3994,16 @@ ${examsXml}
 ${blocoRespMonitXml(event.client_id, aso?.exam_date || dataDeHoje(), '      ')}
     </exMedOcup>
   </evtMonit>
-  <Signature xmlns="http://www.w3.org/2000/09/xmldsig#">
-    <SignedInfo>
-      <CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>
-      <SignatureMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"/>
-      <Reference URI="#${idEvt}">
-        <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"/>
-        <DigestValue>e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855==</DigestValue>
-      </Reference>
-    </SignedInfo>
-    <SignatureValue>MEYCIQ...ICP-Brasil-A1-Signature-PrevSafe...</SignatureValue>
-  </Signature>
+  ${COMENTARIO_SEM_ASSINATURA}
 </eSocial>`;
-    }
+    // As regras do S-2220 estao na validacao (errosDoEventoESocial).
+    return { xml, pendencias: [] };
+  }, [blocoRespMonitXml, campoDoEvento, novoIdDoEvento, clients, responsaveisPeloRegistroAmbiental, workAbsences]);
 
-    if (event.event_type === 'S-2210') {
-      const cat = event.cat_data;
-      return `<?xml version="1.0" encoding="UTF-8"?>
-<eSocial xmlns="${namespaceDoEvento('S-2210')}">
-  <evtCAT Id="${idEvt}">
-    <ideEvento>
-      <indRetif>${event.is_rectification ? '2' : '1'}</indRetif>
-      <tpAmb>${event.environment === 'PRODUCAO' ? '1' : '2'}</tpAmb>
-      <procEmi>1</procEmi>
-      <verProc>PrevSafe-v2.6</verProc>
-    </ideEvento>
-${xmlDoIdeEmpregador(empregador, '    ')}
-    <ideVinculo>
-      <cpfTrab>${workerCpf}</cpfTrab>
-      <matricula>${event.worker_registration}</matricula>
-    </ideVinculo>
-    <cat>
-      ${campoDoEvento('dtAcid', cat?.accident_date, 'data do acidente não informada')}
-      ${campoDoEvento(
-        'tpAcid',
-        cat?.accident_type === 'TIPICO' ? '1'
-          : cat?.accident_type === 'DOENCA_OCUPACIONAL' ? '2'
-          : cat?.accident_type === 'TRAJETO' ? '3'
-          : '',
-        'tipo do acidente não informado'
-      )}
-      ${campoDoEvento('hrAcid', (cat?.accident_time || '').replace(':', ''), 'hora do acidente não informada')}
-      ${campoDoEvento(
-        'hrsTrabAntesAcid',
-        // Ia 0330 fixo: o evento declarava que o trabalhador estava em
-        // atividade havia 3h30, sempre.
-        (cat?.hours_worked_before_accident || '').toString().replace(':', ''),
-        'horas trabalhadas antes do acidente não informadas'
-      )}
-      ${campoDoEvento(
-        'tpCat',
-        cat?.cat_type === 'INICIAL' ? '1'
-          : cat?.cat_type === 'REABERTURA' ? '2'
-          : cat?.cat_type === 'COMUNICACAO_OBITO' ? '3'
-          : '',
-        'tipo da CAT não informado'
-      )}
-      <indMorte>${cat?.death_occurred ? 'S' : 'N'}</indMorte>
-      <localAcidente>
-        <tpLocal>${cat?.location_type === 'ESTABELECIMENTO_EMPREGADOR' ? '1' : '3'}</tpLocal>
-        ${campoDoEvento('dscLocal', cat?.location_description, 'local do acidente não descrito')}
-      </localAcidente>
-      <parteAtingida>
-        ${campoDoEvento('codParteAting', cat?.body_part, 'parte atingida não codificada')}
-      </parteAtingida>
-      <agenteCausador>
-        ${campoDoEvento('codAgntCausador', cat?.accident_agent, 'agente causador não codificado')}
-      </agenteCausador>
-      <atestado>
-        ${campoDoEvento('dtAtendimento', cat?.medical_care_date, 'data do atendimento não informada')}
-        ${campoDoEvento('hrAtendimento', (cat?.medical_care_time || '').replace(':', ''), 'hora do atendimento não informada')}
-        <indAfast>${(cat?.days_away || 0) > 0 ? 'S' : 'N'}</indAfast>
-        <qtdDiasAfast>${cat?.days_away || 0}</qtdDiasAfast>
-        <diagProvavel>
-          ${campoDoEvento('codCID', cat?.cid_code?.split(' ')[0], 'CID do diagnóstico não informado')}
-        </diagProvavel>
-        <emitente>
-          ${campoDoEvento('nmEmit', cat?.medical_cert_issuer, 'emitente do atestado não informado')}
-          <ideOC>1</ideOC>
-          ${campoDoEvento('nrOC', cat?.medical_crm?.replace(/\D/g, ''), 'registro do emitente não informado')}
-          ${campoDoEvento('ufOC', cat?.medical_uf, 'UF do registro do emitente não informada')}
-        </emitente>
-      </atestado>
-    </cat>
-  </evtCAT>
-</eSocial>`;
-    }
-
-    if (event.event_type === 'S-2230') {
-      const abs = event.absence_data;
-      return `<?xml version="1.0" encoding="UTF-8"?>
-<eSocial xmlns="${namespaceDoEvento('S-2230')}">
-  <evtAfastTemp Id="${idEvt}">
-    <ideEvento>
-      <tpAmb>${event.environment === 'PRODUCAO' ? '1' : '2'}</tpAmb>
-      <procEmi>1</procEmi>
-      <verProc>PrevSafe-v2.6</verProc>
-    </ideEvento>
-${xmlDoIdeEmpregador(empregador, '    ')}
-    <ideVinculo>
-      <cpfTrab>${workerCpf}</cpfTrab>
-      <matricula>${event.worker_registration}</matricula>
-    </ideVinculo>
-    <infoAfastamento>
-      <iniAfastamento>
-        <dtIniAfast>${abs?.start_date || '2026-08-15'}</dtIniAfast>
-        <codMotAfast>${abs?.reason_code_table_18 || '01'}</codMotAfast>
-        <infoAtestado>
-          <codCID>${(abs?.cid_code || abs?.cid_10 || 'M54.5').split(' ')[0]}</codCID>
-          <qtdDiasAfast>${abs?.days_count || abs?.estimated_days || 5}</qtdDiasAfast>
-          <emitente>
-            <nmEmit>${abs?.physician_name || abs?.medical_issuer_name || 'Dr. Ortopedista'}</nmEmit>
-            <ideOC>1</ideOC>
-            <nrOC>${abs?.medical_crm?.replace(/\D/g, '') || '77890'}</nrOC>
-            <ufOC>${abs?.medical_uf || 'SP'}</ufOC>
-          </emitente>
-        </infoAtestado>
-      </iniAfastamento>
-    </infoAfastamento>
-  </evtAfastTemp>
-</eSocial>`;
-    }
-
-    // S-3000
-    const excl = event.exclusion_data;
-    return `<?xml version="1.0" encoding="UTF-8"?>
-<eSocial xmlns="${namespaceDoEvento('S-3000')}">
-  <evtExclusao Id="${idEvt}">
-    <ideEvento>
-      <tpAmb>${event.environment === 'PRODUCAO' ? '1' : '2'}</tpAmb>
-      <procEmi>1</procEmi>
-      <verProc>PrevSafe-v2.6</verProc>
-    </ideEvento>
-${xmlDoIdeEmpregador(empregador, '    ')}
-    <infoExclusao>
-      <tpEvento>${excl?.target_event_type || 'S-2240'}</tpEvento>
-      <nrRecEvt>${excl?.target_receipt_number || '1.2.202600.0000000000000000000-00'}</nrRecEvt>
-      <ideTrabalhador>
-        <cpfTrab>${workerCpf}</cpfTrab>
-      </ideTrabalhador>
-    </infoExclusao>
-  </evtExclusao>
-</eSocial>`;
-  }, [blocoRespRegXml, blocoRespMonitXml, campoDoEvento, novoIdDoEvento, clients]);
+  const generateESocialXmlPreview = useCallback(
+    (event: ESocialEvent): string => montarEventoESocial(event).xml,
+    [montarEventoESocial]
+  );
 
   // Create eSocial Event
   const createESocialEvent = useCallback((data: Omit<ESocialEvent, 'id' | 'organization_id' | 'event_number' | 'created_at' | 'updated_at' | 'status'> & { status?: ESocialEventStatus }): ESocialEvent => {
@@ -4216,24 +4085,20 @@ ${xmlDoIdeEmpregador(empregador, '    ')}
     }
   }, [esocialEvents, logAudit]);
 
-  // Validate eSocial Event (Deep Rule Validation)
-  const validateESocialEvent = useCallback((id: string): { success: boolean; errors: string[] } => {
-    const evt = esocialEvents.find(e => e.id === id);
-    if (!evt) return { success: false, errors: ['Evento não encontrado.'] };
-
+  /**
+   * O que impede o evento de ir ao eSocial, sem gravar nada.
+   *
+   * As regras do leiaute (campos, ocorrencia, condicoes) sao as pendencias da
+   * propria montagem do XML (montarEventoESocial): o campo que a validacao cobra
+   * e o mesmo que o XML mostra vazio. Antes a validacao tinha a sua lista, que
+   * divergia do XML: cobrava {dtIniCondic} (nome do leiaute S-1.2), o CPF do
+   * tecnico digitado no formulario - quando o [respReg] sai da atribuicao do
+   * cliente - e o CRM do atestado no S-2230, campo que o leiaute S-1.3 nao tem.
+   * Aqui ficam so as regras do PrevSafe que nao sao do leiaute e as do S-2220,
+   * que ainda e montado no contexto.
+   */
+  const errosDoEventoESocial = useCallback((evt: ESocialEvent): string[] => {
     const errors: string[] = [];
-
-    // Empregador: mesma regra do XML (lib/esocialEmpregador.ts). Sem inscricao
-    // valida o <ideEmpregador> sai vazio, e o evento nao pode ficar pronto. O
-    // aviso (natureza sem codigo) nao bloqueia, mas vai na mensagem de retorno.
-    const clienteDoEvento = clients.find(c => c.id === evt.client_id);
-    const empregador = inscricaoDoEmpregador(clienteDoEvento);
-    if (empregador.ok === false) errors.push(empregador.motivo);
-    if (evt.event_type === 'S-2240') {
-      // {infoAmb/tpInsc} e {infoAmb/nrInsc} tem ocorrencia 1 no leiaute.
-      const ambiente = inscricaoDoAmbiente(clienteDoEvento);
-      if (ambiente.ok === false && empregador.ok) errors.push(ambiente.motivo);
-    }
 
     // General Worker Validations
     if (!evt.worker_name || evt.worker_name.trim().length < 3) {
@@ -4250,34 +4115,21 @@ ${xmlDoIdeEmpregador(empregador, '    ')}
       errors.push('CBO do cargo ocupacional é obrigatório.');
     }
 
-    // S-2240 Specifics
+    // S-2240: o CA "00000" que o cadastro antigo usava como EPI sem CA.
     if (evt.event_type === 'S-2240') {
-      const amb = evt.ambient_data;
-      if (!amb?.start_date) {
-        errors.push('Data de início da condição ambiental (dtIniCondic) é obrigatória.');
-      }
-      if (!amb?.ambient_risks || amb.ambient_risks.length === 0) {
-        errors.push('O S-2240 exige ao menos 1 fator de risco cadastrado (ou código 09.01.001 - Ausência de Risco).');
-      } else {
-        amb.ambient_risks.forEach((r, idx) => {
-          if (!r.risk_code_table_24) {
-            errors.push(`Fator de risco #${idx + 1}: código da Tabela 24 eSocial é obrigatório.`);
-          }
-          if (r.epi_effective && (!r.epi_ca_numbers || r.epi_ca_numbers.length === 0 || r.epi_ca_numbers.includes('CA 00000'))) {
-            errors.push(`Fator de risco #${idx + 1} (${r.description}): CA do EPI informado é inválido ou cancelado no MTE.`);
-          }
-        });
-      }
-      if (!amb?.responsible_technician_cpf || amb.responsible_technician_cpf.replace(/\D/g, '').length !== 11) {
-        errors.push('CPF do Responsável Técnico pelo registro ambiental é obrigatório e deve ter 11 dígitos.');
-      }
-      if (!amb?.responsible_technician_crea_crm) {
-        errors.push('Número do Registro Profissional (CREA/CRM) do responsável técnico é obrigatório.');
-      }
+      (evt.ambient_data?.ambient_risks || []).forEach((r, idx) => {
+        if (r.epi_effective && (!r.epi_ca_numbers || r.epi_ca_numbers.length === 0 || r.epi_ca_numbers.includes('CA 00000'))) {
+          errors.push(`Fator de risco #${idx + 1} (${r.description}): CA do EPI informado é inválido ou cancelado no MTE.`);
+        }
+      });
     }
 
     // S-2220 Specifics
     if (evt.event_type === 'S-2220') {
+      // Empregador: mesma regra do XML (lib/esocialEmpregador.ts). Nos demais
+      // eventos a falta ja vem nas pendencias da montagem.
+      const empregador = inscricaoDoEmpregador(clients.find(c => c.id === evt.client_id));
+      if (empregador.ok === false) errors.push(empregador.motivo);
       const aso = evt.aso_data;
       if (!aso?.exam_date) {
         errors.push('Data de emissão do ASO (dtAso) é obrigatória.');
@@ -4295,47 +4147,26 @@ ${xmlDoIdeEmpregador(empregador, '    ')}
       }
     }
 
-    // S-2210 Specifics
-    if (evt.event_type === 'S-2210') {
-      const cat = evt.cat_data;
-      if (!cat?.accident_date || !cat?.accident_time) {
-        errors.push('Data e hora exata do acidente de trabalho são obrigatórias.');
-      }
-      if (!cat?.body_part) {
-        errors.push('Parte do corpo atingida é obrigatória na CAT.');
-      }
-      if (!cat?.accident_agent) {
-        errors.push('Agente causador do acidente é obrigatório na CAT.');
-      }
-      if (!cat?.medical_crm || !cat?.cid_code) {
-        errors.push('CRM do médico assistente e código CID-10 são obrigatórios para a CAT.');
-      }
+    // S-3000: o motivo e registro do PrevSafe; nao vai ao XML.
+    if (evt.event_type === 'S-3000' && !evt.exclusion_data?.exclusion_reason) {
+      errors.push('Motivo / Justificativa da exclusão é obrigatória.');
     }
 
-    // S-2230 Specifics
-    if (evt.event_type === 'S-2230') {
-      const abs = evt.absence_data;
-      if (!abs?.reason_code_table_18) {
-        errors.push('Código do motivo de afastamento (Tabela 18 do eSocial) é obrigatório.');
-      }
-      if (!abs?.start_date) {
-        errors.push('Data de início do afastamento temporário é obrigatória.');
-      }
-      if (!abs?.medical_crm) {
-        errors.push('CRM do médico emitente do atestado é obrigatório.');
-      }
-    }
+    // As regras do leiaute S-1.3, pela mesma montagem do XML. Id vazio: aqui
+    // so interessam as pendencias.
+    errors.push(...montarEventoESocial(evt, '').pendencias);
 
-    // S-3000 Specifics
-    if (evt.event_type === 'S-3000') {
-      const excl = evt.exclusion_data;
-      if (!excl?.target_receipt_number || !excl.target_receipt_number.startsWith('1.')) {
-        errors.push('Número de recibo do evento anterior a ser excluído é inválido.');
-      }
-      if (!excl?.exclusion_reason) {
-        errors.push('Motivo / Justificativa da exclusão é obrigatória.');
-      }
-    }
+    return errors;
+  }, [clients, montarEventoESocial]);
+
+  // Validate eSocial Event (Deep Rule Validation)
+  const validateESocialEvent = useCallback((id: string): { success: boolean; errors: string[] } => {
+    const evt = esocialEvents.find(e => e.id === id);
+    if (!evt) return { success: false, errors: ['Evento não encontrado.'] };
+
+    const errors = errosDoEventoESocial(evt);
+    // O aviso (natureza sem codigo) nao bloqueia, mas vai na mensagem de retorno.
+    const empregador = inscricaoDoEmpregador(clients.find(c => c.id === evt.client_id));
 
     const isValid = errors.length === 0;
     const newStatus: ESocialEventStatus = isValid ? 'READY_TO_SEND' : 'REJECTED';
@@ -4347,10 +4178,10 @@ ${xmlDoIdeEmpregador(empregador, '    ')}
         status: newStatus,
         validation_errors: isValid ? [] : errors,
         return_code: isValid ? undefined : '422',
-        // Nao ha validacao contra o XSD aqui: a mensagem dizia "schema XSD
-        // v.S-1.2", versao que nem e mais a do leiaute.
+        // Nao ha validacao contra o XSD nem assinatura aqui: a mensagem dizia
+        // "schema XSD v.S-1.2", e o historico registrava "VALIDACAO_XSD".
         return_message: isValid
-          ? `Conferência de campos do PrevSafe concluída (leiaute ${VERSAO_DO_LEIAUTE_ESOCIAL}). O esquema XSD só é aplicado pelo eSocial na recepção.`
+          ? `Conferência de campos do PrevSafe concluída (leiaute ${VERSAO_DO_LEIAUTE_ESOCIAL}). XML não validado contra o XSD e não assinado.`
             + (empregador.ok && empregador.aviso ? ` Atenção: ${empregador.aviso}` : '')
           : `Erros de validação encontrados (${errors.length}).`,
         updated_at: new Date().toISOString(),
@@ -4358,10 +4189,12 @@ ${xmlDoIdeEmpregador(empregador, '    ')}
           ...(e.history || []),
           {
             date: new Date().toISOString(),
-            action: isValid ? 'VALIDAÇÃO_XSD_SUCESSO' : 'VALIDAÇÃO_XSD_FALHA',
+            action: isValid ? 'CONFERÊNCIA_DE_CAMPOS_APROVADA' : 'CONFERÊNCIA_DE_CAMPOS_REPROVADA',
             user_name: currentProfile.full_name,
             status: newStatus,
-            details: isValid ? 'Validação estrutural e de negócio aprovada.' : `Falhas detectadas: ${errors.join('; ')}`
+            details: isValid
+              ? 'Campos conferidos pelo PrevSafe contra o leiaute. XML não validado contra o XSD e não assinado.'
+              : `Falhas detectadas: ${errors.join('; ')}`
           }
         ]
       };
@@ -4373,7 +4206,7 @@ ${xmlDoIdeEmpregador(empregador, '    ')}
     });
 
     return { success: isValid, errors };
-  }, [esocialEvents, clients, currentProfile.full_name, logAudit]);
+  }, [esocialEvents, clients, currentProfile.full_name, logAudit, errosDoEventoESocial]);
 
   // Transmit Single eSocial Event
   const transmitESocialEvent = useCallback((id: string, certificateType: 'A1_DIGITAL' | 'A3_TOKEN_SMARTCARD' = 'A1_DIGITAL'): { success: boolean; receipt?: string; protocol?: string; error?: string } => {
@@ -4393,7 +4226,9 @@ ${xmlDoIdeEmpregador(empregador, '    ')}
         status: 'READY_TO_SEND',
         transmitted_at: undefined,
         return_code: undefined,
-        return_message: 'XML montado e validado pelo PrevSafe. O envio ao eSocial ainda não é feito pelo sistema: ' +
+        // "validado" sozinho fazia supor validacao contra o XSD e assinatura.
+        return_message: 'XML montado e com os campos conferidos pelo PrevSafe; não validado contra o XSD e não assinado. ' +
+          'O envio ao eSocial ainda não é feito pelo sistema: ' +
           'transmita pelo canal oficial (portal do eSocial ou software transmissor com certificado ICP-Brasil) ' +
           'e registre aqui o recibo recebido.',
         validation_errors: [],
@@ -4405,7 +4240,7 @@ ${xmlDoIdeEmpregador(empregador, '    ')}
             action: 'VALIDADO_PARA_ENVIO',
             user_name: currentProfile.full_name,
             status: 'READY_TO_SEND',
-            details: 'XML montado e validado no PrevSafe. Envio ao Serpro não realizado pelo sistema.'
+            details: 'XML montado e com os campos conferidos no PrevSafe (não validado contra o XSD, não assinado). Envio ao Serpro não realizado pelo sistema.'
           }
         ]
       };
@@ -4422,7 +4257,7 @@ ${xmlDoIdeEmpregador(empregador, '    ')}
       recipient_name: currentProfile.full_name,
       event_type: 'document.client_released',
       title: `Evento ${evt?.event_type || 'eSocial'} pronto para envio`,
-      message: 'XML montado e validado. Transmita pelo canal oficial do eSocial e registre o recibo recebido.',
+      message: 'XML montado e com os campos conferidos (não validado contra o XSD, não assinado). Transmita pelo canal oficial do eSocial e registre o recibo recebido.',
       channel: 'PORTAL',
       related_entity_type: 'ESOCIAL_EVENT',
       related_entity_id: id
@@ -4641,7 +4476,9 @@ ${xmlDoIdeEmpregador(empregador, '    ')}
       worker_registration: target.worker_registration,
       worker_cbo: target.worker_cbo,
       worker_role: target.worker_role,
-      status: 'READY_TO_SEND',
+      // DRAFT: nascia READY_TO_SEND sem passar pela validacao - inclusive sem o
+      // recibo do evento a excluir, que e campo obrigatorio do S-3000.
+      status: 'DRAFT',
       exclusion_data: {
         target_event_type: target.event_type as 'S-2210' | 'S-2220' | 'S-2240',
         // Sem recibo original nao ha o que retificar; o campo fica vazio em vez
@@ -4659,19 +4496,21 @@ ${xmlDoIdeEmpregador(empregador, '    ')}
     const results: Array<{ testName: string; passed: boolean; message: string; details?: string }> = [];
 
     // Test 1: S-2240 Schema Generation
+    // Conferia <codFatRis> (nome que o leiaute S-1.3 nao tem) e <Signature> (o
+    // bloco de enfeite que saiu do XML) e anunciava "assinatura ICP-Brasil".
+    // Sem evento, dizia "validada" sem ter conferido nada.
     const testS2240 = esocialEvents.find(e => e.event_type === 'S-2240' && e.status === 'SUCCESS');
     if (testS2240 && testS2240.ambient_data?.ambient_risks && testS2240.ambient_data.ambient_risks.length > 0) {
-      const xml = generateESocialXmlPreview(testS2240);
+      const { xml, pendencias } = montarEventoESocial(testS2240, '');
       const hasRoot = xml.includes('<eSocial') && xml.includes('<evtExpRisco');
-      const hasTabela24 = xml.includes('<codFatRis>');
-      const hasSignature = xml.includes('<Signature');
-      if (hasRoot && hasTabela24 && hasSignature) {
-        results.push({ testName: '1. Geração de Schema XML do S-2240 (Condições Ambientais)', passed: true, message: 'XML estruturado com tags obrigatórias de riscos e assinatura ICP-Brasil.', details: `Tamanho do XML: ${xml.length} bytes` });
+      const hasTabela24 = xml.includes('<codAgNoc>');
+      if (hasRoot && hasTabela24 && pendencias.length === 0) {
+        results.push({ testName: '1. Montagem do XML do S-2240 (Condições Ambientais)', passed: true, message: 'XML montado com os grupos do leiaute S-1.3 e sem pendências. Não validado contra o XSD e não assinado.', details: `Tamanho do XML: ${xml.length} bytes` });
       } else {
-        results.push({ testName: '1. Geração de Schema XML do S-2240', passed: false, message: 'Falha na estrutura do XML ou tags ausentes.' });
+        results.push({ testName: '1. Montagem do XML do S-2240', passed: false, message: pendencias.length ? `Pendências: ${pendencias.join(' | ')}` : 'Falha na estrutura do XML ou tags ausentes.' });
       }
     } else {
-      results.push({ testName: '1. Geração de Schema XML do S-2240', passed: true, message: 'Estrutura padrão de S-2240 validada no gerador.' });
+      results.push({ testName: '1. Montagem do XML do S-2240', passed: true, message: 'Nenhum S-2240 aceito pelo eSocial para conferir.' });
     }
 
     // Test 2: S-2220 ASO & Exames Complementares
@@ -4735,7 +4574,7 @@ ${xmlDoIdeEmpregador(empregador, '    ')}
     const failed = results.filter(r => !r.passed).length;
 
     return { passed, failed, results };
-  }, [esocialEvents, generateESocialXmlPreview]);
+  }, [esocialEvents, montarEventoESocial]);
 
   // Automated eSocial Watcher & Pipeline Robot (Automação Completa)
   const runESocialAutomationJob = useCallback((options?: {
@@ -4854,8 +4693,10 @@ ${xmlDoIdeEmpregador(empregador, '    ')}
                 recipient_user_id: currentProfile.id,
                 recipient_name: client.trade_name || client.legal_name,
                 event_type: 'document.client_released',
-                title: `Robô eSocial: ${transmittedCount} eventos transmitidos`,
-                message: `Os eventos de SST (S-2220/S-2240) foram recepcionados pelo Governo no Lote ${createdBatchNumber}. Recibos oficiais disponíveis para download.`,
+                // Dizia "transmitidos" e "recepcionados pelo Governo", com "recibos
+                // oficiais": o sistema nao envia nada ao eSocial.
+                title: `Robô eSocial: ${transmittedCount} eventos prontos para envio`,
+                message: `Os eventos de SST (S-2220/S-2240) do lote ${createdBatchNumber} tiveram os campos conferidos pelo PrevSafe. Ainda não foram enviados ao eSocial: não há recibo.`,
                 channel: 'WHATSAPP',
                 related_entity_type: 'ESOCIAL_BATCH',
                 related_entity_id: batchResult.batch.id
@@ -4871,7 +4712,7 @@ ${xmlDoIdeEmpregador(empregador, '    ')}
 
     logs.push(`[${new Date().toLocaleTimeString('pt-BR')}] 🏁 Ciclo de automação concluído.`);
 
-    const summary = `Automação executada: ${extractedCount} novos eventos gerados, ${transmittedCount} transmitidos com sucesso e ${errorsCount} pendências.`;
+    const summary = `Automação executada: ${extractedCount} novos eventos gerados, ${transmittedCount} prontos para envio (não transmitidos) e ${errorsCount} com pendências.`;
 
     logAudit('ESOCIAL_BATCH_TRANSMITTED', 'ESOCIAL_BATCH', createdBatchNumber || 'AUTO-ROBOT', `Lote Automático eSocial`, {
       extractedCount,
@@ -6678,15 +6519,87 @@ ${xmlDoIdeEmpregador(empregador, '    ')}
     logAudit('UPDATE_CAT' as any, 'CLIENT' as any, id, updates.cat_number, updates);
   }, [logAudit]);
 
+  /**
+   * S-2210 a partir do registro da CAT.
+   *
+   * Gerar ao gravar a CAT e "transmitir" montavam cada um o seu XML, numa linha
+   * so: sem <ideEvento>, com <ideTrabalhador> no lugar de <ideVinculo>, tpAcid
+   * 2 (doenca) para acidente de trajeto, a data do acidente no lugar da data
+   * do atendimento, <diagProvavel> e <indCatObito> ausentes, e o evento nascia
+   * READY_TO_SEND sem validacao. Agora o evento leva o cadastro da CAT em
+   * cat_data e passa pela montagem (lib/esocialEventos.ts) e pela validacao da
+   * tela de eventos. Com pendencia o evento nao e criado: volta a lista do que
+   * falta, para a tela mostrar.
+   */
+  const generateS2210FromCat = useCallback((catId: string, catRecemCriada?: SSTCATRecord): { evento: ESocialEvent | null; pendencias: string[] } => {
+    // Quem acabou de gravar a CAT ainda ve `catRecords` sem ela: sem
+    // `catRecemCriada`, a busca falhava e nenhum evento era gerado.
+    const cat = catRecemCriada && catRecemCriada.id === catId ? catRecemCriada : catRecords.find(c => c.id === catId);
+    if (!cat) return { evento: null, pendencias: ['Registro CAT não encontrado.'] };
+
+    const agora = new Date().toISOString();
+    const evento: ESocialEvent = {
+      id: novoId('evt-2210'),
+      organization_id: organization.id,
+      client_id: cat.client_id,
+      event_type: 'S-2210',
+      event_number: cat.cat_number,
+      status: 'DRAFT',
+      environment: 'PRODUCAO',
+      is_rectification: false,
+      worker_name: cat.worker_name,
+      worker_cpf: cat.worker_cpf,
+      worker_registration: cat.worker_registration,
+      worker_cbo: cat.worker_cbo || '',
+      // Vinha 'Trabalhador' quando o cadastro nao tinha a funcao.
+      worker_role: cat.worker_role || '',
+      cat_data: {
+        cat_type: cat.cat_type,
+        accident_date: cat.accident_date,
+        accident_time: cat.accident_time,
+        accident_type: cat.accident_type,
+        hours_worked_before_accident: cat.hours_worked_before_accident,
+        death_occurred: cat.death_occurred,
+        death_date: cat.death_date,
+        police_report: cat.police_report,
+        location_type: cat.location_type,
+        location_description: cat.location_description,
+        body_part: cat.body_part_code,
+        accident_agent: cat.causative_agent_code,
+        medical_cert_issuer: cat.medical_name,
+        medical_crm: cat.medical_crm,
+        medical_uf: cat.medical_uf,
+        cid_code: cat.cid_10,
+        days_away: cat.days_away,
+        treatment_type: cat.treatment_type,
+        caused_absence: cat.caused_absence,
+        nature_lesion_code: cat.nature_lesion_code,
+      },
+      created_at: agora,
+      updated_at: agora,
+    };
+
+    const pendencias = errosDoEventoESocial(evento);
+    if (pendencias.length > 0) return { evento: null, pendencias };
+
+    // Sem pendencia, e o mesmo resultado da validacao: pronto para envio.
+    evento.status = 'READY_TO_SEND';
+    evento.xml_content = generateESocialXmlPreview(evento);
+    // Um evento por CAT: gerar de novo substitui o anterior em vez de duplicar.
+    setEsocialEvents(prev => [evento, ...prev.filter(e => !cat.esocial_event_id || e.id !== cat.esocial_event_id)]);
+    setCatRecords(prev => prev.map(c => c.id === cat.id ? { ...c, esocial_event_id: evento.id } : c));
+    return { evento, pendencias: [] };
+  }, [catRecords, organization.id, errosDoEventoESocial, generateESocialXmlPreview]);
+
   const transmitCatRecord = useCallback((id: string): { success: boolean; receipt?: string; protocol?: string; error?: string } => {
     const cat = catRecords.find(c => c.id === id);
     if (!cat) return { success: false, error: 'Registro CAT não encontrado.' };
 
-    // Empregador vem do cadastro do cliente, pela regra de
-    // lib/esocialEmpregador.ts. Sem CNPJ/CPF valido nao ha evento: o XML antes
-    // saia com o CNPJ 12345678000199 fixo no codigo.
-    const empregador = identificacaoDoEmpregador(cat.client_id);
-    if (empregador.ok === false) return { success: false, error: empregador.motivo };
+    // O mesmo caminho de generateS2210FromCat: empregador do cadastro do
+    // cliente (o XML ja saiu com o CNPJ 12345678000199 fixo no codigo) e
+    // nenhum campo do leiaute faltando.
+    const { evento, pendencias } = generateS2210FromCat(id);
+    if (!evento) return { success: false, error: pendencias.join(' | ') };
 
     // Recibo e protocolo nao sao gerados aqui: eles so existem quando o
     // eSocial os emite. Antes eram Math.random() e o registro nascia como
@@ -6698,31 +6611,10 @@ ${xmlDoIdeEmpregador(empregador, '    ')}
       transmitted_at: undefined
     } : c));
 
-    // Register event in esocialEvents
-    const evt: ESocialEvent = {
-      id: `evt-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
-      organization_id: organization.id,
-      client_id: cat.client_id,
-      event_type: 'S-2210',
-      event_number: cat.cat_number,
-      status: 'READY_TO_SEND',
-      environment: 'PRODUCAO',
-      is_rectification: false,
-      worker_name: cat.worker_name,
-      worker_cpf: cat.worker_cpf,
-      worker_registration: cat.worker_registration,
-      worker_cbo: cat.worker_cbo || undefined,
-      worker_role: cat.worker_role || '',
-      xml_content: `<?xml version="1.0" encoding="UTF-8"?><eSocial xmlns="${namespaceDoEvento('S-2210')}"><evtCAT Id="${novoIdDoEvento(empregador.tpInsc, empregador.nrInsc)}">${xmlDoIdeEmpregador(empregador)}<ideTrabalhador><cpfTrab>${cat.worker_cpf.replace(/\D/g, '')}</cpfTrab></ideTrabalhador><cat><dtAcid>${cat.accident_date}</dtAcid><tpAcid>${cat.accident_type === 'TIPICO' ? 1 : 2}</tpAcid><hrAcid>${cat.accident_time.replace(':', '')}</hrAcid><localAcidente><tpLocal>${cat.location_type === 'ESTABELECIMENTO_EMPREGADOR' ? 1 : 3}</tpLocal><dscLocal>${cat.location_description}</dscLocal></localAcidente><parteAtingida><codParteAting>${cat.body_part_code}</codParteAting></parteAtingida><agenteCausador><codAgntCausador>${cat.causative_agent_code}</codAgntCausador></agenteCausador><atestado><dtAtendimento>${cat.accident_date}</dtAtendimento><codCID>${cat.cid_10}</codCID><emitente><nmEmit>${cat.medical_name}</nmEmit><ideOC>1</ideOC><nrOC>${cat.medical_crm}</nrOC><ufOC>${cat.medical_uf}</ufOC></emitente></atestado></cat></evtCAT></eSocial>`,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    };
-    setEsocialEvents(prev => [evt, ...prev]);
-
-    logAudit('TRANSMIT_ESOCIAL_EVENT' as any, 'ESOCIAL' as any, id, `CAT ${cat.cat_number} validada para envio (S-2210)`, { resultado: 'VALIDADO_PARA_ENVIO' });
+    logAudit('TRANSMIT_ESOCIAL_EVENT' as any, 'ESOCIAL' as any, id, `CAT ${cat.cat_number} com os campos conferidos para envio (S-2210)`, { resultado: 'VALIDADO_PARA_ENVIO' });
 
     return { success: true };
-  }, [catRecords, organization.id, logAudit, identificacaoDoEmpregador, novoIdDoEvento]);
+  }, [catRecords, logAudit, generateS2210FromCat]);
 
   const addWorkAbsence = useCallback((data: Omit<SSTWorkAbsence, 'id' | 'organization_id' | 'created_at'>): SSTWorkAbsence => {
     const newAbs: SSTWorkAbsence = {
@@ -6741,49 +6633,87 @@ ${xmlDoIdeEmpregador(empregador, '    ')}
     logAudit('UPDATE_WORK_ABSENCE' as any, 'CLIENT' as any, id, updates.worker_name, updates);
   }, [logAudit]);
 
+  /**
+   * S-2230 a partir do registro de afastamento.
+   *
+   * Os dois montadores de uma linha escreviam um grupo [infoAtestado] (CID,
+   * dias, emitente) que o leiaute S-1.3 nao tem, sem <ideEvento> e com
+   * <ideTrabalhador> no lugar de <ideVinculo>, com "N/A" no CID quando nao o
+   * sabiam. Agora passa pela montagem de lib/esocialEventos.ts e pela validacao
+   * da tela de eventos; com pendencia o evento nao e criado.
+   *
+   * CID e medico do atestado ficam so no registro do afastamento: o evento nao
+   * os leva, porque o S-2230 nao os tem e o CID e dado de saude.
+   */
+  const generateS2230FromAbsence = useCallback((absenceId: string, afastamentoRecemCriado?: SSTWorkAbsence): { evento: ESocialEvent | null; pendencias: string[] } => {
+    // Quem acabou de gravar o afastamento ainda ve `workAbsences` sem ele.
+    const abs = afastamentoRecemCriado && afastamentoRecemCriado.id === absenceId
+      ? afastamentoRecemCriado
+      : workAbsences.find(a => a.id === absenceId);
+    if (!abs) return { evento: null, pendencias: ['Registro de afastamento não encontrado.'] };
+
+    const agora = new Date().toISOString();
+    const evento: ESocialEvent = {
+      id: novoId('evt-2230'),
+      organization_id: organization.id,
+      client_id: abs.client_id,
+      event_type: 'S-2230',
+      event_number: `S2230-${abs.worker_registration}-${Date.now().toString().slice(-4)}`,
+      status: 'DRAFT',
+      environment: 'PRODUCAO',
+      is_rectification: false,
+      worker_name: abs.worker_name,
+      worker_cpf: abs.worker_cpf,
+      worker_registration: abs.worker_registration,
+      worker_cbo: abs.worker_cbo || '',
+      worker_role: '',
+      absence_data: {
+        reason_code_table_18: abs.reason_code_table_18,
+        reason_description: abs.reason_description,
+        start_date: abs.start_date,
+        end_date: abs.end_date,
+        estimated_days: abs.estimated_days,
+        is_traffic_accident: abs.is_traffic_accident,
+        medical_issuer_name: '',
+        medical_crm: '',
+        medical_uf: '',
+      },
+      created_at: agora,
+      updated_at: agora,
+    };
+
+    const pendencias = errosDoEventoESocial(evento);
+    if (pendencias.length > 0) return { evento: null, pendencias };
+
+    evento.status = 'READY_TO_SEND';
+    evento.xml_content = generateESocialXmlPreview(evento);
+    // Um evento por afastamento: gerar de novo substitui o anterior.
+    setEsocialEvents(prev => [evento, ...prev.filter(e => !abs.esocial_event_id || e.id !== abs.esocial_event_id)]);
+    setWorkAbsences(prev => prev.map(a => a.id === abs.id ? { ...a, esocial_event_id: evento.id } : a));
+    return { evento, pendencias: [] };
+  }, [workAbsences, organization.id, errosDoEventoESocial, generateESocialXmlPreview]);
+
   const transmitWorkAbsence = useCallback((id: string): { success: boolean; receipt?: string; protocol?: string; error?: string } => {
     const abs = workAbsences.find(a => a.id === id);
     if (!abs) return { success: false, error: 'Registro de afastamento não encontrado.' };
 
-    // Empregador vem do cadastro do cliente, pela regra de
-    // lib/esocialEmpregador.ts. Sem CNPJ/CPF valido nao ha evento: o XML antes
-    // saia com o CNPJ 12345678000199 fixo no codigo.
-    const empregador = identificacaoDoEmpregador(abs.client_id);
-    if (empregador.ok === false) return { success: false, error: empregador.motivo };
+    // O mesmo caminho de generateS2230FromAbsence: empregador do cadastro do
+    // cliente e nenhum campo do leiaute faltando.
+    const { evento, pendencias } = generateS2230FromAbsence(id);
+    if (!evento) return { success: false, error: pendencias.join(' | ') };
 
     // Recibo e protocolo nao sao gerados aqui: eles so existem quando o
     // eSocial os emite. Antes eram Math.random() e o registro nascia como
     // TRANSMITIDO, fazendo o usuario acreditar que a obrigacao legal do
     // cliente estava cumprida.
-
     setWorkAbsences(prev => prev.map(a => a.id === id ? {
       ...a,
       status: 'ACTIVE_AWAY',
       transmitted_at: undefined
     } : a));
 
-    const evt: ESocialEvent = {
-      id: `evt-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
-      organization_id: organization.id,
-      client_id: abs.client_id,
-      event_type: 'S-2230',
-      event_number: `ABS-${new Date().getFullYear()}-${id.substring(4, 10)}`,
-      status: 'READY_TO_SEND',
-      environment: 'PRODUCAO',
-      is_rectification: false,
-      worker_name: abs.worker_name,
-      worker_cpf: abs.worker_cpf,
-      worker_registration: abs.worker_registration,
-      worker_cbo: abs.worker_cbo || undefined,
-      worker_role: '',
-      xml_content: `<?xml version="1.0" encoding="UTF-8"?><eSocial xmlns="${namespaceDoEvento('S-2230')}"><evtAfastTemp Id="${novoIdDoEvento(empregador.tpInsc, empregador.nrInsc)}">${xmlDoIdeEmpregador(empregador)}<ideTrabalhador><cpfTrab>${abs.worker_cpf.replace(/\D/g, '')}</cpfTrab></ideTrabalhador><infoAfastamento><iniAfastamento><dtIniAfast>${abs.start_date}</dtIniAfast><codMotAfast>${abs.reason_code_table_18}</codMotAfast><infoAtestado><codCID>${abs.cid_10 || 'N/A'}</codCID><qtdDiasAfast>${abs.estimated_days}</qtdDiasAfast><emitente><nmEmit>${abs.physician_name || ''}</nmEmit><nrOC>${abs.physician_crm || ''}</nrOC><ufOC>${abs.physician_uf || ''}</ufOC></emitente></infoAtestado></iniAfastamento></infoAfastamento></evtAfastTemp></eSocial>`,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    };
-    setEsocialEvents(prev => [evt, ...prev]);
-
     return { success: true };
-  }, [workAbsences, organization.id, identificacaoDoEmpregador, novoIdDoEvento]);
+  }, [workAbsences, generateS2230FromAbsence]);
 
   const generateS2240FromGhe = useCallback((gheId: string): { evento: ESocialEvent | null; motivo: string } => {
     const ghe = ghes.find(g => g.id === gheId);
@@ -6856,73 +6786,61 @@ ${xmlDoIdeEmpregador(empregador, '    ')}
       return { evento: null, motivo: empregador.motivo };
     }
 
-    const risksXml = risks.map(r => `
-          <fatRisco>
-            <codFatRisc>${r.risk_code_table_24}</codFatRisc>
-            <dscAgNoc>${r.agent_name}</dscAgNoc>
-            <tpAval>${r.evaluation_type === 'QUANTITATIVA' ? 1 : 2}</tpAval>
-            ${r.measured_value ? `<intConc>${r.measured_value}</intConc><unMed>${r.measurement_unit === 'dB(A)' ? 1 : 2}</unMed>` : ''}
-${r.risk_code_table_24 === '09.01.001' ? '' : xmlDoEpcEpi({
-              epcImplementado: !!r.epc_implemented,
-              epcEficaz: !!r.epc_implemented && !!r.epc_effective,
-              epiUtilizado: !!r.epi_required || (r.epis || []).some(e => !!e.ca_number?.trim()),
-              epiEficaz: (r.epis || []).length > 0 && (r.epis || []).every(e => e.is_effective),
-              cas: (r.epis || []).map(e => e.ca_number)
-            }, '            ')}
-          </fatRisco>`).join('');
-
-    const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<eSocial xmlns="${namespaceDoEvento('S-2240')}">
-  <evtExpRisco Id="${novoIdDoEvento(empregador.tpInsc, empregador.nrInsc)}">
-    <ideEvento>
-      <tpAmb>1</tpAmb>
-      <procEmi>1</procEmi>
-      <verProc>PrevSafe_SST_v1.0</verProc>
-    </ideEvento>
-${xmlDoIdeEmpregador(empregador, '    ')}
-    <ideTrabalhador>
-      <cpfTrab>${cpfDoTrabalhador}</cpfTrab>
-      <matricula>${trabalhador.registration_number || ''}</matricula>
-    </ideTrabalhador>
-    <infoExpRisco>
-      <dtIniCondicao>${inicioDaExposicao}</dtIniCondicao>
-      <infoAmb>
-        <localAmb>1</localAmb>
-        <dscSetor>${ghe.name}</dscSetor>
-${xmlDaInscricaoDoAmbiente(inscricaoDoAmbiente(clients.find(c => c.id === ghe.client_id)), '        ')}
-        <dscAtiv>${ghe.description}</dscAtiv>
-      </infoAmb>
-      <agNoc>${risksXml}
-      </agNoc>
-${blocoRespRegXml(ghe.client_id, dataDeHoje())}
-    </infoExpRisco>
-  </evtExpRisco>
-</eSocial>`;
-
+    // O XML tinha copia propria e errava a estrutura: sem indRetif,
+    // <ideTrabalhador> no lugar de <ideVinculo>, <fatRisco>/<codFatRisc> dentro
+    // de um <agNoc> unico, <dscAtiv> dentro de [infoAmb] (o leiaute pede
+    // [infoAtiv]/<dscAtivDes>), unMed 1 ("dose diaria de ruido") para dB(A),
+    // que e 4, e sem tecMedicao. Agora o evento leva os fatores pela mesma
+    // conversao do S-2240 por colaborador (montarFatorDeRisco) e o XML sai da
+    // montagem unica (montarEventoESocial, lib/esocialEventos.ts). Os campos de
+    // origem continuam os do GHE: nome no setor, descricao nas atividades.
+    const agora = new Date().toISOString();
     const newEvt: ESocialEvent = {
       id: novoId('evt-2240'),
       organization_id: organization.id,
       client_id: ghe.client_id,
       event_type: 'S-2240',
       event_number: `S2240-${ghe.code}-${Date.now().toString().slice(-4)}`,
-      status: 'READY_TO_SEND',
+      status: 'DRAFT',
       environment: 'PRODUCAO',
       is_rectification: false,
       worker_name: trabalhador.name || '',
       worker_cpf: trabalhador.cpf || '',
       worker_registration: trabalhador.registration_number || '',
-      worker_cbo: trabalhador.cbo || undefined,
+      worker_cbo: trabalhador.cbo || '',
       // Vinha 'Operador' quando o cargo nao estava cadastrado: funcao inventada
       // dentro do evento que declara a exposicao daquela funcao.
       worker_role: trabalhador.job_title || '',
-      xml_content: xml,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
+      ambient_data: {
+        start_date: inicioDaExposicao,
+        description_activities: ghe.description || '',
+        work_environment: ghe.name || '',
+        ambient_risks: risks.map(r => montarFatorDeRisco(r).fator),
+        // O [respReg] sai da atribuicao do cliente, nao destes campos.
+        responsible_technician_name: '',
+        responsible_technician_cpf: '',
+        responsible_technician_crea_crm: '',
+        responsible_technician_uf: '',
+      },
+      created_at: agora,
+      updated_at: agora
     };
 
+    // Com pendencia o evento nao e criado: antes nascia READY_TO_SEND sem
+    // passar pela validacao, e a tela dizia "Pronto para transmissao".
+    const pendencias = errosDoEventoESocial(newEvt);
+    if (pendencias.length > 0) {
+      return {
+        evento: null,
+        motivo: `O S-2240 de ${trabalhador.name} não foi gerado. Falta: ${pendencias.join(' | ')}`
+      };
+    }
+
+    newEvt.status = 'READY_TO_SEND';
+    newEvt.xml_content = generateESocialXmlPreview(newEvt);
     setEsocialEvents(prev => [newEvt, ...prev]);
     return { evento: newEvt, motivo: '' };
-  }, [blocoRespRegXml, ghes, environmentalRisks, employees, organization.id, clients, identificacaoDoEmpregador, novoIdDoEvento]);
+  }, [ghes, environmentalRisks, employees, organization.id, identificacaoDoEmpregador, errosDoEventoESocial, generateESocialXmlPreview]);
 
   /**
    * Monta o S-2220 a partir de um ASO registrado.
@@ -6985,76 +6903,6 @@ ${blocoRespRegXml(ghe.client_id, dataDeHoje())}
     setEsocialEvents(prev => [newEvt, ...prev]);
     return newEvt;
   }, [employees, organization.id, identificacaoDoEmpregador, generateESocialXmlPreview]);
-
-  const generateS2210FromCat = useCallback((catId: string): ESocialEvent | null => {
-    const cat = catRecords.find(c => c.id === catId);
-    if (!cat) return null;
-
-    // Empregador vem do cadastro do cliente, pela regra de
-    // lib/esocialEmpregador.ts. Sem CNPJ/CPF valido nao ha evento: o XML antes
-    // saia com o CNPJ 12345678000199 fixo no codigo.
-    const empregador = identificacaoDoEmpregador(cat.client_id);
-    if (!empregador.ok) return null;
-
-    const xml = `<?xml version="1.0" encoding="UTF-8"?><eSocial xmlns="${namespaceDoEvento('S-2210')}"><evtCAT Id="${novoIdDoEvento(empregador.tpInsc, empregador.nrInsc)}">${xmlDoIdeEmpregador(empregador)}<ideTrabalhador><cpfTrab>${cat.worker_cpf.replace(/\D/g, '')}</cpfTrab></ideTrabalhador><cat><dtAcid>${cat.accident_date}</dtAcid><tpAcid>${cat.accident_type === 'TIPICO' ? 1 : 2}</tpAcid><hrAcid>${cat.accident_time.replace(':', '')}</hrAcid><localAcidente><tpLocal>${cat.location_type === 'ESTABELECIMENTO_EMPREGADOR' ? 1 : 3}</tpLocal><dscLocal>${cat.location_description}</dscLocal></localAcidente><parteAtingida><codParteAting>${cat.body_part_code}</codParteAting></parteAtingida><agenteCausador><codAgntCausador>${cat.causative_agent_code}</codAgntCausador></agenteCausador><atestado><dtAtendimento>${cat.accident_date}</dtAtendimento><codCID>${cat.cid_10}</codCID><emitente><nmEmit>${cat.medical_name}</nmEmit><ideOC>1</ideOC><nrOC>${cat.medical_crm}</nrOC><ufOC>${cat.medical_uf}</ufOC></emitente></atestado></cat></evtCAT></eSocial>`;
-
-    const newEvt: ESocialEvent = {
-      id: novoId('evt-2210'),
-      organization_id: organization.id,
-      client_id: cat.client_id,
-      event_type: 'S-2210',
-      event_number: cat.cat_number,
-      status: 'READY_TO_SEND',
-      environment: 'PRODUCAO',
-      is_rectification: false,
-      worker_name: cat.worker_name,
-      worker_cpf: cat.worker_cpf,
-      worker_registration: cat.worker_registration,
-      worker_cbo: cat.worker_cbo || undefined,
-      worker_role: cat.worker_role || 'Trabalhador',
-      xml_content: xml,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    };
-
-    setEsocialEvents(prev => [newEvt, ...prev]);
-    return newEvt;
-  }, [catRecords, organization.id, identificacaoDoEmpregador, novoIdDoEvento]);
-
-  const generateS2230FromAbsence = useCallback((absenceId: string): ESocialEvent | null => {
-    const abs = workAbsences.find(a => a.id === absenceId);
-    if (!abs) return null;
-
-    // Empregador vem do cadastro do cliente, pela regra de
-    // lib/esocialEmpregador.ts. Sem CNPJ/CPF valido nao ha evento: o XML antes
-    // saia com o CNPJ 12345678000199 fixo no codigo.
-    const empregador = identificacaoDoEmpregador(abs.client_id);
-    if (!empregador.ok) return null;
-
-    const xml = `<?xml version="1.0" encoding="UTF-8"?><eSocial xmlns="${namespaceDoEvento('S-2230')}"><evtAfastTemp Id="${novoIdDoEvento(empregador.tpInsc, empregador.nrInsc)}">${xmlDoIdeEmpregador(empregador)}<ideTrabalhador><cpfTrab>${abs.worker_cpf.replace(/\D/g, '')}</cpfTrab></ideTrabalhador><infoAfastamento><iniAfastamento><dtIniAfast>${abs.start_date}</dtIniAfast><codMotAfast>${abs.reason_code_table_18}</codMotAfast><infoAtestado><codCID>${abs.cid_10 || 'N/A'}</codCID><qtdDiasAfast>${abs.estimated_days}</qtdDiasAfast><emitente><nmEmit>${abs.physician_name || ''}</nmEmit><nrOC>${abs.physician_crm || ''}</nrOC><ufOC>${abs.physician_uf || ''}</ufOC></emitente></infoAtestado></iniAfastamento></infoAfastamento></evtAfastTemp></eSocial>`;
-
-    const newEvt: ESocialEvent = {
-      id: novoId('evt-2230'),
-      organization_id: organization.id,
-      client_id: abs.client_id,
-      event_type: 'S-2230',
-      event_number: `S2230-${abs.worker_registration}-${Date.now().toString().slice(-4)}`,
-      status: 'READY_TO_SEND',
-      environment: 'PRODUCAO',
-      is_rectification: false,
-      worker_name: abs.worker_name,
-      worker_cpf: abs.worker_cpf,
-      worker_registration: abs.worker_registration,
-      worker_cbo: abs.worker_cbo || undefined,
-      worker_role: '',
-      xml_content: xml,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    };
-
-    setEsocialEvents(prev => [newEvt, ...prev]);
-    return newEvt;
-  }, [workAbsences, organization.id, identificacaoDoEmpregador, novoIdDoEvento]);
 
   // ==========================================
   // EPI Management Implementations (NR-06, Biometria & eSocial)

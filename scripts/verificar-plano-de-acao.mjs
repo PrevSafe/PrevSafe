@@ -373,11 +373,18 @@ const fatorIncoerente = montarFatorDeRisco({
 check(fatorIncoerente.epc_effective === false && fatorIncoerente.epc_implemented === false,
   'EPC "eficaz" sem estar implantado não chega ao evento como eficaz');
 
+// As duas montagens do S-2240 (pre-visualizacao e GHE) viraram uma so, em
+// lib/esocialEventos.ts; o GHE passa pela montagem do contexto.
 const ctxFonte = semComentarios(ler('context/PrevSafeContext.tsx'));
-check(!/<utilizEPC>/.test(ctxFonte) && !/<utilizEPI>/.test(ctxFonte),
+const eventosFonte = semComentarios(ler('lib/esocialEventos.ts'));
+check(!/<utilizEPC>/.test(ctxFonte + eventosFonte) && !/<utilizEPI>/.test(ctxFonte + eventosFonte),
   'nenhuma montagem do S-2240 escreve [epcEpi] à mão');
-check((ctxFonte.match(/xmlDoEpcEpi\(/g) || []).length >= 2, 'as duas montagens do S-2240 usam xmlDoEpcEpi');
-check((ctxFonte.match(/risk_code_table_24 === '09\.01\.001'/g) || []).length >= 2,
+const corpoDoGhe = (ctxFonte.match(/const generateS2240FromGhe = useCallback\(([\s\S]*?)\n  \}, \[/) || [])[1] || '';
+check((eventosFonte.match(/xmlDoEpcEpi\(/g) || []).length === 1 && !/xmlDoEpcEpi\(/.test(ctxFonte)
+  && /montarFatorDeRisco\(/.test(corpoDoGhe) && /generateESocialXmlPreview\(newEvt\)/.test(corpoDoGhe),
+'o S-2240 da pré-visualização e o do GHE usam a mesma montagem, com xmlDoEpcEpi');
+check(/const ausencia = codigo === CODIGO_AUSENCIA_DE_RISCO;/.test(eventosFonte)
+  && /if \(!ausencia\) \{\s*const cas[\s\S]{0,300}xmlDoEpcEpi\(/.test(eventosFonte),
   'com 09.01.001 o [epcEpi] não vai (MOS S-2240, item 1.5)');
 
 // ===========================================================================

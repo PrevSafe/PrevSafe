@@ -167,8 +167,8 @@ export const LoginView: React.FC<LoginViewProps> = ({ onSuccess, onNavigateHelp 
                   <FileText className="w-4 h-4" />
                 </div>
                 <div>
-                  <div className="text-xs font-semibold text-slate-200">Transmissão eSocial S-2210/2220/2240</div>
-                  <div className="text-[11px] text-slate-400 mt-0.5">Validação estrita de esquemas XSD, lotes e armazenamento de recibos oficiais.</div>
+                  <div className="text-xs font-semibold text-slate-200">Eventos eSocial S-2210/2220/2230/2240</div>
+                  <div className="text-[11px] text-slate-400 mt-0.5">XML no leiaute S-1.3 com os campos conferidos. Sem assinatura nem transmissão.</div>
                 </div>
               </div>
 

@@ -936,8 +936,8 @@ export const TUTORIALS_DATA: TutorialItem[] = [
 
   {
     id: 'tut-esocial-batch-transmission',
-    title: 'Transmissão em Lote de Eventos de SST ao eSocial (S-2210, S-2220 e S-2240)',
-    subtitle: 'Geração de arquivos XML, validação prévia de esquemas XSD, envio em lote direto ao WebService do Governo e tratamento de recibos e erros.',
+    title: 'Preparação dos Eventos de SST para o eSocial (S-2210, S-2220, S-2230 e S-2240)',
+    subtitle: 'Pré-visualização dos XML no leiaute S-1.3, conferência dos campos e pendências. O PrevSafe não valida contra o XSD, não assina e não transmite: o envio é feito pelo canal oficial.',
     category: 'ESOCIAL',
     categoryLabel: 'Eventos de SST no eSocial',
     targetRoles: ['ADMIN', 'GESTOR', 'TÉCNICO'],
@@ -945,11 +945,11 @@ export const TUTORIALS_DATA: TutorialItem[] = [
     estimatedMinutes: 6,
     regulatoryRef: 'Manual de Orientação do eSocial (MOS) & Portaria MTP 671',
     targetViewId: 'esocial',
-    tags: ['eSocial', 'S-2210', 'S-2220', 'S-2240', 'S-3000', 'XML', 'Lotes', 'Transmissão', 'Recibos'],
-    summary: 'Módulo completo de mensageria para o eSocial. Permite gerar, validar a sintaxe contra o XSD oficial do governo e transmitir em lote com certificado digital A1 os eventos S-2210 (CAT), S-2220 (ASO) e S-2240 (Condições Ambientais de Trabalho).',
+    tags: ['eSocial', 'S-2210', 'S-2220', 'S-2230', 'S-2240', 'S-3000', 'XML', 'Lotes', 'Pendências', 'Recibos'],
+    summary: 'Monta o XML dos eventos S-2210 (CAT), S-2220 (ASO), S-2230 (Afastamento) e S-2240 (Condições Ambientais de Trabalho) no leiaute S-1.3 e confere os campos contra o leiaute, apontando o que falta no cadastro. Não valida contra o XSD, não assina e não transmite.',
     whyItMatters: 'O não envio ou envio em atraso gera multas automáticas pela Receita Federal e Ministério do Trabalho diretamente pelo cruzamento da folha.',
-    processUtility: 'Gera os recibos governamentais oficiais que comprovam a regularidade previdenciária e trabalhista da empresa tomadora.',
-    prerequisites: ['Certificado Digital A1 configurado', 'Dados cadastrais do trabalhador (CPF e Matrícula)'],
+    processUtility: 'Mostra, antes do envio, o que falta no cadastro para cada evento. O recibo só existe depois do envio pelo canal oficial, e é registrado no PrevSafe por quem enviou.',
+    prerequisites: ['Cliente com CNPJ ou CPF e natureza jurídica cadastrados', 'Dados cadastrais do trabalhador (CPF e Matrícula)'],
     steps: [
       {
         stepNumber: 1,
@@ -960,7 +960,7 @@ export const TUTORIALS_DATA: TutorialItem[] = [
         mockupDetails: {
           screenTitle: 'Painel Geral de Mensageria eSocial SST',
           breadcrumbs: ['Operações SST', 'eSocial'],
-          mainActionLabel: '🚀 Transmitir Lote Selecionado',
+          mainActionLabel: '📦 Montar Lote para Conferência',
           fieldsOrItems: [
             { label: 'S-2240 • João da Silva (Matrícula 1042)', value: 'Agente: Ruído 88.4 dB(A) • EPI Eficaz', badge: 'Pendente Envio', status: 'Válido' },
             { label: 'S-2220 • Maria Fernandes (Matrícula 2011)', value: 'ASO Periódico Apto • Dr. Lucas (CRM 14233)', badge: 'Pendente Envio', status: 'Válido' },
@@ -970,46 +970,46 @@ export const TUTORIALS_DATA: TutorialItem[] = [
       },
       {
         stepNumber: 2,
-        title: 'Validar a Estrutura XML contra os Esquemas XSD',
-        description: 'O PrevSafe analisa se todos os campos obrigatórios (CNAE, CBO, CRM do médico, Código de Agente Nocivo Tabela 24) estão preenchidos antes de consumir o WebService.',
+        title: 'Conferir os Campos contra o Leiaute S-1.3',
+        description: 'O PrevSafe confere se os campos obrigatórios do leiaute (CBO, CRM do médico, código do agente nocivo da Tabela 24, inscrição do empregador) estão preenchidos e lista as pendências. Não há validação contra o XSD.',
         highlightAction: 'Conferir Validação Prévia',
         screenType: 'XML_VIEWER',
         mockupDetails: {
-          screenTitle: 'Validador Sintático XSD eSocial v.S-1.2',
+          screenTitle: 'Conferência de Campos eSocial (leiaute S-1.3)',
           breadcrumbs: ['eSocial', 'Validação de Lote'],
           fieldsOrItems: [
-            { label: 'Validação de Esquema XSD', value: '100% Conforme', badge: 'Sem Inconsistências' },
-            { label: 'Certificado Digital A1', value: 'Consultoria PrevSafe (Válido até Dez/2026)', badge: 'Pronto' }
+            { label: 'Conferência de campos do leiaute', value: 'Sem pendências', badge: 'Não validado contra o XSD' },
+            { label: 'Assinatura digital', value: 'Não feita pelo PrevSafe', badge: 'Não assinado' }
           ],
           highlightBox: {
-            title: 'Zero Erros de Rejeição',
-            desc: 'A validação prévia evita rejeições comuns como CBO inválido ou CPF divergente.',
+            title: 'Pendências antes do envio',
+            desc: 'A conferência aponta campo vazio ou fora do leiaute; a validação contra o XSD e as regras do eSocial só acontecem na recepção.',
             color: 'emerald'
           }
         }
       },
       {
         stepNumber: 3,
-        title: 'Transmitir Lote e Armazenar Recibo Governamental',
-        description: 'Clique em "Transmitir Lote". O sistema assina o XML digitalmente, envia ao ambiente da Receita Federal e grava o número de recibo oficial no histórico do trabalhador.',
-        highlightAction: 'Transmitir e Obter Recibo',
+        title: 'Enviar pelo Canal Oficial e Registrar o Recibo',
+        description: 'O PrevSafe não transmite. Copie o XML, assine e envie pelo portal do eSocial ou pelo software transmissor com o certificado do empregador, e registre aqui o recibo devolvido.',
+        highlightAction: 'Registrar o Recibo',
         screenType: 'TABLE',
         mockupDetails: {
-          screenTitle: 'Lote Transmitido com Sucesso',
-          breadcrumbs: ['eSocial', 'Lotes Transmitidos', 'LOTE-2026-088'],
-          mainActionLabel: '📄 Baixar Comprovante em PDF',
+          screenTitle: 'Lote Preparado (não transmitido)',
+          breadcrumbs: ['eSocial', 'Lotes Preparados', 'LOTE-2026-088'],
+          mainActionLabel: '📄 Baixar Espelho de Conferência',
           fieldsOrItems: [
-            { label: 'Status do Lote', value: 'Processado com Sucesso', badge: 'Código 201 (Sucesso)' },
-            { label: 'Recibo S-2240', value: '1.2.202608.0000000000014294821', badge: 'Gravado na Base' },
-            { label: 'Data e Hora do Envio', value: '26/08/2026 às 14:15:30 (Horário de Brasília)' }
+            { label: 'Status do Lote', value: 'Pronto para envio pelo canal oficial', badge: 'Não transmitido' },
+            { label: 'Recibo S-2240', value: 'Registrado depois do envio oficial', badge: 'Pendente' },
+            { label: 'Envio', value: 'Feito fora do PrevSafe' }
           ]
         }
       }
     ],
     infographic: {
-      objective: 'Garantir a transmissão tempestiva e sem erros dos eventos S-2210, S-2220 e S-2240 ao Governo Federal.',
+      objective: 'Preparar os eventos S-2210, S-2220, S-2230 e S-2240 sem campo inventado e com as pendências à vista antes do envio.',
       regulatoryCompliance: 'Portaria Conjunta SEPRT/RFB nº 71 e Tabela 24 do eSocial.',
-      criticalSuccessFactor: 'Validação preventiva de CBO, CPF e Certificado A1 antes do envio do lote.',
+      criticalSuccessFactor: 'Conferência de CBO, CPF, matrícula e inscrição do empregador antes do envio pelo canal oficial.',
       flowNodes: [
         {
           id: 'es1',
@@ -1023,11 +1023,11 @@ export const TUTORIALS_DATA: TutorialItem[] = [
         {
           id: 'es2',
           phase: 'Validação',
-          actor: 'Motor XSD PrevSafe',
+          actor: 'Conferência PrevSafe',
           actorColor: 'blue',
-          title: '2. Checagem Sintática',
-          description: 'Validação contra o layout oficial S-1.2 do eSocial.',
-          output: 'XML Validado e Assinado Digitalmente'
+          title: '2. Conferência de Campos',
+          description: 'Campos conferidos contra o leiaute S-1.3. Sem validação contra o XSD.',
+          output: 'XML em pré-visualização, não assinado'
         },
         {
           id: 'es3',
@@ -1035,7 +1035,7 @@ export const TUTORIALS_DATA: TutorialItem[] = [
           actor: 'WebService eSocial (RFB)',
           actorColor: 'purple',
           title: '3. Envio do Lote SOAP',
-          description: 'O eSocial exige disparo via HTTPS com Certificado Digital A1/ICP-Brasil. No PrevSafe esta etapa ainda é simulada.',
+          description: 'O eSocial exige envio via HTTPS com certificado digital ICP-Brasil. O PrevSafe não faz esta etapa: o envio é pelo canal oficial.',
           output: 'Protocolo de Envio e Processamento',
           slaTime: '2 a 5 segundos'
         },
@@ -1045,15 +1045,15 @@ export const TUTORIALS_DATA: TutorialItem[] = [
           actor: 'Banco PrevSafe',
           actorColor: 'amber',
           title: '4. Gravação de Recibo',
-          description: 'Armazenamento do número de recibo oficial e disponibilização no Portal do Cliente.',
-          output: 'Evento Homologado no Governo'
+          description: 'Registro, por quem enviou, do número de recibo devolvido pelo eSocial.',
+          output: 'Recibo registrado'
         }
       ]
     },
     videoSimulator: {
       totalDurationSeconds: 22,
-      videoTitle: 'Transmitindo Lotes de Eventos S-2240 e S-2220 ao eSocial',
-      videoDescription: 'Assista como selecionar eventos pendentes, validar o XML e obter os recibos oficiais.',
+      videoTitle: 'Preparando Eventos S-2240 e S-2220 para o eSocial',
+      videoDescription: 'Veja como selecionar eventos, conferir os campos e preparar o envio pelo canal oficial.',
       keyframes: [
         {
           timestamp: 0,
@@ -1074,29 +1074,29 @@ export const TUTORIALS_DATA: TutorialItem[] = [
         {
           timestamp: 10,
           duration: 6,
-          actionTitle: '3. Clicando em Transmitir Lote',
-          narratorText: 'Clique em "Transmitir Lote". O sistema valida o XML e assina com o Certificado A1.',
-          cursorTarget: { x: 80, y: 25, label: 'Transmitir Lote de Eventos' },
+          actionTitle: '3. Montando o Lote',
+          narratorText: 'Clique para montar o lote. O PrevSafe confere os campos; não valida contra o XSD nem assina.',
+          cursorTarget: { x: 80, y: 25, label: 'Montar Lote' },
           screenState: { modalOpen: true, bannerText: 'Comunicando com WebService da RFB...' }
         },
         {
           timestamp: 16,
           duration: 6,
-          actionTitle: '4. Recibos Oficiais Gerados',
-          narratorText: 'Lote processado com sucesso! Os números de recibo foram vinculados aos colaboradores.',
-          cursorTarget: { x: 60, y: 70, label: 'Visualizar Recibo Oficial' },
-          screenState: { modalOpen: false, successMessage: 'Lote transmitido com Sucesso (Código 201)!' }
+          actionTitle: '4. Lote Pronto para Envio',
+          narratorText: 'Lote pronto. O envio e o recibo acontecem no canal oficial do eSocial.',
+          cursorTarget: { x: 60, y: 70, label: 'Visualizar Pendências' },
+          screenState: { modalOpen: false, successMessage: 'Lote montado (não transmitido)' }
         }
       ]
     },
     faq: [
       {
         question: 'O que fazer se um evento for rejeitado pelo eSocial?',
-        answer: 'O sistema exibe o código de erro retornado pela Receita Federal (ex: CBO inválido) com link direto para corrigir o campo no cadastro e retransmitir com 1 clique.'
+        answer: 'O PrevSafe não recebe o retorno do eSocial. Corrija o campo apontado pelo eSocial no cadastro, gere o evento de novo e envie-o pelo canal oficial.'
       },
       {
         question: 'Como cancelar um evento transmitido indevidamente?',
-        answer: 'Utilize o botão "Gerar S-3000 (Exclusão)", que envia o evento de exclusão referenciando o recibo anterior.'
+        answer: 'Utilize o botão "Gerar S-3000 (Exclusão)": ele monta o evento de exclusão com o recibo do evento anterior. O envio continua pelo canal oficial.'
       }
     ],
     commonMistakes: [

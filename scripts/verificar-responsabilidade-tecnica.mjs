@@ -518,11 +518,17 @@ console.log('\n--- o atalho antigo não voltou (pela forma, no código) ---');
   check(!/506981240/.test(ctx), 'o CREA escrito no código saiu');
   // O <ideOC>1</ideOC> do S-2210 e legitimo: o emitente do atestado da CAT e
   // medico. O que nao pode voltar e ideOC fixo DENTRO do respReg.
-  check(!/<respReg>[\s\S]{0,240}<ideOC>1<\/ideOC>/.test(ctx),
+  // O XML do [respReg] passou para lib/esocialEventos.ts; o contexto so acha
+  // quem responde pelo cliente (responsaveisPeloRegistroAmbiental).
+  const eventosLib = ler('lib/esocialEventos.ts');
+  check(!/<respReg>[\s\S]{0,240}<ideOC>1<\/ideOC>/.test(ctx + eventosLib),
     'ideOC do [respReg] não sai mais fixo em 1');
-  check(/blocoRespRegXml\(/.test(ctx), 'o [respReg] vem da atribuição do cliente');
-  check((ctx.match(/\$\{blocoRespRegXml\(/g) || []).length === 2,
-    'nos dois geradores de S-2240, e não só no de preview');
+  check(/responsaveisDoCliente\([\s\S]{0,160}'REG_AMBIENTAIS'[\s\S]{0,200}codigoDoOrgaoDeClasse\(p\)/.test(ctx)
+    && /responsaveis: responsaveisPeloRegistroAmbiental\(event\.client_id/.test(ctx),
+  'o [respReg] vem da atribuição do cliente');
+  const corpoDoGhe = (ctx.match(/const generateS2240FromGhe = useCallback\(([\s\S]*?)\n  \}, \[/) || [])[1] || '';
+  check(corpoDoGhe !== '' && /generateESocialXmlPreview\(newEvt\)/.test(corpoDoGhe) && !/<respReg>|<evtExpRisco/.test(corpoDoGhe),
+    'nos dois geradores de S-2240: o do GHE passa pela mesma montagem da pré-visualização');
   check(/blocoRespMonitXml\(/.test(ctx),
     'e o S-2220 passou a levar o grupo [respMonit] (MOS S-1.3, item 1.7)');
 
@@ -604,9 +610,13 @@ console.log('\n--- o evento não inventa o que não sabe ---');
   check(!/'752000000'|'303020100'/.test(ctx),
     'os códigos de parte atingida e agente causador usados como padrão saíram');
   check(!/'Pronto Socorro'|'88412'/.test(ctx), 'o emitente de atestado inventado saiu');
-  check(/campoDoEvento\('dtAso'/.test(ctx) && /campoDoEvento\('dtAcid'/.test(ctx),
+  // O S-2210 passou para lib/esocialEventos.ts, onde o campo obrigatorio sem
+  // dado sai vazio pelo `obrigatorio` (e vira pendencia); o S-2220 continua
+  // no contexto, com campoDoEvento.
+  const eventos = semComentarios2(fs.readFileSync(path.join(RAIZ, 'lib/esocialEventos.ts'), 'utf8'));
+  check(/campoDoEvento\('dtAso'/.test(ctx) && /m\.obrigatorio\(r, 'dtAcid', dtAcid,/.test(eventos),
     'os campos ausentes saem vazios, com o motivo ao lado');
-  check((ctx.match(/campoDoEvento\(/g) || []).length >= 14,
+  check((ctx.match(/campoDoEvento\(/g) || []).length + (eventos.match(/m\.obrigatorio\(/g) || []).length >= 14,
     'em todos os campos que eram preenchidos por conta própria');
 
   // Resultado e tipo do ASO caiam num ramo final do ternario.

@@ -83,7 +83,11 @@ fs.writeFileSync(
       baseUrl: RAIZ,
       paths: { '@/*': ['./*'] },
     },
-    files: [path.join(RAIZ, 'lib/esocialEmpregador.ts'), path.join(RAIZ, 'lib/validacoesBr.ts')],
+    files: [
+      path.join(RAIZ, 'lib/esocialEmpregador.ts'), path.join(RAIZ, 'lib/validacoesBr.ts'), path.join(RAIZ, 'lib/companyLookup.ts'),
+      // Os montadores do S-2210, S-2230, S-2240 e S-3000, que o contexto chama.
+      path.join(RAIZ, 'lib/esocialEventos.ts'),
+    ],
   })
 );
 try {
@@ -101,10 +105,12 @@ process.on('exit', () => fs.rmSync(TMP, { recursive: true, force: true }));
 
 const require_ = createRequire(import.meta.url);
 let lib;
+let eventos;
 try {
   lib = require_(path.join(SAIDA, 'esocialEmpregador.js'));
+  eventos = require_(path.join(SAIDA, 'esocialEventos.js'));
 } catch (e) {
-  inconclusivo('não foi possível carregar lib/esocialEmpregador.ts compilado', e.message);
+  inconclusivo('não foi possível carregar lib/esocialEmpregador.ts ou lib/esocialEventos.ts compilado', e.message);
 }
 const {
   VERSAO_DO_ESQUEMA_ESOCIAL,
@@ -182,6 +188,60 @@ console.log('--- ideEmpregador/nrInsc (leiaute S-1.3, S-1000) ---');
 
   check(codigoDaNaturezaJuridica('Sociedade Empresária Limitada') === '' && codigoDaNaturezaJuridica('') === '',
     'descrição sem código e texto vazio não viram código');
+}
+
+// ===========================================================================
+// 1b. A natureza juridica que a consulta de CNPJ grava
+// ===========================================================================
+console.log('\n--- natureza jurídica da consulta de CNPJ (lib/companyLookup.ts) ---');
+{
+  let consulta;
+  try {
+    consulta = require_(path.join(SAIDA, 'companyLookup.js'));
+  } catch (e) {
+    inconclusivo('não foi possível carregar lib/companyLookup.ts compilado', e.message);
+  }
+  const { naturezaJuridicaDaReceita } = consulta;
+  if (typeof naturezaJuridicaDaReceita !== 'function') inconclusivo('lib/companyLookup.ts não exporta naturezaJuridicaDaReceita');
+
+  // Os dois campos como a BrasilAPI os devolveu para o CNPJ 00.000.000/0001-91
+  // (Banco do Brasil), consulta de 05/10/2026: a descricao num campo e o codigo
+  // de 4 algarismos, numerico, no outro.
+  const bancoDoBrasil = { natureza_juridica: 'Sociedade de Economia Mista', codigo_natureza_juridica: 2038 };
+  const gravada = naturezaJuridicaDaReceita(bancoDoBrasil);
+  check(gravada === '203-8 - Sociedade de Economia Mista', `resposta real: grava "NNN-D - descrição" (${gravada})`);
+  // "203-8" e a grafia do proprio leiaute S-1.3 (S-1000, indSiafi) para essa natureza.
+  check(codigoDaNaturezaJuridica(gravada) === '203-8', 'o texto gravado é lido como o código 203-8');
+  const comCodigo = inscricaoDoEmpregador({ document_type: 'CNPJ', document_number: CNPJ, natureza_juridica: gravada });
+  check(comCodigo.ok && comCodigo.aviso === '' && comCodigo.nrInsc === RAIZ_8,
+    'com o código gravado, o aviso de "natureza sem o código" deixa de sair');
+  const federal = naturezaJuridicaDaReceita({ natureza_juridica: 'Órgão Público do Poder Executivo Federal', codigo_natureza_juridica: 1015 });
+  const insFederal = inscricaoDoEmpregador({ document_type: 'CNPJ', document_number: CNPJ, natureza_juridica: federal });
+  check(federal === '101-5 - Órgão Público do Poder Executivo Federal' && insFederal.ok && insFederal.nrInsc === CNPJ_14,
+    'natureza 1015 da Receita vira 101-5 e leva o CNPJ completo ao nrInsc');
+  check(naturezaJuridicaDaReceita({ natureza_juridica: 'Sociedade Empresária Limitada', codigo_natureza_juridica: '2062' })
+    === '206-2 - Sociedade Empresária Limitada', 'código em texto também é aceito');
+
+  // Sem codigo valido, nada e deduzido: fica a descricao, e o aviso continua.
+  const semCodigo = [undefined, null, '', 0, 203, 12345, '20A8', 'abcd', ' ', true];
+  const soDescricao = semCodigo.every((c) =>
+    naturezaJuridicaDaReceita({ natureza_juridica: 'Sociedade de Economia Mista', codigo_natureza_juridica: c }) === 'Sociedade de Economia Mista');
+  check(soDescricao, 'código ausente ou fora do formato: grava só a descrição, sem inventar código');
+  check(naturezaJuridicaDaReceita({ natureza_juridica: '', codigo_natureza_juridica: undefined }) === ''
+    && naturezaJuridicaDaReceita(undefined) === '', 'resposta sem natureza: vazio');
+  check(naturezaJuridicaDaReceita({ natureza_juridica: '206-2 - Sociedade Empresária Limitada', codigo_natureza_juridica: 2062 })
+    === '206-2 - Sociedade Empresária Limitada', 'descrição que já traz o código não é duplicada');
+
+  // Forma do defeito no fonte: a natureza copiada direto do campo de descricao.
+  const fonte = fs.readFileSync(path.join(RAIZ, 'lib/companyLookup.ts'), 'utf8')
+    .replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+  const copiaDaDescricao = (s) => /natureza_juridica:\s*data\.natureza_juridica\b/.test(s);
+  const padraoInventado = (s) => /natureza_juridica:\s*[^,\n]*\|\|\s*'[^']+'/.test(s);
+  if (!copiaDaDescricao("natureza_juridica: data.natureza_juridica || '',")) inconclusivo('o detector da cópia da descrição não acusa o trecho original');
+  if (!padraoInventado("natureza_juridica: mock.natureza_juridica || 'Sociedade Empresária',")) inconclusivo('o detector da natureza padrão não acusa o trecho original');
+  check(!copiaDaDescricao(fonte) && /natureza_juridica:\s*naturezaJuridicaDaReceita\(data\)/.test(fonte),
+    'a consulta grava a natureza por naturezaJuridicaDaReceita, não a descrição crua');
+  check(!padraoInventado(fonte), 'nenhuma natureza jurídica padrão quando o registro não traz a sua');
 }
 
 console.log('\n--- <ideEmpregador> no XML ---');
@@ -278,7 +338,9 @@ console.log('\n--- XML gerado pelo contexto, para os cinco eventos ---');
       pegar(/^const UFS_DO_CRM = new Set\(\[[\s\S]*?\]\);$/m, 'UFS_DO_CRM'),
       `const novoIdDoEvento = ${pegar(/const novoIdDoEvento = useCallback\(([\s\S]*?), \[\]\);/, 'novoIdDoEvento')};`,
       `const campoDoEvento = ${pegar(/const campoDoEvento = useCallback\(([\s\S]*?), \[\]\);/, 'campoDoEvento')};`,
-      `const generateESocialXmlPreview = ${pegar(/const generateESocialXmlPreview = useCallback\(([\s\S]*?\n  \}), \[blocoRespRegXml/, 'generateESocialXmlPreview')};`,
+      // A montagem unica dos cinco eventos; a pre-visualizacao so le o XML dela.
+      `const montarEventoESocial = ${pegar(/const montarEventoESocial = useCallback\(([\s\S]*?\n  \}), \[/, 'montarEventoESocial')};`,
+      'const generateESocialXmlPreview = (e) => montarEventoESocial(e).xml;',
     ].join('\n');
     // Resolucao normal de modulo: no worktree o node_modules fica num diretorio acima.
     const ts = require_('typescript');
@@ -294,10 +356,11 @@ console.log('\n--- XML gerado pelo contexto, para os cinco eventos ---');
       // regra e esconderia o defeito de usa-lo no lugar do cliente.
       organization: { document_number: '99.888.777/0001-00' },
       sequenciaDoId: { current: { segundo: 0, usados: {} } },
-      blocoRespRegXml: () => '', blocoRespMonitXml: () => '',
-      xmlDoEpcEpi: () => '', xmlDosExamesDoS2220: () => '', tpExameOcupDoAso: () => '', resAsoDoAso: () => '',
+      responsaveisPeloRegistroAmbiental: () => [], blocoRespMonitXml: () => '', workAbsences: [],
+      xmlDosExamesDoS2220: () => '', tpExameOcupDoAso: () => '', resAsoDoAso: () => '',
       dataDeHoje: () => '2026-10-04',
       ...lib,
+      ...eventos,
     };
     const nomes = Object.keys(injetados);
     fns = new Function(...nomes, `${js}\nreturn { generateESocialXmlPreview };`)(...nomes.map((n) => injetados[n]));
@@ -370,16 +433,25 @@ console.log('\n--- forma do fonte: uma regra só ---');
     if (!detector[nome](trecho)) inconclusivo(`o detector "${nome}" não acusa o trecho defeituoso original`);
   }
 
-  check(!detector.namespaceAMao(ctx), 'nenhum namespace com versão escrito à mão no contexto (vem de namespaceDoEvento)');
-  const xmlnsDoContexto = [...ctx.matchAll(/<eSocial xmlns="([^"]*)"/g)].map((m) => m[1]);
-  check(xmlnsDoContexto.length >= 5 && xmlnsDoContexto.every((v) => /^\$\{namespaceDoEvento\('S-\d{4}'\)\}$/.test(v)),
-    `todo <eSocial xmlns> do contexto chama namespaceDoEvento (${xmlnsDoContexto.length})`);
-  check(!detector.ideEmpregadorAMao(ctx), 'nenhum <ideEmpregador> escrito à mão no contexto (vem de xmlDoIdeEmpregador)');
-  check((ctx.match(/xmlDoIdeEmpregador\(/g) || []).length >= 9, 'os nove montadores usam xmlDoIdeEmpregador');
-  check(!detector.idMinusculo(ctx), 'nenhum <evt... id=> minúsculo: o XSD declara o atributo "Id"');
-  const ids = [...ctx.matchAll(/<evt\w+ Id="([^"]*)"/g)].map((m) => m[1]);
-  check(ids.length >= 9 && ids.every((v) => /^\$\{(idEvt|novoIdDoEvento\(empregador\.tpInsc, empregador\.nrInsc\))\}$/.test(v)),
-    `todo Id vem de novoIdDoEvento com o nrInsc do empregador (${ids.length})`);
+  // Os montadores do S-2210, S-2230, S-2240 e S-3000 moram em
+  // lib/esocialEventos.ts; o do S-2220 continua no contexto. A forma vale nos dois.
+  const eventosFonte = semComentarios(fs.readFileSync(path.join(RAIZ, 'lib/esocialEventos.ts'), 'utf8'));
+  const montadores = ctx + '\n' + eventosFonte;
+  check(!detector.namespaceAMao(montadores), 'nenhum namespace com versão escrito à mão no contexto nem em lib/esocialEventos.ts');
+  const xmlns = [...montadores.matchAll(/<eSocial xmlns="([^"]*)"/g)].map((m) => m[1]);
+  check(xmlns.length === 2 && xmlns.every((v) => /^\$\{namespaceDoEvento\([^)]*\)\}$/.test(v)),
+    `todo <eSocial xmlns> chama namespaceDoEvento: o do S-2220 e o envelope dos outros quatro (${xmlns.length})`);
+  check(!detector.ideEmpregadorAMao(montadores), 'nenhum <ideEmpregador> escrito à mão (vem de xmlDoIdeEmpregador)');
+  check((ctx.match(/xmlDoIdeEmpregador\(empregador, '    '\)/g) || []).length === 1
+    && (eventosFonte.match(/xmlDoEmpregador\(e\.cabecalho, m\)/g) || []).length === 4
+    && /return xmlDoIdeEmpregador\(cab\.empregador, '    '\)/.test(eventosFonte),
+  'os cinco eventos usam xmlDoIdeEmpregador: o S-2220 no contexto, os outros quatro pelo mesmo ajudante');
+  check(!detector.idMinusculo(montadores), 'nenhum <evt... id=> minúsculo: o XSD declara o atributo "Id"');
+  const idsCtx = [...ctx.matchAll(/<evt\w+ Id="([^"]*)"/g)].map((m) => m[1]);
+  const idsLib = [...eventosFonte.matchAll(/<\$\{elemento\} Id="([^"]*)"/g)].map((m) => m[1]);
+  check(idsCtx.length === 1 && idsCtx[0] === '${idEvt}' && idsLib.length === 1 && idsLib[0] === '${id}'
+    && /novoIdDoEvento\(empregador\.tpInsc, empregador\.nrInsc\)/.test(ctx) && /id: idEvt,/.test(ctx),
+  `todo Id vem de novoIdDoEvento com o nrInsc do empregador (contexto ${idsCtx.length}, envelope ${idsLib.length})`);
   check(!detector.organizacaoComoEmpregador(ctx), 'o CNPJ da organização não é usado como empregador');
   check(!detector.nrInscEmpregadorProprio(ctx), 'o contexto não monta nrInsc por conta própria (padEnd / nrInscEmpregador)');
   check(!/function idDoEventoESocial\(/.test(ctx), 'a regra do Id não tem cópia no contexto');

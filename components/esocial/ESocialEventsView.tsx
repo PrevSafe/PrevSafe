@@ -304,7 +304,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
       setTimeout(() => {
         setAutomationStep(3);
         setAutomationLogs(prev => [
-          { timestamp: now(), message: '📄 Gerando XMLs padrão layout v.S-1.2 e validando Schemas XSD...', level: 'info' },
+          { timestamp: now(), message: '📄 Montando os XML no leiaute S-1.3 e conferindo os campos (sem validação contra o XSD)...', level: 'info' },
           ...prev
         ]);
 
@@ -436,7 +436,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
               <div className="flex items-center space-x-2">
                 <h1 className="text-2xl font-bold text-white tracking-tight">Gestão de Eventos eSocial SST</h1>
                 <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                  Layout v.S-1.2
+                  Leiaute S-1.3 · pré-visualização
                 </span>
                 <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-blue-500/20 text-blue-300 border border-blue-500/30 font-mono">
                   Ambiente Simulado
@@ -550,7 +550,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
           </div>
           <div className="mt-2 flex items-baseline justify-between">
             <span className="text-2xl font-bold text-blue-400 tracking-tight">{stats.ready}</span>
-            <span className="text-[10px] text-blue-400 font-medium">Validados XSD</span>
+            <span className="text-[10px] text-blue-400 font-medium">Campos conferidos · não assinados</span>
           </div>
         </div>
 
@@ -666,7 +666,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
             }`}
           >
             <CheckCircle2 className="w-4 h-4" />
-            <span>Testes & XSD</span>
+            <span>Testes</span>
             {testResults && (
               <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-mono ${
                 testResults.failed === 0 ? 'bg-emerald-950 text-emerald-400' : 'bg-rose-950 text-rose-400'
@@ -729,7 +729,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                       </span>
                     </div>
                     <p className="text-xs text-slate-300">
-                      Geração dos eventos e validação das regras S-1.2. A assinatura A1 e a transmissão em lote ainda são simuladas.
+                      Geração dos eventos e conferência dos campos do leiaute S-1.3. Sem validação contra o XSD, sem assinatura e sem transmissão.
                     </p>
                   </div>
                 </div>
@@ -737,7 +737,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                 <div className="flex flex-wrap items-center gap-4 text-xs text-slate-400 pt-1 font-mono">
                   <div className="flex items-center space-x-1.5 text-slate-300">
                     <CheckCheck className="w-4 h-4 text-emerald-400" />
-                    <span>Conformidade XSD: <strong>100%</strong></span>
+                    <span>Validação contra o XSD: <strong>não feita</strong></span>
                   </div>
                   <div className="flex items-center space-x-1.5 text-slate-300">
                     <Lock className="w-4 h-4 text-emerald-400" />
@@ -785,7 +785,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
               {[
                 { step: 1, title: '1. Varredura de OSs', desc: 'Scan de ASOs e Laudos PGR/LTCAT', icon: Search },
                 { step: 2, title: '2. Mapeamento SST', desc: 'Fatores Tabela 24 & Riscos', icon: FileCode2 },
-                { step: 3, title: '3. Validação XSD', desc: 'Schemas oficiais v.S-1.2', icon: ShieldCheck },
+                { step: 3, title: '3. Conferência de campos', desc: 'Leiaute S-1.3 (sem XSD)', icon: ShieldCheck },
                 { step: 4, title: '4. Assinatura & Envio', desc: 'Simulado (sem certificado)', icon: Send },
                 { step: 5, title: '5. Recibos & WhatsApp', desc: 'Protocolo ao RH do Cliente', icon: MessageSquare }
               ].map((item) => {
@@ -844,7 +844,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                   { key: 'autoScanOS', label: 'Varredura Automática de Ordens de Serviço (OSs Concluídas)', desc: 'Gera eventos ao finalizar atendimentos técnicos ou emitir ASOs' },
                   { key: 'autoGenerateS2220', label: 'Gatilho S-2220 (Monitoramento da Saúde / ASO)', desc: 'Extrai exames clínicos, complementares e CRM do médico coordenador' },
                   { key: 'autoGenerateS2240', label: 'Gatilho S-2240 (Condições Ambientais do Trabalho)', desc: 'Mapeia agentes nocivos da Tabela 24, EPI/EPC e responsável técnico' },
-                  { key: 'autoValidateXSD', label: 'Validação Prévia de Schemas XSD e Regras de Negócio', desc: 'Impede o envio de XMLs com dados ausentes ou CPFs inconsistentes' },
+                  { key: 'autoValidateXSD', label: 'Conferência Prévia dos Campos do Leiaute', desc: 'Retém eventos com campo obrigatório vazio ou CPF inválido. Não valida contra o XSD.' },
                   { key: 'autoSignA1', label: 'Assinatura Digital Automática com Certificado A1', desc: 'O eSocial exige XMLDSig com certificado A1. Ainda não implementado: a etapa é simulada.' },
                   { key: 'autoTransmitSerpro', label: 'Transmissão em Lote para o WebService Serpro', desc: 'Envio real ao WebService ainda não implementado: os recibos gerados são simulados' },
                   { key: 'autoNotifyWhatsApp', label: 'Notificação Automática do RH via WhatsApp', desc: 'Envia número de protocolo, data e link do recibo em PDF para o cliente' }
@@ -1183,7 +1183,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                                   <Send className="w-3 h-3" />
                                   <span>Pronto p/ Envio</span>
                                 </span>
-                                <span className="block text-[10px] text-slate-500 mt-0.5">Validado XSD v.S-1.2</span>
+                                <span className="block text-[10px] text-slate-500 mt-0.5">Campos conferidos · não assinado</span>
                               </div>
                             )}
 
@@ -1244,7 +1244,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                                 <button
                                   id={`btn-validate-${evt.id}`}
                                   onClick={() => handleValidateSingle(evt.id)}
-                                  title="Validar Schemas e Regras XSD"
+                                  title="Conferir os campos do leiaute (não valida contra o XSD)"
                                   className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-blue-300 hover:text-blue-200 transition"
                                 >
                                   <Check className="w-3.5 h-3.5" />
@@ -1496,7 +1496,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                 </span>
               </div>
               <p className="text-xs text-slate-400 mt-1">
-                Executa validações automatizadas de schemas XML, restrições da Tabela 24, validação de CRM/CREA, assinaturas digitais e simulação de WebService Serpro.
+                Confere a montagem dos XML no leiaute S-1.3, a Tabela 24 e os registros de CRM/CREA. Não valida contra o XSD, não assina e não transmite.
               </p>
             </div>
 
@@ -1663,7 +1663,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
               {xmlActiveTab === 'xml' && (
                 <div className="space-y-3">
                   <div className="flex items-center justify-between text-slate-400 pb-2 border-b border-slate-800">
-                    <span className="text-[11px]">Schema XSD: {namespaceDoEvento(xmlModalEvent.event_type)}</span>
+                    <span className="text-[11px]">Pré-visualização não assinada · namespace {namespaceDoEvento(xmlModalEvent.event_type)}</span>
                     <div className="flex items-center space-x-2">
                       <button
                         onClick={() => handleCopyText(xmlModalEvent.xml_content || generateESocialXmlPreview(xmlModalEvent), 'xml')}
@@ -1703,8 +1703,8 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                       <div className="flex items-center space-x-3 text-emerald-400">
                         <CheckCircle2 className="w-6 h-6" />
                         <div>
-                          <h4 className="font-bold text-sm uppercase tracking-wide">Comprovante de Recepção eSocial (simulado)</h4>
-                          <p className="text-[11px] opacity-80">Recibo gerado pelo próprio sistema. Não houve envio ao Serpro / Receita Federal.</p>
+                          <h4 className="font-bold text-sm uppercase tracking-wide">Recibo registrado no PrevSafe</h4>
+                          <p className="text-[11px] opacity-80">O PrevSafe não transmite: confira o recibo no portal do eSocial.</p>
                         </div>
                       </div>
 
@@ -1719,24 +1719,24 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                         </div>
                         <div>
                           <span className="text-slate-400 block text-[10px]">Data/Hora de Processamento:</span>
-                          <span className="text-slate-200">{xmlModalEvent.transmitted_at ? new Date(xmlModalEvent.transmitted_at).toLocaleString('pt-BR') : '18/08/2026 14:22:10'}</span>
+                          <span className="text-slate-200">{xmlModalEvent.transmitted_at ? new Date(xmlModalEvent.transmitted_at).toLocaleString('pt-BR') : 'não registrada'}</span>
                         </div>
                         <div>
                           <span className="text-slate-400 block text-[10px]">Código de Resposta do WebService:</span>
-                          <span className="text-emerald-400 font-bold">{xmlModalEvent.return_code || '201 - SUCESSO'}</span>
+                          <span className="text-emerald-400 font-bold">{xmlModalEvent.return_code || 'não registrado'}</span>
                         </div>
                       </div>
 
                       <div className="p-3 rounded-xl bg-slate-950 border border-emerald-900/60 text-[11px] text-slate-300">
-                        <span className="text-emerald-400 font-bold block mb-1">Mensagem de retorno (simulada):</span>
-                        {xmlModalEvent.return_message || 'Evento processado e recepcionado com sucesso pela base oficial do eSocial (Serpro).'}
+                        <span className="text-emerald-400 font-bold block mb-1">Mensagem de retorno registrada:</span>
+                        {xmlModalEvent.return_message || 'Nenhuma mensagem de retorno registrada.'}
                       </div>
                     </div>
                   ) : (
                     <div className="p-8 text-center text-slate-500 rounded-2xl bg-slate-950 border border-slate-800">
                       <Clock className="w-8 h-8 mx-auto mb-2 opacity-40" />
                       <p className="text-sm font-medium">Este evento ainda não foi transmitido para o eSocial.</p>
-                      <p className="text-xs text-slate-600 mt-1">Valide e processe o evento para gerar o recibo simulado.</p>
+                      <p className="text-xs text-slate-600 mt-1">O PrevSafe não transmite: o recibo existe depois do envio pelo canal oficial.</p>
                     </div>
                   )}
                 </div>
@@ -2114,13 +2114,18 @@ const CreateEditEventModal: React.FC<CreateEditEventModalProps> = ({
   const [s2210AccidentDate, setS2210AccidentDate] = useState<string>(initialEvent?.cat_data?.accident_date || dataDeHoje());
   // A hora do acidente entra na CAT. Vinha '10:00' por padrao.
   const [s2210AccidentTime, setS2210AccidentTime] = useState<string>(initialEvent?.cat_data?.accident_time || '');
-  const [s2210BodyPart, setS2210BodyPart] = useState<string>(initialEvent?.cat_data?.body_part || 'Mão e Dedos');
-  const [s2210Agent, setS2210Agent] = useState<string>(initialEvent?.cat_data?.accident_agent || 'Ferramenta manual ou máquina operatriz');
-  const [s2210Cid, setS2210Cid] = useState<string>(initialEvent?.cat_data?.cid_code || 'S61 - Ferimento do punho e da mão');
+  // Vazios. Vinham "Mão e Dedos", "Ferramenta manual ou máquina operatriz" e o
+  // CID S61: quem nao reparasse gravava a lesao de outra pessoa - e o leiaute
+  // pede os codigos das Tabelas 13 e 14, nao o nome.
+  const [s2210BodyPart, setS2210BodyPart] = useState<string>(initialEvent?.cat_data?.body_part || '');
+  const [s2210Agent, setS2210Agent] = useState<string>(initialEvent?.cat_data?.accident_agent || '');
+  const [s2210Cid, setS2210Cid] = useState<string>(initialEvent?.cat_data?.cid_code || '');
   const [s2210DaysAway, setS2210DaysAway] = useState<number>(initialEvent?.cat_data?.days_away || 0);
 
   // S-3000 State
-  const [s3000TargetType, setS3000TargetType] = useState<'S-2210' | 'S-2220' | 'S-2230' | 'S-2240'>(initialEvent?.exclusion_data?.target_event_type || 'S-2240');
+  // Sem tipo escolhido: vinha S-2240 marcado, e o S-3000 exclui o evento que
+  // o tipo e o recibo apontam.
+  const [s3000TargetType, setS3000TargetType] = useState<'S-2210' | 'S-2220' | 'S-2230' | 'S-2240' | ''>(initialEvent?.exclusion_data?.target_event_type || '');
   // O recibo identifica QUAL evento sera excluido no eSocial. Vinha um numero
   // de recibo pronto no campo: excluir o evento errado e um estrago dificil de
   // desfazer.
@@ -2188,22 +2193,20 @@ const CreateEditEventModal: React.FC<CreateEditEventModalProps> = ({
         exams_list: examesDoAso
       };
     } else if (eventType === 'S-2210') {
+      // So o que este formulario pergunta. O resto vinha escrito aqui e ia ao
+      // XML como se fosse da CAT: acidente tipico, sem obito, sem comunicacao a
+      // policia, emitente "Pronto Atendimento Municipal" com CRM-SP 88412 e
+      // local "Setor de Producao Industrial". Na edicao fica o que o evento ja
+      // tinha; num evento novo, a validacao aponta o que falta.
       payload.cat_data = {
+        ...(initialEvent?.cat_data || {}),
         cat_type: s2210CatType,
         accident_date: s2210AccidentDate,
         accident_time: s2210AccidentTime,
-        accident_type: 'TIPICO',
         body_part: s2210BodyPart,
         accident_agent: s2210Agent,
-        death_occurred: false,
-        police_report: false,
-        medical_cert_issuer: 'Pronto Atendimento Municipal',
-        medical_crm: 'CRM-SP 88412',
-        medical_uf: 'SP',
         cid_code: s2210Cid,
-        days_away: s2210DaysAway,
-        location_type: 'ESTABELECIMENTO_EMPREGADOR',
-        location_description: 'Setor de Produção Industrial'
+        days_away: s2210DaysAway
       };
     } else if (eventType === 'S-3000') {
       payload.exclusion_data = {
@@ -2649,21 +2652,23 @@ const CreateEditEventModal: React.FC<CreateEditEventModalProps> = ({
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-[10px] text-slate-400 mb-1">Parte do Corpo Atingida</label>
+                  <label className="block text-[10px] text-slate-400 mb-1">Parte do Corpo Atingida (código da Tabela 13)</label>
                   <input
                     type="text"
                     value={s2210BodyPart}
                     onChange={e => setS2210BodyPart(e.target.value)}
-                    className="w-full p-2 bg-slate-900 border border-slate-800 rounded-lg text-white"
+                    placeholder="9 dígitos"
+                    className="w-full p-2 bg-slate-900 border border-slate-800 rounded-lg text-white font-mono"
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] text-slate-400 mb-1">Agente Causador</label>
+                  <label className="block text-[10px] text-slate-400 mb-1">Agente Causador (código da Tabela 14)</label>
                   <input
                     type="text"
                     value={s2210Agent}
                     onChange={e => setS2210Agent(e.target.value)}
-                    className="w-full p-2 bg-slate-900 border border-slate-800 rounded-lg text-white"
+                    placeholder="9 dígitos"
+                    className="w-full p-2 bg-slate-900 border border-slate-800 rounded-lg text-white font-mono"
                   />
                 </div>
               </div>
@@ -2675,6 +2680,7 @@ const CreateEditEventModal: React.FC<CreateEditEventModalProps> = ({
                     type="text"
                     value={s2210Cid}
                     onChange={e => setS2210Cid(e.target.value)}
+                    placeholder="Ex.: S61.0"
                     className="w-full p-2 bg-slate-900 border border-slate-800 rounded-lg text-white font-mono"
                   />
                 </div>
@@ -2707,9 +2713,11 @@ const CreateEditEventModal: React.FC<CreateEditEventModalProps> = ({
                     onChange={e => setS3000TargetType(e.target.value as any)}
                     className="w-full p-2 bg-slate-900 border border-slate-800 rounded-lg text-white"
                   >
+                    <option value="">Selecione o tipo do evento</option>
                     <option value="S-2240">S-2240 (Condições Ambientais)</option>
                     <option value="S-2220">S-2220 (ASO / Saúde)</option>
                     <option value="S-2210">S-2210 (CAT)</option>
+                    <option value="S-2230">S-2230 (Afastamento)</option>
                   </select>
                 </div>
 
@@ -2720,7 +2728,7 @@ const CreateEditEventModal: React.FC<CreateEditEventModalProps> = ({
                     required
                     value={s3000Receipt}
                     onChange={e => setS3000Receipt(e.target.value)}
-                    placeholder="1.2.202608.0000000000000847120-01"
+                    placeholder="1.2.0000000000000000000 (23 caracteres)"
                     className="w-full p-2 bg-slate-900 border border-slate-800 rounded-lg text-white font-mono"
                   />
                 </div>

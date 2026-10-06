@@ -103,7 +103,7 @@ export const SSTUnifiedEngineeringView: React.FC<SSTUnifiedEngineeringViewProps>
                 Módulo Integrado SST & eSocial (PGR • PCMSO • LTCAT • S-2210/2220/2240)
               </span>
               <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-300 text-[11px] font-mono font-semibold rounded">
-                MOS v. S-1.2 / S-1.3
+                MOS e leiaute S-1.3
               </span>
             </div>
 

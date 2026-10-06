@@ -1,4 +1,8 @@
 import { ESocialEvent, ESocialReportOptions, Client, Organization } from '@/types';
+// O espelho dizia "Layout MOS v.S-1.2", "XML ASSINADO DIGITALMENTE (PADRAO XSD
+// v.S-1.2)" e "Certificado A1 ICP-Brasil": o leiaute e o S-1.3, o XML nao e
+// assinado nem validado contra o XSD pelo PrevSafe, e nao ha certificado.
+import { VERSAO_DO_LEIAUTE_ESOCIAL } from '@/lib/esocialEmpregador';
 
 /**
  * Generates an official, beautifully formatted HTML report ready for printing/PDF export
@@ -220,7 +224,7 @@ export function generateESocialReportHtml(
           <div class="header-left">
             <div class="org-name">${organization.name || organization.legal_name}</div>
             <div class="doc-title">ESPELHO DE CONFERÊNCIA DE EVENTO SST eSOCIAL</div>
-            <div class="doc-sub">Evento Oficial ${event.event_type} - Layout MOS v.S-1.2</div>
+            <div class="doc-sub">Evento ${event.event_type} - pré-visualização no leiaute ${VERSAO_DO_LEIAUTE_ESOCIAL}</div>
           </div>
           <div class="header-right">
             <div class="protocol-box">
@@ -292,7 +296,7 @@ export function generateESocialReportHtml(
         <!-- XML Preview (Opcional) -->
         ${options.includeXmlPreview ? `
           <div class="section">
-            <div class="section-title">XML ASSINADO DIGITALMENTE (PADRÃO XSD v.S-1.2)</div>
+            <div class="section-title">PRÉ-VISUALIZAÇÃO DO XML (LEIAUTE ${VERSAO_DO_LEIAUTE_ESOCIAL}) - NÃO ASSINADO E NÃO VALIDADO CONTRA O XSD</div>
             <pre class="xml-box">${escapeHtml(event.xml_content || '<xml>Preview não disponível</xml>')}</pre>
           </div>
         ` : ''}
@@ -312,7 +316,7 @@ export function generateESocialReportHtml(
           <div class="stamp-box">
             <div class="stamp-title">CONFERÊNCIA SST</div>
             <div class="stamp-date">Emitido em: ${today}</div>
-            <div class="stamp-cert">Certificado A1 ICP-Brasil</div>
+            <div class="stamp-cert">Sem assinatura digital</div>
           </div>
         </div>
       </div>

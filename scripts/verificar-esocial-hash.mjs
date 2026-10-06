@@ -60,6 +60,8 @@ fs.writeFileSync(
       path.join(RAIZ, 'lib/validacoesBr.ts'),
       // <ideEmpregador>, namespace e Id: a regra unica dos montadores.
       path.join(RAIZ, 'lib/esocialEmpregador.ts'),
+      // Constantes do envelope (versao do aplicativo, aviso de XML nao assinado).
+      path.join(RAIZ, 'lib/esocialEventos.ts'),
     ],
   })
 );
@@ -89,11 +91,13 @@ let esocial;
 let hashLib;
 let validacoesBr;
 let empregadorLib;
+let eventosLib;
 try {
   esocial = require_(path.join(SAIDA, 'esocialDados.js'));
   hashLib = require_(path.join(SAIDA, 'documentoHash.js'));
   validacoesBr = require_(path.join(SAIDA, 'validacoesBr.js'));
   empregadorLib = require_(path.join(SAIDA, 'esocialEmpregador.js'));
+  eventosLib = require_(path.join(SAIDA, 'esocialEventos.js'));
 } catch (e) {
   inconclusivo('não foi possível carregar os módulos compilados', e.message);
 }
@@ -678,7 +682,9 @@ console.log('\n--- S-2220: um montador só, Id de 36 caracteres, grupos do leiau
       `const novoIdDoEvento = ${pegar(/const novoIdDoEvento = useCallback\(([\s\S]*?), \[\]\);/, 'novoIdDoEvento')};`,
       `const campoDoEvento = ${pegar(/const campoDoEvento = useCallback\(([\s\S]*?), \[\]\);/, 'campoDoEvento')};`,
       `const blocoRespMonitXml = ${pegar(/const blocoRespMonitXml = useCallback\(([\s\S]*?\n  \}), \[technicalResponsibilities/, 'blocoRespMonitXml')};`,
-      `const generateESocialXmlPreview = ${pegar(/const generateESocialXmlPreview = useCallback\(([\s\S]*?\n  \}), \[blocoRespRegXml/, 'generateESocialXmlPreview')};`,
+      // A pre-visualizacao le o XML da montagem unica dos eventos.
+      `const montarEventoESocial = ${pegar(/const montarEventoESocial = useCallback\(([\s\S]*?\n  \}), \[/, 'montarEventoESocial')};`,
+      'const generateESocialXmlPreview = (e) => montarEventoESocial(e).xml;',
     ].join('\n');
     // Resolucao normal de modulo, e nao <RAIZ>/node_modules: num git worktree
     // o node_modules fica num diretorio acima, e o caminho fixo nao o achava.
@@ -694,16 +700,20 @@ console.log('\n--- S-2220: um montador só, Id de 36 caracteres, grupos do leiau
     } = empregadorLib;
     const fns = new Function(
       'clients', 'organization', 'respMonitDoCliente', 'technicalResponsibilities', 'technicalProfessionals',
-      'validarCPF', 'xmlDosExamesDoS2220', 'tpExameOcupDoAso', 'resAsoDoAso', 'dataDeHoje', 'sequenciaDoId', 'blocoRespRegXml',
+      'validarCPF', 'xmlDosExamesDoS2220', 'tpExameOcupDoAso', 'resAsoDoAso', 'dataDeHoje', 'sequenciaDoId',
+      'responsaveisPeloRegistroAmbiental', 'workAbsences',
       'idDoEventoESocial', 'inscricaoDoEmpregador', 'inscricaoDoAmbiente', 'xmlDoIdeEmpregador', 'xmlDaInscricaoDoAmbiente', 'namespaceDoEvento',
+      'COMENTARIO_SEM_ASSINATURA', 'VERSAO_DO_APLICATIVO_EMISSOR',
       `${js}\nreturn { idDoEventoESocial, novoIdDoEvento, blocoRespMonitXml, generateESocialXmlPreview };`
     )(
       [{ id: 'cli-1', document_type: 'CNPJ', document_number: '11.222.333/0001-81' }],
       { document_number: '99.888.777/0001-66' },
       () => respAtual, [], [],
       validacoesBr.validarCPF, xmlDosExamesDoS2220, tpExameOcupDoAso, resAsoDoAso,
-      () => '2026-10-02', { current: { segundo: 0, usados: {} } }, () => '',
-      idDoEventoESocial, inscricaoDoEmpregador, inscricaoDoAmbiente, xmlDoIdeEmpregador, xmlDaInscricaoDoAmbiente, namespaceDoEvento
+      () => '2026-10-02', { current: { segundo: 0, usados: {} } },
+      () => [], [],
+      idDoEventoESocial, inscricaoDoEmpregador, inscricaoDoAmbiente, xmlDoIdeEmpregador, xmlDaInscricaoDoAmbiente, namespaceDoEvento,
+      eventosLib.COMENTARIO_SEM_ASSINATURA, eventosLib.VERSAO_DO_APLICATIVO_EMISSOR
     );
 
     // REGRA_VALIDA_ID_EVENTO: IDTNNNNNNNNNNNNNNAAAAMMDDHHMMSSQQQQQ
@@ -751,7 +761,11 @@ console.log('\n--- S-2220: um montador só, Id de 36 caracteres, grupos do leiau
     check(/^ID1\d{33}$/.test(idXml) && idXml.startsWith('ID1' + '11222333' + '000000'),
       `o Id do XML tem 36 caracteres e a inscrição do empregador: ${idXml}`);
     check(!idXml.includes('52998224725'), 'o Id não leva o CPF do trabalhador');
-    check(xml.includes(`<Reference URI="#${idXml}">`), 'a assinatura referencia o mesmo Id');
+    // EXPECTATIVA CORRIGIDA. Este caso exigia <Reference URI="#Id"> - o bloco
+    // <Signature> com DigestValue e SignatureValue de enfeite que o montador
+    // escrevia. O PrevSafe nao assina: o XML nao pode parecer assinado.
+    check(!/<Signature|<SignatureValue>|<DigestValue>/.test(xml) && xml.includes('ds:Signature ausente'),
+      'o XML não traz assinatura de enfeite e diz que não está assinado');
     check(/<evtMonit Id="[^"]*">\s*<ideEvento>\s*<indRetif>1<\/indRetif>\s*<tpAmb>1<\/tpAmb>\s*<procEmi>1<\/procEmi>\s*<verProc>[^<]+<\/verProc>\s*<\/ideEvento>\s*<ideEmpregador>/.test(xml),
       'o XML gerado tem <ideEvento> completo antes de <ideEmpregador>');
     check(/<resAso>1<\/resAso>/.test(xml) && (xml.match(/<exame>/g) || []).length === 1, 'resAso e o exame do ASO vão quando existem');

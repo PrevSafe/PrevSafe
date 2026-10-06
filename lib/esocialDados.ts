@@ -203,6 +203,14 @@ export function montarFatorDeRisco(risco: SSTEnvironmentalRisk): {
     epi_ca_numbers: cas.length > 0 ? cas : undefined,
     is_insalubre: !!risco.insalubridade_applies,
     is_periculoso: !!risco.periculosidade_applies,
+    // {tpAval} vem do tipo de avaliacao do inventario, nao da presenca de um
+    // numero: avaliacao quantitativa sem medicao nao vira "qualitativa".
+    evaluation_type: risco.evaluation_type === 'QUANTITATIVA' || risco.evaluation_type === 'QUALITATIVA'
+      ? risco.evaluation_type
+      : undefined,
+    // O nome do inventario, que {dscAgNoc} pede nos codigos genericos
+    // ("Arsenio e seus compostos" nao diz qual composto).
+    agent_description: String(risco.agent_name || '').trim() || undefined,
   };
 
   return { fator, pendencias };

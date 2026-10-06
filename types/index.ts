@@ -1416,8 +1416,12 @@ export interface ESocialCATData {
   medical_uf: string;
   cid_code: string;
   days_away: number;
-  location_type: 'ESTABELECIMENTO_EMPREGADOR' | 'EMPRESA_TERCEIRA' | 'VIA_PUBLICA' | 'OUTROS';
+  location_type: 'ESTABELECIMENTO_EMPREGADOR' | 'EMPRESA_TERCEIRA' | 'VIA_PUBLICA' | 'EMBARCACAO' | 'OUTROS';
   location_description: string;
+  /** Copiados do registro da CAT (SSTCATRecord): {indInternacao}, {houveAfast}/{indAfast} e {dscLesao}. */
+  treatment_type?: 'AMBULATORIAL' | 'INTERNACAO';
+  caused_absence?: boolean;
+  nature_lesion_code?: string;
 }
 
 export interface ESocialComplementaryExam {
@@ -1463,6 +1467,10 @@ export interface ESocialAmbientRiskFactor {
   epi_ca_numbers?: string[];
   is_insalubre?: boolean;
   is_periculoso?: boolean;
+  /** {tpAval} do S-2240. Ausente nos eventos gravados antes: ali so a intensidade medida dizia algo. */
+  evaluation_type?: 'QUANTITATIVA' | 'QUALITATIVA';
+  /** Nome do agente no inventario, para {dscAgNoc} nos codigos genericos da Tabela 24. */
+  agent_description?: string;
 }
 
 export interface ESocialAmbientRiskData {

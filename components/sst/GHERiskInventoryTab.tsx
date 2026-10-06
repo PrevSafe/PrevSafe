@@ -765,7 +765,7 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
     if (evento) {
       setGeneratedS2240Success(
         `Evento S-2240 (${evento.event_number}) gerado para ${activeGhe.name}, com a exposição de `
-        + `${evento.worker_name}. Pronto para transmissão.`
+        + `${evento.worker_name}. Campos conferidos; não validado contra o XSD, não assinado e não transmitido.`
       );
       setTimeout(() => setGeneratedS2240Success(null), 6000);
     } else {

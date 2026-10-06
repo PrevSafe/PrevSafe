@@ -694,10 +694,15 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
                 <div className="flex items-center justify-between text-[11px] text-slate-400 pt-1 border-t border-slate-800/80">
                   <span className="flex items-center gap-1.5">
                     <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                    <span>eSocial Layout S-1.2: Eventos S-2240, S-2220 e S-2210 compatíveis</span>
+                    {/* Dizia "Layout S-1.2 ... compativeis" e mostrava tpInsc 3/4 para
+                        CAEPF/CNO como se identificassem o empregador. Leiaute S-1.3,
+                        ideEmpregador/tpInsc: "1 - CNPJ, 2 - CPF". */}
+                    <span>eSocial leiaute S-1.3: pré-visualização dos eventos S-2210, S-2220, S-2230 e S-2240 (XML não validado contra o XSD, não assinado)</span>
                   </span>
                   <span className="font-mono text-indigo-300">
-                    &lt;tpInsc: {selectedClient.document_type === 'CAEPF' ? '3 (CAEPF)' : selectedClient.document_type === 'CNO' ? '4 (CNO)' : selectedClient.document_type === 'CPF' ? '2 (CPF)' : '1 (CNPJ)'}&gt;
+                    {selectedClient.document_type === 'CAEPF' || selectedClient.document_type === 'CNO'
+                      ? `${selectedClient.document_type}: só no ambiente de trabalho; empregador sem CNPJ/CPF`
+                      : <>&lt;ideEmpregador/tpInsc: {selectedClient.document_type === 'CPF' ? '2 (CPF)' : '1 (CNPJ)'}&gt;</>}
                   </span>
                 </div>
               </div>
@@ -1438,48 +1443,53 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
             </div>
 
             <div className="space-y-3 text-xs text-slate-300">
+              {/* O modal ensinava CAEPF e CNO como tpInsc do empregador. No leiaute
+                  S-1.3, {ideEmpregador/tpInsc} so aceita "1 - CNPJ, 2 - CPF"; o MOS
+                  (Cap. I, 7.1) manda usar o CAEPF "como estabelecimento vinculado ao
+                  seu CPF" e o CNO "como estabelecimento ou lotacao tributaria". Regra
+                  em lib/esocialEmpregador.ts. */}
               <p>
-                No eSocial (Layout S-1.2), a identificação do empregador e dos estabelecimentos de trabalho para os eventos de SST (<strong className="text-indigo-300">S-2240</strong>, <strong className="text-indigo-300">S-2220</strong> e <strong className="text-indigo-300">S-2210</strong>) segue a tabela técnica do MTE/Receita Federal:
+                No eSocial (leiaute S-1.3), os eventos de SST (<strong className="text-indigo-300">S-2210</strong>, <strong className="text-indigo-300">S-2220</strong>, <strong className="text-indigo-300">S-2230</strong> e <strong className="text-indigo-300">S-2240</strong>) identificam o <strong>empregador</strong> só por CNPJ ou CPF (Tabela 05, campo ideEmpregador/tpInsc). CAEPF e CNO identificam o <strong>estabelecimento</strong> ou a obra, nunca o empregador.
               </p>
 
               <div className="space-y-2">
                 <div className="p-3 bg-slate-950 rounded-2xl border border-slate-800">
                   <div className="flex items-center justify-between font-mono font-bold text-emerald-400">
-                    <span>1. CNPJ &lt;tpInsc: 1&gt;</span>
+                    <span>1. CNPJ &lt;ideEmpregador/tpInsc: 1&gt;</span>
                     <span className="text-[10px] bg-emerald-500/10 px-2 py-0.5 rounded-full">Pessoa Jurídica</span>
                   </div>
                   <p className="text-[11px] text-slate-400 mt-1">
-                    Utilizado para empresas privadas, sociedades anônimas, limitadas e estabelecimentos matriz ou filial. 14 dígitos numéricos.
+                    O número do empregador (nrInsc) é a raiz do CNPJ, 8 dígitos. Só as naturezas jurídicas 101-5, 104-0, 107-4, 116-3 e 134-1 (administração pública federal) informam o CNPJ completo, de 14 dígitos.
                   </p>
                 </div>
 
                 <div className="p-3 bg-slate-950 rounded-2xl border border-slate-800">
                   <div className="flex items-center justify-between font-mono font-bold text-purple-400">
-                    <span>2. CPF &lt;tpInsc: 2&gt;</span>
+                    <span>2. CPF &lt;ideEmpregador/tpInsc: 2&gt;</span>
                     <span className="text-[10px] bg-purple-500/10 px-2 py-0.5 rounded-full">Pessoa Física Empregadora</span>
                   </div>
                   <p className="text-[11px] text-slate-400 mt-1">
-                    Utilizado para empregadores pessoas físicas, profissionais liberais (médicos, advogados, dentistas) e empregadores domésticos. 11 dígitos numéricos.
+                    Empregador pessoa física, inclusive o produtor rural e o titular de cartório. 11 dígitos.
                   </p>
                 </div>
 
                 <div className="p-3 bg-slate-950 rounded-2xl border border-slate-800">
                   <div className="flex items-center justify-between font-mono font-bold text-amber-400">
-                    <span>3. CAEPF &lt;tpInsc: 3&gt;</span>
-                    <span className="text-[10px] bg-amber-500/10 px-2 py-0.5 rounded-full">Produtor Rural / Titular de Cartório</span>
+                    <span>CAEPF &lt;tpInsc 3, só do estabelecimento&gt;</span>
+                    <span className="text-[10px] bg-amber-500/10 px-2 py-0.5 rounded-full">Não identifica o empregador</span>
                   </div>
                   <p className="text-[11px] text-slate-400 mt-1">
-                    Cadastro de Atividade Econômica da Pessoa Física. O empregador possui CPF e vincula seus estabelecimentos agropecuários pelo número CAEPF de 14 dígitos. Obrigatório no eSocial para trabalhadores rurais (NR-31).
+                    Cadastro de Atividade Econômica da Pessoa Física: o estabelecimento vinculado ao CPF do empregador. Entra como local de trabalho (no S-2240, infoAmb/tpInsc 3). O empregador continua identificado pelo CPF: cadastre o CPF no cliente e o CAEPF no campo próprio.
                   </p>
                 </div>
 
                 <div className="p-3 bg-slate-950 rounded-2xl border border-slate-800">
                   <div className="flex items-center justify-between font-mono font-bold text-blue-400">
-                    <span>4. CNO &lt;tpInsc: 4&gt;</span>
-                    <span className="text-[10px] bg-blue-500/10 px-2 py-0.5 rounded-full">Obra de Construção Civil</span>
+                    <span>CNO &lt;tpInsc 4, só da obra&gt;</span>
+                    <span className="text-[10px] bg-blue-500/10 px-2 py-0.5 rounded-full">Não identifica o empregador</span>
                   </div>
                   <p className="text-[11px] text-slate-400 mt-1">
-                    Cadastro Nacional de Obras. Utilizado pelas construtoras e empreiteiras para alocar trabalhadores da construção civil em canteiros de obras específicos (NR-18).
+                    Cadastro Nacional de Obras: a obra, vinculada a um CNPJ ou CPF. Entra como local de trabalho (no S-2240, infoAmb/tpInsc 4). O empregador é o CNPJ ou o CPF a que a obra está vinculada.
                   </p>
                 </div>
               </div>
