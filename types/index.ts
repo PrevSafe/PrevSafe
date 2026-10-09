@@ -2169,6 +2169,12 @@ export interface OccupationalRiskCatalogItem {
   measurement_decimal_places?: number;
   /** Classificacao do efeito na listagem (Leve, Moderado). Ausente quando ela traz "Nao Aplica". */
   effect_classification?: string;
+  /**
+   * Item da listagem que repete um item curado no mesmo nivel de detalhe: id
+   * do curado. Ele vem desativado, para o seletor nao oferecer o mesmo risco
+   * duas vezes, e pode ser reativado na tela.
+   */
+  duplicate_of_id?: string;
 
   // Custom risk entry extras (user-editable items only)
   regulatory_norm_reference?: string;

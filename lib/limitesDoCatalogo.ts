@@ -23,13 +23,27 @@ export function normalizarUnidade(unidade?: string): string | undefined {
  * 78 + "ppm" -> "78 ppm"; 1480 + "mg/m³" -> "1.480 mg/m³";
  * 0.016 + "ppm" + teto -> "0,016 ppm (valor teto)".
  *
+ * Com fonte, o texto diz de onde o numero veio, porque no PGR e no laudo de
+ * insalubridade a origem do limite importa tanto quanto ele:
+ * 78 + "ppm" + sem teto + "NR-15, Anexo 11" -> "78 ppm (NR-15, Anexo 11)";
+ * com teto -> "0,016 ppm (valor teto; NR-15, Anexo 11)". So o catalogo da
+ * listagem passa a fonte, e so para o numero conferido no texto da norma; as
+ * chamadas de 3 argumentos (a tela, ao editar o numero) continuam iguais -
+ * numero editado a mao deixa de ser o da norma e nao deve cita-la.
+ *
  * Zero, negativo ou ausente nao e limite: a listagem escreve 0 quando o agente
  * nao tem valor fixo (silica, calor, ruido de impacto), e "0 ppm" no PGR
  * diria que qualquer exposicao ultrapassa o limite.
  */
-export function textoDoLimite(valor: number | undefined, unidade?: string, teto?: boolean): string | undefined {
+export function textoDoLimite(
+  valor: number | undefined,
+  unidade?: string,
+  teto?: boolean,
+  fonte?: string
+): string | undefined {
   if (typeof valor !== 'number' || !Number.isFinite(valor) || valor <= 0) return undefined;
   const numero = valor.toLocaleString('pt-BR', { maximumFractionDigits: 4 });
   const un = normalizarUnidade(unidade);
-  return `${numero}${un ? ` ${un}` : ''}${teto ? ' (valor teto)' : ''}`;
+  const notas = [teto ? 'valor teto' : '', (fonte || '').trim()].filter(Boolean);
+  return `${numero}${un ? ` ${un}` : ''}${notas.length ? ` (${notas.join('; ')})` : ''}`;
 }

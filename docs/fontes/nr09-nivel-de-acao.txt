@@ -1,0 +1,68 @@
+# NR-09 - AVALIACAO E CONTROLE DAS EXPOSICOES OCUPACIONAIS - trechos do texto oficial sobre nivel de acao.
+# URL: https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-09-atualizada-2026.pdf
+# Baixado em 09/10/2026. Versao: o PDF da como ultima alteracao a Portaria MTE n. 105, de 29/01/2026 (DOU 30/01/26).
+# PDF guardado em docs/fontes/nr-09-atualizada-2026.pdf: 483218 bytes, sha256 9cc608eb7766ca7565234d2069d3491d2714e26d0c76de3aa043105521a8d584.
+# Extracao: pdftotext 4.06 -layout -enc UTF-8, sem nenhuma edicao.
+# Trechos: item 9.6 (disposicoes transitorias: nivel de acao = metade do limite para quimicos e metade da dose
+# para ruido) e Anexo I, item 5 (nivel de acao e limite de exposicao para vibracao).
+# ----------------------------------------------------------------------------------------------------
+9.6.1 Enquanto não forem estabelecidos os Anexos a esta Norma, devem ser adotados para fins de
+medidas de prevenção:
+a) os critérios e limites de tolerância constantes na NR-15 e seus anexos;
+b) como nível de ação para agentes químicos, a metade dos limites de tolerância;
+c) como nível de ação para o agente físico ruído, a metade da dose.
+
+9.6.1.1 Na ausência de limites de tolerância previstos na NR-15 e seus anexos, devem ser utilizados
+como referência para a adoção de medidas de prevenção aqueles previstos pela American
+Conference of Governmental Industrial Higyenists - ACGIH.
+
+9.6.1.2 Considera-se nível de ação, o valor acima do qual devem ser implementadas ações de
+controle sistemático de forma a minimizar a probabilidade de que as exposições ocupacionais
+ultrapassem os limites de exposição.
+
+5.2 Avaliação quantitativa da exposição dos trabalhadores às VMB.
+
+5.2.1 A avaliação da exposição ocupacional à vibração em mãos e braços deve ser feita utilizando-se
+sistemas de medição que permitam a obtenção da aceleração resultante de exposição normalizada
+(aren), parâmetro representativo da exposição diária do trabalhador.
+
+5.2.2 O nível de ação para a avaliação da exposição ocupacional diária à vibração em mãos e braços
+corresponde a um valor de aceleração resultante de exposição normalizada (aren) de 2,5 m/s2.
+
+5.2.3 O limite de exposição ocupacional diária à vibração em mãos e braços corresponde a um valor
+de aceleração resultante de exposição normalizada (aren) de 5 m/s2.
+
+5.2.4 As situações de exposição ocupacional superior ao nível de ação, independentemente do uso
+de equipamentos de proteção individual, implicam obrigatória adoção de medidas de caráter
+preventivo, sem prejuízo do disposto no subitem 1.5.5 da NR-01
+
+5.2.5 As situações de exposição ocupacional superior ao limite de exposição, independentemente
+do uso de equipamentos de proteção individual, implicam obrigatória adoção de medidas de caráter
+corretivo, sem prejuízo do disposto no subitem 1.5.5 da NR-01.
+
+5.3 Avaliação quantitativa da exposição dos trabalhadores às VCI.
+
+5.3.1 A avaliação da exposição ocupacional à vibração de corpo inteiro deve ser feita utilizando-se
+sistemas de medição que permitam a determinação da aceleração resultante de exposição
+
+Este texto não substitui o publicado no DOU  5
+normalizada (aren) e do valor da dose de vibração resultante (VDVR), parâmetros representativos
+da exposição diária do trabalhador.
+
+5.3.2 O nível de ação para a avaliação da exposição ocupacional diária à vibração de corpo inteiro
+corresponde a um valor da aceleração resultante de exposição normalizada (aren) de 0,5m/s2, ou ao
+valor da dose de vibração resultante (VDVR) de 9,1m/s1,75.
+
+5.3.3 O limite de exposição ocupacional diária à vibração de corpo inteiro corresponde ao:
+a) valor da aceleração resultante de exposição normalizada (aren) de 1,1 m/s2; ou
+b) valor da dose de vibração resultante (VDVR) de 21,0 m/s1,75.
+
+5.3.3.1 Para fins de caracterização da exposição, a organização deve comprovar a avaliação dos dois
+parâmetros acima descritos.
+
+5.3.4 As situações de exposição ocupacional superiores ao nível de ação implicam obrigatória adoção
+de medidas de caráter preventivo, sem prejuízo do disposto no subitem 1.5.5 da NR-01.
+
+5.3.5 As situações de exposição ocupacional superiores ao limite de exposição ocupacional implicam
+obrigatória adoção de medidas de caráter corretivo, sem prejuízo do disposto no subitem 1.5.5 da
+NR-01.

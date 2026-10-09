@@ -152,7 +152,8 @@ import {
   excluirOuDesativarItem,
   itemAtivo,
   itemNovoDoUsuario,
-  itensDoCatalogoDoRisco
+  itensDoCatalogoDoRisco,
+  restaurarItensDoSistema
 } from '@/lib/catalogoDeRiscos';
 import {
   INITIAL_CIPA_PROCESSES,
@@ -1152,13 +1153,15 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     apply(setPgrActionPlan, list(parsed.pgrActionPlan, []));
     // Quem ja usava o sistema tem o catalogo gravado com os 25 itens curados,
     // no servidor e no cache: os itens da listagem nao viriam de nenhum dos
-    // dois. A fusao acrescenta os que faltam e nao mexe nos que estao
-    // (lib/catalogoDeRiscos.ts). Ela roda so aqui, no carregamento, e nao num
-    // efeito sobre o catalogo: o que ela acrescenta nao esta na sombra, o
-    // envio seguinte sobe essas linhas uma vez, e no proximo carregamento
-    // elas ja vem do servidor e nada mais se acrescenta. `undefined` continua
-    // sendo "nao mexer"; colecao que nunca existiu no servidor ja cai no
-    // catalogo inicial, que traz a listagem.
+    // dois, nem as correcoes feitas depois nos que ja vieram. A fusao
+    // acrescenta os que faltam e troca pela versao do codigo os da listagem
+    // que o usuario nunca editou; editado, curado e do usuario ficam como
+    // estao (lib/catalogoDeRiscos.ts). Ela roda so aqui, no carregamento, e
+    // nao num efeito sobre o catalogo: o que ela acrescenta ou troca difere da
+    // sombra, o envio seguinte sobe essas linhas uma vez, e no proximo
+    // carregamento elas ja vem do servidor iguais ao codigo e nada mais muda.
+    // `undefined` continua sendo "nao mexer"; colecao que nunca existiu no
+    // servidor ja cai no catalogo inicial, que traz a listagem.
     apply(setOccupationalRisksCatalog, catalogoAoCarregar(
       list<OccupationalRiskCatalogItem>(parsed.occupationalRisksCatalog, INITIAL_OCCUPATIONAL_RISKS_CATALOG, 'occupationalRisksCatalog'),
       RISCOS_DA_LISTAGEM
@@ -6202,9 +6205,15 @@ ${blocoRespMonitXml(event.client_id, aso?.exam_date || dataDeHoje(), '      ')}
     logAudit('DELETE_ESTABLISHMENT_SECTOR' as any, 'CLIENT' as any, id, 'Risco removido do catálogo');
   }, [occupationalRisksCatalog, logAudit]);
 
+  /**
+   * Os itens do sistema voltam a versao do codigo; os criados pelo usuario
+   * ficam (lib/catalogoDeRiscos.ts). Trocava o catalogo inteiro pelo inicial,
+   * e os itens do usuario sumiam - no servidor tambem, pelo envio seguinte.
+   */
   const resetOccupationalRisksCatalogToDefault = useCallback(() => {
-    setOccupationalRisksCatalog(INITIAL_OCCUPATIONAL_RISKS_CATALOG);
-    logAudit('UPDATE_ESTABLISHMENT_SECTOR' as any, 'CLIENT' as any, 'all', 'Catálogo de riscos ocupacionais restaurado para padrão oficial eSocial');
+    setOccupationalRisksCatalog(prev => restaurarItensDoSistema(prev, INITIAL_OCCUPATIONAL_RISKS_CATALOG));
+    logAudit('UPDATE_ESTABLISHMENT_SECTOR' as any, 'CLIENT' as any, 'all',
+      'Itens do sistema do catálogo de riscos restaurados à versão padrão; itens criados pelo usuário mantidos');
   }, [logAudit]);
 
   const applyRisksToTargets = useCallback((payload: {

@@ -23,8 +23,20 @@ import {
   ehItemDaListagem,
   itemAtivo,
   grupoDoItem as grupoDoSeletor,
-  type GrupoDoSeletor
+  type GrupoDoSeletor,
+  textoDaDuplicidade,
+  CLASSIFICACAO_NAO_INFORMADA,
+  classificacaoParaFormulario,
+  valoresDaClassificacao,
+  mudancasDaClassificacao,
+  conflitoGfipAposentadoria,
+  enquadramentoDoItem,
+  OPCOES_DE_GFIP,
+  GRAUS_DE_INSALUBRIDADE,
+  type ClassificacaoNoFormulario
 } from '@/lib/catalogoDeRiscos';
+import { classificarRisco } from '@/lib/classificacaoDeRisco';
+import { PGR_SEVERIDADE } from '@/lib/pgrModelo';
 import { SeletorTabela24 } from './SeletorTabela24';
 import {
   SITUACOES_OPERACIONAIS,
@@ -217,7 +229,13 @@ interface ExameDoFormulario {
   periodicidade_meses: number;
 }
 
-interface FormularioDoRisco {
+/**
+ * Os campos de classificacao (severidade, probabilidade, GFIP, aposentadoria
+ * especial, insalubridade e periculosidade) vem de ClassificacaoNoFormulario,
+ * com o nome do campo do item: a regra de "nao informado nao grava" e de
+ * "edicao grava so o que mudou" esta em lib/catalogoDeRiscos.ts.
+ */
+interface FormularioDoRisco extends ClassificacaoNoFormulario {
   risk_code_table_24: string;
   agent_name: string;
   group: RiskCategoryType;
@@ -270,7 +288,10 @@ const FORMULARIO_VAZIO: FormularioDoRisco = {
   suggested_source: '',
   suggested_controls_summary: '',
   suggested_epis_text: '',
-  suggested_exams: []
+  suggested_exams: [],
+  // Tudo em "Nao informado". O formulario antigo gravava severidade 3,
+  // probabilidade 3, GFIP '00' e "nao se aplica" sem campo na tela.
+  ...CLASSIFICACAO_NAO_INFORMADA
 };
 
 const GRUPOS_DO_FORMULARIO: Array<{ valor: RiskCategoryType; rotulo: string }> = [
@@ -337,7 +358,8 @@ function formularioDoItem(item: OccupationalRiskCatalogItem): FormularioDoRisco 
       codigo: ex.exam_code || '',
       nome: consultarProcedimento(ex.exam_code)?.nome || ex.exam_name || '',
       periodicidade_meses: ex.periodicity_months || 12
-    }))
+    })),
+    ...classificacaoParaFormulario(item)
   };
 }
 
@@ -500,6 +522,9 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
   } = usePrevSafe();
 
   const catalogo = useMemo(() => occupationalRisksCatalog || [], [occupationalRisksCatalog]);
+  // O curado que um item da listagem repete (duplicate_of_id) e achado por id
+  // a cada cartao: um mapa por catalogo, e nao uma busca na lista por cartao.
+  const itemPorId = useMemo(() => new Map(catalogo.map(item => [item.id, item])), [catalogo]);
 
   // Search & Filtering
   const [searchTerm, setSearchTerm] = useState('');
@@ -705,6 +730,10 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
   const unidadeDoFormulario = normalizarUnidade(form.measurement_unit_standard);
   const limiteDoFormulario = lerNumero(form.tolerance_limit_number);
   const nivelDoFormulario = lerNumero(form.action_level_number);
+  // A mesma matriz que o risco aplicado usa (camposDoRiscoAPartirDoCatalogo):
+  // com um so dos dois, o risco nasce nao classificado.
+  const classificacaoNoFormulario = classificarRisco(Number(form.default_severity), Number(form.default_probability));
+  const soUmaGradacao = !classificacaoNoFormulario && (!!form.default_severity || !!form.default_probability);
 
   const handleSaveRisk = (e: React.FormEvent) => {
     e.preventDefault();
@@ -773,6 +802,25 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
       return;
     }
 
+    // Classificacao e enquadramento: "Nao informado" vira undefined e nao e
+    // gravado; na edicao, so o que o usuario mudou (lib/catalogoDeRiscos.ts).
+    const valoresClassificacao = valoresDaClassificacao(form);
+    const mudancasClassificacao = editingItem ? mudancasDaClassificacao(editingItem, formInicial, form) : {};
+    // GFIP e aposentadoria que se contradizem pelos rotulos do proprio GFIP. Na
+    // edicao so se confere quando um dos dois mudou: item que ja vinha assim
+    // nao trava a correcao de outro campo.
+    const mexeuNoEnquadramento =
+      !editingItem ||
+      form.gfip_code_suggested !== formInicial.gfip_code_suggested ||
+      form.special_retirement_eligible !== formInicial.special_retirement_eligible;
+    const conflito = mexeuNoEnquadramento
+      ? conflitoGfipAposentadoria(editingItem ? { ...editingItem, ...mudancasClassificacao } : valoresClassificacao)
+      : null;
+    if (conflito) {
+      alert(conflito);
+      return;
+    }
+
     // Com numero, o texto sai de textoDoLimite - a mesma funcao que escreve o
     // texto dos itens da listagem -, para numero e texto nao divergirem. Sem
     // numero, vale o texto digitado.
@@ -811,7 +859,8 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
         health_effects: opcional(form.harmful_effects),
         regulatory_norm_reference: opcional(form.regulatory_norm_reference),
         generating_sources: opcional(form.suggested_source),
-        recommended_epcs: opcional(form.suggested_controls_summary)
+        recommended_epcs: opcional(form.suggested_controls_summary),
+        ...valoresClassificacao
       };
       Object.entries(preenchidos).forEach(([campo, valor]) => {
         if (valor !== undefined) (novo as any)[campo] = valor;
@@ -907,6 +956,8 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
     // para o risco aplicado. Nao e medicao: sai.
     if (item.suggested_measured_value === 0) mudancas.suggested_measured_value = undefined;
 
+    Object.assign(mudancas, mudancasClassificacao);
+
     if (Object.keys(mudancas).length > 0) {
       updateOccupationalRiskCatalogItem(item.id, mudancas);
     }
@@ -935,16 +986,20 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
   };
 
   const handleRestaurarPadrao = () => {
-    // O que o contexto faz hoje: troca o catalogo inteiro pela lista do
-    // sistema. O botao dizia so "Restaurar Padrão", sem confirmacao, e um
-    // clique apagava os itens criados pelo usuario.
+    // O que o contexto faz (restaurarItensDoSistema, lib/catalogoDeRiscos.ts):
+    // so os itens do sistema voltam a versao do codigo. Antes o catalogo
+    // inteiro era trocado e os itens criados aqui sumiam; o texto tem de dizer
+    // exatamente o que muda e o que fica.
     const criadosAqui = totais.USUARIO;
     const segue = confirm(
-      'Restaurar o catálogo padrão?\n\n' +
-      'O catálogo volta a ser a lista do sistema: ' +
-      (criadosAqui > 0 ? `${criadosAqui} item(ns) criado(s) aqui será(ão) removido(s), e ` : '') +
-      'as edições e desativações feitas nos itens do sistema são desfeitas.\n\n' +
-      'Os riscos já aplicados aos GHEs não mudam.'
+      'Restaurar os itens do sistema?\n\n' +
+      'Os itens curados e os da listagem voltam à versão do sistema: as edições e desativações ' +
+      'feitas neles são desfeitas, e os curados que tinham sido excluídos voltam. Os itens da ' +
+      'listagem que repetem um curado continuam inativos, como vêm do sistema.\n\n' +
+      (criadosAqui > 0
+        ? `Os ${criadosAqui} item(ns) criado(s) aqui não mudam.`
+        : 'Os itens criados aqui não mudam.') +
+      '\n\nOs riscos já aplicados aos GHEs não mudam.'
     );
     if (segue) resetOccupationalRisksCatalogToDefault();
   };
@@ -1054,6 +1109,9 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
       !controleDoItem(item) && 'medidas de controle'
     ].filter(Boolean) as string[];
     const temDetalhes = !!(unidade || limite || nivel || meio || fonte || classificacaoDoEfeito);
+    // So o que o item tem: os da listagem nao trazem nenhum destes campos.
+    const enquadramento = enquadramentoDoItem(item);
+    const duplicidade = textoDaDuplicidade(item, id => itemPorId.get(id));
 
     return (
       <div
@@ -1159,6 +1217,17 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                 {item.name}
               </h3>
 
+              {/* Item da listagem que repete um curado: vem desativado do
+                  sistema, e a ficha diz qual curado ja representa o risco. */}
+              {duplicidade && (
+                <p
+                  className="text-[11px] font-semibold text-amber-300"
+                  title="Item da listagem que repete um item curado. Vem desativado para o seletor não oferecer o mesmo risco duas vezes; pode ser reativado."
+                >
+                  {duplicidade}
+                </p>
+              )}
+
               {/* Denominação oficial do agente, quando difere do nome
                   usado no catálogo: é ela que vale no S-2240. */}
               {agenteOficial && !ausencia && paraBusca(agenteOficial.nome).trim() !== paraBusca(item.name).trim() && (
@@ -1250,6 +1319,20 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                       <span className="font-medium text-slate-200">{classificacaoDoEfeito}</span>
                     </div>
                   )}
+                </div>
+              )}
+
+              {enquadramento.length > 0 && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 text-xs">
+                  {enquadramento.map(linha => (
+                    <div key={linha.rotulo} className="p-2 rounded bg-slate-950 border border-slate-800">
+                      <span className="font-semibold text-slate-500 block">{linha.rotulo}:</span>
+                      <span className="font-medium text-slate-200">{linha.valor}</span>
+                      {linha.detalhe && (
+                        <span className="text-[11px] text-slate-400 block mt-0.5">{linha.detalhe}</span>
+                      )}
+                    </div>
+                  ))}
                 </div>
               )}
 
@@ -1386,7 +1469,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
             <button
               id="btn-reset-catalog-defaults"
               onClick={handleRestaurarPadrao}
-              title="Volta o catálogo à lista do sistema: remove os itens criados aqui e desfaz edições e desativações dos itens do sistema. Pede confirmação."
+              title="Volta os itens do sistema (curados e da listagem) à versão do sistema, desfazendo edições e desativações. Os itens criados aqui não mudam. Pede confirmação."
               className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-slate-400 bg-slate-950 border border-slate-800 rounded-lg hover:bg-slate-800 transition-colors"
             >
               <RotateCcw className="w-3.5 h-3.5" />
@@ -1964,6 +2047,163 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                   value={form.suggested_controls_summary}
                   onChange={(e) => setForm({ ...form, suggested_controls_summary: e.target.value })}
                 />
+              </div>
+
+              {/* Classificacao e enquadramento. Tudo abre em "Nao informado",
+                  e "Nao informado" nao grava nada (lib/catalogoDeRiscos.ts):
+                  o formulario antigo gravava severidade 3, probabilidade 3,
+                  GFIP '00' e "nao se aplica" sem campo na tela, e o risco
+                  aplicado nascia classificado e enquadrado por ninguem. */}
+              <div className="bg-slate-950 border border-slate-800 rounded-lg p-3 space-y-3">
+                <div>
+                  <label className="block text-xs font-bold text-slate-300 uppercase">
+                    Classificação e enquadramento sugeridos
+                  </label>
+                  <p className="text-[11px] text-slate-500 mt-0.5">
+                    Vão para o risco quando o item é aplicado a um GHE. O que ficar em &quot;Não informado&quot; não
+                    é gravado: o risco aplicado nasce sem o campo, e o inventário mostra a pendência.
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[11px] font-semibold text-slate-400 mb-1">Severidade (S)</label>
+                    <select
+                      className="w-full px-3 py-2 text-sm border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-900 text-slate-100"
+                      value={form.default_severity}
+                      onChange={(e) => setForm({ ...form, default_severity: e.target.value as FormularioDoRisco['default_severity'] })}
+                    >
+                      <option value="">Não informado</option>
+                      {PGR_SEVERIDADE.map(l => (
+                        <option key={l[0]} value={l[0]}>S{l[0]} — {l[1]}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-semibold text-slate-400 mb-1">Probabilidade (P)</label>
+                    <select
+                      className="w-full px-3 py-2 text-sm border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-900 text-slate-100"
+                      value={form.default_probability}
+                      onChange={(e) => setForm({ ...form, default_probability: e.target.value as FormularioDoRisco['default_probability'] })}
+                    >
+                      <option value="">Não informado</option>
+                      {['1', '2', '3', '4', '5'].map(n => (
+                        <option key={n} value={n}>P{n}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+                {classificacaoNoFormulario ? (
+                  <p className="text-[11px] text-slate-400">
+                    Matriz do modelo (seção 5.6):{' '}
+                    <span className="font-semibold text-slate-200">
+                      S{classificacaoNoFormulario.severidade} × P{classificacaoNoFormulario.probabilidade} ={' '}
+                      {classificacaoNoFormulario.score} · {classificacaoNoFormulario.rotulo}
+                    </span>
+                  </p>
+                ) : soUmaGradacao ? (
+                  <p className="text-[11px] text-amber-300">
+                    Com só um dos dois, o risco aplicado nasce não classificado: a matriz precisa de severidade e
+                    probabilidade.
+                  </p>
+                ) : null}
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[11px] font-semibold text-slate-400 mb-1">Código GFIP</label>
+                    <select
+                      className="w-full px-3 py-2 text-sm border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-900 text-slate-100"
+                      value={form.gfip_code_suggested}
+                      onChange={(e) => setForm({ ...form, gfip_code_suggested: e.target.value as FormularioDoRisco['gfip_code_suggested'] })}
+                    >
+                      <option value="">Não informado</option>
+                      {OPCOES_DE_GFIP.map(o => (
+                        <option key={o.valor} value={o.valor}>{o.rotulo}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-semibold text-slate-400 mb-1">Aposentadoria especial</label>
+                    <select
+                      className="w-full px-3 py-2 text-sm border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-900 text-slate-100"
+                      value={form.special_retirement_eligible}
+                      onChange={(e) => setForm({ ...form, special_retirement_eligible: e.target.value as FormularioDoRisco['special_retirement_eligible'] })}
+                    >
+                      <option value="">Não informado</option>
+                      <option value="SIM">Sim</option>
+                      <option value="NAO">Não</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Grau e base legal nao valem com "Nao": ficam travados e
+                    vazios na tela, e nao sao gravados. Voltando a "Sim", o que
+                    estava no formulario reaparece. */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div>
+                    <label className="block text-[11px] font-semibold text-slate-400 mb-1">Insalubridade</label>
+                    <select
+                      className="w-full px-3 py-2 text-sm border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-900 text-slate-100"
+                      value={form.insalubridade_applicable}
+                      onChange={(e) => setForm({ ...form, insalubridade_applicable: e.target.value as FormularioDoRisco['insalubridade_applicable'] })}
+                    >
+                      <option value="">Não informado</option>
+                      <option value="SIM">Sim, se aplica</option>
+                      <option value="NAO">Não se aplica</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-semibold text-slate-400 mb-1">Grau</label>
+                    <select
+                      className="w-full px-3 py-2 text-sm border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-900 text-slate-100 disabled:opacity-50"
+                      disabled={form.insalubridade_applicable === 'NAO'}
+                      value={form.insalubridade_applicable === 'NAO' ? '' : form.insalubridade_degree_suggested}
+                      onChange={(e) => setForm({ ...form, insalubridade_degree_suggested: e.target.value as FormularioDoRisco['insalubridade_degree_suggested'] })}
+                    >
+                      <option value="">Não informado</option>
+                      {GRAUS_DE_INSALUBRIDADE.map(g => (
+                        <option key={g.valor} value={g.valor}>{g.rotulo}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-semibold text-slate-400 mb-1">Base legal</label>
+                    <input
+                      type="text"
+                      className="w-full px-3 py-2 text-sm border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-900 text-slate-100 placeholder-slate-500 disabled:opacity-50"
+                      disabled={form.insalubridade_applicable === 'NAO'}
+                      placeholder="Ex: NR-15 Anexo nº 1"
+                      value={form.insalubridade_applicable === 'NAO' ? '' : form.insalubridade_legal_basis}
+                      onChange={(e) => setForm({ ...form, insalubridade_legal_basis: e.target.value })}
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div>
+                    <label className="block text-[11px] font-semibold text-slate-400 mb-1">Periculosidade</label>
+                    <select
+                      className="w-full px-3 py-2 text-sm border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-900 text-slate-100"
+                      value={form.periculosidade_applicable}
+                      onChange={(e) => setForm({ ...form, periculosidade_applicable: e.target.value as FormularioDoRisco['periculosidade_applicable'] })}
+                    >
+                      <option value="">Não informado</option>
+                      <option value="SIM">Sim, se aplica</option>
+                      <option value="NAO">Não se aplica</option>
+                    </select>
+                  </div>
+                  <div className="sm:col-span-2">
+                    <label className="block text-[11px] font-semibold text-slate-400 mb-1">Base legal</label>
+                    <input
+                      type="text"
+                      className="w-full px-3 py-2 text-sm border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-900 text-slate-100 placeholder-slate-500 disabled:opacity-50"
+                      disabled={form.periculosidade_applicable === 'NAO'}
+                      placeholder="Ex: NR-16 Anexo nº 4"
+                      value={form.periculosidade_applicable === 'NAO' ? '' : form.periculosidade_legal_basis}
+                      onChange={(e) => setForm({ ...form, periculosidade_legal_basis: e.target.value })}
+                    />
+                  </div>
+                </div>
               </div>
 
               <div className="pt-4 border-t border-slate-800 flex items-center justify-end gap-3">

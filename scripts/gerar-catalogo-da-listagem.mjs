@@ -120,6 +120,285 @@ export const NOTA_AUSENCIA_RETIRADA =
   'não é propriedade de um risco, e o S-2240 o recusa junto de outro agente.';
 
 /**
+ * DUPLICATAS DE ITENS CURADOS. Linha da listagem -> id do item curado que ela
+ * repete no MESMO nivel de detalhe. Decisao do usuario em 09/10/2026.
+ *
+ * O item continua gerado, mas sai com status INACTIVE e duplicate_of_id:
+ * assim o seletor nao oferece o mesmo risco duas vezes, o usuario ainda pode
+ * reativa-lo na tela, e a desativacao chega as organizacoes que ja gravaram o
+ * catalogo - a carga troca pela versao do codigo todo item da listagem que
+ * ninguem editou (created_at === updated_at, que o gerador mantem).
+ *
+ * Ficam ATIVOS de proposito, por serem MAIS detalhados que o curado: Silica
+ * livre cristalizada - poeira respiravel e - poeira total (o risk-cat-09 nao
+ * separa a fracao), as duas Vibracoes de corpo inteiro, aren e VDVR (o
+ * risk-cat-04 junta as duas), os tres Fumos metalicos especificos - Cobre,
+ * Manganes e Ferro (so o "Fumos metalicos" generico repete o risk-cat-08) - e
+ * Petroleo, xisto betuminoso, gas natural e seus derivados (agente mais amplo
+ * que os oleos e graxas do risk-cat-12).
+ *
+ * Nome exato da fonte. Nome que nao virar item, ou id que nao for de um item
+ * curado, faz a geracao falhar mostrando o nome.
+ */
+export const DUPLICATAS_DE_CURADOS = {
+  'Ruído impulsivo ou de impacto': 'risk-cat-02',
+  'Trabalhos com exposição ao calor nos termos da NR-15, da Portaria 3.214/1978': 'risk-cat-03',
+  'Vibrações localizadas (mão-braço)': 'risk-cat-05',
+  'Radiações não ionizantes': 'risk-cat-06',
+  'Frio': 'risk-cat-07',
+  'Fumos metálicos': 'risk-cat-08',
+  'Óleos e Graxas Minerais (Hidrocarbonetos Aromáticos)': 'risk-cat-12',
+  'Microrganismos Patogênicos': 'risk-cat-13',
+  'Agentes biológicos (bactérias, vírus, fungos e outros)': 'risk-cat-13',
+  'Trabalhos em estabelecimentos de saúde com contato com pacientes portadores de doenças infectocontagiosas ou com manuseio de materiais contaminados': 'risk-cat-13',
+  'Trabalhos em galerias, fossas e tranques de esgoto': 'risk-cat-14',
+  'Levantamento e transporte manual de cargas ou volumes': 'risk-cat-15',
+  'Trabalho em posturas incômodas ou pouco confortáveis por longos períodos': 'risk-cat-16',
+  'Exigência de posturas inadequadas': 'risk-cat-16',
+  'Frequente execução de movimentos repetitivos': 'risk-cat-17',
+  'Trabalho em Altura': 'risk-cat-18',
+  'Queda com diferença de nível': 'risk-cat-18',
+  'Máquinas e equipamentos sem proteção': 'risk-cat-19',
+  'Condições ou procedimentos que possam provocar contato com eletricidade': 'risk-cat-20',
+  'Trabalho em Espaço Confinado': 'risk-cat-21',
+  'Projeção de partículas': 'risk-cat-23',
+  'Ausência de agente nocivo ou de atividades previstas no Anexo IV do Decreto 3.048/1999': 'risk-cat-25',
+};
+
+// ---------------------------------------------------------------------------
+// Conferencia com a NR-15 (texto oficial guardado em docs/fontes/)
+// ---------------------------------------------------------------------------
+
+/**
+ * POR QUE. O limite da listagem vai para o PGR e para o laudo de
+ * insalubridade, entao tem de ser o da norma - e norma nunca de memoria. Os
+ * itens abaixo foram conferidos, um a um, contra o Quadro n. 1 do Anexo 11 da
+ * NR-15 vigente, extraido do PDF oficial do MTE para
+ * docs/fontes/nr15-anexo11.txt (URL, data, versao e comando no cabecalho de
+ * la), e a vibracao contra o Anexo 8 (docs/fontes/nr15-trechos.txt). O
+ * verificador rele esses textos por um caminho proprio e prova cada numero,
+ * cada grau e cada linha citada.
+ *
+ * CONFERIDO = o nome da listagem, ou um sinonimo que ela da entre
+ * parenteses, e o nome de um agente do Quadro - ou de um "vide" do proprio
+ * Quadro -, ignorando acento, caixa e pontuacao; e a unidade e uma das colunas
+ * do Quadro (ppm ou mg/m3, ate 48 h/semana). Grafia diferente ("Cloropreno" x
+ * "Cloroprene"), nome mais amplo ("Chumbo e seus compostos toxicos" x
+ * "Chumbo"), gas que o Quadro so da como "asfixiante simples" e agente fora
+ * do Quadro NAO contam: ficam sem fonte e sem grau, para o usuario decidir.
+ * Uma excecao, anotada: "Alcool etilico (etanol)" casa pelo nome principal; o
+ * "etanol" do parentese cai no "Etanol (vide acetaldeido)" do Quadro, que e
+ * erro da propria norma.
+ *
+ * O item conferido ganha o texto do limite com a fonte ("78 ppm (NR-15,
+ * Anexo 11)") e a insalubridade que a norma da ao agente: o adicional do grau
+ * da coluna "Grau de insalubridade" (NR-15, itens 15.2.1 a 15.2.3) e a base
+ * legal. Nao e invencao: e o que a norma diz desse agente acima do limite.
+ *
+ * NIVEL DE ACAO. A NR-09, item 9.6.1 b), manda usar para agente quimico a
+ * metade do limite da NR-15: a geracao falha se um item conferido no Anexo 11
+ * nao tiver nivel de acao = limite / 2. Na vibracao o nivel vem do Anexo I da
+ * NR-09 (itens 5.2.2 e 5.3.2), e o verificador o confere no texto.
+ */
+export const FONTE_ANEXO_11 = 'NR-15, Anexo 11';
+export const FONTE_ANEXO_8 = 'NR-15, Anexo 8';
+
+/** Grau da norma -> adicional de insalubridade (NR-15, itens 15.2.1 a 15.2.3). */
+export const ADICIONAL_DO_GRAU = { 'máximo': '40%', 'médio': '20%', 'mínimo': '10%' };
+
+/**
+ * Nome na listagem -> [agente como o Quadro n. 1 o escreve, grau, linha do
+ * agente em docs/fontes/nr15-anexo11.txt]. Os marcados "pele" tem "+" na
+ * coluna "Absorcao tambem p/pele", que o catalogo ainda nao tem campo para
+ * guardar.
+ */
+const CONFERIDOS_NO_ANEXO_11 = [
+  ['Estireno (vinilbenzeno)', 'Estireno', 'médio', 366],
+  ['Dissulfeto de carbono', 'Dissulfeto de carbono', 'máximo', 362], // pele
+  ['Acrilonitrila', 'Acrilonitrila', 'máximo', 168], // pele
+  ['1-3-butadieno', '1,3 Butadieno', 'médio', 227],
+  ['Diisocianato de tolueno (TDI)', '2,4 Diisocianato de tolueno (TDI)', 'máximo', 342],
+  ['Óxido de etileno', 'Óxido de etileno', 'máximo', 522],
+  ['Estilbenzeno (etilbenzeno)', 'Etilbenzeno', 'médio', 397],
+  ['Dimetilamina', 'Dimetilamina', 'médio', 348],
+  ['1,1,1 Tricloroetano (Metilclorofórmio)', 'Metilclorofórmio', 'médio', 483],
+  ['1,1,2-Tricloro-1,2,2-trifluoretano (freon 113)', '1,1,2 Tricloro-1,2,2 trifluoretano', 'médio', 597],
+  ['1,1,2-Tricloroetano (Tricloreto de vinila)', '1,1,2 Tricloroetano', 'médio', 589], // pele
+  ['1,1-Dicloro-1-nitroetano', '1,1 Dicloro-1-nitroetano', 'máximo', 332],
+  ['1,1-Dicloroetano', '1,1 Dicloroetano', 'médio', 318],
+  ['1,2 Dicloroetano (Dicloreto de etileno)', '1,2 Dicloroetano', 'máximo', 320],
+  ['1,2 Dicloroetileno', '1,2 Dicloroetileno', 'médio', 326],
+  ['1,2,3-Tricloropropano', '1,2,3 Tricloropropano', 'máximo', 595],
+  ['1,2-Dibramoetano (dibrometo de etileno)', '1,2-Dibramoetano', 'médio', 312], // pele
+  ['1-Butanotiol (n-Butil mercaptana)', 'n-Butil mercaptana', 'médio', 245],
+  ['1-Cloro-1-nitropropano', '1-Cloro 1-nitropropano', 'máximo', 297],
+  ['1-Nitropropano', '1 - Nitropropano', 'médio', 518],
+  ['2-Butóxi etanol (EGBE) (butil cellosolve) (éter monobutílico do etileno glicol)', 'Butil cellosolve', 'médio', 243], // pele
+  ['2-Etoxietanol (cellosolve ou Éter monoetílico do etileno glicol)', '2-Etoxietanol', 'médio', 409], // pele
+  ['2-Nitropropano', '2 - Nitropropano', 'médio', 520],
+  ['Acetaldeído (aldeído acético)', 'Acetaldeído', 'máximo', 126],
+  ['Acetato de 2-etoxi etila (Acetato de cellosolve ou Acetato de éter monoetílico de etilenoglicol)', 'Acetato de cellosolve', 'médio', 128], // pele
+  ['Acetato de etila', 'Acetato de etila', 'mínimo', 136],
+  ['Acetona (propanona)', 'Acetona', 'mínimo', 144],
+  ['Acetonitrila (cianeto de metila)', 'Acetonitrila', 'máximo', 146],
+  ['Ácido acético (ácido etanoico)', 'Ácido acético', 'médio', 148],
+  ['Ácido cianídrico (cianeto de hidrogênio, gás cianídrico)', 'Ácido cianídrico', 'máximo', 150], // pele
+  ['Ácido clorídrico (cloreto de hidrogênio, gás clorídrico)', 'Ácido clorídrico', 'máximo', 152],
+  ['Ácido crômico (névoa)', 'Ácido crômico (névoa)', 'máximo', 154],
+  ['Ácido fluorídrico', 'Ácido fluorídrico', 'máximo', 158],
+  ['Ácido metanoico (ácido fórmico)', 'Ácido fórmico', 'médio', 160],
+  ['Acrilato de metila', 'Acrilato de metila', 'máximo', 166], // pele
+  ['Álcool etílico (etanol)', 'Álcool etílico', 'mínimo', 180],
+  ['Álcool furfurílico', 'Álcool furfurílico', 'médio', 182], // pele
+  ['Álcool isoamílico', 'Álcool isoamílico', 'mínimo', 170],
+  ['Álcool isobutílico (isobutanol)', 'Álcool isobutílico', 'médio', 174],
+  ['Álcool isopropílico (isopropanol ou 2-propanol)', 'Álcool isopropílico', 'médio', 192], // pele
+  ['Álcool metil amílico (metil isobutilcarbinol)', 'Metil isobutilcarbinol', 'máximo', 489], // pele
+  ['Álcool metílico (metanol)', 'Álcool metílico', 'máximo', 188], // pele
+  ['Álcool n-butílico (n-butanol)', 'Álcool n-butílico', 'máximo', 172], // pele
+  ['Álcool n-propílico (n-propanol)', 'Álcool n-propílico', 'médio', 190], // pele
+  ['Álcool sec-butílico (sec-butanol)', 'Álcool sec-butílico (2-butanol)', 'médio', 176],
+  ['Álcool terc-butílico', 'Álcool terc-butílico', 'médio', 178],
+  ['Amônia (gás amoníaco)', 'Amônia', 'médio', 198],
+  ['Anidro sulfuroso (dióxido de enxofre)', 'Dióxido de enxofre', 'máximo', 358],
+  ['Anilina', 'Anilina', 'máximo', 204], // pele
+  ['Brometo de etila (bromoetano)', 'Brometo de etila', 'máximo', 213],
+  ['Brometo de metila (bromometano)', 'Brometo de metila', 'máximo', 215], // pele
+  ['Cianogênio', 'Cianogênio', 'máximo', 259],
+  ['Ciclohexano', 'Ciclohexano', 'médio', 261],
+  ['Ciclohexanol', 'Ciclohexanol', 'máximo', 263],
+  ['Ciclohexilamina', 'Ciclohexilamina', 'máximo', 265], // pele
+  ['Cloreto de etila (cloroetano)', 'Cloreto de etila', 'médio', 269],
+  ['Cloreto de fenila (clorobenzeno)', 'Clorobenzeno', 'médio', 285],
+  ['Cloreto de metila', 'Cloreto de metila', 'máximo', 275],
+  ['Cloreto de vinila (cloroetílico)', 'Cloreto de vinila', 'máximo', 279],
+  ['Cloreto de vinilideno (1,1-Dicloreotileno)', 'Cloreto de vinilideno', 'máximo', 281],
+  ['Clorobromometano', 'Clorobromometano', 'máximo', 287],
+  ['Clorodifluormetano (freon 22)', 'Clorodifluometano (freon 22)', 'mínimo', 293],
+  ['Clorofórmio (Triclorometano)', 'Clorofórmio', 'máximo', 295],
+  ['Decaborano', 'Decaborano', 'máximo', 304], // pele
+  ['Demeton (Systox)', 'Demeton', 'máximo', 306], // pele
+  ['Diborano', 'Diborano', 'máximo', 310],
+  ['Diclorodifluormetano', 'Diclorodifluormetano (freon 12)', 'mínimo', 316],
+  ['Diclorometano (Cloreto de metileno)', 'Cloreto de metileno', 'máximo', 277],
+  ['Diclorotetrafluoretano (freon 114)', 'Diclorotetrafluoretano (freon 114)', 'mínimo', 336],
+  ['Dietil éter (Éter etílico)', 'Éter etílico', 'médio', 380],
+  ['Diisopropilamina', 'Diisopropilamina', 'máximo', 344], // pele
+  ['Dimetilacetamida (N,N-Dimetilacetamida)', 'Dimetilacetamida', 'máximo', 346], // pele
+  ['Dióxido de carbono (gás carbônico)', 'Dióxido de carbono', 'mínimo', 354],
+  ['Dióxido de cloro', 'Dióxido de cloro', 'máximo', 356],
+  ['Dióxido de nitrogênio', 'Dióxido de nitrogênio', 'máximo', 360],
+  ['Éter monometílico do etileno glicol (metil cellosolve ou 2-Metoxi etanol (EGME))', 'Metil cellosolve', 'máximo', 479], // pele
+  ['Etil mercaptana (Etanotiol)', 'Etil mercaptana', 'médio', 405],
+  ['Etilamina', 'Etilamina', 'máximo', 394],
+  ['Etilenoimina', 'Etilenoimina', 'máximo', 403], // pele
+  ['Fenol', 'Fenol', 'máximo', 411], // pele
+  ['Fluortriclorometano (triclorofluormetano ou freon 11)', 'Fluortriclorometano (freon 11)', 'médio', 413],
+  ['Formaldeído (formol ou Aldeído fórmico)', 'Formaldeído (formol)', 'máximo', 415],
+  ['Fosfina (fosfamina)', 'Fosfina (fosfamina)', 'máximo', 417],
+  ['Fosgênio (cloreto de carbonila)', 'Fosgênio', 'máximo', 419],
+  ['Hidrazina (diamina)', 'Hidrazina', 'máximo', 451], // pele
+  ['Hidreto de antimônio (Estibina)', 'Estibina', 'máximo', 364],
+  ['Isopropil benzeno (cumeno)', 'Cumeno', 'máximo', 302], // pele
+  ['Isopropilamina', 'Isopropilamina', 'médio', 461],
+  ['Metacrilato de metila', 'Metacrilato de metila', 'mínimo', 469],
+  ['Metil demeton', 'Metil demeton', 'máximo', 485], // pele
+  ['Metil etil cetona (MEK) (Butanona)', 'metil etil cetona', 'médio', 487],
+  ['Metil mercaptana (metanotiol)', 'Metil mercaptana (metanotiol)', 'médio', 492],
+  ['Metilamina', 'Metilamina', 'máximo', 477],
+  ['Metilciclohexanol', 'Metil ciclohexanol', 'médio', 481],
+  ['Monometil hidrazina (metil hidrazina)', 'Monometil hidrazina', 'máximo', 498], // pele
+  ['Monóxido de carbono', 'Monóxido de carbono', 'máximo', 500],
+  ['n-Butano', 'n-Butano', 'médio', 229],
+  ['n-Butilamina', 'n-Butilamina', 'máximo', 241], // pele
+  ['Negro de fumo', 'Negro de fumo(1)', 'máximo', 502],
+  ['n-Etil morfolina', 'n-Etil morfolina', 'médio', 407], // pele
+  ['Nitrato de n-propila', 'Nitrato de n-propila', 'máximo', 512],
+  ['Nitroetano', 'Nitroetano', 'médio', 514],
+  ['Nitrometano', 'Nitrometano', 'máximo', 516],
+  ['n-Pentano', 'n-Pentano', 'mínimo', 534],
+  ['o-Diclorobenzeno', 'o-Diclorobenzeno', 'máximo', 314],
+  ['Óxido nítrico', 'Óxido nítrico (NO)', 'máximo', 526],
+  ['Ozona (ozônio)', 'Ozona', 'máximo', 530],
+  ['Pentaborano', 'Pentaborano', 'máximo', 532],
+  ['Percloroetileno (Tetracloroetileno)', 'Percloroetíleno', 'médio', 536], // pele
+  ['Piridina', 'Piridina', 'médio', 538],
+  ['Propileno imina', 'Propileno imina', 'máximo', 550], // pele
+  ['Sulfeto de hidrogênio (Gás sulfídrico)', 'Gás sulfídrico', 'máximo', 445],
+  ['Tetrabrometo de acetileno (1,1,2,2-Tetrabromoetano)', '1,1,2,2,Tetrabromoetano', 'médio', 560],
+  ['Tetracloreto de carbono', 'Tetracloreto de carbono', 'máximo', 562], // pele
+  ['Tetracloroetano (1,1,2,2-Tetracloroetano)', 'Tetracloroetano', 'máximo', 564], // pele
+  ['Tetrahidrofurano', 'Tetrahidrofurano', 'máximo', 570],
+  ['Tolueno (toluol)', 'Tolueno (toluol)', 'médio', 572], // pele
+  ['Tribromometano (Bromofórmio)', 'Bromofórmio', 'médio', 221], // pele
+  ['Tricloroetileno', 'Tricloroetileno', 'máximo', 591],
+  ['Trietilamina', 'Trietilamina', 'máximo', 601],
+  ['Xileno (xilol)', 'Xileno (xilol)', 'médio', 607], // pele
+];
+
+/**
+ * Vibracao, conferida no Anexo 8 da NR-15: nome na listagem -> [parametro,
+ * linha do limite em docs/fontes/nr15-trechos.txt]. Grau medio para todos
+ * (Anexo 8, item 2.3).
+ */
+const CONFERIDOS_NO_ANEXO_8 = [
+  ['Vibrações localizadas (mão-braço)', 'VMB: aren', 227],
+  ['Vibração de corpo inteiro (aceleração resultante de exposição normalizada - aren)', 'VCI: aren', 231],
+  ['Vibração de corpo inteiro (Valor da Dose de Vibração Resultante - VDVR)', 'VCI: VDVR', 232],
+];
+
+export const CONFERIDOS_NA_NR15 = [
+  ...CONFERIDOS_NO_ANEXO_11.map(([nome, agente, grau, linha]) => ({ nome, fonte: FONTE_ANEXO_11, agente, grau, linha })),
+  ...CONFERIDOS_NO_ANEXO_8.map(([nome, agente, linha]) => ({ nome, fonte: FONTE_ANEXO_8, agente, grau: 'médio', linha })),
+];
+
+/**
+ * CORRECOES PELA NR-15. Onde a listagem diverge da norma sem ambiguidade
+ * (mesmo agente, mesma unidade), vale a norma - e a correcao fica aqui, nunca
+ * na fonte do usuario. listagem = o que a fonte traz (0 e "sem valor fixo");
+ * norma = o valor do Quadro n. 1; linha = a do agente em
+ * docs/fontes/nr15-anexo11.txt. O nivel de acao corrigido e a metade do limite
+ * corrigido (NR-09, item 9.6.1 b). Cada correcao tem de achar exatamente o
+ * valor "listagem" no item; se a fonte mudar, a geracao falha em vez de
+ * corrigir outra coisa.
+ *
+ * Casas decimais: a listagem registra sempre ao menos as casas do limite e do
+ * nivel de acao (142 de 142 itens com limite). Quando o valor corrigido pede
+ * mais casas (0,02; 0,75; 0,004), elas sobem junto - senao a medicao seria
+ * registrada com menos precisao que o proprio limite. O relatorio lista quais.
+ */
+export const CORRECOES_PELA_NR15 = [
+  { nome: '1,1-Dicloro-1-nitroetano', campo: 'tolerance_limit_is_ceiling', listagem: false, norma: true, anexo: 'NR-15, Anexo 11', linha: 332 },
+  { nome: 'Ácido clorídrico (cloreto de hidrogênio, gás clorídrico)', campo: 'tolerance_limit_is_ceiling', listagem: false, norma: true, anexo: 'NR-15, Anexo 11', linha: 152 },
+  { nome: 'Ácido crômico (névoa)', campo: 'tolerance_limit_value', listagem: 0, norma: 0.04, anexo: 'NR-15, Anexo 11', linha: 154 },
+  { nome: 'Ácido crômico (névoa)', campo: 'action_level_value', listagem: 0, norma: 0.02, anexo: 'NR-09, item 9.6.1 b)', linha: null },
+  { nome: 'Ácido fluorídrico', campo: 'tolerance_limit_value', listagem: 2, norma: 1.5, anexo: 'NR-15, Anexo 11', linha: 158 },
+  { nome: 'Ácido fluorídrico', campo: 'action_level_value', listagem: 1, norma: 0.75, anexo: 'NR-09, item 9.6.1 b)', linha: null },
+  { nome: 'Ácido metanoico (ácido fórmico)', campo: 'tolerance_limit_value', listagem: 1.5, norma: 7, anexo: 'NR-15, Anexo 11', linha: 160 },
+  { nome: 'Ácido metanoico (ácido fórmico)', campo: 'action_level_value', listagem: 0.75, norma: 3.5, anexo: 'NR-09, item 9.6.1 b)', linha: null },
+  { nome: 'Álcool n-butílico (n-butanol)', campo: 'tolerance_limit_is_ceiling', listagem: false, norma: true, anexo: 'NR-15, Anexo 11', linha: 172 },
+  { nome: 'Cloreto de vinila (cloroetílico)', campo: 'tolerance_limit_is_ceiling', listagem: false, norma: true, anexo: 'NR-15, Anexo 11', linha: 279 },
+  { nome: 'Demeton (Systox)', campo: 'tolerance_limit_value', listagem: 0.1, norma: 0.08, anexo: 'NR-15, Anexo 11', linha: 306 },
+  { nome: 'Demeton (Systox)', campo: 'action_level_value', listagem: 0.05, norma: 0.04, anexo: 'NR-09, item 9.6.1 b)', linha: null },
+  { nome: 'Diborano', campo: 'tolerance_limit_value', listagem: 0.1, norma: 0.08, anexo: 'NR-15, Anexo 11', linha: 310 },
+  { nome: 'Diborano', campo: 'action_level_value', listagem: 0.05, norma: 0.04, anexo: 'NR-09, item 9.6.1 b)', linha: null },
+  { nome: 'Diclorodifluormetano', campo: 'tolerance_limit_is_ceiling', listagem: false, norma: true, anexo: 'NR-15, Anexo 11', linha: 316 },
+  { nome: 'Dióxido de nitrogênio', campo: 'tolerance_limit_is_ceiling', listagem: false, norma: true, anexo: 'NR-15, Anexo 11', linha: 360 },
+  { nome: 'Formaldeído (formol ou Aldeído fórmico)', campo: 'tolerance_limit_is_ceiling', listagem: false, norma: true, anexo: 'NR-15, Anexo 11', linha: 415 },
+  { nome: 'Monometil hidrazina (metil hidrazina)', campo: 'tolerance_limit_is_ceiling', listagem: false, norma: true, anexo: 'NR-15, Anexo 11', linha: 498 },
+  { nome: 'n-Butilamina', campo: 'tolerance_limit_is_ceiling', listagem: false, norma: true, anexo: 'NR-15, Anexo 11', linha: 241 },
+  { nome: 'Pentaborano', campo: 'tolerance_limit_value', listagem: 0, norma: 0.008, anexo: 'NR-15, Anexo 11', linha: 532 },
+  { nome: 'Pentaborano', campo: 'action_level_value', listagem: 0, norma: 0.004, anexo: 'NR-09, item 9.6.1 b)', linha: null },
+];
+
+/** Campo do catalogo -> campo do registro do gerador. */
+const CAMPO_DA_CORRECAO_NR15 = {
+  tolerance_limit_value: 'limite',
+  action_level_value: 'nivelDeAcao',
+  tolerance_limit_is_ceiling: 'teto',
+};
+
+/**
  * Termos do Anexo IV procurados nos nomes das linhas SEM codigo, so para o
  * relatorio: sao candidatas a codigo, e a decisao e do usuario. Nada muda no
  * catalogo por causa desta lista. Halogenios e fosforo so pela palavra do
@@ -175,6 +454,16 @@ export const idDoNome = (s) => `risk-lst-${achatar(s).replace(/[^a-z0-9]+/g, '-'
 
 /** "1,480.000" -> 1480. A fonte usa virgula de milhar e ponto decimal. */
 const numero = (txt) => Number(txt.replace(/,/g, ''));
+
+/** Casas decimais que o numero pede: 0.75 -> 2, 0.004 -> 3, null -> 0. */
+const casasDe = (n) => {
+  if (n === null) return 0;
+  let k = 0;
+  while (k < 10 && Math.round(n * 10 ** k) / 10 ** k !== n) k++;
+  return k;
+};
+
+const tem = (o, k) => Object.prototype.hasOwnProperty.call(o, k);
 
 const NUM = String.raw`(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?`;
 const RE_CAUDA = new RegExp(
@@ -299,12 +588,22 @@ export function gerar({ fonte, tabela24, curados: textoDosCurados }) {
     .filter(({ texto }) => texto.trim() && !texto.startsWith('#'));
 
   const aplicadas = new Map(CORRECOES_DA_LISTAGEM.map((c) => [c, 0]));
+  const aplicadasNr15 = new Map(CORRECOES_PELA_NR15.map((c) => [c, 0]));
+  const conferidoPorNome = new Map();
+  for (const c of CONFERIDOS_NA_NR15) {
+    if (conferidoPorNome.has(c.nome)) throw new ErroDaListagem(`CONFERIDOS_NA_NR15: "${c.nome}" aparece duas vezes`);
+    if (!tem(ADICIONAL_DO_GRAU, c.grau)) throw new ErroDaListagem(`CONFERIDOS_NA_NR15: "${c.nome}" tem grau "${c.grau}", que não é máximo, médio nem mínimo`);
+    conferidoPorNome.set(c.nome, c);
+  }
+  const usadosNaConferencia = new Set();
+  const usadasComoDuplicata = new Set();
   const registros = [];
   const deduplicadas = [];
   const ids = new Map(curados.map((c) => [c.id, c.name]));
+  const idsCurados = new Set(curados.map((c) => c.id));
   const relatorio = {
     linhasLidas: linhas.length, coladas: [], divergenciasDeNome: [], ausenciaRetirada: [],
-    quantitativoSemLimite: [], qualitativoComUnidade: [], unidadeSemMeio: [],
+    quantitativoSemLimite: [], qualitativoComUnidade: [], unidadeSemMeio: [], casasAjustadas: [],
   };
 
   for (const { texto, numero: n } of linhas) {
@@ -344,6 +643,28 @@ export function gerar({ fonte, tabela24, curados: textoDosCurados }) {
       aplicadas.set(c, aplicadas.get(c) + 1);
     }
 
+    // Correcoes pela NR-15: o valor da fonte tem de ser exatamente o esperado.
+    // 0 na fonte e null no registro ("sem valor fixo").
+    const correcoesNr15 = CORRECOES_PELA_NR15.filter((x) => x.nome === r.nome);
+    for (const c of correcoesNr15) {
+      const campo = CAMPO_DA_CORRECAO_NR15[c.campo];
+      if (!campo) falhar(`tem correção pela NR-15 em campo desconhecido: ${c.campo}`);
+      const atual = campo === 'teto' ? registro.teto : (registro[campo] ?? 0);
+      if (atual !== c.listagem) falhar(`não traz ${c.listagem} em ${c.campo}, que a correção pela NR-15 esperava (a fonte mudou?)`);
+      registro[campo] = c.norma;
+      aplicadasNr15.set(c, aplicadasNr15.get(c) + 1);
+    }
+    // A listagem registra ao menos as casas do limite e do nivel de acao; o
+    // valor corrigido pode pedir mais (ver CORRECOES_PELA_NR15).
+    const casasPedidas = Math.max(casasDe(registro.limite), casasDe(registro.nivelDeAcao));
+    if (correcoesNr15.length && registro.casas !== null && casasPedidas > registro.casas) {
+      relatorio.casasAjustadas.push({ nome: r.nome, de: registro.casas, para: casasPedidas });
+      registro.casas = casasPedidas;
+    }
+    if (registro.casas !== null && casasPedidas > registro.casas) {
+      falhar(`registra ${registro.casas} casa(s) decimal(is), menos do que o limite ou o nível de ação pedem (${casasPedidas})`);
+    }
+
     // Codigo: tem de existir. 09.01.001 so na linha da ausencia.
     if (registro.codigo) {
       if (!tabela[registro.codigo]) falhar(`traz o código ${registro.codigo}, que não existe na Tabela 24`);
@@ -375,6 +696,24 @@ export function gerar({ fonte, tabela24, curados: textoDosCurados }) {
       continue;
     }
 
+    // Conferido na NR-15: o limite tem de existir e, no Anexo 11, o nivel de
+    // acao tem de ser a metade dele (NR-09, item 9.6.1 b).
+    const conferido = conferidoPorNome.get(r.nome);
+    if (conferido) {
+      if (registro.limite === null) falhar(`está em CONFERIDOS_NA_NR15 (${conferido.fonte}) sem limite de tolerância`);
+      if (conferido.fonte === FONTE_ANEXO_11 && registro.nivelDeAcao !== registro.limite / 2) {
+        falhar(`está em CONFERIDOS_NA_NR15 e o nível de ação (${registro.nivelDeAcao}) não é a metade do limite (${registro.limite}), como manda a NR-09, item 9.6.1 b)`);
+      }
+      usadosNaConferencia.add(r.nome);
+    }
+
+    if (tem(DUPLICATAS_DE_CURADOS, r.nome)) {
+      if (!idsCurados.has(DUPLICATAS_DE_CURADOS[r.nome])) {
+        falhar(`está em DUPLICATAS_DE_CURADOS apontando para "${DUPLICATAS_DE_CURADOS[r.nome]}", que não é id de item curado`);
+      }
+      usadasComoDuplicata.add(r.nome);
+    }
+
     if (ids.has(registro.id)) falhar(`gera o id ${registro.id}, que já é de "${ids.get(registro.id)}"`);
     ids.set(registro.id, r.nome);
     registros.push(registro);
@@ -384,6 +723,19 @@ export function gerar({ fonte, tabela24, curados: textoDosCurados }) {
     if (vezes !== 1) {
       throw new ErroDaListagem(`a correção de ${c.campo} em "${c.nome}" foi aplicada ${vezes} vez(es), e não 1 (a fonte mudou?)`);
     }
+  }
+  for (const [c, vezes] of aplicadasNr15) {
+    if (vezes !== 1) {
+      throw new ErroDaListagem(`CORRECOES_PELA_NR15: a correção de ${c.campo} em "${c.nome}" foi aplicada ${vezes} vez(es), e não 1 (o nome não existe na fonte?)`);
+    }
+  }
+  // Nome que nao virou item: falha com o nome exato, para nao desativar ou
+  // conferir outra coisa em silencio.
+  for (const nome of Object.keys(DUPLICATAS_DE_CURADOS)) {
+    if (!usadasComoDuplicata.has(nome)) throw new ErroDaListagem(`DUPLICATAS_DE_CURADOS: "${nome}" não existe na fonte (ou não virou item)`);
+  }
+  for (const nome of conferidoPorNome.keys()) {
+    if (!usadosNaConferencia.has(nome)) throw new ErroDaListagem(`CONFERIDOS_NA_NR15: "${nome}" não existe na fonte (ou não virou item)`);
   }
 
   // Relatorio: so lista, nao muda nada.
@@ -401,6 +753,12 @@ export function gerar({ fonte, tabela24, curados: textoDosCurados }) {
   relatorio.itens = registros.length;
   relatorio.deduplicadas = deduplicadas;
   relatorio.correcoes = CORRECOES_DA_LISTAGEM;
+  relatorio.correcoesNr15 = CORRECOES_PELA_NR15;
+  relatorio.conferidos = CONFERIDOS_NA_NR15;
+  relatorio.duplicatasDesativadas = Object.entries(DUPLICATAS_DE_CURADOS);
+  relatorio.quantitativosNaoConferidos = registros
+    .filter((r) => r.avaliacao === 'QUANTITATIVA' && !conferidoPorNome.has(r.nome))
+    .map((r) => `${r.nome} [${r.limite ?? 'sem limite'} ${r.standard_unit}]`);
 
   return { ts: escreverTs(registros, deduplicadas, linhas.length), registros, deduplicadas, relatorio };
 }
@@ -437,9 +795,31 @@ function escreverTs(registros, deduplicadas, totalDeLinhas) {
  * propagacao, unidade, tipo de avaliacao, limite de tolerancia, valor teto,
  * nivel de acao, casas decimais, classificacao do efeito e codigo da Tabela
  * 24. Fonte geradora, efeito a saude, EPC, EPI, exames, severidade,
- * probabilidade, insalubridade, periculosidade e aposentadoria especial ficam
- * AUSENTES: a listagem nao os traz, e inventa-los poria no PGR do cliente uma
- * afirmacao que ninguem fez.
+ * probabilidade, periculosidade e aposentadoria especial ficam AUSENTES: a
+ * listagem nao os traz, e inventa-los poria no PGR do cliente uma afirmacao
+ * que ninguem fez. Insalubridade so nos itens conferidos na NR-15 (abaixo),
+ * porque ai e a norma que a afirma.
+ *
+ * CONFERENCIA COM A NR-15
+ *
+ * ${CONFERIDOS_NA_NR15.length} itens foram conferidos no texto oficial: ${CONFERIDOS_NA_NR15.filter((c) => c.fonte === FONTE_ANEXO_11).length} no Quadro n. 1 do Anexo 11
+ * (docs/fontes/nr15-anexo11.txt) e ${CONFERIDOS_NA_NR15.filter((c) => c.fonte === FONTE_ANEXO_8).length} de vibracao no Anexo 8
+ * (docs/fontes/nr15-trechos.txt) - CONFERIDOS_NA_NR15, com o agente como a
+ * norma o escreve e a linha. Neles o texto do limite cita a fonte ("78 ppm
+ * (NR-15, Anexo 11)") e a insalubridade e a da norma: o adicional do grau
+ * (NR-15, itens 15.2.1 a 15.2.3: maximo 40%, medio 20%, minimo 10%) e a base
+ * legal. Onde a listagem divergia da norma sem ambiguidade, vale a norma
+ * (CORRECOES_PELA_NR15, ${CORRECOES_PELA_NR15.length} correcoes em ${new Set(CORRECOES_PELA_NR15.map((c) => c.nome)).size} itens); os numeros abaixo ja vem
+ * corrigidos. Nome diferente, agente fora do Quadro ou unidade sem conversao
+ * direta nao foram corrigidos nem ganharam grau: a decisao e do usuario.
+ *
+ * DUPLICATAS DE ITENS CURADOS
+ *
+ * ${Object.keys(DUPLICATAS_DE_CURADOS).length} itens repetem um item curado no mesmo nivel de detalhe
+ * (DUPLICATAS_DE_CURADOS): saem com status INACTIVE e duplicate_of_id = id do
+ * curado, para o seletor nao oferecer o mesmo risco duas vezes. Podem ser
+ * reativados na tela. created_at e updated_at sao sempre iguais: e assim que a
+ * carga reconhece o item que ninguem editou e o troca por esta versao.
  *
  * LIMITES. A listagem escreve 0 quando o agente nao tem valor fixo (silica,
  * calor, frio, ruido de impacto). 0 vira campo AUSENTE, nunca 0: "0 mg/m³" no
@@ -518,6 +898,50 @@ export const TOTAL_DE_LINHAS_DA_LISTAGEM = ${totalDeLinhas};
 export const NOTA_AUSENCIA_RETIRADA =
   ${aspas(NOTA_AUSENCIA_RETIRADA)};
 
+/** Nome na listagem -> id do item curado que ele repete. O item sai INACTIVE. */
+export const DUPLICATAS_DE_CURADOS: Record<string, string> = {
+${Object.entries(DUPLICATAS_DE_CURADOS).map(([k, v]) => `  ${aspas(k)}: ${aspas(v)},`).join('\n')}
+};
+
+export type GrauDaNr15 = 'máximo' | 'médio' | 'mínimo';
+
+export interface ConferidoNaNr15 {
+  nome: string;
+  fonte: string;
+  /** O agente (ou o parametro, na vibracao) como a norma o escreve. */
+  agente: string;
+  grau: GrauDaNr15;
+  /** Linha em docs/fontes/nr15-anexo11.txt (Anexo 11) ou docs/fontes/nr15-trechos.txt (Anexo 8). */
+  linha: number;
+}
+
+export const CONFERIDOS_NA_NR15: ConferidoNaNr15[] = [
+${CONFERIDOS_NA_NR15.map((c) => `  { nome: ${aspas(c.nome)}, fonte: ${aspas(c.fonte)}, agente: ${aspas(c.agente)}, grau: ${aspas(c.grau)}, linha: ${c.linha} },`).join('\n')}
+];
+
+export interface CorrecaoPelaNr15 {
+  nome: string;
+  campo: 'tolerance_limit_value' | 'action_level_value' | 'tolerance_limit_is_ceiling';
+  /** O que a fonte traz (0 = "sem valor fixo"). */
+  listagem: number | boolean;
+  norma: number | boolean;
+  anexo: string;
+  /** Linha do agente em docs/fontes/nr15-anexo11.txt; null no nivel de acao (metade do limite). */
+  linha: number | null;
+}
+
+export const CORRECOES_PELA_NR15: CorrecaoPelaNr15[] = [
+${CORRECOES_PELA_NR15.map((c) => `  { nome: ${aspas(c.nome)}, campo: ${aspas(c.campo)}, listagem: ${c.listagem}, norma: ${c.norma}, anexo: ${aspas(c.anexo)}, linha: ${num(c.linha)} },`).join('\n')}
+];
+
+/** NR-15, itens 15.2.1 a 15.2.3. */
+const ADICIONAL_DO_GRAU: Record<GrauDaNr15, '10%' | '20%' | '40%'> = {
+${Object.entries(ADICIONAL_DO_GRAU).map(([k, v]) => `  ${aspas(k)}: ${aspas(v)},`).join('\n')}
+};
+
+const DUPLICATA = new Map(Object.entries(DUPLICATAS_DE_CURADOS));
+const CONFERIDO = new Map(CONFERIDOS_NA_NR15.map((c) => [c.nome, c]));
+
 const DATA_DA_LISTAGEM = ${aspas(DATA_DA_LISTAGEM)};
 
 type Linha = [
@@ -566,9 +990,11 @@ function montar([
   if (standardUnit) item.standard_unit = standardUnit;
   if (codigo) item.code_table_24 = codigo;
   if (ausenciaRetirada === 1) item.esocial_enquadramento_nota = NOTA_AUSENCIA_RETIRADA;
+  // So o numero conferido no texto da norma cita a norma.
+  const conferido = CONFERIDO.get(name);
   if (limite !== null) {
     item.tolerance_limit_value = limite;
-    item.tolerance_limit_reference = textoDoLimite(limite, unidade, teto === 1);
+    item.tolerance_limit_reference = textoDoLimite(limite, unidade, teto === 1, conferido?.fonte);
     if (teto === 1) item.tolerance_limit_is_ceiling = true;
   }
   if (nivelDeAcao !== null) {
@@ -577,6 +1003,16 @@ function montar([
   }
   if (casas !== null) item.measurement_decimal_places = casas;
   if (efeito) item.effect_classification = efeito;
+  if (conferido) {
+    item.insalubridade_applicable = true;
+    item.insalubridade_degree_suggested = ADICIONAL_DO_GRAU[conferido.grau];
+    item.insalubridade_legal_basis = conferido.fonte;
+  }
+  const duplicata = DUPLICATA.get(name);
+  if (duplicata) {
+    item.status = 'INACTIVE';
+    item.duplicate_of_id = duplicata;
+  }
   return item;
 }
 
@@ -597,6 +1033,11 @@ function imprimirRelatorio(r) {
   console.log(`itens gerados: ${r.itens}`);
   lista('deduplicadas com item curado', r.deduplicadas, (d) => `linha ${d.linha}: ${d.nome} -> ${d.id_curado}`);
   lista('correções aplicadas', r.correcoes, (c) => `${c.nome}: ${c.campo} "${c.de}" -> "${c.para}"`);
+  lista('duplicatas de curados, desativadas', r.duplicatasDesativadas, ([nome, id]) => `${nome} -> ${id}`);
+  console.log(`\nconferidos na NR-15: ${r.conferidos.length}`);
+  lista('correções pela NR-15', r.correcoesNr15, (c) => `${c.nome}: ${c.campo} ${c.listagem} -> ${c.norma} (${c.anexo}${c.linha ? `, linha ${c.linha}` : ''})`);
+  lista('casas decimais aumentadas para caber o valor corrigido', r.casasAjustadas, (c) => `${c.nome}: ${c.de} -> ${c.para}`);
+  lista('quantitativos não conferidos na NR-15', r.quantitativosNaoConferidos);
   console.log(`\n09.01.001 retirado de ${r.ausenciaRetirada.length} linhas`);
   lista('quase-duplicatas (código em comum com item curado)', r.quaseDuplicatas, (q) => `${q.nome} [${q.codigo}] ~ ${q.curados.join(' | ')}`);
   lista('candidatas a código (termo do Anexo IV no nome, sem código)', r.candidatasACodigo, (c) => `${c.nome} [${c.codigos.join(', ')}]`);

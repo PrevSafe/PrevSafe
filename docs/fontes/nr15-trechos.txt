@@ -1,0 +1,276 @@
+# NR-15 - trechos do texto oficial usados na conferencia do catalogo (fora do Anexo 11).
+# URL: https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/participacao-social/conselhos-e-orgaos-colegiados/comissao-tripartite-partitaria-permanente/normas-regulamentadora/normas-regulamentadoras-vigentes/nr-15-atualizada-2025.pdf
+# Baixado em 09/10/2026. Versao: ultima modificacao Portaria MTE n. 2.021, de 03/12/2025 (DOU 04/12/25).
+# PDF guardado em docs/fontes/nr-15-atualizada-2025.pdf: 2421847 bytes, sha256 d3b04a284837f1965a4f32491a2ce8e688db4131eae6a647a2354aae6459b97e.
+# Extracao: pdftotext 4.06 -layout -enc UTF-8 (texto corrido, sem tabela a alinhar), sem nenhuma edicao.
+# Trechos: item 15.2 (grau -> percentual do adicional), Anexo 1 (ruido continuo), Anexo 2 (ruido de impacto),
+# Anexo 3 itens 1 e 2 (calor), Anexo 5 (radiacoes ionizantes) e Anexos 7 a 10 (inclui o Anexo 8, vibracao).
+# ----------------------------------------------------------------------------------------------------
+15.1 São consideradas atividades ou operações insalubres as que se desenvolvem:
+
+15.1.1 Acima dos limites de tolerância previstos nos Anexos nº 1, 2, 3, 5, 11 e 12;
+
+15.1.2 (Revogado pela Portaria MTE nº 3.751, de 23 de novembro de 1990)
+
+15.1.3 Nas atividades mencionadas nos Anexos nº 6, 13 e 14;
+
+15.1.4 Comprovadas através de laudo de inspeção do local de trabalho, constantes dos Anexos nº 7,
+8, 9 e 10.
+
+15.1.5 Entende-se por "Limite de Tolerância", para os fins desta Norma, a concentração ou
+intensidade máxima ou mínima, relacionada com a natureza e o tempo de exposição ao agente, que
+não causará dano à saúde do trabalhador, durante a sua vida laboral.
+
+15.2 O exercício de trabalho em condições de insalubridade, de acordo com os subitens do item
+Este texto não substitui o publicado no DOU
+anterior, assegura ao trabalhador a percepção de adicional, incidente sobre o salário mínimo da
+região, equivalente a:
+
+15.2.1 40% (quarenta por cento), para insalubridade de grau máximo;
+
+15.2.2 20% (vinte por cento), para insalubridade de grau médio;
+
+15.2.3 10% (dez por cento), para insalubridade de grau mínimo;
+
+15.3 No caso de incidência de mais de um fator de insalubridade, será apenas considerado o de grau
+mais elevado, para efeito de acréscimo salarial, sendo vedada a percepção cumulativa.
+
+                                                     ANEXO Nº 1
+                 LIMITES DE TOLERÂNCIA PARA RUÍDO CONTÍNUO OU INTERMITENTE
+Este texto não substitui o publicado no DOU
+NÍVEL DE RUÍDO dB (A)  MÁXIMA EXPOSIÇÃO DIÁRIA PERMISSÍVEL
+            85                         8 horas
+            86                         7 horas
+            87                         6 horas
+            88                         5 horas
+            89                         4 horas e 30 minutos
+            90                         4 horas
+            91                         3 horas e 30 minutos
+            92                         3 horas
+            93                         2 horas e 40 minutos
+            94                         2 horas e 15 minutos
+            95                         2 horas
+            96                         1 hora e 45 minutos
+            98                         1 hora e 15 minutos
+           100                         1 hora
+           102                         45 minutos
+           104                         35 minutos
+           105                         30 minutos
+           106                         25 minutos
+           108                         20 minutos
+           110                         15 minutos
+           112                         10 minutos
+           114                         8 minutos
+           115                         7 minutos
+
+1. Entende-se por Ruído Contínuo ou Intermitente, para os fins de aplicação de Limites de Tolerância,
+o ruído que não seja ruído de impacto.
+
+2. Os níveis de ruído contínuo ou intermitente devem ser medidos em decibéis (dB) com instrumento
+de nível de pressão sonora operando no circuito de compensação "A" e circuito de resposta lenta
+(SLOW). As leituras devem ser feitas próximas ao ouvido do trabalhador.
+
+3. Os tempos de exposição aos níveis de ruído não devem exceder os limites de tolerância fixados
+no Quadro deste anexo.
+
+4. Para os valores encontrados de nível de ruído intermediário será considerada a máxima exposição
+diária permissível relativa ao nível imediatamente mais elevado.
+
+5. Não é permitida exposição a níveis de ruído acima de 115 dB(A) para indivíduos que não estejam
+adequadamente protegidos.
+
+6. Se durante a jornada de trabalho ocorrerem dois ou mais períodos de exposição a ruído de
+diferentes níveis, devem ser considerados os seus efeitos combinados, de forma que, se a soma das
+seguintes frações:
+
+Este texto não substitui o publicado no DOU
+              C₁ + C₂ + C₃  ____________________ + Cn
+              T₁ T₂ T₃                                        Tn
+
+exceder a unidade, a exposição estará acima do limite de tolerância.
+
+Na equação acima, Cn indica o tempo total que o trabalhador fica exposto a um nível de ruído
+específico, e Tn indica a máxima exposição diária permissível a este nível, segundo o Quadro deste
+Anexo.
+
+7. As atividades ou operações que exponham os trabalhadores a níveis de ruído, contínuo ou
+intermitente, superiores a 115 dB(A), sem proteção adequada, oferecerão risco grave e iminente.
+
+                                       ANEXO Nº 2
+              LIMITES DE TOLERÂNCIA PARA RUÍDOS DE IMPACTO
+
+1. Entende-se por ruído de impacto aquele que apresenta picos de energia acústica de duração
+inferior a 1 (um) segundo, a intervalos superiores a 1 (um) segundo.
+
+2. Os níveis de impacto deverão ser avaliados em decibéis (dB), com medidor de nível de pressão
+sonora operando no circuito linear e circuito de resposta para impacto. As leituras devem ser feitas
+próximas ao ouvido do trabalhador. O limite de tolerância para ruído de impacto será de 130 dB
+(linear). Nos intervalos entre os picos, o ruído existente deverá ser avaliado como ruído contínuo.
+
+3. Em caso de não se dispor de medidor do nível de pressão sonora com circuito de resposta para
+impacto, será válida a leitura feita no circuito de resposta rápida (FAST) e circuito de compensação
+"C". Neste caso, o limite de tolerância será de 120 dB(C).
+
+4. As atividades ou operações que exponham os trabalhadores, sem proteção adequada, a níveis de
+ruído de impacto superiores a 140 dB(LINEAR), medidos no circuito de resposta para impacto, ou
+superiores a 130 dB(C), medidos no circuito de resposta rápida (FAST), oferecerão risco grave e
+iminente.
+
+                                        ANEXO Nº 3
+              LIMITES DE TOLERÂNCIA PARA EXPOSIÇÃO AO CALOR
+
+              (Alterado pela Portaria SEPRT nº 1.359, de 09 de dezembro de 2019)
+
+Sumário:
+1. Objetivos
+2. Caracterização da atividade ou operação insalubre
+3. Laudo Técnico para caracterização da exposição ocupacional ao calor
+
+1. Objetivos
+
+1.1 O objetivo deste Anexo é estabelecer critério para caracterizar as atividades ou operações
+insalubres decorrentes da exposição ocupacional ao calor em ambientes fechados ou ambientes
+
+Este texto não substitui o publicado no DOU
+com fonte artificial de calor.
+
+1.1.1 Este Anexo não se aplica a atividades ocupacionais realizadas a céu aberto sem fonte artificial
+de calor.
+
+2. Caracterização da atividade ou operação insalubre
+
+2.1 A avaliação quantitativa do calor deverá ser realizada com base na metodologia e procedimentos
+descritos na Norma de Higiene Ocupacional NHO 06 (2ª edição - 2017) da FUNDACENTRO nos
+seguintes aspectos:
+a) determinação de sobrecarga térmica por meio do índice IBUTG - Índice de Bulbo Úmido
+
+   Termômetro de Globo;
+b) equipamentos de medição e formas de montagem, posicionamento e procedimentos de uso dos
+
+   mesmos nos locais avaliados;
+c) procedimentos quanto à conduta do avaliador; e
+d) medições e cálculos.
+
+2.2 A taxa metabólica deve ser estimada com base na comparação da atividade realizada pelo
+trabalhador com as opções apresentadas no Quadro 2 deste Anexo.
+
+2.2.1 Caso uma atividade específica não esteja apresentada no Quadro 2 deste Anexo, o valor da
+taxa metabólica deverá ser obtido por associação com atividade similar do referido Quadro.
+
+2.3 São caracterizadas como insalubres as atividades ou operações realizadas em ambientes
+fechados ou ambientes com fonte artificial de calor sempre que o IBUTG (médio) medido ultrapassar
+os limites de exposição ocupacional estabelecidos com base no Índice de Bulbo Úmido Termômetro
+de Globo apresentados no Quadro 1 (IBUTGMÁX) e determinados a partir da taxa metabólica das
+atividades, apresentadas no Quadro 2, ambos deste anexo.
+
+2.4 O Índice de Bulbo Úmido Termômetro de Globo Médio - IBUTG e a Taxa Metabólica Média - 𝑀, a
+serem considerados na avaliação da exposição ao calor, devem ser aqueles que, obtidos no período
+de 60 (sessenta) minutos corridos, resultem na condição mais crítica de exposição.
+
+2.4.1 A avaliação quantitativa deve ser representativa da exposição, devendo ser desconsideradas
+as situações de exposições eventuais ou não rotineiras nas quais os trabalhadores não estejam
+expostos diariamente.
+
+2.5 Os limites de exposição ocupacional ao calor, IBUTGMÁX, estão apresentados no Quadro 1 deste
+anexo para os diferentes valores de taxa metabólica média (M).
+
+2.6 As situações de exposição ocupacional ao calor, caracterizadas como insalubres, serão
+classificadas em grau médio.
+
+3. Laudo Técnico para caracterização da exposição ocupacional ao calor
+Este texto não substitui o publicado no DOU
+
+                         ANEXO Nº 5
+                  RADIAÇÕES IONIZANTES
+
+Nas atividades ou operações onde trabalhadores possam ser expostos a radiações ionizantes, os
+limites de tolerância, os princípios, as obrigações e controles básicos para a proteção do homem e
+do seu meio ambiente contra possíveis efeitos indevidos causados pela radiação ionizante, são os
+constantes da Norma CNEN-NN-3.01: "Diretrizes Básicas de Proteção Radiológica", de março de
+2014, aprovada pela Resolução CNEN nº 164/2014, ou daquela que venha a substituí-la. (Atualizado
+pela Portaria MTb nº 1.084, de 18 de dezembro de 2018)
+
+                                                   ANEXO Nº 7
+
+RADIAÇÕES NÃO-IONIZANTES
+
+1. Para os efeitos desta norma, são radiações não-ionizantes as microondas, ultravioletas e laser.
+
+2. As operações ou atividades que exponham os trabalhadores às radiações não-ionizantes, sem
+a proteção adequada, serão consideradas insalubres, em decorrência de laudo de inspeção
+realizada no local de trabalho.
+
+3. As atividades ou operações que exponham os trabalhadores às radiações da luz negra
+(ultravioleta na faixa - 400-320 nanômetros) não serão consideradas insalubres.
+
+                                                   ANEXO Nº 8
+                (Redação dada pela Portaria MTE nº 1.297, de 13 de agosto de 2014)
+
+                                                    VIBRAÇÃO
+
+Sumário:
+1. Objetivos
+2. Caracterização e classificação da insalubridade
+
+1. Objetivos
+
+1.1 Estabelecer critérios para caracterização da condição de trabalho insalubre decorrente da
+exposição às Vibrações de Mãos e Braços (VMB) e Vibrações de Corpo Inteiro (VCI).
+
+1.2 Os procedimentos técnicos para a avaliação quantitativa das VCI e VMB são os
+estabelecidos nas Normas de Higiene Ocupacional da FUNDACENTRO.
+
+2. Caracterização e classificação da insalubridade
+
+2.1 Caracteriza-se a condição insalubre caso seja superado o limite de exposição ocupacional
+diária a VMB correspondente a um valor de aceleração resultante de exposição normalizada
+(aren) de 5 m/s2.
+
+2.2 Caracteriza-se a condição insalubre caso sejam superados quaisquer dos limites de
+exposição ocupacional diária a VCI:
+a) valor da aceleração resultante de exposição normalizada (aren) de 1,1 m/s2;
+b) valor da dose de vibração resultante (VDVR) de 21,0 m/s1,75.
+
+2.2.1 Para fins de caracterização da condição insalubre, o empregador deve comprovar a
+avaliação dos dois parâmetros acima descritos.
+
+2.3 As situações de exposição a VMB e VCI superiores aos limites de exposição ocupacional são
+caracterizadas como insalubres em grau médio.
+
+Este texto não substitui o publicado no DOU
+2.4 A avaliação quantitativa deve ser representativa da exposição, abrangendo aspectos
+organizacionais e ambientais que envolvam o trabalhador no exercício de suas funções.
+
+2.5 A caracterização da exposição deve ser objeto de laudo técnico que contemple, no mínimo,
+os seguintes itens:
+a) objetivo e datas em que foram desenvolvidos os procedimentos;
+b) descrição e resultado da avaliação preliminar da exposição, realizada de acordo com o item
+
+   4 do Anexo I da NR-09; (alterada pela Portaria MTP nº 426, de 07 de outubro de 2021)
+c) metodologia e critérios empregados, inclusas a caracterização da exposição e
+
+   representatividade da amostragem;
+d) instrumentais utilizados, bem como o registro dos certificados de calibração;
+e) dados obtidos e respectiva interpretação;
+f) circunstâncias específicas que envolveram a avaliação;
+g) descrição das medidas preventivas e corretivas eventualmente existentes e indicação das
+
+   necessárias, bem como a comprovação de sua eficácia;
+h) conclusão.
+
+                                                   ANEXO Nº 9
+
+FRIO
+
+1. As atividades ou operações executadas no interior de câmaras frigoríficas, ou em locais que
+apresentem condições similares, que exponham os trabalhadores ao frio, sem a proteção
+adequada, serão consideradas insalubres em decorrência de laudo de inspeção realizada no local
+de trabalho.
+
+                                                  ANEXO Nº 10
+
+UMIDADE
+
+1. As atividades ou operações executadas em locais alagados ou encharcados, com umidade
+excessiva, capazes de produzir danos à saúde dos trabalhadores, serão consideradas insalubres
+em decorrência de laudo de inspeção realizada no local de trabalho.

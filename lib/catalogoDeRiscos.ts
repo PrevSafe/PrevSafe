@@ -1,7 +1,9 @@
 /**
  * Regras do catalogo de riscos que valem fora da tela do catalogo: a fusao da
- * listagem no carregamento, a exclusao que vira desativacao, a busca do
- * seletor do inventario e o que um item do catalogo leva ao risco do GHE.
+ * listagem no carregamento, a exclusao que vira desativacao, a restauracao do
+ * padrao, a busca do seletor do inventario e o que um item do catalogo leva
+ * ao risco do GHE. E as da classificacao do item na tela, que o verificador
+ * prova sem montar o React.
  *
  * POR QUE ESTE ARQUIVO EXISTE
  *
@@ -11,6 +13,11 @@
  * que ja usava o sistema tem os 25 gravados no servidor e no cache. O
  * carregamento entrega o que esta gravado, entao os itens novos nunca
  * apareceriam para ela. A fusao os acrescenta.
+ *
+ * E pela mesma razao uma correcao do sistema num item da listagem (limite da
+ * NR-15, grau de insalubridade, item desativado por repetir um curado) nunca
+ * chegaria a quem ja gravou o catalogo. Por isso a fusao tambem troca pela
+ * versao do codigo o item da listagem que o usuario nunca editou - e so ele.
  *
  * Fusao e exclusao andam juntas: se um item do sistema pudesse ser excluido, a
  * fusao o traria de volta no carregamento seguinte. Por isso item do sistema
@@ -66,29 +73,75 @@ export function itemAtivo(item: Partial<Item> | null | undefined): boolean {
 // ---------------------------------------------------------------------------
 
 /**
- * O catalogo carregado, com os itens da listagem que faltam nele.
- *
- *  - So acrescenta. Item que ja esta (pelo id) fica como esta: a edicao do
- *    usuario vence, e a desativacao tambem.
- *  - So itens da listagem. Curado ausente nao volta: so falta porque o usuario
- *    o excluiu, quando ainda dava para excluir, e foi de proposito. Por isso a
- *    origem e conferida aqui, e nao so no chamador.
- *  - Nada a acrescentar devolve a MESMA lista, e fundir o resultado de novo
- *    nao acrescenta nada.
+ * O item gravado nunca foi editado: tem as duas datas, e elas sao iguais. O
+ * gerador da listagem grava created_at === updated_at, e toda alteracao pela
+ * tela - inclusive desativar e reativar - passa por atualizarItemDoCatalogo
+ * ou excluirOuDesativarItem, que mudam updated_at. Sem as datas nao da para
+ * saber, e na duvida o item gravado fica: sobrescrever a edicao do usuario e
+ * pior que deixar de receber uma correcao.
  */
-export function acrescentarItensDaListagem(carregado: Item[], listagem: Item[]): Item[] {
+export function itemNuncaEditado(item: Partial<Item> | null | undefined): boolean {
+  const criado = texto(item?.created_at);
+  return !!criado && criado === texto(item?.updated_at);
+}
+
+/**
+ * O item como o servidor o devolve: chaves em ordem e sem as de valor
+ * undefined. O jsonb do Postgres reordena as chaves e o JSON descarta
+ * undefined; comparar o JSON.stringify direto acharia diferenca em todo item
+ * da listagem a cada carga, e a fusao os trocaria - e os reenviaria - sempre.
+ */
+function conteudoCanonico(v: unknown): string {
+  return JSON.stringify(v, (_chave, valor) => {
+    if (!valor || typeof valor !== 'object' || Array.isArray(valor)) return valor;
+    const ordenado: Record<string, unknown> = {};
+    for (const k of Object.keys(valor).sort()) ordenado[k] = (valor as Record<string, unknown>)[k];
+    return ordenado;
+  });
+}
+
+/**
+ * O catalogo carregado, com a listagem do codigo fundida nele.
+ *
+ *  - Item da listagem que falta entra no fim.
+ *  - Item da listagem que o usuario nunca editou (itemNuncaEditado) e trocado
+ *    pela versao do codigo, no mesmo lugar: e assim que a correcao de um
+ *    limite ou o item desativado por repetir um curado chegam a quem ja tinha
+ *    o catalogo gravado.
+ *  - Item editado fica como esta: a edicao do usuario vence, e a desativacao
+ *    e a reativacao tambem.
+ *  - So itens da listagem, dos dois lados. Curado nao e trocado nem volta: se
+ *    falta, e porque o usuario o excluiu quando ainda dava para excluir, e foi
+ *    de proposito. Por isso a origem e conferida aqui, e nao so no chamador.
+ *  - Nada a mudar devolve a MESMA lista, e fundir o resultado de novo nao muda
+ *    nada: o item trocado fica igual ao do codigo, e igual nao se troca.
+ */
+export function fundirItensDaListagem(carregado: Item[], listagem: Item[]): Item[] {
   const lista = Array.isArray(carregado) ? carregado : [];
-  const presentes = new Set(lista.map((item) => String(item?.id ?? '')));
-  const faltam: Item[] = [];
+  const doCodigo = new Map<string, Item>();
   for (const item of Array.isArray(listagem) ? listagem : []) {
     if (!ehItemDaListagem(item)) continue;
     const id = String(item.id);
-    if (presentes.has(id)) continue;
     // Id repetido na propria listagem entra uma vez so.
-    presentes.add(id);
-    faltam.push(item);
+    if (!doCodigo.has(id)) doCodigo.set(id, item);
   }
-  return faltam.length === 0 ? lista : [...lista, ...faltam];
+
+  const presentes = new Set<string>();
+  let trocou = false;
+  const fundida = lista.map((gravado) => {
+    const id = String(gravado?.id ?? '');
+    presentes.add(id);
+    const atual = doCodigo.get(id);
+    if (!atual || atual === gravado) return gravado;
+    if (!ehItemDaListagem(gravado) || !itemNuncaEditado(gravado)) return gravado;
+    if (conteudoCanonico(gravado) === conteudoCanonico(atual)) return gravado;
+    trocou = true;
+    return atual;
+  });
+
+  const faltam = [...doCodigo.values()].filter((item) => !presentes.has(String(item.id)));
+  if (!trocou && faltam.length === 0) return lista;
+  return [...(trocou ? fundida : lista), ...faltam];
 }
 
 /**
@@ -99,7 +152,55 @@ export function acrescentarItensDaListagem(carregado: Item[], listagem: Item[]):
  * usuario.
  */
 export function catalogoAoCarregar(carregado: Item[] | undefined, listagem: Item[]): Item[] | undefined {
-  return carregado === undefined ? undefined : acrescentarItensDaListagem(carregado, listagem);
+  return carregado === undefined ? undefined : fundirItensDaListagem(carregado, listagem);
+}
+
+/**
+ * "Restaurar padrao": os itens do sistema voltam a versao do codigo, e os
+ * criados pelo usuario ficam como estao. Trocava o catalogo inteiro pelo
+ * inicial, e um clique apagava todos os itens criados pelo usuario.
+ *
+ *  - Item do sistema volta como o codigo o traz: edicoes e desativacoes feitas
+ *    na tela se desfazem, o curado excluido (quando ainda dava para excluir)
+ *    volta, e o item da listagem que repete um curado continua inativo, porque
+ *    e assim que o codigo o traz.
+ *  - Item do usuario fica intocado, na ordem em que estava, antes dos do
+ *    sistema - o item novo entra no topo da lista, e continua la.
+ *  - Item do sistema que o codigo nao traz mais sai: a restauracao e para o
+ *    padrao de hoje, como ja era ao trocar pelo catalogo inicial.
+ *  - Id do sistema e do sistema, mesmo num item gravado sem a marca: se o
+ *    item ficasse como "do usuario", haveria dois itens com o mesmo id.
+ *  - Nada a mudar devolve a MESMA lista.
+ */
+export function restaurarItensDoSistema(atual: Item[], sistema: Item[]): Item[] {
+  const lista = Array.isArray(atual) ? atual : [];
+  const padrao: Item[] = [];
+  const idsDoSistema = new Set<string>();
+  for (const item of Array.isArray(sistema) ? sistema : []) {
+    const id = String(item?.id ?? '');
+    if (!id || idsDoSistema.has(id)) continue;
+    idsDoSistema.add(id);
+    padrao.push(item);
+  }
+  const doUsuario = lista.filter((item) => !ehItemDoSistema(item) && !idsDoSistema.has(String(item?.id ?? '')));
+  const restaurada = [...doUsuario, ...padrao];
+  const igual = restaurada.length === lista.length && restaurada.every((item, i) => item === lista[i]);
+  return igual ? lista : restaurada;
+}
+
+/**
+ * O aviso do item da listagem que repete um curado. Sem o curado na lista
+ * (excluido quando ainda dava para excluir), nao ha nome a mostrar - e um id
+ * na tela nao diria nada a ninguem.
+ */
+export function textoDaDuplicidade(
+  item: Partial<Item> | null | undefined,
+  acharItem: (id: string) => Partial<Item> | null | undefined
+): string | null {
+  const id = texto(item?.duplicate_of_id);
+  if (!id) return null;
+  const nome = texto(acharItem(id)?.name);
+  return nome ? `Mesmo risco que «${nome}»` : 'Repete um item curado';
 }
 
 // ---------------------------------------------------------------------------
@@ -370,4 +471,250 @@ export function itensDoCatalogoDoRisco(
   if (!nome) return [];
   return (Array.isArray(catalogo) ? catalogo : []).filter((item) =>
     itemAtivo(item) && texto(item.name) === nome && texto(item.code_table_24) === codigo);
+}
+
+// ---------------------------------------------------------------------------
+// Classificacao e enquadramento do item (formulario e ficha da tela)
+// ---------------------------------------------------------------------------
+//
+// Ficam aqui, e nao na tela, para o verificador provar a regra sem montar o
+// React: "nao informado" nao grava nada - nem severidade 3, nem GFIP '00',
+// nem false -, e a edicao grava so o que o usuario mudou. O formulario antigo
+// gravava os tres padroes em todo item, e eles seguiam para o risco do cliente
+// quando o item era aplicado a um GHE.
+
+type SimNao = '' | 'SIM' | 'NAO';
+type GradacaoNoCampo = '' | '1' | '2' | '3' | '4' | '5';
+type Gfip = NonNullable<Item['gfip_code_suggested']>;
+type GrauDeInsalubridade = NonNullable<Item['insalubridade_degree_suggested']>;
+
+/** Os campos de classificacao no formulario. '' e "Nao informado". */
+export interface ClassificacaoNoFormulario {
+  default_severity: GradacaoNoCampo;
+  default_probability: GradacaoNoCampo;
+  gfip_code_suggested: '' | Gfip;
+  special_retirement_eligible: SimNao;
+  insalubridade_applicable: SimNao;
+  insalubridade_degree_suggested: '' | GrauDeInsalubridade;
+  insalubridade_legal_basis: string;
+  periculosidade_applicable: SimNao;
+  periculosidade_legal_basis: string;
+}
+
+export type CampoDaClassificacao = keyof ClassificacaoNoFormulario;
+
+export const CLASSIFICACAO_NAO_INFORMADA: ClassificacaoNoFormulario = {
+  default_severity: '',
+  default_probability: '',
+  gfip_code_suggested: '',
+  special_retirement_eligible: '',
+  insalubridade_applicable: '',
+  insalubridade_degree_suggested: '',
+  insalubridade_legal_basis: '',
+  periculosidade_applicable: '',
+  periculosidade_legal_basis: ''
+};
+
+/**
+ * Os codigos de GFIP com os rotulos do formulario de risco do GHE
+ * (components/sst/GHERiskInventoryTab.tsx), os mesmos do comentario de
+ * gfip_code em types/index.ts. Copiados, e nao reescritos: o mesmo codigo nao
+ * pode dizer uma coisa no catalogo e outra no inventario.
+ */
+export const OPCOES_DE_GFIP: Array<{ valor: Gfip; rotulo: string }> = [
+  { valor: '00', rotulo: '00 - Sem exposição a agente nocivo' },
+  { valor: '01', rotulo: '01 - Não enseja aposentadoria especial' },
+  { valor: '02', rotulo: '02 - Enseja aposentadoria especial (15 anos)' },
+  { valor: '03', rotulo: '03 - Enseja aposentadoria especial (20 anos)' },
+  { valor: '04', rotulo: '04 - Enseja aposentadoria especial (25 anos)' }
+];
+
+/** Pelos rotulos acima: 02, 03 e 04 ensejam aposentadoria especial; 00 e 01, nao. */
+export const GFIP_QUE_ENSEJA_APOSENTADORIA: Gfip[] = ['02', '03', '04'];
+
+/**
+ * Os graus do item 15.2 da NR-15 (docs/fontes/nr15-trechos.txt: 40% maximo,
+ * 20% medio, 10% minimo), escritos como a conclusao do laudo de insalubridade
+ * os escreve (lib/laudoDados.ts).
+ */
+export const GRAUS_DE_INSALUBRIDADE: Array<{ valor: GrauDeInsalubridade; rotulo: string }> = [
+  { valor: '10%', rotulo: 'Grau mínimo (10%)' },
+  { valor: '20%', rotulo: 'Grau médio (20%)' },
+  { valor: '40%', rotulo: 'Grau máximo (40%)' }
+];
+
+const ehGfip = (v: unknown): v is Gfip => OPCOES_DE_GFIP.some((o) => o.valor === v);
+const ehGrauDeInsalubridade = (v: unknown): v is GrauDeInsalubridade =>
+  GRAUS_DE_INSALUBRIDADE.some((g) => g.valor === v);
+
+const simNaoDoItem = (v: unknown): SimNao => (v === true ? 'SIM' : v === false ? 'NAO' : '');
+const booleanoDoCampo = (v: SimNao): boolean | undefined => (v === 'SIM' ? true : v === 'NAO' ? false : undefined);
+
+/** O que o item tem gravado, nos campos do formulario. Valor fora do dominio abre como "Nao informado". */
+export function classificacaoParaFormulario(item: Partial<Item> | null | undefined): ClassificacaoNoFormulario {
+  const severidade = gradacaoOuNada(item?.default_severity);
+  const probabilidade = gradacaoOuNada(item?.default_probability);
+  const gfip = item?.gfip_code_suggested;
+  const grau = item?.insalubridade_degree_suggested;
+  return {
+    default_severity: severidade ? (String(severidade) as GradacaoNoCampo) : '',
+    default_probability: probabilidade ? (String(probabilidade) as GradacaoNoCampo) : '',
+    gfip_code_suggested: ehGfip(gfip) ? gfip : '',
+    special_retirement_eligible: simNaoDoItem(item?.special_retirement_eligible),
+    insalubridade_applicable: simNaoDoItem(item?.insalubridade_applicable),
+    insalubridade_degree_suggested: ehGrauDeInsalubridade(grau) ? grau : '',
+    insalubridade_legal_basis: texto(item?.insalubridade_legal_basis),
+    periculosidade_applicable: simNaoDoItem(item?.periculosidade_applicable),
+    periculosidade_legal_basis: texto(item?.periculosidade_legal_basis)
+  };
+}
+
+/**
+ * Os valores que o formulario grava. "Nao informado" vira undefined, e campo
+ * undefined nao entra no item novo nem sobrescreve nada na edicao.
+ *
+ * Grau e base legal nao acompanham a insalubridade marcada "Nao", nem a base
+ * da periculosidade a periculosidade marcada "Nao": "nao se aplica, grau 20%"
+ * diria duas coisas ao mesmo tempo, e o grau iria para o risco aplicado. Com
+ * o "aplica?" nao informado eles ficam - o item da listagem pode trazer o grau
+ * da NR-15 sem que ninguem tenha marcado o resto, e "nao informado" nao apaga.
+ */
+export function valoresDaClassificacao(
+  form: ClassificacaoNoFormulario
+): { [K in CampoDaClassificacao]: Item[K] | undefined } {
+  const insalubre = form.insalubridade_applicable !== 'NAO';
+  const perigoso = form.periculosidade_applicable !== 'NAO';
+  return {
+    default_severity: gradacaoOuNada(Number(form.default_severity)),
+    default_probability: gradacaoOuNada(Number(form.default_probability)),
+    gfip_code_suggested: ehGfip(form.gfip_code_suggested) ? form.gfip_code_suggested : undefined,
+    special_retirement_eligible: booleanoDoCampo(form.special_retirement_eligible),
+    insalubridade_applicable: booleanoDoCampo(form.insalubridade_applicable),
+    insalubridade_degree_suggested:
+      insalubre && ehGrauDeInsalubridade(form.insalubridade_degree_suggested) ? form.insalubridade_degree_suggested : undefined,
+    insalubridade_legal_basis: insalubre ? texto(form.insalubridade_legal_basis) || undefined : undefined,
+    periculosidade_applicable: booleanoDoCampo(form.periculosidade_applicable),
+    periculosidade_legal_basis: perigoso ? texto(form.periculosidade_legal_basis) || undefined : undefined
+  };
+}
+
+/**
+ * Campos que se gravam juntos. Mudou o "aplica?", o grau e a base sao
+ * regravados com ele - senao "nao se aplica" ficaria gravado ao lado do grau
+ * de antes.
+ */
+const GRUPOS_DA_CLASSIFICACAO: CampoDaClassificacao[][] = [
+  ['default_severity'],
+  ['default_probability'],
+  ['gfip_code_suggested'],
+  ['special_retirement_eligible'],
+  ['insalubridade_applicable', 'insalubridade_degree_suggested', 'insalubridade_legal_basis'],
+  ['periculosidade_applicable', 'periculosidade_legal_basis']
+];
+
+const semValor = (v: unknown) => v === undefined || v === null || (typeof v === 'string' && v.trim() === '');
+
+/**
+ * O que a edicao grava: so os campos que o usuario mudou no formulario, e
+ * deles so os que ficam diferentes do item. Campo que volta a "Nao
+ * informado" sai como undefined - a chave vai, e o valor some do item.
+ */
+export function mudancasDaClassificacao(
+  item: Partial<Item>,
+  inicial: ClassificacaoNoFormulario,
+  form: ClassificacaoNoFormulario
+): Partial<Item> {
+  const valores = valoresDaClassificacao(form);
+  const mudancas: Partial<Item> = {};
+  for (const grupo of GRUPOS_DA_CLASSIFICACAO) {
+    if (!grupo.some((campo) => form[campo] !== inicial[campo])) continue;
+    for (const campo of grupo) {
+      const antes = item?.[campo];
+      const depois = valores[campo];
+      if ((semValor(antes) && semValor(depois)) || antes === depois) continue;
+      (mudancas as Record<string, unknown>)[campo] = depois;
+    }
+  }
+  return mudancas;
+}
+
+/**
+ * GFIP e aposentadoria especial que se contradizem pelos proprios rotulos:
+ * "04 - Enseja aposentadoria especial" com aposentadoria "Nao", ou 00/01 com
+ * "Sim". Os dois seguem para o risco aplicado e de la para o LTCAT e o PPP.
+ * Sem um dos dois, nao ha o que confrontar.
+ */
+export function conflitoGfipAposentadoria(
+  valores: Pick<Partial<Item>, 'gfip_code_suggested' | 'special_retirement_eligible'>
+): string | null {
+  const gfip = valores?.gfip_code_suggested;
+  const aposentadoria = valores?.special_retirement_eligible;
+  if (!ehGfip(gfip) || typeof aposentadoria !== 'boolean') return null;
+  const enseja = GFIP_QUE_ENSEJA_APOSENTADORIA.includes(gfip);
+  if (enseja === aposentadoria) return null;
+  const rotulo = OPCOES_DE_GFIP.find((o) => o.valor === gfip)?.rotulo;
+  return `O código GFIP "${rotulo}" contradiz a aposentadoria especial marcada como ` +
+    `"${aposentadoria ? 'Sim' : 'Não'}". Corrija um dos dois, ou deixe um deles como não informado.`;
+}
+
+export interface LinhaDoEnquadramento {
+  rotulo: string;
+  valor: string;
+  /** Base legal, quando ha. */
+  detalhe?: string;
+}
+
+/**
+ * Classificacao e enquadramento como a ficha do item os mostra: so o que o
+ * item tem. Campo ausente nao vira linha - os itens da listagem nao trazem
+ * nenhum deles, e quase mil fichas com "nao informado" em seis linhas so
+ * esconderiam o que importa.
+ */
+export function enquadramentoDoItem(item: Partial<Item> | null | undefined): LinhaDoEnquadramento[] {
+  if (!item) return [];
+  const linhas: LinhaDoEnquadramento[] = [];
+  const severidade = gradacaoOuNada(item.default_severity);
+  const probabilidade = gradacaoOuNada(item.default_probability);
+  const classificacao = classificarRisco(severidade, probabilidade);
+  if (classificacao) {
+    linhas.push({
+      rotulo: 'Classificação sugerida',
+      valor: `S${classificacao.severidade} × P${classificacao.probabilidade} = ${classificacao.score} · ${classificacao.rotulo}`
+    });
+  } else if (severidade) {
+    linhas.push({ rotulo: 'Severidade sugerida', valor: `S${severidade} (sem probabilidade)` });
+  } else if (probabilidade) {
+    linhas.push({ rotulo: 'Probabilidade sugerida', valor: `P${probabilidade} (sem severidade)` });
+  }
+
+  const gfip = OPCOES_DE_GFIP.find((o) => o.valor === item.gfip_code_suggested);
+  if (gfip) linhas.push({ rotulo: 'GFIP sugerido', valor: gfip.rotulo });
+
+  if (typeof item.special_retirement_eligible === 'boolean') {
+    linhas.push({ rotulo: 'Aposentadoria especial', valor: item.special_retirement_eligible ? 'Sim' : 'Não' });
+  }
+
+  const grau = GRAUS_DE_INSALUBRIDADE.find((g) => g.valor === item.insalubridade_degree_suggested);
+  const insalubridade = linhaDeAdicional('Insalubridade', item.insalubridade_applicable, grau?.rotulo, item.insalubridade_legal_basis);
+  if (insalubridade) linhas.push(insalubridade);
+  const periculosidade = linhaDeAdicional('Periculosidade', item.periculosidade_applicable, undefined, item.periculosidade_legal_basis);
+  if (periculosidade) linhas.push(periculosidade);
+  return linhas;
+}
+
+/**
+ * "Sim · Grau medio (20%)", com a base legal a parte. So a base, sem o "aplica?"
+ * nem o grau, vira o proprio valor: um rotulo seguido de nada nao diz nada.
+ */
+function linhaDeAdicional(
+  rotulo: string,
+  aplica: unknown,
+  grau: string | undefined,
+  base: unknown
+): LinhaDoEnquadramento | null {
+  const valor = [aplica === true ? 'Sim' : aplica === false ? 'Não' : '', grau || ''].filter(Boolean).join(' · ');
+  const detalhe = texto(base);
+  if (!valor && !detalhe) return null;
+  if (!valor) return { rotulo, valor: detalhe };
+  return detalhe ? { rotulo, valor, detalhe } : { rotulo, valor };
 }

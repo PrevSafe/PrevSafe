@@ -10,16 +10,26 @@
  * os 25 gravados no servidor e no cache: sem fusao, os itens novos nunca
  * apareceriam. A fusao (lib/catalogoDeRiscos.ts) tem de:
  *
- *   1. acrescentar SO o que falta, e so da listagem: item editado pelo usuario
- *      fica como esta, e curado que ele excluiu nao volta;
- *   2. ser idempotente e nao gerar laco de sincronizacao: o que ela acrescenta
- *      sobe uma vez, e no carregamento seguinte nada mais se acrescenta;
- *   3. respeitar a semantica de list() do contexto (undefined = nao mexer).
+ *   1. acrescentar o que falta, e so da listagem: curado que o usuario
+ *      excluiu nao volta;
+ *   2. trocar pela versao do codigo o item da listagem que o usuario nunca
+ *      editou (created_at === updated_at) - e so ele: o editado, o desativado
+ *      e o reativado ficam como estao, e curado e item do usuario nao mudam.
+ *      E assim que a correcao de um limite chega a quem ja gravou o catalogo;
+ *   3. ser idempotente e nao gerar laco de sincronizacao: o que ela acrescenta
+ *      ou troca sobe uma vez, e no carregamento seguinte - com as chaves na
+ *      ordem do jsonb - nada mais muda;
+ *   4. respeitar a semantica de list() do contexto (undefined = nao mexer).
  *
  * Por causa da fusao, item do sistema nao se exclui, se desativa - excluido,
  * ele voltaria na carga seguinte. E item da listagem nao traz severidade nem
  * probabilidade: o risco aplicado a partir dele nasce sem classificacao, e
  * nunca com um MEDIO que ninguem avaliou.
+ *
+ * Tambem prova o "Restaurar padrao" (so os itens do sistema voltam ao codigo;
+ * os do usuario ficam), os campos de classificacao do formulario ("nao
+ * informado" nao grava nada, a edicao grava so o que mudou) e o aviso do item
+ * da listagem que repete um curado.
  *
  * O teste roda as funcoes compiladas, a list() do proprio contexto (extraida
  * do fonte e transpilada) e o envioPermitido da sincronizacao. No fonte da
@@ -106,9 +116,11 @@ try {
 }
 
 const {
-  acrescentarItensDaListagem, catalogoAoCarregar, ehItemDoSistema, ehItemDaListagem, itemAtivo,
-  itemNovoDoUsuario, atualizarItemDoCatalogo, excluirOuDesativarItem, indiceDoSeletor, buscarNoSeletor,
-  grupoDoItem, LIMITE_DO_SELETOR, camposDoRiscoAPartirDoCatalogo, itensDoCatalogoDoRisco
+  fundirItensDaListagem, catalogoAoCarregar, itemNuncaEditado, ehItemDoSistema, ehItemDaListagem, itemAtivo,
+  itemNovoDoUsuario, atualizarItemDoCatalogo, excluirOuDesativarItem, restaurarItensDoSistema, textoDaDuplicidade,
+  indiceDoSeletor, buscarNoSeletor, grupoDoItem, LIMITE_DO_SELETOR, camposDoRiscoAPartirDoCatalogo, itensDoCatalogoDoRisco,
+  CLASSIFICACAO_NAO_INFORMADA, classificacaoParaFormulario, valoresDaClassificacao, mudancasDaClassificacao,
+  conflitoGfipAposentadoria, enquadramentoDoItem, OPCOES_DE_GFIP, GRAUS_DE_INSALUBRIDADE
 } = cat;
 const { sugestoesDoCatalogo, acoesDoPlano } = plano;
 const { envioPermitido } = acesso;
@@ -142,6 +154,21 @@ function corpoDe(fonte, inicio) {
 
 const ids = (lista) => (lista || []).map((i) => i.id);
 const mesmoConjunto = (a, b) => a.length === b.length && a.every((x) => b.includes(x));
+
+/**
+ * O registro como o servidor o devolve: o jsonb do Postgres guarda as chaves
+ * por tamanho e depois em ordem binaria, e o JSON descarta undefined. E nessa
+ * forma que o item gravado chega a fusao em toda carga.
+ */
+function comoJsonb(v) {
+  const ordenar = (x) => {
+    if (Array.isArray(x)) return x.map(ordenar);
+    if (!x || typeof x !== 'object') return x;
+    const chaves = Object.keys(x).sort((a, b) => a.length - b.length || (a < b ? -1 : a > b ? 1 : 0));
+    return Object.fromEntries(chaves.map((k) => [k, ordenar(x[k])]));
+  };
+  return ordenar(JSON.parse(JSON.stringify(v)));
+}
 
 // ===========================================================================
 // Massa
@@ -179,45 +206,104 @@ const CHAVE = 'occupationalRisksCatalog';
 // ===========================================================================
 // 1. FUSAO
 // ===========================================================================
-console.log('\n— fusão: acrescenta só o que falta');
+console.log('\n— fusão: acrescenta o que falta');
 {
   const antiga = [U1, C1, C2];
-  const fundida = acrescentarItensDaListagem(antiga, LISTAGEM);
+  const fundida = fundirItensDaListagem(antiga, LISTAGEM);
   check(mesmoConjunto(ids(fundida), [U1.id, C1.id, C2.id, L1.id, L2.id, L3.id]) && fundida.length === 6,
     'organização com o catálogo antigo recebe os itens da listagem');
   check(fundida[0] === U1 && fundida[1] === C1 && fundida[2] === C2,
     'os itens que já estavam ficam como estavam, na mesma ordem, e os novos vão ao fim');
 
   const editado = { ...L2, name: 'Ácido sulfúrico (névoa)', status: 'INACTIVE', updated_at: AGORA };
-  const comEditado = acrescentarItensDaListagem([C1, editado], LISTAGEM);
+  const comEditado = fundirItensDaListagem([C1, editado], LISTAGEM);
   check(comEditado.filter((i) => i.id === L2.id).length === 1 && comEditado.find((i) => i.id === L2.id) === editado,
     'item da listagem editado pelo usuário vence: não é sobrescrito nem duplicado');
   check(comEditado.find((i) => i.id === L2.id).status === 'INACTIVE',
     'item da listagem desativado continua desativado depois da fusão');
 
-  const semC1 = acrescentarItensDaListagem([C2, U1], INICIAL);
+  const semC1 = fundirItensDaListagem([C2, U1], INICIAL);
   check(!ids(semC1).includes(C1.id),
     'curado excluído pelo usuário não volta, mesmo que o catálogo inicial inteiro seja passado como listagem');
   check(ids(semC1).filter((id) => id.startsWith('risk-lst-')).length === 3, 'e os da listagem entram');
 
-  const vazia = acrescentarItensDaListagem([], LISTAGEM);
+  const vazia = fundirItensDaListagem([], LISTAGEM);
   check(mesmoConjunto(ids(vazia), ids(LISTAGEM)), 'coleção esvaziada de propósito recebe só a listagem, sem curado');
 
-  const repetida = acrescentarItensDaListagem([C1], [L1, { ...L1 }, L2]);
+  const repetida = fundirItensDaListagem([C1], [L1, { ...L1 }, L2]);
   check(repetida.filter((i) => i.id === L1.id).length === 1, 'id repetido na listagem entra uma vez só');
 
   const semOrigem = { ...L3, catalog_source: undefined };
-  check(ids(acrescentarItensDaListagem([C1], [semOrigem])).includes(L3.id),
+  check(ids(fundirItensDaListagem([C1], [semOrigem])).includes(L3.id),
     'item da listagem sem catalog_source, mas com id risk-lst-, é reconhecido');
-  check(!ids(acrescentarItensDaListagem([], [{ ...L1, id: 'risk-lst-x', catalog_source: 'CURADO' }])).includes('risk-lst-x'),
+  check(!ids(fundirItensDaListagem([], [{ ...L1, id: 'risk-lst-x', catalog_source: 'CURADO' }])).includes('risk-lst-x'),
     'item marcado como curado não entra pela fusão, qualquer que seja o id');
 
-  const uma = acrescentarItensDaListagem([U1, C1], LISTAGEM);
-  const duas = acrescentarItensDaListagem(uma, LISTAGEM);
+  const uma = fundirItensDaListagem([U1, C1], LISTAGEM);
+  const duas = fundirItensDaListagem(uma, LISTAGEM);
   check(duas === uma, 'idempotente: fundir de novo devolve a mesma lista');
   const completa = [C1, C2, ...LISTAGEM];
-  check(acrescentarItensDaListagem(completa, LISTAGEM) === completa,
+  check(fundirItensDaListagem(completa, LISTAGEM) === completa,
     'nada a acrescentar devolve a mesma referência (o estado não muda à toa)');
+}
+
+// A correcao do sistema chega a quem ja gravou o catalogo: o item da listagem
+// nunca editado (created_at === updated_at) e trocado pela versao do codigo.
+console.log('\n— fusão: troca o item da listagem nunca editado, e só ele');
+{
+  // Como o servidor tem o item hoje: gravado antes da correcao, ativo e com o
+  // limite antigo, com as duas datas iguais.
+  const L1antigo = comoJsonb({ ...L1, tolerance_limit_value: 100, tolerance_limit_reference: '100 ppm' });
+  const L3antigo = comoJsonb(L3);
+  // A versao do codigo: L1 com o limite corrigido; L3 desativado por repetir C1.
+  const L3dup = { ...L3, status: 'INACTIVE', duplicate_of_id: C1.id };
+  const CODIGO = [L1, L2, L3dup];
+
+  check(itemNuncaEditado(L1antigo) && !itemNuncaEditado({ ...L1, updated_at: AGORA }),
+    'nunca editado = as duas datas presentes e iguais');
+  check(!itemNuncaEditado({ ...L1, created_at: undefined, updated_at: undefined }) && !itemNuncaEditado({ ...L1, created_at: '', updated_at: '' }),
+    'sem as datas não dá para saber: não conta como nunca editado');
+
+  const gravado = [U1, C1, L1antigo, L2, L3antigo];
+  const fundida = fundirItensDaListagem(gravado, CODIGO);
+  check(fundida[2] === L1 && fundida[2].tolerance_limit_value === 78,
+    'troca o não editado: o item da listagem gravado com o limite antigo recebe o limite corrigido, no mesmo lugar');
+  check(fundida[4] === L3dup && fundida[4].status === 'INACTIVE' && fundida[4].duplicate_of_id === C1.id,
+    'o item que o código desativa por repetir um curado chega desativado a quem o tinha ativo e nunca o editou');
+  check(fundida.length === gravado.length && new Set(ids(fundida)).size === fundida.length,
+    'a troca não duplica nem acrescenta: mesmo tamanho, ids únicos');
+  check(fundida[0] === U1 && fundida[1] === C1 && fundida[3] === L2, 'os demais itens ficam como estavam, pela referência');
+  check(fundirItensDaListagem(fundida, CODIGO) === fundida, 'idempotente depois da troca: fundir de novo não muda nada');
+
+  // Preserva o editado: editado, desativado e reativado pela tela mudam updated_at.
+  const L1editado = { ...L1antigo, name: 'Estireno (meu texto)', updated_at: AGORA };
+  const comEditado = fundirItensDaListagem([C1, L1editado], CODIGO);
+  check(comEditado.find((i) => i.id === L1.id) === L1editado,
+    'preserva o editado: o item da listagem com edição do usuário não recebe a correção');
+  const desativado = excluirOuDesativarItem([L3antigo], L3.id, AGORA)[0];
+  check(fundirItensDaListagem([desativado], CODIGO)[0] === desativado,
+    'preserva o desativado pela tela, mesmo que o código mude o item');
+  const reativado = atualizarItemDoCatalogo([L3dup], L3.id, { status: 'ACTIVE' }, AGORA)[0];
+  const aposReativar = fundirItensDaListagem([reativado], CODIGO)[0];
+  check(aposReativar === reativado && aposReativar.status === 'ACTIVE',
+    'preserva o reativado: o item repetido que o usuário reativou não volta a ser desativado');
+  const semDatas = { ...L1antigo, created_at: undefined, updated_at: undefined };
+  check(fundirItensDaListagem([semDatas], CODIGO)[0] === semDatas, 'item gravado sem as datas fica como está');
+
+  // Nao troca curado: o curado gravado, com as datas iguais e texto antigo, fica.
+  const C1antigo = comoJsonb({ ...C1, name: 'Curado 1 (texto antigo)', created_at: DATA, updated_at: DATA });
+  const comCurado = fundirItensDaListagem([C1antigo, U1], [C1, C2, ...CODIGO]);
+  check(comCurado[0] === C1antigo && comCurado[1] === U1,
+    'não troca curado nem item do usuário, nem quando o catálogo inicial inteiro é passado como listagem');
+  check(!ids(comCurado).includes(C2.id), 'e o curado ausente continua sem voltar');
+  const curadoComIdDeListagem = { ...L1antigo, catalog_source: 'CURADO' };
+  check(fundirItensDaListagem([curadoComIdDeListagem], CODIGO)[0] === curadoComIdDeListagem,
+    'item gravado como curado não é trocado, qualquer que seja o id');
+
+  // Igual ao codigo, mas com as chaves na ordem do jsonb: nao e troca.
+  const servidorIgual = [comoJsonb(C1), comoJsonb(L1), comoJsonb(L2), comoJsonb(L3dup)];
+  check(fundirItensDaListagem(servidorIgual, CODIGO) === servidorIgual,
+    'item igual ao do código, com as chaves na ordem do jsonb e sem os undefined, não é trocado: a mesma lista');
 }
 
 // ===========================================================================
@@ -226,6 +312,7 @@ console.log('\n— fusão: acrescenta só o que falta');
 console.log('\n— carregamento: semântica de list() e sincronização');
 const ctxBruto = ler('context/PrevSafeContext.tsx');
 const ctxFonte = semComentarios(ctxBruto);
+const viewFonte = semComentarios(ler('components/sst/OccupationalRisksCatalogView.tsx'));
 let criarList = null;
 {
   const inicio = ctxBruto.indexOf('const list = <T,>(');
@@ -299,6 +386,28 @@ const MATERIALIZADA = new Set([CHAVE]);
   const comUsuarioExcluido = excluirOuDesativarItem(carga2, U1.id, AGORA);
   const env5 = envio(servidor2, comUsuarioExcluido);
   check(env5.deletedIds.length === 1 && env5.deletedIds[0] === U1.id, 'item do usuário excluído sai do servidor');
+
+  // A correcao do codigo sobe uma vez, e a carga seguinte - que devolve o
+  // item com as chaves na ordem do jsonb - nao troca de novo.
+  const L1corrigido = { ...L1, tolerance_limit_value: 20, tolerance_limit_reference: '20 ppm' };
+  const L2dup = { ...L2, status: 'INACTIVE', duplicate_of_id: C2.id };
+  const CODIGO = [L1corrigido, L2dup, L3];
+  const L3editado = comoJsonb({ ...L3, name: 'Queda de altura (andaime)', updated_at: AGORA });
+  const servidorA = [comoJsonb(C1), comoJsonb(U1), comoJsonb(L1), comoJsonb(L2), L3editado];
+  const cargaA = catalogoAoCarregar(criarList(true, MATERIALIZADA)(servidorA, INICIAL, CHAVE), CODIGO);
+  const envA = envio(servidorA, cargaA);
+  check(mesmoConjunto(ids(envA.rows), [L1.id, L2.id]) && envA.deletedIds.length === 0,
+    'a correção sobe como alteração dos itens nunca editados, e só deles: o editado não é reenviado');
+  const servidorB = servidorA.map((r) => {
+    const enviado = envA.rows.find((e) => e.id === r.id);
+    return enviado ? comoJsonb(enviado) : r;
+  });
+  const cargaB = catalogoAoCarregar(criarList(true, MATERIALIZADA)(servidorB, INICIAL, CHAVE), CODIGO);
+  check(cargaB === servidorB, 'na carga seguinte o servidor já tem a versão do código: a mesma lista, nada trocado');
+  const envB = envio(servidorB, cargaB);
+  check(envB.rows.length === 0 && envB.deletedIds.length === 0, 'e não há envio: a correção não vira laço de sincronização');
+  check(cargaB.find((r) => r.id === L2.id).status === 'INACTIVE' && cargaB.find((r) => r.id === L3.id).name === 'Queda de altura (andaime)',
+    'o repetido ficou desativado no servidor, e o editado continua com a edição do usuário');
 }
 
 // Forma do defeito no contexto.
@@ -308,7 +417,7 @@ const MATERIALIZADA = new Set([CHAVE]);
   check(/apply\(setOccupationalRisksCatalog,\s*catalogoAoCarregar\(\s*list<OccupationalRiskCatalogItem>\(parsed\.occupationalRisksCatalog,\s*INITIAL_OCCUPATIONAL_RISKS_CATALOG,\s*'occupationalRisksCatalog'\),\s*RISCOS_DA_LISTAGEM\s*\)\)/.test(aplicar),
     'o carregamento passa o catálogo pela fusão com a listagem, depois da list()');
   check(!/apply\(setOccupationalRisksCatalog,\s*list\(/.test(aplicar), 'nenhum carregamento do catálogo pula a fusão');
-  const usos = (ctxFonte.match(/(catalogoAoCarregar|acrescentarItensDaListagem)\(/g) || []).length;
+  const usos = (ctxFonte.match(/(catalogoAoCarregar|fundirItensDaListagem|acrescentarItensDaListagem)\(/g) || []).length;
   check(usos === 1 && /catalogoAoCarregar\(/.test(aplicar),
     'a fusão roda só no carregamento: nenhum efeito sobre o catálogo a reaplica (laço de envio)');
   const efeitos = ctxFonte.split(/\n  useEffect\(/).slice(1);
@@ -361,9 +470,63 @@ console.log('\n— item do sistema se desativa; o do usuário se exclui');
     'a alteração passa pelo atualizarItemDoCatalogo, e não por um spread direto');
   check(/itemNovoDoUsuario\(data,/.test(corpoDe(ctxFonte, 'const addOccupationalRiskCatalogItem = useCallback(')),
     'item novo passa pelo itemNovoDoUsuario');
-  check(/setOccupationalRisksCatalog\(INITIAL_OCCUPATIONAL_RISKS_CATALOG\)/.test(
-    corpoDe(ctxFonte, 'const resetOccupationalRisksCatalogToDefault = useCallback(')),
-  'restaurar o padrão continua voltando ao catálogo inicial');
+}
+
+// ===========================================================================
+// 3b. RESTAURAR PADRAO: so os itens do sistema
+// ===========================================================================
+console.log('\n— restaurar padrão: os itens do sistema voltam ao código, os do usuário ficam');
+{
+  const L2dup = { ...L2, status: 'INACTIVE', duplicate_of_id: C1.id };
+  const SISTEMA = [C1, C2, L1, L2dup, L3];
+  const U2 = { ...U1, id: 'risk-cat-1759000000001-cd34', name: 'Outro do usuário', status: 'INACTIVE', updated_at: AGORA };
+  const C1editado = { ...C1, name: 'Curado 1 (editado)', updated_at: AGORA };
+  const L1desativado = { ...L1, status: 'INACTIVE', updated_at: AGORA };
+  const L2reativado = { ...L2dup, status: 'ACTIVE', updated_at: AGORA };
+  const obsoleto = listado('velho', { name: 'Item que o sistema não traz mais' });
+  // C2 foi excluido quando ainda dava para excluir curado.
+  const atual = [U2, U1, C1editado, L1desativado, L2reativado, L3, obsoleto];
+  const restaurada = restaurarItensDoSistema(atual, SISTEMA);
+
+  check(restaurada[0] === U2 && restaurada[1] === U1,
+    'os itens criados pelo usuário ficam intocados, pela referência, na ordem em que estavam e no topo');
+  check(restaurada.find((i) => i.id === U2.id).status === 'INACTIVE', 'item do usuário desativado continua desativado');
+  check(restaurada.find((i) => i.id === C1.id) === C1, 'a edição feita no curado é desfeita: volta a versão do código');
+  check(restaurada.find((i) => i.id === L1.id) === L1 && itemAtivo(restaurada.find((i) => i.id === L1.id)),
+    'a desativação feita no item da listagem é desfeita');
+  check(restaurada.find((i) => i.id === C2.id) === C2, 'o curado excluído volta');
+  check(restaurada.find((i) => i.id === L2.id) === L2dup && !itemAtivo(restaurada.find((i) => i.id === L2.id)),
+    'o item que o código traz inativo por repetir um curado volta inativo, mesmo reativado pelo usuário');
+  check(!ids(restaurada).includes(obsoleto.id), 'item do sistema que o código não traz mais sai');
+  check(restaurada.length === 2 + SISTEMA.length && new Set(ids(restaurada)).size === restaurada.length,
+    'sem duplicar: os do usuário mais os do sistema, ids únicos');
+  const semMarca = { ...C1editado, is_system_default: false, catalog_source: undefined };
+  check(restaurarItensDoSistema([semMarca], SISTEMA).filter((i) => i.id === C1.id).length === 1,
+    'item gravado com id do sistema, mesmo sem a marca, é trocado pelo do sistema: não fica em dobro');
+  const jaRestaurada = restaurarItensDoSistema(restaurada, SISTEMA);
+  check(jaRestaurada === restaurada, 'nada a restaurar devolve a mesma lista');
+  check(fundirItensDaListagem(restaurada, SISTEMA) === restaurada,
+    'depois de restaurar, a fusão da carga não muda nada: os itens do sistema já são os do código');
+
+  const ini = Array.isArray(INITIAL_OCCUPATIONAL_RISKS_CATALOG) ? INITIAL_OCCUPATIONAL_RISKS_CATALOG : [];
+  const real = restaurarItensDoSistema([U1, ...ini.slice(1).map((i) => ({ ...i, status: 'INACTIVE', updated_at: AGORA }))], ini);
+  check(real[0] === U1 && real.length === ini.length + 1 && real.slice(1).every((item, i) => item === ini[i]),
+    `com o catálogo real: o do usuário fica e os ${ini.length} do sistema voltam exatamente como o código os traz`);
+
+  const restaurar = corpoDe(ctxFonte, 'const resetOccupationalRisksCatalogToDefault = useCallback(');
+  check(/setOccupationalRisksCatalog\(prev => restaurarItensDoSistema\(prev, INITIAL_OCCUPATIONAL_RISKS_CATALOG\)\)/.test(restaurar),
+    'o contexto restaura pelo restaurarItensDoSistema, sobre o catálogo em memória');
+  check(!/setOccupationalRisksCatalog\(\s*INITIAL_OCCUPATIONAL_RISKS_CATALOG\s*\)/.test(ctxFonte),
+    'nenhum ponto do contexto troca o catálogo inteiro pelo inicial (o que apagava os itens do usuário)');
+
+  const telaRestaurar = corpoDe(viewFonte, 'const handleRestaurarPadrao = () => {');
+  const textoDaConfirmacao = (telaRestaurar.match(/confirm\(([\s\S]*?)\);\n/) || [])[1] || '';
+  check(/criado\(s\) aqui não mudam/.test(textoDaConfirmacao) && !/removid|apagad/i.test(textoDaConfirmacao),
+    'a confirmação diz que os itens criados aqui não mudam, e não promete removê-los');
+  check(/edições e desativações/.test(textoDaConfirmacao) && /excluídos voltam/.test(textoDaConfirmacao)
+    && /repetem um curado continuam inativos/.test(textoDaConfirmacao),
+  'e diz o que muda nos do sistema: edições e desativações desfeitas, curado excluído de volta, repetido inativo');
+  check(/resetOccupationalRisksCatalogToDefault\(\)/.test(telaRestaurar), 'e só restaura depois da confirmação');
 }
 
 // ===========================================================================
@@ -499,9 +662,9 @@ console.log('\n— dados reais: listagem e catálogo inicial');
   const curadosIni = ini.filter((i) => !ehItemDaListagem(i));
   check(curadosIni.length > 0 && curadosIni.every(ehItemDoSistema), `os curados do catálogo inicial são do sistema (${curadosIni.length})`);
   check(ids(lst).every((id) => ids(ini).includes(id)), 'o catálogo inicial traz a listagem inteira');
-  const antiga = acrescentarItensDaListagem(curadosIni, lst);
+  const antiga = fundirItensDaListagem(curadosIni, lst);
   check(mesmoConjunto(ids(antiga), ids(ini)), 'organização com só os curados fica, depois da fusão, com o catálogo inicial inteiro');
-  check(acrescentarItensDaListagem(ini, lst) === ini, 'o catálogo inicial já fundido não muda');
+  check(fundirItensDaListagem(ini, lst) === ini, 'o catálogo inicial já fundido não muda');
 
   const classificados = lst.filter((i) => classificarRisco(camposDoRiscoAPartirDoCatalogo(i).severity, camposDoRiscoAPartirDoCatalogo(i).probability));
   check(classificados.length === 0, 'nenhum risco aplicado a partir da listagem nasce classificado');
@@ -516,6 +679,29 @@ console.log('\n— dados reais: listagem e catálogo inicial');
   const semGrupo = indice.filter((e) => !e.grupo);
   check(semGrupo.length === 0,
     `todo item ativo cai num grupo do filtro${semGrupo.length ? `: ${semGrupo.slice(0, 3).map((e) => e.item.group).join(', ')}` : ''}`);
+  const editadosNoCodigo = lst.filter((i) => !itemNuncaEditado(i));
+  check(editadosNoCodigo.length === 0,
+    `todo item da listagem do código nasce com created_at === updated_at, e a fusão pode levar a correção seguinte${editadosNoCodigo.length ? `: ${ids(editadosNoCodigo).slice(0, 3).join(', ')}` : ''}`);
+  // Quem gravou a listagem antes das correcoes: tudo ativo, sem o curado que
+  // repete e com as datas iguais. Depois da fusao, tem a versao do codigo.
+  const gravadaAntes = [...ini.filter((i) => !ehItemDaListagem(i)), ...lst.map((i) => {
+    const antes = { ...i, status: 'ACTIVE' };
+    delete antes.duplicate_of_id;
+    return comoJsonb(antes);
+  })];
+  const atualizada = fundirItensDaListagem(gravadaAntes, lst);
+  const mesmoConteudo = (a, b) => JSON.stringify(comoJsonb(a)) === JSON.stringify(comoJsonb(b));
+  check(atualizada.length === ini.length
+    && atualizada.every((item, i) => (ehItemDaListagem(item) ? mesmoConteudo(item, ini[i]) : item === gravadaAntes[i])),
+  `quem gravou a listagem antes das correções fica com a versão do código dos ${lst.length} itens, e os curados ficam`);
+  check(fundirItensDaListagem(atualizada, lst) === atualizada, 'e a carga seguinte não muda mais nada');
+  const repetidos = lst.filter((i) => i.duplicate_of_id);
+  check(repetidos.every((i) => !itemAtivo(atualizada.find((a) => a.id === i.id))),
+    `os ${repetidos.length} itens que repetem um curado chegam inativos a quem os tinha ativos`);
+  const semCurado = repetidos.filter((i) => !/^Mesmo risco que «.+»$/.test(textoDaDuplicidade(i, (id) => ini.find((x) => x.id === id)) || ''));
+  check(semCurado.length === 0,
+    `todo item repetido acha o curado no catálogo inicial e mostra o nome dele${semCurado.length ? `: ${ids(semCurado).slice(0, 3).join(', ')}` : ''}`);
+
   const acentuado = lst.find((i) => itemAtivo(i) && /[áéíóúâêôãõç]/i.test(i.name));
   if (acentuado) {
     const termo = acentuado.name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().slice(0, 30);
@@ -527,6 +713,158 @@ console.log('\n— dados reais: listagem e catálogo inicial');
       && ids(buscarNoSeletor(indice, comCodigo.code_table_24.replace(/\D/g, ''), 'ALL')).includes(comCodigo.id),
     `o código ${comCodigo.code_table_24} acha o item, com e sem pontos`);
   }
+}
+
+// ===========================================================================
+// 7. CLASSIFICACAO E ENQUADRAMENTO NO FORMULARIO E NA FICHA
+// ===========================================================================
+console.log('\n— classificação no formulário: "não informado" não grava nada');
+{
+  const CAMPOS = Object.keys(CLASSIFICACAO_NAO_INFORMADA);
+  const ini = Array.isArray(INITIAL_OCCUPATIONAL_RISKS_CATALOG) ? INITIAL_OCCUPATIONAL_RISKS_CATALOG : [];
+  const R01 = ini.find((i) => i.id === 'risk-cat-01');
+  check(CAMPOS.length === 9 && CAMPOS.every((c) => CLASSIFICACAO_NAO_INFORMADA[c] === ''),
+    'os nove campos de classificação começam em "Não informado"');
+  const vazios = valoresDaClassificacao(CLASSIFICACAO_NAO_INFORMADA);
+  check(CAMPOS.every((c) => vazios[c] === undefined),
+    'formulário em "Não informado" não grava nada: nem severidade 3, nem GFIP 00, nem false');
+
+  const preenchido = valoresDaClassificacao({ ...CLASSIFICACAO_NAO_INFORMADA, default_severity: '4', default_probability: '2',
+    gfip_code_suggested: '00', special_retirement_eligible: 'NAO', insalubridade_applicable: 'SIM',
+    insalubridade_degree_suggested: '40%', insalubridade_legal_basis: '  NR-15 Anexo nº 13  ', periculosidade_applicable: 'NAO' });
+  check(preenchido.default_severity === 4 && preenchido.default_probability === 2 && preenchido.gfip_code_suggested === '00'
+    && preenchido.special_retirement_eligible === false && preenchido.insalubridade_applicable === true
+    && preenchido.insalubridade_degree_suggested === '40%' && preenchido.insalubridade_legal_basis === 'NR-15 Anexo nº 13'
+    && preenchido.periculosidade_applicable === false,
+  'o que o usuário escolhe é gravado como escolheu: 4, 2, "00", "Não", "Sim", 40%, base sem espaços');
+  const naoSeAplica = valoresDaClassificacao({ ...CLASSIFICACAO_NAO_INFORMADA, insalubridade_applicable: 'NAO',
+    insalubridade_degree_suggested: '20%', insalubridade_legal_basis: 'NR-15', periculosidade_applicable: 'NAO', periculosidade_legal_basis: 'NR-16' });
+  check(naoSeAplica.insalubridade_applicable === false && naoSeAplica.insalubridade_degree_suggested === undefined
+    && naoSeAplica.insalubridade_legal_basis === undefined && naoSeAplica.periculosidade_legal_basis === undefined,
+  'insalubridade e periculosidade marcadas "Não" não levam grau nem base legal');
+  const grauSemAplica = valoresDaClassificacao({ ...CLASSIFICACAO_NAO_INFORMADA, insalubridade_degree_suggested: '20%' });
+  check(grauSemAplica.insalubridade_degree_suggested === '20%' && grauSemAplica.insalubridade_applicable === undefined,
+    'com o "aplica?" não informado, o grau que o item traz fica: "não informado" não apaga');
+
+  check(CAMPOS.every((c) => classificacaoParaFormulario(L1)[c] === ''), 'item da listagem abre o formulário todo em "Não informado"');
+  const doR01 = classificacaoParaFormulario(R01);
+  check(doR01.default_severity === '3' && doR01.gfip_code_suggested === '04' && doR01.special_retirement_eligible === 'SIM'
+    && doR01.insalubridade_degree_suggested === '20%' && doR01.periculosidade_applicable === 'NAO',
+  'o curado abre com o que tem gravado (Ruído: S3, GFIP 04, aposentadoria Sim, 20%, periculosidade Não)');
+  const foraDoDominio = { ...L1, default_severity: 0, default_probability: '3', gfip_code_suggested: '09', insalubridade_degree_suggested: '15%' };
+  const formFora = classificacaoParaFormulario(foraDoDominio);
+  check(formFora.default_severity === '' && formFora.default_probability === '' && formFora.gfip_code_suggested === ''
+    && formFora.insalubridade_degree_suggested === '', 'valor gravado fora do domínio abre como "Não informado"');
+  const perdidos = ini.filter((item) => {
+    const v = valoresDaClassificacao(classificacaoParaFormulario(item));
+    return CAMPOS.some((c) => (v[c] ?? null) !== (item[c] === '' ? null : item[c] ?? null));
+  });
+  check(perdidos.length === 0,
+    `abrir e salvar sem mexer devolve a classificação de todos os ${ini.length} itens do catálogo inicial${perdidos.length ? `: ${ids(perdidos).slice(0, 3).join(', ')}` : ''}`);
+
+  // Edicao: so o que o usuario mudou.
+  const abrir = (item) => classificacaoParaFormulario(item);
+  check(Object.keys(mudancasDaClassificacao(R01, abrir(R01), abrir(R01))).length === 0, 'edição sem mudar a classificação não grava nenhum campo dela');
+  check(Object.keys(mudancasDaClassificacao(foraDoDominio, abrir(foraDoDominio), abrir(foraDoDominio))).length === 0,
+    'e não apaga o valor gravado que o formulário não sabe mostrar');
+  const soSeveridade = mudancasDaClassificacao(R01, abrir(R01), { ...abrir(R01), default_severity: '4' });
+  check(JSON.stringify(soSeveridade) === JSON.stringify({ default_severity: 4 }), 'mudar a severidade grava só a severidade');
+  const limpou = mudancasDaClassificacao(R01, abrir(R01), { ...abrir(R01), gfip_code_suggested: '' });
+  check(Object.keys(limpou).join() === 'gfip_code_suggested' && limpou.gfip_code_suggested === undefined,
+    'voltar o GFIP a "Não informado" tira o valor do item, sem pôr "00" no lugar');
+  const tirouInsalubridade = mudancasDaClassificacao(R01, abrir(R01), { ...abrir(R01), insalubridade_applicable: 'NAO' });
+  check(tirouInsalubridade.insalubridade_applicable === false && 'insalubridade_degree_suggested' in tirouInsalubridade
+    && tirouInsalubridade.insalubridade_degree_suggested === undefined && tirouInsalubridade.insalubridade_legal_basis === undefined
+    && Object.keys(tirouInsalubridade).length === 3,
+  'marcar insalubridade "Não" regrava o grau e a base com ela (saem), e nada mais');
+  const naListagem = mudancasDaClassificacao(L1, abrir(L1), { ...abrir(L1), gfip_code_suggested: '04', special_retirement_eligible: 'SIM' });
+  check(JSON.stringify(naListagem) === JSON.stringify({ gfip_code_suggested: '04', special_retirement_eligible: true }),
+    'no item da listagem, escolher GFIP e aposentadoria grava só os dois');
+  const vaiEVolta = mudancasDaClassificacao(R01, abrir(R01), { ...abrir(R01), insalubridade_applicable: 'SIM' });
+  check(Object.keys(vaiEVolta).length === 0, 'marcar e desmarcar até voltar ao que estava não grava nada');
+
+  // GFIP x aposentadoria especial, pelos rotulos do proprio GFIP.
+  check(!!conflitoGfipAposentadoria({ gfip_code_suggested: '04', special_retirement_eligible: false })
+    && !!conflitoGfipAposentadoria({ gfip_code_suggested: '01', special_retirement_eligible: true })
+    && !!conflitoGfipAposentadoria({ gfip_code_suggested: '00', special_retirement_eligible: true }),
+  'GFIP que enseja com aposentadoria "Não", ou 00/01 com "Sim": contradição apontada');
+  check(conflitoGfipAposentadoria({ gfip_code_suggested: '04', special_retirement_eligible: true }) === null
+    && conflitoGfipAposentadoria({ gfip_code_suggested: '04' }) === null
+    && conflitoGfipAposentadoria({ special_retirement_eligible: false }) === null,
+  'GFIP e aposentadoria coerentes, ou um deles não informado: sem contradição');
+  const contraditorios = ini.filter((i) => conflitoGfipAposentadoria(i));
+  check(contraditorios.length === 0, `nenhum item do catálogo inicial se contradiz${contraditorios.length ? `: ${ids(contraditorios).join(', ')}` : ''}`);
+
+  // Rotulos reaproveitados, e nao inventados.
+  const abaGhe = ler('components/sst/GHERiskInventoryTab.tsx');
+  const semRotulo = OPCOES_DE_GFIP.filter((o) => !abaGhe.includes(`<option value="${o.valor}">${o.rotulo}</option>`));
+  check(OPCOES_DE_GFIP.length === 5 && semRotulo.length === 0,
+    `os rótulos de GFIP 00 a 04 são os do formulário de risco do GHE${semRotulo.length ? `: ${semRotulo.map((o) => o.valor).join(', ')}` : ''}`);
+  const laudo = ler('lib/laudoDados.ts');
+  check(GRAUS_DE_INSALUBRIDADE.length === 3
+    && GRAUS_DE_INSALUBRIDADE.every((g) => laudo.includes(g.rotulo.replace(/^Grau /, '')) && g.rotulo.includes(`(${g.valor})`)),
+  'os graus 10%, 20% e 40% com os nomes que o laudo de insalubridade usa');
+
+  // Ficha: so o que o item tem.
+  check(enquadramentoDoItem(L1).length === 0, 'item da listagem sem classificação: a ficha não ganha nenhuma linha');
+  const ficha = enquadramentoDoItem(R01);
+  const linha = (rotulo) => ficha.find((l) => l.rotulo === rotulo);
+  check(linha('Classificação sugerida')?.valor === `S3 × P3 = 9 · ${classificarRisco(3, 3).rotulo}`,
+    'a ficha do curado mostra a classificação pela matriz do modelo');
+  check(linha('GFIP sugerido')?.valor === OPCOES_DE_GFIP.find((o) => o.valor === '04').rotulo
+    && linha('Aposentadoria especial')?.valor === 'Sim', 'e o GFIP com o rótulo do formulário, e a aposentadoria especial');
+  check(linha('Insalubridade')?.valor === 'Sim · Grau médio (20%)' && /NR-15/.test(linha('Insalubridade')?.detalhe || '')
+    && linha('Periculosidade')?.valor === 'Não', 'e a insalubridade com grau e base legal, e a periculosidade');
+  check(enquadramentoDoItem({ ...L1, default_severity: 2 }).map((l) => l.valor).join() === 'S2 (sem probabilidade)',
+    'só a severidade: aparece, sem classificação inventada');
+  const fichas = ini.flatMap((i) => enquadramentoDoItem(i));
+  check(fichas.every((l) => l.valor && !FACHADA.test(l.valor) && !FACHADA.test(l.detalhe || '')),
+    'nenhuma linha da ficha fica vazia ou com "undefined"');
+
+  // A tela: o formulario e a ficha usam as funcoes, e nada de padrao fixo.
+  const corpoDoSalvar = corpoDe(viewFonte, 'const handleSaveRisk = (e: React.FormEvent) => {');
+  const criacao = (corpoDoSalvar.match(/if \(!editingItem\) \{([\s\S]*?)\n    \}\n/) || [])[1] || '';
+  const preenchidos = (criacao.match(/const preenchidos[^=]*= \{([\s\S]*?)\n      \};/) || [])[1] || '';
+  const novo = (criacao.match(/const novo[^=]*= \{([\s\S]*?)\n      \};/) || [])[1] || '';
+  check(/\.\.\.valoresClassificacao/.test(preenchidos) && /if \(valor !== undefined\)/.test(criacao) && !/valoresClassificacao|default_|gfip|insalubridade|periculosidade|special_retirement/.test(novo),
+    'item novo leva a classificação só pelo filtro do que foi preenchido');
+  check(/const valoresClassificacao = valoresDaClassificacao\(form\)/.test(corpoDoSalvar)
+    && /mudancasDaClassificacao\(editingItem, formInicial, form\)/.test(corpoDoSalvar)
+    && /Object\.assign\(mudancas, mudancasClassificacao\)/.test(corpoDoSalvar),
+  'a edição grava da classificação só o que mudou, pelo mudancasDaClassificacao');
+  check(/conflitoGfipAposentadoria\(/.test(corpoDoSalvar) && /if \(conflito\) \{\s*alert\(conflito\);\s*return;/.test(corpoDoSalvar),
+    'GFIP e aposentadoria contraditórios não são salvos');
+  // No item (3, '00', false) e no formulario ('3', 'NAO'): as duas formas do padrao fixo.
+  check(!/(default_severity|default_probability)\s*:\s*'?\d/.test(viewFonte) && !/gfip_code_suggested\s*:\s*'0/.test(viewFonte)
+    && !/(special_retirement_eligible|insalubridade_applicable|periculosidade_applicable)\s*:\s*(true|false|'SIM'|'NAO')/.test(viewFonte)
+    && !/insalubridade_degree_suggested\s*:\s*'\d/.test(viewFonte),
+  'a tela não tem severidade, probabilidade, GFIP nem enquadramento fixos, nem no item nem no formulário');
+  check(/FORMULARIO_VAZIO: FormularioDoRisco = \{[^}]*?\.\.\.CLASSIFICACAO_NAO_INFORMADA\s*\};/.test(viewFonte),
+    'o formulário vazio começa com a classificação em "Não informado"');
+  check(/\.\.\.classificacaoParaFormulario\(item\)/.test(viewFonte), 'a edição abre com a classificação gravada no item');
+  const semControle = CAMPOS.filter((c) => !new RegExp(`value=\\{(form\\.[a-z_]+ === 'NAO' \\? '' : )?form\\.${c}\\}`).test(viewFonte));
+  check(semControle.length === 0, `cada campo de classificação tem controle no formulário${semControle.length ? `: falta ${semControle.join(', ')}` : ''}`);
+  const naoInformado = (viewFonte.match(/<option value="">Não informado<\/option>/g) || []).length;
+  check(naoInformado >= 7, `as sete listas da classificação começam em "Não informado" (${naoInformado})`);
+  check(/const enquadramento = enquadramentoDoItem\(item\)/.test(viewFonte) && /\{enquadramento\.map\(/.test(viewFonte),
+    'a ficha do item mostra a classificação e o enquadramento que ele tem');
+}
+
+// ===========================================================================
+// 8. ITEM DA LISTAGEM QUE REPETE UM CURADO
+// ===========================================================================
+console.log('\n— item que repete um curado');
+{
+  const repetido = { ...L1, status: 'INACTIVE', duplicate_of_id: C1.id };
+  const achar = (lista) => (id) => lista.find((i) => i.id === id);
+  check(textoDaDuplicidade(repetido, achar([C1, repetido])) === `Mesmo risco que «${C1.name}»`, 'com o curado na lista: "Mesmo risco que «nome do curado»"');
+  check(textoDaDuplicidade(repetido, achar([repetido])) === 'Repete um item curado', 'sem o curado na lista: "Repete um item curado"');
+  check(textoDaDuplicidade(L1, achar([C1, L1])) === null && textoDaDuplicidade({ ...L1, duplicate_of_id: '  ' }, achar([C1])) === null,
+    'item que não repete nada: nenhum aviso');
+  check(/const duplicidade = textoDaDuplicidade\(item, id => itemPorId\.get\(id\)\)/.test(viewFonte) && /\{duplicidade &&/.test(viewFonte)
+    && /\{duplicidade\}/.test(viewFonte), 'a ficha mostra o aviso, achando o curado pelo id no catálogo');
+  check(/const itemPorId = useMemo\(\(\) => new Map\(catalogo\.map\(item => \[item\.id, item\]\)\), \[catalogo\]\)/.test(viewFonte),
+    'o curado é achado num mapa montado uma vez por catálogo, e não numa busca por cartão');
 }
 
 // ===========================================================================

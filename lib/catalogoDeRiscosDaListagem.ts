@@ -15,9 +15,31 @@
  * propagacao, unidade, tipo de avaliacao, limite de tolerancia, valor teto,
  * nivel de acao, casas decimais, classificacao do efeito e codigo da Tabela
  * 24. Fonte geradora, efeito a saude, EPC, EPI, exames, severidade,
- * probabilidade, insalubridade, periculosidade e aposentadoria especial ficam
- * AUSENTES: a listagem nao os traz, e inventa-los poria no PGR do cliente uma
- * afirmacao que ninguem fez.
+ * probabilidade, periculosidade e aposentadoria especial ficam AUSENTES: a
+ * listagem nao os traz, e inventa-los poria no PGR do cliente uma afirmacao
+ * que ninguem fez. Insalubridade so nos itens conferidos na NR-15 (abaixo),
+ * porque ai e a norma que a afirma.
+ *
+ * CONFERENCIA COM A NR-15
+ *
+ * 124 itens foram conferidos no texto oficial: 121 no Quadro n. 1 do Anexo 11
+ * (docs/fontes/nr15-anexo11.txt) e 3 de vibracao no Anexo 8
+ * (docs/fontes/nr15-trechos.txt) - CONFERIDOS_NA_NR15, com o agente como a
+ * norma o escreve e a linha. Neles o texto do limite cita a fonte ("78 ppm
+ * (NR-15, Anexo 11)") e a insalubridade e a da norma: o adicional do grau
+ * (NR-15, itens 15.2.1 a 15.2.3: maximo 40%, medio 20%, minimo 10%) e a base
+ * legal. Onde a listagem divergia da norma sem ambiguidade, vale a norma
+ * (CORRECOES_PELA_NR15, 21 correcoes em 15 itens); os numeros abaixo ja vem
+ * corrigidos. Nome diferente, agente fora do Quadro ou unidade sem conversao
+ * direta nao foram corrigidos nem ganharam grau: a decisao e do usuario.
+ *
+ * DUPLICATAS DE ITENS CURADOS
+ *
+ * 22 itens repetem um item curado no mesmo nivel de detalhe
+ * (DUPLICATAS_DE_CURADOS): saem com status INACTIVE e duplicate_of_id = id do
+ * curado, para o seletor nao oferecer o mesmo risco duas vezes. Podem ser
+ * reativados na tela. created_at e updated_at sao sempre iguais: e assim que a
+ * carga reconhece o item que ninguem editou e o troca por esta versao.
  *
  * LIMITES. A listagem escreve 0 quando o agente nao tem valor fixo (silica,
  * calor, frio, ruido de impacto). 0 vira campo AUSENTE, nunca 0: "0 mg/m³" no
@@ -100,6 +122,216 @@ export const TOTAL_DE_LINHAS_DA_LISTAGEM = 910;
 
 export const NOTA_AUSENCIA_RETIRADA =
   'A listagem trazia 09.01.001, retirado aqui: esse código declara que o trabalhador não tem agente nocivo, não é propriedade de um risco, e o S-2240 o recusa junto de outro agente.';
+
+/** Nome na listagem -> id do item curado que ele repete. O item sai INACTIVE. */
+export const DUPLICATAS_DE_CURADOS: Record<string, string> = {
+  'Ruído impulsivo ou de impacto': 'risk-cat-02',
+  'Trabalhos com exposição ao calor nos termos da NR-15, da Portaria 3.214/1978': 'risk-cat-03',
+  'Vibrações localizadas (mão-braço)': 'risk-cat-05',
+  'Radiações não ionizantes': 'risk-cat-06',
+  'Frio': 'risk-cat-07',
+  'Fumos metálicos': 'risk-cat-08',
+  'Óleos e Graxas Minerais (Hidrocarbonetos Aromáticos)': 'risk-cat-12',
+  'Microrganismos Patogênicos': 'risk-cat-13',
+  'Agentes biológicos (bactérias, vírus, fungos e outros)': 'risk-cat-13',
+  'Trabalhos em estabelecimentos de saúde com contato com pacientes portadores de doenças infectocontagiosas ou com manuseio de materiais contaminados': 'risk-cat-13',
+  'Trabalhos em galerias, fossas e tranques de esgoto': 'risk-cat-14',
+  'Levantamento e transporte manual de cargas ou volumes': 'risk-cat-15',
+  'Trabalho em posturas incômodas ou pouco confortáveis por longos períodos': 'risk-cat-16',
+  'Exigência de posturas inadequadas': 'risk-cat-16',
+  'Frequente execução de movimentos repetitivos': 'risk-cat-17',
+  'Trabalho em Altura': 'risk-cat-18',
+  'Queda com diferença de nível': 'risk-cat-18',
+  'Máquinas e equipamentos sem proteção': 'risk-cat-19',
+  'Condições ou procedimentos que possam provocar contato com eletricidade': 'risk-cat-20',
+  'Trabalho em Espaço Confinado': 'risk-cat-21',
+  'Projeção de partículas': 'risk-cat-23',
+  'Ausência de agente nocivo ou de atividades previstas no Anexo IV do Decreto 3.048/1999': 'risk-cat-25',
+};
+
+export type GrauDaNr15 = 'máximo' | 'médio' | 'mínimo';
+
+export interface ConferidoNaNr15 {
+  nome: string;
+  fonte: string;
+  /** O agente (ou o parametro, na vibracao) como a norma o escreve. */
+  agente: string;
+  grau: GrauDaNr15;
+  /** Linha em docs/fontes/nr15-anexo11.txt (Anexo 11) ou docs/fontes/nr15-trechos.txt (Anexo 8). */
+  linha: number;
+}
+
+export const CONFERIDOS_NA_NR15: ConferidoNaNr15[] = [
+  { nome: 'Estireno (vinilbenzeno)', fonte: 'NR-15, Anexo 11', agente: 'Estireno', grau: 'médio', linha: 366 },
+  { nome: 'Dissulfeto de carbono', fonte: 'NR-15, Anexo 11', agente: 'Dissulfeto de carbono', grau: 'máximo', linha: 362 },
+  { nome: 'Acrilonitrila', fonte: 'NR-15, Anexo 11', agente: 'Acrilonitrila', grau: 'máximo', linha: 168 },
+  { nome: '1-3-butadieno', fonte: 'NR-15, Anexo 11', agente: '1,3 Butadieno', grau: 'médio', linha: 227 },
+  { nome: 'Diisocianato de tolueno (TDI)', fonte: 'NR-15, Anexo 11', agente: '2,4 Diisocianato de tolueno (TDI)', grau: 'máximo', linha: 342 },
+  { nome: 'Óxido de etileno', fonte: 'NR-15, Anexo 11', agente: 'Óxido de etileno', grau: 'máximo', linha: 522 },
+  { nome: 'Estilbenzeno (etilbenzeno)', fonte: 'NR-15, Anexo 11', agente: 'Etilbenzeno', grau: 'médio', linha: 397 },
+  { nome: 'Dimetilamina', fonte: 'NR-15, Anexo 11', agente: 'Dimetilamina', grau: 'médio', linha: 348 },
+  { nome: '1,1,1 Tricloroetano (Metilclorofórmio)', fonte: 'NR-15, Anexo 11', agente: 'Metilclorofórmio', grau: 'médio', linha: 483 },
+  { nome: '1,1,2-Tricloro-1,2,2-trifluoretano (freon 113)', fonte: 'NR-15, Anexo 11', agente: '1,1,2 Tricloro-1,2,2 trifluoretano', grau: 'médio', linha: 597 },
+  { nome: '1,1,2-Tricloroetano (Tricloreto de vinila)', fonte: 'NR-15, Anexo 11', agente: '1,1,2 Tricloroetano', grau: 'médio', linha: 589 },
+  { nome: '1,1-Dicloro-1-nitroetano', fonte: 'NR-15, Anexo 11', agente: '1,1 Dicloro-1-nitroetano', grau: 'máximo', linha: 332 },
+  { nome: '1,1-Dicloroetano', fonte: 'NR-15, Anexo 11', agente: '1,1 Dicloroetano', grau: 'médio', linha: 318 },
+  { nome: '1,2 Dicloroetano (Dicloreto de etileno)', fonte: 'NR-15, Anexo 11', agente: '1,2 Dicloroetano', grau: 'máximo', linha: 320 },
+  { nome: '1,2 Dicloroetileno', fonte: 'NR-15, Anexo 11', agente: '1,2 Dicloroetileno', grau: 'médio', linha: 326 },
+  { nome: '1,2,3-Tricloropropano', fonte: 'NR-15, Anexo 11', agente: '1,2,3 Tricloropropano', grau: 'máximo', linha: 595 },
+  { nome: '1,2-Dibramoetano (dibrometo de etileno)', fonte: 'NR-15, Anexo 11', agente: '1,2-Dibramoetano', grau: 'médio', linha: 312 },
+  { nome: '1-Butanotiol (n-Butil mercaptana)', fonte: 'NR-15, Anexo 11', agente: 'n-Butil mercaptana', grau: 'médio', linha: 245 },
+  { nome: '1-Cloro-1-nitropropano', fonte: 'NR-15, Anexo 11', agente: '1-Cloro 1-nitropropano', grau: 'máximo', linha: 297 },
+  { nome: '1-Nitropropano', fonte: 'NR-15, Anexo 11', agente: '1 - Nitropropano', grau: 'médio', linha: 518 },
+  { nome: '2-Butóxi etanol (EGBE) (butil cellosolve) (éter monobutílico do etileno glicol)', fonte: 'NR-15, Anexo 11', agente: 'Butil cellosolve', grau: 'médio', linha: 243 },
+  { nome: '2-Etoxietanol (cellosolve ou Éter monoetílico do etileno glicol)', fonte: 'NR-15, Anexo 11', agente: '2-Etoxietanol', grau: 'médio', linha: 409 },
+  { nome: '2-Nitropropano', fonte: 'NR-15, Anexo 11', agente: '2 - Nitropropano', grau: 'médio', linha: 520 },
+  { nome: 'Acetaldeído (aldeído acético)', fonte: 'NR-15, Anexo 11', agente: 'Acetaldeído', grau: 'máximo', linha: 126 },
+  { nome: 'Acetato de 2-etoxi etila (Acetato de cellosolve ou Acetato de éter monoetílico de etilenoglicol)', fonte: 'NR-15, Anexo 11', agente: 'Acetato de cellosolve', grau: 'médio', linha: 128 },
+  { nome: 'Acetato de etila', fonte: 'NR-15, Anexo 11', agente: 'Acetato de etila', grau: 'mínimo', linha: 136 },
+  { nome: 'Acetona (propanona)', fonte: 'NR-15, Anexo 11', agente: 'Acetona', grau: 'mínimo', linha: 144 },
+  { nome: 'Acetonitrila (cianeto de metila)', fonte: 'NR-15, Anexo 11', agente: 'Acetonitrila', grau: 'máximo', linha: 146 },
+  { nome: 'Ácido acético (ácido etanoico)', fonte: 'NR-15, Anexo 11', agente: 'Ácido acético', grau: 'médio', linha: 148 },
+  { nome: 'Ácido cianídrico (cianeto de hidrogênio, gás cianídrico)', fonte: 'NR-15, Anexo 11', agente: 'Ácido cianídrico', grau: 'máximo', linha: 150 },
+  { nome: 'Ácido clorídrico (cloreto de hidrogênio, gás clorídrico)', fonte: 'NR-15, Anexo 11', agente: 'Ácido clorídrico', grau: 'máximo', linha: 152 },
+  { nome: 'Ácido crômico (névoa)', fonte: 'NR-15, Anexo 11', agente: 'Ácido crômico (névoa)', grau: 'máximo', linha: 154 },
+  { nome: 'Ácido fluorídrico', fonte: 'NR-15, Anexo 11', agente: 'Ácido fluorídrico', grau: 'máximo', linha: 158 },
+  { nome: 'Ácido metanoico (ácido fórmico)', fonte: 'NR-15, Anexo 11', agente: 'Ácido fórmico', grau: 'médio', linha: 160 },
+  { nome: 'Acrilato de metila', fonte: 'NR-15, Anexo 11', agente: 'Acrilato de metila', grau: 'máximo', linha: 166 },
+  { nome: 'Álcool etílico (etanol)', fonte: 'NR-15, Anexo 11', agente: 'Álcool etílico', grau: 'mínimo', linha: 180 },
+  { nome: 'Álcool furfurílico', fonte: 'NR-15, Anexo 11', agente: 'Álcool furfurílico', grau: 'médio', linha: 182 },
+  { nome: 'Álcool isoamílico', fonte: 'NR-15, Anexo 11', agente: 'Álcool isoamílico', grau: 'mínimo', linha: 170 },
+  { nome: 'Álcool isobutílico (isobutanol)', fonte: 'NR-15, Anexo 11', agente: 'Álcool isobutílico', grau: 'médio', linha: 174 },
+  { nome: 'Álcool isopropílico (isopropanol ou 2-propanol)', fonte: 'NR-15, Anexo 11', agente: 'Álcool isopropílico', grau: 'médio', linha: 192 },
+  { nome: 'Álcool metil amílico (metil isobutilcarbinol)', fonte: 'NR-15, Anexo 11', agente: 'Metil isobutilcarbinol', grau: 'máximo', linha: 489 },
+  { nome: 'Álcool metílico (metanol)', fonte: 'NR-15, Anexo 11', agente: 'Álcool metílico', grau: 'máximo', linha: 188 },
+  { nome: 'Álcool n-butílico (n-butanol)', fonte: 'NR-15, Anexo 11', agente: 'Álcool n-butílico', grau: 'máximo', linha: 172 },
+  { nome: 'Álcool n-propílico (n-propanol)', fonte: 'NR-15, Anexo 11', agente: 'Álcool n-propílico', grau: 'médio', linha: 190 },
+  { nome: 'Álcool sec-butílico (sec-butanol)', fonte: 'NR-15, Anexo 11', agente: 'Álcool sec-butílico (2-butanol)', grau: 'médio', linha: 176 },
+  { nome: 'Álcool terc-butílico', fonte: 'NR-15, Anexo 11', agente: 'Álcool terc-butílico', grau: 'médio', linha: 178 },
+  { nome: 'Amônia (gás amoníaco)', fonte: 'NR-15, Anexo 11', agente: 'Amônia', grau: 'médio', linha: 198 },
+  { nome: 'Anidro sulfuroso (dióxido de enxofre)', fonte: 'NR-15, Anexo 11', agente: 'Dióxido de enxofre', grau: 'máximo', linha: 358 },
+  { nome: 'Anilina', fonte: 'NR-15, Anexo 11', agente: 'Anilina', grau: 'máximo', linha: 204 },
+  { nome: 'Brometo de etila (bromoetano)', fonte: 'NR-15, Anexo 11', agente: 'Brometo de etila', grau: 'máximo', linha: 213 },
+  { nome: 'Brometo de metila (bromometano)', fonte: 'NR-15, Anexo 11', agente: 'Brometo de metila', grau: 'máximo', linha: 215 },
+  { nome: 'Cianogênio', fonte: 'NR-15, Anexo 11', agente: 'Cianogênio', grau: 'máximo', linha: 259 },
+  { nome: 'Ciclohexano', fonte: 'NR-15, Anexo 11', agente: 'Ciclohexano', grau: 'médio', linha: 261 },
+  { nome: 'Ciclohexanol', fonte: 'NR-15, Anexo 11', agente: 'Ciclohexanol', grau: 'máximo', linha: 263 },
+  { nome: 'Ciclohexilamina', fonte: 'NR-15, Anexo 11', agente: 'Ciclohexilamina', grau: 'máximo', linha: 265 },
+  { nome: 'Cloreto de etila (cloroetano)', fonte: 'NR-15, Anexo 11', agente: 'Cloreto de etila', grau: 'médio', linha: 269 },
+  { nome: 'Cloreto de fenila (clorobenzeno)', fonte: 'NR-15, Anexo 11', agente: 'Clorobenzeno', grau: 'médio', linha: 285 },
+  { nome: 'Cloreto de metila', fonte: 'NR-15, Anexo 11', agente: 'Cloreto de metila', grau: 'máximo', linha: 275 },
+  { nome: 'Cloreto de vinila (cloroetílico)', fonte: 'NR-15, Anexo 11', agente: 'Cloreto de vinila', grau: 'máximo', linha: 279 },
+  { nome: 'Cloreto de vinilideno (1,1-Dicloreotileno)', fonte: 'NR-15, Anexo 11', agente: 'Cloreto de vinilideno', grau: 'máximo', linha: 281 },
+  { nome: 'Clorobromometano', fonte: 'NR-15, Anexo 11', agente: 'Clorobromometano', grau: 'máximo', linha: 287 },
+  { nome: 'Clorodifluormetano (freon 22)', fonte: 'NR-15, Anexo 11', agente: 'Clorodifluometano (freon 22)', grau: 'mínimo', linha: 293 },
+  { nome: 'Clorofórmio (Triclorometano)', fonte: 'NR-15, Anexo 11', agente: 'Clorofórmio', grau: 'máximo', linha: 295 },
+  { nome: 'Decaborano', fonte: 'NR-15, Anexo 11', agente: 'Decaborano', grau: 'máximo', linha: 304 },
+  { nome: 'Demeton (Systox)', fonte: 'NR-15, Anexo 11', agente: 'Demeton', grau: 'máximo', linha: 306 },
+  { nome: 'Diborano', fonte: 'NR-15, Anexo 11', agente: 'Diborano', grau: 'máximo', linha: 310 },
+  { nome: 'Diclorodifluormetano', fonte: 'NR-15, Anexo 11', agente: 'Diclorodifluormetano (freon 12)', grau: 'mínimo', linha: 316 },
+  { nome: 'Diclorometano (Cloreto de metileno)', fonte: 'NR-15, Anexo 11', agente: 'Cloreto de metileno', grau: 'máximo', linha: 277 },
+  { nome: 'Diclorotetrafluoretano (freon 114)', fonte: 'NR-15, Anexo 11', agente: 'Diclorotetrafluoretano (freon 114)', grau: 'mínimo', linha: 336 },
+  { nome: 'Dietil éter (Éter etílico)', fonte: 'NR-15, Anexo 11', agente: 'Éter etílico', grau: 'médio', linha: 380 },
+  { nome: 'Diisopropilamina', fonte: 'NR-15, Anexo 11', agente: 'Diisopropilamina', grau: 'máximo', linha: 344 },
+  { nome: 'Dimetilacetamida (N,N-Dimetilacetamida)', fonte: 'NR-15, Anexo 11', agente: 'Dimetilacetamida', grau: 'máximo', linha: 346 },
+  { nome: 'Dióxido de carbono (gás carbônico)', fonte: 'NR-15, Anexo 11', agente: 'Dióxido de carbono', grau: 'mínimo', linha: 354 },
+  { nome: 'Dióxido de cloro', fonte: 'NR-15, Anexo 11', agente: 'Dióxido de cloro', grau: 'máximo', linha: 356 },
+  { nome: 'Dióxido de nitrogênio', fonte: 'NR-15, Anexo 11', agente: 'Dióxido de nitrogênio', grau: 'máximo', linha: 360 },
+  { nome: 'Éter monometílico do etileno glicol (metil cellosolve ou 2-Metoxi etanol (EGME))', fonte: 'NR-15, Anexo 11', agente: 'Metil cellosolve', grau: 'máximo', linha: 479 },
+  { nome: 'Etil mercaptana (Etanotiol)', fonte: 'NR-15, Anexo 11', agente: 'Etil mercaptana', grau: 'médio', linha: 405 },
+  { nome: 'Etilamina', fonte: 'NR-15, Anexo 11', agente: 'Etilamina', grau: 'máximo', linha: 394 },
+  { nome: 'Etilenoimina', fonte: 'NR-15, Anexo 11', agente: 'Etilenoimina', grau: 'máximo', linha: 403 },
+  { nome: 'Fenol', fonte: 'NR-15, Anexo 11', agente: 'Fenol', grau: 'máximo', linha: 411 },
+  { nome: 'Fluortriclorometano (triclorofluormetano ou freon 11)', fonte: 'NR-15, Anexo 11', agente: 'Fluortriclorometano (freon 11)', grau: 'médio', linha: 413 },
+  { nome: 'Formaldeído (formol ou Aldeído fórmico)', fonte: 'NR-15, Anexo 11', agente: 'Formaldeído (formol)', grau: 'máximo', linha: 415 },
+  { nome: 'Fosfina (fosfamina)', fonte: 'NR-15, Anexo 11', agente: 'Fosfina (fosfamina)', grau: 'máximo', linha: 417 },
+  { nome: 'Fosgênio (cloreto de carbonila)', fonte: 'NR-15, Anexo 11', agente: 'Fosgênio', grau: 'máximo', linha: 419 },
+  { nome: 'Hidrazina (diamina)', fonte: 'NR-15, Anexo 11', agente: 'Hidrazina', grau: 'máximo', linha: 451 },
+  { nome: 'Hidreto de antimônio (Estibina)', fonte: 'NR-15, Anexo 11', agente: 'Estibina', grau: 'máximo', linha: 364 },
+  { nome: 'Isopropil benzeno (cumeno)', fonte: 'NR-15, Anexo 11', agente: 'Cumeno', grau: 'máximo', linha: 302 },
+  { nome: 'Isopropilamina', fonte: 'NR-15, Anexo 11', agente: 'Isopropilamina', grau: 'médio', linha: 461 },
+  { nome: 'Metacrilato de metila', fonte: 'NR-15, Anexo 11', agente: 'Metacrilato de metila', grau: 'mínimo', linha: 469 },
+  { nome: 'Metil demeton', fonte: 'NR-15, Anexo 11', agente: 'Metil demeton', grau: 'máximo', linha: 485 },
+  { nome: 'Metil etil cetona (MEK) (Butanona)', fonte: 'NR-15, Anexo 11', agente: 'metil etil cetona', grau: 'médio', linha: 487 },
+  { nome: 'Metil mercaptana (metanotiol)', fonte: 'NR-15, Anexo 11', agente: 'Metil mercaptana (metanotiol)', grau: 'médio', linha: 492 },
+  { nome: 'Metilamina', fonte: 'NR-15, Anexo 11', agente: 'Metilamina', grau: 'máximo', linha: 477 },
+  { nome: 'Metilciclohexanol', fonte: 'NR-15, Anexo 11', agente: 'Metil ciclohexanol', grau: 'médio', linha: 481 },
+  { nome: 'Monometil hidrazina (metil hidrazina)', fonte: 'NR-15, Anexo 11', agente: 'Monometil hidrazina', grau: 'máximo', linha: 498 },
+  { nome: 'Monóxido de carbono', fonte: 'NR-15, Anexo 11', agente: 'Monóxido de carbono', grau: 'máximo', linha: 500 },
+  { nome: 'n-Butano', fonte: 'NR-15, Anexo 11', agente: 'n-Butano', grau: 'médio', linha: 229 },
+  { nome: 'n-Butilamina', fonte: 'NR-15, Anexo 11', agente: 'n-Butilamina', grau: 'máximo', linha: 241 },
+  { nome: 'Negro de fumo', fonte: 'NR-15, Anexo 11', agente: 'Negro de fumo(1)', grau: 'máximo', linha: 502 },
+  { nome: 'n-Etil morfolina', fonte: 'NR-15, Anexo 11', agente: 'n-Etil morfolina', grau: 'médio', linha: 407 },
+  { nome: 'Nitrato de n-propila', fonte: 'NR-15, Anexo 11', agente: 'Nitrato de n-propila', grau: 'máximo', linha: 512 },
+  { nome: 'Nitroetano', fonte: 'NR-15, Anexo 11', agente: 'Nitroetano', grau: 'médio', linha: 514 },
+  { nome: 'Nitrometano', fonte: 'NR-15, Anexo 11', agente: 'Nitrometano', grau: 'máximo', linha: 516 },
+  { nome: 'n-Pentano', fonte: 'NR-15, Anexo 11', agente: 'n-Pentano', grau: 'mínimo', linha: 534 },
+  { nome: 'o-Diclorobenzeno', fonte: 'NR-15, Anexo 11', agente: 'o-Diclorobenzeno', grau: 'máximo', linha: 314 },
+  { nome: 'Óxido nítrico', fonte: 'NR-15, Anexo 11', agente: 'Óxido nítrico (NO)', grau: 'máximo', linha: 526 },
+  { nome: 'Ozona (ozônio)', fonte: 'NR-15, Anexo 11', agente: 'Ozona', grau: 'máximo', linha: 530 },
+  { nome: 'Pentaborano', fonte: 'NR-15, Anexo 11', agente: 'Pentaborano', grau: 'máximo', linha: 532 },
+  { nome: 'Percloroetileno (Tetracloroetileno)', fonte: 'NR-15, Anexo 11', agente: 'Percloroetíleno', grau: 'médio', linha: 536 },
+  { nome: 'Piridina', fonte: 'NR-15, Anexo 11', agente: 'Piridina', grau: 'médio', linha: 538 },
+  { nome: 'Propileno imina', fonte: 'NR-15, Anexo 11', agente: 'Propileno imina', grau: 'máximo', linha: 550 },
+  { nome: 'Sulfeto de hidrogênio (Gás sulfídrico)', fonte: 'NR-15, Anexo 11', agente: 'Gás sulfídrico', grau: 'máximo', linha: 445 },
+  { nome: 'Tetrabrometo de acetileno (1,1,2,2-Tetrabromoetano)', fonte: 'NR-15, Anexo 11', agente: '1,1,2,2,Tetrabromoetano', grau: 'médio', linha: 560 },
+  { nome: 'Tetracloreto de carbono', fonte: 'NR-15, Anexo 11', agente: 'Tetracloreto de carbono', grau: 'máximo', linha: 562 },
+  { nome: 'Tetracloroetano (1,1,2,2-Tetracloroetano)', fonte: 'NR-15, Anexo 11', agente: 'Tetracloroetano', grau: 'máximo', linha: 564 },
+  { nome: 'Tetrahidrofurano', fonte: 'NR-15, Anexo 11', agente: 'Tetrahidrofurano', grau: 'máximo', linha: 570 },
+  { nome: 'Tolueno (toluol)', fonte: 'NR-15, Anexo 11', agente: 'Tolueno (toluol)', grau: 'médio', linha: 572 },
+  { nome: 'Tribromometano (Bromofórmio)', fonte: 'NR-15, Anexo 11', agente: 'Bromofórmio', grau: 'médio', linha: 221 },
+  { nome: 'Tricloroetileno', fonte: 'NR-15, Anexo 11', agente: 'Tricloroetileno', grau: 'máximo', linha: 591 },
+  { nome: 'Trietilamina', fonte: 'NR-15, Anexo 11', agente: 'Trietilamina', grau: 'máximo', linha: 601 },
+  { nome: 'Xileno (xilol)', fonte: 'NR-15, Anexo 11', agente: 'Xileno (xilol)', grau: 'médio', linha: 607 },
+  { nome: 'Vibrações localizadas (mão-braço)', fonte: 'NR-15, Anexo 8', agente: 'VMB: aren', grau: 'médio', linha: 227 },
+  { nome: 'Vibração de corpo inteiro (aceleração resultante de exposição normalizada - aren)', fonte: 'NR-15, Anexo 8', agente: 'VCI: aren', grau: 'médio', linha: 231 },
+  { nome: 'Vibração de corpo inteiro (Valor da Dose de Vibração Resultante - VDVR)', fonte: 'NR-15, Anexo 8', agente: 'VCI: VDVR', grau: 'médio', linha: 232 },
+];
+
+export interface CorrecaoPelaNr15 {
+  nome: string;
+  campo: 'tolerance_limit_value' | 'action_level_value' | 'tolerance_limit_is_ceiling';
+  /** O que a fonte traz (0 = "sem valor fixo"). */
+  listagem: number | boolean;
+  norma: number | boolean;
+  anexo: string;
+  /** Linha do agente em docs/fontes/nr15-anexo11.txt; null no nivel de acao (metade do limite). */
+  linha: number | null;
+}
+
+export const CORRECOES_PELA_NR15: CorrecaoPelaNr15[] = [
+  { nome: '1,1-Dicloro-1-nitroetano', campo: 'tolerance_limit_is_ceiling', listagem: false, norma: true, anexo: 'NR-15, Anexo 11', linha: 332 },
+  { nome: 'Ácido clorídrico (cloreto de hidrogênio, gás clorídrico)', campo: 'tolerance_limit_is_ceiling', listagem: false, norma: true, anexo: 'NR-15, Anexo 11', linha: 152 },
+  { nome: 'Ácido crômico (névoa)', campo: 'tolerance_limit_value', listagem: 0, norma: 0.04, anexo: 'NR-15, Anexo 11', linha: 154 },
+  { nome: 'Ácido crômico (névoa)', campo: 'action_level_value', listagem: 0, norma: 0.02, anexo: 'NR-09, item 9.6.1 b)', linha: null },
+  { nome: 'Ácido fluorídrico', campo: 'tolerance_limit_value', listagem: 2, norma: 1.5, anexo: 'NR-15, Anexo 11', linha: 158 },
+  { nome: 'Ácido fluorídrico', campo: 'action_level_value', listagem: 1, norma: 0.75, anexo: 'NR-09, item 9.6.1 b)', linha: null },
+  { nome: 'Ácido metanoico (ácido fórmico)', campo: 'tolerance_limit_value', listagem: 1.5, norma: 7, anexo: 'NR-15, Anexo 11', linha: 160 },
+  { nome: 'Ácido metanoico (ácido fórmico)', campo: 'action_level_value', listagem: 0.75, norma: 3.5, anexo: 'NR-09, item 9.6.1 b)', linha: null },
+  { nome: 'Álcool n-butílico (n-butanol)', campo: 'tolerance_limit_is_ceiling', listagem: false, norma: true, anexo: 'NR-15, Anexo 11', linha: 172 },
+  { nome: 'Cloreto de vinila (cloroetílico)', campo: 'tolerance_limit_is_ceiling', listagem: false, norma: true, anexo: 'NR-15, Anexo 11', linha: 279 },
+  { nome: 'Demeton (Systox)', campo: 'tolerance_limit_value', listagem: 0.1, norma: 0.08, anexo: 'NR-15, Anexo 11', linha: 306 },
+  { nome: 'Demeton (Systox)', campo: 'action_level_value', listagem: 0.05, norma: 0.04, anexo: 'NR-09, item 9.6.1 b)', linha: null },
+  { nome: 'Diborano', campo: 'tolerance_limit_value', listagem: 0.1, norma: 0.08, anexo: 'NR-15, Anexo 11', linha: 310 },
+  { nome: 'Diborano', campo: 'action_level_value', listagem: 0.05, norma: 0.04, anexo: 'NR-09, item 9.6.1 b)', linha: null },
+  { nome: 'Diclorodifluormetano', campo: 'tolerance_limit_is_ceiling', listagem: false, norma: true, anexo: 'NR-15, Anexo 11', linha: 316 },
+  { nome: 'Dióxido de nitrogênio', campo: 'tolerance_limit_is_ceiling', listagem: false, norma: true, anexo: 'NR-15, Anexo 11', linha: 360 },
+  { nome: 'Formaldeído (formol ou Aldeído fórmico)', campo: 'tolerance_limit_is_ceiling', listagem: false, norma: true, anexo: 'NR-15, Anexo 11', linha: 415 },
+  { nome: 'Monometil hidrazina (metil hidrazina)', campo: 'tolerance_limit_is_ceiling', listagem: false, norma: true, anexo: 'NR-15, Anexo 11', linha: 498 },
+  { nome: 'n-Butilamina', campo: 'tolerance_limit_is_ceiling', listagem: false, norma: true, anexo: 'NR-15, Anexo 11', linha: 241 },
+  { nome: 'Pentaborano', campo: 'tolerance_limit_value', listagem: 0, norma: 0.008, anexo: 'NR-15, Anexo 11', linha: 532 },
+  { nome: 'Pentaborano', campo: 'action_level_value', listagem: 0, norma: 0.004, anexo: 'NR-09, item 9.6.1 b)', linha: null },
+];
+
+/** NR-15, itens 15.2.1 a 15.2.3. */
+const ADICIONAL_DO_GRAU: Record<GrauDaNr15, '10%' | '20%' | '40%'> = {
+  'máximo': '40%',
+  'médio': '20%',
+  'mínimo': '10%',
+};
+
+const DUPLICATA = new Map(Object.entries(DUPLICATAS_DE_CURADOS));
+const CONFERIDO = new Map(CONFERIDOS_NA_NR15.map((c) => [c.nome, c]));
 
 const DATA_DA_LISTAGEM = '2026-10-08T00:00:00Z';
 
@@ -309,7 +541,7 @@ const LINHAS: Linha[] = [
   ['risk-lst-1-1-2-2-tetracloro-1-2-difluoretano', '1,1,2,2-Tetracloro-1,2-difluoretano', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, 0, '', '', 0],
   ['risk-lst-1-1-2-tricloro-1-2-2-trifluoretano-freon-113', '1,1,2-Tricloro-1,2,2-trifluoretano (freon 113)', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', 5930, 0, 2965, 1, '', '', 0],
   ['risk-lst-1-1-2-tricloroetano-tricloreto-de-vinila', '1,1,2-Tricloroetano (Tricloreto de vinila)', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', 35, 0, 17.5, 1, '', '', 0],
-  ['risk-lst-1-1-dicloro-1-nitroetano', '1,1-Dicloro-1-nitroetano', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', 47, 0, 23.5, 1, '', '', 0],
+  ['risk-lst-1-1-dicloro-1-nitroetano', '1,1-Dicloro-1-nitroetano', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', 47, 1, 23.5, 1, '', '', 0],
   ['risk-lst-1-1-dicloroetano', '1,1-Dicloroetano', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', 640, 0, 320, 1, '', '', 0],
   ['risk-lst-1-1-dimetil-hidrazina', '1,1-Dimetil hidrazina', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', 0.8, 0, 0.4, 1, '', '', 0],
   ['risk-lst-1-2-dicloroetano-dicloreto-de-etileno', '1,2 Dicloroetano (Dicloreto de etileno)', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', 156, 0, 78, 1, '', '', 0],
@@ -392,13 +624,13 @@ const LINHAS: Linha[] = [
   ['risk-lst-acido-bromidrico-brometo-de-hidrogenio', 'Ácido bromídrico (brometo de hidrogênio)', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '', 0],
   ['risk-lst-acido-carbonico', 'Ácido carbônico', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '', 0],
   ['risk-lst-acido-cianidrico-cianeto-de-hidrogenio-gas-cianidrico', 'Ácido cianídrico (cianeto de hidrogênio, gás cianídrico)', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', 9, 0, 4.5, 1, '', '', 0],
-  ['risk-lst-acido-cloridrico-cloreto-de-hidrogenio-gas-cloridrico', 'Ácido clorídrico (cloreto de hidrogênio, gás clorídrico)', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', 5.5, 0, 2.75, 2, '', '', 0],
-  ['risk-lst-acido-cromico-nevoa', 'Ácido crômico (névoa)', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', null, 0, null, 1, '', '', 0],
+  ['risk-lst-acido-cloridrico-cloreto-de-hidrogenio-gas-cloridrico', 'Ácido clorídrico (cloreto de hidrogênio, gás clorídrico)', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', 5.5, 1, 2.75, 2, '', '', 0],
+  ['risk-lst-acido-cromico-nevoa', 'Ácido crômico (névoa)', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', 0.04, 0, 0.02, 2, '', '', 0],
   ['risk-lst-acido-dicloroacetico', 'Ácido dicloroacético', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '', 0],
-  ['risk-lst-acido-fluoridrico', 'Ácido fluorídrico', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', 2, 0, 1, 1, '', '', 0],
+  ['risk-lst-acido-fluoridrico', 'Ácido fluorídrico', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', 1.5, 0, 0.75, 2, '', '', 0],
   ['risk-lst-acido-fosforico', 'Ácido fosfórico', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', 1, 0, 0.5, 1, '', '', 0],
   ['risk-lst-acido-metacrilico', 'Ácido metacrílico', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '', 0],
-  ['risk-lst-acido-metanoico-acido-formico', 'Ácido metanoico (ácido fórmico)', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', 1.5, 0, 0.75, 2, '', '', 0],
+  ['risk-lst-acido-metanoico-acido-formico', 'Ácido metanoico (ácido fórmico)', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', 7, 0, 3.5, 2, '', '', 0],
   ['risk-lst-acido-monocloroacetico', 'Ácido monocloroacético', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '', 0],
   ['risk-lst-acido-nitrico', 'Ácido nítrico', 'QUÍMICO', 'Ar e contato', 'ppm', 'QUANTITATIVA', 1.56, 0, 0.78, 2, '', '', 0],
   ['risk-lst-acido-oxalico-anidro-e-diidratado', 'Ácido oxálico, anidro e diidratado', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '', 0],
@@ -430,7 +662,7 @@ const LINHAS: Linha[] = [
   ['risk-lst-alcool-isopropilico-isopropanol-ou-2-propanol', 'Álcool isopropílico (isopropanol ou 2-propanol)', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', 765, 0, 382.5, 1, '', '', 0],
   ['risk-lst-alcool-metil-amilico-metil-isobutilcarbinol', 'Álcool metil amílico (metil isobutilcarbinol)', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', 78, 0, 39, 1, '', '', 0],
   ['risk-lst-alcool-metilico-metanol', 'Álcool metílico (metanol)', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', 200, 0, 100, 1, '', '', 0],
-  ['risk-lst-alcool-n-butilico-n-butanol', 'Álcool n-butílico (n-butanol)', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', 115, 0, 57.5, 1, '', '', 0],
+  ['risk-lst-alcool-n-butilico-n-butanol', 'Álcool n-butílico (n-butanol)', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', 115, 1, 57.5, 1, '', '', 0],
   ['risk-lst-alcool-n-propilico-n-propanol', 'Álcool n-propílico (n-propanol)', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', 390, 0, 195, 1, '', '', 0],
   ['risk-lst-alcool-propargilico', 'Álcool propargílico', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '', 0],
   ['risk-lst-alcool-sec-butilico-sec-butanol', 'Álcool sec-butílico (sec-butanol)', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', 350, 0, 175, 1, '', '', 0],
@@ -520,7 +752,7 @@ const LINHAS: Linha[] = [
   ['risk-lst-cloreto-de-metila', 'Cloreto de metila', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', 165, 0, 82.5, 1, '', '', 0],
   ['risk-lst-cloreto-de-polivinila-pvc-policloreto-de-vinila', 'Cloreto de polivinila (PVC (policloreto de vinila))', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '', 0],
   ['risk-lst-cloreto-de-tionila', 'Cloreto de tionila', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '', 0],
-  ['risk-lst-cloreto-de-vinila-cloroetilico', 'Cloreto de vinila (cloroetílico)', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', 398, 0, 199, 1, '', '', 0],
+  ['risk-lst-cloreto-de-vinila-cloroetilico', 'Cloreto de vinila (cloroetílico)', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', 398, 1, 199, 1, '', '', 0],
   ['risk-lst-cloreto-de-vinilideno-1-1-dicloreotileno', 'Cloreto de vinilideno (1,1-Dicloreotileno)', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', 31, 0, 15.5, 1, '', '', 0],
   ['risk-lst-cloreto-de-zinco-fumos', 'Cloreto de zinco, fumos', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '', 0],
   ['risk-lst-clornafazina', 'Clornafazina', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '', 0],
@@ -552,19 +784,19 @@ const LINHAS: Linha[] = [
   ['risk-lst-ddd-diclorodifenildicloretano', 'DDD (diclorodifenildicloretano)', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '', 0],
   ['risk-lst-ddt', 'DDT', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '', 0],
   ['risk-lst-decaborano', 'Decaborano', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', 0.25, 0, 0.125, 3, '', '', 0],
-  ['risk-lst-demeton-systox', 'Demeton (Systox)', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', 0.1, 0, 0.05, 2, '', '', 0],
+  ['risk-lst-demeton-systox', 'Demeton (Systox)', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', 0.08, 0, 0.04, 2, '', '', 0],
   ['risk-lst-demeton-s-metila', 'Demeton-S-metila', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '', 0],
   ['risk-lst-destilacao-do-alcatrao-de-hulha', 'Destilação do alcatrão de hulha', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '', 0],
   ['risk-lst-diacetil', 'Diacetil', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '', 0],
   ['risk-lst-diacetona-alcool', 'Diacetona álcool', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '', 0],
   ['risk-lst-diazinon', 'Diazinon', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '', 0],
   ['risk-lst-diazometano', 'Diazometano', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '', 0],
-  ['risk-lst-diborano', 'Diborano', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', 0.1, 0, 0.05, 2, '', '', 0],
+  ['risk-lst-diborano', 'Diborano', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', 0.08, 0, 0.04, 2, '', '', 0],
   ['risk-lst-dibutilftalato-ftalato-de-dibutila', 'Dibutilftalato (ftalato de dibutila)', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '', 0],
   ['risk-lst-diciclopentadieno', 'Diciclopentadieno', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '', 0],
   ['risk-lst-dicloreto-de-propileno-1-2-dicloropropano', 'Dicloreto de propileno (1,2-Dicloropropano)', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '', 0],
   ['risk-lst-dicloroacetileno', 'Dicloroacetileno', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '', 0],
-  ['risk-lst-diclorodifluormetano', 'Diclorodifluormetano', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', 3860, 0, 1930, 1, '', '', 0],
+  ['risk-lst-diclorodifluormetano', 'Diclorodifluormetano', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', 3860, 1, 1930, 1, '', '', 0],
   ['risk-lst-diclorofluormetano-freon-12', 'Diclorofluormetano (freon 12)', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', 3860, 0, 1930, 1, '', '', 0],
   ['risk-lst-diclorometano-cloreto-de-metileno', 'Diclorometano (Cloreto de metileno)', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', 560, 0, 280, 1, '', '', 0],
   ['risk-lst-diclorotetrafluoretano-freon-114', 'Diclorotetrafluoretano (freon 114)', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', 5460, 0, 2730, 1, '', '', 0],
@@ -596,7 +828,7 @@ const LINHAS: Linha[] = [
   ['risk-lst-dioxation', 'Dioxation', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '', 0],
   ['risk-lst-dioxido-de-carbono-gas-carbonico', 'Dióxido de carbono (gás carbônico)', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', 7020, 0, 3510, 1, '', '', 0],
   ['risk-lst-dioxido-de-cloro', 'Dióxido de cloro', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', 0.25, 0, 0.125, 3, '', '', 0],
-  ['risk-lst-dioxido-de-nitrogenio', 'Dióxido de nitrogênio', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', 7, 0, 3.5, 1, '', '', 0],
+  ['risk-lst-dioxido-de-nitrogenio', 'Dióxido de nitrogênio', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', 7, 1, 3.5, 1, '', '', 0],
   ['risk-lst-dioxido-de-titanio', 'Dióxido de titânio', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '', 0],
   ['risk-lst-dioxido-de-vinil-ciclohexano', 'Dióxido de vinil ciclohexano', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '', 0],
   ['risk-lst-dipropil-cetona', 'Dipropil cetona', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '', 0],
@@ -678,7 +910,7 @@ const LINHAS: Linha[] = [
   ['risk-lst-fluortriclorometano-triclorofluormetano-ou-freon-11', 'Fluortriclorometano (triclorofluormetano ou freon 11)', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', 4370, 0, 2185, 1, '', '', 0],
   ['risk-lst-fonofos', 'Fonofos', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '', 0],
   ['risk-lst-forato', 'Forato', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '', 0],
-  ['risk-lst-formaldeido-formol-ou-aldeido-formico', 'Formaldeído (formol ou Aldeído fórmico)', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', 2.3, 0, 1.15, 2, '', '', 0],
+  ['risk-lst-formaldeido-formol-ou-aldeido-formico', 'Formaldeído (formol ou Aldeído fórmico)', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', 2.3, 1, 1.15, 2, '', '', 0],
   ['risk-lst-formamida', 'Formamida', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '', 0],
   ['risk-lst-formiato-de-etila', 'Formiato de etila', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '', 0],
   ['risk-lst-formiato-de-metila', 'Formiato de metila', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '', 0],
@@ -786,7 +1018,7 @@ const LINHAS: Linha[] = [
   ['risk-lst-molibdenio-metal-e-compostos-insoluveis-fracao-inalavel', 'Molibdênio - metal e compostos insolúveis (fração inalável)', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '', 0],
   ['risk-lst-molibdenio-metal-e-compostos-insoluveis-fracao-respiravel', 'Molibdênio - metal e compostos insolúveis (fração respirável)', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '', 0],
   ['risk-lst-monocrotofos', 'Monocrotofós', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '', 0],
-  ['risk-lst-monometil-hidrazina-metil-hidrazina', 'Monometil hidrazina (metil hidrazina)', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', 0.27, 0, 0.135, 3, '', '', 0],
+  ['risk-lst-monometil-hidrazina-metil-hidrazina', 'Monometil hidrazina (metil hidrazina)', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', 0.27, 1, 0.135, 3, '', '', 0],
   ['risk-lst-monoxido-de-carbono', 'Monóxido de carbono', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', 43, 0, 21.5, 1, '', '', 0],
   ['risk-lst-morfolina', 'Morfolina', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '', 0],
   ['risk-lst-m-toluidina', 'm-Toluidina', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '', 0],
@@ -795,7 +1027,7 @@ const LINHAS: Linha[] = [
   ['risk-lst-naftois-1-naftol-2-naftol', 'Naftóis (1-Naftol, 2-Naftol)', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '', 0],
   ['risk-lst-naled', 'Naled', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '', 0],
   ['risk-lst-n-butano', 'n-Butano', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', 1090, 0, 545, 1, '', '', 0],
-  ['risk-lst-n-butilamina', 'n-Butilamina', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', 12, 0, 6, 1, '', '', 0],
+  ['risk-lst-n-butilamina', 'n-Butilamina', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', 12, 1, 6, 1, '', '', 0],
   ['risk-lst-negro-de-fumo', 'Negro de fumo', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', 3.5, 0, 1.75, 2, '', '', 0],
   ['risk-lst-neonio', 'Neônio', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '', 0],
   ['risk-lst-n-etil-morfolina', 'n-Etil morfolina', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', 74, 0, 37, 1, '', '', 0],
@@ -853,7 +1085,7 @@ const LINHAS: Linha[] = [
   ['risk-lst-particulados-insoluveis-ou-de-baixa-solubilidade-nao-especificados-de-outra-maneira-pnos-nao-respiraveis', 'Particulados (insolúveis ou de baixa solubilidade) não especificados de outra maneira (PNOS) - não respiráveis', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '', 0],
   ['risk-lst-particulados-insoluveis-ou-de-baixa-solubilidade-nao-especificados-de-outra-maneira-pnos-respiraveis', 'Particulados (insolúveis ou de baixa solubilidade) não especificados de outra maneira (PNOS) - respiráveis', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '', 0],
   ['risk-lst-p-diclorobenzeno', 'p-Diclorobenzeno', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '', 0],
-  ['risk-lst-pentaborano', 'Pentaborano', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', null, 0, null, 1, '', '', 0],
+  ['risk-lst-pentaborano', 'Pentaborano', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', 0.008, 0, 0.004, 3, '', '', 0],
   ['risk-lst-pentacloreto-de-fosforo', 'Pentacloreto de fósforo', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '', 0],
   ['risk-lst-pentaclorofenol', 'Pentaclorofenol', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '', 0],
   ['risk-lst-pentacloronaftaleno', 'Pentacloronaftaleno', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '', 0],
@@ -1057,9 +1289,11 @@ function montar([
   if (standardUnit) item.standard_unit = standardUnit;
   if (codigo) item.code_table_24 = codigo;
   if (ausenciaRetirada === 1) item.esocial_enquadramento_nota = NOTA_AUSENCIA_RETIRADA;
+  // So o numero conferido no texto da norma cita a norma.
+  const conferido = CONFERIDO.get(name);
   if (limite !== null) {
     item.tolerance_limit_value = limite;
-    item.tolerance_limit_reference = textoDoLimite(limite, unidade, teto === 1);
+    item.tolerance_limit_reference = textoDoLimite(limite, unidade, teto === 1, conferido?.fonte);
     if (teto === 1) item.tolerance_limit_is_ceiling = true;
   }
   if (nivelDeAcao !== null) {
@@ -1068,6 +1302,16 @@ function montar([
   }
   if (casas !== null) item.measurement_decimal_places = casas;
   if (efeito) item.effect_classification = efeito;
+  if (conferido) {
+    item.insalubridade_applicable = true;
+    item.insalubridade_degree_suggested = ADICIONAL_DO_GRAU[conferido.grau];
+    item.insalubridade_legal_basis = conferido.fonte;
+  }
+  const duplicata = DUPLICATA.get(name);
+  if (duplicata) {
+    item.status = 'INACTIVE';
+    item.duplicate_of_id = duplicata;
+  }
   return item;
 }
 

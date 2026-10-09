@@ -23,6 +23,25 @@
  *      inventado; grupos conforme a fonte e a decisao do usuario.
  *   7. Pontos conferidos contra a fonte, a mao.
  *   8. O gerador falha alto - com a linha - no que nao entende.
+ *   9. As 22 duplicatas de itens curados saem INACTIVE com duplicate_of_id de
+ *      um curado que existe; nenhuma outra linha sai inativa.
+ *  10. Conferencia com a NR-15: cada item conferido bate com a linha que cita
+ *      no texto oficial guardado em docs/fontes/ (limite na unidade, valor
+ *      teto, grau -> adicional, fonte no texto do limite); cada correcao pela
+ *      NR-15 acha na norma o valor que aplicou; nenhum item nao conferido traz
+ *      insalubridade nem cita a norma; nenhum quantitativo com o nome exato de
+ *      um agente do Quadro n. 1 ficou de fora.
+ *  11. Os criterios vem do texto da norma, nao de memoria: grau -> adicional
+ *      (NR-15, 15.2), nivel de acao = metade do limite (NR-09, 9.6.1 b) e os
+ *      niveis de acao da vibracao (NR-09, Anexo I).
+ *
+ * A NORMA E LIDA AQUI POR UM CAMINHO PROPRIO. O gerador nao le a norma: ele
+ * so aplica as listas que a conferencia montou. Este verificador le
+ * docs/fontes/nr15-anexo11.txt sozinho e acha as colunas do Quadro n. 1 pela
+ * posicao das palavras do CABECALHO do proprio Quadro ("Valor teto",
+ * "p/pele", "ppm*", "mg/m3*"): cada "+" ou numero vai para a coluna mais
+ * proxima. Se a extracao ou as listas do gerador estiverem erradas, a
+ * comparacao com o texto acusa.
  *
  * COMO O TESTE PROCURA O DEFEITO
  *
@@ -75,6 +94,9 @@ const REL = {
   tabela24: 'lib/tabela24.ts',
   limites: 'lib/limitesDoCatalogo.ts',
   gerador: 'scripts/gerar-catalogo-da-listagem.mjs',
+  anexo11: 'docs/fontes/nr15-anexo11.txt',
+  trechos15: 'docs/fontes/nr15-trechos.txt',
+  nr09: 'docs/fontes/nr09-nivel-de-acao.txt',
 };
 const ler = (rel) => fs.readFileSync(path.join(RAIZ, rel), 'utf8');
 const sha = (txt) => createHash('sha256').update(txt).digest('hex');
@@ -186,7 +208,65 @@ const CAMPOS_PERMITIDOS = new Set([
   'catalog_source', 'is_system_default', 'status', 'created_at', 'updated_at', 'standard_unit', 'code_table_24',
   'esocial_enquadramento_nota', 'tolerance_limit_value', 'tolerance_limit_reference', 'tolerance_limit_is_ceiling',
   'action_level_value', 'action_level_reference', 'measurement_decimal_places', 'effect_classification',
+  // Duplicata de curado e insalubridade conferida na NR-15 (checagens proprias abaixo).
+  'duplicate_of_id', 'insalubridade_applicable', 'insalubridade_degree_suggested', 'insalubridade_legal_basis',
 ]);
+
+// Decisao do usuario em 09/10/2026: linhas que repetem um curado no mesmo
+// nivel de detalhe. Copia propria, nao a do gerador.
+const DUPLICATAS_ESPERADAS = {
+  'Ruído impulsivo ou de impacto': 'risk-cat-02',
+  'Trabalhos com exposição ao calor nos termos da NR-15, da Portaria 3.214/1978': 'risk-cat-03',
+  'Vibrações localizadas (mão-braço)': 'risk-cat-05',
+  'Radiações não ionizantes': 'risk-cat-06',
+  'Frio': 'risk-cat-07',
+  'Fumos metálicos': 'risk-cat-08',
+  'Óleos e Graxas Minerais (Hidrocarbonetos Aromáticos)': 'risk-cat-12',
+  'Microrganismos Patogênicos': 'risk-cat-13',
+  'Agentes biológicos (bactérias, vírus, fungos e outros)': 'risk-cat-13',
+  'Trabalhos em estabelecimentos de saúde com contato com pacientes portadores de doenças infectocontagiosas ou com manuseio de materiais contaminados': 'risk-cat-13',
+  'Trabalhos em galerias, fossas e tranques de esgoto': 'risk-cat-14',
+  'Levantamento e transporte manual de cargas ou volumes': 'risk-cat-15',
+  'Trabalho em posturas incômodas ou pouco confortáveis por longos períodos': 'risk-cat-16',
+  'Exigência de posturas inadequadas': 'risk-cat-16',
+  'Frequente execução de movimentos repetitivos': 'risk-cat-17',
+  'Trabalho em Altura': 'risk-cat-18',
+  'Queda com diferença de nível': 'risk-cat-18',
+  'Máquinas e equipamentos sem proteção': 'risk-cat-19',
+  'Condições ou procedimentos que possam provocar contato com eletricidade': 'risk-cat-20',
+  'Trabalho em Espaço Confinado': 'risk-cat-21',
+  'Projeção de partículas': 'risk-cat-23',
+  'Ausência de agente nocivo ou de atividades previstas no Anexo IV do Decreto 3.048/1999': 'risk-cat-25',
+};
+
+// Correcoes pela NR-15 conferidas a mao no Quadro n. 1: [nome, campo, o que a
+// fonte traz, o que a norma diz]. O nivel de acao e a metade do limite.
+const CORRECOES_NR15_ESPERADAS = [
+  ['1,1-Dicloro-1-nitroetano', 'tolerance_limit_is_ceiling', false, true],
+  ['Ácido clorídrico (cloreto de hidrogênio, gás clorídrico)', 'tolerance_limit_is_ceiling', false, true],
+  ['Ácido crômico (névoa)', 'tolerance_limit_value', 0, 0.04],
+  ['Ácido crômico (névoa)', 'action_level_value', 0, 0.02],
+  ['Ácido fluorídrico', 'tolerance_limit_value', 2, 1.5],
+  ['Ácido fluorídrico', 'action_level_value', 1, 0.75],
+  ['Ácido metanoico (ácido fórmico)', 'tolerance_limit_value', 1.5, 7],
+  ['Ácido metanoico (ácido fórmico)', 'action_level_value', 0.75, 3.5],
+  ['Álcool n-butílico (n-butanol)', 'tolerance_limit_is_ceiling', false, true],
+  ['Cloreto de vinila (cloroetílico)', 'tolerance_limit_is_ceiling', false, true],
+  ['Demeton (Systox)', 'tolerance_limit_value', 0.1, 0.08],
+  ['Demeton (Systox)', 'action_level_value', 0.05, 0.04],
+  ['Diborano', 'tolerance_limit_value', 0.1, 0.08],
+  ['Diborano', 'action_level_value', 0.05, 0.04],
+  ['Diclorodifluormetano', 'tolerance_limit_is_ceiling', false, true],
+  ['Dióxido de nitrogênio', 'tolerance_limit_is_ceiling', false, true],
+  ['Formaldeído (formol ou Aldeído fórmico)', 'tolerance_limit_is_ceiling', false, true],
+  ['Monometil hidrazina (metil hidrazina)', 'tolerance_limit_is_ceiling', false, true],
+  ['n-Butilamina', 'tolerance_limit_is_ceiling', false, true],
+  ['Pentaborano', 'tolerance_limit_value', 0, 0.008],
+  ['Pentaborano', 'action_level_value', 0, 0.004],
+];
+const FONTE_A11 = 'NR-15, Anexo 11';
+const FONTE_A8 = 'NR-15, Anexo 8';
+const CAMPOS_DE_INSALUBRIDADE = ['insalubridade_applicable', 'insalubridade_degree_suggested', 'insalubridade_legal_basis'];
 
 const tem = (o, k) => Object.prototype.hasOwnProperty.call(o, k);
 const achatar = (s) => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
@@ -235,6 +315,144 @@ function camposDaLinha(t, nome) {
 function itensComLinha(ctx) {
   return casarLinhas(ctx).filter((l) => l.casados.length === 1 && l.casados[0].item)
     .map((l) => [l.casados[0].item, camposDaLinha(l.t, l.casados[0].nome), l]);
+}
+
+/** Casas decimais que o numero pede: 0.75 -> 2. */
+const casasDe = (n) => {
+  if (typeof n !== 'number') return 0;
+  let k = 0;
+  while (k < 10 && Math.round(n * 10 ** k) / 10 ** k !== n) k++;
+  return k;
+};
+
+const CAMPO_DA_FONTE = { tolerance_limit_value: 'lt', action_level_value: 'na', tolerance_limit_is_ceiling: 'teto' };
+
+/**
+ * O que o item deve trazer: o que a linha da fonte diz, com as correcoes pela
+ * NR-15 que ESTE verificador espera por cima. Casas sobem so onde houve
+ * correcao e o valor corrigido pede mais.
+ */
+function esperadoDoItem(nome, f) {
+  const e = { lt: f.lt, na: f.na, teto: f.teto, casas: f.casas };
+  const corr = CORRECOES_NR15_ESPERADAS.filter(([n]) => n === nome);
+  for (const [, campo, , norma] of corr) e[CAMPO_DA_FONTE[campo]] = norma;
+  if (corr.length && e.casas !== null) e.casas = Math.max(e.casas, casasDe(e.lt), casasDe(e.na));
+  return e;
+}
+
+// ---------------------------------------------------------------------------
+// A norma, lida aqui por um caminho proprio
+// ---------------------------------------------------------------------------
+
+/** "0,016" -> 0.016; "-" e "_" (sem valor) -> null. */
+const numeroDaNorma = (t) => (/^\d+(?:,\d+)?$/.test(t) ? Number(t.replace(',', '.')) : null);
+const GRAUS = new Set(['máximo', 'médio', 'mínimo']);
+
+/**
+ * Colunas do Quadro n. 1 pelas palavras do cabecalho do proprio Quadro: o
+ * centro de "Valor" (teto) e de "p/pele", e onde terminam "ppm*" e "mg/m3*"
+ * (os numeros sao alinhados a direita). O "\f" de quebra de pagina sai antes
+ * de medir.
+ */
+function colunasDoQuadro(linhas) {
+  const iTab = linhas.findIndex((l) => l.includes('TABELA DE LIMITES DE TOLER'));
+  const iPrim = linhas.findIndex((l, k) => k > iTab && /^\s*Acetaldeído\s{3,}/.test(l));
+  if (iTab < 0 || iPrim < 0) return null;
+  const cab = linhas.slice(iTab, iPrim);
+  const pos = (palavra) => {
+    for (const l of cab) {
+      const k = l.indexOf(palavra);
+      if (k >= 0) return [k, k + palavra.length];
+    }
+    return null;
+  };
+  const [valor, pele, ppm, mg] = ['Valor', 'p/pele', 'ppm*', 'mg/m3*'].map(pos);
+  if (!valor || !pele || !ppm || !mg) return null;
+  return { teto: (valor[0] + valor[1] - 1) / 2, pele: (pele[0] + pele[1] - 1) / 2, ppmFim: ppm[1], mgFim: mg[1] };
+}
+
+/** Uma linha do Quadro: nome e colunas. null quando nao e linha de agente com valores. */
+function linhaDoQuadro(l, col) {
+  const s = l.replace(/^\f/, '');
+  const m = s.match(/^\s*(\S(?:.*?\S)?)(?=\s{3,}|$)/);
+  if (!m) return null;
+  const ini = m[0].length;
+  const r = { nome: m[1], teto: false, pele: false, ppm: null, mg: null, grau: null };
+  for (const t of s.slice(ini).matchAll(/\S+/g)) {
+    const a = ini + t.index;
+    const b = a + t[0].length;
+    if (t[0] === '+') {
+      if (Math.abs(a - col.teto) < Math.abs(a - col.pele)) r.teto = true;
+      else r.pele = true;
+    } else if (GRAUS.has(t[0])) {
+      r.grau = t[0];
+    } else if (numeroDaNorma(t[0]) !== null) {
+      if (Math.abs(b - col.ppmFim) < Math.abs(b - col.mgFim)) r.ppm = numeroDaNorma(t[0]);
+      else r.mg = numeroDaNorma(t[0]);
+    } else if (!/^[-_]$/.test(t[0])) {
+      return null;
+    }
+  }
+  return r.grau || r.ppm !== null || r.mg !== null ? r : null;
+}
+
+/** Quadro n. 1 lido: linhas (numeradas como no arquivo) e colunas. */
+const memoQuadro = new Map();
+function quadro(texto) {
+  if (memoQuadro.has(texto)) return memoQuadro.get(texto);
+  const linhas = texto.split(/\r?\n/);
+  const col = colunasDoQuadro(linhas.map((l) => l.replace(/^\f/, '')));
+  const r = { linhas, col };
+  memoQuadro.set(texto, r);
+  return r;
+}
+
+/** As linhas de agente do Quadro cujo nome e exatamente este. */
+function acharNoQuadro(texto, agente) {
+  const { linhas, col } = quadro(texto);
+  if (!col) return [];
+  return linhas.map((l, k) => ({ r: linhaDoQuadro(l, col), n: k + 1 })).filter(({ r }) => r && r.nome === agente);
+}
+
+/**
+ * Nomes que identificam o agente: o nome todo, o nome sem parenteses e cada
+ * sinonimo entre parenteses (separados por "ou" ou virgula), sem acento,
+ * caixa e pontuacao. O "(1)" de nota de rodape da norma nao e nome.
+ */
+const nomesDe = (nome) => new Set(
+  [nome, ...nome.split(/[()]|\s+ou\s+|,\s+(?=[^\d\s])/)]
+    .map((p) => achatar(p).replace(/[^a-z0-9]/g, ''))
+    .filter((p) => p && !/^\d+$/.test(p))
+);
+
+/** Remissoes "X (vide Y)" do Quadro: nome de X -> nome de Y. */
+function remissoesDoQuadro(texto) {
+  const linhas = texto.split(/\r?\n/).map((l) => l.replace(/^\f/, '').trim());
+  const r = [];
+  linhas.forEach((l, k) => {
+    // A remissao pode quebrar a linha: "Cloreto de fenila (vide cloro" + "benzeno)".
+    const junto = /\(vide [^)]*$/.test(l) ? `${l} ${(linhas[k + 1] || '').split(/\s{3,}/)[0]}` : l;
+    const m = junto.match(/^(.*?)\s*\(vide\s+(.*?)\)?(?:\s{3,}|$)/);
+    if (m) r.push([achatar(m[1]).replace(/[^a-z0-9]/g, ''), achatar(m[2]).replace(/[^a-z0-9]/g, '')]);
+  });
+  return r;
+}
+
+/** Mesmo agente: algum nome do item e nome do agente, direto ou por remissao do Quadro. */
+function mesmoAgente(nomeDoItem, agente, remissoes) {
+  const doItem = nomesDe(nomeDoItem);
+  const doAgente = nomesDe(agente);
+  if ([...doItem].some((n) => doAgente.has(n))) return true;
+  return remissoes.some(([de, para]) => doItem.has(de) && doAgente.has(para));
+}
+
+/** NR-15, 15.2.1 a 15.2.3, lido do texto: grau -> adicional. */
+function adicionalPeloTexto(trechos) {
+  const r = {};
+  for (const m of trechos.replace(/\s+/g, ' ').matchAll(/15\.2\.[123] (\d+)% \([^)]*\), para insalubridade de grau (máximo|médio|mínimo)/g)) {
+    r[m[2]] = `${m[1]}%`;
+  }
+  return r;
 }
 
 // ---------------------------------------------------------------------------
@@ -350,20 +568,23 @@ function limitesNuncaZero(ctx) {
   return p;
 }
 
+// A fonte, com as correcoes pela NR-15 que este verificador espera por cima
+// (esperadoDoItem); a checagem correcoesPelaNr15 prova cada uma na norma.
 function limitesDaFonte(ctx) {
   const p = [];
   for (const [item, f] of itensComLinha(ctx)) {
     if (!f) continue;
-    const confere = (campo, daFonte) => {
-      if (daFonte > 0 ? item[campo] !== daFonte : tem(item, campo)) {
-        p.push(`${item.name}: ${campo} ${JSON.stringify(item[campo])}, a fonte traz ${daFonte}`);
+    const e = esperadoDoItem(item.name, f);
+    const confere = (campo, esperado) => {
+      if (esperado > 0 ? item[campo] !== esperado : tem(item, campo)) {
+        p.push(`${item.name}: ${campo} ${JSON.stringify(item[campo])}, a fonte (com as correções pela NR-15) traz ${esperado}`);
       }
     };
-    confere('tolerance_limit_value', f.lt);
-    confere('action_level_value', f.na);
-    if (f.teto !== (item.tolerance_limit_is_ceiling === true)) p.push(`${item.name}: teto ${item.tolerance_limit_is_ceiling}, a fonte "${f.teto ? 'Sim' : 'Não'}"`);
-    if (f.casas === null ? tem(item, 'measurement_decimal_places') : item.measurement_decimal_places !== f.casas) {
-      p.push(`${item.name}: casas ${item.measurement_decimal_places}, a fonte ${f.casas}`);
+    confere('tolerance_limit_value', e.lt);
+    confere('action_level_value', e.na);
+    if (e.teto !== (item.tolerance_limit_is_ceiling === true)) p.push(`${item.name}: teto ${item.tolerance_limit_is_ceiling}, esperado ${e.teto} (fonte "${f.teto ? 'Sim' : 'Não'}")`);
+    if (e.casas === null ? tem(item, 'measurement_decimal_places') : item.measurement_decimal_places !== e.casas) {
+      p.push(`${item.name}: casas ${item.measurement_decimal_places}, esperado ${e.casas} (fonte ${f.casas})`);
     }
   }
   return p;
@@ -371,8 +592,11 @@ function limitesDaFonte(ctx) {
 
 function textoConfere(ctx) {
   const p = [];
+  const fonteDe = new Map(ctx.conferidos.map((c) => [c.nome, c.fonte]));
   for (const i of ctx.listagem) {
-    const lt = tem(i, 'tolerance_limit_value') ? limites.textoDoLimite(i.tolerance_limit_value, i.standard_unit, i.tolerance_limit_is_ceiling === true) : undefined;
+    const lt = tem(i, 'tolerance_limit_value')
+      ? limites.textoDoLimite(i.tolerance_limit_value, i.standard_unit, i.tolerance_limit_is_ceiling === true, fonteDe.get(i.name))
+      : undefined;
     const na = tem(i, 'action_level_value') ? limites.textoDoLimite(i.action_level_value, i.standard_unit) : undefined;
     if (i.tolerance_limit_reference !== lt) p.push(`${i.name}: "${i.tolerance_limit_reference}" ≠ textoDoLimite "${lt}"`);
     if (i.action_level_reference !== na) p.push(`${i.name}: "${i.action_level_reference}" ≠ textoDoLimite "${na}"`);
@@ -426,7 +650,8 @@ function semDescritivo(ctx) {
     if (!Array.isArray(i.recommended_epis) || i.recommended_epis.length) p.push(`${i.name}: EPI sugerido`);
     if (!Array.isArray(i.suggested_exams_pcmso) || i.suggested_exams_pcmso.length) p.push(`${i.name}: exame sugerido`);
     if (i.catalog_source !== 'LISTAGEM') p.push(`${i.name}: catalog_source ${i.catalog_source}`);
-    if (i.is_system_default !== true || i.status !== 'ACTIVE') p.push(`${i.name}: is_system_default/status`);
+    // ACTIVE ou INACTIVE: qual deve ser e a checagem das duplicatas que diz.
+    if (i.is_system_default !== true || !['ACTIVE', 'INACTIVE'].includes(i.status)) p.push(`${i.name}: is_system_default/status`);
     if (i.created_at !== DATA || i.updated_at !== DATA) p.push(`${i.name}: datas ${i.created_at} / ${i.updated_at}`);
     if (!['QUALITATIVA', 'QUANTITATIVA'].includes(i.evaluation_type)) p.push(`${i.name}: avaliação ${i.evaluation_type}`);
   }
@@ -480,13 +705,233 @@ function deduplicadas(ctx) {
   return p;
 }
 
+const emOrdem = (o) => JSON.stringify(Object.entries(o || {}).sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0)));
+
+function duplicatasDeCurados(ctx) {
+  const p = [];
+  if (emOrdem(ctx.duplicatasMapa) !== emOrdem(DUPLICATAS_ESPERADAS)) p.push('DUPLICATAS_DE_CURADOS não é a decisão do usuário (22 linhas)');
+  const idsCurados = new Set(ctx.curados.map((c) => c.id));
+  for (const [nome, id] of Object.entries(DUPLICATAS_ESPERADAS)) {
+    const i = ctx.listagem.find((x) => x.name === nome);
+    if (!i) { p.push(`"${nome}" não está no catálogo`); continue; }
+    if (i.status !== 'INACTIVE') p.push(`${nome}: status ${i.status}, e não INACTIVE`);
+    if (i.duplicate_of_id !== id) p.push(`${nome}: duplicate_of_id ${JSON.stringify(i.duplicate_of_id)}, e não ${id}`);
+    if (!idsCurados.has(i.duplicate_of_id)) p.push(`${nome}: aponta para ${JSON.stringify(i.duplicate_of_id)}, que não é item curado`);
+  }
+  for (const i of ctx.listagem) {
+    if (tem(DUPLICATAS_ESPERADAS, i.name)) continue;
+    if (i.status !== 'ACTIVE') p.push(`${i.name}: status ${i.status} sem ser duplicata de curado`);
+    if (tem(i, 'duplicate_of_id')) p.push(`${i.name}: duplicate_of_id sem ser duplicata de curado`);
+  }
+  // Contrato com a carga: item que ninguem editou tem created_at === updated_at.
+  for (const i of ctx.listagem) if (i.created_at !== i.updated_at) p.push(`${i.name}: created_at ${i.created_at} ≠ updated_at ${i.updated_at}`);
+  return p;
+}
+
+function conferidosNoAnexo11(ctx) {
+  const p = [];
+  const { linhas, col } = quadro(ctx.anexo11);
+  if (!col) return [`o cabeçalho do Quadro n. 1 não foi achado em ${REL.anexo11}`];
+  const adicional = adicionalPeloTexto(ctx.trechos15);
+  const remissoes = remissoesDoQuadro(ctx.anexo11);
+  const lista = ctx.conferidos.filter((c) => c.fonte === FONTE_A11);
+  if (lista.length < 100) p.push(`só ${lista.length} itens conferidos no Anexo 11`);
+  for (const c of lista) {
+    const i = ctx.listagem.find((x) => x.name === c.nome);
+    if (!i) { p.push(`"${c.nome}" não está no catálogo`); continue; }
+    const r = linhaDoQuadro(linhas[c.linha - 1] || '', col);
+    if (!r || r.nome !== c.agente) { p.push(`${c.nome}: a linha ${c.linha} de ${REL.anexo11} não é a do agente "${c.agente}"`); continue; }
+    if (!mesmoAgente(c.nome, c.agente, remissoes)) p.push(`${c.nome}: nenhum nome do item é o do agente "${c.agente}" do Quadro`);
+    const daNorma = i.standard_unit === 'ppm' ? r.ppm : i.standard_unit === 'mg/m³' ? r.mg : undefined;
+    if (daNorma === undefined) p.push(`${c.nome}: a unidade ${i.standard_unit} não é coluna do Quadro`);
+    else if (i.tolerance_limit_value !== daNorma) p.push(`${c.nome}: limite ${i.tolerance_limit_value} ${i.standard_unit}, a norma diz ${daNorma} (linha ${c.linha})`);
+    if ((i.tolerance_limit_is_ceiling === true) !== r.teto) p.push(`${c.nome}: valor teto ${i.tolerance_limit_is_ceiling === true}, a norma ${r.teto} (linha ${c.linha})`);
+    if (r.grau !== c.grau) p.push(`${c.nome}: grau "${c.grau}", a norma diz "${r.grau}" (linha ${c.linha})`);
+    if (i.insalubridade_applicable !== true || !adicional[r.grau] || i.insalubridade_degree_suggested !== adicional[r.grau] || i.insalubridade_legal_basis !== FONTE_A11) {
+      p.push(`${c.nome}: insalubridade ${i.insalubridade_applicable}/${i.insalubridade_degree_suggested}/${i.insalubridade_legal_basis}, a norma dá grau ${r.grau} = ${adicional[r.grau]}`);
+    }
+    if (!String(i.tolerance_limit_reference || '').endsWith(`${FONTE_A11})`)) p.push(`${c.nome}: o texto do limite não cita ${FONTE_A11}: "${i.tolerance_limit_reference}"`);
+  }
+  return p;
+}
+
+function naoConferidos(ctx) {
+  const p = [];
+  const conferidos = new Set(ctx.conferidos.map((c) => c.nome));
+  for (const i of ctx.listagem) {
+    if (conferidos.has(i.name)) continue;
+    const extras = CAMPOS_DE_INSALUBRIDADE.filter((k) => tem(i, k));
+    if (extras.length) p.push(`${i.name}: traz ${extras.join(', ')} sem ter sido conferido na norma`);
+    if (/NR-\d/.test(String(i.tolerance_limit_reference || ''))) p.push(`${i.name}: o texto do limite cita norma sem conferência: "${i.tolerance_limit_reference}"`);
+  }
+  // Completude: quantitativo cujo nome INTEIRO e o de um agente do Quadro, com
+  // valor na unidade do item, tem de ter sido conferido.
+  const { linhas, col } = quadro(ctx.anexo11);
+  if (!col) return [...p, `o cabeçalho do Quadro n. 1 não foi achado em ${REL.anexo11}`];
+  const porNome = new Map();
+  for (const l of linhas) {
+    const r = linhaDoQuadro(l, col);
+    if (r) porNome.set(achatar(r.nome.replace(/\(1\)$/, '')).replace(/[^a-z0-9]/g, ''), r);
+  }
+  for (const i of ctx.listagem) {
+    if (conferidos.has(i.name) || i.evaluation_type !== 'QUANTITATIVA') continue;
+    const r = porNome.get(achatar(i.name).replace(/[^a-z0-9]/g, ''));
+    const v = r ? (i.standard_unit === 'ppm' ? r.ppm : i.standard_unit === 'mg/m³' ? r.mg : null) : null;
+    if (v !== null) p.push(`${i.name}: tem o nome de um agente do Quadro n. 1 (${v} ${i.standard_unit}) e não foi conferido`);
+  }
+  return p;
+}
+
+function correcoesPelaNr15(ctx) {
+  const p = [];
+  const { linhas, col } = quadro(ctx.anexo11);
+  if (!col) return [`o cabeçalho do Quadro n. 1 não foi achado em ${REL.anexo11}`];
+  const remissoes = remissoesDoQuadro(ctx.anexo11);
+  if (ctx.correcoesNr15.length !== CORRECOES_NR15_ESPERADAS.length) {
+    p.push(`CORRECOES_PELA_NR15 tem ${ctx.correcoesNr15.length} entradas, e não ${CORRECOES_NR15_ESPERADAS.length}`);
+  }
+  const fonteDe = new Map(itensComLinha(ctx).map(([i, f]) => [i.name, f]));
+  for (const [nome, campo, listagem, norma] of CORRECOES_NR15_ESPERADAS) {
+    const c = ctx.correcoesNr15.find((x) => x.nome === nome && x.campo === campo);
+    if (!c || c.listagem !== listagem || c.norma !== norma || !String(c.anexo || '').trim()) {
+      p.push(`correção ausente ou diferente: ${nome} / ${campo}`);
+      continue;
+    }
+    const i = ctx.listagem.find((x) => x.name === nome);
+    const f = fonteDe.get(nome);
+    if (!i || !f) { p.push(`"${nome}" sem item ou sem linha na fonte`); continue; }
+    if (f[CAMPO_DA_FONTE[campo]] !== listagem) p.push(`${nome}: a fonte traz ${f[CAMPO_DA_FONTE[campo]]} em ${campo}, a correção diz ${listagem}`);
+    const atual = campo === 'tolerance_limit_is_ceiling' ? i[campo] === true : i[campo];
+    if (atual !== norma) p.push(`${nome}: ${campo} = ${JSON.stringify(i[campo])}, a norma diz ${norma}`);
+    if (campo === 'action_level_value') {
+      const lt = CORRECOES_NR15_ESPERADAS.find(([n, k]) => n === nome && k === 'tolerance_limit_value');
+      if (!lt || norma !== lt[3] / 2) p.push(`${nome}: nível de ação corrigido ${norma} não é a metade do limite corrigido`);
+      continue;
+    }
+    const r = linhaDoQuadro(linhas[c.linha - 1] || '', col);
+    if (!r || !mesmoAgente(nome, r.nome, remissoes)) { p.push(`${nome}: a linha ${c.linha} citada não é a do agente`); continue; }
+    const daNorma = campo === 'tolerance_limit_is_ceiling' ? r.teto : i.standard_unit === 'ppm' ? r.ppm : r.mg;
+    if (daNorma !== norma) p.push(`${nome}: a linha ${c.linha} da norma diz ${daNorma}, a correção ${norma}`);
+  }
+  return p;
+}
+
+function casasDecimais(ctx) {
+  const p = [];
+  for (const i of ctx.listagem) {
+    if (!tem(i, 'measurement_decimal_places')) continue;
+    const pedidas = Math.max(casasDe(i.tolerance_limit_value), casasDe(i.action_level_value));
+    if (i.measurement_decimal_places < pedidas) p.push(`${i.name}: ${i.measurement_decimal_places} casa(s), o limite ou o nível de ação pedem ${pedidas}`);
+  }
+  return p;
+}
+
+function vibracao(ctx) {
+  const p = [];
+  const linhas = ctx.trechos15.split(/\r?\n/);
+  const ini = linhas.findIndex((l) => /ANEXO Nº 8\s*$/.test(l));
+  const fim = linhas.findIndex((l, k) => k > ini && /ANEXO Nº 9\s*$/.test(l));
+  if (ini < 0 || fim < 0) return [`o Anexo 8 não foi achado em ${REL.trechos15}`];
+  const grau = linhas.slice(ini, fim).join(' ').replace(/\s+/g, ' ').match(/caracterizadas como insalubres em grau (máximo|médio|mínimo)/)?.[1];
+  const adicional = adicionalPeloTexto(ctx.trechos15);
+  const nr09 = ctx.nr09.replace(/\s+/g, ' ');
+  const vmb = nr09.match(/nível de ação para a avaliação da exposição ocupacional diária à vibração em mãos e braços corresponde a um valor de aceleração resultante de exposição normalizada \(aren\) de (\d+(?:,\d+)?) ?m\/s2/)?.[1];
+  const vci = nr09.match(/nível de ação para a avaliação da exposição ocupacional diária à vibração de corpo inteiro corresponde a um valor da aceleração resultante de exposição normalizada \(aren\) de (\d+(?:,\d+)?) ?m\/s2, ou ao valor da dose de vibração resultante \(VDVR\) de (\d+(?:,\d+)?) ?m\/s1,75/);
+  const naDaNr09 = { 'VMB: aren': vmb, 'VCI: aren': vci?.[1], 'VCI: VDVR': vci?.[2] };
+  const lista = ctx.conferidos.filter((c) => c.fonte === FONTE_A8);
+  if (lista.length !== 3) p.push(`${lista.length} itens de vibração conferidos, e não 3`);
+  for (const c of lista) {
+    const i = ctx.listagem.find((x) => x.name === c.nome);
+    if (!i) { p.push(`"${c.nome}" não está no catálogo`); continue; }
+    if (c.linha <= ini + 1 || c.linha > fim) p.push(`${c.nome}: a linha ${c.linha} está fora do Anexo 8 em ${REL.trechos15}`);
+    const m = (linhas[c.linha - 1] || '').match(/de (\d+(?:,\d+)?) ?m\/s(2|1,75)\b/);
+    const unidade = m ? { 2: 'm/s²', '1,75': 'm/s1,75' }[m[2]] : undefined;
+    if (!m || numeroDaNorma(m[1]) !== i.tolerance_limit_value || unidade !== i.standard_unit) {
+      p.push(`${c.nome}: limite ${i.tolerance_limit_value} ${i.standard_unit}, a linha ${c.linha} da norma diz "${m ? m[0] : '(nada)'}"`);
+    }
+    const na = naDaNr09[c.agente];
+    if (!na || numeroDaNorma(na) !== i.action_level_value) p.push(`${c.nome}: nível de ação ${i.action_level_value}, o Anexo I da NR-09 diz ${na}`);
+    if (!grau || c.grau !== grau || i.insalubridade_applicable !== true || i.insalubridade_degree_suggested !== adicional[grau] || i.insalubridade_legal_basis !== FONTE_A8) {
+      p.push(`${c.nome}: insalubridade ${i.insalubridade_degree_suggested}/${i.insalubridade_legal_basis}, o Anexo 8 dá grau ${grau} = ${adicional[grau]}`);
+    }
+    if (!String(i.tolerance_limit_reference || '').endsWith(`${FONTE_A8})`)) p.push(`${c.nome}: o texto do limite não cita ${FONTE_A8}`);
+  }
+  return p;
+}
+
+const VERSAO_NR15 = 'Portaria MTE n. 2.021, de 03/12/2025';
+const VERSAO_NR09 = 'Portaria MTE n. 105, de 29/01/2026';
+
+function criteriosDaNorma(ctx) {
+  const p = [];
+  const adicional = adicionalPeloTexto(ctx.trechos15);
+  if (emOrdem(adicional) !== emOrdem({ 'máximo': '40%', 'médio': '20%', 'mínimo': '10%' })) p.push(`NR-15, itens 15.2.1 a 15.2.3, lidos como ${JSON.stringify(adicional)}`);
+  if (!ctx.nr09.replace(/\s+/g, ' ').includes('b) como nível de ação para agentes químicos, a metade dos limites de tolerância;')) {
+    p.push(`${REL.nr09} não traz o item 9.6.1 b) (nível de ação = metade do limite)`);
+  }
+  for (const c of ctx.conferidos.filter((x) => x.fonte === FONTE_A11)) {
+    const i = ctx.listagem.find((x) => x.name === c.nome);
+    if (i && i.action_level_value !== i.tolerance_limit_value / 2) p.push(`${c.nome}: nível de ação ${i.action_level_value}, a metade do limite é ${i.tolerance_limit_value / 2}`);
+  }
+  for (const [rel, texto, versao] of [[REL.anexo11, ctx.anexo11, VERSAO_NR15], [REL.trechos15, ctx.trechos15, VERSAO_NR15], [REL.nr09, ctx.nr09, VERSAO_NR09]]) {
+    const url = /^# URL: https:\/\/www\.gov\.br\/trabalho-e-emprego\/\S+\.pdf\s*$/m.test(texto);
+    if (!url || !texto.includes(versao) || !/Baixado em \d{2}\/\d{2}\/\d{4}/.test(texto)) p.push(`${rel}: cabeçalho sem a URL do MTE, a data do download ou a versão (${versao})`);
+  }
+  return p;
+}
+
+// Lidos a mao no PDF da NR-15: [agente como o Quadro escreve, ppm, mg/m3, teto, pele, grau].
+const PONTOS_NA_NORMA = [
+  ['Estireno', 78, 328, false, false, 'médio'],
+  ['2,4 Diisocianato de tolueno (TDI)', 0.016, 0.11, true, false, 'máximo'],
+  ['Ácido fluorídrico', 2.5, 1.5, false, false, 'máximo'],
+  ['Ácido fórmico', 4, 7, false, false, 'médio'],
+  ['Pentaborano', 0.004, 0.008, false, false, 'máximo'],
+  ['Formaldeído (formol)', 1.6, 2.3, true, false, 'máximo'],
+  ['Acetona', 780, 1870, false, false, 'mínimo'],
+  ['Tolueno (toluol)', 78, 290, false, true, 'médio'],
+  ['Álcool n-butílico', 40, 115, true, true, 'máximo'],
+  ['Negro de fumo(1)', null, 3.5, false, false, 'máximo'],
+  ['Sulfato de dimetila', 0.08, 0.4, true, true, 'máximo'],
+];
+// E como ficam no catalogo: [nome, texto do limite, adicional].
+const PONTOS_NO_CATALOGO = [
+  ['Ácido fluorídrico', '1,5 mg/m³ (NR-15, Anexo 11)', '40%'],
+  ['Diisocianato de tolueno (TDI)', '0,016 ppm (valor teto; NR-15, Anexo 11)', '40%'],
+  ['Acetona (propanona)', '1.870 mg/m³ (NR-15, Anexo 11)', '10%'],
+  ['Pentaborano', '0,008 mg/m³ (NR-15, Anexo 11)', '40%'],
+  ['Formaldeído (formol ou Aldeído fórmico)', '2,3 mg/m³ (valor teto; NR-15, Anexo 11)', '40%'],
+  ['Xileno (xilol)', '340 mg/m³ (NR-15, Anexo 11)', '20%'],
+  ['Vibrações localizadas (mão-braço)', '5 m/s² (NR-15, Anexo 8)', '20%'],
+];
+
+function pontosNaNorma(ctx) {
+  const p = [];
+  for (const [agente, ppm, mg, teto, pele, grau] of PONTOS_NA_NORMA) {
+    const achados = acharNoQuadro(ctx.anexo11, agente);
+    if (achados.length !== 1) { p.push(`"${agente}" aparece ${achados.length} vez(es) no Quadro n. 1`); continue; }
+    const { r, n } = achados[0];
+    Object.entries({ ppm, mg, teto, pele, grau }).filter(([k, v]) => r[k] !== v)
+      .forEach(([k, v]) => p.push(`${agente} (linha ${n}): ${k} lido ${JSON.stringify(r[k])}, o PDF diz ${JSON.stringify(v)}`));
+  }
+  for (const [nome, texto, adicional] of PONTOS_NO_CATALOGO) {
+    const i = ctx.listagem.find((x) => x.name === nome);
+    if (!i) { p.push(`"${nome}" não está no catálogo`); continue; }
+    if (i.tolerance_limit_reference !== texto) p.push(`${nome}: "${i.tolerance_limit_reference}", e não "${texto}"`);
+    if (i.insalubridade_degree_suggested !== adicional) p.push(`${nome}: adicional ${i.insalubridade_degree_suggested}, e não ${adicional}`);
+  }
+  return p;
+}
+
 // Pontos conferidos contra a fonte, a mao.
 const PONTOS = [
-  ['Estireno (vinilbenzeno)', { standard_unit: 'ppm', tolerance_limit_value: 78, tolerance_limit_reference: '78 ppm', action_level_value: 39, action_level_reference: '39 ppm' }, ['tolerance_limit_is_ceiling']],
-  ['Diisocianato de tolueno (TDI)', { standard_unit: 'ppm', tolerance_limit_value: 0.016, tolerance_limit_reference: '0,016 ppm (valor teto)', tolerance_limit_is_ceiling: true, action_level_value: 0.008, action_level_reference: '0,008 ppm' }, []],
-  ['1,1,1 Tricloroetano (Metilclorofórmio)', { standard_unit: 'mg/m³', tolerance_limit_value: 1480, tolerance_limit_reference: '1.480 mg/m³', action_level_value: 740, action_level_reference: '740 mg/m³' }, ['tolerance_limit_is_ceiling']],
-  ['Cádmio e seus compostos tóxicos', { standard_unit: 'mg/m³', tolerance_limit_value: 0.039, tolerance_limit_reference: '0,039 mg/m³', action_level_value: 0.019, action_level_reference: '0,019 mg/m³', code_table_24: '01.06.001' }, []],
-  ['Vibração de corpo inteiro (Valor da Dose de Vibração Resultante - VDVR)', { standard_unit: 'm/s1,75', tolerance_limit_value: 21, tolerance_limit_reference: '21 m/s1,75', action_level_value: 9.1, action_level_reference: '9,1 m/s1,75' }, []],
+  ['Estireno (vinilbenzeno)', { standard_unit: 'ppm', tolerance_limit_value: 78, tolerance_limit_reference: '78 ppm (NR-15, Anexo 11)', action_level_value: 39, action_level_reference: '39 ppm', insalubridade_degree_suggested: '20%' }, ['tolerance_limit_is_ceiling']],
+  ['Diisocianato de tolueno (TDI)', { standard_unit: 'ppm', tolerance_limit_value: 0.016, tolerance_limit_reference: '0,016 ppm (valor teto; NR-15, Anexo 11)', tolerance_limit_is_ceiling: true, action_level_value: 0.008, action_level_reference: '0,008 ppm' }, []],
+  ['1,1,1 Tricloroetano (Metilclorofórmio)', { standard_unit: 'mg/m³', tolerance_limit_value: 1480, tolerance_limit_reference: '1.480 mg/m³ (NR-15, Anexo 11)', action_level_value: 740, action_level_reference: '740 mg/m³' }, ['tolerance_limit_is_ceiling']],
+  ['Cádmio e seus compostos tóxicos', { standard_unit: 'mg/m³', tolerance_limit_value: 0.039, tolerance_limit_reference: '0,039 mg/m³', action_level_value: 0.019, action_level_reference: '0,019 mg/m³', code_table_24: '01.06.001' }, ['insalubridade_degree_suggested']],
+  ['Vibração de corpo inteiro (Valor da Dose de Vibração Resultante - VDVR)', { standard_unit: 'm/s1,75', tolerance_limit_value: 21, tolerance_limit_reference: '21 m/s1,75 (NR-15, Anexo 8)', action_level_value: 9.1, action_level_reference: '9,1 m/s1,75' }, []],
+  ['Ácido fluorídrico', { standard_unit: 'mg/m³', tolerance_limit_value: 1.5, action_level_value: 0.75, measurement_decimal_places: 2, insalubridade_degree_suggested: '40%' }, ['tolerance_limit_is_ceiling']],
+  ['Frio', { status: 'INACTIVE', duplicate_of_id: 'risk-cat-07' }, ['tolerance_limit_value']],
   ['Radiações ionizantes', { standard_unit: 'Milisievert (mSv)', tolerance_limit_value: 20, tolerance_limit_reference: '20 Milisievert (mSv)', action_level_value: 10, action_level_reference: '10 Milisievert (mSv)', code_table_24: '02.01.006' }, []],
   ['Sílica livre cristalizada - poeira respirável', { standard_unit: 'mg/m³', evaluation_type: 'QUANTITATIVA', code_table_24: '01.18.001' }, ['tolerance_limit_value', 'tolerance_limit_reference', 'action_level_value', 'action_level_reference']],
 ];
@@ -607,6 +1052,69 @@ const VERIFICACOES = [
     ['deduplicada contra outro curado', (c) => { c.deduplicadas[0].id_curado = 'risk-cat-02'; }],
     ['deduplicada sem motivo', (c) => { c.deduplicadas[0].motivo = ' '; }],
   ]],
+  ['as 22 duplicatas de curados saem INACTIVE apontando para um curado que existe; as demais, ACTIVE', duplicatasDeCurados, [
+    ['uma duplicata reativada', mudar('Frio', (i) => { i.status = 'ACTIVE'; })],
+    ['duplicata sem o id do curado', mudar('Projeção de partículas', (i) => { delete i.duplicate_of_id; })],
+    ['duplicata apontando para outro curado', mudar('Trabalho em Altura', (i) => { i.duplicate_of_id = 'risk-cat-19'; })],
+    ['o curado apontado não existe', (c) => { c.curados = c.curados.filter((x) => x.id !== 'risk-cat-23'); }],
+    ['Fumos metálicos específico desativado', mudar('Fumos metálicos (Cobre)', (i) => { i.status = 'INACTIVE'; i.duplicate_of_id = 'risk-cat-08'; })],
+    ['outra linha desativada', mudar('Iodo', (i) => { i.status = 'INACTIVE'; })],
+    ['mapa das duplicatas alterado', (c) => { c.duplicatasMapa.Iodo = 'risk-cat-08'; }],
+    ['item com updated_at diferente de created_at', mudar('Frio', (i) => { i.updated_at = '2026-10-09T00:00:00Z'; })],
+  ]],
+  ['cada item conferido no Anexo 11 bate com a linha que cita no texto da norma', conferidosNoAnexo11, [
+    ['limite do conferido trocado', mudar('Xileno (xilol)', (i) => { i.tolerance_limit_value = 350; })],
+    ['valor teto da norma perdido', mudar('Ácido clorídrico (cloreto de hidrogênio, gás clorídrico)', (i) => { delete i.tolerance_limit_is_ceiling; })],
+    ['adicional trocado', mudar('Acetona (propanona)', (i) => { i.insalubridade_degree_suggested = '20%'; })],
+    ['base legal trocada', mudar('Fenol', (i) => { i.insalubridade_legal_basis = 'NR-15, Anexo 13'; })],
+    ['insalubridade perdida', mudar('Fenol', (i) => { delete i.insalubridade_applicable; })],
+    ['texto do limite sem a fonte', mudar('Estireno (vinilbenzeno)', (i) => { i.tolerance_limit_reference = '78 ppm'; })],
+    ['linha citada errada', (c) => { c.conferidos.find((x) => x.nome === 'Fenol').linha += 2; }],
+    // Mesmo limite (78 ppm) e mesmo grau: so a identidade do agente acusa.
+    ['conferido contra agente de outro nome', (c) => { Object.assign(c.conferidos.find((x) => x.nome === 'Estireno (vinilbenzeno)'), { agente: 'Etilbenzeno', linha: 397 }); }],
+  ]],
+  ['nenhum item não conferido traz insalubridade ou cita a norma; nenhum agente do Quadro ficou de fora', naoConferidos, [
+    ['adicional num item não conferido', mudar('Cádmio e seus compostos tóxicos', (i) => { i.insalubridade_degree_suggested = '40%'; })],
+    ['norma citada num item não conferido', mudar('Cádmio e seus compostos tóxicos', (i) => { i.tolerance_limit_reference = '0,039 mg/m³ (NR-15, Anexo 11)'; })],
+    ['conferido tirado da lista', (c) => { c.conferidos = c.conferidos.filter((x) => x.nome !== 'Fenol'); }],
+    // Sem lista e sem os campos: so a completude acusa.
+    ['agente do Quadro esquecido por inteiro', (c) => {
+      c.conferidos = c.conferidos.filter((x) => x.nome !== 'Fenol');
+      const i = item(c, 'Fenol');
+      CAMPOS_DE_INSALUBRIDADE.forEach((k) => delete i[k]);
+      i.tolerance_limit_reference = '15 mg/m³';
+    }],
+  ]],
+  ['correções pela NR-15: a fonte trazia o valor, a linha citada da norma diz o corrigido, o item o traz', correcoesPelaNr15, [
+    ['limite corrigido desfeito', mudar('Ácido fluorídrico', (i) => { i.tolerance_limit_value = 2; })],
+    ['teto corrigido desfeito', mudar('Formaldeído (formol ou Aldeído fórmico)', (i) => { delete i.tolerance_limit_is_ceiling; })],
+    ['nível de ação corrigido desfeito', mudar('Pentaborano', (i) => { delete i.action_level_value; })],
+    ['correção citando outra linha', (c) => { c.correcoesNr15.find((x) => x.nome === 'Diborano' && x.linha).linha -= 2; }],
+    ['correção sem registro', (c) => { c.correcoesNr15.pop(); }],
+    ['a norma não diz o valor corrigido', (c) => { c.anexo11 = c.anexo11.replace(/(Diborano\s+0,08\s+)0,08/, '$10,09'); }],
+  ]],
+  ['casas decimais cobrem o limite e o nível de ação', casasDecimais, [
+    ['casas abaixo do limite corrigido', mudar('Pentaborano', (i) => { i.measurement_decimal_places = 1; })],
+  ]],
+  ['vibração conferida no Anexo 8 da NR-15 e nível de ação no Anexo I da NR-09', vibracao, [
+    ['VMB com outro limite', mudar('Vibrações localizadas (mão-braço)', (i) => { i.tolerance_limit_value = 4; })],
+    ['nível de ação do VDVR fora da NR-09', mudar('Vibração de corpo inteiro (Valor da Dose de Vibração Resultante - VDVR)', (i) => { i.action_level_value = 10.5; })],
+    ['linha citada fora do Anexo 8', (c) => { c.conferidos.find((x) => x.fonte === FONTE_A8).linha = 5; }],
+    ['adicional da vibração trocado', mudar('Vibração de corpo inteiro (aceleração resultante de exposição normalizada - aren)', (i) => { i.insalubridade_degree_suggested = '40%'; })],
+  ]],
+  ['critérios lidos da norma: grau -> adicional (NR-15, 15.2) e nível de ação = metade do limite (NR-09, 9.6.1 b)', criteriosDaNorma, [
+    ['NR-09 sem o critério da metade', (c) => { c.nr09 = c.nr09.replace('a metade dos limites de tolerância', 'um terço dos limites de tolerância'); }],
+    ['grau -> adicional adulterado no texto', (c) => { c.trechos15 = c.trechos15.replace('15.2.2 20%', '15.2.2 25%'); }],
+    ['nível de ação fora da metade', mudar('Acetona (propanona)', (i) => { i.action_level_value = 900; })],
+    ['fonte sem a URL do MTE', (c) => { c.anexo11 = c.anexo11.replace('# URL: https://www.gov.br/', '# URL: https://exemplo.com/'); }],
+  ]],
+  ['pontos conferidos à mão no PDF da NR-15, relidos no texto guardado', pontosNaNorma, [
+    // Espacos de coluna (3+): o cabecalho do arquivo tambem cita "Estireno 78 328".
+    ['valor da norma adulterado no texto', (c) => { c.anexo11 = c.anexo11.replace(/(Estireno {3,}78 {3,})328/, '$1329'); }],
+    // Mesma largura: o "+" so muda de coluna.
+    ['"+" do Formaldeído movido de teto para pele', (c) => { c.anexo11 = c.anexo11.replace(/(Formaldeído \(formol\)\s+)\+( {18})/, '$1$2+'); }],
+    ['adicional no catálogo trocado', mudar('Acetona (propanona)', (i) => { i.insalubridade_degree_suggested = '20%'; })],
+  ]],
   ...PONTOS.map((pt) => [
     `ponto conferido: ${pt[0].slice(0, 50)}`,
     ponto(pt),
@@ -630,7 +1138,16 @@ const CTX = {
   correcoes: listagem.CORRECOES_DA_LISTAGEM,
   inespecificos: listagem.GRUPO_DOS_INESPECIFICOS,
   total: listagem.TOTAL_DE_LINHAS_DA_LISTAGEM,
+  duplicatasMapa: listagem.DUPLICATAS_DE_CURADOS,
+  conferidos: listagem.CONFERIDOS_NA_NR15,
+  correcoesNr15: listagem.CORRECOES_PELA_NR15,
+  anexo11: ler(REL.anexo11),
+  trechos15: ler(REL.trechos15),
+  nr09: ler(REL.nr09),
 };
+if (!CTX.duplicatasMapa || !Array.isArray(CTX.conferidos) || !Array.isArray(CTX.correcoesNr15)) {
+  inconclusivo('o módulo compilado não exporta DUPLICATAS_DE_CURADOS, CONFERIDOS_NA_NR15 e CORRECOES_PELA_NR15');
+}
 if (!Array.isArray(CTX.listagem) || !Array.isArray(CTX.curados) || !Array.isArray(CTX.inicial)) {
   inconclusivo('os módulos compilados não exportam RISCOS_DA_LISTAGEM, RISCOS_CURADOS e INITIAL_OCCUPATIONAL_RISKS_CATALOG');
 }
@@ -669,6 +1186,8 @@ console.log('\n--- o gerador falha alto, com a linha, no que não entende ---');
     ['correção que não encontra o que corrigir', trocar('Agentes biológicos (bactérias, vírus, fungos e outros) ', (l) => l.replace(' Físico ', ' Biológico '))],
     ['ausência sem o código 09.01.001', trocar('Ausência de agente nocivo ou de atividades previstas no Anexo IV do Decreto 3.048/1999 ', (l) => l.replace(/ 09\.01\.001 - .*$/, ''))],
     ['linha repetida (dois itens com o mesmo id)', { fonte: `${base}\n${linhaDe(base, 'Iodo ')}\n`, linha: linhaDe(base, 'Iodo ') }],
+    ['correção pela NR-15 que não acha o valor da listagem', trocar('Ácido fluorídrico ', (l) => l.replace('Quantitativo 2.0 Não 1.0', 'Quantitativo 2.5 Não 1.25'))],
+    ['item conferido com nível de ação fora da metade do limite', trocar('Estireno (vinilbenzeno) ', (l) => l.replace('Quantitativo 78.00 Não 39.00', 'Quantitativo 78.00 Não 40.00'))],
   ];
   const gerarCom = (fonte) => gerador.gerar({ fonte, tabela24: TEXTO_T24, curados: TEXTO_CURADOS });
   let geraLimpo = true;
@@ -678,6 +1197,43 @@ console.log('\n--- o gerador falha alto, com a linha, no que não entende ---');
     let erro = null;
     try { gerarCom(fonte); } catch (e) { erro = e; }
     check(erro !== null && erro.message.includes(linha), `${nome}: a geração para e mostra a linha${erro ? '' : ' (NÃO parou)'}`);
+  }
+  // Nome das listas do gerador que sumiu da fonte: a geracao para e mostra o
+  // nome exato, em vez de desativar ou conferir outra coisa em silencio.
+  const CASOS_POR_NOME = [
+    ['duplicata de curado cujo nome sumiu da fonte', 'Projeção de partículas ', 'Projeção de partículas volantes ', '"Projeção de partículas"'],
+    ['item conferido cujo nome sumiu da fonte', 'Fenol ', 'Fenóis ', '"Fenol"'],
+  ];
+  for (const [nome, prefixo, novo, esperado] of CASOS_POR_NOME) {
+    const { fonte } = trocar(prefixo, (l) => l.replace(prefixo, novo));
+    let erro = null;
+    try { gerarCom(fonte); } catch (e) { erro = e; }
+    check(erro !== null && erro.message.includes(esperado), `${nome}: a geração para e mostra ${esperado}${erro ? `` : ' (NÃO parou)'}`);
+  }
+}
+
+console.log('\n--- textoDoLimite: igual com 3 argumentos, cita a fonte com 4 ---');
+{
+  const CASOS_DO_TEXTO = [
+    [[78, 'ppm'], '78 ppm'],
+    [[0.016, 'ppm', true], '0,016 ppm (valor teto)'],
+    [[1480, 'mg/m3'], '1.480 mg/m³'],
+    [[78, 'ppm', false, 'NR-15, Anexo 11'], '78 ppm (NR-15, Anexo 11)'],
+    [[0.016, 'ppm', true, 'NR-15, Anexo 11'], '0,016 ppm (valor teto; NR-15, Anexo 11)'],
+    [[0, 'ppm', false, 'NR-15, Anexo 11'], undefined],
+  ];
+  const testarTexto = (f) => CASOS_DO_TEXTO.filter(([args, esperado]) => f(...args) !== esperado)
+    .map(([args, esperado]) => `${JSON.stringify(args)} -> ${JSON.stringify(f(...args))}, e não ${JSON.stringify(esperado)}`);
+  const problemas = testarTexto(limites.textoDoLimite);
+  check(problemas.length === 0, `textoDoLimite com e sem fonte${problemas.length ? `:\n      ${problemas.join('\n      ')}` : ''}`);
+  // Mutacao: a mesma bateria tem de acusar uma funcao com o defeito.
+  const DEFEITOS = [
+    ['ignora a fonte', (v, u, t) => limites.textoDoLimite(v, u, t)],
+    ['fonte em parêntese separado do teto', (v, u, t, f) => { const s = limites.textoDoLimite(v, u, t); return s && f ? `${s} (${f})` : s; }],
+    ['cita uma fonte sem ser pedida', (v, u, t, f) => limites.textoDoLimite(v, u, t, f || 'NR-15')],
+  ];
+  if (problemas.length === 0) {
+    for (const [nome, f] of DEFEITOS) if (testarTexto(f).length === 0) inconclusivo(`a bateria de textoDoLimite não acusou: ${nome}`);
   }
 }
 
