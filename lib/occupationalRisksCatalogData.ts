@@ -1,4 +1,5 @@
 import { OccupationalRiskCatalogItem } from '@/types';
+import { RISCOS_DA_LISTAGEM } from '@/lib/catalogoDeRiscosDaListagem';
 
 /**
  * CODIGOS DE EXAME CORRIGIDOS CONTRA A TABELA 27.
@@ -28,8 +29,13 @@ import { OccupationalRiskCatalogItem } from '@/types';
  *
  * Os nomes sao agora os da Tabela 27 (lib/tabela27.ts), porque e a denominacao
  * publicada que vale perante o governo.
+ *
+ * Os 25 itens CURADOS: escritos e conferidos aqui, com fonte geradora, efeito
+ * a saude, EPI e exames. catalog_source: 'CURADO' os separa dos itens da
+ * listagem do usuario (lib/catalogoDeRiscosDaListagem.ts), que trazem so o
+ * que a listagem diz.
  */
-export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] = [
+export const RISCOS_CURADOS: OccupationalRiskCatalogItem[] = [
   // =========================================================================
   // GRUPO 1: RISCOS FÍSICOS (Código eSocial Grupo 01)
   // =========================================================================
@@ -67,6 +73,7 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
     insalubridade_legal_basis: 'NR-15 Anexo nº 1 - Limites de Tolerância para Ruído Contínuo ou Intermitente',
     periculosidade_applicable: false,
     is_system_default: true,
+    catalog_source: 'CURADO',
     status: 'ACTIVE',
     created_at: '2026-01-01T00:00:00Z',
     updated_at: '2026-08-20T00:00:00Z'
@@ -103,6 +110,7 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
     insalubridade_legal_basis: 'NR-15 Anexo nº 2 - Limites de Tolerância para Ruídos de Impacto',
     periculosidade_applicable: false,
     is_system_default: true,
+    catalog_source: 'CURADO',
     status: 'ACTIVE',
     created_at: '2026-01-01T00:00:00Z',
     updated_at: '2026-08-20T00:00:00Z'
@@ -143,6 +151,7 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
     insalubridade_legal_basis: 'NR-15 Anexo nº 3 - Limites de Tolerância para Exposição ao Calor',
     periculosidade_applicable: false,
     is_system_default: true,
+    catalog_source: 'CURADO',
     status: 'ACTIVE',
     created_at: '2026-01-01T00:00:00Z',
     updated_at: '2026-08-20T00:00:00Z'
@@ -179,6 +188,7 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
     insalubridade_legal_basis: 'NR-15 Anexo nº 8 - Vibrações de Corpo Inteiro',
     periculosidade_applicable: false,
     is_system_default: true,
+    catalog_source: 'CURADO',
     status: 'ACTIVE',
     created_at: '2026-01-01T00:00:00Z',
     updated_at: '2026-08-20T00:00:00Z'
@@ -213,6 +223,7 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
     insalubridade_legal_basis: 'NR-15 Anexo nº 8 - Vibrações de Mãos e Braços',
     periculosidade_applicable: false,
     is_system_default: true,
+    catalog_source: 'CURADO',
     status: 'ACTIVE',
     created_at: '2026-01-01T00:00:00Z',
     updated_at: '2026-08-20T00:00:00Z'
@@ -250,6 +261,7 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
     insalubridade_legal_basis: 'NR-15 Anexo nº 7 - Radiações Não-Ionizantes',
     periculosidade_applicable: false,
     is_system_default: true,
+    catalog_source: 'CURADO',
     status: 'ACTIVE',
     created_at: '2026-01-01T00:00:00Z',
     updated_at: '2026-08-20T00:00:00Z'
@@ -285,6 +297,7 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
     insalubridade_legal_basis: 'NR-15 Anexo nº 9 - Frio',
     periculosidade_applicable: false,
     is_system_default: true,
+    catalog_source: 'CURADO',
     status: 'ACTIVE',
     created_at: '2026-01-01T00:00:00Z',
     updated_at: '2026-08-20T00:00:00Z'
@@ -328,6 +341,7 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
     insalubridade_legal_basis: 'NR-15 Anexo nº 12 - Limites de Tolerância para Poeiras Minerais e Fumos Metálicos',
     periculosidade_applicable: false,
     is_system_default: true,
+    catalog_source: 'CURADO',
     status: 'ACTIVE',
     created_at: '2026-01-01T00:00:00Z',
     updated_at: '2026-08-20T00:00:00Z'
@@ -363,6 +377,7 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
     insalubridade_legal_basis: 'NR-15 Anexo nº 12 - Poeiras Minerais (Sílica Livre Cristalizada)',
     periculosidade_applicable: false,
     is_system_default: true,
+    catalog_source: 'CURADO',
     status: 'ACTIVE',
     created_at: '2026-01-01T00:00:00Z',
     updated_at: '2026-08-20T00:00:00Z'
@@ -404,6 +419,7 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
     insalubridade_legal_basis: 'NR-15 Anexo nº 11 e 13 - Agentes Químicos e Hidrocarbonetos',
     periculosidade_applicable: false,
     is_system_default: true,
+    catalog_source: 'CURADO',
     status: 'ACTIVE',
     created_at: '2026-01-01T00:00:00Z',
     updated_at: '2026-08-20T00:00:00Z'
@@ -441,6 +457,7 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
     insalubridade_legal_basis: 'NR-15 Anexo nº 13 - Fabricação e manuseio de ácidos e álcalis cáusticos',
     periculosidade_applicable: false,
     is_system_default: true,
+    catalog_source: 'CURADO',
     status: 'ACTIVE',
     created_at: '2026-01-01T00:00:00Z',
     updated_at: '2026-08-20T00:00:00Z'
@@ -475,6 +492,7 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
     insalubridade_legal_basis: 'NR-15 Anexo nº 13 - Hidrocarbonetos e Outros Compostos de Carbono (Manipulação de óleos minerais)',
     periculosidade_applicable: false,
     is_system_default: true,
+    catalog_source: 'CURADO',
     status: 'ACTIVE',
     created_at: '2026-01-01T00:00:00Z',
     updated_at: '2026-08-20T00:00:00Z'
@@ -518,6 +536,7 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
     insalubridade_legal_basis: 'NR-15 Anexo nº 14 - Agentes Biológicos (Contato permanente com pacientes em isolamento ou material infectocontagiante)',
     periculosidade_applicable: false,
     is_system_default: true,
+    catalog_source: 'CURADO',
     status: 'ACTIVE',
     created_at: '2026-01-01T00:00:00Z',
     updated_at: '2026-08-20T00:00:00Z'
@@ -554,6 +573,7 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
     insalubridade_legal_basis: 'NR-15 Anexo nº 14 - Esgotos (galerias e tanques) e Lixo Urbano',
     periculosidade_applicable: false,
     is_system_default: true,
+    catalog_source: 'CURADO',
     status: 'ACTIVE',
     created_at: '2026-01-01T00:00:00Z',
     updated_at: '2026-08-20T00:00:00Z'
@@ -592,6 +612,7 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
     insalubridade_applicable: false,
     periculosidade_applicable: false,
     is_system_default: true,
+    catalog_source: 'CURADO',
     status: 'ACTIVE',
     created_at: '2026-01-01T00:00:00Z',
     updated_at: '2026-08-20T00:00:00Z'
@@ -622,6 +643,7 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
     insalubridade_applicable: false,
     periculosidade_applicable: false,
     is_system_default: true,
+    catalog_source: 'CURADO',
     status: 'ACTIVE',
     created_at: '2026-01-01T00:00:00Z',
     updated_at: '2026-08-20T00:00:00Z'
@@ -653,6 +675,7 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
     insalubridade_applicable: false,
     periculosidade_applicable: false,
     is_system_default: true,
+    catalog_source: 'CURADO',
     status: 'ACTIVE',
     created_at: '2026-01-01T00:00:00Z',
     updated_at: '2026-08-20T00:00:00Z'
@@ -694,6 +717,7 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
     insalubridade_applicable: false,
     periculosidade_applicable: false,
     is_system_default: true,
+    catalog_source: 'CURADO',
     status: 'ACTIVE',
     created_at: '2026-01-01T00:00:00Z',
     updated_at: '2026-08-20T00:00:00Z'
@@ -728,6 +752,7 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
     insalubridade_applicable: false,
     periculosidade_applicable: false,
     is_system_default: true,
+    catalog_source: 'CURADO',
     status: 'ACTIVE',
     created_at: '2026-01-01T00:00:00Z',
     updated_at: '2026-08-20T00:00:00Z'
@@ -766,6 +791,7 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
     periculosidade_applicable: true,
     periculosidade_legal_basis: 'NR-16 Anexo nº 4 - Atividades e operações perigosas com energia elétrica',
     is_system_default: true,
+    catalog_source: 'CURADO',
     status: 'ACTIVE',
     created_at: '2026-01-01T00:00:00Z',
     updated_at: '2026-08-20T00:00:00Z'
@@ -802,6 +828,7 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
     insalubridade_applicable: false,
     periculosidade_applicable: false,
     is_system_default: true,
+    catalog_source: 'CURADO',
     status: 'ACTIVE',
     created_at: '2026-01-01T00:00:00Z',
     updated_at: '2026-08-20T00:00:00Z'
@@ -836,6 +863,7 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
     periculosidade_applicable: true,
     periculosidade_legal_basis: 'NR-16 Anexo nº 2 - Atividades e operações perigosas com inflamáveis',
     is_system_default: true,
+    catalog_source: 'CURADO',
     status: 'ACTIVE',
     created_at: '2026-01-01T00:00:00Z',
     updated_at: '2026-08-20T00:00:00Z'
@@ -870,6 +898,7 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
     insalubridade_applicable: false,
     periculosidade_applicable: false,
     is_system_default: true,
+    catalog_source: 'CURADO',
     status: 'ACTIVE',
     created_at: '2026-01-01T00:00:00Z',
     updated_at: '2026-08-20T00:00:00Z'
@@ -907,6 +936,7 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
     insalubridade_applicable: false,
     periculosidade_applicable: false,
     is_system_default: true,
+    catalog_source: 'CURADO',
     status: 'ACTIVE',
     created_at: '2026-01-01T00:00:00Z',
     updated_at: '2026-08-20T00:00:00Z'
@@ -949,10 +979,21 @@ export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] =
     insalubridade_applicable: false,
     periculosidade_applicable: false,
     is_system_default: true,
+    catalog_source: 'CURADO',
     // INACTIVE ate o codigo ser conferido na Tabela 24 oficial. Ver o
     // comentario acima.
     status: 'INACTIVE',
     created_at: '2026-01-01T00:00:00Z',
     updated_at: '2026-08-20T00:00:00Z'
   }
+];
+
+/**
+ * Catalogo inicial: os curados primeiro, depois a listagem. Uma linha da
+ * listagem com o mesmo nome de um curado nao e gerada - o curado ja a
+ * representa (LINHAS_DEDUPLICADAS_DA_LISTAGEM).
+ */
+export const INITIAL_OCCUPATIONAL_RISKS_CATALOG: OccupationalRiskCatalogItem[] = [
+  ...RISCOS_CURADOS,
+  ...RISCOS_DA_LISTAGEM,
 ];

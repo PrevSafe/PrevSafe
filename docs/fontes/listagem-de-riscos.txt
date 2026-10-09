@@ -1,0 +1,922 @@
+# LISTAGEM DE RISCOS - fornecida pelo usuario (PDF "Riscos Ocupacionais.pdf", 8 paginas), 08/10/2026.
+# Transcricao do texto extraido do PDF, uma linha por risco, na ordem do PDF. Linhas com # sao comentario.
+# As colunas vazias do PDF somem no texto extraido; o gerador (scripts/gerar-catalogo-da-listagem.mjs) as reconstroi.
+# Colunas: Nome Agente | Grupo | Meio de Propagacao | Unidade de Medida | Classificacao do Risco | Limite Tolerancia | Valor Teto | Nivel de Acao | Valor Minimo da Faixa | Valor Maximo da Faixa | Qtd de casas decimais | Periodicidade da Med | Classif. Efeito | Usa NEN | Nocivo - PPP | PCMSO | PPRA | Codigo Fator Risco (eSocial - Tabela 24)
+# pagina 1
+Arsênio e seus compostos Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim 01.01.001 - Arsênio e seus compostos
+Asbestos (ou amianto) Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim 01.02.001 - Asbestos (ou amianto)
+Benzeno e seus compostos tóxicos (exceto os abaixo especificados, que constam expressamente no Anexo IV do Decreto 3.048/1999) Químico Ar e contato Qualitativo 0 Não 0 0 0 0 12 Não Aplica Não Sim Sim Sim 01.03.001 - Benzeno e seus compostos tóxicos (exceto os abaixo especificados, que constam expressamente no Anexo IV do Decreto 3.048/1999)
+Estireno (vinilbenzeno) Químico Ar e contato ppm Quantitativo 78.00 Não 39.00 0 0 2 12 Não Aplica Não Sim Sim Sim 01.03.002 - Estireno (vinilbenzeno)
+Berílio e seus compostos tóxicos Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim 01.04.001 - Berílio e seus compostos tóxicos
+Bromo e seus compostos tóxicos Químico Ar e contato ppm Quantitativo 0.08 Não 0.04 0 0 2 12 Não Aplica Não Sim Sim Sim 01.05.001 - Bromo e seus compostos tóxicos
+Cádmio e seus compostos tóxicos Químico Ar e contato mg/m³ Quantitativo 0.039 Não 0.019 0 0 3 12 Não Aplica Sim Sim Sim 01.06.001 - Cádmio e seus compostos tóxicos
+Carvão mineral e seus derivados Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim 01.07.001 - Carvão mineral e seus derivados
+Chumbo e seus compostos tóxicos Químico Ar e contato mg/m³ Quantitativo 0.10 Não 0.05 0 0 2 12 Não Aplica Não Sim Sim Sim 01.08.001 - Chumbo e seus compostos tóxicos
+Cloro e seus compostos tóxicos (exceto os abaixo especificados, que constam expressamente no Anexo IV do Decreto 3.048/1999) Químico Ar e contato mg/m³ Quantitativo 0.80 Não 0.40 0 0 2 12 Não Aplica Não Sim Sim Sim 01.09.001 - Cloro e seus compostos tóxicos (exceto os abaixo especificados, que constam expressamente no Anexo IV do Decreto 3.048/1999)
+Metileno-ortocloroanilina, MOCA® (4,4'-metileno-bis-(2-cloroanilina), MBOCA®) Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim 01.09.002 - Metileno-ortocloroanilina, MOCA (4,4-metileno-bis-(2-cloroanilina), MBOCA)
+Bis (cloro metil) éter, clorometileter, (éter bis (clorometílico) ou éter metílico de clorometila), bisclorometil Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim 01.09.003 - Bis (cloro metil) éter, clorometileter, (éter bis (clorometílico) ou éter metílico de clorometila), bisclorometil
+Biscloroetileter (éter dicloroetílico) Químico Ar e contato mg/m³ Quantitativo 24.0 Não 12.0 0 0 1 12 Não Aplica Sim Sim Sim 01.09.004 - Biscloroetileter (éter dicloroetílico)
+Clorambucil (cloroambucil) Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim 01.09.005 - Clorambucil (cloroambucil)
+Cloropreno Químico Ar e Contato ppm Quantitativo 20.00 Não 10.00 0 0 2 12 Não Aplica Não Sim Sim Sim 01.09.006 - Cloropreno
+Cromo e seus compostos tóxicos Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim 01.10.001 - Cromo e seus compostos tóxicos
+Dissulfeto de carbono Químico Ar e contato ppm Quantitativo 16.00 Não 8.00 0 0 2 12 Não Aplica Não Sim Sim Sim 01.11.001 - Dissulfeto de carbono
+Fósforo e seus compostos tóxicos Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim 01.12.001 - Fósforo e seus compostos tóxicos
+Iodo Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim 01.13.001 - Iodo
+Manganês e seus compostos Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim 01.14.001 - Manganês e seus compostos
+Mercúrio e seus compostos Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim 01.15.001 - Mercúrio e seus compostos
+Níquel e seus compostos tóxicos Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim 01.16.001 - Níquel e seus compostos tóxicos
+Petróleo, xisto betuminoso, gás natural e seus derivadosQuímico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim 01.17.001 - Petróleo, xisto betuminoso, gás natural e seus derivados
+Sílica livre cristalizada - poeira respirável Químico Ar e contato mg/m3 Quantitativo 0 Não 0 0 0 0 12 Não Aplica Não Sim Sim Sim 01.18.001 - Sílica livre
+Sílica livre cristalizada - poeira total Químico Ar e contato mg/m3 Quantitativo 0.00 Não 0.00 0 0 2 12 Não Aplica Não Sim Sim Sim 01.18.001 - Sílica livre
+Butadieno-estireno Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim 01.19.001 - Butadieno-estireno
+Acrilonitrila Químico Ar e contato ppm Quantitativo 16.00 Não 8.00 0 0 2 12 Não Aplica Não Sim Sim Sim 01.19.002 - Acrilonitrila
+1-3-butadieno Químico Ar e contato ppm Quantitativo 780.00 Não 390.00 0 0 2 12 Não Aplica Não Sim Sim Sim 01.19.003 - 1-3-butadieno
+Mercaptanos (tióis) Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim 01.19.004 - Mercaptanos (tióis)
+n-hexano Químico Ar e contato Qualitativo 0 Não 0 0 0 0 12 Não Aplica Não Sim Sim Sim 01.19.005 - n-hexano
+Diisocianato de tolueno (TDI) Químico Ar e contato ppm Quantitativo 0.0160 Sim 0.0080 0 0 4 12 Não Aplica Não Sim Sim Sim 01.19.006 - Diisocianato de tolueno (TDI)
+Aminas aromáticas Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim 01.19.007 - Aminas aromáticas
+Aminobifenila (4-aminodifenil) Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim 01.19.008 - Aminobifenila (4-aminodifenil)
+Auramina Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim 01.19.009 - Auramina
+Azatioprina Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim 01.19.010 - Azatioprina
+1-4-butanodiol Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim 01.19.011 - 1-4-butanodiol
+Dimetanosulfonato (MIRELAN) Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim 01.19.012 - Dimetanosulfonato (MIRELAN)
+Ciclofosfamida Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim 01.19.013 - Ciclofosfamida
+Dietiletil-bestrol Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim 01.19.014 - Dietiletil-bestrol
+Acronitrila Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim 01.19.015 - Acronitrila
+Nitronaftilamina Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim 01.19.016 - Nitronaftilamina
+4-dimetil-aminoazobenzeno Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim 01.19.017 - 4-dimetil-aminoazobenzeno
+Benzopireno Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim 01.19.018 - Benzopireno
+Beta-pbiscloromeropiolactona (beta-propiolactona) Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim 01.19.019 - Beta-pbiscloromeropiolactona (beta-propiolactona)
+Dianizidina Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim 01.19.021 - Dianizidina
+Dietilsulfato Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim 01.19.022 - Dietilsulfato
+Dimetilsulfato Químico Ar e contato mg/m³ Quantitativo 0.4 Não 0.2 0 0 1 12 Não Aplica Sim Sim Sim 01.19.023 - Dimetilsulfato
+Etilenoamina Químico Ar e contato ppm Quantitativo 0.40 Não 0.20 0 0 2 12 Não Aplica Não Sim Sim Sim 01.19.024 - Etilenoamina
+Etilenotiureia Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim 01.19.025 - Etilenotiureia
+Fenacetina Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim 01.19.026 - Fenacetina
+Iodeto de metila Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim 01.19.027 - Iodeto de metila
+Etilnitrosureia Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim 01.19.028 - Etilnitrosureia
+Nitrosamina Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim 01.19.029 - Nitrosamina
+Ortotoluidina Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim 01.19.030 - Ortotoluidina
+Oximetalona (oxime-talona) Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim 01.19.031 - Oximetalona (oxime-talona)
+Procarbazina Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim 01.19.032 - Procarbazina
+Propanosultona Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim 01.19.033 - Propanosultona
+Óxido de etileno Químico Ar e contato ppm Quantitativo 39.00 Não 19.50 0 0 2 12 Não Aplica Não Sim Sim Sim 01.19.034 - Óxido de etileno
+Estilbenzeno (etilbenzeno) Químico Ar e contato ppm Quantitativo 78.00 Não 39.00 0 0 2 12 Não Aplica Não Sim Sim Sim 01.19.035 - Estilbenzeno
+Creosoto Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim 01.19.036 - Creosoto
+Benzidina Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim 01.19.038 - Benzidina
+Betanaftilamina Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim 01.19.039 - Betanaftilamina
+1-cloro-2,4-nitrodifenil Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim 01.19.040 - 1-cloro-2,4-nitrodifenil
+3-poxipro-pano Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim 01.19.041 - 3-poxipro-pano
+Dimetilamina Químico Ar e contato mg/m³ Quantitativo 14.00 Não 7.00 0 0 2 12 Não Aplica Não Sim Sim Sim
+Vibrações localizadas (mão-braço) Físico Contato m/s² Quantitativo 5.00 Não 2.50 0 0 2 12 Não Aplica Não Sim Sim Sim 02.01.002 - Vibrações localizadas (mão-braço)
+Vibração de corpo inteiro (aceleração resultante de exposição normalizada - aren) Físico Contato m/s² Quantitativo 1.1 Não 0.5 0 0 1 12 Não Aplica Não Sim Sim Sim 02.01.003 - Vibração de corpo inteiro (aceleração resultante de exposição normalizada - aren)
+Vibração de corpo inteiro (Valor da Dose de Vibração Resultante - VDVR) Físico Contato m/s1,75 Quantitativo 21.0 Não 9.1 0 0 1 12 Não Aplica Não Sim Sim Sim 02.01.004 - Vibração de corpo inteiro (Valor da Dose de Vibração Resultante - VDVR)
+Trabalhos com perfuratrizes e marteletes pneumáticosFísico Contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim 02.01.005 - Trabalhos com perfuratrizes e marteletes pneumáticos
+Radiações ionizantes Físico Ar Milisievert (mSv) Quantitativo 20.0 Não 10.0 0 0 1 12 Não Aplica Sim Sim Sim 02.01.006 - Radiações ionizantes
+Extração e beneficiamento de minerais radioativos Físico Ar e Contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim 02.01.007 - Extração e beneficiamento de minerais radioativos
+Atividades em minerações com exposição ao radônio Físico Ar e Contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim 02.01.008 - Atividades em minerações com exposição ao radônio
+Realização de manutenção e supervisão em unidades de extração, tratamento e beneficiamento de minerais radioativos com exposição às radiações ionizantes Físico Ar e Contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim 02.01.009 - Realização de manutenção e supervisão em unidades de extração, tratamento e beneficiamento de minerais radioativos com exposição às radiações ionizantes
+Operações com reatores nucleares ou com fontes radioativas Físico Ar e Contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim 02.01.010 - Operações com reatores nucleares ou com fontes radioativas
+Trabalhos realizados com exposição aos raios Alfa, Beta, Gama e X, aos nêutrons e às substâncias radioativas para fins industriais, terapêuticos e diagnósticos Físico Ar Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim 02.01.011 - Trabalhos realizados com exposição aos raios Alfa, Beta, Gama e X, aos nêutrons e às substâncias radioativas para fins industriais, terapêuticos e diagnósticos
+Fabricação e manipulação de produtos radioativos Físico Ar e Contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim 02.01.012 - Fabricação e manipulação de produtos radioativos
+Pesquisas e estudos com radiações ionizantes em laboratórios Físico Ar e Contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim 02.01.013 - Pesquisas e estudos com radiações ionizantes em laboratórios
+Trabalhos com exposição ao calor nos termos da NR-15, da Portaria 3.214/1978 Físico Ar °C Quantitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim 02.01.014 - Trabalhos com exposição ao calor nos termos da NR-15, da Portaria 3.214/1978
+Pressão atmosférica anormal Físico Ar Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim 02.01.015 - Pressão atmosférica anormal
+Trabalhos em caixões ou câmaras hiperbáricas Físico Ar Qualitativo 0 Não 0 0 0 0 12 Não Aplica Não Sim Sim Sim 02.01.016 - Trabalhos em caixões ou câmaras hiperbáricas
+Trabalhos em tubulões ou túneis sob ar comprimido Físico Ar Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim 02.01.017 - Trabalhos em tubulões ou túneis sob ar comprimido
+Operações de mergulho com o uso de escafandros ou outros equipamentos Físico Ar Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim 02.01.018 - Operações de mergulho com o uso de escafandros ou outros equipamentos
+Trabalhos em estabelecimentos de saúde com contato com pacientes portadores de doenças infectocontagiosas ou com manuseio de materiais contaminados Biológico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim 03.01.001 - Trabalhos em estabelecimentos de saúde com contato com pacientes portadores de doenças infectocontagiosas ou com manuseio de materiais contaminados
+Trabalhos com animais infectados para tratamento ou para o preparo de soro, vacinas e outros produtos Biológico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim 03.01.002 - Trabalhos com animais infectados para tratamento ou para o preparo de soro, vacinas e outros produtos
+Trabalhos em laboratórios de autópsia, de anatomia e anátomo-histologia Biológico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim 03.01.003 - Trabalhos em laboratórios de autópsia, de anatomia e anátomo-histologia
+Trabalho de exumação de corpos e manipulação de resíduos de animais deteriorados Biológico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim 03.01.004 - Trabalho de exumação de corpos e manipulação de resíduos de animais deteriorados
+Trabalhos em galerias, fossas e tranques de esgoto Biológico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim 03.01.005 - Trabalhos em galerias, fossas e tranques de esgoto
+Esvaziamento de biodigestores Biológico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim 03.01.006 - Esvaziamento de biodigestores
+Coleta e industrialização do lixo Biológico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim 03.01.007 - Coleta e industrialização do lixo
+Trabalho em posturas incômodas ou pouco confortáveis por longos períodos Ergonômico Qualitativo 0 Não 0 0 0 0 12 Não Aplica Não Não Sim Sim 09.01.001 - Ausência de agente nocivo ou de atividades previstas no Anexo IV do Decreto 3.048/1999
+Mineração subterrânea cujas atividades sejam exercidas afastadas das frentes de produção Inespecífico Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim 04.01.001 - Mineração subterrânea cujas atividades sejam exercidas afastadas das frentes de produção
+Postura sentada por longos períodos Ergonômico Qualitativo 0 Não 0 0 0 0 12 Não Aplica Não Não Sim Sim 09.01.001 - Ausência de agente nocivo ou de atividades previstas no Anexo IV do Decreto 3.048/1999
+Trabalhos em atividades permanentes no subsolo de minerações subterrâneas em frente de produção Inespecífico Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim 04.01.002 - Trabalhos em atividades permanentes no subsolo de minerações subterrâneas em frente de produção
+Postura de pé por longos períodos Ergonômico Qualitativo 0 Não 0 0 0 0 12 Não Aplica Não Não Sim Sim 09.01.001 - Ausência de agente nocivo ou de atividades previstas no Anexo IV do Decreto 3.048/1999
+Frequente deslocamento a pé durante a jornada de trabalho Ergonômico Qualitativo 0 Não 0 0 0 12 Não Aplica Não Sim Sim
+Trabalho com esforço físico intenso Ergonômico Qualitativo 0 Não 0 0 0 12 Não Aplica Não Sim Sim
+Levantamento e transporte manual de cargas ou volumesErgonômico Qualitativo 0 Não 0 0 0 12 Não Aplica Não Sim Sim
+Frequente ação de puxar/empurrar cargas ou volumesErgonômico Qualitativo 0 Não 0 0 0 12 Não Aplica Não Sim Sim
+Frequente execução de movimentos repetitivos Ergonômico Qualitativo 0 Não 0 0 0 0 12 Não Aplica Não Não Sim Sim 09.01.001 - Ausência de agente nocivo ou de atividades previstas no Anexo IV do Decreto 3.048/1999
+Manuseio de ferramentas e/ou objetos pesados por longos períodos Ergonômico Qualitativo 0 Não 0 0 0 0 12 Não Aplica Não Não Sim Sim 09.01.001 - Ausência de agente nocivo ou de atividades previstas no Anexo IV do Decreto 3.048/1999
+Exigência de uso frequente de força, pressão, preensão, flexão, extensão ou torção dos segmentos corporais Ergonômico Qualitativo 0 Não 0 0 0 12 Não Aplica Não Sim Sim
+Compressão de partes do corpo por superfícies rígidas ou com quinas Ergonômico Qualitativo 0 Não 0 0 0 12 Não Aplica Não Sim Sim
+Exigência de flexões de coluna vertebral frequentes Ergonômico Qualitativo 0 Não 0 0 0 12 Não Aplica Não Sim Sim
+Uso frequente de pedais Ergonômico Qualitativo 0 Não 0 0 0 12 Não Aplica Não Sim Sim
+Uso frequente de alavancas Ergonômico Qualitativo 0 Não 0 0 0 12 Não Aplica Não Sim Sim
+Exigência de elevação frequente de membros superioresErgonômico Qualitativo 0 Não 0 0 0 12 Não Aplica Não Sim Sim
+Manuseio ou movimentação de cargas e volumes sem pega ou com “pega pobre” Ergonômico Qualitativo 0 Não 0 0 0 12 Não Aplica Não Sim Sim
+Uso frequente de escadas Ergonômico Qualitativo 0 Não 0 0 0 12 Não Aplica Não Sim Sim
+Trabalho intensivo com teclado ou outros dispositivos de entrada de dados Ergonômico Qualitativo 0 Não 0 0 0 12 Não Aplica Não Sim Sim
+Posto de trabalho improvisado Ergonômico Qualitativo 0 Não 0 0 0 12 Não Aplica Não Sim Sim
+Mobiliário sem meios de regulagem de ajuste Ergonômico Qualitativo 0 Não 0 0 0 12 Não Aplica Não Sim Sim
+Equipamentos e/ou máquinas sem meios de regulagem de ajuste ou sem condições de uso Ergonômico Qualitativo 0 Não 0 0 0 12 Não Aplica Não Sim Sim
+Posto de trabalho não planejado/adaptado para a posição sentada Ergonômico Qualitativo 0 Não 0 0 0 12 Não Aplica Não Sim Sim
+Assento inadequado Ergonômico Qualitativo 0 Não 0 0 0 12 Não Aplica Não Sim Sim
+Encosto do assento inadequado ou ausente Ergonômico Qualitativo 0 Não 0 0 0 12 Não Aplica Não Sim Sim
+Mobiliário ou equipamento sem espaço para movimentação de segmentos corporais Ergonômico Qualitativo 0 Não 0 0 0 12 Não Aplica Não Sim Sim
+Trabalho com necessidade de alcançar objetos, documentos, controles ou qualquer ponto além das zonas de alcance ideais para as características antropométricas do trabalhador Ergonômico Qualitativo 0 Não 0 0 0 0 12 Não Aplica Não Não Sim Sim 09.01.001 - Ausência de agente nocivo ou de atividades previstas no Anexo IV do Decreto 3.048/1999
+Equipamentos ou mobiliários não adaptados à antropometria do trabalhador Ergonômico Qualitativo 0 Não 0 0 0 12 Não Aplica Não Sim Sim
+# pagina 2
+Trabalho realizado sem pausas pré-definidas para descanso Ergonômico Qualitativo 0 Não 0 0 0 12 Não Aplica Não Sim Sim
+Necessidade de manter ritmos intensos de trabalho Ergonômico Qualitativo 0 Não 0 0 0 12 Não Aplica Não Sim Sim
+Trabalho com necessidade de variação de turnos Ergonômico Qualitativo 0 Não 0 0 0 12 Não Aplica Não Sim Sim
+Monotonia Ergonômico Qualitativo 0 Não 0 0 0 12 Não Aplica Não Sim Sim
+Trabalho noturno Ergonômico Qualitativo 0 Não 0 0 0 12 Não Aplica Não Sim Sim
+Insuficiência de capacitação para execução da tarefa Ergonômico Qualitativo 0 Não 0 0 0 12 Não Aplica Não Sim Sim
+Trabalho com utilização rigorosa de metas de produçãoErgonômico Qualitativo 0 Não 0 0 0 12 Não Aplica Não Sim Sim
+Trabalho remunerado por produção Ergonômico Qualitativo 0 Não 0 0 0 12 Não Aplica Não Sim Sim
+Cadência do trabalho imposta por um equipamento Ergonômico Qualitativo 0 Não 0 0 0 12 Não Aplica Não Sim Sim
+Desequilíbrio entre tempo de trabalho e tempo de repouso Ergonômico Qualitativo 0 Não 0 0 0 12 Não Aplica Não Sim Sim
+Condições de trabalho com níveis de pressão sonora fora dos parâmetros de conforto Ergonômico Qualitativo 0 Não 0 0 0 12 Não Aplica Não Sim Sim
+Condições de trabalho com índice de temperatura efetiva fora dos parâmetros de conforto Ergonômico Qualitativo 0 Não 0 0 0 12 Não Aplica Não Sim Sim
+Condições de trabalho com velocidade do ar fora dos parâmetros de conforto Ergonômico Qualitativo 0 Não 0 0 0 12 Não Aplica Não Sim Sim
+Condições de trabalho com umidade do ar fora dos parâmetros de conforto Ergonômico Qualitativo 0 Não 0 0 0 0 12 Não Aplica Não Não Sim Sim 09.01.001 - Ausência de agente nocivo ou de atividades previstas no Anexo IV do Decreto 3.048/1999
+Condições de trabalho com Iluminação diurna inadequada Ergonômico Qualitativo 0 Não 0 0 0 12 Não Aplica Não Sim Sim
+Condições de trabalho com Iluminação noturna inadequada Ergonômico Qualitativo 0 Não 0 0 0 12 Não Aplica Não Sim Sim
+Presença de reflexos em telas, painéis, vidros, monitores ou qualquer superfície, que causem desconforto ou prejudiquem a visualização Ergonômico Qualitativo 0 Não 0 0 0 12 Não Aplica Não Sim Sim
+Excesso de situações de estresse Ergonômico Qualitativo 0 Não 0 0 0 12 Não Aplica Não Sim Sim
+Situações de sobrecarga de trabalho mental Ergonômico Qualitativo 0 Não 0 0 0 12 Não Aplica Não Sim Sim
+Exigência de alto nível de concentração, atenção e memória Ergonômico Qualitativo 0 Não 0 0 0 12 Não Aplica Não Sim Sim
+Excesso de conflitos hierárquicos no trabalho Ergonômico Qualitativo 0 Não 0 0 0 12 Não Aplica Não Sim Sim
+Excesso de demandas emocionais/afetivas no trabalhoErgonômico Qualitativo 0 Não 0 0 0 12 Não Aplica Não Sim Sim
+Assédio de qualquer natureza no trabalho Ergonômico Qualitativo 0 Não 0 0 0 12 Não Aplica Não Sim Sim
+Trabalho com demandas divergentes (ordens divergentes, metas incompatíveis entre si, de qualidade X quantidade, entre outras) Ergonômico Qualitativo 0 Não 0 0 0 12 Não Aplica Não Sim Sim
+Exigência de realização de múltiplas tarefas, com alta demanda cognitiva Ergonômico Qualitativo 0 Não 0 0 0 12 Não Aplica Não Sim Sim
+Diferença de nível menor ou igual a dois metros Acidentes Qualitativo 0 Não 0 0 0 12 Não Aplica Não Sim Sim
+Trabalho em Altura Acidentes Qualitativo 0 Não 0 0 0 0 12 Não Aplica Não Não Sim Sim 09.01.001 - Ausência de agente nocivo ou de atividades previstas no Anexo IV do Decreto 3.048/1999
+Iluminação diurna inadequada Acidentes Qualitativo 0 Não 0 0 0 12 Não Aplica Não Sim Sim
+Iluminação noturna inadequada Acidentes Qualitativo 0 Não 0 0 0 12 Não Aplica Não Sim Sim
+Condições ou procedimentos que possam provocar contato com eletricidade Acidentes Qualitativo 0 Não 0 0 0 0 12 Não Aplica Não Não Sim Sim 09.01.001 - Ausência de agente nocivo ou de atividades previstas no Anexo IV do Decreto 3.048/1999
+Arranjo físico deficiente ou inadequado Acidentes Qualitativo 0 Não 0 0 0 12 Não Aplica Não Sim Sim
+Máquinas e equipamentos sem proteção Acidentes Qualitativo 0 Não 0 0 0 12 Não Aplica Não Sim Sim
+Armazenamento inadequado Acidentes Qualitativo 0 Não 0 0 0 12 Não Aplica Não Sim Sim
+Ferramentas necessitando de ajustes e manutenção Acidentes Qualitativo 0 Não 0 0 0 12 Não Aplica Não Sim Sim
+Ferramentas inadequadas ou defeituosas Acidentes Qualitativo 0 Não 0 0 0 0 12 Não Aplica Não Sim Sim Sim 09.01.001 - Ausência de agente nocivo ou de atividades previstas no Anexo IV do Decreto 3.048/1999
+Ambientes com risco de engolfamento Acidentes Qualitativo 0 Não 0 0 0 12 Não Aplica Não Sim Sim
+Ambientes com risco de afogamento Acidentes Qualitativo 0 Não 0 0 0 12 Não Aplica Não Sim Sim
+Áreas classificadas Acidentes Qualitativo 0 Não 0 0 0 12 Não Aplica Não Sim Sim
+Queda de objetos Acidentes Qualitativo 0 Não 0 0 0 0 12 Não Aplica Não Não Sim Sim 09.01.001 - Ausência de agente nocivo ou de atividades previstas no Anexo IV do Decreto 3.048/1999
+Intempéries Acidentes Qualitativo 0 Não 0 0 0 12 Não Aplica Não Sim Sim
+Ambientes com risco de soterramento Acidentes Qualitativo 0 Não 0 0 0 12 Não Aplica Não Sim Sim
+Animais peçonhentos Acidentes Qualitativo 0 Não 0 0 0 0 12 Não Aplica Não Não Sim Sim 09.01.001 - Ausência de agente nocivo ou de atividades previstas no Anexo IV do Decreto 3.048/1999
+Animais domésticos Acidentes Qualitativo 0 Não 0 0 0 12 Não Aplica Não Sim Sim
+Animais selvagens Acidentes Qualitativo 0 Não 0 0 0 12 Não Aplica Não Sim Sim
+Mobiliário e/ou superfícies com quinas vivas, rebarbas ou elementos de fixação expostos Acidentes Qualitativo 0 Não 0 0 0 12 Não Aplica Não Sim Sim
+Pisos, passagens, passarelas, plataformas, rampas e corredores com saliências, descontinuidades, aberturas ou obstruções, ou escorregadios Acidentes Qualitativo 0 Não 0 0 0 12 Não Aplica Não Sim Sim
+Escadas e rampas inadequadas Acidentes Qualitativo 0 Não 0 0 0 12 Não Aplica Não Sim Sim
+Superfícies e/ou materiais aquecidos expostos Acidentes Qualitativo 0 Não 0 0 0 12 Não Aplica Não Sim Sim
+Superfícies e/ou materiais em baixa temperatura expostos Acidentes Qualitativo 0 Não 0 0 0 12 Não Aplica Não Sim Sim
+Áreas de trânsito de pedestres sem demarcação Acidentes Qualitativo 0 Não 0 0 0 12 Não Aplica Não Sim Sim
+Áreas de trânsito de veículos sem demarcação Acidentes Qualitativo 0 Não 0 0 0 12 Não Aplica Não Sim Sim
+Áreas de movimentação de materiais sem demarcaçãoAcidentes Qualitativo 0 Não 0 0 0 12 Não Aplica Não Sim Sim
+Condução de veículos de qualquer natureza em vias públicas Acidentes Qualitativo 0 Não 0 0 0 12 Não Aplica Não Sim Sim
+Ausência de agente nocivo ou de atividades previstas no Anexo IV do Decreto 3.048/1999 Inespecífico Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim 09.01.001 - Ausência de agente nocivo ou de atividades previstas no Anexo IV do Decreto 3.048/1999
+Bactérias Biológico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Fungos Biológico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Protozoários Biológico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Vírus Biológico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Frio Físico Ar °C Quantitativo 0 Não 0 0 0 0 12 Não Aplica Não Sim Sim Sim
+Radiações não ionizantes Físico Ar Qualitativo 0 Não 0 0 0 0 12 Não Aplica Não Sim Sim Sim 09.01.001 - Ausência de agente nocivo ou de atividades previstas no Anexo IV do Decreto 3.048/1999
+Dimetilanilina Químico Ar e contato mg/m3 Quantitativo 0 Não 0 0 0 0 12 Não Aplica Não Sim Sim Sim
+1,1,1 Tricloroetano (Metilclorofórmio) Químico Ar e contato mg/m³ Quantitativo 1,480.000 Não 740.000 0 0 3 12 Não Aplica Não Sim Sim Sim
+1,1,1,2-Tetracloro-2,2-difluoretano Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+1,1,2,2-Tetracloro-1,2-difluoretano Químico Ar e contato Qualitativo 0 Não 0 0 0 0 12 Não Aplica Não Sim Sim Sim
+1,1,2-Tricloro-1,2,2-trifluoretano (freon 113) Químico Ar e contato mg/m³ Quantitativo 5,930.0 Não 2,965.0 0 0 1 12 Não Aplica Sim Sim Sim
+1,1,2-Tricloroetano (Tricloreto de vinila) Químico Ar e contato mg/m³ Quantitativo 35.0 Não 17.5 0 0 1 12 Não Aplica Sim Sim Sim
+1,1-Dicloro-1-nitroetano Químico Ar e contato mg/m³ Quantitativo 47.0 Não 23.5 0 0 1 12 Não Aplica Sim Sim Sim
+1,1-Dicloroetano Químico Ar e contato mg/m³ Quantitativo 640.0 Não 320.0 0 0 1 12 Não Aplica Sim Sim Sim
+1,1-Dimetil hidrazina Químico Ar e contato mg/m³ Quantitativo 0.8 Não 0.4 0 0 1 12 Não Aplica Sim Sim Sim
+1,2 Dicloroetano (Dicloreto de etileno) Químico Ar e contato mg/m³ Quantitativo 156.0 Não 78.0 0 0 1 12 Não Aplica Sim Sim Sim
+1,2 Dicloroetileno Químico Ar e contato mg/m³ Quantitativo 615.0 Não 307.5 0 0 1 12 Não Aplica Sim Sim Sim
+1,2,3-Tricloropropano Químico Ar e contato mg/m³ Quantitativo 235.0 Não 117.5 0 0 1 12 Não Aplica Sim Sim Sim
+1,2,4-Triclorobenzeno Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+1,2-Dibramoetano (dibrometo de etileno) Químico Ar e contato mg/m³ Quantitativo 110.0 Não 55.0 0 0 1 12 Não Aplica Sim Sim Sim
+1,3,5-Triglicidil-s-triazinetriona Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+1,3-Dicloro-5,5-dimetil hidantoina Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+1,3-Dicloropropeno Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+1,3-Dioxolane Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+1,4-Dicloro-2-buteno Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+1,4-Dioxano Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+1,6-Hexanodiamina Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+1-Bromopropano Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+1-Butanotiol (n-Butil mercaptana) Químico Ar e contato mg/m³ Quantitativo 1.20 Não 0.60 0 0 2 12 Não Aplica Sim Sim Sim
+1-Cloro-1-nitropropano Químico Ar e contato mg/m³ Quantitativo 78.0 Não 39.0 0 0 1 12 Não Aplica Sim Sim Sim
+1-Cloro-2,3-Epoxipropano (epicloridrina) Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+1-Cloro-2-propanol Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+1-Hexeno Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+1-Metil naftaleno Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+1-Metoxi-2-propanol Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+1-Nitropropano Químico Ar e contato mg/m³ Quantitativo 70.0 Não 35.0 0 0 1 12 Não Aplica Sim Sim Sim
+2,3,4,7,8-Pentaclorodibenzofurano Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+2,3,7,8-Tetraclorodibenzo-para-dioxina Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+2,4 D Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+2,4,5-T Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+2,4,6-Trinitrotolueno Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+2,4-Pentanodiona Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+2-Aminopiridina Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+2-Butóxi etanol (EGBE) (butil cellosolve) (éter monobutílico do etileno glicol) Químico Ar e contato mg/m³ Quantitativo 190.0 Não 95.0 0 0 1 12 Não Aplica Sim Sim Sim
+2-Cianoacrilato de metila Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+2-Cloro-1-propanol Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+2-Cloroacetofenona Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+2-Dietilaminoetanol Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+2-Etoxietanol (cellosolve ou Éter monoetílico do etileno glicol) Químico Ar e contato mg/m³ Quantitativo 290.0 Não 145.0 0 0 1 12 Não Aplica Sim Sim Sim
+2-Metil naftaleno Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+2-Metilciclopentadienil manganês tricarbonila Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+2-N-Dibutilaminoetanol Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+2-Nitropropano Químico Ar e contato mg/m³ Quantitativo 70.0 Não 35.0 0 0 1 12 Não Aplica Sim Sim Sim
+3,3’-Dicloro-benzidina (Diclorobenzidina) Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+3,4,5,3’,4’-Pentaclorobifenil (PCB - 126) Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+3,5-Dinitro-o-toluamida Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+4-(metilnitrosamino)-1-(3-piridil)1-butanona (NNK) Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+4,4'-Metileno dianilina Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+4,4'-Tiobis (6-terc-butil-m-cresol) Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+4-Metoxifenol Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+4-Nitrodifenil (4-Nitrodifenila) Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+4-Vinilciclohexeno Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+5-Nitro-o-toluidina Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Acetaldeído (aldeído acético) Químico Ar e contato mg/m³ Quantitativo 140.0 Não 70.0 0 0 1 12 Não Aplica Sim Sim Sim
+Acetato de 2-butoxietila Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Acetato de 2-etoxi etila (Acetato de cellosolve ou Acetato de éter monoetílico de etilenoglicol) Químico Ar e contato mg/m³ Quantitativo 420.0 Não 210.0 0 0 1 12 Não Aplica Sim Sim Sim
+Acetato de 2-metoxietila (EGMEA) Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+# pagina 3
+Acetato de benzila Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Acetato de etila Químico Ar e contato mg/m³ Quantitativo 1,090.0 Não 545.0 0 0 1 12 Não Aplica Sim Sim Sim
+Acetato de isobutila Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Acetato de isopropila Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Acetato de metila Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Acetato de n-butila Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Acetato de n-propila Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Acetato de pentila, todos os isômeros Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Acetato de sec-butila Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Acetato de sec-hexila Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Acetato de terc-butila Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Acetato de vinila Químico Ar e contato ppm Quantitativo 10.00 Não 5.00 0 0 2 12 Não Aplica Não Sim Sim Sim
+Acetileno Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Acetofenona Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Acetona (propanona) Químico Ar e contato mg/m³ Quantitativo 1,870.0 Não 935.0 0 0 1 12 Não Aplica Sim Sim Sim
+Acetona cianidrina Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Acetonitrila (cianeto de metila) Químico Ar e contato mg/m³ Quantitativo 55.0 Não 27.5 0 0 1 12 Não Aplica Sim Sim Sim
+Ácido 2,2-dicloropropiônico Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Ácido 2-cloropropiônico Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Ácido 2-etil hexanoico Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Ácido acético (ácido etanoico) Químico Ar e contato mg/m³ Quantitativo 20.0 Não 10.0 0 0 1 12 Não Aplica Sim Sim Sim
+Ácido acetilsalicílico (aspirina) Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Ácido acrílico Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Ácido adípico Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Ácido aristolóquico Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Ácido bromídrico (brometo de hidrogênio) Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Ácido carbônico Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Ácido cianídrico (cianeto de hidrogênio, gás cianídrico)Químico Ar e contato mg/m³ Quantitativo 9.0 Não 4.5 0 0 1 12 Não Aplica Sim Sim Sim
+Ácido clorídrico (cloreto de hidrogênio, gás clorídrico) Químico Ar e contato mg/m³ Quantitativo 5.50 Não 2.75 0 0 2 12 Não Aplica Sim Sim Sim
+Ácido crômico (névoa) Químico Ar e contato mg/m³ Quantitativo 0.0 Não 0.0 0 0 1 12 Não Aplica Sim Sim Sim
+Ácido dicloroacético Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Ácido fluorídrico Químico Ar e contato mg/m³ Quantitativo 2.0 Não 1.0 0 0 1 12 Não Aplica Sim Sim Sim
+Ácido fosfórico Químico Ar e contato mg/m³ Quantitativo 1.0 Não 0.5 0 0 1 12 Não Aplica Sim Sim Sim
+Ácido metacrílico Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Ácido metanoico (ácido fórmico) Químico Ar e contato mg/m³ Quantitativo 1.50 Não 0.75 0 0 2 12 Não Aplica Sim Sim Sim
+Ácido monocloroacético Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Ácido nítrico Químico Ar e contato ppm Quantitativo 1.56 Não 0.78 0 0 2 12 Não Aplica Sim Sim Sim
+Ácido oxálico, anidro e diidratado Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Ácido peracético Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Ácido pícrico Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Ácido propiônico Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Ácido sulfúrico Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Ácido tereftálico Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Ácido tioglicólico Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Ácido tricloroacético Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Acrilamida Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Acrilato de 2-hidroxipropila Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Acrilato de etila Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Acrilato de metila Químico Ar e contato mg/m³ Quantitativo 27.0 Não 13.5 0 0 1 12 Não Aplica Sim Sim Sim
+Acrilato de n-butila Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Acroleína Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Adiponitrila Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Aflatoxinas Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Aguarrás mineral (solvente de Stoddard) Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Alaclor Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Álcalis cáusticos Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Alcatrão de hulha, produtos voláteis como aerossóis solúveis em benzeno (breu de alcatrão de hulha) Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Álcool alílico Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Álcool etílico (etanol) Químico Ar e contato mg/m³ Quantitativo 1,480.0 Não 740.0 0 0 1 12 Não Aplica Sim Sim Sim
+Álcool furfurílico Químico Ar e contato mg/m³ Quantitativo 15.50 Não 7.75 0 0 2 12 Não Aplica Sim Sim Sim
+Álcool isoamílico Químico Ar e contato mg/m³ Quantitativo 280.0 Não 140.0 0 0 1 12 Não Aplica Sim Sim Sim
+Álcool isobutílico (isobutanol) Químico Ar e contato mg/m³ Quantitativo 115.0 Não 57.5 0 0 1 12 Não Aplica Sim Sim Sim
+Álcool isooctílico Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Álcool isopropílico (isopropanol ou 2-propanol) Químico Ar e contato mg/m³ Quantitativo 765.0 Não 382.5 0 0 1 12 Não Aplica Sim Sim Sim
+Álcool metil amílico (metil isobutilcarbinol) Químico Ar e contato mg/m³ Quantitativo 78.0 Não 39.0 0 0 1 12 Não Aplica Sim Sim Sim
+Álcool metílico (metanol) Químico Ar e contato mg/m³ Quantitativo 200.0 Não 100.0 0 0 1 12 Não Aplica Não Sim Sim Sim
+Álcool n-butílico (n-butanol) Químico Ar e contato mg/m³ Quantitativo 115.0 Não 57.5 0 0 1 12 Não Aplica Sim Sim Sim
+Álcool n-propílico (n-propanol) Químico Ar e contato mg/m³ Quantitativo 390.0 Não 195.0 0 0 1 12 Não Aplica Sim Sim Sim
+Álcool propargílico Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Álcool sec-butílico (sec-butanol) Químico Ar e contato mg/m³ Quantitativo 350.0 Não 175.0 0 0 1 12 Não Aplica Sim Sim Sim
+Álcool terc-butílico Químico Ar e contato mg/m³ Quantitativo 235.0 Não 117.5 0 0 1 12 Não Aplica Sim Sim Sim
+Aldrin Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Algodão, bruto, sem tratamento, poeira Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Alumínio metal e compostos insolúveis Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Amido Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Amitrol (3-amina-1,2,4-triazol) Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Amônia (gás amoníaco) Químico Ar e contato mg/m³ Quantitativo 14.0 Não 7.0 0 0 1 12 Não Aplica Sim Sim Sim
+Anidrido acético Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Anidrido ftálico Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Anidrido hexahidroftálico, todos os isômeros Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Anidrido maleico Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Anidrido trimelítico Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Anidro sulfuroso (dióxido de enxofre) Químico Ar e contato mg/m³ Quantitativo 10.0 Não 5.0 0 0 1 12 Não Aplica Sim Sim Sim
+Anilina Químico Ar e contato mg/m³ Quantitativo 15.0 Não 7.5 0 0 1 12 Não Aplica Não Sim Sim Sim
+Antimônio e seus compostos Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Antraceno Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+ANTU Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Argônio Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Arseneto de gálio Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Arsina Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Asfalto (betume), fumos, como aerossol solúvel em benzeno Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Atrazine (e triazinas simétricas relacionadas) Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Azida de sódio (como azida de sódio; como vapor de ácido hidrazoico) Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Azinfos metil Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Bário e compostos solúveis Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Benomil Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Benzo[a]antraceno Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Benzo[b]fluoranteno Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+BHC (hexacloreto de benzeno ou hexaclorobenzeno) Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Bifenil Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Bifenis policlorados Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Bissulfito de sódio Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Borato, compostos inorgânicos Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Borracha natural, látex como proteínas alergênicas inaláveis Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Bromacil Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Brometo de alila Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Brometo de etila (bromoetano) Químico Ar e contato mg/m³ Quantitativo 695.0 Não 347.5 0 0 1 12 Não Aplica Sim Sim Sim
+Brometo de metila (bromometano) Químico Ar e contato mg/m³ Quantitativo 47.0 Não 23.5 0 0 1 12 Não Aplica Sim Sim Sim
+Butenos, todos os isômeros Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Canfeno clorado Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Cânfora, sintética Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Caolim Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Caprolactama Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Captafol Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Captan Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Carbaril Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Carbeto de silício Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Carbofuran Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Catecol Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Celulose Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Cereais, poeira (aveia, cevada, trigo) Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+# pagina 4
+Ceteno Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Chumbo tetraetila Químico Ar e contato Qualitativo 0 Não 0 0 0 0 12 Não Aplica Não Sim Sim Sim
+Chumbo tetrametila Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Cianamida Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Cianamida de cálcio Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Cianoacrilato de etila Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Cianogênio Químico Ar e contato mg/m³ Quantitativo 16.0 Não 8.0 0 0 1 12 Não Aplica Sim Sim Sim
+Ciclohexano Químico Ar e contato mg/m³ Quantitativo 820.0 Não 410.0 0 0 1 12 Não Aplica Sim Sim Sim
+Ciclohexanol Químico Ar e contato mg/m³ Quantitativo 160.0 Não 80.0 0 0 1 12 Não Aplica Sim Sim Sim
+Ciclohexanona Químico Ar e contato Qualitativo 0 Não 0 0 0 0 12 Não Aplica Não Sim Sim Sim
+Ciclohexeno Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Ciclohexilamina Químico Ar e contato mg/m³ Quantitativo 32.0 Não 16.0 0 0 1 12 Não Aplica Sim Sim Sim
+Ciclonita Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Ciclopentadieno Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Ciclopentano Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Ciclosporina Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Cihexatin Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Cimento portland Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Citral Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Clopidol Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Clordane Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Cloreto de alila Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Cloreto de amônio - fumos Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Cloreto de benzila Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Cloreto de benzoíla Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Cloreto de cianogênio Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Cloreto de cloroacetila Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Cloreto de cromila Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Cloreto de dimetil carbamila Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Cloreto de enxofre Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Cloreto de etila (cloroetano) Químico Ar e contato mg/m³ Quantitativo 2,030.0 Não 1,015.0 0 0 1 12 Não Aplica Sim Sim Sim
+Cloreto de fenila (clorobenzeno) Químico Ar e contato mg/m³ Quantitativo 275.0 Não 137.5 0 0 1 12 Não Aplica Não Sim Sim Sim
+Cloreto de metila Químico Ar e contato mg/m³ Quantitativo 165.0 Não 82.5 0 0 1 12 Não Aplica Sim Sim Sim
+Cloreto de polivinila (PVC (policloreto de vinila)) Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Cloreto de tionila Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Cloreto de vinila (cloroetílico) Químico Ar e contato mg/m³ Quantitativo 398.0 Não 199.0 0 0 1 12 Não Aplica Sim Sim Sim
+Cloreto de vinilideno (1,1-Dicloreotileno) Químico Ar e contato mg/m³ Quantitativo 31.0 Não 15.5 0 0 1 12 Não Aplica Sim Sim Sim
+Cloreto de zinco, fumos Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Clornafazina Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Cloroacetaldeído Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Cloroacetona Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Clorobromometano Químico Ar e contato mg/m³ Quantitativo 820.0 Não 410.0 0 0 1 12 Não Aplica Sim Sim Sim
+Clorodifenil (42% de Cloro) Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Clorodifenil (54% de Cloro) Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Clorodifluormetano (freon 22) Químico Ar e contato mg/m³ Quantitativo 2,730.0 Não 1,365.0 0 0 1 12 Não Aplica Sim Sim Sim
+Clorofórmio (Triclorometano) Químico Ar e contato mg/m³ Quantitativo 94.0 Não 47.0 0 0 1 12 Não Aplica Sim Sim Sim
+Cloropentafluoretano Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Cloropicrina Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Cloropirifos Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Cobalto carbonila Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Cobalto e seus compostos inorgânicos Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Cobalto hidrocarbonila Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Cobre Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Coumafos Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Cresol, todos os isômeros Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Criseno Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Cromato de cálcio Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Cromato de chumbo Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Cromato de estrôncio Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Cromato de terc-butila Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Cromatos de zinco Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Cromita - processamento do minério (cromato) Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Crotonaldeído Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Crufomate Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+DDD (diclorodifenildicloretano) Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+DDT Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Decaborano Químico Ar e contato mg/m³ Quantitativo 0.250 Não 0.125 0 0 3 12 Não Aplica Sim Sim Sim
+Demeton (Systox) Químico Ar e contato mg/m³ Quantitativo 0.10 Não 0.05 0 0 2 12 Não Aplica Não Sim Sim Sim
+Demeton-S-metila Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Destilação do alcatrão de hulha Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Diacetil Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Diacetona álcool Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Diazinon Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Diazometano Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Diborano Químico Ar e contato mg/m³ Quantitativo 0.10 Não 0.05 0 0 2 12 Não Aplica Não Sim Sim Sim
+Dibutilftalato (ftalato de dibutila) Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Diciclopentadieno Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Dicloreto de propileno (1,2-Dicloropropano) Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Dicloroacetileno Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Diclorodifluormetano Químico Ar e contato mg/m³ Quantitativo 3,860.0 Não 1,930.0 0 0 1 12 Não Aplica Sim Sim Sim
+Diclorofluormetano (freon 12) Químico Ar e contato mg/m³ Quantitativo 3,860.0 Não 1,930.0 0 0 1 12 Não Aplica Sim Sim Sim
+Diclorometano (Cloreto de metileno) Químico Ar e contato mg/m³ Quantitativo 560.0 Não 280.0 0 0 1 12 Não Aplica Não Sim Sim Sim
+Diclorotetrafluoretano (freon 114) Químico Ar e contato mg/m³ Quantitativo 5,460.0 Não 2,730.0 0 0 1 12 Não Aplica Sim Sim Sim
+Diclorvos (DDVP) Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Dicrotofós Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Dieldrin Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Dietanolamina Químico Ar e contato mg/m³ Quantitativo 59.0 Não 29.5 0 0 1 12 Não Aplica Sim Sim Sim
+Dietil éter (Éter etílico) Químico Ar e contato mg/m³ Quantitativo 940.0 Não 470.0 0 0 1 12 Não Aplica Sim Sim Sim
+Dietilamina Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Dietilcetona Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Dietileno triamina Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Dietilftalato (ftalato de dietila) Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Difenilamina Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Difluordibromometano Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Difluoreto de oxigênio Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Diisobutil cetona Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Diisocianato de isoforona Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Diisopropilamina Químico Ar e contato mg/m³ Quantitativo 16.0 Não 8.0 0 0 1 12 Não Aplica Sim Sim Sim
+Dimetilacetamida (N,N-Dimetilacetamida) Químico Ar e contato mg/m³ Quantitativo 28.0 Não 14.0 0 0 1 12 Não Aplica Não Sim Sim Sim
+Ruído contínuo ou intermitente Físico Ar dB(A) Quantitativo 85.00 Não 80.00 0 0 2 12 Não Aplica Não Sim Sim Sim 02.01.001 - Ruído
+Ruído impulsivo ou de impacto Físico Ar dB(C) Quantitativo 0.00 Não 0.00 0 0 2 12 Não Aplica Não Sim Sim Sim
+Dimetiletoxisilano Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Dimetilformamida (N,N Dimetilformamida) Químico Ar e contato ppm Quantitativo 7.81 Não 3.90 0 0 2 12 Não Aplica Não Sim Sim Sim
+Dimetilftalato Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Dinitrato de etileno glicol Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Dinitrato de propileno glicol Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Dinitrobenzeno, todos os isômeros Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Dinitro-o-cresol Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Dinitrotolueno Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Dioxation Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Dióxido de carbono (gás carbônico) Químico Ar e contato mg/m³ Quantitativo 7,020.0 Não 3,510.0 0 0 1 12 Não Aplica Sim Sim Sim
+Dióxido de cloro Químico Ar e contato mg/m³ Quantitativo 0.250 Não 0.125 0 0 3 12 Não Aplica Sim Sim Sim
+Dióxido de nitrogênio Químico Ar e contato mg/m³ Quantitativo 7.0 Não 3.5 0 0 1 12 Não Aplica Sim Sim Sim
+Dióxido de titânio Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Dióxido de vinil ciclohexano Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Dipropil cetona Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Diquat Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Dissulfeto de alil propila Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Dissulfeto de dimetila Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Dissulfiram Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Dissulfoton Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+# pagina 5
+Diuron Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Divinil benzeno Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Dodecil mercaptana Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Endosulfan Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Endrin Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Enflurano Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+EPN Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Erionita Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Estanho - compostos inorgânicos e óxido, exceto hidreto de estanho Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Estanho - metal Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Estanho e seus compostos orgânicos Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Estriquinina Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Etano Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Etanolamina Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Éter alil glicidílico Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Éter diglicidílico Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Éter etil terc-butílico Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Éter fenil glicidílico Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Éter fenílico, vapor Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Éter isopropil glicidílico (IGE) Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Éter isopropílico Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Éter isopropílico de monoetileno glicol (2-isopropoxietanol) Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Éter metil terc-amílico Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Éter metil terc-butílico (MTBE) Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Éter metílico de dipropilenoglicol (2-Metoximetiletoxi) propanol (DPGME)) Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Éter monobutílico de dietileno glicol Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Éter monometílico do etileno glicol (metil cellosolve ou 2-Metoxi etanol (EGME)) Químico Ar e contato mg/m³ Quantitativo 60.0 Não 30.0 0 0 1 12 Não Aplica Sim Sim Sim
+Éter n-Butil glicidílico Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Etil amil cetona Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Etil butil cetona Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Etil mercaptana (Etanotiol) Químico Ar e contato mg/m³ Quantitativo 0.8 Não 0.4 0 0 1 12 Não Aplica Sim Sim Sim
+Etilamina Químico Ar e contato mg/m³ Quantitativo 14.0 Não 7.0 0 0 1 12 Não Aplica Sim Sim Sim
+Etileno Químico Ar e contato ppm Quantitativo 200.0 Não 100.0 0 0 1 12 Não Aplica Sim Sim Sim
+Etileno cloridrina Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Etileno diamina Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Etileno glicol Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Etilenoimina Químico Ar e contato mg/m³ Quantitativo 0.8 Não 0.4 0 0 1 12 Não Aplica Sim Sim Sim
+Etilideno norborneno Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Etion Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Etoposide Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Etoposide em associação com cisplatina e bleomicina Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Farinha (poeiras) Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Fenamifos Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Fenil isocianato Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Fenil mercaptana Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Fenilfosfina Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Fenilhidrazina Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Fenol Químico Ar e contato mg/m³ Quantitativo 15.0 Não 7.5 0 0 1 12 Não Aplica Não Sim Sim Sim
+Fenotiazine Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Fensulfotion Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Fention Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Ferbam Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Ferro diciclopentadienila Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Ferro pentacarbonila Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Ferro, óxido (Fe2O3) Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Ferro, sais solúveis Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Ferrovanádio, poeira Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Fibras Vítreas Sintéticas - Fibras cerâmicas refratáriasQuímico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Fibras Vítreas Sintéticas - Fibras de escória mineral Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Fibras Vítreas Sintéticas - Fibras de lã de rocha Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Fibras Vítreas Sintéticas - Fibras de lã de vidro Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Fibras Vítreas Sintéticas - Fibras de vídeo finalidades especiais Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Fibras Vítreas Sintéticas - Fibras de vidro de filamento contínuo Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Flúor Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Fluoracetato de sódio Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Fluoreto de carbonila Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Fluoreto de perclorila Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Fluoreto de sulfurila Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Fluoreto de vinila Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Fluoreto de vinilideno Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Fluortriclorometano (triclorofluormetano ou freon 11) Químico Ar e contato mg/m³ Quantitativo 4,370.0 Não 2,185.0 0 0 1 12 Não Aplica Sim Sim Sim
+Fonofos Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Forato Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Formaldeído (formol ou Aldeído fórmico) Químico Ar e contato mg/m³ Quantitativo 2.30 Não 1.15 0 0 2 12 Não Aplica Sim Sim Sim
+Formamida Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Formiato de etila Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Formiato de metila Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Fosfato de dibutil fenila Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Fosfato de dibutila Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Fosfato de tributila Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Fosfato de trifenila Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Fosfato de triortocresila Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Fosfina (fosfamina) Químico Ar e contato mg/m³ Quantitativo 0.30 Não 0.15 0 0 2 12 Não Aplica Sim Sim Sim
+Fosfito de trimetila Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Fosgênio (cloreto de carbonila) Químico Ar e contato mg/m³ Quantitativo 0.30 Não 0.15 0 0 2 12 Não Aplica Sim Sim Sim
+Ftalato de di(2-etilhexila) Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Furfural Químico Ar e contato Qualitativo 0 Não 0 0 0 0 12 Não Aplica Não Sim Sim Sim
+Gás mostarda Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Gás natural e seus derivados Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Gasolina Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Glicerina, névoas Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Glicidol Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Glioxal Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+GLP (gás liquefeito do petróleo) Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Glutaraldeído, ativado e não ativado Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Grafite (todas as formas, exceto fibras de grafite) Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Háfnio e seus compostos Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Halotano Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Hélio Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Heptacloro Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Heptacloro epóxido Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Heptano, todos os isômeros Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Hexaclorobutadieno Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Hexaclorociclopentadieno Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Hexacloroetano Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Hexacloronaftaleno Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Hexafluoracetona Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Hexafluoreto de enxofre Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Hexafluoreto de selênio Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Hexafluoreto de telúrio Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Hexafluorpropileno Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Hexametileno diisocianato (HDI) Químico Ar e contato Qualitativo 0 Não 0 0 0 0 12 Não Aplica Não Sim Sim Sim
+Hexametilfosforamida Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Hexano, outros isômeros que não o n-Hexano Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Hexileno glicol Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Hidrazina (diamina) Químico Ar e contato mg/m³ Quantitativo 0.08 Não 0.04 0 0 2 12 Não Aplica Não Sim Sim Sim
+Hidreto de antimônio (Estibina) Químico Ar e contato mg/m³ Quantitativo 0.4 Não 0.2 0 0 1 12 Não Aplica Sim Sim Sim
+Hidreto de lítio Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Hidrocarbonetos alifáticos gasosos Alcanos Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Hidrocarbonetos aromáticos Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Hidrocarbonetos cíclicos Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+# pagina 6
+Hidrocarbonetos e outros compostos de carbono Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Hidrogênio Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Hidroquinona Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Hidróxido de cálcio Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Hidróxido de césio Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Hidróxido de potássio Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Hidróxido de sódio Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Hidroxitolueno butilado Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Hormônios sexuais femininos (apenas para homens) Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Indeno Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Índio e seus compostos Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Iodofórmio Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Isobuteno Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Isocianato de metila Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Isoforona Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Isopropil benzeno (cumeno) Químico Ar e contato mg/m³ Quantitativo 190.0 Não 95.0 0 0 1 12 Não Aplica Sim Sim Sim
+Isopropilamina Químico Ar e contato mg/m³ Quantitativo 9.50 Não 4.75 0 0 2 12 Não Aplica Sim Sim Sim
+Ítrio e compostos Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Lactato de n-butila Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Lindano Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Madeira, poeiras - Cedro Vermelho do Oeste Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Madeira, poeiras - Todas as outras espécies Químico Ar e contato mg/m³ Quantitativo 1.0 Não 0.5 0 0 1 12 Não Aplica Sim Sim Sim
+Malation Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Melfalano Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Metabisulfito de sódio Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Metacrilato de metila Químico Ar e contato mg/m³ Quantitativo 320.0 Não 160.0 0 0 1 12 Não Aplica Sim Sim Sim
+Metais duros contendo carboneto de tungstênio e cobaltoQuímico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Metano Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Metil acetileno Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Metil acetileno-propadieno, mistura (MAPP) Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Metil ciclohexano Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Metil demeton Químico Ar e contato mg/m³ Quantitativo 0.4 Não 0.2 0 0 1 12 Não Aplica Sim Sim Sim
+Metil etil cetona (MEK) (Butanona) Químico Ar e contato mg/m³ Quantitativo 460.0 Não 230.0 0 0 1 12 Não Aplica Não Sim Sim Sim
+Metil isoamil cetona Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Metil isobutil cetona Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Metil isopropil cetona Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Metil mercaptana (metanotiol) Químico Ar e contato mg/m³ Quantitativo 0.8 Não 0.4 0 0 1 12 Não Aplica Sim Sim Sim
+Metil n-amil cetona Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Metil n-butil cetona Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Metil paration (paration) Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Metil propil cetona Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Metil vinil cetona Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Metilacrilonitrila Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Metilal Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Metilamina Químico Ar e contato mg/m³ Quantitativo 9.50 Não 4.75 0 0 2 12 Não Aplica Sim Sim Sim
+Metilciclohexanol Químico Ar e contato mg/m³ Quantitativo 180.0 Não 90.0 0 0 1 12 Não Aplica Sim Sim Sim
+Metileno bisfenil isocianato (MDI) Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Metileno-bis-(4-ciclohexilisocianato) Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Metomil Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Metoxicloro Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Metoxsalen associado com radiação ultravioleta A Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Metribuzin Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Mevinfos Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+m-Fenileno diamina Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+m-Ftalodinitrila Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Mica Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Molibdênio - compostos solúveis Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Molibdênio - metal e compostos insolúveis (fração inalável) Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Molibdênio - metal e compostos insolúveis (fração respirável) Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Monocrotofós Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Monometil hidrazina (metil hidrazina) Químico Ar e contato mg/m³ Quantitativo 0.270 Não 0.135 0 0 3 12 Não Aplica Sim Sim Sim
+Monóxido de carbono Químico Ar e contato mg/m³ Quantitativo 43.0 Não 21.5 0 0 1 12 Não Aplica Não Sim Sim Sim
+Morfolina Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+m-Toluidina Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+N,N-Dietilhidroxilamina Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Naftaleno Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Naftóis (1-Naftol, 2-Naftol) Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Naled Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+n-Butano Químico Ar e contato mg/m³ Quantitativo 1,090.0 Não 545.0 0 0 1 12 Não Aplica Sim Sim Sim
+n-Butilamina Químico Ar e contato mg/m³ Quantitativo 12.0 Não 6.0 0 0 1 12 Não Aplica Sim Sim Sim
+Negro de fumo Químico Ar e contato mg/m³ Quantitativo 3.50 Não 1.75 0 0 2 12 Não Aplica Não Sim Sim Sim
+Neônio Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+n-Etil morfolina Químico Ar e contato mg/m³ Quantitativo 74.0 Não 37.0 0 0 1 12 Não Aplica Sim Sim Sim
+n-Fenil-ß-naftilamina Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Nicotina Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+n-Isopropilanilina Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Nitrapirin Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Nitrato de n-propila Químico Ar e contato mg/m³ Quantitativo 85.0 Não 42.5 0 0 1 12 Não Aplica Sim Sim Sim
+Nitrito de isobutila Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Nitrobenzeno Químico Ar e contato Qualitativo 0 Não 0 0 0 0 12 Não Aplica Não Sim Sim Sim
+Nitroetano Químico Ar e contato mg/m³ Quantitativo 245.0 Não 122.5 0 0 1 12 Não Aplica Sim Sim Sim
+Nitrogênio Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Nitroglicerina Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Nitrometano Químico Ar e contato mg/m³ Quantitativo 195.0 Não 97.5 0 0 1 12 Não Aplica Sim Sim Sim
+Nitrotolueno, todos os isômeros Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+n-Metil anilina Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+N-Nitrosodimetilamina Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+N'-Nitrosonornicotina (NNN) Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Nonano Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+n-Pentano Químico Ar e contato mg/m³ Quantitativo 1,400.0 Não 700.0 0 0 1 12 Não Aplica Sim Sim Sim
+n-propano (propano) Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+n-Valeraldeído Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+n-Vinil-2-pirrolidone Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+o-Anisidina Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+o-Clorobenzilideno malononitrila Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+o-Cloroestireno Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+o-Clorotolueno Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Octacloronaftaleno Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Octano, todos os isômeros Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+o-Diclorobenzeno Químico Ar e contato mg/m³ Quantitativo 235.0 Não 117.5 0 0 1 12 Não Aplica Sim Sim Sim
+o-Fenileno diamina Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+o-Ftalodinitrila Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Óleo diesel, como hidrocarbonetos totais Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Óleo mineral, excluídos os fluídos de trabalho com metais - Puro, alta e severamente refinado Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Óleo mineral, excluídos os fluídos de trabalho com metais - Refinação fraca ou média Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Óleo queimado Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+o-Metilciclohexanona Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+o-sec Butilfenol Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+o-Tolidina Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Oxicloreto de fósforo Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Óxido de boro Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Óxido de cálcio Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Óxido de difenila o-clorada Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Óxido de magnésio Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Óxido de mesitila Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Óxido de propileno Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Óxido de zinco Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Óxido nítrico Químico Ar e contato mg/m³ Quantitativo 23.0 Não 11.5 0 0 1 12 Não Aplica Sim Sim Sim
+Óxido nitroso Químico Ar e contato ppm Quantitativo 50.0 Não 25.0 0 0 1 12 Não Aplica Sim Sim Sim
+Ozona (ozônio) Químico Ar e contato mg/m³ Quantitativo 0.16 Não 0.08 0 0 2 12 Não Aplica Não Sim Sim Sim
+p,p'-Oxibis(benzeno sulfonila hidrazida) Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+# pagina 7
+p-Anisidina Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Parafina, cera (fumos) Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Paraquat, como o cátion Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Particulados (insolúveis ou de baixa solubilidade) não especificados de outra maneira (PNOS) - não respiráveis Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Particulados (insolúveis ou de baixa solubilidade) não especificados de outra maneira (PNOS) - respiráveis Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+p-Diclorobenzeno Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Pentaborano Químico Ar e contato mg/m³ Quantitativo 0.0 Não 0.0 0 0 1 12 Não Aplica Sim Sim Sim
+Pentacloreto de fósforo Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Pentaclorofenol Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Pentacloronaftaleno Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Pentacloronitrobenzeno Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Pentaeritritol Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Pentafluoreto de bromo Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Pentafluoreto de enxofre Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Pentassulfeto de fósforo Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Pentóxido de vanádio Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Percloroetileno (Tetracloroetileno) Químico Ar e contato mg/m³ Quantitativo 525.0 Não 262.5 0 0 1 12 Não Aplica Não Sim Sim Sim
+Perclorometil mercaptana Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Perfluorisobutileno Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Perfluorobutil etileno Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Perfluoroctanoato de amônio Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Peróxido de benzoíla Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Peróxido de hidrogênio Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Peróxido de metil etil cetona Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Persulfatos, como persulfato Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+p-Fenileno diamina Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Picloram Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Pindone Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Piretro Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Piridina Químico Ar e contato mg/m³ Quantitativo 12.0 Não 6.0 0 0 1 12 Não Aplica Sim Sim Sim
+Pirofosfato de tetraetila Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Pirperazina e sais (dihidrocloreto de piperazina) Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Platina e sais solúveis - Metal Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Platina e sais solúveis - Sais solúveis Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Plutônio Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+p-Nitroanilina Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+p-Nitroclorobenzeno Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Poliisocianetos Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Poliuretanas Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Prata e seus compostos - compostos solúveis Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Prata e seus compostos - metal, poeira e fumos Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Propileno Químico Ar e contato ppm Quantitativo 500.0 Não 250.0 0 0 1 12 Não Aplica Sim Sim Sim
+Propileno imina Químico Ar e contato mg/m³ Quantitativo 4.0 Não 2.0 0 0 1 12 Não Aplica Sim Sim Sim
+Propionaldeído Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Propoxur Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+p-terc-Butiltolueno Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+p-Toluidina Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Querosene combustível de avião, como vapor de hidrocarbonetos totais Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Quinona Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Rádio-224 e seus produtos de decaimento Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Rádio-226 e seus produtos de decaimento Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Rádio-228 e seus produtos de decaimento Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Radônio-222 e seus produtos de decaimento Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Resina de vareta (eletrodo arame) de solda, produtos da decomposição térmica (breu) Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Resorcinol Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Ródio - compostos solúveis Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Ródio - metal e compostos insolúveis Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Ronel Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Rotenona (comercial) Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Sacarose Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Sais de Cianeto Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Salicilato de etila Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Salicilato de metila Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Seleneto de hidrogênio Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Selênio e seus compostos Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Semustina [1-(2 -cloroetil) -3-(4-metilciclohexil)-1-nitrosourea, Metil CC- NU] Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Sesone Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Silicato de cálcio, sintético não fibroso Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Silicatos Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Simazine Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Subtilisins, como 100% enzima cristalina ativa cristalinaQuímico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Sulfamato de amônio Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Sulfato de bário Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Sulfato de cálcio Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Sulfato de carbonila Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Sulfeto de dimetila Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Sulfeto de hidrogênio (Gás sulfídrico) Químico Ar e contato mg/m³ Quantitativo 12.0 Não 6.0 0 0 1 12 Não Aplica Sim Sim Sim
+Sulfeto de níquel Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Sulfometuron metil Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Sulfotep (TEDP) Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Sulprofos Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Talco Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Tálio Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Tamoxifeno Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Telureto de bismuto - aditivado com Se, como Bi2Te3 Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Telureto de bismuto - não aditivado, como Bi2Te3 Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Telúrio e compostos (NOS), como Te, excluído telureto de hidrogênio Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Temefós Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Terbufos Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Terebentina e monoterpenos selecionados Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Terfenilas (o,m,p-isômeros) Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Terfenilas hidrogenadas (não irradiadas) Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Tetrabrometo de acetileno (1,1,2,2-Tetrabromoetano) Químico Ar e contato mg/m³ Quantitativo 11.0 Não 5.5 0 0 1 12 Não Aplica Sim Sim Sim
+Tetrabrometo de carbono Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Tetracloreto de carbono Químico Ar e contato mg/m³ Quantitativo 50.0 Não 25.0 0 0 1 12 Não Aplica Sim Sim Sim
+Tetracloroetano (1,1,2,2-Tetracloroetano) Químico Ar e contato mg/m³ Quantitativo 27.0 Não 13.5 0 0 1 12 Não Aplica Sim Sim Sim
+Tetracloronaftaleno Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Tetrafluoretileno Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Tetrafluoreto de enxofre Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Tetrahidreto de germânio Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Tetrahidreto de silício Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Tetrahidrofurano Químico Ar e contato mg/m³ Quantitativo 460.0 Não 230.0 0 0 1 12 Não Aplica Não Sim Sim Sim
+Tetrametil succinonitrila Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Tetranitrometano Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Tetraquis (hidroximetil) fosfônio, sais - Cloreto de tetraquis (hidroximetil) fosfônio Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Tetraquis (hidroximetil) fosfônio, sais - Sulfato de tetraquis (hidroximetil) fosfônio Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Tetril Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Tetróxido de ósmio Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Thiram Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Tiotepa Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Titânio Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Tolueno (toluol) Químico Ar e contato mg/m³ Quantitativo 290.0 Não 145.0 0 0 1 12 Não Aplica Não Sim Sim Sim
+Tório-232 e seus produtos de decaimento Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Tribrometo de boro Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Tribromometano (Bromofórmio) Químico Ar e contato mg/m³ Quantitativo 4.0 Não 2.0 0 0 1 12 Não Aplica Sim Sim Sim
+Tricloreto de boro Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Tricloreto de fósforo Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Triclorfon Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Tricloroetileno Químico Ar e contato mg/m³ Quantitativo 420.0 Não 210.0 0 0 1 12 Não Aplica Não Sim Sim Sim
+Triclorometil benzeno Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Tricloronaftaleno Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+# pagina 8
+Trietanolamina Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Trietilamina Químico Ar e contato mg/m³ Quantitativo 78.0 Não 39.0 0 0 1 12 Não Aplica Sim Sim Sim
+Trifluorbromometano Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Trifluoreto de boro Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Trifluoreto de cloro Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Trifluoreto de nitrogênio Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Trimetil benzeno (mistura de isômeros) Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Trimetilamina Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Trióxido de antimônio Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Tungstênio - compostos solúveis Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Tungstênio - metal e compostos insolúveis Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Urânio (natural) compostos solúveis e insolúveis Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Vinil tolueno Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Warfarin (Varfarina) Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Xileno (xilol) Químico Ar e contato mg/m³ Quantitativo 340.0 Não 170.0 0 0 1 12 Não Aplica Não Sim Sim Sim
+Xilidina (mistura de isômeros) Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Xisto betuminoso e seus derivados Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+Zircônio e compostos Químico Ar e contato Qualitativo 0 Não 0 0 0 12 Não Aplica Sim Sim Sim
+alfa,alfa Diamina m-xileno Químico Ar e contato Qualitativo 0 Não 0 0 0 0 12 Não Aplica Não Sim Sim Sim
+alfa-Metil estireno Químico Ar e contato Qualitativo 0 Não 0 0 0 0 12 Não Aplica Não Sim Sim Sim
+Trabalho em Espaço Confinado Acidentes Qualitativo 0 Não 0 0 0 0 0 Não Aplica Não Sim Sim Sim
+Queimaduras Acidentes Qualitativo 0 Não 0 0 0 0 0 Não Aplica Não Sim Sim Sim 09.01.001 - Ausência de agente nocivo ou de atividades previstas no Anexo IV do Decreto 3.048/1999
+Trabalho com Manipulação de Alimentos Inespecífico Qualitativo 0 Não 0 0 0 0 0 Não Aplica Não Sim Sim Sim 09.01.001 - Ausência de agente nocivo ou de atividades previstas no Anexo IV do Decreto 3.048/1999
+Objetos Cortantes ou Perfurantes Acidentes Qualitativo 0 Não 0 0 0 0 0 Não Aplica Não Sim Sim Sim 09.01.001 - Ausência de agente nocivo ou de atividades previstas no Anexo IV do Decreto 3.048/1999
+Exigência de posturas inadequadas Ergonômico Qualitativo 0 Não 0 0 0 0 0 Não Aplica Não Sim Sim Sim 09.01.001 - Ausência de agente nocivo ou de atividades previstas no Anexo IV do Decreto 3.048/1999
+Queda de mesmo nível Acidentes Qualitativo 0 Não 0 0 0 0 0 Não Aplica Não Sim Sim Sim 09.01.001 - Ausência de agente nocivo ou de atividades previstas no Anexo IV do Decreto 3.048/1999
+Queda com diferença de nível Acidentes Qualitativo 0 Não 0 0 0 0 0 Não Aplica Não Sim Sim Sim 09.01.001 - Ausência de agente nocivo ou de atividades previstas no Anexo IV do Decreto 3.048/1999
+Defensivos agrícolas Químico Qualitativo 0 Não 0 0 0 0 0 Não Aplica Não Sim Sim Sim 01.12.001 - Fósforo e seus compostos tóxicos
+Risco de corte e perfurações Acidentes Qualitativo 0 Não 0 0 0 0 0 Leve Não Sim Sim Sim 09.01.001 - Ausência de agente nocivo ou de atividades previstas no Anexo IV do Decreto 3.048/1999
+Projeção de partículas Acidentes Qualitativo 0 Não 0 0 0 0 0 Leve Não Sim Sim Sim 09.01.001 - Ausência de agente nocivo ou de atividades previstas no Anexo IV do Decreto 3.048/1999
+Outras situações de risco que poderão contribuir para a ocorrência de acidentes Acidentes Qualitativo 0 Não 0 0 0 0 0 Leve Não Sim Sim Sim 09.01.001 - Ausência de agente nocivo ou de atividades previstas no Anexo IV do Decreto 3.048/1999
+Gases e vapores Químico Qualitativo 0 Não 0 0 0 0 0 Não Aplica Não Sim Sim Sim 09.01.001 - Ausência de agente nocivo ou de atividades previstas no Anexo IV do Decreto 3.048/1999
+Poeiras (Respirável e ou total) Químico Qualitativo 0 Não 0 0 0 0 0 Não Aplica Não Sim Sim Sim 09.01.001 - Ausência de agente nocivo ou de atividades previstas no Anexo IV do Decreto 3.048/1999
+Fumos metálicos Químico Qualitativo 0 Não 0 0 0 0 0 Não Aplica Não Sim Sim Sim 09.01.001 - Ausência de agente nocivo ou de atividades previstas no Anexo IV do Decreto 3.048/1999
+Produtos de Limpeza Químico Qualitativo 0 Não 0 0 0 0 0 Não Aplica Não Sim Sim Sim 09.01.001 - Ausência de agente nocivo ou de atividades previstas no Anexo IV do Decreto 3.048/1999
+Microrganismos Patogênicos Biológico Qualitativo 0 Não 0 0 0 0 0 Não Aplica Não Sim Sim Sim 09.01.001 - Ausência de agente nocivo ou de atividades previstas no Anexo IV do Decreto 3.048/1999
+Umidade Físico Qualitativo 0 Não 0 0 0 0 0 Não Aplica Não Sim Sim Sim 09.01.001 - Ausência de agente nocivo ou de atividades previstas no Anexo IV do Decreto 3.048/1999
+Acidente de trânsito Acidentes Acidente de trânsito Acidente de trânsito Qualitativo 0 Não 0 0 0 0 0 Não Aplica Não Sim Sim Sim 09.01.001 - Ausência de agente nocivo ou de atividades previstas no Anexo IV do Decreto 3.048/1999
+Produtos Químicos diversos Químico Qualitativo 0 Não 0 0 0 0 0 Não Aplica Não Sim Sim Sim 09.01.001 - Ausência de agente nocivo ou de atividades previstas no Anexo IV do Decreto 3.048/1999
+Poeiras Metálicas Químico Qualitativo 0 Não 0 0 0 0 0 Leve Não Sim Sim Sim 09.01.001 - Ausência de agente nocivo ou de atividades previstas no Anexo IV do Decreto 3.048/1999
+Assédio e interação com o público Ergonômico Qualitativo 0 Não 0 0 0 0 0 Não Aplica Não Sim Sim Sim 09.01.001 - Ausência de agente nocivo ou de atividades previstas no Anexo IV do Decreto 3.048/1999
+Carga mental e pressão por performance Ergonômico Qualitativo 0 Não 0 0 0 0 0 Não Aplica Não Sim Sim Sim 09.01.001 - Ausência de agente nocivo ou de atividades previstas no Anexo IV do Decreto 3.048/1999
+Óleos e Graxas Minerais (Hidrocarbonetos Aromáticos)Químico Qualitativo 0 Não 0 0 0 0 0 Não Aplica Não Sim Sim Sim 09.01.001 - Ausência de agente nocivo ou de atividades previstas no Anexo IV do Decreto 3.048/1999
+Prensamento ou Esmagamento de Membros Acidentes Qualitativo 0 Não 0 0 0 0 0 Não Aplica Não Sim Sim Sim 09.01.001 - Ausência de agente nocivo ou de atividades previstas no Anexo IV do Decreto 3.048/1999
+Quedas e escorregões Acidentes Qualitativo 0 Não 0 0 0 0 0 Não Aplica Não Sim Sim Sim 09.01.001 - Ausência de agente nocivo ou de atividades previstas no Anexo IV do Decreto 3.048/1999
+Agentes biológicos (bactérias, vírus, fungos e outros) Físico Qualitativo 0 Não 0 0 0 0 0 Não Aplica Não Sim Sim Sim 09.01.001 - Ausência de agente nocivo ou de atividades previstas no Anexo IV do Decreto 3.048/1999
+Pressão por metas de cobrança Ergonômico Qualitativo 0 Não 0 0 0 0 0 Leve Não Sim Sim Sim 09.01.001 - Ausência de agente nocivo ou de atividades previstas no Anexo IV do Decreto 3.048/1999
+Batida contra Acidentes Qualitativo 0 Não 0 0 0 0 0 Não Aplica Não Sim Sim Sim 09.01.001 - Ausência de agente nocivo ou de atividades previstas no Anexo IV do Decreto 3.048/1999
+Tombamento Acidentes Qualitativo 0 Não 0 0 0 0 0 Não Aplica Não Sim Sim Sim 09.01.001 - Ausência de agente nocivo ou de atividades previstas no Anexo IV do Decreto 3.048/1999
+Colisão Acidentes Qualitativo 0 Não 0 0 0 0 0 Não Aplica Não Sim Sim Sim 09.01.001 - Ausência de agente nocivo ou de atividades previstas no Anexo IV do Decreto 3.048/1999
+Fumos metálicos (Cobre) Químico Ar mg/m³ Qualitativo 0 Não 0 0 0 0 0 Moderado Não Sim Sim Sim 09.01.001 - Ausência de agente nocivo ou de atividades previstas no Anexo IV do Decreto 3.048/1999
+Fumos metálicos (Manganês) Químico mg/m³ Qualitativo 0 Não 0 0 0 0 0 Moderado Não Sim Sim Sim 09.01.001 - Ausência de agente nocivo ou de atividades previstas no Anexo IV do Decreto 3.048/1999
+Fumos metálicos (Ferro) Químico mg/m³ Qualitativo 0 Não 0 0 0 0 0 Não Aplica Não Sim Sim Sim 09.01.001 - Ausência de agente nocivo ou de atividades previstas no Anexo IV do Decreto 3.048/1999
+Cola a base de EVA, álcoois etc Químico Qualitativo 0 Não 0 0 0 0 0 Não Aplica Não Sim Sim Sim 09.01.001 - Ausência de agente nocivo ou de atividades previstas no Anexo IV do Decreto 3.048/1999
+Tintas e solventes Químico Qualitativo 0 Não 0 0 0 0 0 Não Aplica Não Sim Sim Sim 09.01.001 - Ausência de agente nocivo ou de atividades previstas no Anexo IV do Decreto 3.048/1999
+Pressão por prazo, produtividade e retrabalho Ergonômico Qualitativo 0 Não 0 0 0 0 0 Não Aplica Não Sim Sim Sim 09.01.001 - Ausência de agente nocivo ou de atividades previstas no Anexo IV do Decreto 3.048/1999
+Fadiga Física + Estresse (Efeito Combinado) Ergonômico Qualitativo 0 Não 0 0 0 0 0 Não Aplica Não Sim Sim Sim 09.01.001 - Ausência de agente nocivo ou de atividades previstas no Anexo IV do Decreto 3.048/1999
+Queda de cargas Acidentes Qualitativo 0 Não 0 0 0 0 0 Não Aplica Não Sim Sim Sim
+Aprisionamento de membros Acidentes Qualitativo 0 Não 0 0 0 0 0 Não Aplica Não Sim Sim Sim
+Impacto com equipamentos Acidentes Qualitativo 0 Não 0 0 0 0 0 Não Aplica Não Sim Sim Sim
+Ruptura de estruturas Acidentes Qualitativo 0 Não 0 0 0 0 0 Não Aplica Não Sim Sim Sim
+Lesões musculoesqueléticas (LME) Ergonômico Qualitativo 0 Não 0 0 0 0 0 Não Aplica Não Sim Sim Sim
+Sobrecarga de cargas Ergonômico Qualitativo 0 Não 0 0 0 0 0 Não Aplica Não Sim Sim Sim
+Desinfetante (Cloreto de Alquil Dimetil Benzil Amônio, Nonil Fenol Etoxilado 9,5 M) Químico Qualitativo 0 Não 0 0 0 0 0 Não Aplica Não Sim Sim Sim
+Detergente (Derivado de isotiazolinona máximo de 0,0015%) Químico Qualitativo 0 Não 0 0 0 0 0 Não Aplica Não Sim Sim Sim
+Água sanitária (Hidróxido de Sódio) Químico Qualitativo 0 Não 0 0 0 0 0 Não Aplica Não Sim Sim Sim

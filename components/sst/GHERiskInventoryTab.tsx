@@ -1,8 +1,15 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useDeferredValue, useMemo, useState } from 'react';
 import { usePrevSafe } from '@/context/PrevSafeContext';
 import { SSTGroupHomogeneousExposure, SSTEnvironmentalRisk, RiskCategoryType, OccupationalRiskCatalogItem } from '@/types';
+import {
+  GRUPOS_DO_SELETOR,
+  LIMITE_DO_SELETOR,
+  buscarNoSeletor,
+  indiceDoSeletor,
+  type GrupoDoSeletor
+} from '@/lib/catalogoDeRiscos';
 import { SeletorTabela27 } from './SeletorTabela27';
 import { consultarProcedimento, codigoExisteNaTabela27 } from '@/lib/tabela27';
 import { classificarRisco } from '@/lib/classificacaoDeRisco';
@@ -68,7 +75,7 @@ interface GHERiskInventoryTabProps {
 type GrupoDaEscala = 'FISICO_QUIMICO' | 'BIOLOGICO' | 'ACIDENTE' | 'ERGONOMICO';
 
 const semAcento = (s: string) =>
-  String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toUpperCase();
+  String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
 
 /** Qual tabela de probabilidade vale para o tipo de perigo. null: o modelo nao gradua. */
 function grupoDaEscala(categoria: string, psicossocial: boolean): GrupoDaEscala | null {
@@ -177,8 +184,37 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
   // Search & Apply from Global Catalog Modal State
   const [isCatalogModalOpen, setIsCatalogModalOpen] = useState(false);
   const [catalogSearch, setCatalogSearch] = useState('');
-  const [catalogGroupFilter, setCatalogGroupFilter] = useState('ALL');
+  const [catalogGroupFilter, setCatalogGroupFilter] = useState<GrupoDoSeletor | 'ALL'>('ALL');
   const [selectedCatalogRiskIds, setSelectedCatalogRiskIds] = useState<string[]>([]);
+
+  // O catalogo tem perto de mil itens. O indice (so os ativos, com nome e
+  // codigo ja sem acento) se monta uma vez por catalogo, e nao a cada tecla;
+  // a busca roda sobre o valor adiado, entao a digitacao nao espera a lista; e
+  // so os primeiros LIMITE_DO_SELETOR itens sao desenhados - desenhar todos
+  // era o que travava o modal.
+  const indiceDoCatalogo = useMemo(() => indiceDoSeletor(occupationalRisksCatalog), [occupationalRisksCatalog]);
+  const buscaNoCatalogo = useDeferredValue(catalogSearch);
+  const achadosNoCatalogo = useMemo(
+    () => buscarNoSeletor(indiceDoCatalogo, buscaNoCatalogo, catalogGroupFilter),
+    [indiceDoCatalogo, buscaNoCatalogo, catalogGroupFilter]
+  );
+  const exibidosDoCatalogo = achadosNoCatalogo.slice(0, LIMITE_DO_SELETOR);
+  const buscaPendente = buscaNoCatalogo !== catalogSearch;
+  const ativosPorGrupo = useMemo(() => {
+    const contagem = new Map<GrupoDoSeletor, number>();
+    indiceDoCatalogo.forEach((e) => {
+      if (e.grupo) contagem.set(e.grupo, (contagem.get(e.grupo) || 0) + 1);
+    });
+    return contagem;
+  }, [indiceDoCatalogo]);
+  // Os marcados continuam marcados quando a busca muda e eles saem da lista:
+  // ficam a vista aqui, com o nome, para poder desmarcar.
+  const marcadosNoCatalogo = useMemo(() => {
+    const porId = new Map(indiceDoCatalogo.map((e) => [e.item.id, e.item]));
+    return selectedCatalogRiskIds
+      .map((id) => porId.get(id))
+      .filter((item): item is OccupationalRiskCatalogItem => !!item);
+  }, [indiceDoCatalogo, selectedCatalogRiskIds]);
   const [catalogTargetMode, setCatalogTargetMode] = useState<'CURRENT_GHE' | 'MULTI_GHE' | 'JOB' | 'SECTOR_TREE'>('CURRENT_GHE');
   const [catalogSelectedGheIds, setCatalogSelectedGheIds] = useState<string[]>([]);
   const [catalogSelectedJobIds, setCatalogSelectedJobIds] = useState<string[]>([]);
@@ -1766,23 +1802,28 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
                     type="text"
                     value={catalogSearch}
                     onChange={(e) => setCatalogSearch(e.target.value)}
-                    placeholder="Filtrar por agente (ex: ruído, poeira), código eSocial (ex: 01.01.001), danos..."
+                    placeholder="Buscar por nome do agente (ex: ruído, acido sulfurico) ou código (ex: 01.18.001)"
                     className="w-full bg-slate-950 border border-slate-700 rounded-lg pl-9 pr-3 py-2 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500"
                   />
                 </div>
 
                 <div className="md:col-span-4">
+                  {/* O valor e a chave do grupo, e nao o texto gravado: a opcao
+                      "ACIDENTE" nunca casava com o grupo "ACIDENTES", e grupo
+                      gravado sem acento sumia de todo filtro. */}
                   <select
                     value={catalogGroupFilter}
-                    onChange={(e) => setCatalogGroupFilter(e.target.value)}
+                    onChange={(e) => setCatalogGroupFilter(e.target.value as GrupoDoSeletor | 'ALL')}
                     className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-indigo-500"
                   >
-                    <option value="ALL">Todos os Grupos (1 a 5)</option>
-                    <option value="FÍSICO">Físicos (Grupo 1)</option>
-                    <option value="QUÍMICO">Químicos (Grupo 2)</option>
-                    <option value="BIOLÓGICO">Biológicos (Grupo 3)</option>
-                    <option value="ERGONÔMICO">Ergonômicos (Grupo 4)</option>
-                    <option value="ACIDENTE">Acidentes (Grupo 5)</option>
+                    <option value="ALL">Todos os grupos ({indiceDoCatalogo.length})</option>
+                    {GRUPOS_DO_SELETOR
+                      .filter((g) => (ativosPorGrupo.get(g.chave) || 0) > 0 || g.chave === catalogGroupFilter)
+                      .map((g) => (
+                        <option key={g.chave} value={g.chave}>
+                          {g.rotulo} ({ativosPorGrupo.get(g.chave) || 0})
+                        </option>
+                      ))}
                   </select>
                 </div>
               </div>
@@ -1949,100 +1990,148 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
 
               {/* List of Catalog Risks to Pick */}
               <div className="space-y-2">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between gap-3 flex-wrap">
                   <span className="font-bold text-slate-200">
-                    Selecione os Agentes Nocivos do Catálogo ({selectedCatalogRiskIds.length} selecionados):
+                    Selecione os agentes do catálogo ({selectedCatalogRiskIds.length} selecionado(s)):
                   </span>
+                  {/* Alterna so os itens desenhados, e soma a selecao em vez de
+                      troca-la. "Todos os visiveis" marcava a lista filtrada
+                      inteira: com o catalogo grande, centenas de agentes que
+                      ninguem viu iriam ao inventario. */}
                   <button
                     type="button"
+                    disabled={exibidosDoCatalogo.length === 0}
                     onClick={() => {
-                      const visible = occupationalRisksCatalog.filter(r => {
-                        const matchGroup = catalogGroupFilter === 'ALL' || r.group === catalogGroupFilter;
-                        const matchSearch = r.name.toLowerCase().includes(catalogSearch.toLowerCase()) || r.code_table_24.includes(catalogSearch);
-                        return matchGroup && matchSearch;
-                      });
-                      if (selectedCatalogRiskIds.length === visible.length) {
-                        setSelectedCatalogRiskIds([]);
-                      } else {
-                        setSelectedCatalogRiskIds(visible.map(r => r.id));
-                      }
+                      const ids = exibidosDoCatalogo.map(r => r.id);
+                      const todosMarcados = ids.every(id => selectedCatalogRiskIds.includes(id));
+                      setSelectedCatalogRiskIds(prev => (todosMarcados
+                        ? prev.filter(id => !ids.includes(id))
+                        : [...prev, ...ids.filter(id => !prev.includes(id))]));
                     }}
-                    className="text-[11px] text-indigo-400 hover:text-indigo-300 font-semibold"
+                    className="text-[11px] text-indigo-400 hover:text-indigo-300 disabled:opacity-50 font-semibold"
                   >
-                    Alternar Selecionar Todos Visíveis
+                    Marcar ou desmarcar os {exibidosDoCatalogo.length} exibidos
                   </button>
                 </div>
 
-                <div className="space-y-2 max-h-64 overflow-y-auto border border-slate-800 rounded-xl p-2 bg-slate-950">
-                  {occupationalRisksCatalog
-                    .filter(r => {
-                      const matchGroup = catalogGroupFilter === 'ALL' || r.group === catalogGroupFilter;
-                      const matchSearch = r.name.toLowerCase().includes(catalogSearch.toLowerCase()) || 
-                                          r.code_table_24.includes(catalogSearch) ||
-                                          r.health_effects.toLowerCase().includes(catalogSearch.toLowerCase());
-                      return matchGroup && matchSearch;
-                    })
-                    .map(item => {
-                      const checked = selectedCatalogRiskIds.includes(item.id);
-                      return (
-                        <div
-                          key={item.id}
-                          onClick={() => {
-                            if (checked) {
-                              setSelectedCatalogRiskIds(prev => prev.filter(id => id !== item.id));
-                            } else {
-                              setSelectedCatalogRiskIds(prev => [...prev, item.id]);
-                            }
-                          }}
-                          className={`p-3 rounded-lg border cursor-pointer transition-all flex items-start gap-3 ${
-                            checked
-                              ? 'bg-indigo-950/50 border-indigo-500/70 shadow-sm'
-                              : 'bg-slate-900 border-slate-800 hover:border-slate-700'
-                          }`}
-                        >
-                          <div className="mt-0.5">
-                            {checked ? (
-                              <CheckSquare className="w-4 h-4 text-indigo-400" />
-                            ) : (
-                              <Square className="w-4 h-4 text-slate-600" />
+                {marcadosNoCatalogo.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5 max-h-20 overflow-y-auto">
+                    {marcadosNoCatalogo.map(item => (
+                      <button
+                        key={item.id}
+                        type="button"
+                        onClick={() => setSelectedCatalogRiskIds(prev => prev.filter(id => id !== item.id))}
+                        title="Desmarcar"
+                        className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-indigo-950/60 border border-indigo-500/40 text-indigo-200 hover:text-white text-[10px] font-semibold"
+                      >
+                        <span className="truncate max-w-[220px]">{item.name}</span>
+                        <X className="w-3 h-3 flex-shrink-0" />
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                <div
+                  className={`space-y-2 max-h-64 overflow-y-auto border border-slate-800 rounded-xl p-2 bg-slate-950 transition-opacity ${
+                    buscaPendente ? 'opacity-60' : ''
+                  }`}
+                >
+                  {exibidosDoCatalogo.length === 0 && (
+                    <p className="p-3 text-[11px] text-slate-400">
+                      {indiceDoCatalogo.length === 0
+                        ? 'Nenhum risco ativo no catálogo.'
+                        : 'Nenhum risco ativo do catálogo com esse nome ou código neste grupo.'}
+                    </p>
+                  )}
+                  {exibidosDoCatalogo.map(item => {
+                    const checked = selectedCatalogRiskIds.includes(item.id);
+                    // Item da listagem vem sem codigo, efeitos, exames e
+                    // gradacao: o que falta nao aparece, em vez de um rotulo
+                    // seguido de nada.
+                    const codigo = (item.code_table_24 || '').trim();
+                    const efeitos = (item.health_effects || '').trim();
+                    const exames = Array.isArray(item.suggested_exams_pcmso) ? item.suggested_exams_pcmso : [];
+                    const semGradacao = !classificarRisco(item.default_severity, item.default_probability);
+                    return (
+                      <div
+                        key={item.id}
+                        onClick={() => {
+                          if (checked) {
+                            setSelectedCatalogRiskIds(prev => prev.filter(id => id !== item.id));
+                          } else {
+                            setSelectedCatalogRiskIds(prev => [...prev, item.id]);
+                          }
+                        }}
+                        className={`p-3 rounded-lg border cursor-pointer transition-all flex items-start gap-3 ${
+                          checked
+                            ? 'bg-indigo-950/50 border-indigo-500/70 shadow-sm'
+                            : 'bg-slate-900 border-slate-800 hover:border-slate-700'
+                        }`}
+                      >
+                        <div className="mt-0.5">
+                          {checked ? (
+                            <CheckSquare className="w-4 h-4 text-indigo-400" />
+                          ) : (
+                            <Square className="w-4 h-4 text-slate-600" />
+                          )}
+                        </div>
+
+                        <div className="flex-1 min-w-0 space-y-1">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            {codigo && (
+                              <span className="font-mono text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-800 text-amber-300 border border-slate-700">
+                                {codigo}
+                              </span>
+                            )}
+                            <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-slate-800 text-slate-300">
+                              {item.group}
+                            </span>
+                            <span className="text-slate-100 font-bold text-xs">
+                              {item.name}
+                            </span>
+                          </div>
+
+                          {efeitos && (
+                            <p className="text-[11px] text-slate-400 line-clamp-1">
+                              <strong>Efeitos:</strong> {efeitos}
+                            </p>
+                          )}
+
+                          <div className="flex items-center gap-2 flex-wrap text-[10px] text-slate-400 pt-0.5">
+                            {item.tolerance_limit_reference && (
+                              <span className="bg-slate-950 px-1.5 py-0.5 rounded border border-slate-800">
+                                LT: {item.tolerance_limit_reference}
+                              </span>
+                            )}
+                            {item.action_level_reference && (
+                              <span className="bg-slate-950 px-1.5 py-0.5 rounded border border-slate-800">
+                                NA: {item.action_level_reference}
+                              </span>
+                            )}
+                            {semGradacao && (
+                              <span className="text-amber-300">
+                                sem severidade e probabilidade: o risco entra não classificado
+                              </span>
+                            )}
+                            {exames.length > 0 && (
+                              <span className="text-blue-400 flex items-center gap-1">
+                                <Stethoscope className="w-3 h-3" />
+                                Exames PCMSO: {exames.map(e => e.exam_name).join(', ')}
+                              </span>
                             )}
                           </div>
-
-                          <div className="flex-1 space-y-1">
-                            <div className="flex items-center gap-2 flex-wrap">
-                              <span className="font-mono text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-800 text-amber-300 border border-slate-700">
-                                {item.code_table_24}
-                              </span>
-                              <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-slate-800 text-slate-300">
-                                {item.group}
-                              </span>
-                              <span className="text-slate-100 font-bold text-xs">
-                                {item.name}
-                              </span>
-                            </div>
-
-                            <p className="text-[11px] text-slate-400 line-clamp-1">
-                              <strong>Efeitos:</strong> {item.health_effects}
-                            </p>
-
-                            <div className="flex items-center gap-2 text-[10px] text-slate-400 pt-0.5">
-                              {item.tolerance_limit_reference && (
-                                <span className="bg-slate-950 px-1.5 py-0.5 rounded border border-slate-800">
-                                  LT: {item.tolerance_limit_reference}
-                                </span>
-                              )}
-                              {item.suggested_exams_pcmso.length > 0 && (
-                                <span className="text-blue-400 flex items-center gap-1">
-                                  <Stethoscope className="w-3 h-3" />
-                                  Exames PCMSO: {item.suggested_exams_pcmso.map(e => e.exam_name).join(', ')}
-                                </span>
-                              )}
-                            </div>
-                          </div>
                         </div>
-                      );
-                    })}
+                      </div>
+                    );
+                  })}
                 </div>
+
+                {achadosNoCatalogo.length > exibidosDoCatalogo.length && (
+                  <p className="text-[11px] text-amber-300">
+                    Mostrando {exibidosDoCatalogo.length} de {achadosNoCatalogo.length} riscos. Refine a busca pelo
+                    nome ou pelo código, ou escolha um grupo, para ver os demais.
+                  </p>
+                )}
               </div>
 
               {/* Include PCMSO Exams checkbox */}

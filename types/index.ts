@@ -2122,31 +2122,53 @@ export interface OccupationalRiskCatalogItem {
   name: string;
   group: RiskCategoryType;
   category_color?: string;
-  generating_sources: string; // Fontes geradoras comuns
+  generating_sources?: string; // Fontes geradoras comuns
   propagation_paths: string; // Vias de propagação / penetração no organismo
-  health_effects: string; // Possíveis danos / patologias / CID-10
+  health_effects?: string; // Possíveis danos / patologias / CID-10
   evaluation_type: RiskEvaluationType;
   standard_unit?: string; // dB(A), mg/m³, ppm, m/s², IBUTG °C, etc.
   tolerance_limit_reference?: string; // Limite de tolerância (NR-15 / ACGIH)
   action_level_reference?: string; // Nível de ação (NR-09)
   measurement_methodology?: string; // Metodologia recomendada (NHO, NIOSH, OSHA)
-  recommended_epcs: string; // Medidas de proteção coletivas
+  recommended_epcs?: string; // Medidas de proteção coletivas
   recommended_epis: OccupationalRiskEPISuggestion[]; // EPIs recomendados
   suggested_exams_pcmso: OccupationalRiskExamSuggestion[]; // Exames PCMSO recomendados
-  default_severity: 1 | 2 | 3 | 4 | 5;
-  default_probability: 1 | 2 | 3 | 4 | 5;
-  special_retirement_eligible: boolean; // LTCAT / Aposentadoria Especial (Dec. 3048/99)
-  gfip_code_suggested: '00' | '01' | '02' | '03' | '04';
-  insalubridade_applicable: boolean;
+  default_severity?: 1 | 2 | 3 | 4 | 5;
+  default_probability?: 1 | 2 | 3 | 4 | 5;
+  special_retirement_eligible?: boolean; // LTCAT / Aposentadoria Especial (Dec. 3048/99)
+  gfip_code_suggested?: '00' | '01' | '02' | '03' | '04';
+  insalubridade_applicable?: boolean;
   insalubridade_degree_suggested?: '10%' | '20%' | '40%';
   insalubridade_legal_basis?: string;
-  periculosidade_applicable: boolean;
+  periculosidade_applicable?: boolean;
   periculosidade_legal_basis?: string;
   is_system_default?: boolean;
   is_custom?: boolean;
   status: 'ACTIVE' | 'INACTIVE';
   created_at: string;
   updated_at: string;
+
+  /**
+   * De onde veio o item. CURADO: escrito e conferido em
+   * lib/occupationalRisksCatalogData.ts, com fontes, EPI e exames. LISTAGEM:
+   * importado da listagem de riscos do usuario (docs/fontes/listagem-de-riscos.txt)
+   * so com o que ela traz - nome, grupo, meio de propagacao, unidade, tipo de
+   * avaliacao, limites e codigo. Nos itens da listagem os campos descritivos
+   * (fonte geradora, efeito a saude, EPC, severidade, insalubridade) ficam
+   * VAZIOS ate alguem preenche-los: nao se inventa o que a listagem nao diz.
+   * Ausente nos itens criados pelo usuario.
+   */
+  catalog_source?: 'CURADO' | 'LISTAGEM';
+  /** Limite de tolerancia em numero, na standard_unit. Ausente quando nao ha valor fixo (a listagem traz 0). */
+  tolerance_limit_value?: number;
+  /** O limite e valor teto: nao pode ser ultrapassado em momento algum da jornada. */
+  tolerance_limit_is_ceiling?: boolean;
+  /** Nivel de acao em numero, na standard_unit. Ausente quando a listagem traz 0. */
+  action_level_value?: number;
+  /** Casas decimais com que a listagem registra a medicao. */
+  measurement_decimal_places?: number;
+  /** Classificacao do efeito na listagem (Leve, Moderado). Ausente quando ela traz "Nao Aplica". */
+  effect_classification?: string;
 
   // Custom risk entry extras (user-editable items only)
   regulatory_norm_reference?: string;

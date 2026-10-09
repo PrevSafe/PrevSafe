@@ -99,8 +99,7 @@ import {
   CipaMeetingRecord,
   CipaVoteVerificationMethod,
   OccupationalRiskCatalogItem,
-  PgrActionPlanItem,
-  RiskLevelType
+  PgrActionPlanItem
 } from '@/types';
 
 import {
@@ -144,6 +143,17 @@ import {
   INITIAL_SST_DOCUMENT_SIGNATURES
 } from '@/lib/seedData';
 import { INITIAL_OCCUPATIONAL_RISKS_CATALOG } from '@/lib/occupationalRisksCatalogData';
+import { RISCOS_DA_LISTAGEM } from '@/lib/catalogoDeRiscosDaListagem';
+import {
+  atualizarItemDoCatalogo,
+  catalogoAoCarregar,
+  camposDoRiscoAPartirDoCatalogo,
+  ehItemDoSistema,
+  excluirOuDesativarItem,
+  itemAtivo,
+  itemNovoDoUsuario,
+  itensDoCatalogoDoRisco
+} from '@/lib/catalogoDeRiscos';
 import {
   INITIAL_CIPA_PROCESSES,
   calculateCipaDimensioning,
@@ -1140,7 +1150,19 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
     apply(setTrainingRequirements, list(parsed.trainingRequirements, []));
     apply(setErgonomicAssessments, list(parsed.ergonomicAssessments, []));
     apply(setPgrActionPlan, list(parsed.pgrActionPlan, []));
-    apply(setOccupationalRisksCatalog, list(parsed.occupationalRisksCatalog, INITIAL_OCCUPATIONAL_RISKS_CATALOG, 'occupationalRisksCatalog'));
+    // Quem ja usava o sistema tem o catalogo gravado com os 25 itens curados,
+    // no servidor e no cache: os itens da listagem nao viriam de nenhum dos
+    // dois. A fusao acrescenta os que faltam e nao mexe nos que estao
+    // (lib/catalogoDeRiscos.ts). Ela roda so aqui, no carregamento, e nao num
+    // efeito sobre o catalogo: o que ela acrescenta nao esta na sombra, o
+    // envio seguinte sobe essas linhas uma vez, e no proximo carregamento
+    // elas ja vem do servidor e nada mais se acrescenta. `undefined` continua
+    // sendo "nao mexer"; colecao que nunca existiu no servidor ja cai no
+    // catalogo inicial, que traz a listagem.
+    apply(setOccupationalRisksCatalog, catalogoAoCarregar(
+      list<OccupationalRiskCatalogItem>(parsed.occupationalRisksCatalog, INITIAL_OCCUPATIONAL_RISKS_CATALOG, 'occupationalRisksCatalog'),
+      RISCOS_DA_LISTAGEM
+    ));
   }, []);
 
   const readLocalCache = useCallback((): any | null => {
@@ -6063,10 +6085,13 @@ ${blocoRespMonitXml(event.client_id, aso?.exam_date || dataDeHoje(), '      ')}
     riscos.filter(r => !comAcao.has(r.id)).forEach(r => {
       const prazo = prazoSugeridoDoRisco(r);
       // Risco que veio do catalogo recebe as medidas recomendadas para o
-      // agente; o resto, a sugestao pelo estado dos controles.
-      const doCatalogo = occupationalRisksCatalog.find(cat =>
-        cat.name === r.agent_name && (cat.code_table_24 || '') === (r.risk_code_table_24 || ''));
-      const sugestoes = doCatalogo ? sugestoesDoCatalogo(r, doCatalogo, prazo) : [];
+      // agente; o resto, a sugestao pelo estado dos controles. Com a listagem
+      // o mesmo agente pode estar no catalogo duas vezes, e o item da
+      // listagem nao traz recomendacao: vale o primeiro que trouxer. Item
+      // desativado no catalogo nao sugere nada.
+      const sugestoes = itensDoCatalogoDoRisco(occupationalRisksCatalog, r)
+        .map(cat => sugestoesDoCatalogo(r, cat, prazo))
+        .find(s => s.length > 0) || [];
       (sugestoes.length > 0 ? sugestoes : [novaAcaoDoInventario(r, prazo)]).forEach(n => {
         novas.push(montarAcaoDoPlano(
           n,
@@ -6139,26 +6164,43 @@ ${blocoRespMonitXml(event.client_id, aso?.exam_date || dataDeHoje(), '      ')}
   // ==========================================
   const addOccupationalRiskCatalogItem = useCallback((data: Omit<OccupationalRiskCatalogItem, 'id' | 'created_at' | 'updated_at'>): OccupationalRiskCatalogItem => {
     const now = new Date().toISOString();
-    const newItem: OccupationalRiskCatalogItem = {
-      ...data,
-      id: `risk-cat-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
-      created_at: now,
-      updated_at: now
-    };
+    // Item criado pela tela e do usuario, mesmo copiado de um do sistema.
+    const newItem = itemNovoDoUsuario(data, `risk-cat-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`, now);
     setOccupationalRisksCatalog(prev => [newItem, ...prev]);
     logAudit('CREATE_ESTABLISHMENT_SECTOR' as any, 'CLIENT' as any, newItem.id, `Novo risco no catálogo: ${newItem.name}`, { code_24: newItem.code_table_24, group: newItem.group });
     return newItem;
   }, [logAudit]);
 
   const updateOccupationalRiskCatalogItem = useCallback((id: string, updates: Partial<OccupationalRiskCatalogItem>) => {
-    setOccupationalRisksCatalog(prev => prev.map(item => item.id === id ? { ...item, ...updates, updated_at: new Date().toISOString() } : item));
-    logAudit('UPDATE_ESTABLISHMENT_SECTOR' as any, 'CLIENT' as any, id, updates.name ? `Risco atualizado: ${updates.name}` : 'Risco do catálogo atualizado', updates);
+    // A tela desativa e reativa por aqui ({ status }). Id, origem e marca do
+    // sistema nao mudam pela edicao: item do sistema que deixasse de se-lo
+    // poderia ser excluido, e a fusao da carga o recriaria.
+    setOccupationalRisksCatalog(prev => atualizarItemDoCatalogo(prev, id, updates, new Date().toISOString()));
+    const soStatus = Object.keys(updates).length === 1 && !!updates.status;
+    logAudit('UPDATE_ESTABLISHMENT_SECTOR' as any, 'CLIENT' as any, id,
+      soStatus
+        ? (updates.status === 'INACTIVE' ? 'Risco desativado no catálogo' : 'Risco reativado no catálogo')
+        : updates.name ? `Risco atualizado: ${updates.name}` : 'Risco do catálogo atualizado',
+      updates);
   }, [logAudit]);
 
+  /**
+   * Item do sistema (curado ou da listagem) nao se exclui: desativa-se. Se
+   * saisse da colecao, a fusao da carga o traria de volta, ativo, no proximo
+   * carregamento. So o item criado pelo usuario e excluido de fato.
+   */
   const deleteOccupationalRiskCatalogItem = useCallback((id: string) => {
-    setOccupationalRisksCatalog(prev => prev.filter(item => item.id !== id));
+    const alvo = occupationalRisksCatalog.find(item => item.id === id);
+    setOccupationalRisksCatalog(prev => excluirOuDesativarItem(prev, id, new Date().toISOString()));
+    if (alvo && ehItemDoSistema(alvo)) {
+      if (alvo.status !== 'INACTIVE') {
+        logAudit('UPDATE_ESTABLISHMENT_SECTOR' as any, 'CLIENT' as any, id,
+          `Risco do sistema desativado no catálogo (não se exclui): ${alvo.name}`, { status: 'INACTIVE' });
+      }
+      return;
+    }
     logAudit('DELETE_ESTABLISHMENT_SECTOR' as any, 'CLIENT' as any, id, 'Risco removido do catálogo');
-  }, [logAudit]);
+  }, [occupationalRisksCatalog, logAudit]);
 
   const resetOccupationalRisksCatalogToDefault = useCallback(() => {
     setOccupationalRisksCatalog(INITIAL_OCCUPATIONAL_RISKS_CATALOG);
@@ -6176,9 +6218,20 @@ ${blocoRespMonitXml(event.client_id, aso?.exam_date || dataDeHoje(), '      ')}
     target_sector_ids?: string[];
     include_suggested_exams?: boolean;
   }): { created_risks_count: number; created_exams_count: number; message: string } => {
-    const selectedCatalogRisks = occupationalRisksCatalog.filter(r => payload.risk_catalog_ids.includes(r.id));
+    const idsSelecionados = new Set(payload.risk_catalog_ids || []);
+    const marcados = occupationalRisksCatalog.filter(r => idsSelecionados.has(r.id));
+    // Item desativado no catalogo nao se aplica, mesmo que um id antigo dele
+    // ainda esteja na selecao da tela.
+    const selectedCatalogRisks = marcados.filter(itemAtivo);
+    const desativadosNaSelecao = marcados.length - selectedCatalogRisks.length;
     if (selectedCatalogRisks.length === 0) {
-      return { created_risks_count: 0, created_exams_count: 0, message: 'Nenhum risco selecionado no catálogo.' };
+      return {
+        created_risks_count: 0,
+        created_exams_count: 0,
+        message: desativadosNaSelecao > 0
+          ? 'Os riscos selecionados estão desativados no catálogo: reative-os no catálogo para aplicar.'
+          : 'Nenhum risco selecionado no catálogo.'
+      };
     }
 
     // Resolve target GHEs
@@ -6231,15 +6284,6 @@ ${blocoRespMonitXml(event.client_id, aso?.exam_date || dataDeHoje(), '      ')}
 
       selectedCatalogRisks.forEach(catRisk => {
         const riskId = `risk-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
-        const severityValue = payload.custom_risk_data?.severity || catRisk.default_severity;
-        const probabilityValue = payload.custom_risk_data?.probability || catRisk.default_probability;
-        // Segunda formula de classificacao que existia no sistema, divergente
-        // da aba do GHE e das duas do modelo. Score 9 saia BAIXO aqui e MEDIO
-        // la; score 20 saia CRITICO aqui e ALTO la. Agora as duas chamam a
-        // matriz do modelo (secao 5.6).
-        const classificacaoDoCatalogo = classificarRisco(severityValue, probabilityValue);
-        const riskScore = classificacaoDoCatalogo?.score ?? 0;
-        const derivedRiskLevel: RiskLevelType = (classificacaoDoCatalogo?.nivel || 'MEDIO') as RiskLevelType;
 
         const riskObj: SSTEnvironmentalRisk = {
           id: riskId,
@@ -6247,25 +6291,12 @@ ${blocoRespMonitXml(event.client_id, aso?.exam_date || dataDeHoje(), '      ')}
           client_id: payload.client_id,
           client_unit_id: payload.client_unit_id || '',
           ghe_id: gheId,
-          risk_category: catRisk.group,
-          agent_name: catRisk.name,
-          risk_code_table_24: catRisk.code_table_24,
-          generating_source: catRisk.suggested_source || catRisk.generating_sources || targetGhe.description || 'Atividades operacionais no ambiente de trabalho',
-          propagation_path: catRisk.suggested_medium || catRisk.propagation_paths || 'Aérea',
-          health_effects: catRisk.health_effects,
-          evaluation_type: catRisk.evaluation_type,
-          measurement_unit: catRisk.standard_unit,
-          tolerance_limit: catRisk.tolerance_limit_reference,
-          action_level: catRisk.action_level_reference,
-          // `?? 0` gravava a string "0" como se fosse medicao, e a unidade
-          // padrao do catalogo ia junto: "0 dB(A)" num risco ergonomico.
-          // Sem valor sugerido, o campo fica vazio ate alguem medir.
-          measured_value:
-            payload.custom_risk_data?.measured_value ||
-            (catRisk.suggested_measured_value != null ? String(catRisk.suggested_measured_value) : ''),
-          severity: severityValue,
-          probability: probabilityValue,
-          risk_level: payload.custom_risk_data?.risk_level || derivedRiskLevel,
+          // O que vem do item: agente, codigo, via, unidade, limites, EPI
+          // recomendado e enquadramento - e severidade e probabilidade so
+          // quando o item as tem. Item da listagem nao tem: o risco nasce "nao
+          // classificado", e o nivel nao cai mais em MEDIO. A classificacao
+          // e a matriz do modelo (secao 5.6), a mesma da aba do GHE.
+          ...camposDoRiscoAPartirDoCatalogo(catRisk, payload.custom_risk_data),
           // Gravava EPC implantado e EFICAZ, com a recomendacao do catalogo
           // como descricao - antes de alguem ir ao local. O PGR dizia "manter
           // e monitorar" um controle que talvez nem exista, e o S-2240
@@ -6275,47 +6306,10 @@ ${blocoRespMonitXml(event.client_id, aso?.exam_date || dataDeHoje(), '      ')}
           epc_implemented: false,
           epc_description: undefined,
           epc_effective: false,
-          special_retirement_applies: catRisk.special_retirement_eligible,
-          gfip_code: catRisk.gfip_code_suggested,
-          // Dizia "Exposicao ... CARACTERIZADA conforme criterios tecnicos e
-          // legais" no instante em que o risco era aplicado a partir do
-          // catalogo - antes de qualquer avaliacao. Caracterizar exposicao e a
-          // conclusao do LTCAT, nao o ponto de partida dele.
-          ltcat_technical_conclusion:
-            `Agente ${catRisk.name} (${catRisk.code_table_24}) incluído no inventário a partir do ` +
-            'catálogo. Avaliação de exposição pendente: a caracterização para fins de LTCAT e ' +
-            'aposentadoria especial depende da avaliação no local.',
-          insalubridade_applies: catRisk.insalubridade_applicable,
-          insalubridade_degree: catRisk.insalubridade_degree_suggested,
-          insalubridade_legal_basis: catRisk.insalubridade_legal_basis,
-          periculosidade_applies: catRisk.periculosidade_applicable,
-          periculosidade_legal_basis: catRisk.periculosidade_legal_basis,
+          // Os EPIs recomendados entram com CA de exemplo e as cinco condicoes
+          // de eficacia em false: ninguem as verificou no local
+          // (camposDoRiscoAPartirDoCatalogo, em lib/catalogoDeRiscos.ts).
           status: 'ACTIVE',
-          epi_required: catRisk.recommended_epis.length > 0,
-          // O catalogo traz EPIs RECOMENDADOS, com CA de exemplo. Ao virar
-          // registro do cliente, nada disso esta verificado:
-          //
-          //   - ca_number caia em '12345' quando o catalogo nao tinha exemplo.
-          //     Esse numero ia para epi_ca_numbers do S-2240.
-          //   - is_effective, complies_with_nr06, uninterrupted_use,
-          //     periodic_replacement e hygienic_conditions eram gravados todos
-          //     como `true`. Sao exatamente as condicoes que o eSocial exige
-          //     que o empregador ATESTE para que o EPI neutralize a exposicao,
-          //     e delas depende o enquadramento de aposentadoria especial.
-          //     Nenhuma delas foi verificada no momento em que o risco e
-          //     copiado de um catalogo.
-          //
-          // Ficam em branco e em false ate alguem conferir no local.
-          epis: catRisk.recommended_epis.map(epi => ({
-            epi_name: epi.name,
-            ca_number: epi.ca_example || '',
-            attenuation_factor: epi.attenuation,
-            is_effective: false,
-            complies_with_nr06: false,
-            uninterrupted_use: false,
-            periodic_replacement: false,
-            hygienic_conditions: false
-          })),
           created_at: now,
           updated_at: now,
           ...payload.custom_risk_data
@@ -6327,8 +6321,9 @@ ${blocoRespMonitXml(event.client_id, aso?.exam_date || dataDeHoje(), '      ')}
         });
 
         // Include suggested exams if requested
-        if (payload.include_suggested_exams && catRisk.suggested_exams_pcmso.length > 0) {
-          catRisk.suggested_exams_pcmso.forEach(suggExam => {
+        const examesSugeridos = Array.isArray(catRisk.suggested_exams_pcmso) ? catRisk.suggested_exams_pcmso : [];
+        if (payload.include_suggested_exams && examesSugeridos.length > 0) {
+          examesSugeridos.forEach(suggExam => {
             // Check if protocol already exists in this GHE to avoid duplicate
             const alreadyExists = examProtocols.some(p => p.ghe_id === gheId && p.exam_code_table_27 === suggExam.exam_code);
             if (!alreadyExists) {
@@ -6343,7 +6338,10 @@ ${blocoRespMonitXml(event.client_id, aso?.exam_date || dataDeHoje(), '      ')}
                 periodicity_months: suggExam.periodicity_months,
                 triggers: suggExam.triggers,
                 mandatory_by_standard: suggExam.mandatory_standard,
-                preparation_instructions: 'Comparecer em jejum se solicitado ou repouso auditivo de 14h para audiometria.',
+                // Ia uma instrucao de preparo fixa (jejum e repouso auditivo)
+                // em todo exame, de hemograma a raio X, que nenhum medico
+                // escreveu. Fica vazia ate o protocolo ser editado na aba de
+                // exames.
                 status: 'ACTIVE',
                 created_at: now
               });
@@ -6369,6 +6367,11 @@ ${blocoRespMonitXml(event.client_id, aso?.exam_date || dataDeHoje(), '      ')}
       exams_count: newExams.length
     });
 
+    // Item sem severidade e probabilidade (os da listagem) gera risco sem
+    // classificacao: a mensagem diz, para a pendencia nao ser descoberta so
+    // no PGR.
+    const semClassificacao = newRisks.filter(r => !classificarRisco(r.severity, r.probability)).length;
+
     return {
       created_risks_count: newRisks.length,
       created_exams_count: newExams.length,
@@ -6379,6 +6382,13 @@ ${blocoRespMonitXml(event.client_id, aso?.exam_date || dataDeHoje(), '      ')}
         + (newActions.length > 0
           ? ` ${newActions.length} medida(s) recomendada(s) pelo catálogo entraram no plano de ação como `
             + 'sugestão: o risco fica sem controle implantado até a medida ser aceita, concluída e aferida.'
+          : '')
+        + (semClassificacao > 0
+          ? ` ${semClassificacao} risco(s) entraram sem severidade e probabilidade, que o catálogo não traz para `
+            + 'esse agente: classifique-os no inventário do GHE.'
+          : '')
+        + (desativadosNaSelecao > 0
+          ? ` ${desativadosNaSelecao} risco(s) desativado(s) no catálogo ficaram de fora.`
           : '')
         + (cargosSemGhe.length > 0 ? ` ${avisoDeCargosSemGhe(cargosSemGhe)}` : '')
     };
