@@ -499,6 +499,8 @@ export interface ClassificacaoNoFormulario {
   insalubridade_legal_basis: string;
   periculosidade_applicable: SimNao;
   periculosidade_legal_basis: string;
+  /** Absorcao tambem pela pele (coluna "p/pele" do Quadro n. 1 do Anexo 11 da NR-15). */
+  skin_absorption: SimNao;
 }
 
 export type CampoDaClassificacao = keyof ClassificacaoNoFormulario;
@@ -512,7 +514,8 @@ export const CLASSIFICACAO_NAO_INFORMADA: ClassificacaoNoFormulario = {
   insalubridade_degree_suggested: '',
   insalubridade_legal_basis: '',
   periculosidade_applicable: '',
-  periculosidade_legal_basis: ''
+  periculosidade_legal_basis: '',
+  skin_absorption: ''
 };
 
 /**
@@ -565,7 +568,8 @@ export function classificacaoParaFormulario(item: Partial<Item> | null | undefin
     insalubridade_degree_suggested: ehGrauDeInsalubridade(grau) ? grau : '',
     insalubridade_legal_basis: texto(item?.insalubridade_legal_basis),
     periculosidade_applicable: simNaoDoItem(item?.periculosidade_applicable),
-    periculosidade_legal_basis: texto(item?.periculosidade_legal_basis)
+    periculosidade_legal_basis: texto(item?.periculosidade_legal_basis),
+    skin_absorption: simNaoDoItem(item?.skin_absorption)
   };
 }
 
@@ -594,7 +598,8 @@ export function valoresDaClassificacao(
       insalubre && ehGrauDeInsalubridade(form.insalubridade_degree_suggested) ? form.insalubridade_degree_suggested : undefined,
     insalubridade_legal_basis: insalubre ? texto(form.insalubridade_legal_basis) || undefined : undefined,
     periculosidade_applicable: booleanoDoCampo(form.periculosidade_applicable),
-    periculosidade_legal_basis: perigoso ? texto(form.periculosidade_legal_basis) || undefined : undefined
+    periculosidade_legal_basis: perigoso ? texto(form.periculosidade_legal_basis) || undefined : undefined,
+    skin_absorption: booleanoDoCampo(form.skin_absorption)
   };
 }
 
@@ -609,7 +614,8 @@ const GRUPOS_DA_CLASSIFICACAO: CampoDaClassificacao[][] = [
   ['gfip_code_suggested'],
   ['special_retirement_eligible'],
   ['insalubridade_applicable', 'insalubridade_degree_suggested', 'insalubridade_legal_basis'],
-  ['periculosidade_applicable', 'periculosidade_legal_basis']
+  ['periculosidade_applicable', 'periculosidade_legal_basis'],
+  ['skin_absorption']
 ];
 
 const semValor = (v: unknown) => v === undefined || v === null || (typeof v === 'string' && v.trim() === '');

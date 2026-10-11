@@ -2175,6 +2175,12 @@ export interface OccupationalRiskCatalogItem {
    * duas vezes, e pode ser reativado na tela.
    */
   duplicate_of_id?: string;
+  /**
+   * Absorcao tambem pela pele, como a coluna do Quadro n. 1 do Anexo 11 da
+   * NR-15 marca o agente. Ausente quando nao conferido; false so quando a
+   * norma conferiu e nao marca.
+   */
+  skin_absorption?: boolean;
 
   // Custom risk entry extras (user-editable items only)
   regulatory_norm_reference?: string;

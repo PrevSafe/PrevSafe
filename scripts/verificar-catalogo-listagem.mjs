@@ -199,6 +199,13 @@ const CORRECOES_ESPERADAS = [
   ['Agentes biológicos (bactérias, vírus, fungos e outros)', 'group', 'FÍSICO', 'BIOLÓGICO'],
   ['Acidente de trânsito', 'propagation_paths', 'Acidente de trânsito', ''],
   ['Acidente de trânsito', 'standard_unit', 'Acidente de trânsito', ''],
+  ['Plutônio', 'group', 'QUÍMICO', 'FÍSICO'],
+  ['Rádio-224 e seus produtos de decaimento', 'group', 'QUÍMICO', 'FÍSICO'],
+  ['Rádio-226 e seus produtos de decaimento', 'group', 'QUÍMICO', 'FÍSICO'],
+  ['Rádio-228 e seus produtos de decaimento', 'group', 'QUÍMICO', 'FÍSICO'],
+  ['Radônio-222 e seus produtos de decaimento', 'group', 'QUÍMICO', 'FÍSICO'],
+  ['Tório-232 e seus produtos de decaimento', 'group', 'QUÍMICO', 'FÍSICO'],
+  ['Urânio (natural) compostos solúveis e insolúveis', 'group', 'QUÍMICO', 'FÍSICO'],
 ];
 const MEIOS_VALIDOS = new Set(['', 'Ar e contato', 'Ar', 'Contato']);
 const UNIDADES_VALIDAS = new Set(['ppm', 'mg/m³', 'm/s²', 'm/s1,75', 'Milisievert (mSv)', '°C', 'dB(A)', 'dB(C)']);
@@ -210,6 +217,8 @@ const CAMPOS_PERMITIDOS = new Set([
   'action_level_value', 'action_level_reference', 'measurement_decimal_places', 'effect_classification',
   // Duplicata de curado e insalubridade conferida na NR-15 (checagens proprias abaixo).
   'duplicate_of_id', 'insalubridade_applicable', 'insalubridade_degree_suggested', 'insalubridade_legal_basis',
+  // Absorcao pela pele, da mesma conferencia no Anexo 11.
+  'skin_absorption',
 ]);
 
 // Decisao do usuario em 09/10/2026: linhas que repetem um curado no mesmo
@@ -530,11 +539,11 @@ function notaDaAusencia(ctx) {
   for (const [item, f] of itensComLinha(ctx)) {
     if (f?.codigo !== AUS || item.group === 'AUSÊNCIA_RISCO') continue;
     deveriamTer.add(item);
-    if (tem(item, 'code_table_24')) p.push(`${item.name}: a fonte trazia ${AUS} e o item ficou com "${item.code_table_24}"`);
+    if (tem(item, 'code_table_24') && !tem(CODIGOS_ESPERADOS, item.name)) p.push(`${item.name}: a fonte trazia ${AUS} e o item ficou com "${item.code_table_24}"`);
     if (!String(item.esocial_enquadramento_nota || '').includes(AUS)) p.push(`${item.name}: ${AUS} retirado sem a nota que explica`);
   }
   for (const i of ctx.listagem) {
-    if (!deveriamTer.has(i) && tem(i, 'esocial_enquadramento_nota')) p.push(`${i.name}: nota de enquadramento sem ${AUS} na fonte`);
+    if (!deveriamTer.has(i) && !tem(CODIGOS_ESPERADOS, i.name) && tem(i, 'esocial_enquadramento_nota')) p.push(`${i.name}: nota de enquadramento sem ${AUS} na fonte`);
   }
   if (deveriamTer.size === 0) p.push(`nenhuma linha da fonte com ${AUS} fora da ausência foi encontrada`);
   return p;
@@ -545,7 +554,7 @@ function codigosPreservados(ctx) {
   for (const [item, f] of itensComLinha(ctx)) {
     if (!f || f.codigo === AUS) continue;
     if (f.codigo && item.code_table_24 !== f.codigo) p.push(`${item.name}: a fonte traz ${f.codigo}, o item "${item.code_table_24 ?? ''}"`);
-    if (!f.codigo && tem(item, 'code_table_24')) p.push(`${item.name}: a fonte não traz código, o item "${item.code_table_24}"`);
+    if (!f.codigo && tem(item, 'code_table_24') && !tem(CODIGOS_ESPERADOS, item.name)) p.push(`${item.name}: a fonte não traz código, o item "${item.code_table_24}"`);
   }
   return p;
 }
@@ -945,6 +954,135 @@ const ponto = ([nome, esperado, ausentes]) => (ctx) => {
 };
 
 // ---------------------------------------------------------------------------
+// Codigos atribuidos pelo usuario e absorcao pela pele
+// ---------------------------------------------------------------------------
+
+/**
+ * Os 46 de confianca alta que o usuario aprovou em 09/10/2026: nome ->
+ * [codigo, outro codigo que a nota tem de citar]. Escritos aqui por conta
+ * propria, e nao lidos do gerador, para o gerador nao se conferir sozinho.
+ */
+const CODIGOS_ESPERADOS = {
+  ['1-Butanotiol (n-Butil mercaptana)']: ['01.19.004'],
+  ['2-Metilciclopentadienil manganês tricarbonila']: ['01.14.001'],
+  ['4-(metilnitrosamino)-1-(3-piridil)1-butanona (NNK)']: ['01.19.029'],
+  ['Ácido crômico (névoa)']: ['01.10.001'],
+  ['Alcatrão de hulha, produtos voláteis como aerossóis solúveis em benzeno (breu de alcatrão de hulha)']: ['01.07.001'],
+  ['Arseneto de gálio']: ['01.01.001'],
+  ['Arsina']: ['01.01.001'],
+  ['Chumbo tetraetila']: ['01.08.001'],
+  ['Chumbo tetrametila']: ['01.08.001'],
+  ['Cloreto de cromila']: ['01.10.001', '01.09.001'],
+  ['Clorodifenil (42% de Cloro)']: ['01.09.001'],
+  ['Clorodifenil (54% de Cloro)']: ['01.09.001'],
+  ['Cromato de cálcio']: ['01.10.001'],
+  ['Cromato de chumbo']: ['01.08.001', '01.10.001'],
+  ['Cromato de estrôncio']: ['01.10.001'],
+  ['Cromato de terc-butila']: ['01.10.001'],
+  ['Cromatos de zinco']: ['01.10.001'],
+  ['Cromita - processamento do minério (cromato)']: ['01.10.001'],
+  ['Destilação do alcatrão de hulha']: ['01.07.001'],
+  ['Ruído impulsivo ou de impacto']: ['02.01.001'],
+  ['Dióxido de cloro']: ['01.09.001'],
+  ['Dodecil mercaptana']: ['01.19.004'],
+  ['Etil mercaptana (Etanotiol)']: ['01.19.004'],
+  ['Fenil mercaptana']: ['01.19.004'],
+  ['Gás natural e seus derivados']: ['01.17.001'],
+  ['GLP (gás liquefeito do petróleo)']: ['01.17.001'],
+  ['Metil mercaptana (metanotiol)']: ['01.19.004'],
+  ['Óleo mineral, excluídos os fluídos de trabalho com metais - Puro, alta e severamente refinado']: ['01.17.001'],
+  ['Óleo mineral, excluídos os fluídos de trabalho com metais - Refinação fraca ou média']: ['01.17.001'],
+  ['Oxicloreto de fósforo']: ['01.12.001', '01.09.001'],
+  ['Pentacloreto de fósforo']: ['01.12.001', '01.09.001'],
+  ['Pentafluoreto de bromo']: ['01.05.001'],
+  ['Pentassulfeto de fósforo']: ['01.12.001'],
+  ['Plutônio']: ['02.01.006'],
+  ['Rádio-224 e seus produtos de decaimento']: ['02.01.006'],
+  ['Rádio-226 e seus produtos de decaimento']: ['02.01.006'],
+  ['Rádio-228 e seus produtos de decaimento']: ['02.01.006'],
+  ['Radônio-222 e seus produtos de decaimento']: ['02.01.006', '02.01.008'],
+  ['Sulfeto de níquel']: ['01.16.001'],
+  ['Tório-232 e seus produtos de decaimento']: ['02.01.006'],
+  ['Tricloreto de fósforo']: ['01.12.001', '01.09.001'],
+  ['Trifluoreto de cloro']: ['01.09.001'],
+  ['Urânio (natural) compostos solúveis e insolúveis']: ['02.01.006'],
+  ['Xisto betuminoso e seus derivados']: ['01.17.001'],
+  ['Óleos e Graxas Minerais (Hidrocarbonetos Aromáticos)']: ['01.17.001'],
+  ['Fumos metálicos (Manganês)']: ['01.14.001'],
+};
+/** Confianca baixa e falsos positivos: ficam sem codigo de proposito. */
+const SEM_CODIGO_DE_PROPOSITO = [
+  '1,2,4-Triclorobenzeno',
+  '3,3’-Dicloro-benzidina (Diclorobenzidina)',
+  'BHC (hexacloreto de benzeno ou hexaclorobenzeno)',
+  'Cloreto de fenila (clorobenzeno)',
+  'Dinitrobenzeno, todos os isômeros',
+  'Divinil benzeno',
+  'Isopropil benzeno (cumeno)',
+  'Nitrobenzeno',
+  'o-Diclorobenzeno',
+  'p-Diclorobenzeno',
+  'Pentacloronitrobenzeno',
+  'Perclorometil mercaptana',
+  'p-Nitroclorobenzeno',
+  'Triclorometil benzeno',
+  'Trimetil benzeno (mistura de isômeros)',
+  'Metilacrilonitrila',
+  'p,p\'-Oxibis(benzeno sulfonila hidrazida)',
+  'alfa-Metil estireno',
+];
+const RADIOATIVOS = Object.keys(CODIGOS_ESPERADOS).filter((n) => CODIGOS_ESPERADOS[n][0] === '02.01.006');
+
+function codigosAtribuidos(ctx) {
+  const p = [];
+  const esperados = Object.keys(CODIGOS_ESPERADOS);
+  if (esperados.length !== 46) p.push(`a lista esperada tem ${esperados.length} nomes, e não 46`);
+  if (Object.keys(ctx.atribuidos || {}).sort().join('|') !== [...esperados].sort().join('|')) {
+    p.push('CODIGOS_ATRIBUIDOS_PELO_USUARIO não tem exatamente os 46 nomes aprovados');
+  }
+  for (const [nome, [codigo, outro]] of Object.entries(CODIGOS_ESPERADOS)) {
+    const i = ctx.listagem.find((x) => x.name === nome);
+    if (!i) { p.push(`"${nome}" não está no catálogo`); continue; }
+    if (i.code_table_24 !== codigo) p.push(`${nome}: código "${i.code_table_24 ?? ''}", o aprovado é ${codigo}`);
+    const nota = String(i.esocial_enquadramento_nota || '');
+    if (!nota.includes('atribuído pelo usuário')) p.push(`${nome}: sem a nota que diz que o código foi atribuído pelo usuário`);
+    if (outro && !nota.includes(outro)) p.push(`${nome}: a nota não cita o outro código possível, ${outro}`);
+  }
+  for (const nome of SEM_CODIGO_DE_PROPOSITO) {
+    const i = ctx.listagem.find((x) => x.name === nome);
+    if (!i) p.push(`"${nome}" não está no catálogo`);
+    else if (tem(i, 'code_table_24')) p.push(`${nome}: recebeu ${i.code_table_24}, mas a confiança era baixa ou o termo casou por acaso`);
+  }
+  for (const nome of RADIOATIVOS) {
+    const i = ctx.listagem.find((x) => x.name === nome);
+    if (i && i.group !== 'FÍSICO') p.push(`${nome}: grupo ${i.group} com código de radiação ionizante (físico)`);
+  }
+  return p;
+}
+
+/** A coluna "p/pele" do Quadro n. 1, lida do texto da norma, nos conferidos no Anexo 11. */
+function absorcaoPelaPele(ctx) {
+  const p = [];
+  const { linhas, col } = quadro(ctx.anexo11);
+  if (!col) return [`o cabeçalho do Quadro n. 1 não foi achado em ${REL.anexo11}`];
+  const doAnexo11 = new Set();
+  let comPele = 0;
+  for (const c of ctx.conferidos.filter((x) => x.fonte === FONTE_A11)) {
+    doAnexo11.add(c.nome);
+    const i = ctx.listagem.find((x) => x.name === c.nome);
+    const r = linhaDoQuadro(linhas[c.linha - 1] || '', col);
+    if (!i || !r) continue; // conferidosNoAnexo11 ja acusa
+    if (i.skin_absorption !== r.pele) p.push(`${c.nome}: absorção pela pele ${i.skin_absorption}, a norma ${r.pele} (linha ${c.linha})`);
+    if (r.pele) comPele++;
+  }
+  if (comPele !== 38) p.push(`${comPele} agentes conferidos com absorção pela pele na norma, e não 38`);
+  for (const i of ctx.listagem) {
+    if (!doAnexo11.has(i.name) && tem(i, 'skin_absorption')) p.push(`${i.name}: absorção pela pele sem conferência no Anexo 11`);
+  }
+  return p;
+}
+
+// ---------------------------------------------------------------------------
 // Mutacoes: o defeito reintroduzido numa copia dos dados.
 // ---------------------------------------------------------------------------
 const item = (ctx, nome) => {
@@ -1073,6 +1211,19 @@ const VERIFICACOES = [
     // Mesmo limite (78 ppm) e mesmo grau: so a identidade do agente acusa.
     ['conferido contra agente de outro nome', (c) => { Object.assign(c.conferidos.find((x) => x.nome === 'Estireno (vinilbenzeno)'), { agente: 'Etilbenzeno', linha: 397 }); }],
   ]],
+  ['os 46 códigos aprovados pelo usuário estão nos itens, com nota; os de confiança baixa seguem sem código; radioativos em FÍSICO', codigosAtribuidos, [
+    ['código aprovado perdido', mudar('Arsina', (i) => { delete i.code_table_24; })],
+    ['código de confiança baixa aplicado', mudar('Nitrobenzeno', (i) => { i.code_table_24 = '01.03.001'; })],
+    ['radioativo de volta a QUÍMICO', mudar('Plutônio', (i) => { i.group = 'QUÍMICO'; })],
+    ['nota sem o segundo código', mudar('Cromato de chumbo', (i) => { i.esocial_enquadramento_nota = 'Código atribuído pelo usuário em 09/10/2026.'; })],
+    ['nome a mais na constante gerada', (c) => { c.atribuidos = { ...c.atribuidos, Iodo: { codigo: '01.13.001', nota: 'x' } }; }],
+  ]],
+  ['absorção pela pele igual à coluna "p/pele" do Quadro n. 1, e só nos conferidos no Anexo 11', absorcaoPelaPele, [
+    ['pele perdida', mudar('Demeton (Systox)', (i) => { delete i.skin_absorption; })],
+    ['pele inventada', mudar('Estireno (vinilbenzeno)', (i) => { i.skin_absorption = true; })],
+    ['pele num item não conferido', mudar('Iodo', (i) => { i.skin_absorption = false; })],
+    ['"+" do Formaldeído movido de teto para pele no texto', (c) => { c.anexo11 = c.anexo11.replace(/(Formaldeído \(formol\)\s+)\+( {18})/, '$1$2+'); }],
+  ]],
   ['nenhum item não conferido traz insalubridade ou cita a norma; nenhum agente do Quadro ficou de fora', naoConferidos, [
     ['adicional num item não conferido', mudar('Cádmio e seus compostos tóxicos', (i) => { i.insalubridade_degree_suggested = '40%'; })],
     ['norma citada num item não conferido', mudar('Cádmio e seus compostos tóxicos', (i) => { i.tolerance_limit_reference = '0,039 mg/m³ (NR-15, Anexo 11)'; })],
@@ -1141,6 +1292,7 @@ const CTX = {
   duplicatasMapa: listagem.DUPLICATAS_DE_CURADOS,
   conferidos: listagem.CONFERIDOS_NA_NR15,
   correcoesNr15: listagem.CORRECOES_PELA_NR15,
+  atribuidos: listagem.CODIGOS_ATRIBUIDOS_PELO_USUARIO,
   anexo11: ler(REL.anexo11),
   trechos15: ler(REL.trechos15),
   nr09: ler(REL.nr09),

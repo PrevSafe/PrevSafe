@@ -112,6 +112,23 @@ export const CORRECOES_DA_LISTAGEM = [
     para: '',
     motivo: 'A listagem repete o nome do risco na coluna da unidade de medida.',
   },
+  // Radioativos: o codigo atribuido pelo usuario (02.01.006, radiacoes
+  // ionizantes) e do grupo dos agentes fisicos na Tabela 24.
+  ...[
+    'Plutônio',
+    'Rádio-224 e seus produtos de decaimento',
+    'Rádio-226 e seus produtos de decaimento',
+    'Rádio-228 e seus produtos de decaimento',
+    'Radônio-222 e seus produtos de decaimento',
+    'Tório-232 e seus produtos de decaimento',
+    'Urânio (natural) compostos solúveis e insolúveis',
+  ].map((nome) => ({
+    nome,
+    campo: 'group',
+    de: 'QUÍMICO',
+    para: 'FÍSICO',
+    motivo: 'Radioativo: recebeu 02.01.006 (radiações ionizantes), código do grupo dos agentes físicos na Tabela 24, por decisão do usuário em 09/10/2026.',
+  })),
 ];
 
 /** Texto da nota dos itens dos quais o 09.01.001 foi retirado. Vai para a tela. */
@@ -165,6 +182,72 @@ export const DUPLICATAS_DE_CURADOS = {
   'Ausência de agente nocivo ou de atividades previstas no Anexo IV do Decreto 3.048/1999': 'risk-cat-25',
 };
 
+/**
+ * Codigos da Tabela 24 que a listagem nao traz e que o usuario atribuiu em
+ * 09/10/2026, sobre a sugestao pelo nome (composto do elemento ou agente que
+ * o Anexo IV lista). So os de confianca alta: os derivados do benzeno, o BHC,
+ * a diclorobenzidina, a perclorometil mercaptana e os tres falsos positivos
+ * continuam sem codigo, porque o enquadramento deles e duvidoso. Quando a
+ * substancia cabe em dois codigos, o principal vai no item e o outro, na
+ * nota. A geracao falha se o nome nao existir na fonte, se a linha ja tiver
+ * codigo ou se o codigo nao existir na Tabela 24.
+ *
+ * Nome -> [codigo, complemento da nota].
+ */
+export const CODIGOS_ATRIBUIDOS_PELO_USUARIO = {
+  '1-Butanotiol (n-Butil mercaptana)': ['01.19.004'],
+  '2-Metilciclopentadienil manganês tricarbonila': ['01.14.001'],
+  '4-(metilnitrosamino)-1-(3-piridil)1-butanona (NNK)': ['01.19.029'],
+  'Ácido crômico (névoa)': ['01.10.001'],
+  'Alcatrão de hulha, produtos voláteis como aerossóis solúveis em benzeno (breu de alcatrão de hulha)': ['01.07.001'],
+  'Arseneto de gálio': ['01.01.001'],
+  'Arsina': ['01.01.001'],
+  'Chumbo tetraetila': ['01.08.001'],
+  'Chumbo tetrametila': ['01.08.001'],
+  'Cloreto de cromila': ['01.10.001', 'Também 01.09.001 (cloro e seus compostos tóxicos).'],
+  'Clorodifenil (42% de Cloro)': ['01.09.001'],
+  'Clorodifenil (54% de Cloro)': ['01.09.001'],
+  'Cromato de cálcio': ['01.10.001'],
+  'Cromato de chumbo': ['01.08.001', 'Também 01.10.001 (cromo e seus compostos tóxicos).'],
+  'Cromato de estrôncio': ['01.10.001'],
+  'Cromato de terc-butila': ['01.10.001'],
+  'Cromatos de zinco': ['01.10.001'],
+  'Cromita - processamento do minério (cromato)': ['01.10.001'],
+  'Destilação do alcatrão de hulha': ['01.07.001'],
+  'Ruído impulsivo ou de impacto': ['02.01.001'],
+  'Dióxido de cloro': ['01.09.001'],
+  'Dodecil mercaptana': ['01.19.004'],
+  'Etil mercaptana (Etanotiol)': ['01.19.004'],
+  'Fenil mercaptana': ['01.19.004'],
+  'Gás natural e seus derivados': ['01.17.001'],
+  'GLP (gás liquefeito do petróleo)': ['01.17.001'],
+  'Metil mercaptana (metanotiol)': ['01.19.004'],
+  'Óleo mineral, excluídos os fluídos de trabalho com metais - Puro, alta e severamente refinado': ['01.17.001'],
+  'Óleo mineral, excluídos os fluídos de trabalho com metais - Refinação fraca ou média': ['01.17.001'],
+  'Oxicloreto de fósforo': ['01.12.001', 'Também 01.09.001 (cloro e seus compostos tóxicos).'],
+  'Pentacloreto de fósforo': ['01.12.001', 'Também 01.09.001 (cloro e seus compostos tóxicos).'],
+  'Pentafluoreto de bromo': ['01.05.001'],
+  'Pentassulfeto de fósforo': ['01.12.001'],
+  'Plutônio': ['02.01.006'],
+  'Rádio-224 e seus produtos de decaimento': ['02.01.006'],
+  'Rádio-226 e seus produtos de decaimento': ['02.01.006'],
+  'Rádio-228 e seus produtos de decaimento': ['02.01.006'],
+  'Radônio-222 e seus produtos de decaimento': ['02.01.006', 'Se a exposição for em mineração, 02.01.008.'],
+  'Sulfeto de níquel': ['01.16.001'],
+  'Tório-232 e seus produtos de decaimento': ['02.01.006'],
+  'Tricloreto de fósforo': ['01.12.001', 'Também 01.09.001 (cloro e seus compostos tóxicos).'],
+  'Trifluoreto de cloro': ['01.09.001'],
+  'Urânio (natural) compostos solúveis e insolúveis': ['02.01.006'],
+  'Xisto betuminoso e seus derivados': ['01.17.001'],
+  'Óleos e Graxas Minerais (Hidrocarbonetos Aromáticos)': ['01.17.001'],
+  'Fumos metálicos (Manganês)': ['01.14.001'],
+};
+
+const NOTA_DO_CODIGO_ATRIBUIDO =
+  'Código atribuído pelo usuário em 09/10/2026, sobre sugestão pelo nome: a listagem não traz código.';
+export const notaDoCodigoAtribuido = (complemento) =>
+  (complemento ? `${NOTA_DO_CODIGO_ATRIBUIDO} ${complemento}` : NOTA_DO_CODIGO_ATRIBUIDO);
+
 // ---------------------------------------------------------------------------
 // Conferencia com a NR-15 (texto oficial guardado em docs/fontes/)
 // ---------------------------------------------------------------------------
@@ -208,14 +291,14 @@ export const ADICIONAL_DO_GRAU = { 'máximo': '40%', 'médio': '20%', 'mínimo':
 
 /**
  * Nome na listagem -> [agente como o Quadro n. 1 o escreve, grau, linha do
- * agente em docs/fontes/nr15-anexo11.txt]. Os marcados "pele" tem "+" na
- * coluna "Absorcao tambem p/pele", que o catalogo ainda nao tem campo para
- * guardar.
+ * agente em docs/fontes/nr15-anexo11.txt, e 'pele' quando o agente tem "+"
+ * na coluna "Absorcao tambem p/pele"]. A marca vira skin_absorption true; os
+ * conferidos sem ela, false.
  */
 const CONFERIDOS_NO_ANEXO_11 = [
   ['Estireno (vinilbenzeno)', 'Estireno', 'médio', 366],
-  ['Dissulfeto de carbono', 'Dissulfeto de carbono', 'máximo', 362], // pele
-  ['Acrilonitrila', 'Acrilonitrila', 'máximo', 168], // pele
+  ['Dissulfeto de carbono', 'Dissulfeto de carbono', 'máximo', 362, 'pele'],
+  ['Acrilonitrila', 'Acrilonitrila', 'máximo', 168, 'pele'],
   ['1-3-butadieno', '1,3 Butadieno', 'médio', 227],
   ['Diisocianato de tolueno (TDI)', '2,4 Diisocianato de tolueno (TDI)', 'máximo', 342],
   ['Óxido de etileno', 'Óxido de etileno', 'máximo', 522],
@@ -223,51 +306,51 @@ const CONFERIDOS_NO_ANEXO_11 = [
   ['Dimetilamina', 'Dimetilamina', 'médio', 348],
   ['1,1,1 Tricloroetano (Metilclorofórmio)', 'Metilclorofórmio', 'médio', 483],
   ['1,1,2-Tricloro-1,2,2-trifluoretano (freon 113)', '1,1,2 Tricloro-1,2,2 trifluoretano', 'médio', 597],
-  ['1,1,2-Tricloroetano (Tricloreto de vinila)', '1,1,2 Tricloroetano', 'médio', 589], // pele
+  ['1,1,2-Tricloroetano (Tricloreto de vinila)', '1,1,2 Tricloroetano', 'médio', 589, 'pele'],
   ['1,1-Dicloro-1-nitroetano', '1,1 Dicloro-1-nitroetano', 'máximo', 332],
   ['1,1-Dicloroetano', '1,1 Dicloroetano', 'médio', 318],
   ['1,2 Dicloroetano (Dicloreto de etileno)', '1,2 Dicloroetano', 'máximo', 320],
   ['1,2 Dicloroetileno', '1,2 Dicloroetileno', 'médio', 326],
   ['1,2,3-Tricloropropano', '1,2,3 Tricloropropano', 'máximo', 595],
-  ['1,2-Dibramoetano (dibrometo de etileno)', '1,2-Dibramoetano', 'médio', 312], // pele
+  ['1,2-Dibramoetano (dibrometo de etileno)', '1,2-Dibramoetano', 'médio', 312, 'pele'],
   ['1-Butanotiol (n-Butil mercaptana)', 'n-Butil mercaptana', 'médio', 245],
   ['1-Cloro-1-nitropropano', '1-Cloro 1-nitropropano', 'máximo', 297],
   ['1-Nitropropano', '1 - Nitropropano', 'médio', 518],
-  ['2-Butóxi etanol (EGBE) (butil cellosolve) (éter monobutílico do etileno glicol)', 'Butil cellosolve', 'médio', 243], // pele
-  ['2-Etoxietanol (cellosolve ou Éter monoetílico do etileno glicol)', '2-Etoxietanol', 'médio', 409], // pele
+  ['2-Butóxi etanol (EGBE) (butil cellosolve) (éter monobutílico do etileno glicol)', 'Butil cellosolve', 'médio', 243, 'pele'],
+  ['2-Etoxietanol (cellosolve ou Éter monoetílico do etileno glicol)', '2-Etoxietanol', 'médio', 409, 'pele'],
   ['2-Nitropropano', '2 - Nitropropano', 'médio', 520],
   ['Acetaldeído (aldeído acético)', 'Acetaldeído', 'máximo', 126],
-  ['Acetato de 2-etoxi etila (Acetato de cellosolve ou Acetato de éter monoetílico de etilenoglicol)', 'Acetato de cellosolve', 'médio', 128], // pele
+  ['Acetato de 2-etoxi etila (Acetato de cellosolve ou Acetato de éter monoetílico de etilenoglicol)', 'Acetato de cellosolve', 'médio', 128, 'pele'],
   ['Acetato de etila', 'Acetato de etila', 'mínimo', 136],
   ['Acetona (propanona)', 'Acetona', 'mínimo', 144],
   ['Acetonitrila (cianeto de metila)', 'Acetonitrila', 'máximo', 146],
   ['Ácido acético (ácido etanoico)', 'Ácido acético', 'médio', 148],
-  ['Ácido cianídrico (cianeto de hidrogênio, gás cianídrico)', 'Ácido cianídrico', 'máximo', 150], // pele
+  ['Ácido cianídrico (cianeto de hidrogênio, gás cianídrico)', 'Ácido cianídrico', 'máximo', 150, 'pele'],
   ['Ácido clorídrico (cloreto de hidrogênio, gás clorídrico)', 'Ácido clorídrico', 'máximo', 152],
   ['Ácido crômico (névoa)', 'Ácido crômico (névoa)', 'máximo', 154],
   ['Ácido fluorídrico', 'Ácido fluorídrico', 'máximo', 158],
   ['Ácido metanoico (ácido fórmico)', 'Ácido fórmico', 'médio', 160],
-  ['Acrilato de metila', 'Acrilato de metila', 'máximo', 166], // pele
+  ['Acrilato de metila', 'Acrilato de metila', 'máximo', 166, 'pele'],
   ['Álcool etílico (etanol)', 'Álcool etílico', 'mínimo', 180],
-  ['Álcool furfurílico', 'Álcool furfurílico', 'médio', 182], // pele
+  ['Álcool furfurílico', 'Álcool furfurílico', 'médio', 182, 'pele'],
   ['Álcool isoamílico', 'Álcool isoamílico', 'mínimo', 170],
   ['Álcool isobutílico (isobutanol)', 'Álcool isobutílico', 'médio', 174],
-  ['Álcool isopropílico (isopropanol ou 2-propanol)', 'Álcool isopropílico', 'médio', 192], // pele
-  ['Álcool metil amílico (metil isobutilcarbinol)', 'Metil isobutilcarbinol', 'máximo', 489], // pele
-  ['Álcool metílico (metanol)', 'Álcool metílico', 'máximo', 188], // pele
-  ['Álcool n-butílico (n-butanol)', 'Álcool n-butílico', 'máximo', 172], // pele
-  ['Álcool n-propílico (n-propanol)', 'Álcool n-propílico', 'médio', 190], // pele
+  ['Álcool isopropílico (isopropanol ou 2-propanol)', 'Álcool isopropílico', 'médio', 192, 'pele'],
+  ['Álcool metil amílico (metil isobutilcarbinol)', 'Metil isobutilcarbinol', 'máximo', 489, 'pele'],
+  ['Álcool metílico (metanol)', 'Álcool metílico', 'máximo', 188, 'pele'],
+  ['Álcool n-butílico (n-butanol)', 'Álcool n-butílico', 'máximo', 172, 'pele'],
+  ['Álcool n-propílico (n-propanol)', 'Álcool n-propílico', 'médio', 190, 'pele'],
   ['Álcool sec-butílico (sec-butanol)', 'Álcool sec-butílico (2-butanol)', 'médio', 176],
   ['Álcool terc-butílico', 'Álcool terc-butílico', 'médio', 178],
   ['Amônia (gás amoníaco)', 'Amônia', 'médio', 198],
   ['Anidro sulfuroso (dióxido de enxofre)', 'Dióxido de enxofre', 'máximo', 358],
-  ['Anilina', 'Anilina', 'máximo', 204], // pele
+  ['Anilina', 'Anilina', 'máximo', 204, 'pele'],
   ['Brometo de etila (bromoetano)', 'Brometo de etila', 'máximo', 213],
-  ['Brometo de metila (bromometano)', 'Brometo de metila', 'máximo', 215], // pele
+  ['Brometo de metila (bromometano)', 'Brometo de metila', 'máximo', 215, 'pele'],
   ['Cianogênio', 'Cianogênio', 'máximo', 259],
   ['Ciclohexano', 'Ciclohexano', 'médio', 261],
   ['Ciclohexanol', 'Ciclohexanol', 'máximo', 263],
-  ['Ciclohexilamina', 'Ciclohexilamina', 'máximo', 265], // pele
+  ['Ciclohexilamina', 'Ciclohexilamina', 'máximo', 265, 'pele'],
   ['Cloreto de etila (cloroetano)', 'Cloreto de etila', 'médio', 269],
   ['Cloreto de fenila (clorobenzeno)', 'Clorobenzeno', 'médio', 285],
   ['Cloreto de metila', 'Cloreto de metila', 'máximo', 275],
@@ -276,43 +359,43 @@ const CONFERIDOS_NO_ANEXO_11 = [
   ['Clorobromometano', 'Clorobromometano', 'máximo', 287],
   ['Clorodifluormetano (freon 22)', 'Clorodifluometano (freon 22)', 'mínimo', 293],
   ['Clorofórmio (Triclorometano)', 'Clorofórmio', 'máximo', 295],
-  ['Decaborano', 'Decaborano', 'máximo', 304], // pele
-  ['Demeton (Systox)', 'Demeton', 'máximo', 306], // pele
+  ['Decaborano', 'Decaborano', 'máximo', 304, 'pele'],
+  ['Demeton (Systox)', 'Demeton', 'máximo', 306, 'pele'],
   ['Diborano', 'Diborano', 'máximo', 310],
   ['Diclorodifluormetano', 'Diclorodifluormetano (freon 12)', 'mínimo', 316],
   ['Diclorometano (Cloreto de metileno)', 'Cloreto de metileno', 'máximo', 277],
   ['Diclorotetrafluoretano (freon 114)', 'Diclorotetrafluoretano (freon 114)', 'mínimo', 336],
   ['Dietil éter (Éter etílico)', 'Éter etílico', 'médio', 380],
-  ['Diisopropilamina', 'Diisopropilamina', 'máximo', 344], // pele
-  ['Dimetilacetamida (N,N-Dimetilacetamida)', 'Dimetilacetamida', 'máximo', 346], // pele
+  ['Diisopropilamina', 'Diisopropilamina', 'máximo', 344, 'pele'],
+  ['Dimetilacetamida (N,N-Dimetilacetamida)', 'Dimetilacetamida', 'máximo', 346, 'pele'],
   ['Dióxido de carbono (gás carbônico)', 'Dióxido de carbono', 'mínimo', 354],
   ['Dióxido de cloro', 'Dióxido de cloro', 'máximo', 356],
   ['Dióxido de nitrogênio', 'Dióxido de nitrogênio', 'máximo', 360],
-  ['Éter monometílico do etileno glicol (metil cellosolve ou 2-Metoxi etanol (EGME))', 'Metil cellosolve', 'máximo', 479], // pele
+  ['Éter monometílico do etileno glicol (metil cellosolve ou 2-Metoxi etanol (EGME))', 'Metil cellosolve', 'máximo', 479, 'pele'],
   ['Etil mercaptana (Etanotiol)', 'Etil mercaptana', 'médio', 405],
   ['Etilamina', 'Etilamina', 'máximo', 394],
-  ['Etilenoimina', 'Etilenoimina', 'máximo', 403], // pele
-  ['Fenol', 'Fenol', 'máximo', 411], // pele
+  ['Etilenoimina', 'Etilenoimina', 'máximo', 403, 'pele'],
+  ['Fenol', 'Fenol', 'máximo', 411, 'pele'],
   ['Fluortriclorometano (triclorofluormetano ou freon 11)', 'Fluortriclorometano (freon 11)', 'médio', 413],
   ['Formaldeído (formol ou Aldeído fórmico)', 'Formaldeído (formol)', 'máximo', 415],
   ['Fosfina (fosfamina)', 'Fosfina (fosfamina)', 'máximo', 417],
   ['Fosgênio (cloreto de carbonila)', 'Fosgênio', 'máximo', 419],
-  ['Hidrazina (diamina)', 'Hidrazina', 'máximo', 451], // pele
+  ['Hidrazina (diamina)', 'Hidrazina', 'máximo', 451, 'pele'],
   ['Hidreto de antimônio (Estibina)', 'Estibina', 'máximo', 364],
-  ['Isopropil benzeno (cumeno)', 'Cumeno', 'máximo', 302], // pele
+  ['Isopropil benzeno (cumeno)', 'Cumeno', 'máximo', 302, 'pele'],
   ['Isopropilamina', 'Isopropilamina', 'médio', 461],
   ['Metacrilato de metila', 'Metacrilato de metila', 'mínimo', 469],
-  ['Metil demeton', 'Metil demeton', 'máximo', 485], // pele
+  ['Metil demeton', 'Metil demeton', 'máximo', 485, 'pele'],
   ['Metil etil cetona (MEK) (Butanona)', 'metil etil cetona', 'médio', 487],
   ['Metil mercaptana (metanotiol)', 'Metil mercaptana (metanotiol)', 'médio', 492],
   ['Metilamina', 'Metilamina', 'máximo', 477],
   ['Metilciclohexanol', 'Metil ciclohexanol', 'médio', 481],
-  ['Monometil hidrazina (metil hidrazina)', 'Monometil hidrazina', 'máximo', 498], // pele
+  ['Monometil hidrazina (metil hidrazina)', 'Monometil hidrazina', 'máximo', 498, 'pele'],
   ['Monóxido de carbono', 'Monóxido de carbono', 'máximo', 500],
   ['n-Butano', 'n-Butano', 'médio', 229],
-  ['n-Butilamina', 'n-Butilamina', 'máximo', 241], // pele
+  ['n-Butilamina', 'n-Butilamina', 'máximo', 241, 'pele'],
   ['Negro de fumo', 'Negro de fumo(1)', 'máximo', 502],
-  ['n-Etil morfolina', 'n-Etil morfolina', 'médio', 407], // pele
+  ['n-Etil morfolina', 'n-Etil morfolina', 'médio', 407, 'pele'],
   ['Nitrato de n-propila', 'Nitrato de n-propila', 'máximo', 512],
   ['Nitroetano', 'Nitroetano', 'médio', 514],
   ['Nitrometano', 'Nitrometano', 'máximo', 516],
@@ -321,19 +404,19 @@ const CONFERIDOS_NO_ANEXO_11 = [
   ['Óxido nítrico', 'Óxido nítrico (NO)', 'máximo', 526],
   ['Ozona (ozônio)', 'Ozona', 'máximo', 530],
   ['Pentaborano', 'Pentaborano', 'máximo', 532],
-  ['Percloroetileno (Tetracloroetileno)', 'Percloroetíleno', 'médio', 536], // pele
+  ['Percloroetileno (Tetracloroetileno)', 'Percloroetíleno', 'médio', 536, 'pele'],
   ['Piridina', 'Piridina', 'médio', 538],
-  ['Propileno imina', 'Propileno imina', 'máximo', 550], // pele
+  ['Propileno imina', 'Propileno imina', 'máximo', 550, 'pele'],
   ['Sulfeto de hidrogênio (Gás sulfídrico)', 'Gás sulfídrico', 'máximo', 445],
   ['Tetrabrometo de acetileno (1,1,2,2-Tetrabromoetano)', '1,1,2,2,Tetrabromoetano', 'médio', 560],
-  ['Tetracloreto de carbono', 'Tetracloreto de carbono', 'máximo', 562], // pele
-  ['Tetracloroetano (1,1,2,2-Tetracloroetano)', 'Tetracloroetano', 'máximo', 564], // pele
+  ['Tetracloreto de carbono', 'Tetracloreto de carbono', 'máximo', 562, 'pele'],
+  ['Tetracloroetano (1,1,2,2-Tetracloroetano)', 'Tetracloroetano', 'máximo', 564, 'pele'],
   ['Tetrahidrofurano', 'Tetrahidrofurano', 'máximo', 570],
-  ['Tolueno (toluol)', 'Tolueno (toluol)', 'médio', 572], // pele
-  ['Tribromometano (Bromofórmio)', 'Bromofórmio', 'médio', 221], // pele
+  ['Tolueno (toluol)', 'Tolueno (toluol)', 'médio', 572, 'pele'],
+  ['Tribromometano (Bromofórmio)', 'Bromofórmio', 'médio', 221, 'pele'],
   ['Tricloroetileno', 'Tricloroetileno', 'máximo', 591],
   ['Trietilamina', 'Trietilamina', 'máximo', 601],
-  ['Xileno (xilol)', 'Xileno (xilol)', 'médio', 607], // pele
+  ['Xileno (xilol)', 'Xileno (xilol)', 'médio', 607, 'pele'],
 ];
 
 /**
@@ -348,7 +431,10 @@ const CONFERIDOS_NO_ANEXO_8 = [
 ];
 
 export const CONFERIDOS_NA_NR15 = [
-  ...CONFERIDOS_NO_ANEXO_11.map(([nome, agente, grau, linha]) => ({ nome, fonte: FONTE_ANEXO_11, agente, grau, linha })),
+  ...CONFERIDOS_NO_ANEXO_11.map(([nome, agente, grau, linha, marca]) => {
+    if (marca !== undefined && marca !== 'pele') throw new Error(`CONFERIDOS_NO_ANEXO_11: "${nome}" tem a marca "${marca}"; a unica e 'pele'`);
+    return { nome, fonte: FONTE_ANEXO_11, agente, grau, linha, pele: marca === 'pele' };
+  }),
   ...CONFERIDOS_NO_ANEXO_8.map(([nome, agente, linha]) => ({ nome, fonte: FONTE_ANEXO_8, agente, grau: 'médio', linha })),
 ];
 
@@ -606,6 +692,7 @@ export function gerar({ fonte, tabela24, curados: textoDosCurados }) {
     quantitativoSemLimite: [], qualitativoComUnidade: [], unidadeSemMeio: [], casasAjustadas: [],
   };
 
+  const usadosNaAtribuicao = new Set();
   for (const { texto, numero: n } of linhas) {
     const r = lerLinha(texto, n);
     const falhar = (motivo) => {
@@ -679,6 +766,14 @@ export function gerar({ fonte, tabela24, curados: textoDosCurados }) {
       registro.ausenciaRetirada = true;
       relatorio.ausenciaRetirada.push(r.nome);
     }
+    // Codigo atribuido pelo usuario: so em linha que ficou sem codigo.
+    if (tem(CODIGOS_ATRIBUIDOS_PELO_USUARIO, r.nome)) {
+      const [codigo] = CODIGOS_ATRIBUIDOS_PELO_USUARIO[r.nome];
+      if (registro.codigo) falhar(`está em CODIGOS_ATRIBUIDOS_PELO_USUARIO e já traz o código ${registro.codigo}`);
+      if (!tabela[codigo]) falhar(`recebe em CODIGOS_ATRIBUIDOS_PELO_USUARIO o código ${codigo}, que não existe na Tabela 24`);
+      registro.codigo = codigo;
+      usadosNaAtribuicao.add(r.nome);
+    }
 
     if (r.colado) relatorio.coladas.push(r.nome);
     if (registro.avaliacao === 'QUANTITATIVA' && registro.limite === null) relatorio.quantitativoSemLimite.push(r.nome);
@@ -733,6 +828,9 @@ export function gerar({ fonte, tabela24, curados: textoDosCurados }) {
   // conferir outra coisa em silencio.
   for (const nome of Object.keys(DUPLICATAS_DE_CURADOS)) {
     if (!usadasComoDuplicata.has(nome)) throw new ErroDaListagem(`DUPLICATAS_DE_CURADOS: "${nome}" não existe na fonte (ou não virou item)`);
+  }
+  for (const nome of Object.keys(CODIGOS_ATRIBUIDOS_PELO_USUARIO)) {
+    if (!usadosNaAtribuicao.has(nome)) throw new ErroDaListagem(`CODIGOS_ATRIBUIDOS_PELO_USUARIO: "${nome}" não existe na fonte (ou não virou item)`);
   }
   for (const nome of conferidoPorNome.keys()) {
     if (!usadosNaConferencia.has(nome)) throw new ErroDaListagem(`CONFERIDOS_NA_NR15: "${nome}" não existe na fonte (ou não virou item)`);
@@ -859,6 +957,13 @@ function escreverTs(registros, deduplicadas, totalDeLinhas) {
  * (04.01.001 e 04.01.002) em FISICO e a manipulacao de alimentos em
  * BIOLOGICO.
  *
+ * CODIGOS ATRIBUIDOS PELO USUARIO
+ *
+ * ${Object.keys(CODIGOS_ATRIBUIDOS_PELO_USUARIO).length} linhas sem codigo na listagem receberam codigo da Tabela 24 por
+ * decisao do usuario em 09/10/2026 (CODIGOS_ATRIBUIDOS_PELO_USUARIO), com
+ * nota no item. Os radioativos com 02.01.006 passaram a FISICO
+ * (CORRECOES_DA_LISTAGEM).
+ *
  * CORRECOES E DUPLICATAS
  *
  * As correcoes evidentes da fonte estao em CORRECOES_DA_LISTAGEM. Uma linha
@@ -903,6 +1008,11 @@ export const DUPLICATAS_DE_CURADOS: Record<string, string> = {
 ${Object.entries(DUPLICATAS_DE_CURADOS).map(([k, v]) => `  ${aspas(k)}: ${aspas(v)},`).join('\n')}
 };
 
+/** Nome na listagem -> codigo da Tabela 24 atribuido pelo usuario e a nota que vai ao item. */
+export const CODIGOS_ATRIBUIDOS_PELO_USUARIO: Record<string, { codigo: string; nota: string }> = {
+${Object.entries(CODIGOS_ATRIBUIDOS_PELO_USUARIO).map(([k, [codigo, complemento]]) => `  ${aspas(k)}: { codigo: ${aspas(codigo)}, nota: ${aspas(notaDoCodigoAtribuido(complemento))} },`).join('\n')}
+};
+
 export type GrauDaNr15 = 'máximo' | 'médio' | 'mínimo';
 
 export interface ConferidoNaNr15 {
@@ -913,10 +1023,12 @@ export interface ConferidoNaNr15 {
   grau: GrauDaNr15;
   /** Linha em docs/fontes/nr15-anexo11.txt (Anexo 11) ou docs/fontes/nr15-trechos.txt (Anexo 8). */
   linha: number;
+  /** "+" na coluna "Absorcao tambem p/pele" do Quadro n. 1. So no Anexo 11. */
+  pele?: boolean;
 }
 
 export const CONFERIDOS_NA_NR15: ConferidoNaNr15[] = [
-${CONFERIDOS_NA_NR15.map((c) => `  { nome: ${aspas(c.nome)}, fonte: ${aspas(c.fonte)}, agente: ${aspas(c.agente)}, grau: ${aspas(c.grau)}, linha: ${c.linha} },`).join('\n')}
+${CONFERIDOS_NA_NR15.map((c) => `  { nome: ${aspas(c.nome)}, fonte: ${aspas(c.fonte)}, agente: ${aspas(c.agente)}, grau: ${aspas(c.grau)}, linha: ${c.linha}${c.pele === undefined ? '' : `, pele: ${c.pele}`} },`).join('\n')}
 ];
 
 export interface CorrecaoPelaNr15 {
@@ -941,6 +1053,7 @@ ${Object.entries(ADICIONAL_DO_GRAU).map(([k, v]) => `  ${aspas(k)}: ${aspas(v)},
 
 const DUPLICATA = new Map(Object.entries(DUPLICATAS_DE_CURADOS));
 const CONFERIDO = new Map(CONFERIDOS_NA_NR15.map((c) => [c.nome, c]));
+const CODIGO_ATRIBUIDO = new Map(Object.entries(CODIGOS_ATRIBUIDOS_PELO_USUARIO));
 
 const DATA_DA_LISTAGEM = ${aspas(DATA_DA_LISTAGEM)};
 
@@ -989,7 +1102,10 @@ function montar([
   const standardUnit = normalizarUnidade(unidade);
   if (standardUnit) item.standard_unit = standardUnit;
   if (codigo) item.code_table_24 = codigo;
-  if (ausenciaRetirada === 1) item.esocial_enquadramento_nota = NOTA_AUSENCIA_RETIRADA;
+  // Codigo atribuido pelo usuario e 09.01.001 retirado valem juntos nos fumos
+  // de manganes e nos oleos e graxas: as duas notas vao ao item.
+  const notas = [CODIGO_ATRIBUIDO.get(name)?.nota, ausenciaRetirada === 1 ? NOTA_AUSENCIA_RETIRADA : ''].filter(Boolean);
+  if (notas.length) item.esocial_enquadramento_nota = notas.join(' ');
   // So o numero conferido no texto da norma cita a norma.
   const conferido = CONFERIDO.get(name);
   if (limite !== null) {
@@ -1008,6 +1124,7 @@ function montar([
     item.insalubridade_degree_suggested = ADICIONAL_DO_GRAU[conferido.grau];
     item.insalubridade_legal_basis = conferido.fonte;
   }
+  if (conferido?.pele !== undefined) item.skin_absorption = conferido.pele;
   const duplicata = DUPLICATA.get(name);
   if (duplicata) {
     item.status = 'INACTIVE';

@@ -723,8 +723,8 @@ console.log('\n— classificação no formulário: "não informado" não grava n
   const CAMPOS = Object.keys(CLASSIFICACAO_NAO_INFORMADA);
   const ini = Array.isArray(INITIAL_OCCUPATIONAL_RISKS_CATALOG) ? INITIAL_OCCUPATIONAL_RISKS_CATALOG : [];
   const R01 = ini.find((i) => i.id === 'risk-cat-01');
-  check(CAMPOS.length === 9 && CAMPOS.every((c) => CLASSIFICACAO_NAO_INFORMADA[c] === ''),
-    'os nove campos de classificação começam em "Não informado"');
+  check(CAMPOS.length === 10 && CAMPOS.every((c) => CLASSIFICACAO_NAO_INFORMADA[c] === ''),
+    'os dez campos de classificação (com a absorção pela pele) começam em "Não informado"');
   const vazios = valoresDaClassificacao(CLASSIFICACAO_NAO_INFORMADA);
   check(CAMPOS.every((c) => vazios[c] === undefined),
     'formulário em "Não informado" não grava nada: nem severidade 3, nem GFIP 00, nem false');
@@ -780,6 +780,17 @@ console.log('\n— classificação no formulário: "não informado" não grava n
   const naListagem = mudancasDaClassificacao(L1, abrir(L1), { ...abrir(L1), gfip_code_suggested: '04', special_retirement_eligible: 'SIM' });
   check(JSON.stringify(naListagem) === JSON.stringify({ gfip_code_suggested: '04', special_retirement_eligible: true }),
     'no item da listagem, escolher GFIP e aposentadoria grava só os dois');
+  // Absorcao pela pele: true, false e ausente sao tres estados diferentes.
+  check(abrir({ skin_absorption: true }).skin_absorption === 'SIM' && abrir({ skin_absorption: false }).skin_absorption === 'NAO'
+    && abrir({}).skin_absorption === '', 'a absorção pela pele abre como Sim, Não ou Não informado, conforme o item');
+  check(valoresDaClassificacao({ ...CLASSIFICACAO_NAO_INFORMADA, skin_absorption: 'NAO' }).skin_absorption === false,
+    'absorção pela pele "Não" grava false, e não some');
+  const pele = mudancasDaClassificacao(R01, abrir(R01), { ...abrir(R01), skin_absorption: 'SIM' });
+  check(JSON.stringify(pele) === JSON.stringify({ skin_absorption: true }), 'marcar a absorção pela pele grava só ela');
+  check(/item\.skin_absorption === true &&/.test(viewFonte) && !/item\.skin_absorption &&/.test(viewFonte)
+    && viewFonte.includes('absorção também pela pele'),
+  'o selo de absorção pela pele só aparece com true, e não com false (conferido, a norma não marca)');
+  check(/value=\{form\.skin_absorption\}/.test(viewFonte), 'o formulário tem o campo da absorção pela pele');
   const vaiEVolta = mudancasDaClassificacao(R01, abrir(R01), { ...abrir(R01), insalubridade_applicable: 'SIM' });
   check(Object.keys(vaiEVolta).length === 0, 'marcar e desmarcar até voltar ao que estava não grava nada');
 

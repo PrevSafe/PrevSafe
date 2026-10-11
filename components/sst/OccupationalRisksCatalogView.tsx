@@ -1285,6 +1285,16 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                             valor teto
                           </span>
                         )}
+                        {/* So com true: false e "conferido, a norma nao marca", e
+                            ausente e "nao conferido" - nenhum dos dois e selo. */}
+                        {item.skin_absorption === true && (
+                          <span
+                            className="px-1.5 py-px rounded text-[10px] font-bold bg-amber-500/15 text-amber-300 border border-amber-500/30"
+                            title="O Quadro n. 1 do Anexo 11 da NR-15 marca este agente com absorção também pela pele: a via cutânea conta na avaliação e na proteção."
+                          >
+                            absorção também pela pele
+                          </span>
+                        )}
                       </span>
                       <span className="font-medium text-slate-200">{limite}</span>
                     </div>
@@ -2128,6 +2138,18 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                       className="w-full px-3 py-2 text-sm border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-900 text-slate-100"
                       value={form.special_retirement_eligible}
                       onChange={(e) => setForm({ ...form, special_retirement_eligible: e.target.value as FormularioDoRisco['special_retirement_eligible'] })}
+                    >
+                      <option value="">Não informado</option>
+                      <option value="SIM">Sim</option>
+                      <option value="NAO">Não</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-semibold text-slate-400 mb-1">Absorção também pela pele</label>
+                    <select
+                      className="w-full px-3 py-2 text-sm border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-900 text-slate-100"
+                      value={form.skin_absorption}
+                      onChange={(e) => setForm({ ...form, skin_absorption: e.target.value as FormularioDoRisco['skin_absorption'] })}
                     >
                       <option value="">Não informado</option>
                       <option value="SIM">Sim</option>
