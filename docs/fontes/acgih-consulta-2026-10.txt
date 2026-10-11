@@ -1,0 +1,31 @@
+# ACGIH - TLVs consultados nas paginas publicas de cada substancia, em 11/10/2026.
+# Por que: a NR-09, item 9.6.1.1 (docs/fontes/nr09-nivel-de-acao.txt), manda usar os limites da ACGIH
+# na ausencia de limite na NR-15. A publicacao completa e paga; algumas paginas de substancia mostram
+# o TLV adotado sem login, outras nao. So o que esta abaixo foi conferido; o resto ficou como a
+# listagem traz, com o texto do limite dizendo que a NR-15 nao fixa limite.
+# As linhas entre "> " sao copia literal do corpo da pagina (o site e "Copyright 2026 ACGIH").
+# ----------------------------------------------------------------------------------------------------
+
+[Cadmio e seus compostos toxicos] https://www.acgih.org/cadmium-and-compounds/
+> TLV–TWA, 0.01 mg/m3, as Cd, Total particulate
+> TLV–TWA, 0.002 mg/m3, as Cd, Respirable particulate fraction
+> A2 — Suspected Human Carcinogen
+
+[Acido fosforico] https://www.acgih.org/phosphoric-acid/
+> TLV–TWA, 1 mg/m3
+> TLV–STEL, 3 mg/m3
+
+[Acido nitrico] https://www.acgih.org/nitric-acid/
+> TLV®-STEL, 0.025 ppm (0.06 mg/m3), Inhalable Fraction and Vapor
+> A4 – Not Classifiable as a Human Carcinogen
+# A pagina nao traz TLV-TWA. O valor e a revisao proposta em 2022 (Notice of Intended Changes: sem
+# TWA e STEL de 4 ppm para 0,025 ppm, fracao inalavel e vapor), adotada: a WorkSafeBC lista "Nitric
+# acid" e "Nitric acid, Inhalable Fraction & Vapour" entre os TLVs novos ou revisados de 2026 em
+# https://www.worksafebc.com/en/law-policy/occupational-health-safety/regulating-chemical-exposure/2026-new-revised-acgih-threshold-limit-values-bc-els-june
+
+# Sem valor publico (a pagina pede login de assinante), NAO conferidos:
+#   Acetato de vinila   https://www.acgih.org/vinyl-acetate/
+#   Madeira (poeiras)   https://www.acgih.org/wood-dusts/
+#   Etileno             https://www.acgih.org/ethylene/
+#   Propileno           https://www.acgih.org/propylene/
+#   Oxido nitroso       https://www.acgih.org/nitrous-oxide/

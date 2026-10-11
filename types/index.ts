@@ -2181,6 +2181,12 @@ export interface OccupationalRiskCatalogItem {
    * norma conferiu e nao marca.
    */
   skin_absorption?: boolean;
+  /**
+   * Codigo da Tabela 24 a definir: o enquadramento e duvidoso e o campo fica
+   * vazio para preenchimento manual. O texto diz a sugestao pelo nome. Sai
+   * quando o codigo e preenchido.
+   */
+  code_table_24_pending?: string;
 
   // Custom risk entry extras (user-editable items only)
   regulatory_norm_reference?: string;

@@ -235,6 +235,8 @@ export function atualizarItemDoCatalogo(lista: Item[], id: string, alteracao: Pa
     else delete atualizado.is_system_default;
     if ('catalog_source' in item) atualizado.catalog_source = item.catalog_source;
     else delete atualizado.catalog_source;
+    // Codigo preenchido resolve a pendencia de "codigo a definir".
+    if (texto(atualizado.code_table_24)) delete atualizado.code_table_24_pending;
     return atualizado;
   });
 }

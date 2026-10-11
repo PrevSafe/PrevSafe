@@ -95,6 +95,7 @@ const REL = {
   limites: 'lib/limitesDoCatalogo.ts',
   gerador: 'scripts/gerar-catalogo-da-listagem.mjs',
   anexo11: 'docs/fontes/nr15-anexo11.txt',
+  acgih: 'docs/fontes/acgih-consulta-2026-10.txt',
   trechos15: 'docs/fontes/nr15-trechos.txt',
   nr09: 'docs/fontes/nr09-nivel-de-acao.txt',
 };
@@ -226,6 +227,8 @@ const CAMPOS_PERMITIDOS = new Set([
   'duplicate_of_id', 'insalubridade_applicable', 'insalubridade_degree_suggested', 'insalubridade_legal_basis',
   // Absorcao pela pele, da mesma conferencia no Anexo 11.
   'skin_absorption',
+  // Codigo a definir a mao, com a sugestao pelo nome.
+  'code_table_24_pending',
 ]);
 
 // Decisao do usuario em 09/10/2026: linhas que repetem um curado no mesmo
@@ -365,6 +368,13 @@ function esperadoDoItem(nome, f) {
   const corr = CORRECOES_NR15_ESPERADAS.filter(([n]) => n === nome);
   for (const [, campo, , norma] of corr) e[CAMPO_DA_FONTE[campo]] = norma;
   if (tem(LIMITES_DE_OUTRO_AGENTE_ESPERADOS, nome)) { e.lt = 0; e.na = 0; }
+  if (tem(ACGIH_ESPERADOS, nome)) {
+    const [lt, na] = ACGIH_ESPERADOS[nome];
+    if (lt !== e.lt || na !== e.na) {
+      e.lt = lt; e.na = na;
+      if (e.casas !== null) e.casas = Math.max(e.casas, casasDe(e.lt), casasDe(e.na));
+    }
+  }
   if (corr.length && e.casas !== null) e.casas = Math.max(e.casas, casasDe(e.lt), casasDe(e.na));
   return e;
 }
@@ -488,15 +498,43 @@ const SINONIMOS_ACEITOS = [
 
 /** De onde vem o limite que a NR-15 nao fixa (texto entre parenteses), pedido pelo usuario em 09/10/2026. */
 const ORIGENS_ESPERADAS = {
-  ['Cádmio e seus compostos tóxicos']: 'listagem; a NR-15 não fixa limite',
+  ['Cádmio e seus compostos tóxicos']: 'ACGIH, vigente em 10/2026: TLV-TWA como Cd, partículas totais; fração respirável 0,002 mg/m³; A2',
   ['Acetato de vinila']: 'listagem; a NR-15 não fixa limite',
-  ['Ácido fosfórico']: 'listagem; a NR-15 não fixa limite',
-  ['Ácido nítrico']: 'listagem; a NR-15 não fixa limite',
+  ['Ácido fosfórico']: 'ACGIH, vigente em 10/2026: TLV-TWA; TLV-STEL 3 mg/m³',
+  ['Ácido nítrico']: 'ACGIH, vigente em 10/2026: TLV-STEL, fração inalável e vapor; sem TLV-TWA nem nível de ação',
   ['Madeira, poeiras - Todas as outras espécies']: 'listagem; a NR-15 não fixa limite',
   ['Etileno']: 'listagem; NR-15, Anexo 11: asfixiante simples, oxigênio mínimo de 18% em volume',
   ['Propileno']: 'listagem; NR-15, Anexo 11: asfixiante simples, oxigênio mínimo de 18% em volume',
   ['Óxido nitroso']: 'listagem; NR-15, Anexo 11: asfixiante simples, oxigênio mínimo de 18% em volume',
   ['Radiações ionizantes']: 'listagem; NR-15, Anexo 5: limites da CNEN-NN-3.01',
+};
+/**
+ * Conferidos na ACGIH (pagina publica de cada substancia, copiada em
+ * docs/fontes/acgih-consulta-2026-10.txt): nome -> [limite, nivel de acao (0 =
+ * nao ha), unidade, linha literal da pagina que da o limite].
+ */
+const ACGIH_ESPERADOS = {
+  'Cádmio e seus compostos tóxicos': [0.01, 0.005, 'mg/m³', '> TLV–TWA, 0.01 mg/m3, as Cd, Total particulate'],
+  'Ácido nítrico': [0.025, 0, 'ppm', '> TLV®-STEL, 0.025 ppm (0.06 mg/m3), Inhalable Fraction and Vapor'],
+  'Ácido fosfórico': [1, 0.5, 'mg/m³', '> TLV–TWA, 1 mg/m3'],
+};
+/** Os 15 de confianca baixa: codigo vazio, a definir a mao, com a sugestao pelo nome. */
+const A_DEFINIR_ESPERADOS = {
+  '1,2,4-Triclorobenzeno': ['01.03.001', '01.09.001'],
+  '3,3’-Dicloro-benzidina (Diclorobenzidina)': ['01.19.007'],
+  'BHC (hexacloreto de benzeno ou hexaclorobenzeno)': ['01.09.001'],
+  'Cloreto de fenila (clorobenzeno)': ['01.03.001', '01.09.001'],
+  'Dinitrobenzeno, todos os isômeros': ['01.03.001'],
+  'Divinil benzeno': ['01.03.001'],
+  'Isopropil benzeno (cumeno)': ['01.03.001'],
+  'Nitrobenzeno': ['01.03.001'],
+  'o-Diclorobenzeno': ['01.03.001', '01.09.001'],
+  'p-Diclorobenzeno': ['01.03.001', '01.09.001'],
+  'Pentacloronitrobenzeno': ['01.03.001', '01.09.001'],
+  'Perclorometil mercaptana': ['01.19.004', '01.09.001'],
+  'p-Nitroclorobenzeno': ['01.03.001', '01.09.001'],
+  'Triclorometil benzeno': ['01.03.001', '01.09.001'],
+  'Trimetil benzeno (mistura de isômeros)': ['01.03.001'],
 };
 /** Listagem que repete outra da listagem: nome -> nome do item que fica. */
 const DUPLICATAS_NA_LISTAGEM_ESPERADAS = { 'Diclorofluormetano (freon 12)': 'Diclorodifluormetano' };
@@ -1003,7 +1041,7 @@ const PONTOS = [
   ['Estireno (vinilbenzeno)', { standard_unit: 'ppm', tolerance_limit_value: 78, tolerance_limit_reference: '78 ppm (NR-15, Anexo 11)', action_level_value: 39, action_level_reference: '39 ppm', insalubridade_degree_suggested: '20%' }, ['tolerance_limit_is_ceiling']],
   ['Diisocianato de tolueno (TDI)', { standard_unit: 'ppm', tolerance_limit_value: 0.016, tolerance_limit_reference: '0,016 ppm (valor teto; NR-15, Anexo 11)', tolerance_limit_is_ceiling: true, action_level_value: 0.008, action_level_reference: '0,008 ppm' }, []],
   ['1,1,1 Tricloroetano (Metilclorofórmio)', { standard_unit: 'mg/m³', tolerance_limit_value: 1480, tolerance_limit_reference: '1.480 mg/m³ (NR-15, Anexo 11)', action_level_value: 740, action_level_reference: '740 mg/m³' }, ['tolerance_limit_is_ceiling']],
-  ['Cádmio e seus compostos tóxicos', { standard_unit: 'mg/m³', tolerance_limit_value: 0.039, tolerance_limit_reference: '0,039 mg/m³ (listagem; a NR-15 não fixa limite)', action_level_value: 0.019, action_level_reference: '0,019 mg/m³', code_table_24: '01.06.001' }, ['insalubridade_degree_suggested']],
+  ['Cádmio e seus compostos tóxicos', { standard_unit: 'mg/m³', tolerance_limit_value: 0.01, tolerance_limit_reference: '0,01 mg/m³ (ACGIH, vigente em 10/2026: TLV-TWA como Cd, partículas totais; fração respirável 0,002 mg/m³; A2)', action_level_value: 0.005, action_level_reference: '0,005 mg/m³', code_table_24: '01.06.001' }, ['insalubridade_degree_suggested']],
   ['Vibração de corpo inteiro (Valor da Dose de Vibração Resultante - VDVR)', { standard_unit: 'm/s1,75', tolerance_limit_value: 21, tolerance_limit_reference: '21 m/s1,75 (NR-15, Anexo 8)', action_level_value: 9.1, action_level_reference: '9,1 m/s1,75' }, []],
   ['Ácido fluorídrico', { standard_unit: 'mg/m³', tolerance_limit_value: 1.5, action_level_value: 0.75, measurement_decimal_places: 2, insalubridade_degree_suggested: '40%' }, ['tolerance_limit_is_ceiling']],
   ['Frio', { status: 'INACTIVE', duplicate_of_id: 'risk-cat-07' }, ['tolerance_limit_value']],
@@ -1146,6 +1184,40 @@ function limitesDeOutroAgente(ctx) {
     if (f.lt !== valor || (unidade === 'mg/m³' ? r.mg : r.ppm) !== valor) p.push(`${nome}: a fonte traz ${f.lt} e a linha de ${agente} diz ${unidade === 'mg/m³' ? r.mg : r.ppm}; não é o número de ${agente}`);
     if (mesmoAgente(nome, agente, remissoes)) p.push(`${nome}: é o próprio ${agente}, e o limite não seria de outro agente`);
     if (tem(i, 'tolerance_limit_value') || tem(i, 'action_level_value') || tem(i, 'tolerance_limit_reference')) p.push(`${nome}: ainda traz o limite de ${agente}`);
+  }
+  return p;
+}
+
+/** O limite dos conferidos na ACGIH e o da linha literal da pagina, guardada em docs/fontes. */
+function limitesDaAcgih(ctx) {
+  const p = [];
+  const linhas = new Set(ctx.acgih.split(/\r?\n/).map((l) => l.trim()));
+  for (const [nome, [lt, na, unidade, linha]] of Object.entries(ACGIH_ESPERADOS)) {
+    if (!linhas.has(linha)) p.push(`${nome}: a linha "${linha}" não está em ${REL.acgih}`);
+    const numero = Number((linha.match(/, ([\d.]+) (?:ppm|mg\/m3)/) || [])[1]);
+    if (numero !== lt) p.push(`${nome}: a página da ACGIH diz ${numero}, o esperado é ${lt}`);
+    const i = ctx.listagem.find((x) => x.name === nome);
+    if (!i) { p.push(`"${nome}" não está no catálogo`); continue; }
+    if (i.tolerance_limit_value !== lt || i.standard_unit !== unidade) p.push(`${nome}: limite ${i.tolerance_limit_value} ${i.standard_unit}, a ACGIH ${lt} ${unidade}`);
+    if (na ? i.action_level_value !== na : tem(i, 'action_level_value')) p.push(`${nome}: nível de ação ${i.action_level_value}, esperado ${na || 'nenhum'}`);
+    if (!String(i.tolerance_limit_reference || '').includes('ACGIH, vigente em 10/2026')) p.push(`${nome}: o texto do limite não cita a ACGIH`);
+  }
+  return p;
+}
+
+/** Os 15 de confianca baixa: sem codigo, com a pendencia e a sugestao; ninguem mais pendente. */
+function codigoADefinir(ctx) {
+  const p = [];
+  for (const [nome, codigos] of Object.entries(A_DEFINIR_ESPERADOS)) {
+    const i = ctx.listagem.find((x) => x.name === nome);
+    if (!i) { p.push(`"${nome}" não está no catálogo`); continue; }
+    if (tem(i, 'code_table_24')) p.push(`${nome}: traz ${i.code_table_24}, e o campo devia ficar vazio`);
+    const t = String(i.code_table_24_pending || '');
+    if (!t.includes('a definir')) p.push(`${nome}: sem a pendência de código a definir`);
+    for (const c of codigos) if (!t.includes(c)) p.push(`${nome}: a pendência não cita a sugestão ${c}`);
+  }
+  for (const i of ctx.listagem) {
+    if (!tem(A_DEFINIR_ESPERADOS, i.name) && tem(i, 'code_table_24_pending')) p.push(`${i.name}: pendência de código sem ser dos 15`);
   }
   return p;
 }
@@ -1308,6 +1380,16 @@ const VERIFICACOES = [
     ['nota sem o segundo código', mudar('Cromato de chumbo', (i) => { i.esocial_enquadramento_nota = 'Código atribuído pelo usuário em 09/10/2026.'; })],
     ['nome a mais na constante gerada', (c) => { c.atribuidos = { ...c.atribuidos, Iodo: { codigo: '01.13.001', nota: 'x' } }; }],
   ]],
+  ['os limites conferidos na ACGIH são os da página pública guardada em docs/fontes', limitesDaAcgih, [
+    ['cádmio de volta a 0,039', mudar('Cádmio e seus compostos tóxicos', (i) => { i.tolerance_limit_value = 0.039; })],
+    ['nível de ação inventado no ácido nítrico', mudar('Ácido nítrico', (i) => { i.action_level_value = 0.0125; })],
+    ['linha da página trocada', (c) => { c.acgih = c.acgih.replace('0.025 ppm (0.06', '2 ppm (5'); }],
+  ]],
+  ['os 15 de confiança baixa ficam sem código, a definir à mão, com a sugestão pelo nome', codigoADefinir, [
+    ['código preenchido por conta própria', mudar('Nitrobenzeno', (i) => { i.code_table_24 = '01.03.001'; })],
+    ['pendência perdida', mudar('Divinil benzeno', (i) => { delete i.code_table_24_pending; })],
+    ['pendência num item de fora', mudar('Iodo', (i) => { i.code_table_24_pending = 'Código da Tabela 24 a definir'; })],
+  ]],
   ['o limite que era de outro agente do Quadro saiu do item', limitesDeOutroAgente, [
     ['o número da Dietil amina de volta', mudar('Dietanolamina', (i) => { i.tolerance_limit_value = 59; i.tolerance_limit_reference = '59 mg/m³'; })],
     ['nível de ação de outro agente', mudar('Dietanolamina', (i) => { i.action_level_value = 29.5; })],
@@ -1388,6 +1470,7 @@ const CTX = {
   correcoesNr15: listagem.CORRECOES_PELA_NR15,
   atribuidos: listagem.CODIGOS_ATRIBUIDOS_PELO_USUARIO,
   anexo11: ler(REL.anexo11),
+  acgih: ler(REL.acgih),
   trechos15: ler(REL.trechos15),
   nr09: ler(REL.nr09),
 };

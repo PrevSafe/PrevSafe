@@ -791,6 +791,19 @@ console.log('\n— classificação no formulário: "não informado" não grava n
     && viewFonte.includes('absorção também pela pele'),
   'o selo de absorção pela pele só aparece com true, e não com false (conferido, a norma não marca)');
   check(/value=\{form\.skin_absorption\}/.test(viewFonte), 'o formulário tem o campo da absorção pela pele');
+
+  // Codigo a definir: preencher o codigo resolve a pendencia; mexer em outra coisa, nao.
+  const pendente = { ...L1, code_table_24_pending: 'Código da Tabela 24 a definir: sugestão 01.03.001.' };
+  delete pendente.code_table_24;
+  const comCodigo = atualizarItemDoCatalogo([pendente], pendente.id, { code_table_24: '01.03.001' }, AGORA)[0];
+  check(comCodigo.code_table_24 === '01.03.001' && !('code_table_24_pending' in comCodigo),
+    'preencher o código da Tabela 24 tira a pendência de "código a definir"');
+  const outraCoisa = atualizarItemDoCatalogo([pendente], pendente.id, { status: 'INACTIVE' }, AGORA)[0];
+  check(outraCoisa.code_table_24_pending === pendente.code_table_24_pending, 'mudar outra coisa não tira a pendência');
+  const codigoVazio = atualizarItemDoCatalogo([pendente], pendente.id, { code_table_24: '  ' }, AGORA)[0];
+  check(codigoVazio.code_table_24_pending === pendente.code_table_24_pending, 'código em branco não resolve a pendência');
+  check(/item\.code_table_24_pending \? \(/.test(viewFonte) && /onClick=\{\(\) => handleOpenEditModal\(item\)\}[\s\S]{0,400}código a definir/.test(viewFonte),
+    'item com código a definir mostra o selo que abre o formulário para preenchê-lo');
   const vaiEVolta = mudancasDaClassificacao(R01, abrir(R01), { ...abrir(R01), insalubridade_applicable: 'SIM' });
   check(Object.keys(vaiEVolta).length === 0, 'marcar e desmarcar até voltar ao que estava não grava nada');
 

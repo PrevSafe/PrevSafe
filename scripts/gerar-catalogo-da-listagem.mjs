@@ -257,6 +257,44 @@ export const notaDoCodigoAtribuido = (complemento) =>
   (complemento ? `${NOTA_DO_CODIGO_ATRIBUIDO} ${complemento}` : NOTA_DO_CODIGO_ATRIBUIDO);
 
 /**
+ * Conferencia com a ACGIH (NR-09, item 9.6.1.1), pedida pelo usuario em
+ * 11/10/2026, nos agentes que a NR-15 nao fixa. So o que as paginas publicas
+ * da ACGIH mostram (docs/fontes/acgih-consulta-2026-10.txt): cadmio e acido
+ * nitrico mudam; acido fosforico confere. 0 em "acgih" e "sai": o acido
+ * nitrico nao tem mais TLV-TWA, e nivel de acao sem limite de jornada seria
+ * inventado.
+ */
+export const CORRECOES_PELA_ACGIH = [
+  { nome: 'Cádmio e seus compostos tóxicos', campo: 'tolerance_limit_value', listagem: 0.039, acgih: 0.01 },
+  { nome: 'Cádmio e seus compostos tóxicos', campo: 'action_level_value', listagem: 0.019, acgih: 0.005 },
+  { nome: 'Ácido nítrico', campo: 'tolerance_limit_value', listagem: 1.56, acgih: 0.025 },
+  { nome: 'Ácido nítrico', campo: 'action_level_value', listagem: 0.78, acgih: 0 },
+];
+
+/**
+ * Os 15 de confianca baixa (decisao do usuario em 11/10/2026): o codigo fica
+ * VAZIO, para preenchimento manual, e o item diz a sugestao pelo nome.
+ * Nome -> codigos sugeridos.
+ */
+export const CODIGO_A_DEFINIR = {
+  '1,2,4-Triclorobenzeno': ['01.03.001', '01.09.001'],
+  '3,3’-Dicloro-benzidina (Diclorobenzidina)': ['01.19.007'],
+  'BHC (hexacloreto de benzeno ou hexaclorobenzeno)': ['01.09.001'],
+  'Cloreto de fenila (clorobenzeno)': ['01.03.001', '01.09.001'],
+  'Dinitrobenzeno, todos os isômeros': ['01.03.001'],
+  'Divinil benzeno': ['01.03.001'],
+  'Isopropil benzeno (cumeno)': ['01.03.001'],
+  'Nitrobenzeno': ['01.03.001'],
+  'o-Diclorobenzeno': ['01.03.001', '01.09.001'],
+  'p-Diclorobenzeno': ['01.03.001', '01.09.001'],
+  'Pentacloronitrobenzeno': ['01.03.001', '01.09.001'],
+  'Perclorometil mercaptana': ['01.19.004', '01.09.001'],
+  'p-Nitroclorobenzeno': ['01.03.001', '01.09.001'],
+  'Triclorometil benzeno': ['01.03.001', '01.09.001'],
+  'Trimetil benzeno (mistura de isômeros)': ['01.03.001'],
+};
+
+/**
  * Linha da listagem que repete outra da propria listagem: nome -> nome do
  * item que fica. Sai INACTIVE, como as duplicatas de curados.
  */
@@ -285,10 +323,10 @@ export const LIMITES_DE_OUTRO_AGENTE = {
 const SEM_LIMITE_NA_NR15 = 'listagem; a NR-15 não fixa limite';
 const ASFIXIANTE_SIMPLES = 'listagem; NR-15, Anexo 11: asfixiante simples, oxigênio mínimo de 18% em volume';
 export const ORIGEM_DO_LIMITE = {
-  'Cádmio e seus compostos tóxicos': SEM_LIMITE_NA_NR15,
+  'Cádmio e seus compostos tóxicos': 'ACGIH, vigente em 10/2026: TLV-TWA como Cd, partículas totais; fração respirável 0,002 mg/m³; A2',
   'Acetato de vinila': SEM_LIMITE_NA_NR15,
-  'Ácido fosfórico': SEM_LIMITE_NA_NR15,
-  'Ácido nítrico': SEM_LIMITE_NA_NR15,
+  'Ácido fosfórico': 'ACGIH, vigente em 10/2026: TLV-TWA; TLV-STEL 3 mg/m³',
+  'Ácido nítrico': 'ACGIH, vigente em 10/2026: TLV-STEL, fração inalável e vapor; sem TLV-TWA nem nível de ação',
   'Madeira, poeiras - Todas as outras espécies': SEM_LIMITE_NA_NR15,
   'Etileno': ASFIXIANTE_SIMPLES,
   'Propileno': ASFIXIANTE_SIMPLES,
@@ -744,6 +782,11 @@ function lerLinha(linha, numeroDaLinha) {
 // Geracao
 // ---------------------------------------------------------------------------
 
+/** "01.03.001 (Benzeno e seus compostos tóxicos)": o nome oficial, sem a ressalva entre parenteses. */
+const codigoComNome = (tabela, c) => `${c} (${tabela[c].split(' (exceto')[0]})`;
+export const textoDoCodigoADefinir = (tabela, codigos) =>
+  `Código da Tabela 24 a definir: enquadramento duvidoso, preencha manualmente se se confirmar. Sugestão pelo nome, de confiança baixa: ${codigos.map((c) => codigoComNome(tabela, c)).join(' ou ')}.`;
+
 export function gerar({ fonte, tabela24, curados: textoDosCurados }) {
   const { tabela, ausencia } = lerTabela24(tabela24);
   const curados = lerCurados(textoDosCurados);
@@ -773,6 +816,8 @@ export function gerar({ fonte, tabela24, curados: textoDosCurados }) {
 
   const usadosNaAtribuicao = new Set();
   const usadosComLimiteDeOutro = new Set();
+  const aplicadasAcgih = new Map(CORRECOES_PELA_ACGIH.map((c) => [c, 0]));
+  const usadosAADefinir = new Set();
   for (const { texto, numero: n } of linhas) {
     const r = lerLinha(texto, n);
     const falhar = (motivo) => {
@@ -823,6 +868,15 @@ export function gerar({ fonte, tabela24, curados: textoDosCurados }) {
       registro[campo] = c.norma;
       aplicadasNr15.set(c, aplicadasNr15.get(c) + 1);
     }
+    // Correcoes pela ACGIH: mesmo campo das da NR-15; 0 e "sai".
+    const correcoesAcgih = CORRECOES_PELA_ACGIH.filter((x) => x.nome === r.nome);
+    for (const c of correcoesAcgih) {
+      const campo = CAMPO_DA_CORRECAO_NR15[c.campo];
+      if (!campo || campo === 'teto') falhar(`tem correção pela ACGIH em campo desconhecido: ${c.campo}`);
+      if ((registro[campo] ?? 0) !== c.listagem) falhar(`não traz ${c.listagem} em ${c.campo}, que a correção pela ACGIH esperava (a fonte mudou?)`);
+      registro[campo] = c.acgih > 0 ? c.acgih : null;
+      aplicadasAcgih.set(c, aplicadasAcgih.get(c) + 1);
+    }
     if (tem(LIMITES_DE_OUTRO_AGENTE, r.nome)) {
       if (registro.limite === null) falhar('está em LIMITES_DE_OUTRO_AGENTE e não traz limite');
       registro.limite = null;
@@ -832,7 +886,7 @@ export function gerar({ fonte, tabela24, curados: textoDosCurados }) {
     // A listagem registra ao menos as casas do limite e do nivel de acao; o
     // valor corrigido pode pedir mais (ver CORRECOES_PELA_NR15).
     const casasPedidas = Math.max(casasDe(registro.limite), casasDe(registro.nivelDeAcao));
-    if (correcoesNr15.length && registro.casas !== null && casasPedidas > registro.casas) {
+    if ((correcoesNr15.length || correcoesAcgih.length) && registro.casas !== null && casasPedidas > registro.casas) {
       relatorio.casasAjustadas.push({ nome: r.nome, de: registro.casas, para: casasPedidas });
       registro.casas = casasPedidas;
     }
@@ -853,6 +907,12 @@ export function gerar({ fonte, tabela24, curados: textoDosCurados }) {
       registro.codigo = '';
       registro.ausenciaRetirada = true;
       relatorio.ausenciaRetirada.push(r.nome);
+    }
+    if (tem(CODIGO_A_DEFINIR, r.nome)) {
+      if (registro.codigo) falhar(`está em CODIGO_A_DEFINIR e já traz o código ${registro.codigo}`);
+      for (const c of CODIGO_A_DEFINIR[r.nome]) if (!tabela[c]) falhar(`tem em CODIGO_A_DEFINIR a sugestão ${c}, que não existe na Tabela 24`);
+      registro.aDefinir = textoDoCodigoADefinir(tabela, CODIGO_A_DEFINIR[r.nome]);
+      usadosAADefinir.add(r.nome);
     }
     // Codigo atribuido pelo usuario: so em linha que ficou sem codigo.
     if (tem(CODIGOS_ATRIBUIDOS_PELO_USUARIO, r.nome)) {
@@ -916,6 +976,12 @@ export function gerar({ fonte, tabela24, curados: textoDosCurados }) {
   // conferir outra coisa em silencio.
   for (const nome of Object.keys(DUPLICATAS_DE_CURADOS)) {
     if (!usadasComoDuplicata.has(nome)) throw new ErroDaListagem(`DUPLICATAS_DE_CURADOS: "${nome}" não existe na fonte (ou não virou item)`);
+  }
+  for (const [c, n] of aplicadasAcgih) {
+    if (n !== 1) throw new ErroDaListagem(`CORRECOES_PELA_ACGIH: "${c.nome}" / ${c.campo} aplicada ${n} vez(es)`);
+  }
+  for (const nome of Object.keys(CODIGO_A_DEFINIR)) {
+    if (!usadosAADefinir.has(nome)) throw new ErroDaListagem(`CODIGO_A_DEFINIR: "${nome}" não existe na fonte (ou não virou item)`);
   }
   for (const nome of Object.keys(LIMITES_DE_OUTRO_AGENTE)) {
     if (!usadosComLimiteDeOutro.has(nome)) throw new ErroDaListagem(`LIMITES_DE_OUTRO_AGENTE: "${nome}" não existe na fonte (ou não virou item)`);
@@ -1125,6 +1191,16 @@ export const ORIGEM_DO_LIMITE: Record<string, string> = {
 ${Object.entries(ORIGEM_DO_LIMITE).map(([k, v]) => `  ${aspas(k)}: ${aspas(v)},`).join('\n')}
 };
 
+/** Correcoes pela ACGIH (NR-09, 9.6.1.1): 0 em "acgih" e "o campo sai". */
+export const CORRECOES_PELA_ACGIH: Array<{ nome: string; campo: 'tolerance_limit_value' | 'action_level_value'; listagem: number; acgih: number }> = [
+${CORRECOES_PELA_ACGIH.map((c) => `  { nome: ${aspas(c.nome)}, campo: ${aspas(c.campo)}, listagem: ${c.listagem}, acgih: ${c.acgih} },`).join('\n')}
+];
+
+/** Codigo da Tabela 24 a definir a mao: nome -> texto que vai ao item, com a sugestao pelo nome. */
+export const CODIGO_A_DEFINIR: Record<string, string> = {
+${registros.filter((r) => r.aDefinir).map((r) => `  ${aspas(r.nome)}: ${aspas(r.aDefinir)},`).join('\n')}
+};
+
 /** Nome na listagem -> codigo da Tabela 24 atribuido pelo usuario e a nota que vai ao item. */
 export const CODIGOS_ATRIBUIDOS_PELO_USUARIO: Record<string, { codigo: string; nota: string }> = {
 ${Object.entries(CODIGOS_ATRIBUIDOS_PELO_USUARIO).map(([k, [codigo, complemento]]) => `  ${aspas(k)}: { codigo: ${aspas(codigo)}, nota: ${aspas(notaDoCodigoAtribuido(complemento))} },`).join('\n')}
@@ -1170,6 +1246,7 @@ ${Object.entries(ADICIONAL_DO_GRAU).map(([k, v]) => `  ${aspas(k)}: ${aspas(v)},
 
 const DUPLICATA = new Map([...Object.entries(DUPLICATAS_DE_CURADOS), ...Object.entries(DUPLICATAS_NA_LISTAGEM)]);
 const ORIGEM = new Map(Object.entries(ORIGEM_DO_LIMITE));
+const A_DEFINIR = new Map(Object.entries(CODIGO_A_DEFINIR));
 const CONFERIDO = new Map(CONFERIDOS_NA_NR15.map((c) => [c.nome, c]));
 const CODIGO_ATRIBUIDO = new Map(Object.entries(CODIGOS_ATRIBUIDOS_PELO_USUARIO));
 
@@ -1243,6 +1320,8 @@ function montar([
     item.insalubridade_legal_basis = conferido.fonte;
   }
   if (conferido?.pele !== undefined) item.skin_absorption = conferido.pele;
+  const aDefinir = A_DEFINIR.get(name);
+  if (aDefinir) item.code_table_24_pending = aDefinir;
   const duplicata = DUPLICATA.get(name);
   if (duplicata) {
     item.status = 'INACTIVE';

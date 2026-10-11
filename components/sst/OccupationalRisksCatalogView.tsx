@@ -1158,6 +1158,17 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                     eSocial {codigo || codigoBruto}
                     {ausencia && <span className="font-sans font-medium text-slate-400"> · ausência de agente nocivo</span>}
                   </span>
+                ) : item.code_table_24_pending ? (
+                  // Enquadramento duvidoso: o campo fica vazio de proposito,
+                  // e o selo leva direto ao formulario para preenche-lo.
+                  <button
+                    type="button"
+                    onClick={() => handleOpenEditModal(item)}
+                    className="text-xs font-semibold px-2 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/30 hover:bg-amber-500/25"
+                    title={item.code_table_24_pending}
+                  >
+                    código a definir · preencher
+                  </button>
                 ) : (
                   <span
                     className="text-xs font-semibold px-2 py-0.5 rounded bg-slate-950 text-slate-500 border border-slate-800"
@@ -1739,6 +1750,9 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                     onSelecionar={(a) => setForm({ ...form, risk_code_table_24: a.codigo })}
                     onLimpar={() => setForm({ ...form, risk_code_table_24: '' })}
                   />
+                  {editingItem?.code_table_24_pending && !form.risk_code_table_24 && (
+                    <p className="mt-1 text-[11px] text-amber-300">{editingItem.code_table_24_pending}</p>
+                  )}
                 </div>
 
                 <div>

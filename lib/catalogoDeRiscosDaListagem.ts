@@ -181,15 +181,42 @@ export const LIMITES_DE_OUTRO_AGENTE: Record<string, [string, number]> = {
 
 /** De onde vem o limite que a NR-15 nao fixa: vai entre parenteses no texto do limite. */
 export const ORIGEM_DO_LIMITE: Record<string, string> = {
-  'Cádmio e seus compostos tóxicos': 'listagem; a NR-15 não fixa limite',
+  'Cádmio e seus compostos tóxicos': 'ACGIH, vigente em 10/2026: TLV-TWA como Cd, partículas totais; fração respirável 0,002 mg/m³; A2',
   'Acetato de vinila': 'listagem; a NR-15 não fixa limite',
-  'Ácido fosfórico': 'listagem; a NR-15 não fixa limite',
-  'Ácido nítrico': 'listagem; a NR-15 não fixa limite',
+  'Ácido fosfórico': 'ACGIH, vigente em 10/2026: TLV-TWA; TLV-STEL 3 mg/m³',
+  'Ácido nítrico': 'ACGIH, vigente em 10/2026: TLV-STEL, fração inalável e vapor; sem TLV-TWA nem nível de ação',
   'Madeira, poeiras - Todas as outras espécies': 'listagem; a NR-15 não fixa limite',
   'Etileno': 'listagem; NR-15, Anexo 11: asfixiante simples, oxigênio mínimo de 18% em volume',
   'Propileno': 'listagem; NR-15, Anexo 11: asfixiante simples, oxigênio mínimo de 18% em volume',
   'Óxido nitroso': 'listagem; NR-15, Anexo 11: asfixiante simples, oxigênio mínimo de 18% em volume',
   'Radiações ionizantes': 'listagem; NR-15, Anexo 5: limites da CNEN-NN-3.01',
+};
+
+/** Correcoes pela ACGIH (NR-09, 9.6.1.1): 0 em "acgih" e "o campo sai". */
+export const CORRECOES_PELA_ACGIH: Array<{ nome: string; campo: 'tolerance_limit_value' | 'action_level_value'; listagem: number; acgih: number }> = [
+  { nome: 'Cádmio e seus compostos tóxicos', campo: 'tolerance_limit_value', listagem: 0.039, acgih: 0.01 },
+  { nome: 'Cádmio e seus compostos tóxicos', campo: 'action_level_value', listagem: 0.019, acgih: 0.005 },
+  { nome: 'Ácido nítrico', campo: 'tolerance_limit_value', listagem: 1.56, acgih: 0.025 },
+  { nome: 'Ácido nítrico', campo: 'action_level_value', listagem: 0.78, acgih: 0 },
+];
+
+/** Codigo da Tabela 24 a definir a mao: nome -> texto que vai ao item, com a sugestao pelo nome. */
+export const CODIGO_A_DEFINIR: Record<string, string> = {
+  '1,2,4-Triclorobenzeno': 'Código da Tabela 24 a definir: enquadramento duvidoso, preencha manualmente se se confirmar. Sugestão pelo nome, de confiança baixa: 01.03.001 (Benzeno e seus compostos tóxicos) ou 01.09.001 (Cloro e seus compostos tóxicos).',
+  '3,3’-Dicloro-benzidina (Diclorobenzidina)': 'Código da Tabela 24 a definir: enquadramento duvidoso, preencha manualmente se se confirmar. Sugestão pelo nome, de confiança baixa: 01.19.007 (Aminas aromáticas).',
+  'BHC (hexacloreto de benzeno ou hexaclorobenzeno)': 'Código da Tabela 24 a definir: enquadramento duvidoso, preencha manualmente se se confirmar. Sugestão pelo nome, de confiança baixa: 01.09.001 (Cloro e seus compostos tóxicos).',
+  'Cloreto de fenila (clorobenzeno)': 'Código da Tabela 24 a definir: enquadramento duvidoso, preencha manualmente se se confirmar. Sugestão pelo nome, de confiança baixa: 01.03.001 (Benzeno e seus compostos tóxicos) ou 01.09.001 (Cloro e seus compostos tóxicos).',
+  'Dinitrobenzeno, todos os isômeros': 'Código da Tabela 24 a definir: enquadramento duvidoso, preencha manualmente se se confirmar. Sugestão pelo nome, de confiança baixa: 01.03.001 (Benzeno e seus compostos tóxicos).',
+  'Divinil benzeno': 'Código da Tabela 24 a definir: enquadramento duvidoso, preencha manualmente se se confirmar. Sugestão pelo nome, de confiança baixa: 01.03.001 (Benzeno e seus compostos tóxicos).',
+  'Isopropil benzeno (cumeno)': 'Código da Tabela 24 a definir: enquadramento duvidoso, preencha manualmente se se confirmar. Sugestão pelo nome, de confiança baixa: 01.03.001 (Benzeno e seus compostos tóxicos).',
+  'Nitrobenzeno': 'Código da Tabela 24 a definir: enquadramento duvidoso, preencha manualmente se se confirmar. Sugestão pelo nome, de confiança baixa: 01.03.001 (Benzeno e seus compostos tóxicos).',
+  'o-Diclorobenzeno': 'Código da Tabela 24 a definir: enquadramento duvidoso, preencha manualmente se se confirmar. Sugestão pelo nome, de confiança baixa: 01.03.001 (Benzeno e seus compostos tóxicos) ou 01.09.001 (Cloro e seus compostos tóxicos).',
+  'p-Diclorobenzeno': 'Código da Tabela 24 a definir: enquadramento duvidoso, preencha manualmente se se confirmar. Sugestão pelo nome, de confiança baixa: 01.03.001 (Benzeno e seus compostos tóxicos) ou 01.09.001 (Cloro e seus compostos tóxicos).',
+  'Pentacloronitrobenzeno': 'Código da Tabela 24 a definir: enquadramento duvidoso, preencha manualmente se se confirmar. Sugestão pelo nome, de confiança baixa: 01.03.001 (Benzeno e seus compostos tóxicos) ou 01.09.001 (Cloro e seus compostos tóxicos).',
+  'Perclorometil mercaptana': 'Código da Tabela 24 a definir: enquadramento duvidoso, preencha manualmente se se confirmar. Sugestão pelo nome, de confiança baixa: 01.19.004 (Mercaptanos (tióis)) ou 01.09.001 (Cloro e seus compostos tóxicos).',
+  'p-Nitroclorobenzeno': 'Código da Tabela 24 a definir: enquadramento duvidoso, preencha manualmente se se confirmar. Sugestão pelo nome, de confiança baixa: 01.03.001 (Benzeno e seus compostos tóxicos) ou 01.09.001 (Cloro e seus compostos tóxicos).',
+  'Triclorometil benzeno': 'Código da Tabela 24 a definir: enquadramento duvidoso, preencha manualmente se se confirmar. Sugestão pelo nome, de confiança baixa: 01.03.001 (Benzeno e seus compostos tóxicos) ou 01.09.001 (Cloro e seus compostos tóxicos).',
+  'Trimetil benzeno (mistura de isômeros)': 'Código da Tabela 24 a definir: enquadramento duvidoso, preencha manualmente se se confirmar. Sugestão pelo nome, de confiança baixa: 01.03.001 (Benzeno e seus compostos tóxicos).',
 };
 
 /** Nome na listagem -> codigo da Tabela 24 atribuido pelo usuario e a nota que vai ao item. */
@@ -450,6 +477,7 @@ const ADICIONAL_DO_GRAU: Record<GrauDaNr15, '10%' | '20%' | '40%'> = {
 
 const DUPLICATA = new Map([...Object.entries(DUPLICATAS_DE_CURADOS), ...Object.entries(DUPLICATAS_NA_LISTAGEM)]);
 const ORIGEM = new Map(Object.entries(ORIGEM_DO_LIMITE));
+const A_DEFINIR = new Map(Object.entries(CODIGO_A_DEFINIR));
 const CONFERIDO = new Map(CONFERIDOS_NA_NR15.map((c) => [c.nome, c]));
 const CODIGO_ATRIBUIDO = new Map(Object.entries(CODIGOS_ATRIBUIDOS_PELO_USUARIO));
 
@@ -483,7 +511,7 @@ const LINHAS: Linha[] = [
   ['risk-lst-estireno-vinilbenzeno', 'Estireno (vinilbenzeno)', 'QUÍMICO', 'Ar e contato', 'ppm', 'QUANTITATIVA', 78, 0, 39, 2, '', '01.03.002', 0],
   ['risk-lst-berilio-e-seus-compostos-toxicos', 'Berílio e seus compostos tóxicos', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '01.04.001', 0],
   ['risk-lst-bromo-e-seus-compostos-toxicos', 'Bromo e seus compostos tóxicos', 'QUÍMICO', 'Ar e contato', 'ppm', 'QUANTITATIVA', 0.08, 0, 0.04, 2, '', '01.05.001', 0],
-  ['risk-lst-cadmio-e-seus-compostos-toxicos', 'Cádmio e seus compostos tóxicos', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', 0.039, 0, 0.019, 3, '', '01.06.001', 0],
+  ['risk-lst-cadmio-e-seus-compostos-toxicos', 'Cádmio e seus compostos tóxicos', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', 0.01, 0, 0.005, 3, '', '01.06.001', 0],
   ['risk-lst-carvao-mineral-e-seus-derivados', 'Carvão mineral e seus derivados', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '01.07.001', 0],
   ['risk-lst-chumbo-e-seus-compostos-toxicos', 'Chumbo e seus compostos tóxicos', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', 0.1, 0, 0.05, 2, '', '01.08.001', 0],
   ['risk-lst-cloro-e-seus-compostos-toxicos-exceto-os-abaixo-especificados-que-constam-expressamente-no-anexo-iv-do-decreto-3-048-1999', 'Cloro e seus compostos tóxicos (exceto os abaixo especificados, que constam expressamente no Anexo IV do Decreto 3.048/1999)', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', 2.3, 0, 1.15, 2, '', '01.09.001', 0],
@@ -752,7 +780,7 @@ const LINHAS: Linha[] = [
   ['risk-lst-acido-metacrilico', 'Ácido metacrílico', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '', 0],
   ['risk-lst-acido-metanoico-acido-formico', 'Ácido metanoico (ácido fórmico)', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', 7, 0, 3.5, 2, '', '', 0],
   ['risk-lst-acido-monocloroacetico', 'Ácido monocloroacético', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '', 0],
-  ['risk-lst-acido-nitrico', 'Ácido nítrico', 'QUÍMICO', 'Ar e contato', 'ppm', 'QUANTITATIVA', 1.56, 0, 0.78, 2, '', '', 0],
+  ['risk-lst-acido-nitrico', 'Ácido nítrico', 'QUÍMICO', 'Ar e contato', 'ppm', 'QUANTITATIVA', 0.025, 0, null, 3, '', '', 0],
   ['risk-lst-acido-oxalico-anidro-e-diidratado', 'Ácido oxálico, anidro e diidratado', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '', 0],
   ['risk-lst-acido-peracetico', 'Ácido peracético', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '', 0],
   ['risk-lst-acido-picrico', 'Ácido pícrico', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '', 0],
@@ -1431,6 +1459,8 @@ function montar([
     item.insalubridade_legal_basis = conferido.fonte;
   }
   if (conferido?.pele !== undefined) item.skin_absorption = conferido.pele;
+  const aDefinir = A_DEFINIR.get(name);
+  if (aDefinir) item.code_table_24_pending = aDefinir;
   const duplicata = DUPLICATA.get(name);
   if (duplicata) {
     item.status = 'INACTIVE';
