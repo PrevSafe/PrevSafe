@@ -129,6 +129,14 @@ export const CORRECOES_DA_LISTAGEM = [
     para: 'FÍSICO',
     motivo: 'Radioativo: recebeu 02.01.006 (radiações ionizantes), código do grupo dos agentes físicos na Tabela 24, por decisão do usuário em 09/10/2026.',
   })),
+  // Qualitativos na listagem que tem limite no Quadro n. 1 do Anexo 11: viram
+  // quantitativos, com o limite em CORRECOES_PELA_NR15.
+  { nome: 'Arsina', campo: 'evaluation_type', de: 'QUALITATIVA', para: 'QUANTITATIVA', motivo: 'A NR-15 (Anexo 11, Quadro n. 1) fixa limite para o agente; correção pedida pelo usuário em 09/10/2026.' },
+  { nome: 'Arsina', campo: 'standard_unit', de: '', para: 'mg/m³', motivo: 'Unidade da coluna mg/m3 do Quadro n. 1, de onde vem o limite.' },
+  { nome: 'Dietilamina', campo: 'evaluation_type', de: 'QUALITATIVA', para: 'QUANTITATIVA', motivo: 'A NR-15 (Anexo 11, Quadro n. 1) fixa limite para o agente; correção pedida pelo usuário em 09/10/2026.' },
+  { nome: 'Dietilamina', campo: 'standard_unit', de: '', para: 'mg/m³', motivo: 'Unidade da coluna mg/m3 do Quadro n. 1, de onde vem o limite.' },
+  { nome: 'Dicloreto de propileno (1,2-Dicloropropano)', campo: 'evaluation_type', de: 'QUALITATIVA', para: 'QUANTITATIVA', motivo: 'A NR-15 (Anexo 11, Quadro n. 1) fixa limite para o agente; correção pedida pelo usuário em 09/10/2026.' },
+  { nome: 'Dicloreto de propileno (1,2-Dicloropropano)', campo: 'standard_unit', de: '', para: 'mg/m³', motivo: 'Unidade da coluna mg/m3 do Quadro n. 1, de onde vem o limite.' },
 ];
 
 /** Texto da nota dos itens dos quais o 09.01.001 foi retirado. Vai para a tela. */
@@ -247,6 +255,46 @@ const NOTA_DO_CODIGO_ATRIBUIDO =
   'Código atribuído pelo usuário em 09/10/2026, sobre sugestão pelo nome: a listagem não traz código.';
 export const notaDoCodigoAtribuido = (complemento) =>
   (complemento ? `${NOTA_DO_CODIGO_ATRIBUIDO} ${complemento}` : NOTA_DO_CODIGO_ATRIBUIDO);
+
+/**
+ * Linha da listagem que repete outra da propria listagem: nome -> nome do
+ * item que fica. Sai INACTIVE, como as duplicatas de curados.
+ */
+export const DUPLICATAS_NA_LISTAGEM = {
+  // "Diclorofluormetano" e outro composto; o "(freon 12)" e os numeros da
+  // linha (3.860 e 1.930 mg/m3) sao do Diclorodifluormetano, que a listagem
+  // ja traz e que a NR-15 marca como valor teto.
+  'Diclorofluormetano (freon 12)': 'Diclorodifluormetano',
+};
+
+/**
+ * Limite que a listagem pos no agente errado: o numero e o de outro agente do
+ * Quadro n. 1. Limite e nivel de acao saem, e o item fica sem valor fixo.
+ * Nome -> [agente a quem o numero pertence, linha em docs/fontes/nr15-anexo11.txt].
+ */
+export const LIMITES_DE_OUTRO_AGENTE = {
+  'Dietanolamina': ['Dietil amina', 338],
+};
+
+/**
+ * De onde vem o limite que a NR-15 nao fixa, para o texto do limite dizer
+ * isso em vez de parecer norma. Na falta de limite na NR-15, a NR-09 (item
+ * 9.6.1.1, docs/fontes/nr09-nivel-de-acao.txt) manda usar a ACGIH; o valor da
+ * listagem nao foi conferido contra ela.
+ */
+const SEM_LIMITE_NA_NR15 = 'listagem; a NR-15 não fixa limite';
+const ASFIXIANTE_SIMPLES = 'listagem; NR-15, Anexo 11: asfixiante simples, oxigênio mínimo de 18% em volume';
+export const ORIGEM_DO_LIMITE = {
+  'Cádmio e seus compostos tóxicos': SEM_LIMITE_NA_NR15,
+  'Acetato de vinila': SEM_LIMITE_NA_NR15,
+  'Ácido fosfórico': SEM_LIMITE_NA_NR15,
+  'Ácido nítrico': SEM_LIMITE_NA_NR15,
+  'Madeira, poeiras - Todas as outras espécies': SEM_LIMITE_NA_NR15,
+  'Etileno': ASFIXIANTE_SIMPLES,
+  'Propileno': ASFIXIANTE_SIMPLES,
+  'Óxido nitroso': ASFIXIANTE_SIMPLES,
+  'Radiações ionizantes': 'listagem; NR-15, Anexo 5: limites da CNEN-NN-3.01',
+};
 
 // ---------------------------------------------------------------------------
 // Conferencia com a NR-15 (texto oficial guardado em docs/fontes/)
@@ -417,6 +465,22 @@ const CONFERIDOS_NO_ANEXO_11 = [
   ['Tricloroetileno', 'Tricloroetileno', 'máximo', 591],
   ['Trietilamina', 'Trietilamina', 'máximo', 601],
   ['Xileno (xilol)', 'Xileno (xilol)', 'médio', 607, 'pele'],
+  // Conferidos a pedido do usuario em 09/10/2026, com o nome do Quadro
+  // diferente do da listagem: mesmo agente, mesma linha, mesmo numero (ou o
+  // numero corrigido em CORRECOES_PELA_NR15). O sinonimo esta escrito no
+  // verificador, que nao aceita nome diferente sem ele.
+  ['Cloro e seus compostos tóxicos (exceto os abaixo especificados, que constam expressamente no Anexo IV do Decreto 3.048/1999)', 'Cloro', 'máximo', 283],
+  ['Bromo e seus compostos tóxicos', 'Bromo', 'máximo', 217],
+  ['Chumbo e seus compostos tóxicos', 'Chumbo', 'máximo', 253],
+  ['Cloropreno', 'Cloroprene', 'máximo', 299, 'pele'],
+  ['Biscloroetileter (éter dicloroetílico)', 'Éter decloroetílico', 'máximo', 378, 'pele'],
+  ['1,1-Dimetil hidrazina', 'l,l Dimetil hidrazina', 'máximo', 352, 'pele'],
+  ['Etilenoamina', 'Etilenoimina', 'máximo', 403, 'pele'],
+  ['Dimetilformamida (N,N Dimetilformamida)', 'Dimetiformamida', 'médio', 350],
+  ['Dimetilsulfato', 'Sulfato de dimetila', 'máximo', 552, 'pele'],
+  ['Dietilamina', 'Dietil amina', 'médio', 338],
+  ['Arsina', 'Arsina (arsenamina)', 'máximo', 209],
+  ['Dicloreto de propileno (1,2-Dicloropropano)', '1,2 Dicloropropano', 'máximo', 334],
 ];
 
 /**
@@ -475,6 +539,21 @@ export const CORRECOES_PELA_NR15 = [
   { nome: 'n-Butilamina', campo: 'tolerance_limit_is_ceiling', listagem: false, norma: true, anexo: 'NR-15, Anexo 11', linha: 241 },
   { nome: 'Pentaborano', campo: 'tolerance_limit_value', listagem: 0, norma: 0.008, anexo: 'NR-15, Anexo 11', linha: 532 },
   { nome: 'Pentaborano', campo: 'action_level_value', listagem: 0, norma: 0.004, anexo: 'NR-09, item 9.6.1 b)', linha: null },
+  // Pedidas pelo usuario em 09/10/2026, sobre o que a primeira conferencia
+  // deixou em aberto: o cloro trazia em mg/m3 o numero do ppm; a
+  // dimetilformamida, 7,81 em vez de 8; o sulfato de dimetila e valor teto; e
+  // tres qualitativos ganham o limite do Quadro.
+  { nome: 'Cloro e seus compostos tóxicos (exceto os abaixo especificados, que constam expressamente no Anexo IV do Decreto 3.048/1999)', campo: 'tolerance_limit_value', listagem: 0.8, norma: 2.3, anexo: 'NR-15, Anexo 11', linha: 283 },
+  { nome: 'Cloro e seus compostos tóxicos (exceto os abaixo especificados, que constam expressamente no Anexo IV do Decreto 3.048/1999)', campo: 'action_level_value', listagem: 0.4, norma: 1.15, anexo: 'NR-09, item 9.6.1 b)', linha: null },
+  { nome: 'Dimetilformamida (N,N Dimetilformamida)', campo: 'tolerance_limit_value', listagem: 7.81, norma: 8, anexo: 'NR-15, Anexo 11', linha: 350 },
+  { nome: 'Dimetilformamida (N,N Dimetilformamida)', campo: 'action_level_value', listagem: 3.9, norma: 4, anexo: 'NR-09, item 9.6.1 b)', linha: null },
+  { nome: 'Dimetilsulfato', campo: 'tolerance_limit_is_ceiling', listagem: false, norma: true, anexo: 'NR-15, Anexo 11', linha: 552 },
+  { nome: 'Arsina', campo: 'tolerance_limit_value', listagem: 0, norma: 0.16, anexo: 'NR-15, Anexo 11', linha: 209 },
+  { nome: 'Arsina', campo: 'action_level_value', listagem: 0, norma: 0.08, anexo: 'NR-09, item 9.6.1 b)', linha: null },
+  { nome: 'Dietilamina', campo: 'tolerance_limit_value', listagem: 0, norma: 59, anexo: 'NR-15, Anexo 11', linha: 338 },
+  { nome: 'Dietilamina', campo: 'action_level_value', listagem: 0, norma: 29.5, anexo: 'NR-09, item 9.6.1 b)', linha: null },
+  { nome: 'Dicloreto de propileno (1,2-Dicloropropano)', campo: 'tolerance_limit_value', listagem: 0, norma: 275, anexo: 'NR-15, Anexo 11', linha: 334 },
+  { nome: 'Dicloreto de propileno (1,2-Dicloropropano)', campo: 'action_level_value', listagem: 0, norma: 137.5, anexo: 'NR-09, item 9.6.1 b)', linha: null },
 ];
 
 /** Campo do catalogo -> campo do registro do gerador. */
@@ -693,6 +772,7 @@ export function gerar({ fonte, tabela24, curados: textoDosCurados }) {
   };
 
   const usadosNaAtribuicao = new Set();
+  const usadosComLimiteDeOutro = new Set();
   for (const { texto, numero: n } of linhas) {
     const r = lerLinha(texto, n);
     const falhar = (motivo) => {
@@ -725,8 +805,10 @@ export function gerar({ fonte, tabela24, curados: textoDosCurados }) {
     };
 
     for (const c of CORRECOES_DA_LISTAGEM.filter((x) => x.nome === r.nome)) {
-      if (registro[c.campo] !== c.de) falhar(`não traz "${c.de}" em ${c.campo}, que a correção esperava (a fonte mudou?)`);
-      registro[c.campo] = c.para;
+      // O registro guarda a avaliacao com outro nome; a correcao usa o do item.
+      const campo = c.campo === 'evaluation_type' ? 'avaliacao' : c.campo;
+      if (registro[campo] !== c.de) falhar(`não traz "${c.de}" em ${c.campo}, que a correção esperava (a fonte mudou?)`);
+      registro[campo] = c.para;
       aplicadas.set(c, aplicadas.get(c) + 1);
     }
 
@@ -740,6 +822,12 @@ export function gerar({ fonte, tabela24, curados: textoDosCurados }) {
       if (atual !== c.listagem) falhar(`não traz ${c.listagem} em ${c.campo}, que a correção pela NR-15 esperava (a fonte mudou?)`);
       registro[campo] = c.norma;
       aplicadasNr15.set(c, aplicadasNr15.get(c) + 1);
+    }
+    if (tem(LIMITES_DE_OUTRO_AGENTE, r.nome)) {
+      if (registro.limite === null) falhar('está em LIMITES_DE_OUTRO_AGENTE e não traz limite');
+      registro.limite = null;
+      registro.nivelDeAcao = null;
+      usadosComLimiteDeOutro.add(r.nome);
     }
     // A listagem registra ao menos as casas do limite e do nivel de acao; o
     // valor corrigido pode pedir mais (ver CORRECOES_PELA_NR15).
@@ -828,6 +916,20 @@ export function gerar({ fonte, tabela24, curados: textoDosCurados }) {
   // conferir outra coisa em silencio.
   for (const nome of Object.keys(DUPLICATAS_DE_CURADOS)) {
     if (!usadasComoDuplicata.has(nome)) throw new ErroDaListagem(`DUPLICATAS_DE_CURADOS: "${nome}" não existe na fonte (ou não virou item)`);
+  }
+  for (const nome of Object.keys(LIMITES_DE_OUTRO_AGENTE)) {
+    if (!usadosComLimiteDeOutro.has(nome)) throw new ErroDaListagem(`LIMITES_DE_OUTRO_AGENTE: "${nome}" não existe na fonte (ou não virou item)`);
+  }
+  const registroDe = (nome) => registros.find((x) => x.nome === nome);
+  for (const [nome, alvo] of Object.entries(DUPLICATAS_NA_LISTAGEM)) {
+    if (!registroDe(nome) || !registroDe(alvo)) throw new ErroDaListagem(`DUPLICATAS_NA_LISTAGEM: "${nome}" ou "${alvo}" não é item da listagem`);
+    if (tem(DUPLICATAS_NA_LISTAGEM, alvo) || tem(DUPLICATAS_DE_CURADOS, alvo)) throw new ErroDaListagem(`DUPLICATAS_NA_LISTAGEM: "${alvo}" também é duplicata`);
+  }
+  for (const nome of Object.keys(ORIGEM_DO_LIMITE)) {
+    const reg = registroDe(nome);
+    if (!reg) throw new ErroDaListagem(`ORIGEM_DO_LIMITE: "${nome}" não é item da listagem`);
+    if (reg.limite === null) throw new ErroDaListagem(`ORIGEM_DO_LIMITE: "${nome}" não tem limite`);
+    if (conferidoPorNome.has(nome)) throw new ErroDaListagem(`ORIGEM_DO_LIMITE: "${nome}" foi conferido na NR-15, e a origem é a norma`);
   }
   for (const nome of Object.keys(CODIGOS_ATRIBUIDOS_PELO_USUARIO)) {
     if (!usadosNaAtribuicao.has(nome)) throw new ErroDaListagem(`CODIGOS_ATRIBUIDOS_PELO_USUARIO: "${nome}" não existe na fonte (ou não virou item)`);
@@ -979,7 +1081,7 @@ import { normalizarUnidade, textoDoLimite } from '@/lib/limitesDoCatalogo';
 
 export interface CorrecaoDaListagem {
   nome: string;
-  campo: 'group' | 'propagation_paths' | 'standard_unit';
+  campo: 'group' | 'propagation_paths' | 'standard_unit' | 'evaluation_type';
   de: string;
   para: string;
   motivo: string;
@@ -1006,6 +1108,21 @@ export const NOTA_AUSENCIA_RETIRADA =
 /** Nome na listagem -> id do item curado que ele repete. O item sai INACTIVE. */
 export const DUPLICATAS_DE_CURADOS: Record<string, string> = {
 ${Object.entries(DUPLICATAS_DE_CURADOS).map(([k, v]) => `  ${aspas(k)}: ${aspas(v)},`).join('\n')}
+};
+
+/** Linha que repete outra da propria listagem: nome -> id do item que fica. Sai INACTIVE. */
+export const DUPLICATAS_NA_LISTAGEM: Record<string, string> = {
+${Object.entries(DUPLICATAS_NA_LISTAGEM).map(([k, v]) => `  ${aspas(k)}: ${aspas(idDoNome(v))},`).join('\n')}
+};
+
+/** Limite que pertencia a outro agente do Quadro n. 1 e saiu: nome -> [agente, linha]. */
+export const LIMITES_DE_OUTRO_AGENTE: Record<string, [string, number]> = {
+${Object.entries(LIMITES_DE_OUTRO_AGENTE).map(([k, [a, l]]) => `  ${aspas(k)}: [${aspas(a)}, ${l}],`).join('\n')}
+};
+
+/** De onde vem o limite que a NR-15 nao fixa: vai entre parenteses no texto do limite. */
+export const ORIGEM_DO_LIMITE: Record<string, string> = {
+${Object.entries(ORIGEM_DO_LIMITE).map(([k, v]) => `  ${aspas(k)}: ${aspas(v)},`).join('\n')}
 };
 
 /** Nome na listagem -> codigo da Tabela 24 atribuido pelo usuario e a nota que vai ao item. */
@@ -1051,7 +1168,8 @@ const ADICIONAL_DO_GRAU: Record<GrauDaNr15, '10%' | '20%' | '40%'> = {
 ${Object.entries(ADICIONAL_DO_GRAU).map(([k, v]) => `  ${aspas(k)}: ${aspas(v)},`).join('\n')}
 };
 
-const DUPLICATA = new Map(Object.entries(DUPLICATAS_DE_CURADOS));
+const DUPLICATA = new Map([...Object.entries(DUPLICATAS_DE_CURADOS), ...Object.entries(DUPLICATAS_NA_LISTAGEM)]);
+const ORIGEM = new Map(Object.entries(ORIGEM_DO_LIMITE));
 const CONFERIDO = new Map(CONFERIDOS_NA_NR15.map((c) => [c.nome, c]));
 const CODIGO_ATRIBUIDO = new Map(Object.entries(CODIGOS_ATRIBUIDOS_PELO_USUARIO));
 
@@ -1110,7 +1228,7 @@ function montar([
   const conferido = CONFERIDO.get(name);
   if (limite !== null) {
     item.tolerance_limit_value = limite;
-    item.tolerance_limit_reference = textoDoLimite(limite, unidade, teto === 1, conferido?.fonte);
+    item.tolerance_limit_reference = textoDoLimite(limite, unidade, teto === 1, conferido?.fonte ?? ORIGEM.get(name));
     if (teto === 1) item.tolerance_limit_is_ceiling = true;
   }
   if (nivelDeAcao !== null) {

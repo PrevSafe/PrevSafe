@@ -206,6 +206,13 @@ const CORRECOES_ESPERADAS = [
   ['Radônio-222 e seus produtos de decaimento', 'group', 'QUÍMICO', 'FÍSICO'],
   ['Tório-232 e seus produtos de decaimento', 'group', 'QUÍMICO', 'FÍSICO'],
   ['Urânio (natural) compostos solúveis e insolúveis', 'group', 'QUÍMICO', 'FÍSICO'],
+  ['Arsina', 'evaluation_type', 'QUALITATIVA', 'QUANTITATIVA'],
+  ['Arsina', 'standard_unit', '', 'mg/m³'],
+  ['Dietilamina', 'evaluation_type', 'QUALITATIVA', 'QUANTITATIVA'],
+  ['Dietilamina', 'standard_unit', '', 'mg/m³'],
+  ['Dicloreto de propileno (1,2-Dicloropropano)', 'evaluation_type', 'QUALITATIVA', 'QUANTITATIVA'],
+  ['Dicloreto de propileno (1,2-Dicloropropano)', 'standard_unit', '', 'mg/m³'],
+
 ];
 const MEIOS_VALIDOS = new Set(['', 'Ar e contato', 'Ar', 'Contato']);
 const UNIDADES_VALIDAS = new Set(['ppm', 'mg/m³', 'm/s²', 'm/s1,75', 'Milisievert (mSv)', '°C', 'dB(A)', 'dB(C)']);
@@ -272,6 +279,18 @@ const CORRECOES_NR15_ESPERADAS = [
   ['n-Butilamina', 'tolerance_limit_is_ceiling', false, true],
   ['Pentaborano', 'tolerance_limit_value', 0, 0.008],
   ['Pentaborano', 'action_level_value', 0, 0.004],
+  ['Cloro e seus compostos tóxicos (exceto os abaixo especificados, que constam expressamente no Anexo IV do Decreto 3.048/1999)', 'tolerance_limit_value', 0.8, 2.3],
+  ['Cloro e seus compostos tóxicos (exceto os abaixo especificados, que constam expressamente no Anexo IV do Decreto 3.048/1999)', 'action_level_value', 0.4, 1.15],
+  ['Dimetilformamida (N,N Dimetilformamida)', 'tolerance_limit_value', 7.81, 8],
+  ['Dimetilformamida (N,N Dimetilformamida)', 'action_level_value', 3.9, 4],
+  ['Dimetilsulfato', 'tolerance_limit_is_ceiling', false, true],
+  ['Arsina', 'tolerance_limit_value', 0, 0.16],
+  ['Arsina', 'action_level_value', 0, 0.08],
+  ['Dietilamina', 'tolerance_limit_value', 0, 59],
+  ['Dietilamina', 'action_level_value', 0, 29.5],
+  ['Dicloreto de propileno (1,2-Dicloropropano)', 'tolerance_limit_value', 0, 275],
+  ['Dicloreto de propileno (1,2-Dicloropropano)', 'action_level_value', 0, 137.5],
+
 ];
 const FONTE_A11 = 'NR-15, Anexo 11';
 const FONTE_A8 = 'NR-15, Anexo 8';
@@ -345,6 +364,7 @@ function esperadoDoItem(nome, f) {
   const e = { lt: f.lt, na: f.na, teto: f.teto, casas: f.casas };
   const corr = CORRECOES_NR15_ESPERADAS.filter(([n]) => n === nome);
   for (const [, campo, , norma] of corr) e[CAMPO_DA_FONTE[campo]] = norma;
+  if (tem(LIMITES_DE_OUTRO_AGENTE_ESPERADOS, nome)) { e.lt = 0; e.na = 0; }
   if (corr.length && e.casas !== null) e.casas = Math.max(e.casas, casasDe(e.lt), casasDe(e.na));
   return e;
 }
@@ -447,11 +467,48 @@ function remissoesDoQuadro(texto) {
   return r;
 }
 
+/**
+ * Sinonimos aceitos a pedido do usuario em 09/10/2026: nome na listagem ->
+ * agente como o Quadro n. 1 o escreve. Grafia diferente ("Cloroprene",
+ * "Dimetiformamida", "l,l Dimetil hidrazina") ou nome mais amplo ("Cloro e
+ * seus compostos toxicos") para o mesmo agente da linha conferida.
+ */
+const SINONIMOS_ACEITOS = [
+  ['Cloro e seus compostos tóxicos (exceto os abaixo especificados, que constam expressamente no Anexo IV do Decreto 3.048/1999)', 'Cloro'],
+  ['Bromo e seus compostos tóxicos', 'Bromo'],
+  ['Chumbo e seus compostos tóxicos', 'Chumbo'],
+  ['Cloropreno', 'Cloroprene'],
+  ['Biscloroetileter (éter dicloroetílico)', 'Éter decloroetílico'],
+  ['1,1-Dimetil hidrazina', 'l,l Dimetil hidrazina'],
+  ['Etilenoamina', 'Etilenoimina'],
+  ['Dimetilformamida (N,N Dimetilformamida)', 'Dimetiformamida'],
+  ['Dimetilsulfato', 'Sulfato de dimetila'],
+  ['Dietilamina', 'Dietil amina'],
+].map(([n, a]) => [achatar(n).replace(/[^a-z0-9]/g, ''), achatar(a).replace(/[^a-z0-9]/g, '')]);
+
+/** De onde vem o limite que a NR-15 nao fixa (texto entre parenteses), pedido pelo usuario em 09/10/2026. */
+const ORIGENS_ESPERADAS = {
+  ['Cádmio e seus compostos tóxicos']: 'listagem; a NR-15 não fixa limite',
+  ['Acetato de vinila']: 'listagem; a NR-15 não fixa limite',
+  ['Ácido fosfórico']: 'listagem; a NR-15 não fixa limite',
+  ['Ácido nítrico']: 'listagem; a NR-15 não fixa limite',
+  ['Madeira, poeiras - Todas as outras espécies']: 'listagem; a NR-15 não fixa limite',
+  ['Etileno']: 'listagem; NR-15, Anexo 11: asfixiante simples, oxigênio mínimo de 18% em volume',
+  ['Propileno']: 'listagem; NR-15, Anexo 11: asfixiante simples, oxigênio mínimo de 18% em volume',
+  ['Óxido nitroso']: 'listagem; NR-15, Anexo 11: asfixiante simples, oxigênio mínimo de 18% em volume',
+  ['Radiações ionizantes']: 'listagem; NR-15, Anexo 5: limites da CNEN-NN-3.01',
+};
+/** Listagem que repete outra da listagem: nome -> nome do item que fica. */
+const DUPLICATAS_NA_LISTAGEM_ESPERADAS = { 'Diclorofluormetano (freon 12)': 'Diclorodifluormetano' };
+/** Limite que era de outro agente: nome -> [agente do Quadro, linha, valor na fonte, unidade]. */
+const LIMITES_DE_OUTRO_AGENTE_ESPERADOS = { Dietanolamina: ['Dietil amina', 338, 59, 'mg/m³'] };
+
 /** Mesmo agente: algum nome do item e nome do agente, direto ou por remissao do Quadro. */
 function mesmoAgente(nomeDoItem, agente, remissoes) {
   const doItem = nomesDe(nomeDoItem);
   const doAgente = nomesDe(agente);
   if ([...doItem].some((n) => doAgente.has(n))) return true;
+  if (SINONIMOS_ACEITOS.some(([de, para]) => doItem.has(de) && doAgente.has(para))) return true;
   return remissoes.some(([de, para]) => doItem.has(de) && doAgente.has(para));
 }
 
@@ -601,7 +658,7 @@ function limitesDaFonte(ctx) {
 
 function textoConfere(ctx) {
   const p = [];
-  const fonteDe = new Map(ctx.conferidos.map((c) => [c.nome, c.fonte]));
+  const fonteDe = new Map([...Object.entries(ORIGENS_ESPERADAS), ...ctx.conferidos.map((c) => [c.nome, c.fonte])]);
   for (const i of ctx.listagem) {
     const lt = tem(i, 'tolerance_limit_value')
       ? limites.textoDoLimite(i.tolerance_limit_value, i.standard_unit, i.tolerance_limit_is_ceiling === true, fonteDe.get(i.name))
@@ -727,8 +784,15 @@ function duplicatasDeCurados(ctx) {
     if (i.duplicate_of_id !== id) p.push(`${nome}: duplicate_of_id ${JSON.stringify(i.duplicate_of_id)}, e não ${id}`);
     if (!idsCurados.has(i.duplicate_of_id)) p.push(`${nome}: aponta para ${JSON.stringify(i.duplicate_of_id)}, que não é item curado`);
   }
+  for (const [nome, alvo] of Object.entries(DUPLICATAS_NA_LISTAGEM_ESPERADAS)) {
+    const i = ctx.listagem.find((x) => x.name === nome);
+    const a = ctx.listagem.find((x) => x.name === alvo);
+    if (!i || !a) { p.push(`"${nome}" ou "${alvo}" não está no catálogo`); continue; }
+    if (i.status !== 'INACTIVE' || i.duplicate_of_id !== a.id) p.push(`${nome}: ${i.status}, duplicate_of_id ${JSON.stringify(i.duplicate_of_id)}, e não INACTIVE apontando para ${a.id}`);
+    if (a.status !== 'ACTIVE') p.push(`${alvo}: o item que fica está ${a.status}`);
+  }
   for (const i of ctx.listagem) {
-    if (tem(DUPLICATAS_ESPERADAS, i.name)) continue;
+    if (tem(DUPLICATAS_ESPERADAS, i.name) || tem(DUPLICATAS_NA_LISTAGEM_ESPERADAS, i.name)) continue;
     if (i.status !== 'ACTIVE') p.push(`${i.name}: status ${i.status} sem ser duplicata de curado`);
     if (tem(i, 'duplicate_of_id')) p.push(`${i.name}: duplicate_of_id sem ser duplicata de curado`);
   }
@@ -771,6 +835,8 @@ function naoConferidos(ctx) {
     if (conferidos.has(i.name)) continue;
     const extras = CAMPOS_DE_INSALUBRIDADE.filter((k) => tem(i, k));
     if (extras.length) p.push(`${i.name}: traz ${extras.join(', ')} sem ter sido conferido na norma`);
+    const origem = ORIGENS_ESPERADAS[i.name];
+    if (origem && String(i.tolerance_limit_reference || '').endsWith(`(${origem})`)) continue;
     if (/NR-\d/.test(String(i.tolerance_limit_reference || ''))) p.push(`${i.name}: o texto do limite cita norma sem conferência: "${i.tolerance_limit_reference}"`);
   }
   // Completude: quantitativo cujo nome INTEIRO e o de um agente do Quadro, com
@@ -937,11 +1003,11 @@ const PONTOS = [
   ['Estireno (vinilbenzeno)', { standard_unit: 'ppm', tolerance_limit_value: 78, tolerance_limit_reference: '78 ppm (NR-15, Anexo 11)', action_level_value: 39, action_level_reference: '39 ppm', insalubridade_degree_suggested: '20%' }, ['tolerance_limit_is_ceiling']],
   ['Diisocianato de tolueno (TDI)', { standard_unit: 'ppm', tolerance_limit_value: 0.016, tolerance_limit_reference: '0,016 ppm (valor teto; NR-15, Anexo 11)', tolerance_limit_is_ceiling: true, action_level_value: 0.008, action_level_reference: '0,008 ppm' }, []],
   ['1,1,1 Tricloroetano (Metilclorofórmio)', { standard_unit: 'mg/m³', tolerance_limit_value: 1480, tolerance_limit_reference: '1.480 mg/m³ (NR-15, Anexo 11)', action_level_value: 740, action_level_reference: '740 mg/m³' }, ['tolerance_limit_is_ceiling']],
-  ['Cádmio e seus compostos tóxicos', { standard_unit: 'mg/m³', tolerance_limit_value: 0.039, tolerance_limit_reference: '0,039 mg/m³', action_level_value: 0.019, action_level_reference: '0,019 mg/m³', code_table_24: '01.06.001' }, ['insalubridade_degree_suggested']],
+  ['Cádmio e seus compostos tóxicos', { standard_unit: 'mg/m³', tolerance_limit_value: 0.039, tolerance_limit_reference: '0,039 mg/m³ (listagem; a NR-15 não fixa limite)', action_level_value: 0.019, action_level_reference: '0,019 mg/m³', code_table_24: '01.06.001' }, ['insalubridade_degree_suggested']],
   ['Vibração de corpo inteiro (Valor da Dose de Vibração Resultante - VDVR)', { standard_unit: 'm/s1,75', tolerance_limit_value: 21, tolerance_limit_reference: '21 m/s1,75 (NR-15, Anexo 8)', action_level_value: 9.1, action_level_reference: '9,1 m/s1,75' }, []],
   ['Ácido fluorídrico', { standard_unit: 'mg/m³', tolerance_limit_value: 1.5, action_level_value: 0.75, measurement_decimal_places: 2, insalubridade_degree_suggested: '40%' }, ['tolerance_limit_is_ceiling']],
   ['Frio', { status: 'INACTIVE', duplicate_of_id: 'risk-cat-07' }, ['tolerance_limit_value']],
-  ['Radiações ionizantes', { standard_unit: 'Milisievert (mSv)', tolerance_limit_value: 20, tolerance_limit_reference: '20 Milisievert (mSv)', action_level_value: 10, action_level_reference: '10 Milisievert (mSv)', code_table_24: '02.01.006' }, []],
+  ['Radiações ionizantes', { standard_unit: 'Milisievert (mSv)', tolerance_limit_value: 20, tolerance_limit_reference: '20 Milisievert (mSv) (listagem; NR-15, Anexo 5: limites da CNEN-NN-3.01)', action_level_value: 10, action_level_reference: '10 Milisievert (mSv)', code_table_24: '02.01.006' }, []],
   ['Sílica livre cristalizada - poeira respirável', { standard_unit: 'mg/m³', evaluation_type: 'QUANTITATIVA', code_table_24: '01.18.001' }, ['tolerance_limit_value', 'tolerance_limit_reference', 'action_level_value', 'action_level_reference']],
 ];
 const ponto = ([nome, esperado, ausentes]) => (ctx) => {
@@ -1060,6 +1126,30 @@ function codigosAtribuidos(ctx) {
   return p;
 }
 
+/**
+ * O limite que a listagem pos no agente errado: na fonte, o numero e o do
+ * agente citado (lido do Quadro), o nome do item NAO e o desse agente, e o
+ * item ficou sem limite e sem nivel de acao.
+ */
+function limitesDeOutroAgente(ctx) {
+  const p = [];
+  const { linhas, col } = quadro(ctx.anexo11);
+  if (!col) return [`o cabeçalho do Quadro n. 1 não foi achado em ${REL.anexo11}`];
+  const remissoes = remissoesDoQuadro(ctx.anexo11);
+  const fonteDe = new Map(itensComLinha(ctx).map(([i, f]) => [i.name, f]));
+  for (const [nome, [agente, linha, valor, unidade]] of Object.entries(LIMITES_DE_OUTRO_AGENTE_ESPERADOS)) {
+    const i = ctx.listagem.find((x) => x.name === nome);
+    const f = fonteDe.get(nome);
+    const r = linhaDoQuadro(linhas[linha - 1] || '', col);
+    if (!i || !f) { p.push(`"${nome}" sem item ou sem linha na fonte`); continue; }
+    if (!r || r.nome !== agente) { p.push(`${nome}: a linha ${linha} não é a do agente "${agente}"`); continue; }
+    if (f.lt !== valor || (unidade === 'mg/m³' ? r.mg : r.ppm) !== valor) p.push(`${nome}: a fonte traz ${f.lt} e a linha de ${agente} diz ${unidade === 'mg/m³' ? r.mg : r.ppm}; não é o número de ${agente}`);
+    if (mesmoAgente(nome, agente, remissoes)) p.push(`${nome}: é o próprio ${agente}, e o limite não seria de outro agente`);
+    if (tem(i, 'tolerance_limit_value') || tem(i, 'action_level_value') || tem(i, 'tolerance_limit_reference')) p.push(`${nome}: ainda traz o limite de ${agente}`);
+  }
+  return p;
+}
+
 /** A coluna "p/pele" do Quadro n. 1, lida do texto da norma, nos conferidos no Anexo 11. */
 function absorcaoPelaPele(ctx) {
   const p = [];
@@ -1075,7 +1165,7 @@ function absorcaoPelaPele(ctx) {
     if (i.skin_absorption !== r.pele) p.push(`${c.nome}: absorção pela pele ${i.skin_absorption}, a norma ${r.pele} (linha ${c.linha})`);
     if (r.pele) comPele++;
   }
-  if (comPele !== 38) p.push(`${comPele} agentes conferidos com absorção pela pele na norma, e não 38`);
+  if (comPele !== 43) p.push(`${comPele} agentes conferidos com absorção pela pele na norma, e não 43`);
   for (const i of ctx.listagem) {
     if (!doAnexo11.has(i.name) && tem(i, 'skin_absorption')) p.push(`${i.name}: absorção pela pele sem conferência no Anexo 11`);
   }
@@ -1217,6 +1307,10 @@ const VERIFICACOES = [
     ['radioativo de volta a QUÍMICO', mudar('Plutônio', (i) => { i.group = 'QUÍMICO'; })],
     ['nota sem o segundo código', mudar('Cromato de chumbo', (i) => { i.esocial_enquadramento_nota = 'Código atribuído pelo usuário em 09/10/2026.'; })],
     ['nome a mais na constante gerada', (c) => { c.atribuidos = { ...c.atribuidos, Iodo: { codigo: '01.13.001', nota: 'x' } }; }],
+  ]],
+  ['o limite que era de outro agente do Quadro saiu do item', limitesDeOutroAgente, [
+    ['o número da Dietil amina de volta', mudar('Dietanolamina', (i) => { i.tolerance_limit_value = 59; i.tolerance_limit_reference = '59 mg/m³'; })],
+    ['nível de ação de outro agente', mudar('Dietanolamina', (i) => { i.action_level_value = 29.5; })],
   ]],
   ['absorção pela pele igual à coluna "p/pele" do Quadro n. 1, e só nos conferidos no Anexo 11', absorcaoPelaPele, [
     ['pele perdida', mudar('Demeton (Systox)', (i) => { delete i.skin_absorption; })],

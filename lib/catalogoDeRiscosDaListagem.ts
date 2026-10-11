@@ -22,14 +22,14 @@
  *
  * CONFERENCIA COM A NR-15
  *
- * 124 itens foram conferidos no texto oficial: 121 no Quadro n. 1 do Anexo 11
+ * 136 itens foram conferidos no texto oficial: 133 no Quadro n. 1 do Anexo 11
  * (docs/fontes/nr15-anexo11.txt) e 3 de vibracao no Anexo 8
  * (docs/fontes/nr15-trechos.txt) - CONFERIDOS_NA_NR15, com o agente como a
  * norma o escreve e a linha. Neles o texto do limite cita a fonte ("78 ppm
  * (NR-15, Anexo 11)") e a insalubridade e a da norma: o adicional do grau
  * (NR-15, itens 15.2.1 a 15.2.3: maximo 40%, medio 20%, minimo 10%) e a base
  * legal. Onde a listagem divergia da norma sem ambiguidade, vale a norma
- * (CORRECOES_PELA_NR15, 21 correcoes em 15 itens); os numeros abaixo ja vem
+ * (CORRECOES_PELA_NR15, 32 correcoes em 21 itens); os numeros abaixo ja vem
  * corrigidos. Nome diferente, agente fora do Quadro ou unidade sem conversao
  * direta nao foram corrigidos nem ganharam grau: a decisao e do usuario.
  *
@@ -101,7 +101,7 @@ import { normalizarUnidade, textoDoLimite } from '@/lib/limitesDoCatalogo';
 
 export interface CorrecaoDaListagem {
   nome: string;
-  campo: 'group' | 'propagation_paths' | 'standard_unit';
+  campo: 'group' | 'propagation_paths' | 'standard_unit' | 'evaluation_type';
   de: string;
   para: string;
   motivo: string;
@@ -118,6 +118,12 @@ export const CORRECOES_DA_LISTAGEM: CorrecaoDaListagem[] = [
   { nome: 'Radônio-222 e seus produtos de decaimento', campo: 'group', de: 'QUÍMICO', para: 'FÍSICO', motivo: 'Radioativo: recebeu 02.01.006 (radiações ionizantes), código do grupo dos agentes físicos na Tabela 24, por decisão do usuário em 09/10/2026.' },
   { nome: 'Tório-232 e seus produtos de decaimento', campo: 'group', de: 'QUÍMICO', para: 'FÍSICO', motivo: 'Radioativo: recebeu 02.01.006 (radiações ionizantes), código do grupo dos agentes físicos na Tabela 24, por decisão do usuário em 09/10/2026.' },
   { nome: 'Urânio (natural) compostos solúveis e insolúveis', campo: 'group', de: 'QUÍMICO', para: 'FÍSICO', motivo: 'Radioativo: recebeu 02.01.006 (radiações ionizantes), código do grupo dos agentes físicos na Tabela 24, por decisão do usuário em 09/10/2026.' },
+  { nome: 'Arsina', campo: 'evaluation_type', de: 'QUALITATIVA', para: 'QUANTITATIVA', motivo: 'A NR-15 (Anexo 11, Quadro n. 1) fixa limite para o agente; correção pedida pelo usuário em 09/10/2026.' },
+  { nome: 'Arsina', campo: 'standard_unit', de: '', para: 'mg/m³', motivo: 'Unidade da coluna mg/m3 do Quadro n. 1, de onde vem o limite.' },
+  { nome: 'Dietilamina', campo: 'evaluation_type', de: 'QUALITATIVA', para: 'QUANTITATIVA', motivo: 'A NR-15 (Anexo 11, Quadro n. 1) fixa limite para o agente; correção pedida pelo usuário em 09/10/2026.' },
+  { nome: 'Dietilamina', campo: 'standard_unit', de: '', para: 'mg/m³', motivo: 'Unidade da coluna mg/m3 do Quadro n. 1, de onde vem o limite.' },
+  { nome: 'Dicloreto de propileno (1,2-Dicloropropano)', campo: 'evaluation_type', de: 'QUALITATIVA', para: 'QUANTITATIVA', motivo: 'A NR-15 (Anexo 11, Quadro n. 1) fixa limite para o agente; correção pedida pelo usuário em 09/10/2026.' },
+  { nome: 'Dicloreto de propileno (1,2-Dicloropropano)', campo: 'standard_unit', de: '', para: 'mg/m³', motivo: 'Unidade da coluna mg/m3 do Quadro n. 1, de onde vem o limite.' },
 ];
 
 export const GRUPO_DOS_INESPECIFICOS: Record<string, RiskCategoryType> = {
@@ -161,6 +167,29 @@ export const DUPLICATAS_DE_CURADOS: Record<string, string> = {
   'Trabalho em Espaço Confinado': 'risk-cat-21',
   'Projeção de partículas': 'risk-cat-23',
   'Ausência de agente nocivo ou de atividades previstas no Anexo IV do Decreto 3.048/1999': 'risk-cat-25',
+};
+
+/** Linha que repete outra da propria listagem: nome -> id do item que fica. Sai INACTIVE. */
+export const DUPLICATAS_NA_LISTAGEM: Record<string, string> = {
+  'Diclorofluormetano (freon 12)': 'risk-lst-diclorodifluormetano',
+};
+
+/** Limite que pertencia a outro agente do Quadro n. 1 e saiu: nome -> [agente, linha]. */
+export const LIMITES_DE_OUTRO_AGENTE: Record<string, [string, number]> = {
+  'Dietanolamina': ['Dietil amina', 338],
+};
+
+/** De onde vem o limite que a NR-15 nao fixa: vai entre parenteses no texto do limite. */
+export const ORIGEM_DO_LIMITE: Record<string, string> = {
+  'Cádmio e seus compostos tóxicos': 'listagem; a NR-15 não fixa limite',
+  'Acetato de vinila': 'listagem; a NR-15 não fixa limite',
+  'Ácido fosfórico': 'listagem; a NR-15 não fixa limite',
+  'Ácido nítrico': 'listagem; a NR-15 não fixa limite',
+  'Madeira, poeiras - Todas as outras espécies': 'listagem; a NR-15 não fixa limite',
+  'Etileno': 'listagem; NR-15, Anexo 11: asfixiante simples, oxigênio mínimo de 18% em volume',
+  'Propileno': 'listagem; NR-15, Anexo 11: asfixiante simples, oxigênio mínimo de 18% em volume',
+  'Óxido nitroso': 'listagem; NR-15, Anexo 11: asfixiante simples, oxigênio mínimo de 18% em volume',
+  'Radiações ionizantes': 'listagem; NR-15, Anexo 5: limites da CNEN-NN-3.01',
 };
 
 /** Nome na listagem -> codigo da Tabela 24 atribuido pelo usuario e a nota que vai ao item. */
@@ -349,6 +378,18 @@ export const CONFERIDOS_NA_NR15: ConferidoNaNr15[] = [
   { nome: 'Tricloroetileno', fonte: 'NR-15, Anexo 11', agente: 'Tricloroetileno', grau: 'máximo', linha: 591, pele: false },
   { nome: 'Trietilamina', fonte: 'NR-15, Anexo 11', agente: 'Trietilamina', grau: 'máximo', linha: 601, pele: false },
   { nome: 'Xileno (xilol)', fonte: 'NR-15, Anexo 11', agente: 'Xileno (xilol)', grau: 'médio', linha: 607, pele: true },
+  { nome: 'Cloro e seus compostos tóxicos (exceto os abaixo especificados, que constam expressamente no Anexo IV do Decreto 3.048/1999)', fonte: 'NR-15, Anexo 11', agente: 'Cloro', grau: 'máximo', linha: 283, pele: false },
+  { nome: 'Bromo e seus compostos tóxicos', fonte: 'NR-15, Anexo 11', agente: 'Bromo', grau: 'máximo', linha: 217, pele: false },
+  { nome: 'Chumbo e seus compostos tóxicos', fonte: 'NR-15, Anexo 11', agente: 'Chumbo', grau: 'máximo', linha: 253, pele: false },
+  { nome: 'Cloropreno', fonte: 'NR-15, Anexo 11', agente: 'Cloroprene', grau: 'máximo', linha: 299, pele: true },
+  { nome: 'Biscloroetileter (éter dicloroetílico)', fonte: 'NR-15, Anexo 11', agente: 'Éter decloroetílico', grau: 'máximo', linha: 378, pele: true },
+  { nome: '1,1-Dimetil hidrazina', fonte: 'NR-15, Anexo 11', agente: 'l,l Dimetil hidrazina', grau: 'máximo', linha: 352, pele: true },
+  { nome: 'Etilenoamina', fonte: 'NR-15, Anexo 11', agente: 'Etilenoimina', grau: 'máximo', linha: 403, pele: true },
+  { nome: 'Dimetilformamida (N,N Dimetilformamida)', fonte: 'NR-15, Anexo 11', agente: 'Dimetiformamida', grau: 'médio', linha: 350, pele: false },
+  { nome: 'Dimetilsulfato', fonte: 'NR-15, Anexo 11', agente: 'Sulfato de dimetila', grau: 'máximo', linha: 552, pele: true },
+  { nome: 'Dietilamina', fonte: 'NR-15, Anexo 11', agente: 'Dietil amina', grau: 'médio', linha: 338, pele: false },
+  { nome: 'Arsina', fonte: 'NR-15, Anexo 11', agente: 'Arsina (arsenamina)', grau: 'máximo', linha: 209, pele: false },
+  { nome: 'Dicloreto de propileno (1,2-Dicloropropano)', fonte: 'NR-15, Anexo 11', agente: '1,2 Dicloropropano', grau: 'máximo', linha: 334, pele: false },
   { nome: 'Vibrações localizadas (mão-braço)', fonte: 'NR-15, Anexo 8', agente: 'VMB: aren', grau: 'médio', linha: 227 },
   { nome: 'Vibração de corpo inteiro (aceleração resultante de exposição normalizada - aren)', fonte: 'NR-15, Anexo 8', agente: 'VCI: aren', grau: 'médio', linha: 231 },
   { nome: 'Vibração de corpo inteiro (Valor da Dose de Vibração Resultante - VDVR)', fonte: 'NR-15, Anexo 8', agente: 'VCI: VDVR', grau: 'médio', linha: 232 },
@@ -387,6 +428,17 @@ export const CORRECOES_PELA_NR15: CorrecaoPelaNr15[] = [
   { nome: 'n-Butilamina', campo: 'tolerance_limit_is_ceiling', listagem: false, norma: true, anexo: 'NR-15, Anexo 11', linha: 241 },
   { nome: 'Pentaborano', campo: 'tolerance_limit_value', listagem: 0, norma: 0.008, anexo: 'NR-15, Anexo 11', linha: 532 },
   { nome: 'Pentaborano', campo: 'action_level_value', listagem: 0, norma: 0.004, anexo: 'NR-09, item 9.6.1 b)', linha: null },
+  { nome: 'Cloro e seus compostos tóxicos (exceto os abaixo especificados, que constam expressamente no Anexo IV do Decreto 3.048/1999)', campo: 'tolerance_limit_value', listagem: 0.8, norma: 2.3, anexo: 'NR-15, Anexo 11', linha: 283 },
+  { nome: 'Cloro e seus compostos tóxicos (exceto os abaixo especificados, que constam expressamente no Anexo IV do Decreto 3.048/1999)', campo: 'action_level_value', listagem: 0.4, norma: 1.15, anexo: 'NR-09, item 9.6.1 b)', linha: null },
+  { nome: 'Dimetilformamida (N,N Dimetilformamida)', campo: 'tolerance_limit_value', listagem: 7.81, norma: 8, anexo: 'NR-15, Anexo 11', linha: 350 },
+  { nome: 'Dimetilformamida (N,N Dimetilformamida)', campo: 'action_level_value', listagem: 3.9, norma: 4, anexo: 'NR-09, item 9.6.1 b)', linha: null },
+  { nome: 'Dimetilsulfato', campo: 'tolerance_limit_is_ceiling', listagem: false, norma: true, anexo: 'NR-15, Anexo 11', linha: 552 },
+  { nome: 'Arsina', campo: 'tolerance_limit_value', listagem: 0, norma: 0.16, anexo: 'NR-15, Anexo 11', linha: 209 },
+  { nome: 'Arsina', campo: 'action_level_value', listagem: 0, norma: 0.08, anexo: 'NR-09, item 9.6.1 b)', linha: null },
+  { nome: 'Dietilamina', campo: 'tolerance_limit_value', listagem: 0, norma: 59, anexo: 'NR-15, Anexo 11', linha: 338 },
+  { nome: 'Dietilamina', campo: 'action_level_value', listagem: 0, norma: 29.5, anexo: 'NR-09, item 9.6.1 b)', linha: null },
+  { nome: 'Dicloreto de propileno (1,2-Dicloropropano)', campo: 'tolerance_limit_value', listagem: 0, norma: 275, anexo: 'NR-15, Anexo 11', linha: 334 },
+  { nome: 'Dicloreto de propileno (1,2-Dicloropropano)', campo: 'action_level_value', listagem: 0, norma: 137.5, anexo: 'NR-09, item 9.6.1 b)', linha: null },
 ];
 
 /** NR-15, itens 15.2.1 a 15.2.3. */
@@ -396,7 +448,8 @@ const ADICIONAL_DO_GRAU: Record<GrauDaNr15, '10%' | '20%' | '40%'> = {
   'mínimo': '10%',
 };
 
-const DUPLICATA = new Map(Object.entries(DUPLICATAS_DE_CURADOS));
+const DUPLICATA = new Map([...Object.entries(DUPLICATAS_DE_CURADOS), ...Object.entries(DUPLICATAS_NA_LISTAGEM)]);
+const ORIGEM = new Map(Object.entries(ORIGEM_DO_LIMITE));
 const CONFERIDO = new Map(CONFERIDOS_NA_NR15.map((c) => [c.nome, c]));
 const CODIGO_ATRIBUIDO = new Map(Object.entries(CODIGOS_ATRIBUIDOS_PELO_USUARIO));
 
@@ -433,7 +486,7 @@ const LINHAS: Linha[] = [
   ['risk-lst-cadmio-e-seus-compostos-toxicos', 'Cádmio e seus compostos tóxicos', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', 0.039, 0, 0.019, 3, '', '01.06.001', 0],
   ['risk-lst-carvao-mineral-e-seus-derivados', 'Carvão mineral e seus derivados', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '01.07.001', 0],
   ['risk-lst-chumbo-e-seus-compostos-toxicos', 'Chumbo e seus compostos tóxicos', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', 0.1, 0, 0.05, 2, '', '01.08.001', 0],
-  ['risk-lst-cloro-e-seus-compostos-toxicos-exceto-os-abaixo-especificados-que-constam-expressamente-no-anexo-iv-do-decreto-3-048-1999', 'Cloro e seus compostos tóxicos (exceto os abaixo especificados, que constam expressamente no Anexo IV do Decreto 3.048/1999)', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', 0.8, 0, 0.4, 2, '', '01.09.001', 0],
+  ['risk-lst-cloro-e-seus-compostos-toxicos-exceto-os-abaixo-especificados-que-constam-expressamente-no-anexo-iv-do-decreto-3-048-1999', 'Cloro e seus compostos tóxicos (exceto os abaixo especificados, que constam expressamente no Anexo IV do Decreto 3.048/1999)', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', 2.3, 0, 1.15, 2, '', '01.09.001', 0],
   ['risk-lst-metileno-ortocloroanilina-moca-4-4-metileno-bis-2-cloroanilina-mboca', 'Metileno-ortocloroanilina, MOCA® (4,4\'-metileno-bis-(2-cloroanilina), MBOCA®)', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '01.09.002', 0],
   ['risk-lst-bis-cloro-metil-eter-clorometileter-eter-bis-clorometilico-ou-eter-metilico-de-clorometila-bisclorometil', 'Bis (cloro metil) éter, clorometileter, (éter bis (clorometílico) ou éter metílico de clorometila), bisclorometil', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '01.09.003', 0],
   ['risk-lst-biscloroetileter-eter-dicloroetilico', 'Biscloroetileter (éter dicloroetílico)', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', 24, 0, 12, 1, '', '01.09.004', 0],
@@ -470,7 +523,7 @@ const LINHAS: Linha[] = [
   ['risk-lst-beta-pbiscloromeropiolactona-beta-propiolactona', 'Beta-pbiscloromeropiolactona (beta-propiolactona)', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '01.19.019', 0],
   ['risk-lst-dianizidina', 'Dianizidina', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '01.19.021', 0],
   ['risk-lst-dietilsulfato', 'Dietilsulfato', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '01.19.022', 0],
-  ['risk-lst-dimetilsulfato', 'Dimetilsulfato', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', 0.4, 0, 0.2, 1, '', '01.19.023', 0],
+  ['risk-lst-dimetilsulfato', 'Dimetilsulfato', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', 0.4, 1, 0.2, 1, '', '01.19.023', 0],
   ['risk-lst-etilenoamina', 'Etilenoamina', 'QUÍMICO', 'Ar e contato', 'ppm', 'QUANTITATIVA', 0.4, 0, 0.2, 2, '', '01.19.024', 0],
   ['risk-lst-etilenotiureia', 'Etilenotiureia', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '01.19.025', 0],
   ['risk-lst-fenacetina', 'Fenacetina', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '01.19.026', 0],
@@ -752,7 +805,7 @@ const LINHAS: Linha[] = [
   ['risk-lst-antu', 'ANTU', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '', 0],
   ['risk-lst-argonio', 'Argônio', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '', 0],
   ['risk-lst-arseneto-de-galio', 'Arseneto de gálio', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '01.01.001', 0],
-  ['risk-lst-arsina', 'Arsina', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '01.01.001', 0],
+  ['risk-lst-arsina', 'Arsina', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', 0.16, 0, 0.08, null, '', '01.01.001', 0],
   ['risk-lst-asfalto-betume-fumos-como-aerossol-soluvel-em-benzeno', 'Asfalto (betume), fumos, como aerossol solúvel em benzeno', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '', 0],
   ['risk-lst-atrazine-e-triazinas-simetricas-relacionadas', 'Atrazine (e triazinas simétricas relacionadas)', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '', 0],
   ['risk-lst-azida-de-sodio-como-azida-de-sodio-como-vapor-de-acido-hidrazoico', 'Azida de sódio (como azida de sódio; como vapor de ácido hidrazoico)', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '', 0],
@@ -861,7 +914,7 @@ const LINHAS: Linha[] = [
   ['risk-lst-diborano', 'Diborano', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', 0.08, 0, 0.04, 2, '', '', 0],
   ['risk-lst-dibutilftalato-ftalato-de-dibutila', 'Dibutilftalato (ftalato de dibutila)', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '', 0],
   ['risk-lst-diciclopentadieno', 'Diciclopentadieno', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '', 0],
-  ['risk-lst-dicloreto-de-propileno-1-2-dicloropropano', 'Dicloreto de propileno (1,2-Dicloropropano)', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '', 0],
+  ['risk-lst-dicloreto-de-propileno-1-2-dicloropropano', 'Dicloreto de propileno (1,2-Dicloropropano)', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', 275, 0, 137.5, null, '', '', 0],
   ['risk-lst-dicloroacetileno', 'Dicloroacetileno', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '', 0],
   ['risk-lst-diclorodifluormetano', 'Diclorodifluormetano', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', 3860, 1, 1930, 1, '', '', 0],
   ['risk-lst-diclorofluormetano-freon-12', 'Diclorofluormetano (freon 12)', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', 3860, 0, 1930, 1, '', '', 0],
@@ -870,9 +923,9 @@ const LINHAS: Linha[] = [
   ['risk-lst-diclorvos-ddvp', 'Diclorvos (DDVP)', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '', 0],
   ['risk-lst-dicrotofos', 'Dicrotofós', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '', 0],
   ['risk-lst-dieldrin', 'Dieldrin', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '', 0],
-  ['risk-lst-dietanolamina', 'Dietanolamina', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', 59, 0, 29.5, 1, '', '', 0],
+  ['risk-lst-dietanolamina', 'Dietanolamina', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', null, 0, null, 1, '', '', 0],
   ['risk-lst-dietil-eter-eter-etilico', 'Dietil éter (Éter etílico)', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', 940, 0, 470, 1, '', '', 0],
-  ['risk-lst-dietilamina', 'Dietilamina', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '', 0],
+  ['risk-lst-dietilamina', 'Dietilamina', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', 59, 0, 29.5, null, '', '', 0],
   ['risk-lst-dietilcetona', 'Dietilcetona', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '', 0],
   ['risk-lst-dietileno-triamina', 'Dietileno triamina', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '', 0],
   ['risk-lst-dietilftalato-ftalato-de-dietila', 'Dietilftalato (ftalato de dietila)', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '', 0],
@@ -885,7 +938,7 @@ const LINHAS: Linha[] = [
   ['risk-lst-dimetilacetamida-n-n-dimetilacetamida', 'Dimetilacetamida (N,N-Dimetilacetamida)', 'QUÍMICO', 'Ar e contato', 'mg/m³', 'QUANTITATIVA', 28, 0, 14, 1, '', '', 0],
   ['risk-lst-ruido-impulsivo-ou-de-impacto', 'Ruído impulsivo ou de impacto', 'FÍSICO', 'Ar', 'dB(C)', 'QUANTITATIVA', null, 0, null, 2, '', '02.01.001', 0],
   ['risk-lst-dimetiletoxisilano', 'Dimetiletoxisilano', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '', 0],
-  ['risk-lst-dimetilformamida-n-n-dimetilformamida', 'Dimetilformamida (N,N Dimetilformamida)', 'QUÍMICO', 'Ar e contato', 'ppm', 'QUANTITATIVA', 7.81, 0, 3.9, 2, '', '', 0],
+  ['risk-lst-dimetilformamida-n-n-dimetilformamida', 'Dimetilformamida (N,N Dimetilformamida)', 'QUÍMICO', 'Ar e contato', 'ppm', 'QUANTITATIVA', 8, 0, 4, 2, '', '', 0],
   ['risk-lst-dimetilftalato', 'Dimetilftalato', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '', 0],
   ['risk-lst-dinitrato-de-etileno-glicol', 'Dinitrato de etileno glicol', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '', 0],
   ['risk-lst-dinitrato-de-propileno-glicol', 'Dinitrato de propileno glicol', 'QUÍMICO', 'Ar e contato', '', 'QUALITATIVA', null, 0, null, null, '', '', 0],
@@ -1363,7 +1416,7 @@ function montar([
   const conferido = CONFERIDO.get(name);
   if (limite !== null) {
     item.tolerance_limit_value = limite;
-    item.tolerance_limit_reference = textoDoLimite(limite, unidade, teto === 1, conferido?.fonte);
+    item.tolerance_limit_reference = textoDoLimite(limite, unidade, teto === 1, conferido?.fonte ?? ORIGEM.get(name));
     if (teto === 1) item.tolerance_limit_is_ceiling = true;
   }
   if (nivelDeAcao !== null) {
