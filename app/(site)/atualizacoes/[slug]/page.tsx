@@ -83,13 +83,17 @@ export default async function ArtigoPage({ params }: Props) {
         </header>
 
         {artigo.imagem_url && (
-          <div className="mx-auto max-w-[56rem] px-4 sm:px-6 -mt-8 relative">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={artigo.imagem_url}
-              alt=""
-              className="w-full rounded-3xl shadow-lg object-cover max-h-[26rem]"
-            />
+          <div className="mx-auto max-w-[40rem] px-4 sm:px-6 -mt-8 relative">
+            {/* Imagem completa, sem corte: infográficos verticais precisam ser lidos.
+                Clique abre o arquivo original em resolução total. */}
+            <a href={artigo.imagem_url} target="_blank" rel="noopener noreferrer" title="Ver imagem em tamanho completo">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={artigo.imagem_url}
+                alt={artigo.titulo}
+                className="w-full h-auto rounded-3xl shadow-lg"
+              />
+            </a>
           </div>
         )}
 
