@@ -3,6 +3,7 @@ import { SiteHeader } from '@/components/site/SiteHeader';
 import { SiteFooter } from '@/components/site/SiteFooter';
 import { RecoveryLinkGuard } from '@/components/site/RecoveryLinkGuard';
 import { BotaoWhatsApp } from '@/components/site/BotaoWhatsApp';
+import { Analytics } from '@/components/site/Analytics';
 
 export default function SiteLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -10,6 +11,7 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
       {/* O Supabase pode mandar o link de recuperação para a raiz do domínio,
           que agora é o site e não mais o sistema. Sem isto o token viraria
           sessão silenciosamente e o usuário nunca chegaria à tela de senha. */}
+      <Analytics />
       <RecoveryLinkGuard />
 
       <a
