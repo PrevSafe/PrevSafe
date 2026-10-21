@@ -61,7 +61,7 @@ export default async function AtualizacoesPage() {
                 >
                   {destaque.imagem_url ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={destaque.imagem_url} alt="" className="w-full h-full min-h-[16rem] object-cover" />
+                    <img src={destaque.imagem_url} alt="" className="w-full h-full min-h-[16rem] object-cover object-top" />
                   ) : (
                     <div className="w-full min-h-[16rem] bg-gradient-to-br from-emerald-600 to-teal-800" aria-hidden="true" />
                   )}
@@ -94,7 +94,7 @@ export default async function AtualizacoesPage() {
                   >
                     {a.imagem_url && (
                       // eslint-disable-next-line @next/next/no-img-element
-                      <img src={a.imagem_url} alt="" className="w-full h-40 object-cover" />
+                      <img src={a.imagem_url} alt="" className="w-full h-40 object-cover object-top" />
                     )}
                     <div className="p-5 flex flex-col flex-1">
                       {a.categoria && (
