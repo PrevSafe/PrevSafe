@@ -27,6 +27,7 @@ export function SiteFooter() {
               <li><Link href="/para-empresas" className="hover:text-emerald-400 transition">Para empresas</Link></li>
               <li><Link href="/para-trabalhadores" className="hover:text-emerald-400 transition">Para trabalhadores</Link></li>
               <li><Link href="/atualizacoes" className="hover:text-emerald-400 transition">Atualizações de SST</Link></li>
+              <li><a href="https://www.blogdosst.com.br" target="_blank" rel="noopener noreferrer" className="hover:text-emerald-400 transition">Blog SST (artigos e verbas) ↗</a></li>
             </ul>
           </div>
 
