@@ -10,6 +10,7 @@ const LINKS = [
   { href: '/para-empresas', label: 'Para empresas' },
   { href: '/para-trabalhadores', label: 'Para trabalhadores' },
   { href: '/contato', label: 'Contato' },
+  { href: 'https://www.blogdosst.com.br', label: 'Blog SST ↗', externo: true },
 ];
 
 export function SiteHeader() {
