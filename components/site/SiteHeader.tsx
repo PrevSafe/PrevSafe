@@ -4,13 +4,20 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { Menu, X, ArrowRight, LogIn } from 'lucide-react';
 
-const LINKS = [
+type NavLink = {
+  href: string;
+  label: string;
+  /** Link externo ao site: abre em nova aba para não perder a navegação da PrevSafe. */
+  externo?: boolean;
+};
+
+const LINKS: NavLink[] = [
   { href: '/servicos', label: 'Serviços' },
   { href: '/atualizacoes', label: 'Atualizações' },
   { href: '/para-empresas', label: 'Para empresas' },
   { href: '/para-trabalhadores', label: 'Para trabalhadores' },
   { href: '/contato', label: 'Contato' },
-  { href: 'https://www.blogdosst.com.br', label: 'Blog SST ↗' },
+  { href: 'https://www.blogdosst.com.br', label: 'Blog SST ↗', externo: true },
 ];
 
 export function SiteHeader() {
@@ -29,6 +36,8 @@ export function SiteHeader() {
               <Link
                 key={l.href}
                 href={l.href}
+                target={l.externo ? '_blank' : undefined}
+                rel={l.externo ? 'noopener noreferrer' : undefined}
                 className="text-sm font-medium text-slate-600 hover:text-emerald-700 transition"
               >
                 {l.label}
@@ -74,6 +83,8 @@ export function SiteHeader() {
               <Link
                 key={l.href}
                 href={l.href}
+                target={l.externo ? '_blank' : undefined}
+                rel={l.externo ? 'noopener noreferrer' : undefined}
                 onClick={() => setAberto(false)}
                 className="py-2.5 text-[15px] font-medium text-slate-700"
               >
