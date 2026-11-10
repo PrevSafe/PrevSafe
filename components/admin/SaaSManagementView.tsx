@@ -203,7 +203,7 @@ export const SaaSManagementView: React.FC<{ onNavigate: (view: string) => void }
       case 'TRIAL':
         return <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-blue-500/10 text-blue-700 border border-blue-500/20"><Sparkles className="w-3 h-3 mr-1" /> Em Teste (Trial)</span>;
       case 'PAST_DUE':
-        return <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-amber-500/10 text-amber-700 border border-amber-500/20"><AlertTriangle className="w-3 h-3 mr-1" /> Pendente / Vencido</span>;
+        return <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-amber-500/10 text-amber-800 border border-amber-500/20"><AlertTriangle className="w-3 h-3 mr-1" /> Pendente / Vencido</span>;
       case 'SUSPENDED':
         return <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-rose-500/10 text-rose-700 border border-rose-500/20"><AlertTriangle className="w-3 h-3 mr-1" /> Suspenso</span>;
       case 'CANCELLED':
@@ -216,7 +216,7 @@ export const SaaSManagementView: React.FC<{ onNavigate: (view: string) => void }
       case 'STARTER':
         return <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-semibold bg-superficie-2 text-tinta border border-borda">Starter</span>;
       case 'PRO':
-        return <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-semibold bg-teal-500/20 text-teal-700 border border-teal-500/40">Professional</span>;
+        return <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-semibold bg-teal-500/20 text-teal-800 border border-teal-500/40">Professional</span>;
       case 'ENTERPRISE':
         return <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-semibold bg-purple-500/20 text-purple-700 border border-purple-500/40">Enterprise</span>;
       case 'CUSTOM':
@@ -228,14 +228,14 @@ export const SaaSManagementView: React.FC<{ onNavigate: (view: string) => void }
     <div className="space-y-6 pb-12">
       {/* Active Impersonation Context Alert */}
       {activeTenantContext && (
-        <div className="bg-gradient-to-r from-amber-500/20 via-amber-600/20 to-orange-500/20 border border-amber-500/40 rounded-2xl p-4 flex items-center justify-between text-amber-200 shadow-xl backdrop-blur-md">
+        <div className="bg-gradient-to-r from-amber-500/20 via-amber-600/20 to-orange-500/20 border border-amber-500/40 rounded-2xl p-4 flex items-center justify-between text-amber-800 shadow-xl backdrop-blur-md">
           <div className="flex items-center space-x-3">
             <div className="p-2 bg-amber-500/20 rounded-xl">
               <Eye className="w-5 h-5 text-amber-700" />
             </div>
             <div>
               <p className="text-xs font-bold uppercase tracking-wider text-amber-700">Modo de Suporte / Impersonação Ativo</p>
-              <p className="text-sm text-amber-100">
+              <p className="text-sm text-amber-700">
                 Você está visualizando o ecossistema como <strong>{activeTenantContext.trade_name}</strong> ({activeTenantContext.admin_name}).
               </p>
             </div>
@@ -275,7 +275,7 @@ export const SaaSManagementView: React.FC<{ onNavigate: (view: string) => void }
             <div>
               <div className="flex items-center space-x-2">
                 <h1 className="text-2xl font-black text-tinta tracking-tight">Gestão de Assinantes SaaS</h1>
-                <span className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-teal-500/20 text-teal-700 border border-teal-500/30 rounded-md">
+                <span className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-teal-500/20 text-teal-800 border border-teal-500/30 rounded-md">
                   Super Admin
                 </span>
               </div>
@@ -346,7 +346,7 @@ export const SaaSManagementView: React.FC<{ onNavigate: (view: string) => void }
           onClick={() => setActiveTab('TENANTS')}
           className={`flex items-center space-x-2 px-4 py-2.5 rounded-2xl text-xs font-bold transition ${
             activeTab === 'TENANTS'
-              ? 'bg-teal-500/10 text-teal-700 border border-teal-500/30'
+              ? 'bg-teal-500/10 text-teal-800 border border-teal-500/30'
               : 'text-tinta-2 hover:text-tinta hover:bg-superficie'
           }`}
         >
@@ -358,7 +358,7 @@ export const SaaSManagementView: React.FC<{ onNavigate: (view: string) => void }
           onClick={() => setActiveTab('PLANS')}
           className={`flex items-center space-x-2 px-4 py-2.5 rounded-2xl text-xs font-bold transition ${
             activeTab === 'PLANS'
-              ? 'bg-teal-500/10 text-teal-700 border border-teal-500/30'
+              ? 'bg-teal-500/10 text-teal-800 border border-teal-500/30'
               : 'text-tinta-2 hover:text-tinta hover:bg-superficie'
           }`}
         >
@@ -525,7 +525,7 @@ export const SaaSManagementView: React.FC<{ onNavigate: (view: string) => void }
                     {/* Impersonate / Support Access */}
                     <button
                       onClick={() => switchTenantContext(tenant.id)}
-                      className="flex items-center space-x-1.5 px-3 py-1.5 bg-teal-500/10 hover:bg-teal-500/20 text-teal-700 border border-teal-500/30 rounded-xl text-xs font-semibold transition"
+                      className="flex items-center space-x-1.5 px-3 py-1.5 bg-teal-500/10 hover:bg-teal-500/20 text-teal-800 border border-teal-500/30 rounded-xl text-xs font-semibold transition"
                     >
                       <Eye className="w-3.5 h-3.5" />
                       <span>Acessar Ambiente (Suporte)</span>
@@ -535,7 +535,7 @@ export const SaaSManagementView: React.FC<{ onNavigate: (view: string) => void }
                     {tenant.status === 'ACTIVE' ? (
                       <button
                         onClick={() => toggleTenantStatus(tenant.id, 'SUSPENDED')}
-                        className="flex items-center space-x-1.5 px-3 py-1.5 bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 border border-amber-500/30 rounded-xl text-xs font-semibold transition"
+                        className="flex items-center space-x-1.5 px-3 py-1.5 bg-amber-500/10 hover:bg-amber-500/20 text-amber-800 border border-amber-500/30 rounded-xl text-xs font-semibold transition"
                       >
                         <AlertTriangle className="w-3.5 h-3.5" />
                         <span>Suspender</span>
@@ -569,7 +569,7 @@ export const SaaSManagementView: React.FC<{ onNavigate: (view: string) => void }
                           deleteTenant(tenant.id);
                         }
                       }}
-                      className="p-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-700 border border-rose-500/30 rounded-xl transition"
+                      className="p-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-800 border border-rose-500/30 rounded-xl transition"
                       title="Excluir Consultoria"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -688,7 +688,7 @@ export const SaaSManagementView: React.FC<{ onNavigate: (view: string) => void }
           <div className="bg-superficie border border-borda rounded-3xl max-w-2xl w-full p-6 sm:p-7 shadow-2xl space-y-6 my-8">
             <div className="flex items-center justify-between border-b border-borda pb-4">
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 rounded-xl bg-teal-500/20 text-teal-700 flex items-center justify-center font-bold">
+                <div className="w-10 h-10 rounded-xl bg-teal-500/20 text-teal-800 flex items-center justify-center font-bold">
                   <Building2 className="w-5 h-5" />
                 </div>
                 <div>
@@ -773,7 +773,7 @@ export const SaaSManagementView: React.FC<{ onNavigate: (view: string) => void }
                       onClick={() => setFormData({ ...formData, plan_id: p.id, max_companies_limit: p.max_managed_companies, max_users_limit: p.max_internal_users })}
                       className={`p-3 rounded-xl border text-left transition ${
                         formData.plan_id === p.id 
-                          ? 'bg-teal-500/10 border-teal-500 text-teal-700' 
+                          ? 'bg-teal-500/10 border-teal-500 text-teal-800' 
                           : 'bg-superficie border-borda text-tinta-2 hover:border-borda'
                       }`}
                     >
@@ -975,7 +975,7 @@ export const SaaSManagementView: React.FC<{ onNavigate: (view: string) => void }
           <div className="bg-superficie border border-borda rounded-3xl max-w-3xl w-full p-6 sm:p-8 shadow-2xl space-y-6 my-8">
             <div className="flex items-center justify-between border-b border-borda pb-4">
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 rounded-xl bg-teal-500/20 text-teal-700 flex items-center justify-center font-bold">
+                <div className="w-10 h-10 rounded-xl bg-teal-500/20 text-teal-800 flex items-center justify-center font-bold">
                   <Database className="w-5 h-5" />
                 </div>
                 <div>

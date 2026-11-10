@@ -44,11 +44,11 @@ export const AccidentsIncidentsView: React.FC<AccidentsIncidentsViewProps> = ({ 
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
           <div className="space-y-2">
             <div className="flex items-center gap-2">
-              <span className="px-3 py-1 bg-rose-500/20 text-rose-700 font-bold text-xs rounded-full border border-rose-500/30 flex items-center gap-1.5">
+              <span className="px-3 py-1 bg-rose-500/20 text-rose-800 font-bold text-xs rounded-full border border-rose-500/30 flex items-center gap-1.5">
                 <AlertTriangle className="w-3.5 h-3.5" />
                 Investigação de Acidentes & Quase-Acidentes (NR-01.5.5)
               </span>
-              <span className="px-2 py-0.5 bg-amber-500/20 text-amber-700 text-[11px] font-mono font-semibold rounded">
+              <span className="px-2 py-0.5 bg-amber-500/20 text-amber-800 text-[11px] font-mono font-semibold rounded">
                 Taxas de Frequência & Gravidade (NBR 14280) • Ishikawa & 5 Porquês
               </span>
             </div>

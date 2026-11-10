@@ -269,7 +269,7 @@ export const ContractsView: React.FC<{ onNavigate: (view: string) => void }> = (
           <button 
             id="btn-new-contract"
             onClick={() => handleOpenNewContract()}
-            className="px-4 py-2.5 bg-gradient-to-r from-marca to-teal-600 hover:from-marca hover:to-teal-500 text-white rounded-2xl text-xs font-bold shadow-lg shadow-emerald-950/40 transition flex items-center space-x-1.5"
+            className="px-4 py-2.5 bg-gradient-to-r from-marca-escura to-teal-600 hover:from-marca-escura hover:to-teal-700 text-white rounded-2xl text-xs font-bold shadow-lg shadow-emerald-950/40 transition flex items-center space-x-1.5"
           >
             <Plus className="w-4 h-4" />
             <span>Novo Contrato</span>
@@ -278,10 +278,10 @@ export const ContractsView: React.FC<{ onNavigate: (view: string) => void }> = (
       </div>
 
       {propostasAceitasSemContrato.length > 0 && (
-        <div className="bg-indigo-950/30 border border-indigo-500/30 rounded-3xl p-5 space-y-3">
+        <div className="bg-indigo-50 border border-indigo-500/30 rounded-3xl p-5 space-y-3">
           <div className="flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-indigo-700 shrink-0" />
-            <span className="text-sm font-bold text-indigo-200">
+            <span className="text-sm font-bold text-indigo-700">
               {propostasAceitasSemContrato.length === 1
                 ? 'Uma proposta aceita ainda sem contrato'
                 : `${propostasAceitasSemContrato.length} propostas aceitas ainda sem contrato`}
@@ -352,7 +352,7 @@ export const ContractsView: React.FC<{ onNavigate: (view: string) => void }> = (
                       <span className="font-mono text-xs font-bold text-tinta">{contract.contract_number}</span>
                       <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full ${
                         isSigned ? 'bg-marca-suave text-marca-escura border border-marca-escura' :
-                        'bg-amber-500/10 text-amber-700 border border-amber-500/20'
+                        'bg-amber-500/10 text-amber-800 border border-amber-500/20'
                       }`}>
                         {isSigned ? 'ATIVO / VIGENTE' : 'AGUARDANDO ASSINATURA'}
                       </span>
@@ -402,7 +402,7 @@ export const ContractsView: React.FC<{ onNavigate: (view: string) => void }> = (
                   </button>
                   <button
                     onClick={() => setDeletingContract(selectedContract)}
-                    className="p-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-700 rounded-xl text-xs font-semibold border border-rose-500/20 transition"
+                    className="p-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-800 rounded-xl text-xs font-semibold border border-rose-500/20 transition"
                     title="Excluir Contrato"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
@@ -410,7 +410,7 @@ export const ContractsView: React.FC<{ onNavigate: (view: string) => void }> = (
                   <span className={`text-xs font-bold px-3 py-1 rounded-full ${
                     (selectedContract.status === 'ACTIVE' || selectedContract.status === 'SIGNED')
                       ? 'bg-marca-suave text-marca-escura border border-marca-escura'
-                      : 'bg-amber-500/10 text-amber-700 border border-amber-500/20'
+                      : 'bg-amber-500/10 text-amber-800 border border-amber-500/20'
                   }`}>
                     {(selectedContract.status === 'ACTIVE' || selectedContract.status === 'SIGNED') ? 'Assinado e Válido' : 'Pendente de Assinatura'}
                   </span>
@@ -496,7 +496,7 @@ export const ContractsView: React.FC<{ onNavigate: (view: string) => void }> = (
                       ASSINADO ELETRONICAMENTE
                     </span>
                   ) : (
-                    <span className="text-[10px] font-mono text-amber-700 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded font-bold">
+                    <span className="text-[10px] font-mono text-amber-800 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded font-bold">
                       PENDENTE
                     </span>
                   )}
@@ -554,7 +554,7 @@ export const ContractsView: React.FC<{ onNavigate: (view: string) => void }> = (
                 <button
                   id="btn-sign-contract"
                   onClick={() => setShowSignModal(true)}
-                  className="px-4 py-2.5 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-tinta text-xs font-bold rounded-xl shadow-lg shadow-indigo-500/20 transition flex items-center space-x-1.5"
+                  className="px-4 py-2.5 bg-gradient-to-r from-indigo-700 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white text-xs font-bold rounded-xl shadow-lg shadow-indigo-500/20 transition flex items-center space-x-1.5"
                 >
                   <FileSignature className="w-4 h-4" />
                   <span>Assinar Digitalmente (Disparar OS - RN002)</span>
@@ -772,7 +772,7 @@ export const ContractsView: React.FC<{ onNavigate: (view: string) => void }> = (
               <button
                 type="button"
                 onClick={handleDeleteContractConfirm}
-                className="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white rounded-xl text-xs font-semibold shadow-md"
+                className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-semibold shadow-md"
               >
                 Confirmar Exclusão
               </button>
@@ -843,7 +843,7 @@ export const ContractsView: React.FC<{ onNavigate: (view: string) => void }> = (
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-tinta rounded-xl text-xs font-bold shadow-md"
+                  className="px-4 py-2 bg-gradient-to-r from-indigo-700 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white rounded-xl text-xs font-bold shadow-md"
                 >
                   Confirmar & Assinar
                 </button>

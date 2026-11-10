@@ -231,10 +231,10 @@ export const AepPsychosocialModal: React.FC<AepPsychosocialModalProps> = ({ aep,
     `px-2.5 py-1 rounded-lg text-[11px] font-semibold border transition-colors ${
       ativo
         ? cor === 'rose'
-          ? 'bg-rose-500 text-white border-rose-400'
+          ? 'bg-rose-700 text-white border-rose-400'
           : cor === 'teal'
             ? 'bg-teal-500 text-slate-950 border-teal-400'
-            : 'bg-slate-600 text-tinta border-slate-500'
+            : 'bg-slate-600 text-white border-slate-500'
         : 'bg-superficie text-tinta border-borda hover:bg-superficie-2'
     }`;
 
@@ -572,7 +572,7 @@ export const AepPsychosocialModal: React.FC<AepPsychosocialModalProps> = ({ aep,
         ) : (
           <div className="p-3 rounded-lg border border-amber-500/30 bg-amber-500/10 flex items-start gap-2">
             <AlertTriangle className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
-            <ul className="text-amber-200 space-y-0.5 list-disc list-inside">
+            <ul className="text-amber-700 space-y-0.5 list-disc list-inside">
               {faltas.map((f, i) => <li key={i}>{f.longo}</li>)}
             </ul>
           </div>
@@ -584,7 +584,7 @@ export const AepPsychosocialModal: React.FC<AepPsychosocialModalProps> = ({ aep,
             Fechar sem salvar
           </button>
           <button type="button" onClick={() => salvar(false)}
-            className="px-4 py-2 rounded-lg bg-superficie-3 text-tinta hover:bg-slate-600 font-semibold">
+            className="px-4 py-2 rounded-lg bg-superficie-3 text-white hover:bg-slate-600 font-semibold">
             Salvar
           </button>
           <button type="button" onClick={() => salvar(true)}

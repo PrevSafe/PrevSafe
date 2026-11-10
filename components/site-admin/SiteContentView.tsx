@@ -319,7 +319,7 @@ export const SiteContentView: React.FC<{ onNavigate: (view: string) => void }> =
           </button>
           <button
             onClick={() => abrirNovo('ARTIGO')}
-            className="px-4 py-2.5 bg-gradient-to-r from-marca to-teal-600 hover:from-marca hover:to-teal-500 text-white rounded-2xl text-xs font-bold shadow-lg shadow-emerald-950/40 transition flex items-center gap-1.5"
+            className="px-4 py-2.5 bg-gradient-to-r from-marca-escura to-teal-600 hover:from-marca-escura hover:to-teal-700 text-white rounded-2xl text-xs font-bold shadow-lg shadow-emerald-950/40 transition flex items-center gap-1.5"
           >
             <Plus className="w-4 h-4" aria-hidden="true" />
             Nova publicação
@@ -598,7 +598,7 @@ export const SiteContentView: React.FC<{ onNavigate: (view: string) => void }> =
                         <button
                           type="button"
                           onClick={removerImagem}
-                          className="px-3 py-2 bg-superficie-2 hover:bg-rose-900/60 text-tinta hover:text-rose-700 rounded-xl text-xs font-semibold transition flex items-center gap-1.5"
+                          className="px-3 py-2 bg-superficie-2 hover:bg-rose-50 text-tinta hover:text-rose-700 rounded-xl text-xs font-semibold transition flex items-center gap-1.5"
                         >
                           <ImageOff className="w-3.5 h-3.5" aria-hidden="true" />
                           Remover

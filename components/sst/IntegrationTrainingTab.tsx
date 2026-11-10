@@ -266,7 +266,7 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
           <div>
             <p className="text-xs font-semibold text-tinta-2 uppercase tracking-wider">Atas com Validade Jurídica</p>
             <p className="text-2xl font-black text-violet-700 mt-1">{clientTrainings.filter(t => t.status === 'COMPLETED').length}</p>
-            <p className="text-[11px] text-violet-500/80 mt-0.5">Instrutor & RT com ART/CREA</p>
+            <p className="text-[11px] text-violet-700 mt-0.5">Instrutor & RT com ART/CREA</p>
           </div>
           <div className="p-3 bg-violet-500/10 border border-violet-500/20 rounded-xl text-violet-700">
             <Award className="w-6 h-6" />
@@ -331,7 +331,7 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
         <div className="flex flex-wrap items-center gap-2 shrink-0">
           <button
             onClick={handleQuickCreateAdmissionTraining}
-            className="px-3 py-2 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-tinta rounded-lg text-xs font-bold transition-all shadow-md shadow-indigo-600/20 flex items-center gap-1.5"
+            className="px-3 py-2 bg-gradient-to-r from-indigo-700 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white rounded-lg text-xs font-bold transition-all shadow-md shadow-indigo-600/20 flex items-center gap-1.5"
             title="Cria automaticamente o Treinamento de Integração com todos os colaboradores admitidos da empresa"
           >
             <Sparkles className="w-3.5 h-3.5" />
@@ -432,7 +432,7 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
                             Homologado
                           </span>
                         ) : (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-700 border border-amber-500/20">
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-800 border border-amber-500/20">
                             <Clock className="w-3 h-3" />
                             {t.status}
                           </span>
@@ -471,7 +471,7 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
                                 deleteIntegrationTraining(t.id);
                               }
                             }}
-                            className="p-1.5 text-rose-700 hover:text-rose-700 hover:bg-rose-950/40 rounded-lg transition-colors"
+                            className="p-1.5 text-rose-700 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition-colors"
                             title="Excluir Treinamento"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -617,7 +617,7 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
                                   setSigningEmployee(attendee);
                                   setIsSignModalOpen(true);
                                 }}
-                                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 border border-amber-500/20"
+                                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-500/10 hover:bg-amber-500/20 text-amber-800 border border-amber-500/20"
                               >
                                 <Fingerprint className="w-3 h-3" />
                                 Coletar Presença
@@ -628,7 +628,7 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
                           <td className="py-2.5 px-3 text-right">
                             <button
                               onClick={() => exportTrainingCertificatePDF(viewingTraining, attendee, organization)}
-                              className="p-1.5 text-indigo-700 hover:text-indigo-700 hover:bg-indigo-950/40 rounded-lg transition-colors inline-flex items-center gap-1 text-[11px] font-semibold"
+                              className="p-1.5 text-indigo-700 hover:text-indigo-700 hover:bg-indigo-50 rounded-lg transition-colors inline-flex items-center gap-1 text-[11px] font-semibold"
                               title="Emitir Certificado Individual de Capacitação"
                             >
                               <Award className="w-3.5 h-3.5" />
@@ -643,7 +643,7 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
               </div>
 
               {/* Legal Validity Term */}
-              <div className="p-3.5 bg-indigo-950/30 border border-indigo-900/40 rounded-xl text-indigo-200 text-[11px] leading-relaxed">
+              <div className="p-3.5 bg-indigo-50 border border-indigo-200 rounded-xl text-indigo-700 text-[11px] leading-relaxed">
                 <strong className="text-indigo-700 block mb-1">Declaração de Validade Jurídica (NR-01 item 1.7.4):</strong>
                 {viewingTraining.certificate_validity_legal_statement}
               </div>

@@ -83,7 +83,7 @@ export const TutorialDetailModal: React.FC<TutorialDetailModalProps> = ({
           <div className="flex items-center space-x-2 shrink-0">
             <button
               onClick={handleLaunchTool}
-              className="hidden sm:flex items-center space-x-1.5 px-3.5 py-2 bg-gradient-to-r from-marca to-teal-600 hover:from-marca hover:to-teal-500 text-white rounded-xl text-xs font-semibold shadow-lg shadow-emerald-950/50 transition active:scale-95"
+              className="hidden sm:flex items-center space-x-1.5 px-3.5 py-2 bg-gradient-to-r from-marca-escura to-teal-600 hover:from-marca-escura hover:to-teal-700 text-white rounded-xl text-xs font-semibold shadow-lg shadow-emerald-950/50 transition active:scale-95"
             >
               <span>Abrir no Sistema</span>
               <ExternalLink className="w-3.5 h-3.5" />
@@ -336,7 +336,7 @@ export const TutorialDetailModal: React.FC<TutorialDetailModalProps> = ({
 
             <button
               onClick={handleLaunchTool}
-              className="flex-1 sm:flex-none flex items-center justify-center space-x-2 px-5 py-2 bg-gradient-to-r from-marca to-teal-600 hover:from-marca hover:to-teal-500 text-white rounded-xl text-xs font-bold shadow-lg shadow-emerald-950/50 transition active:scale-95"
+              className="flex-1 sm:flex-none flex items-center justify-center space-x-2 px-5 py-2 bg-gradient-to-r from-marca-escura to-teal-600 hover:from-marca-escura hover:to-teal-700 text-white rounded-xl text-xs font-bold shadow-lg shadow-emerald-950/50 transition active:scale-95"
             >
               <span>Experimentar Ferramenta no Sistema</span>
               <ArrowRight className="w-4 h-4" />

@@ -145,7 +145,7 @@ export const DocumentsView: React.FC<{ onNavigate: (view: string) => void }> = (
           <button 
             id="btn-new-document"
             onClick={handleOpenNewDoc}
-            className="px-4 py-2.5 bg-gradient-to-r from-marca to-teal-600 hover:from-marca hover:to-teal-500 text-white rounded-2xl text-xs font-bold shadow-lg shadow-emerald-950/40 transition flex items-center space-x-1.5"
+            className="px-4 py-2.5 bg-gradient-to-r from-marca-escura to-teal-600 hover:from-marca-escura hover:to-teal-700 text-white rounded-2xl text-xs font-bold shadow-lg shadow-emerald-950/40 transition flex items-center space-x-1.5"
           >
             <Plus className="w-4 h-4" />
             <span>Publicar Laudo / Documento</span>
@@ -211,7 +211,7 @@ export const DocumentsView: React.FC<{ onNavigate: (view: string) => void }> = (
                     </button>
                     <button
                       onClick={() => setDeletingDoc(doc)}
-                      className="p-1 hover:bg-rose-500/20 text-tinta-2 hover:text-rose-700 rounded transition"
+                      className="p-1 hover:bg-rose-500/20 text-tinta-2 hover:text-rose-800 rounded transition"
                       title="Excluir Documento"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
@@ -244,7 +244,7 @@ export const DocumentsView: React.FC<{ onNavigate: (view: string) => void }> = (
                 </button>
                 <button
                   onClick={() => alert(`O download em PDF de "${doc.name}" ainda não está disponível nesta versão do sistema.`)}
-                  className="px-3.5 py-1.5 bg-gradient-to-r from-marca to-teal-600 hover:from-marca hover:to-teal-500 text-white rounded-xl text-xs font-semibold shadow-md transition flex items-center space-x-1"
+                  className="px-3.5 py-1.5 bg-gradient-to-r from-marca-escura to-teal-600 hover:from-marca-escura hover:to-teal-700 text-white rounded-xl text-xs font-semibold shadow-md transition flex items-center space-x-1"
                 >
                   <Download className="w-3.5 h-3.5" />
                   <span>Download PDF</span>
@@ -403,7 +403,7 @@ export const DocumentsView: React.FC<{ onNavigate: (view: string) => void }> = (
               <button
                 type="button"
                 onClick={handleDeleteDocConfirm}
-                className="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white rounded-xl text-xs font-semibold shadow-md"
+                className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-semibold shadow-md"
               >
                 Confirmar Exclusão
               </button>

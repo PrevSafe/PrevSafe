@@ -91,7 +91,7 @@ export const NotificationsView: React.FC<{ onNavigate: (view: string) => void }>
         <div className="flex items-center space-x-2">
           <button
             onClick={() => setShowSimulateSend(true)}
-            className="px-4 py-2.5 bg-gradient-to-r from-marca to-teal-600 hover:from-marca hover:to-teal-500 text-white rounded-2xl text-xs font-bold shadow-lg shadow-emerald-950/40 transition flex items-center space-x-1.5"
+            className="px-4 py-2.5 bg-gradient-to-r from-marca-escura to-teal-600 hover:from-marca-escura hover:to-teal-700 text-white rounded-2xl text-xs font-bold shadow-lg shadow-emerald-950/40 transition flex items-center space-x-1.5"
           >
             <Send className="w-4 h-4" />
             <span>Novo Disparo Manual</span>
@@ -116,7 +116,7 @@ export const NotificationsView: React.FC<{ onNavigate: (view: string) => void }>
           <button
             onClick={() => setChannelFilter('ALL')}
             className={`px-3.5 py-2 rounded-2xl text-xs font-bold transition ${
-              channelFilter === 'ALL' ? 'bg-indigo-600 text-white shadow-md' : 'bg-fundo text-white/85 hover:text-white border border-borda'
+              channelFilter === 'ALL' ? 'bg-indigo-600 text-white shadow-md' : 'bg-fundo text-tinta hover:text-tinta border border-borda'
             }`}
           >
             Todos ({notifications.length})
@@ -124,7 +124,7 @@ export const NotificationsView: React.FC<{ onNavigate: (view: string) => void }>
           <button
             onClick={() => setChannelFilter('WHATSAPP')}
             className={`px-3.5 py-2 rounded-2xl text-xs font-bold transition ${
-              channelFilter === 'WHATSAPP' ? 'bg-marca text-white shadow-md' : 'bg-fundo text-white/80 hover:text-white border border-borda'
+              channelFilter === 'WHATSAPP' ? 'bg-marca-escura text-white shadow-md' : 'bg-fundo text-tinta hover:text-tinta border border-borda'
             }`}
           >
             WhatsApp
@@ -132,7 +132,7 @@ export const NotificationsView: React.FC<{ onNavigate: (view: string) => void }>
           <button
             onClick={() => setChannelFilter('EMAIL')}
             className={`px-3.5 py-2 rounded-2xl text-xs font-bold transition ${
-              channelFilter === 'EMAIL' ? 'bg-blue-600 text-white shadow-md' : 'bg-fundo text-white/85 hover:text-white border border-borda'
+              channelFilter === 'EMAIL' ? 'bg-blue-600 text-white shadow-md' : 'bg-fundo text-tinta hover:text-tinta border border-borda'
             }`}
           >
             E-mail
@@ -279,7 +279,7 @@ export const EvaluationsView: React.FC<{ onNavigate: (view: string) => void }> =
       {/* Header Bento Card */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-superficie border border-borda rounded-3xl p-6 shadow-xl">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex items-center justify-center text-amber-700">
+          <div className="w-10 h-10 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex items-center justify-center text-amber-800">
             <Star className="w-5 h-5" />
           </div>
           <div>

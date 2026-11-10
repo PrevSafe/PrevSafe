@@ -509,7 +509,7 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
           <button 
             id="btn-create-proposal"
             onClick={handleOpenNewProposal}
-            className="px-4 py-2.5 bg-gradient-to-r from-marca to-teal-600 hover:from-marca hover:to-teal-500 text-white rounded-2xl text-xs font-bold shadow-lg shadow-emerald-950/40 transition flex items-center space-x-1.5"
+            className="px-4 py-2.5 bg-gradient-to-r from-marca-escura to-teal-600 hover:from-marca-escura hover:to-teal-700 text-white rounded-2xl text-xs font-bold shadow-lg shadow-emerald-950/40 transition flex items-center space-x-1.5"
           >
             <Plus className="w-4 h-4" />
             <span>Criar Nova Proposta</span>
@@ -601,7 +601,7 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
                   </button>
                   <button
                     onClick={() => setDeletingProposal(selectedProposal)}
-                    className="p-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-700 rounded-xl text-xs font-semibold border border-rose-500/20 transition"
+                    className="p-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-800 rounded-xl text-xs font-semibold border border-rose-500/20 transition"
                     title="Excluir Proposta"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
@@ -734,7 +734,7 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
                 <button
                   id="btn-send-proposal"
                   onClick={() => setShowSendModal(true)}
-                  className="px-3.5 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-tinta text-xs font-semibold rounded-xl shadow-md transition flex items-center space-x-1.5"
+                  className="px-3.5 py-2 bg-gradient-to-r from-blue-700 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-semibold rounded-xl shadow-md transition flex items-center space-x-1.5"
                 >
                   <Share2 className="w-3.5 h-3.5" />
                   <span>Enviar ao Cliente (WhatsApp / E-mail)</span>
@@ -775,14 +775,14 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
                       if (motivo === null) return;
                       rejectProposal(selectedProposal.id, motivo.trim() || undefined);
                     }}
-                    className="px-3.5 py-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-700 text-xs font-semibold rounded-xl border border-rose-500/30 transition"
+                    className="px-3.5 py-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-800 text-xs font-semibold rounded-xl border border-rose-500/30 transition"
                   >
                     Recusar
                   </button>
                   <button
                     id="btn-approve-proposal"
                     onClick={() => handleApprove(selectedProposal)}
-                    className="px-4 py-2 bg-gradient-to-r from-marca to-teal-600 hover:from-marca hover:to-teal-500 text-white text-xs font-bold rounded-xl shadow-md transition flex items-center space-x-1.5"
+                    className="px-4 py-2 bg-gradient-to-r from-marca-escura to-teal-600 hover:from-marca-escura hover:to-teal-700 text-white text-xs font-bold rounded-xl shadow-md transition flex items-center space-x-1.5"
                   >
                     <CheckCircle2 className="w-4 h-4" />
                     <span>Aprovar & Gerar Contrato (RN001)</span>
@@ -1047,7 +1047,7 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
                               <button
                                 type="button"
                                 onClick={() => handleRemoveItem(idx)}
-                                className="p-1.5 px-2.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-700 hover:text-rose-700 border border-rose-500/30 rounded-xl text-[11px] font-bold transition flex items-center space-x-1"
+                                className="p-1.5 px-2.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-800 hover:text-rose-800 border border-rose-500/30 rounded-xl text-[11px] font-bold transition flex items-center space-x-1"
                                 title="Remover do Orçamento"
                               >
                                 <Trash2 className="w-3.5 h-3.5 text-rose-700" />
@@ -1119,7 +1119,7 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
                                     type="button"
                                     onClick={() => handleUpdateItemField(idx, 'discount_type', 'PERCENT')}
                                     className={`px-1.5 py-0.2 rounded text-[9px] font-bold ${
-                                      item.discount_type === 'PERCENT' ? 'bg-indigo-600 text-white' : 'text-white/85 hover:text-white'
+                                      item.discount_type === 'PERCENT' ? 'bg-indigo-600 text-white' : 'text-tinta hover:text-tinta'
                                     }`}
                                   >
                                     %
@@ -1128,7 +1128,7 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
                                     type="button"
                                     onClick={() => handleUpdateItemField(idx, 'discount_type', 'FIXED')}
                                     className={`px-1.5 py-0.2 rounded text-[9px] font-bold ${
-                                      item.discount_type === 'FIXED' ? 'bg-indigo-600 text-white' : 'text-white/85 hover:text-white'
+                                      item.discount_type === 'FIXED' ? 'bg-indigo-600 text-white' : 'text-tinta hover:text-tinta'
                                     }`}
                                   >
                                     R$
@@ -1195,7 +1195,7 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
                           type="button"
                           onClick={() => setGlobalDiscountType('FIXED')}
                           className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                            globalDiscountType === 'FIXED' ? 'bg-indigo-600 text-white' : 'text-white/85'
+                            globalDiscountType === 'FIXED' ? 'bg-indigo-600 text-white' : 'text-tinta'
                           }`}
                         >
                           R$ Fixo
@@ -1204,7 +1204,7 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
                           type="button"
                           onClick={() => setGlobalDiscountType('PERCENT')}
                           className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                            globalDiscountType === 'PERCENT' ? 'bg-indigo-600 text-white' : 'text-white/85'
+                            globalDiscountType === 'PERCENT' ? 'bg-indigo-600 text-white' : 'text-tinta'
                           }`}
                         >
                           % Geral
@@ -1312,7 +1312,7 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2.5 bg-gradient-to-r from-marca to-teal-600 hover:from-marca hover:to-teal-500 text-white rounded-xl text-xs font-bold shadow-lg shadow-emerald-950/40 transition flex items-center space-x-1.5"
+                  className="px-5 py-2.5 bg-gradient-to-r from-marca-escura to-teal-600 hover:from-marca-escura hover:to-teal-700 text-white rounded-xl text-xs font-bold shadow-lg shadow-emerald-950/40 transition flex items-center space-x-1.5"
                 >
                   <Check className="w-4 h-4" />
                   <span>{editingProposal ? 'Atualizar Proposta Comercial' : 'Salvar Proposta Comercial'}</span>
@@ -1352,7 +1352,7 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
               <button
                 type="button"
                 onClick={handleDeleteProposalConfirm}
-                className="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white rounded-xl text-xs font-semibold shadow-md"
+                className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-semibold shadow-md"
               >
                 Confirmar Exclusão
               </button>
@@ -1386,7 +1386,7 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
 
               <button
                 onClick={() => handleSendProposal(selectedProposal, 'EMAIL')}
-                className="w-full p-4 bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/30 rounded-2xl text-left flex items-center justify-between text-xs font-semibold text-indigo-200 transition"
+                className="w-full p-4 bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/30 rounded-2xl text-left flex items-center justify-between text-xs font-semibold text-indigo-700 transition"
               >
                 <div>
                   <div className="font-bold text-tinta">✉️ Abrir no E-mail</div>

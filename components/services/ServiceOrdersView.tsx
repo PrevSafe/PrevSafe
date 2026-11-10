@@ -350,7 +350,7 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
           <button 
             id="btn-new-service-order"
             onClick={handleOpenNewOS}
-            className="px-4 py-2 bg-gradient-to-r from-marca to-teal-600 hover:from-marca hover:to-teal-500 text-white rounded-2xl text-xs font-bold shadow-lg shadow-emerald-950/40 transition flex items-center space-x-1.5"
+            className="px-4 py-2 bg-gradient-to-r from-marca-escura to-teal-600 hover:from-marca-escura hover:to-teal-700 text-white rounded-2xl text-xs font-bold shadow-lg shadow-emerald-950/40 transition flex items-center space-x-1.5"
             title="Criar Nova Ordem de Serviço (Ctrl + N)"
           >
             <Plus className="w-4 h-4" />
@@ -492,7 +492,7 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
                           <div className="flex items-center space-x-2">
                             <span className="font-mono text-xs font-bold text-indigo-700">{os.os_number}</span>
                             {os.sla_is_paused && (
-                              <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-700 border border-amber-500/20 flex items-center">
+                              <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-800 border border-amber-500/20 flex items-center">
                                 <PauseCircle className="w-3 h-3 mr-0.5" /> SLA Pausado
                               </span>
                             )}
@@ -589,7 +589,7 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
                   <button
                     id="btn-delete-os"
                     onClick={() => setShowDeleteOSModal(true)}
-                    className="p-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-700 rounded-xl text-xs font-semibold border border-rose-500/20 transition"
+                    className="p-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-800 rounded-xl text-xs font-semibold border border-rose-500/20 transition"
                     title="Excluir Ordem de Serviço"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
@@ -600,7 +600,7 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
                     onClick={handleToggleSla}
                     className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition flex items-center space-x-1 border ${
                       selectedOS.sla_is_paused 
-                        ? 'bg-amber-500/20 text-amber-700 border-amber-500/40 hover:bg-amber-500/30' 
+                        ? 'bg-amber-500/20 text-amber-800 border-amber-500/40 hover:bg-amber-500/30' 
                         : 'bg-superficie-2 hover:bg-superficie-3 text-tinta border-borda'
                     }`}
                     title="RN006: Pausar/Retomar SLA"
@@ -613,7 +613,7 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
                     <button
                       id="btn-deliver-os"
                       onClick={handleDeliver}
-                      className="px-3.5 py-1.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-tinta text-xs font-bold rounded-xl shadow-lg shadow-purple-950/40 transition flex items-center space-x-1.5"
+                      className="px-3.5 py-1.5 bg-gradient-to-r from-purple-700 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-xs font-bold rounded-xl shadow-lg shadow-purple-950/40 transition flex items-center space-x-1.5"
                     >
                       <Send className="w-3.5 h-3.5" />
                       <span>Realizar Entrega Técnica (RN007)</span>
@@ -625,7 +625,7 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
                       <button
                         id="btn-request-rework"
                         onClick={() => setShowReworkModal(true)}
-                        className="px-3 py-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-700 text-xs font-semibold rounded-xl border border-rose-500/30 transition flex items-center space-x-1"
+                        className="px-3 py-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-800 text-xs font-semibold rounded-xl border border-rose-500/30 transition flex items-center space-x-1"
                       >
                         <RotateCcw className="w-3.5 h-3.5" />
                         <span>Solicitar Ajuste / Retrabalho</span>
@@ -645,7 +645,7 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
 
               {/* SLA Paused Notice */}
               {selectedOS.sla_is_paused && (
-                <div className="p-3.5 bg-amber-500/10 border border-amber-500/20 rounded-2xl text-xs text-amber-200 flex items-center space-x-2">
+                <div className="p-3.5 bg-amber-500/10 border border-amber-500/20 rounded-2xl text-xs text-amber-800 flex items-center space-x-2">
                   <AlertTriangle className="w-4 h-4 text-amber-700 flex-shrink-0" />
                   <span>
                     <strong>SLA Pausado (RN006):</strong> {selectedOS.sla_pause_reason || 'Aguardando retorno documental do cliente.'} (O tempo não está contando para o prazo da consultoria).
@@ -730,7 +730,7 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
                                 <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
                                   isCompleted ? 'bg-marca-suave text-marca-escura border-marca-escura' :
                                   isInProgress ? 'bg-indigo-500/10 text-indigo-700 border-indigo-500/20' :
-                                  isWaitingClient ? 'bg-amber-500/10 text-amber-700 border-amber-500/20' : 'bg-superficie-2 text-tinta-2 border-borda'
+                                  isWaitingClient ? 'bg-amber-500/10 text-amber-800 border-amber-500/20' : 'bg-superficie-2 text-tinta-2 border-borda'
                                 }`}>
                                   {stage.status}
                                 </span>
@@ -903,7 +903,7 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
                             <div className="flex items-center space-x-2">
                               <span className="font-bold text-xs text-tinta">{req.title}</span>
                               <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
-                                req.priority === 'HIGH' ? 'bg-rose-500/10 text-rose-700 border-rose-500/20' : 'bg-amber-500/10 text-amber-700 border-amber-500/20'
+                                req.priority === 'HIGH' ? 'bg-rose-500/10 text-rose-700 border-rose-500/20' : 'bg-amber-500/10 text-amber-800 border-amber-500/20'
                               }`}>
                                 Prioridade {req.priority}
                               </span>
@@ -1264,7 +1264,7 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
               <button
                 type="button"
                 onClick={handleDeleteOSConfirm}
-                className="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white rounded-xl text-xs font-semibold shadow-md"
+                className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-semibold shadow-md"
               >
                 Confirmar Exclusão
               </button>
@@ -1421,7 +1421,7 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white rounded-xl font-bold shadow-md"
+                  className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl font-bold shadow-md"
                 >
                   Registrar Retrabalho
                 </button>

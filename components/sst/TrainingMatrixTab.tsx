@@ -298,7 +298,7 @@ export const TrainingMatrixTab: React.FC<TrainingMatrixTabProps> = ({ selectedCl
               periodicidade, a sugestão vem marcada como definida pelo empregador e o campo fica em
               branco para você preencher — não há número inventado aqui.
             </p>
-            <p className="text-[11px] text-amber-700/90 mt-2 flex items-start gap-1.5">
+            <p className="text-[11px] text-amber-700 mt-2 flex items-start gap-1.5">
               <Info className="w-3 h-3 mt-0.5 shrink-0" />
               NR-18, NR-20, NR-22, NR-31, NR-32, NR-34, NR-36 e NR-37 também exigem capacitação e
               não estão nesta lista: não foram conferidas no texto oficial nesta revisão. Cadastre-as
@@ -354,10 +354,10 @@ export const TrainingMatrixTab: React.FC<TrainingMatrixTabProps> = ({ selectedCl
         <div className="bg-amber-500/10 border border-amber-500/30 rounded-2xl p-4 flex items-start gap-2.5">
           <AlertTriangle className="w-4 h-4 text-amber-700 mt-0.5 shrink-0" />
           <div>
-            <p className="text-sm text-amber-200 font-semibold">
+            <p className="text-sm text-amber-700 font-semibold">
               O que está cadastrado no PGR pressupõe treinamento que não está nesta matriz.
             </p>
-            <ul className="text-xs text-amber-200/70 mt-1 space-y-0.5 list-disc list-inside">
+            <ul className="text-xs text-amber-700 mt-1 space-y-0.5 list-disc list-inside">
               {lacunas.map((l) => <li key={l}>{l}</li>)}
             </ul>
           </div>

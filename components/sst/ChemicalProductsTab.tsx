@@ -272,10 +272,10 @@ export const ChemicalProductsTab: React.FC<ChemicalProductsTabProps> = ({ select
         <div className="bg-amber-500/10 border border-amber-500/30 rounded-2xl p-4 flex items-start gap-2.5">
           <AlertTriangle className="w-4 h-4 text-amber-700 mt-0.5 shrink-0" />
           <div>
-            <p className="text-sm text-amber-200 font-semibold">
+            <p className="text-sm text-amber-700 font-semibold">
               Há produto perigoso aqui e nenhum agente químico no inventário de riscos.
             </p>
-            <p className="text-xs text-amber-200/70 mt-1">
+            <p className="text-xs text-amber-700 mt-1">
               O PGR sairia afirmando duas coisas diferentes nas seções 6.4 e 7. Avalie a exposição e
               inventarie o agente no GHE, ou registre no inventário a ausência de risco com a
               justificativa. Sai como pendência enquanto isso.
@@ -380,7 +380,7 @@ export const ChemicalProductsTab: React.FC<ChemicalProductsTabProps> = ({ select
                         <span
                           className={`px-1.5 py-0.5 rounded border text-[10px] font-bold ${
                             perigoso
-                              ? 'bg-rose-500/15 text-rose-700 border-rose-500/30'
+                              ? 'bg-rose-500/15 text-rose-800 border-rose-500/30'
                               : 'bg-superficie-2 text-tinta border-borda'
                           }`}
                         >

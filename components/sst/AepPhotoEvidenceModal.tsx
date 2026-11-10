@@ -287,7 +287,7 @@ export const AepPhotoEvidenceModal: React.FC<AepPhotoEvidenceModalProps> = ({ ae
         {semCorrecao.length > 0 && (
           <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-3 flex items-start gap-2">
             <AlertTriangle className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
-            <p className="text-xs text-amber-200">
+            <p className="text-xs text-amber-700">
               <strong>Foto do problema sem foto da correção:</strong>{' '}
               {semCorrecao.map((c) => (c ? rotuloDoAspecto(c) : 'sem aspecto indicado')).join('; ')}.
               Sozinha, ela documenta que a empresa conhecia o risco. Anexe a foto &quot;após a medida&quot;
@@ -356,7 +356,7 @@ export const AepPhotoEvidenceModal: React.FC<AepPhotoEvidenceModalProps> = ({ ae
         {/* ---------------------------------------------------------- descarte */}
         {descartando && (
           <div className="bg-rose-500/5 border border-rose-500/30 rounded-xl p-4 space-y-3 text-xs">
-            <p className="text-rose-200 font-semibold">
+            <p className="text-rose-700 font-semibold">
               Descartar: o arquivo sai do armazenamento; o registro — hash, autor, data e motivo — fica.
             </p>
             <select
@@ -516,7 +516,7 @@ export const AepPhotoEvidenceModal: React.FC<AepPhotoEvidenceModalProps> = ({ ae
           {problemas.length > 0 && (
             <ul className="bg-red-500/10 border border-red-500/30 rounded-lg p-3 space-y-1">
               {problemas.map((p) => (
-                <li key={p} className="text-red-200 flex items-start gap-1.5">
+                <li key={p} className="text-red-700 flex items-start gap-1.5">
                   <AlertTriangle className="w-3.5 h-3.5 text-red-700 shrink-0 mt-0.5" />
                   {p}
                 </li>
@@ -537,7 +537,7 @@ export const AepPhotoEvidenceModal: React.FC<AepPhotoEvidenceModalProps> = ({ ae
             <button
               type="submit"
               disabled={enviando}
-              className="px-4 py-2 bg-teal-500 hover:bg-teal-400 disabled:bg-superficie-2 disabled:text-white/80 text-slate-950 font-bold rounded-lg flex items-center gap-1.5"
+              className="px-4 py-2 bg-teal-500 hover:bg-teal-400 disabled:bg-superficie-2 disabled:text-tinta text-slate-950 font-bold rounded-lg flex items-center gap-1.5"
             >
               {enviando && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
               {substituindo ? 'Substituir' : 'Anexar'}

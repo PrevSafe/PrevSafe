@@ -43,7 +43,7 @@ export const EPIManagementView: React.FC<EPIManagementViewProps> = ({ onNavigate
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
           <div className="space-y-2">
             <div className="flex items-center gap-2">
-              <span className="px-3 py-1 bg-amber-500/20 text-amber-700 font-bold text-xs rounded-full border border-amber-500/30 flex items-center gap-1.5">
+              <span className="px-3 py-1 bg-amber-500/20 text-amber-800 font-bold text-xs rounded-full border border-amber-500/30 flex items-center gap-1.5">
                 <HardHat className="w-3.5 h-3.5" />
                 Norma Regulamentadora NR-06 & CLT Art. 166/167
               </span>

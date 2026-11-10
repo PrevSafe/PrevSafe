@@ -119,24 +119,24 @@ export const CipaVotingModal: React.FC<CipaVotingModalProps> = ({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-superficie p-4 backdrop-blur-sm">
       <div className="relative w-full max-w-2xl rounded-2xl bg-white shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[92vh]">
         {/* Header */}
-        <div className="bg-gradient-to-r from-teal-700 via-teal-800 to-marca-escura p-5 text-tinta flex items-center justify-between">
+        <div className="bg-gradient-to-r from-teal-700 via-teal-800 to-marca-escura p-5 text-white flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/15 border border-white/20 text-tinta shadow-inner">
               <Vote className="h-6 w-6" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="rounded bg-teal-500/30 px-2 py-0.5 text-xs font-semibold uppercase tracking-wider text-teal-200 border border-teal-400/30">
+                <span className="rounded bg-teal-500/30 px-2 py-0.5 text-xs font-semibold uppercase tracking-wider text-teal-800 border border-teal-400/30">
                   {process.norm} • Escrutínio Secreto
                 </span>
-                <span className="text-xs text-teal-200/80">Gestão {process.mandate_year}</span>
+                <span className="text-xs text-teal-700">Gestão {process.mandate_year}</span>
               </div>
               <h2 className="text-lg font-bold leading-tight">Cabine de Votação Digital CIPA</h2>
             </div>
           </div>
           <button
             onClick={resetVotingState}
-            className="rounded-lg p-1.5 text-teal-100 hover:bg-white/10 transition-colors"
+            className="rounded-lg p-1.5 text-teal-700 hover:bg-white/10 transition-colors"
           >
             <X className="h-5 w-5" />
           </button>
@@ -161,7 +161,7 @@ export const CipaVotingModal: React.FC<CipaVotingModalProps> = ({
               <div className="mx-auto max-w-md rounded-xl bg-slate-50 border border-slate-200 p-5 text-left space-y-3 font-mono text-xs">
                 <div className="flex items-center justify-between border-b border-slate-200 pb-2">
                   <span className="font-sans font-bold text-slate-700">COMPROVANTE DE VOTAÇÃO ELETRÔNICA</span>
-                  <FileCheck2 className="h-4 w-4 text-teal-600" />
+                  <FileCheck2 className="h-4 w-4 text-teal-700" />
                 </div>
                 <div className="space-y-1.5 text-[11px] text-tinta-2">
                   <div><strong>Empresa:</strong> {process.client_name}</div>
@@ -192,7 +192,7 @@ export const CipaVotingModal: React.FC<CipaVotingModalProps> = ({
             <form onSubmit={handleConfirmVote} className="space-y-5">
               {/* LGPD & Legal Banner */}
               <div className="flex items-start gap-3 rounded-xl bg-teal-50/80 border border-teal-100 p-3.5 text-xs text-teal-900">
-                <ShieldCheck className="h-5 w-5 text-teal-600 shrink-0 mt-0.5" />
+                <ShieldCheck className="h-5 w-5 text-teal-700 shrink-0 mt-0.5" />
                 <div>
                   <p className="font-semibold">Voto Secreto &amp; Proteção de Dados (LGPD):</p>
                   <p className="text-teal-800/90 mt-0.5 leading-relaxed">
@@ -252,7 +252,7 @@ export const CipaVotingModal: React.FC<CipaVotingModalProps> = ({
                           : 'border-slate-200 text-tinta-2 hover:bg-slate-50'
                       }`}
                     >
-                      <Camera className="h-4 w-4 mb-1 text-teal-600" />
+                      <Camera className="h-4 w-4 mb-1 text-teal-700" />
                       <span>Biometria Facial</span>
                     </button>
                     <button
@@ -264,7 +264,7 @@ export const CipaVotingModal: React.FC<CipaVotingModalProps> = ({
                           : 'border-slate-200 text-tinta-2 hover:bg-slate-50'
                       }`}
                     >
-                      <Fingerprint className="h-4 w-4 mb-1 text-teal-600" />
+                      <Fingerprint className="h-4 w-4 mb-1 text-teal-700" />
                       <span>Token Digital</span>
                     </button>
                     <button
@@ -276,7 +276,7 @@ export const CipaVotingModal: React.FC<CipaVotingModalProps> = ({
                           : 'border-slate-200 text-tinta-2 hover:bg-slate-50'
                       }`}
                     >
-                      <KeyRound className="h-4 w-4 mb-1 text-teal-600" />
+                      <KeyRound className="h-4 w-4 mb-1 text-teal-700" />
                       <span>SSO / Login</span>
                     </button>
                   </div>
@@ -322,7 +322,7 @@ export const CipaVotingModal: React.FC<CipaVotingModalProps> = ({
                   <h4 className="text-xs font-bold uppercase tracking-wider text-tinta-2">
                     Etapa 2: Cédula Eleitoral Oficial (Escolha o Candidato)
                   </h4>
-                  <span className="text-xs text-teal-600 font-medium">Voto Nominal Secreto</span>
+                  <span className="text-xs text-teal-700 font-medium">Voto Nominal Secreto</span>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -341,7 +341,7 @@ export const CipaVotingModal: React.FC<CipaVotingModalProps> = ({
                         value={c.id}
                         checked={selectedCandidateId === c.id}
                         onChange={() => setSelectedCandidateId(c.id)}
-                        className="h-4 w-4 text-teal-600 focus:ring-teal-500"
+                        className="h-4 w-4 text-teal-700 focus:ring-teal-500"
                       />
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
@@ -373,7 +373,7 @@ export const CipaVotingModal: React.FC<CipaVotingModalProps> = ({
                       value="VOTE_BLANK"
                       checked={selectedCandidateId === 'VOTE_BLANK'}
                       onChange={() => setSelectedCandidateId('VOTE_BLANK')}
-                      className="h-4 w-4 text-amber-600 focus:ring-amber-500"
+                      className="h-4 w-4 text-amber-700 focus:ring-amber-500"
                     />
                     <div>
                       <div className="font-bold text-slate-700 text-xs">Voto em Branco</div>
@@ -394,7 +394,7 @@ export const CipaVotingModal: React.FC<CipaVotingModalProps> = ({
                       value="VOTE_NULL"
                       checked={selectedCandidateId === 'VOTE_NULL'}
                       onChange={() => setSelectedCandidateId('VOTE_NULL')}
-                      className="h-4 w-4 text-red-600 focus:ring-red-500"
+                      className="h-4 w-4 text-red-700 focus:ring-red-500"
                     />
                     <div>
                       <div className="font-bold text-slate-700 text-xs">Voto Nulo</div>
@@ -407,7 +407,7 @@ export const CipaVotingModal: React.FC<CipaVotingModalProps> = ({
               {/* Error warning */}
               {errorMessage && (
                 <div className="flex items-center gap-2 rounded-lg bg-red-50 border border-red-200 p-3 text-xs text-red-700">
-                  <AlertTriangle className="h-4 w-4 shrink-0 text-red-600" />
+                  <AlertTriangle className="h-4 w-4 shrink-0 text-red-700" />
                   <span>{errorMessage}</span>
                 </div>
               )}

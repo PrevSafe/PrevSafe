@@ -503,7 +503,7 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
 
       {/* Top Banner Alert */}
       {generatedS2220Success && (
-        <div className="p-4 bg-teal-500/10 border border-teal-500/30 rounded-xl flex items-center justify-between text-xs text-teal-700 animate-in fade-in">
+        <div className="p-4 bg-teal-500/10 border border-teal-500/30 rounded-xl flex items-center justify-between text-xs text-teal-800 animate-in fade-in">
           <div className="flex items-center gap-2">
             <CheckCircle2 className="w-5 h-5 text-teal-700" />
             <span className="font-semibold">{generatedS2220Success}</span>
@@ -636,7 +636,7 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
               >
                 <div>
                   <div className="flex items-center justify-between">
-                    <span className="px-2 py-0.5 bg-teal-500/10 border border-teal-500/30 text-teal-700 text-[10px] font-mono font-bold rounded">
+                    <span className="px-2 py-0.5 bg-teal-500/10 border border-teal-500/30 text-teal-800 text-[10px] font-mono font-bold rounded">
                       Cód. Tab 27: {protocol.exam_code_table_27}
                     </span>
                     {/* Codigo fora da Tabela 27 fica VISIVEL na lista: foi assim
@@ -644,7 +644,7 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
                         agentes quimicos no lugar de exames sem ninguem notar. */}
                     {!codigoExisteNaTabela27(protocol.exam_code_table_27) && (
                       <span
-                        className="px-2 py-0.5 bg-rose-500/15 text-rose-700 text-[10px] rounded font-bold border border-rose-500/30"
+                        className="px-2 py-0.5 bg-rose-500/15 text-rose-800 text-[10px] rounded font-bold border border-rose-500/30"
                         title="Este código não consta na Tabela 27 do eSocial. Edite o protocolo e escolha o procedimento correto."
                       >
                         código inválido
@@ -662,7 +662,7 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
                     const oficial = consultarProcedimento(protocol.exam_code_table_27);
                     if (!oficial || oficial.nome === protocol.exam_name) return null;
                     return (
-                      <p className="text-[10px] text-amber-700/90 mt-0.5">
+                      <p className="text-[10px] text-amber-700 mt-0.5">
                         Denominação oficial: {oficial.nome}
                       </p>
                     );
@@ -677,7 +677,7 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
                       olha a lista acha que o PCMSO deste cliente ja esta
                       cadastrado quando nao ha nada cadastrado. */}
                   {ehModelo && (
-                    <p className="text-[10px] text-amber-700 bg-amber-500/10 border border-amber-500/30 rounded p-2 mt-2">
+                    <p className="text-[10px] text-amber-800 bg-amber-500/10 border border-amber-500/30 rounded p-2 mt-2">
                       <strong>Modelo do sistema.</strong> Aparece em todos os clientes e não é o PCMSO
                       deste. Copie para este cliente e escolha o GHE.
                     </p>
@@ -713,7 +713,7 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
                     <button
                       type="button"
                       onClick={() => copiarModeloParaCliente(protocol)}
-                      className="px-2 py-1 text-[11px] font-bold text-amber-700 hover:text-amber-800 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 rounded transition-colors flex items-center gap-1"
+                      className="px-2 py-1 text-[11px] font-bold text-amber-800 hover:text-amber-800 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 rounded transition-colors flex items-center gap-1"
                       title="Cria um protocolo deste cliente a partir do modelo. Escolha o GHE no formulário."
                     >
                       <Copy className="w-3 h-3" />
@@ -830,7 +830,7 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
                   /* Sem GHE nao ha onde aplicar o exame. Antes o select ficava
                      vazio e o botao de salvar nao respondia - sem dizer por
                      que, nem onde resolver. */
-                  <div className="rounded-lg border border-amber-700/60 bg-amber-950/30 p-3 text-[11px] text-amber-200 space-y-1">
+                  <div className="rounded-lg border border-amber-700/60 bg-amber-50 p-3 text-[11px] text-amber-700 space-y-1">
                     <p className="font-bold text-amber-700">Este cliente ainda não tem GHE.</p>
                     <p>
                       O protocolo de exame é vinculado a um Grupo Homogêneo de Exposição. Crie o GHE
@@ -1087,7 +1087,7 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
                     className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta"
                   />
                   {validadeSugerida ? (
-                    <p className="text-[10px] text-teal-700/90 mt-1 flex items-start gap-1">
+                    <p className="text-[10px] text-teal-700 mt-1 flex items-start gap-1">
                       <CalendarClock className="w-3 h-3 mt-0.5 shrink-0" />
                       <span>
                         {validadeSugerida.meses} meses pela matriz ({validadeSugerida.origem}).
@@ -1095,7 +1095,7 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
                       </span>
                     </p>
                   ) : (
-                    <p className="text-[10px] text-amber-700/90 mt-1 flex items-start gap-1">
+                    <p className="text-[10px] text-amber-700 mt-1 flex items-start gap-1">
                       <Info className="w-3 h-3 mt-0.5 shrink-0" />
                       <span>
                         A matriz não define periodicidade de exame periódico para este

@@ -168,7 +168,7 @@ export const ExecutiveDashboard: React.FC<{ onNavigate: (view: string) => void }
 
           <button 
             onClick={() => onNavigate('service-orders')}
-            className="px-4 py-2.5 bg-gradient-to-r from-marca to-teal-600 hover:from-marca hover:to-teal-500 text-white rounded-2xl text-xs font-bold shadow-lg shadow-emerald-950/40 transition flex items-center space-x-2"
+            className="px-4 py-2.5 bg-gradient-to-r from-marca-escura to-teal-600 hover:from-marca-escura hover:to-teal-700 text-white rounded-2xl text-xs font-bold shadow-lg shadow-emerald-950/40 transition flex items-center space-x-2"
           >
             <span>Gerenciar Ordens de Serviço</span>
             <ArrowRight className="w-4 h-4" />
@@ -242,7 +242,7 @@ export const ExecutiveDashboard: React.FC<{ onNavigate: (view: string) => void }
         >
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-tinta-2 uppercase tracking-wider">OS em Execução</span>
-            <div className="p-2.5 rounded-2xl bg-teal-500/10 text-teal-700 border border-teal-500/20">
+            <div className="p-2.5 rounded-2xl bg-teal-500/10 text-teal-800 border border-teal-500/20">
               <Briefcase className="w-4 h-4" />
             </div>
           </div>
@@ -265,7 +265,7 @@ export const ExecutiveDashboard: React.FC<{ onNavigate: (view: string) => void }
         >
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-tinta-2 uppercase tracking-wider">NPS / Satisfação</span>
-            <div className="p-2.5 rounded-2xl bg-amber-500/10 text-amber-700 border border-amber-500/20">
+            <div className="p-2.5 rounded-2xl bg-amber-500/10 text-amber-800 border border-amber-500/20">
               <Star className="w-4 h-4" />
             </div>
           </div>
@@ -280,9 +280,9 @@ export const ExecutiveDashboard: React.FC<{ onNavigate: (view: string) => void }
 
       {/* Critical Action Banner if any delay or open pendencies */}
       {(delayedOSCount > 0 || openRequestsCount > 0) && (
-        <div className="p-5 bg-amber-950/30 border border-amber-500/30 rounded-3xl flex items-center justify-between gap-4">
+        <div className="p-5 bg-amber-50 border border-amber-500/30 rounded-3xl flex items-center justify-between gap-4">
           <div className="flex items-center space-x-3.5">
-            <div className="p-3 bg-amber-500/10 rounded-2xl text-amber-700 border border-amber-500/20 flex-shrink-0">
+            <div className="p-3 bg-amber-500/10 rounded-2xl text-amber-800 border border-amber-500/20 flex-shrink-0">
               <AlertTriangle className="w-5 h-5" />
             </div>
             <div>
@@ -316,7 +316,7 @@ export const ExecutiveDashboard: React.FC<{ onNavigate: (view: string) => void }
                 <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border uppercase tracking-wider ${
                   esocialConfig.environment === 'PRODUCAO' 
                     ? 'bg-marca-suave text-marca-escura border-marca-escura' 
-                    : 'bg-amber-500/10 text-amber-700 border-amber-500/30'
+                    : 'bg-amber-500/10 text-amber-800 border-amber-500/30'
                 }`}>
                   Ambiente {esocialConfig.environment === 'PRODUCAO' ? 'Produção' : 'Homologação'}
                 </span>
@@ -376,7 +376,7 @@ export const ExecutiveDashboard: React.FC<{ onNavigate: (view: string) => void }
             </div>
             <div className="mt-3 flex items-baseline justify-between">
               <span className="text-2xl font-bold text-amber-700 font-mono">{esocialPendingCount}</span>
-              <span className="text-[11px] text-amber-700/80 group-hover:text-amber-700 font-medium flex items-center">
+              <span className="text-[11px] text-amber-700 group-hover:text-amber-700 font-medium flex items-center">
                 Transmitir lote <ArrowRight className="w-3 h-3 ml-1" />
               </span>
             </div>
@@ -393,7 +393,7 @@ export const ExecutiveDashboard: React.FC<{ onNavigate: (view: string) => void }
             </div>
             <div className="mt-3 flex items-baseline justify-between">
               <span className="text-2xl font-bold text-blue-700 font-mono">{esocialProcessingCount}</span>
-              <span className="text-[11px] text-blue-700/80 group-hover:text-blue-700 font-medium flex items-center">
+              <span className="text-[11px] text-blue-700 group-hover:text-blue-700 font-medium flex items-center">
                 Consultar Serpro <ArrowRight className="w-3 h-3 ml-1" />
               </span>
             </div>
@@ -421,7 +421,7 @@ export const ExecutiveDashboard: React.FC<{ onNavigate: (view: string) => void }
             onClick={() => onNavigate('esocial_events')}
             className={`p-4 rounded-2xl border cursor-pointer transition flex flex-col justify-between group ${
               esocialErrorCount > 0 
-                ? 'bg-rose-950/30 border-rose-500/50 hover:bg-rose-950/50 shadow-lg shadow-rose-950/40' 
+                ? 'bg-rose-50 border-rose-500/50 hover:bg-rose-50 shadow-lg shadow-rose-950/40' 
                 : 'bg-fundo border-borda hover:border-borda'
             }`}
           >
@@ -436,7 +436,7 @@ export const ExecutiveDashboard: React.FC<{ onNavigate: (view: string) => void }
                 {esocialErrorCount}
               </span>
               {esocialErrorCount > 0 ? (
-                <span className="text-[11px] text-rose-700 font-bold flex items-center bg-rose-500/20 px-2 py-0.5 rounded-lg border border-rose-500/30">
+                <span className="text-[11px] text-rose-800 font-bold flex items-center bg-rose-500/20 px-2 py-0.5 rounded-lg border border-rose-500/30">
                   Corrigir Imediatamente <ArrowRight className="w-3 h-3 ml-1" />
                 </span>
               ) : (
@@ -605,7 +605,7 @@ export const ExecutiveDashboard: React.FC<{ onNavigate: (view: string) => void }
                           os.status === 'IN_PROGRESS' ? 'bg-indigo-500/10 text-indigo-700 border-indigo-500/20' :
                           os.status === 'WAITING_ACCEPTANCE' ? 'bg-purple-500/10 text-purple-700 border-purple-500/20' :
                           os.status === 'ACCEPTED' ? 'bg-marca-suave text-marca-escura border-marca-escura' :
-                          os.status === 'WAITING_CLIENT' ? 'bg-amber-500/10 text-amber-700 border-amber-500/20' :
+                          os.status === 'WAITING_CLIENT' ? 'bg-amber-500/10 text-amber-800 border-amber-500/20' :
                           os.status === 'REWORK' ? 'bg-rose-500/10 text-rose-700 border-rose-500/20' : 'bg-superficie-2 text-tinta border-borda'
                         }`}>
                           {os.status}

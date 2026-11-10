@@ -309,7 +309,7 @@ export const ESocialPdfReportModal: React.FC<ESocialPdfReportModalProps> = ({
                           key={evt.id}
                           className={`flex items-center space-x-2.5 p-2 rounded-xl border text-xs cursor-pointer transition ${
                             isChecked 
-                              ? 'bg-indigo-950/30 border-indigo-500/40 text-tinta' 
+                              ? 'bg-indigo-50 border-indigo-500/40 text-tinta' 
                               : 'bg-superficie border-borda text-tinta-2'
                           }`}
                         >
@@ -325,7 +325,7 @@ export const ESocialPdfReportModal: React.FC<ESocialPdfReportModalProps> = ({
                           </div>
                           <span className={`text-[10px] px-1.5 py-0.5 rounded font-mono ${
                             evt.status === 'SUCCESS' ? 'bg-marca-suave text-marca-escura' :
-                            evt.status === 'REJECTED' ? 'bg-rose-500/20 text-rose-700' : 'bg-superficie-2 text-tinta'
+                            evt.status === 'REJECTED' ? 'bg-rose-500/20 text-rose-800' : 'bg-superficie-2 text-tinta'
                           }`}>
                             {evt.status}
                           </span>

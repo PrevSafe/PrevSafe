@@ -190,7 +190,7 @@ export const LeadsOpportunitiesView: React.FC<{ onNavigate: (view: string) => vo
       {/* Header Bento Card */}
       <div id="leads-header" className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-superficie border border-borda rounded-3xl p-6 shadow-xl">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex items-center justify-center text-amber-700">
+          <div className="w-10 h-10 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex items-center justify-center text-amber-800">
             <Target className="w-5 h-5" />
           </div>
           <div>
@@ -203,7 +203,7 @@ export const LeadsOpportunitiesView: React.FC<{ onNavigate: (view: string) => vo
             <button 
               id="btn-new-lead"
               onClick={handleOpenNewLead}
-              className="px-4 py-2.5 bg-gradient-to-r from-marca to-teal-600 hover:from-marca hover:to-teal-500 text-white rounded-2xl text-xs font-bold shadow-lg shadow-emerald-950/40 transition flex items-center space-x-1.5"
+              className="px-4 py-2.5 bg-gradient-to-r from-marca-escura to-teal-600 hover:from-marca-escura hover:to-teal-700 text-white rounded-2xl text-xs font-bold shadow-lg shadow-emerald-950/40 transition flex items-center space-x-1.5"
             >
               <Plus className="w-4 h-4" />
               <span>Novo Lead</span>
@@ -212,7 +212,7 @@ export const LeadsOpportunitiesView: React.FC<{ onNavigate: (view: string) => vo
             <button 
               id="btn-new-opportunity"
               onClick={handleOpenNewOpp}
-              className="px-4 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-tinta rounded-2xl text-xs font-bold shadow-lg shadow-indigo-950/40 transition flex items-center space-x-1.5"
+              className="px-4 py-2.5 bg-gradient-to-r from-indigo-700 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-2xl text-xs font-bold shadow-lg shadow-indigo-950/40 transition flex items-center space-x-1.5"
             >
               <Plus className="w-4 h-4" />
               <span>Nova Oportunidade</span>
@@ -273,7 +273,7 @@ export const LeadsOpportunitiesView: React.FC<{ onNavigate: (view: string) => vo
                     </button>
                     <button
                       onClick={() => setDeletingLead(lead)}
-                      className="p-1.5 hover:bg-rose-500/20 text-tinta-2 hover:text-rose-700 rounded-lg transition"
+                      className="p-1.5 hover:bg-rose-500/20 text-tinta-2 hover:text-rose-800 rounded-lg transition"
                       title="Excluir Lead"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
@@ -309,7 +309,7 @@ export const LeadsOpportunitiesView: React.FC<{ onNavigate: (view: string) => vo
                 </span>
                 <button
                   onClick={() => handleConvertLead(lead)}
-                  className="px-3.5 py-2 bg-gradient-to-r from-marca to-teal-600 hover:from-marca hover:to-teal-500 text-white rounded-xl text-xs font-bold shadow-md transition flex items-center space-x-1"
+                  className="px-3.5 py-2 bg-gradient-to-r from-marca-escura to-teal-600 hover:from-marca-escura hover:to-teal-700 text-white rounded-xl text-xs font-bold shadow-md transition flex items-center space-x-1"
                 >
                   <UserPlus className="w-3.5 h-3.5" />
                   <span>Converter em Cliente</span>
@@ -357,7 +357,7 @@ export const LeadsOpportunitiesView: React.FC<{ onNavigate: (view: string) => vo
                               </button>
                               <button
                                 onClick={() => setDeletingOpp(opp)}
-                                className="opacity-0 group-hover:opacity-100 p-1 hover:bg-rose-500/20 text-tinta-2 hover:text-rose-700 rounded"
+                                className="opacity-0 group-hover:opacity-100 p-1 hover:bg-rose-500/20 text-tinta-2 hover:text-rose-800 rounded"
                                 title="Excluir Oportunidade"
                               >
                                 <Trash2 className="w-3 h-3" />
@@ -568,7 +568,7 @@ export const LeadsOpportunitiesView: React.FC<{ onNavigate: (view: string) => vo
               <button
                 type="button"
                 onClick={handleDeleteLeadConfirm}
-                className="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white rounded-xl text-xs font-semibold shadow-md"
+                className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-semibold shadow-md"
               >
                 Confirmar Exclusão
               </button>
@@ -719,7 +719,7 @@ export const LeadsOpportunitiesView: React.FC<{ onNavigate: (view: string) => vo
               <button
                 type="button"
                 onClick={handleDeleteOppConfirm}
-                className="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white rounded-xl text-xs font-semibold shadow-md"
+                className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-semibold shadow-md"
               >
                 Confirmar Exclusão
               </button>

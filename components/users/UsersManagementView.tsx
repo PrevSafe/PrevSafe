@@ -774,7 +774,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
         <div className={`fixed top-4 right-4 z-50 flex items-center space-x-3 px-4 py-3 rounded-2xl shadow-2xl border backdrop-blur-xl animate-in fade-in slide-in-from-top-4 duration-300 ${
           feedbackMessage.type === 'success' 
             ? 'bg-marca-suave border-marca-escura text-marca-escura' 
-            : 'bg-rose-950/90 border-rose-500/30 text-rose-200'
+            : 'bg-rose-50 border-rose-500/30 text-rose-700'
         }`}>
           {feedbackMessage.type === 'success' ? (
             <CheckCircle2 className="w-5 h-5 text-marca-escura flex-shrink-0" />
@@ -791,13 +791,13 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
         
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
           <div className="flex items-start sm:items-center space-x-4">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-teal-500 to-marca-escura flex items-center justify-center text-tinta shadow-lg shadow-teal-950/50 flex-shrink-0">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-teal-700 to-marca-escura flex items-center justify-center text-white shadow-lg shadow-teal-950/50 flex-shrink-0">
               <Users className="w-6 h-6" />
             </div>
             <div>
               <div className="flex items-center space-x-2.5">
                 <h1 className="text-2xl font-bold tracking-tight text-tinta">Central de Usuários & Gestão de Acessos</h1>
-                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-teal-500/10 text-teal-700 border border-teal-500/20">
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-teal-500/10 text-teal-800 border border-teal-500/20">
                   RBAC V1.0
                 </span>
               </div>
@@ -850,7 +850,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
           </div>
 
           <div className="p-3.5 rounded-2xl bg-fundo border border-borda flex items-center space-x-3">
-            <div className="w-9 h-9 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-700">
+            <div className="w-9 h-9 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-800">
               <Smartphone className="w-4 h-4" />
             </div>
             <div>
@@ -870,7 +870,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
           </div>
 
           <div className="p-3.5 rounded-2xl bg-fundo border border-borda flex items-center space-x-3 col-span-2 sm:col-span-1">
-            <div className="w-9 h-9 rounded-xl bg-teal-500/10 border border-teal-500/20 flex items-center justify-center text-teal-700">
+            <div className="w-9 h-9 rounded-xl bg-teal-500/10 border border-teal-500/20 flex items-center justify-center text-teal-800">
               <ShieldCheck className="w-4 h-4" />
             </div>
             <div>
@@ -1027,7 +1027,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
 
                         <div className="flex items-center space-x-1.5">
                           {p.two_factor_enabled && (
-                            <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-teal-500/10 text-teal-700 border border-teal-500/20 flex items-center space-x-1" title="Autenticação 2FA ativa">
+                            <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-teal-500/10 text-teal-800 border border-teal-500/20 flex items-center space-x-1" title="Autenticação 2FA ativa">
                               <Lock className="w-2.5 h-2.5" />
                               <span>2FA</span>
                             </span>
@@ -1075,7 +1075,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
                           <h3 className="text-sm font-bold text-tinta truncate group-hover:text-teal-700 transition flex items-center space-x-1.5">
                             <span className="truncate">{p.full_name}</span>
                             {isCurrentLoggedUser && (
-                              <span className="text-[10px] font-mono font-bold text-teal-700 bg-teal-500/10 px-1.5 py-0.2 rounded border border-teal-500/20 flex-shrink-0">
+                              <span className="text-[10px] font-mono font-bold text-teal-800 bg-teal-500/10 px-1.5 py-0.2 rounded border border-teal-500/20 flex-shrink-0">
                                 VOCÊ
                               </span>
                             )}
@@ -1120,7 +1120,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
                       {currentProfile.role === 'ADMIN' && (
                         <button
                           onClick={() => handleImpersonate(p)}
-                          className="flex-1 flex items-center justify-center space-x-1.5 py-2 px-2.5 rounded-xl bg-superficie-2 hover:bg-teal-500 hover:text-slate-950 text-white/80 text-xs font-semibold border border-borda transition"
+                          className="flex-1 flex items-center justify-center space-x-1.5 py-2 px-2.5 rounded-xl bg-superficie-2 hover:bg-teal-700 hover:text-white text-white/90 text-xs font-semibold border border-borda transition"
                           title="Entrar temporariamente com as permissões deste perfil"
                         >
                           <UserCheck className="w-3.5 h-3.5" />
@@ -1139,7 +1139,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
                       <button
                         onClick={() => handleResetPassword(p)}
                         disabled={isResettingPasswordId === p.id}
-                        className="p-2 rounded-xl bg-superficie-2 hover:bg-superficie-3 text-amber-700 hover:text-amber-700 border border-borda transition disabled:opacity-50"
+                        className="p-2 rounded-xl bg-superficie-2 hover:bg-superficie-3 text-amber-800 hover:text-amber-800 border border-borda transition disabled:opacity-50"
                         title="Gerar nova senha temporária"
                       >
                         <KeyRound className="w-3.5 h-3.5" />
@@ -1159,7 +1159,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
                       {!isCurrentLoggedUser && (
                         <button
                           onClick={() => setDeleteConfirmId(p.id)}
-                          className="p-2 rounded-xl bg-superficie-2 hover:bg-rose-950/40 text-rose-700 hover:text-rose-700 border border-rose-900/30 transition"
+                          className="p-2 rounded-xl bg-superficie-2 hover:bg-rose-50 text-rose-700 hover:text-rose-700 border border-rose-200 transition"
                           title="Excluir conta de usuário"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
@@ -1194,7 +1194,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
                       const isCurrent = currentProfile.id === p.id;
 
                       return (
-                        <tr key={p.id} className={`hover:bg-superficie-2 transition ${isCurrent ? 'bg-teal-950/10' : ''}`}>
+                        <tr key={p.id} className={`hover:bg-superficie-2 transition ${isCurrent ? 'bg-teal-50' : ''}`}>
                           <td className="py-3 px-4">
                             <div className="flex items-center space-x-3">
                               {p.avatar_url ? (
@@ -1214,7 +1214,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
                               <div>
                                 <div className="font-bold text-tinta flex items-center space-x-1.5">
                                   <span>{p.full_name}</span>
-                                  {isCurrent && <span className="text-[9px] font-mono text-teal-700 bg-teal-500/10 px-1 rounded border border-teal-500/20">VOCÊ</span>}
+                                  {isCurrent && <span className="text-[9px] font-mono text-teal-800 bg-teal-500/10 px-1 rounded border border-teal-500/20">VOCÊ</span>}
                                 </div>
                                 <div className="text-[11px] text-tinta-2">{p.email}</div>
                               </div>
@@ -1274,7 +1274,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
                               {currentProfile.role === 'ADMIN' && (
                                 <button
                                   onClick={() => handleImpersonate(p)}
-                                  className="p-1.5 rounded-lg bg-superficie-2 hover:bg-teal-500 hover:text-slate-950 text-white/80 transition"
+                                  className="p-1.5 rounded-lg bg-superficie-2 hover:bg-teal-700 hover:text-white text-white/90 transition"
                                   title="Entrar como este usuário"
                                 >
                                   <UserCheck className="w-3.5 h-3.5" />
@@ -1290,7 +1290,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
                               <button
                                 onClick={() => handleResetPassword(p)}
                                 disabled={isResettingPasswordId === p.id}
-                                className="p-1.5 rounded-lg bg-superficie-2 hover:bg-superficie-3 text-amber-700 transition disabled:opacity-50"
+                                className="p-1.5 rounded-lg bg-superficie-2 hover:bg-superficie-3 text-amber-800 transition disabled:opacity-50"
                                 title="Redefinir Senha"
                               >
                                 <KeyRound className="w-3.5 h-3.5" />
@@ -1298,7 +1298,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
                               {!isCurrent && (
                                 <button
                                   onClick={() => setDeleteConfirmId(p.id)}
-                                  className="p-1.5 rounded-lg bg-superficie-2 hover:bg-rose-950/40 text-rose-700 transition"
+                                  className="p-1.5 rounded-lg bg-superficie-2 hover:bg-rose-50 text-rose-700 transition"
                                   title="Excluir"
                                 >
                                   <Trash2 className="w-3.5 h-3.5" />
@@ -1397,7 +1397,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
           {/* Security Cards Grid */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="bg-superficie border border-borda rounded-3xl p-5 shadow-xl space-y-3">
-              <div className="w-10 h-10 rounded-2xl bg-teal-500/10 border border-teal-500/20 flex items-center justify-center text-teal-700">
+              <div className="w-10 h-10 rounded-2xl bg-teal-500/10 border border-teal-500/20 flex items-center justify-center text-teal-800">
                 <ShieldCheck className="w-5 h-5" />
               </div>
               <h3 className="text-sm font-bold text-tinta">Autenticação de Dois Fatores (2FA)</h3>
@@ -1405,7 +1405,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
                 Obrigatoriedade de código OTP via WhatsApp ou app autenticador para perfis com privilégios elevados.
               </p>
               <div className="pt-2">
-                <span className="px-3 py-1 rounded-xl text-xs font-bold bg-teal-500/10 text-teal-700 border border-teal-500/20">
+                <span className="px-3 py-1 rounded-xl text-xs font-bold bg-teal-500/10 text-teal-800 border border-teal-500/20">
                   {twoFactorUsers} de {totalUsers} contas com 2FA
                 </span>
               </div>
@@ -1477,7 +1477,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
                             {log.user_name}
                           </td>
                           <td className="py-2.5 px-4">
-                            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-teal-500/10 text-teal-700 border border-teal-500/20">
+                            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-teal-500/10 text-teal-800 border border-teal-500/20">
                               {log.new_data?.event || log.action}
                             </span>
                           </td>
@@ -1500,7 +1500,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
           <div className="bg-superficie border border-borda rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl p-6 space-y-6">
             <div className="flex items-center justify-between border-b border-borda pb-4">
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 rounded-2xl bg-teal-500/10 border border-teal-500/20 flex items-center justify-center text-teal-700">
+                <div className="w-10 h-10 rounded-2xl bg-teal-500/10 border border-teal-500/20 flex items-center justify-center text-teal-800">
                   <UserPlus className="w-5 h-5" />
                 </div>
                 <div>
@@ -1581,7 +1581,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
                 </div>
 
                 {formData.role.startsWith('CLIENTE_') && (
-                  <div className="space-y-1 sm:col-span-2 p-3 bg-purple-950/20 border border-purple-900/30 rounded-2xl">
+                  <div className="space-y-1 sm:col-span-2 p-3 bg-purple-50 border border-purple-200 rounded-2xl">
                     <label className="text-xs font-semibold text-purple-700">Empresa Cliente Vinculada *</label>
                     <select
                       required
@@ -1712,21 +1712,21 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
                     type="checkbox"
                     checked={formData.two_factor_enabled}
                     onChange={(e) => setFormData({ ...formData, two_factor_enabled: e.target.checked })}
-                    className="w-4 h-4 rounded text-teal-500 focus:ring-teal-500 border-borda bg-superficie"
+                    className="w-4 h-4 rounded text-teal-700 focus:ring-teal-500 border-borda bg-superficie"
                   />
                 </div>
 
                 {!editingProfile && (
-                  <div className="sm:col-span-2 flex items-center justify-between p-3 bg-teal-950/20 border border-teal-900/30 rounded-2xl">
+                  <div className="sm:col-span-2 flex items-center justify-between p-3 bg-teal-50 border border-teal-200 rounded-2xl">
                     <div>
                       <div className="text-xs font-bold text-teal-700">Enviar Convite de Acesso Imediato</div>
-                      <div className="text-[11px] text-teal-700/80">Gerar link mágico e enviar por e-mail e WhatsApp</div>
+                      <div className="text-[11px] text-teal-700">Gerar link mágico e enviar por e-mail e WhatsApp</div>
                     </div>
                     <input
                       type="checkbox"
                       checked={formData.send_invite_now}
                       onChange={(e) => setFormData({ ...formData, send_invite_now: e.target.checked })}
-                      className="w-4 h-4 rounded text-teal-500 focus:ring-teal-500 border-borda bg-superficie"
+                      className="w-4 h-4 rounded text-teal-700 focus:ring-teal-500 border-borda bg-superficie"
                     />
                   </div>
                 )}
@@ -1787,7 +1787,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
               {inviteModalData.tempPass && (
                 <div className="pt-2 border-t border-borda flex items-center justify-between text-xs">
                   <span className="text-tinta-2">Senha Provisória:</span>
-                  <span className="font-mono font-bold text-amber-700 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">
+                  <span className="font-mono font-bold text-amber-800 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">
                     {inviteModalData.tempPass}
                   </span>
                 </div>
@@ -1804,7 +1804,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
               </button>
               <button
                 onClick={() => handleShareInvite('EMAIL')}
-                className="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition flex items-center justify-center space-x-1.5"
+                className="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition flex items-center justify-center space-x-1.5"
               >
                 <Mail className="w-3.5 h-3.5" />
                 <span>Abrir no E-mail</span>
@@ -1891,7 +1891,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
               </button>
               <button
                 onClick={() => handleDeleteUser(deleteConfirmId)}
-                className="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs shadow-lg shadow-rose-950/50 transition"
+                className="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-lg shadow-rose-950/50 transition"
               >
                 Sim, Excluir Usuário
               </button>

@@ -62,7 +62,7 @@ export const SSTDeadlineAlertBanner: React.FC<SSTDeadlineAlertBannerProps> = ({ 
     <div className="bg-gradient-to-r from-amber-950/40 via-slate-900 to-indigo-950/40 border border-amber-500/30 rounded-3xl p-5 shadow-xl relative overflow-hidden">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-center space-x-3.5">
-          <div className="p-3 bg-amber-500/10 rounded-2xl text-amber-700 border border-amber-500/20 flex-shrink-0 animate-pulse">
+          <div className="p-3 bg-amber-500/10 rounded-2xl text-amber-800 border border-amber-500/20 flex-shrink-0 animate-pulse">
             <Bell className="w-5 h-5" />
           </div>
           <div>
@@ -70,7 +70,7 @@ export const SSTDeadlineAlertBanner: React.FC<SSTDeadlineAlertBannerProps> = ({ 
               <span className="text-xs font-bold text-amber-700 uppercase tracking-wider">
                 Monitor de Prazos SST eSocial (SLA Ativo)
               </span>
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-700 border border-amber-500/30">
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-800 border border-amber-500/30">
                 {totalUrgent} alertas de vencimento
               </span>
             </div>
@@ -135,7 +135,7 @@ export const SSTDeadlineAlertBanner: React.FC<SSTDeadlineAlertBannerProps> = ({ 
                     </div>
                     <div className="text-right">
                       <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full font-mono ${
-                        isOverdue ? 'bg-rose-500/20 text-rose-700 border border-rose-500/30' : 'bg-amber-500/20 text-amber-700 border border-amber-500/30'
+                        isOverdue ? 'bg-rose-500/20 text-rose-800 border border-rose-500/30' : 'bg-amber-500/20 text-amber-800 border border-amber-500/30'
                       }`}>
                         {isOverdue ? 'VENCIDO' : 'VENCE EM BREVE'}
                       </span>
@@ -171,7 +171,7 @@ export const SSTDeadlineAlertBanner: React.FC<SSTDeadlineAlertBannerProps> = ({ 
                     </div>
                     <div className="text-right">
                       <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full font-mono ${
-                        isOverdue ? 'bg-rose-500/20 text-rose-700 border border-rose-500/30' : 'bg-indigo-500/20 text-indigo-700 border border-indigo-500/30'
+                        isOverdue ? 'bg-rose-500/20 text-rose-800 border border-rose-500/30' : 'bg-indigo-500/20 text-indigo-700 border border-indigo-500/30'
                       }`}>
                         {isOverdue ? 'SLA ESTOURADO' : 'PRÓXIMO DO SLA'}
                       </span>

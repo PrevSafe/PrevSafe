@@ -407,7 +407,7 @@ export const EPIManagementTab: React.FC<EPIManagementTabProps> = ({ selectedClie
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
           <div className="space-y-2">
             <div className="flex items-center gap-2">
-              <span className="px-3 py-1 bg-amber-500/20 text-amber-700 font-bold text-xs rounded-full border border-amber-500/30 flex items-center gap-1.5">
+              <span className="px-3 py-1 bg-amber-500/20 text-amber-800 font-bold text-xs rounded-full border border-amber-500/30 flex items-center gap-1.5">
                 <ShieldCheck className="w-4 h-4 text-amber-700" />
                 Gestão NR-06 & eSocial S-2240
               </span>
@@ -757,7 +757,7 @@ export const EPIManagementTab: React.FC<EPIManagementTabProps> = ({ selectedClie
                 <div className="space-y-2.5">
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex items-center gap-1.5">
-                      <span className="px-2.5 py-1 bg-amber-500/20 text-amber-700 font-mono font-bold text-xs rounded border border-amber-500/30">
+                      <span className="px-2.5 py-1 bg-amber-500/20 text-amber-800 font-mono font-bold text-xs rounded border border-amber-500/30">
                         CA {item.ca_number}
                       </span>
                       <span className="px-2 py-0.5 bg-superficie-2 text-tinta text-[10px] font-semibold rounded">
@@ -1138,7 +1138,7 @@ export const EPIManagementTab: React.FC<EPIManagementTabProps> = ({ selectedClie
                       type="button"
                       onClick={() => setDeliveryMode('FACIAL')}
                       className={`flex-1 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all ${
-                        deliveryMode === 'FACIAL' ? 'bg-marca text-slate-950' : 'bg-fundo text-white/80 border border-borda'
+                        deliveryMode === 'FACIAL' ? 'bg-marca text-slate-950' : 'bg-fundo text-tinta border border-borda'
                       }`}
                     >
                       <Camera className="w-3.5 h-3.5" />
@@ -1148,7 +1148,7 @@ export const EPIManagementTab: React.FC<EPIManagementTabProps> = ({ selectedClie
                       type="button"
                       onClick={() => setDeliveryMode('MANUAL')}
                       className={`flex-1 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all ${
-                        deliveryMode === 'MANUAL' ? 'bg-amber-500 text-slate-950' : 'bg-fundo text-white/85 border border-borda'
+                        deliveryMode === 'MANUAL' ? 'bg-amber-500 text-slate-950' : 'bg-fundo text-tinta border border-borda'
                       }`}
                     >
                       <FileText className="w-3.5 h-3.5" />
@@ -1185,7 +1185,7 @@ export const EPIManagementTab: React.FC<EPIManagementTabProps> = ({ selectedClie
                         <button
                           type="button"
                           onClick={capturePhoto}
-                          className="px-4 py-2 bg-marca hover:bg-marca-escura text-slate-950 font-bold text-xs rounded-xl flex items-center gap-1.5 shadow-lg shadow-emerald-500/20"
+                          className="px-4 py-2 bg-marca hover:bg-marca-escura text-white font-bold text-xs rounded-xl flex items-center gap-1.5 shadow-lg shadow-emerald-500/20"
                         >
                           <Camera className="w-4 h-4" />
                           Capturar Rosto do Trabalhador
@@ -1203,7 +1203,7 @@ export const EPIManagementTab: React.FC<EPIManagementTabProps> = ({ selectedClie
                             type="button"
                             onClick={handleVerifyBiometrics}
                             disabled={isBiometricVerifying}
-                            className="px-3.5 py-1.5 bg-marca hover:bg-marca-escura text-slate-950 font-bold text-xs rounded-lg flex items-center gap-1.5"
+                            className="px-3.5 py-1.5 bg-marca hover:bg-marca-escura text-white font-bold text-xs rounded-lg flex items-center gap-1.5"
                           >
                             {isBiometricVerifying ? (
                               <RefreshCw className="w-3.5 h-3.5 animate-spin" />
@@ -1254,7 +1254,7 @@ export const EPIManagementTab: React.FC<EPIManagementTabProps> = ({ selectedClie
                     type="checkbox"
                     checked={termAccepted}
                     onChange={(e) => setTermAccepted(e.target.checked)}
-                    className="rounded border-borda text-amber-500 focus:ring-amber-500 bg-fundo"
+                    className="rounded border-borda text-amber-700 focus:ring-amber-500 bg-fundo"
                   />
                   <span>O colaborador aceitou os termos de recebimento e responsabilidade da NR-06.</span>
                 </label>
@@ -1264,7 +1264,7 @@ export const EPIManagementTab: React.FC<EPIManagementTabProps> = ({ selectedClie
                     type="checkbox"
                     checked={trainingReceived}
                     onChange={(e) => setTrainingReceived(e.target.checked)}
-                    className="rounded border-borda text-amber-500 focus:ring-amber-500 bg-fundo"
+                    className="rounded border-borda text-amber-700 focus:ring-amber-500 bg-fundo"
                   />
                   <span>Colaborador treinado e instruído sobre a correta higienização e guarda do EPI.</span>
                 </label>

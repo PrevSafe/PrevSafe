@@ -355,7 +355,7 @@ export const MachinesEquipmentTab: React.FC<MachinesEquipmentTabProps> = ({ sele
                             key={n}
                             className={`px-1.5 py-0.5 rounded border text-[10px] font-bold ${
                               n === 'NR_13' && vencida
-                                ? 'bg-rose-500/15 text-rose-700 border-rose-500/30'
+                                ? 'bg-rose-500/15 text-rose-800 border-rose-500/30'
                                 : 'bg-superficie-2 text-tinta border-borda'
                             }`}
                           >

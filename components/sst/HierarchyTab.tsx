@@ -560,7 +560,7 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
               >
                 <div>
                   <div className="flex items-center justify-between">
-                    <span className="px-2 py-0.5 bg-teal-500/10 border border-teal-500/30 text-teal-700 text-[10px] font-mono font-bold rounded">
+                    <span className="px-2 py-0.5 bg-teal-500/10 border border-teal-500/30 text-teal-800 text-[10px] font-mono font-bold rounded">
                       {sector.code || 'SEC'}
                     </span>
                     <span className="px-2 py-0.5 bg-superficie-2 text-tinta-2 text-[10px] rounded">
@@ -697,7 +697,7 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
                   <td className="py-3 px-4">{u.city} - {u.state}</td>
                   <td className="py-3 px-4 font-mono text-tinta-2">{u.cnae}</td>
                   <td className="py-3 px-4 text-center">
-                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-teal-500/10 text-teal-700 border border-teal-500/30">
+                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-teal-500/10 text-teal-800 border border-teal-500/30">
                       {u.risk_degree ? `Grau ${u.risk_degree}` : 'Grau n/c'}
                     </span>
                   </td>
@@ -721,7 +721,7 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
                           className={`px-2 py-0.5 rounded text-[10px] font-bold border ${
                             completo
                               ? 'bg-marca-suave text-marca-escura border-marca-escura'
-                              : 'bg-amber-500/10 text-amber-700 border-amber-500/30'
+                              : 'bg-amber-500/10 text-amber-800 border-amber-500/30'
                           }`}
                         >
                           {preenchidos}/{campos.length}
@@ -855,7 +855,7 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
           <div className="bg-superficie border border-borda rounded-2xl max-w-2xl w-full p-6 space-y-4 shadow-2xl animate-in fade-in zoom-in-95 duration-150 my-6 max-h-[90vh] flex flex-col">
             <div className="flex items-center justify-between border-b border-borda pb-3 flex-shrink-0">
               <div className="flex items-center gap-2">
-                <div className="p-2 rounded-lg bg-teal-500/10 border border-teal-500/30 text-teal-700">
+                <div className="p-2 rounded-lg bg-teal-500/10 border border-teal-500/30 text-teal-800">
                   <Briefcase className="w-5 h-5" />
                 </div>
                 <div>
@@ -962,7 +962,7 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
                         >
                           <div className="space-y-0.5 min-w-0">
                             <div className="flex items-center gap-2">
-                              <span className="px-1.5 py-0.5 rounded bg-teal-500/20 text-teal-700 font-mono font-bold text-[11px] border border-teal-500/30">
+                              <span className="px-1.5 py-0.5 rounded bg-teal-500/20 text-teal-800 font-mono font-bold text-[11px] border border-teal-500/30">
                                 CBO {item.code}
                               </span>
                               <span className="font-bold text-tinta group-hover:text-teal-700 text-xs">
@@ -978,7 +978,7 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
                           </div>
                           <button
                             type="button"
-                            className="px-2.5 py-1 bg-teal-600/20 hover:bg-teal-500 group-hover:bg-teal-500 text-teal-700 group-hover:text-slate-950 font-bold rounded text-[10px] whitespace-nowrap transition-colors flex-shrink-0"
+                            className="px-2.5 py-1 bg-teal-600/20 hover:bg-teal-500 group-hover:bg-teal-500 text-teal-950 group-hover:text-slate-950 font-bold rounded text-[10px] whitespace-nowrap transition-colors flex-shrink-0"
                           >
                             Preencher
                           </button>
@@ -1065,7 +1065,7 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
                       <button
                         type="button"
                         onClick={handleRestoreCboStandardDesc}
-                        className="text-[10px] text-teal-700 hover:text-teal-700 font-semibold flex items-center gap-1 bg-teal-950/40 border border-teal-500/30 px-2 py-0.5 rounded hover:bg-teal-900/50 transition-colors"
+                        className="text-[10px] text-teal-700 hover:text-teal-700 font-semibold flex items-center gap-1 bg-teal-50 border border-teal-500/30 px-2 py-0.5 rounded hover:bg-teal-50 transition-colors"
                         title="Restaura a descrição oficial padrão do CBO selecionado"
                       >
                         <RotateCcw className="w-2.5 h-2.5" />

@@ -491,7 +491,7 @@ export const GlobalCommandPalette: React.FC<GlobalCommandPaletteProps> = ({
                     onMouseEnter={() => setSelectedIndex(idx)}
                     className={`w-full text-left px-3.5 py-2.5 rounded-xl flex items-center justify-between gap-3 transition-colors ${
                       isSelected 
-                        ? 'bg-marca-suave border border-marca-escura text-white' 
+                        ? 'bg-marca-suave border border-marca-escura text-tinta' 
                         : 'text-tinta hover:bg-superficie-2 hover:text-tinta border border-transparent'
                     }`}
                   >
@@ -502,7 +502,7 @@ export const GlobalCommandPalette: React.FC<GlobalCommandPaletteProps> = ({
                           : item.category === 'SERVICE_ORDERS'
                           ? 'bg-blue-500/20 text-blue-700'
                           : item.category === 'CLIENTS'
-                          ? 'bg-amber-500/20 text-amber-700'
+                          ? 'bg-amber-500/20 text-amber-800'
                           : 'bg-superficie-2 text-tinta'
                       }`}>
                         <IconComponent className="w-4 h-4" />
@@ -716,7 +716,7 @@ export const QuickNewOSModal: React.FC<QuickNewOSModalProps> = ({
         {/* Modal Form */}
         <form onSubmit={handleSubmit} className="p-6 space-y-4 max-h-[75vh] overflow-y-auto">
           {errorMsg && (
-            <div className="p-3 bg-rose-500/15 border border-rose-500/30 rounded-xl text-rose-700 text-xs flex items-center gap-2">
+            <div className="p-3 bg-rose-500/15 border border-rose-500/30 rounded-xl text-rose-800 text-xs flex items-center gap-2">
               <AlertTriangle className="w-4 h-4 flex-shrink-0" />
               <span>{errorMsg}</span>
             </div>

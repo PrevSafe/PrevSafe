@@ -94,16 +94,16 @@ const COR_DO_STATUS: Record<StatusDaAcaoDoPlano, string> = {
   SUGERIDA: 'bg-indigo-500/15 text-indigo-700 border-indigo-500/30',
   NAO_INICIADA: 'bg-superficie-2 text-tinta border-borda',
   EM_ANDAMENTO: 'bg-sky-500/15 text-sky-700 border-sky-500/30',
-  CONCLUIDA: 'bg-teal-500/15 text-teal-700 border-teal-500/30',
+  CONCLUIDA: 'bg-teal-500/15 text-teal-800 border-teal-500/30',
   EFICACIA_VERIFICADA: 'bg-marca-suave text-marca-escura border-marca-escura',
   DESCARTADA: 'bg-superficie text-tinta-2 border-borda'
 };
-const COR_ATRASADA = 'bg-rose-500/15 text-rose-700 border-rose-500/30';
+const COR_ATRASADA = 'bg-rose-500/15 text-rose-800 border-rose-500/30';
 
 const COR_DO_NIVEL: Record<string, string> = {
-  MUITO_ALTO: 'bg-rose-500/15 text-rose-700 border-rose-500/30',
-  ALTO: 'bg-orange-500/15 text-orange-700 border-orange-500/30',
-  MEDIO: 'bg-amber-500/15 text-amber-700 border-amber-500/30',
+  MUITO_ALTO: 'bg-rose-500/15 text-rose-800 border-rose-500/30',
+  ALTO: 'bg-orange-500/15 text-orange-800 border-orange-500/30',
+  MEDIO: 'bg-amber-500/15 text-amber-800 border-amber-500/30',
   BAIXO: 'bg-marca-suave text-marca-escura border-marca-escura'
 };
 
@@ -241,7 +241,7 @@ const Modal: React.FC<{
 
 const ErroDoModal: React.FC<{ texto: string | null }> = ({ texto }) =>
   texto ? (
-    <div className="p-3 bg-rose-500/10 border border-rose-500/30 rounded-xl flex items-start gap-2 text-xs text-rose-200">
+    <div className="p-3 bg-rose-500/10 border border-rose-500/30 rounded-xl flex items-start gap-2 text-xs text-rose-700">
       <AlertTriangle className="w-4 h-4 text-rose-700 shrink-0 mt-0.5" />
       <span className="break-words">{texto}</span>
     </div>
@@ -578,7 +578,7 @@ export const PlanoDeAcaoTab: React.FC<PlanoDeAcaoTabProps> = ({ selectedClientId
             ? 'bg-fundo border-borda opacity-80'
             : aceita
               ? 'bg-fundo border-borda'
-              : 'bg-indigo-950/20 border-dashed border-indigo-700/50'
+              : 'bg-indigo-50 border-dashed border-indigo-700/50'
         }`}
       >
         <div className="flex items-center gap-1.5 flex-wrap">
@@ -707,7 +707,7 @@ export const PlanoDeAcaoTab: React.FC<PlanoDeAcaoTabProps> = ({ selectedClientId
               <AlertTriangle className="w-3.5 h-3.5" />
               {aceita ? 'O que falta (sai como pendência no PGR)' : 'Sugestão: não entra no PGR até ser aceita'}
             </p>
-            <ul className="mt-1 space-y-0.5 text-[11px] text-amber-200/90 list-disc list-inside">
+            <ul className="mt-1 space-y-0.5 text-[11px] text-amber-700 list-disc list-inside">
               {faltas.map((f) => (
                 <li key={f} className="break-words">{f}</li>
               ))}
@@ -879,7 +879,7 @@ export const PlanoDeAcaoTab: React.FC<PlanoDeAcaoTabProps> = ({ selectedClientId
           className={`p-3 rounded-xl border flex items-start justify-between gap-3 text-xs ${
             aviso.ok
               ? 'bg-marca-suave border-marca-escura text-marca-escura'
-              : 'bg-amber-500/10 border-amber-500/30 text-amber-200'
+              : 'bg-amber-500/10 border-amber-500/30 text-amber-800'
           }`}
         >
           <div className="flex items-start gap-2 min-w-0">
@@ -1108,7 +1108,7 @@ export const PlanoDeAcaoTab: React.FC<PlanoDeAcaoTabProps> = ({ selectedClientId
 
             {justificarNoFormulario && (
               <div className="p-3 bg-amber-500/5 border border-amber-500/30 rounded-xl space-y-2">
-                <p className="text-[11px] text-amber-200">
+                <p className="text-[11px] text-amber-700">
                   {ROTULO_DA_HIERARQUIA[form.hierarchy as HierarquiaDaMedida]} só se adota nas hipóteses do
                   subitem 1.5.5.1.2: inviabilidade técnica da proteção coletiva, proteção coletiva insuficiente
                   ou em fase de estudo, planejamento ou implantação, ou caráter complementar ou emergencial.
@@ -1409,7 +1409,7 @@ export const PlanoDeAcaoTab: React.FC<PlanoDeAcaoTabProps> = ({ selectedClientId
                   <span className="text-tinta">{acaoDoRegistro.measurement || 'não definida'}</span>.
                   {ehControleDoRisco && ' Esta é a medida de controle do risco: registrada a eficácia, o inventário passa a indicar o controle como eficaz — o que vai ao PGR, ao LTCAT e ao S-2240.'}
                 </p>
-                <p className="text-[11px] text-amber-200 flex items-start gap-1.5">
+                <p className="text-[11px] text-amber-700 flex items-start gap-1.5">
                   <AlertTriangle className="w-3.5 h-3.5 text-amber-700 shrink-0 mt-0.5" />
                   Se a aferição mostrou que a medida não funcionou, não registre eficácia: use &quot;Reabrir&quot; e
                   informe o motivo (subitem 1.5.5.3.2.1).
@@ -1516,7 +1516,7 @@ export const PlanoDeAcaoTab: React.FC<PlanoDeAcaoTabProps> = ({ selectedClientId
                 type="submit"
                 className={`px-4 py-2 font-bold rounded-lg shadow-md ${
                   registro.tipo === 'DESCARTAR'
-                    ? 'bg-rose-500 hover:bg-rose-400 text-white'
+                    ? 'bg-rose-500 hover:bg-rose-700 text-white'
                     : 'bg-teal-500 hover:bg-teal-400 text-slate-950'
                 }`}
               >

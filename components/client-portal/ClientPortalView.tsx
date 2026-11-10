@@ -424,7 +424,7 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
         <button
           onClick={() => setActiveTab('SIGNATURES')}
           className={`px-4 py-2.5 rounded-xl text-xs font-bold transition whitespace-nowrap flex items-center space-x-2 ${
-            activeTab === 'SIGNATURES' ? 'bg-teal-500 text-slate-950 font-black shadow-lg shadow-teal-500/20' : 'text-white/80 hover:text-white'
+            activeTab === 'SIGNATURES' ? 'bg-teal-500 text-slate-950 font-black shadow-lg shadow-teal-500/20' : 'text-tinta hover:text-tinta'
           }`}
         >
           <ShieldCheck className="w-4 h-4" />
@@ -544,7 +544,7 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
                       </button>
                       <button
                         onClick={() => setShowAcceptModal(true)}
-                        className="px-5 py-2 bg-gradient-to-r from-marca to-teal-600 hover:from-marca hover:to-teal-500 text-white text-xs font-bold rounded-2xl shadow-lg shadow-emerald-950/40 transition flex items-center space-x-1.5"
+                        className="px-5 py-2 bg-gradient-to-r from-marca-escura to-teal-600 hover:from-marca-escura hover:to-teal-700 text-white text-xs font-bold rounded-2xl shadow-lg shadow-emerald-950/40 transition flex items-center space-x-1.5"
                       >
                         <CheckCircle2 className="w-4 h-4" />
                         <span>Dar Aceite Formal no Laudo</span>
@@ -558,7 +558,7 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
                         setEvalOSId(selectedOS.id);
                         setShowFeedbackModal(true);
                       }}
-                      className="px-4 py-2 bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 border border-amber-500/30 text-xs font-bold rounded-2xl transition flex items-center space-x-1.5"
+                      className="px-4 py-2 bg-amber-500/10 hover:bg-amber-500/20 text-amber-800 border border-amber-500/30 text-xs font-bold rounded-2xl transition flex items-center space-x-1.5"
                     >
                       <Star className="w-4 h-4 text-amber-700 fill-amber-400" />
                       <span>Avaliar Atendimento</span>
@@ -737,7 +737,7 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
               <div className="space-y-1">
                 <div className="flex items-center space-x-2">
                   <h2 className="text-base font-bold text-tinta">Central de Assinaturas & Aceites Digitais</h2>
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-teal-500/10 text-teal-700 border border-teal-500/20">
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-teal-500/10 text-teal-800 border border-teal-500/20">
                     Lei 14.063/2020, art. 4º, I
                   </span>
                 </div>
@@ -812,7 +812,7 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
                             <div className={`p-2.5 rounded-2xl border flex-shrink-0 mt-0.5 ${
                               isFullySigned ? 'bg-marca-suave border-marca-escura text-marca-escura' :
                               isRejected ? 'bg-rose-500/10 border-rose-500/20 text-rose-700' :
-                              'bg-amber-500/10 border-amber-500/20 text-amber-700'
+                              'bg-amber-500/10 border-amber-500/20 text-amber-800'
                             }`}>
                               <ShieldCheck className="w-6 h-6" />
                             </div>
@@ -824,7 +824,7 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
                                 <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${
                                   isFullySigned ? 'bg-marca-suave text-marca-escura border-marca-escura' :
                                   isRejected ? 'bg-rose-500/10 text-rose-700 border-rose-500/20' :
-                                  'bg-amber-500/10 text-amber-700 border-amber-500/20 animate-pulse'
+                                  'bg-amber-500/10 text-amber-800 border-amber-500/20 animate-pulse'
                                 }`}>
                                   {isFullySigned ? 'CONCLUÍDO & HOMOLOGADO' : isRejected ? 'RECUSADO' : 'AGUARDANDO SEU ACEITE DIGITAL'}
                                 </span>
@@ -880,7 +880,7 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
                                 <span className={`px-2 py-0.5 rounded text-[9px] font-bold ${
                                   isSg ? 'bg-marca-suave text-marca-escura border border-marca-escura' :
                                   isRj ? 'bg-rose-500/10 text-rose-700 border border-rose-500/20' :
-                                  'bg-amber-500/10 text-amber-700 border border-amber-500/20'
+                                  'bg-amber-500/10 text-amber-800 border border-amber-500/20'
                                 }`}>
                                   {isSg ? 'Assinado' : isRj ? 'Recusado' : 'Pendente'}
                                 </span>
@@ -948,7 +948,7 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
                         </span>
                         <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
                           req.status === 'OPEN'
-                            ? 'bg-amber-500/10 text-amber-700 border-amber-500/20'
+                            ? 'bg-amber-500/10 text-amber-800 border-amber-500/20'
                             : 'bg-marca-suave text-marca-escura border-marca-escura'
                         }`}>
                           {req.status === 'OPEN' ? 'PENDENTE / ABERTO' : 'RESOLVIDO'}
@@ -1244,7 +1244,7 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white rounded-xl font-bold shadow-md"
+                  className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl font-bold shadow-md"
                 >
                   Enviar para Engenharia
                 </button>
@@ -1292,7 +1292,7 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
                       onClick={() => setNpsScore(num)}
                       className={`w-8 h-8 rounded-xl font-mono font-bold text-xs transition ${
                         npsScore === num 
-                          ? 'bg-marca text-white ring-2 ring-marca-escura shadow-md' 
+                          ? 'bg-marca-escura text-white ring-2 ring-marca-escura shadow-md' 
                           : 'bg-fundo hover:bg-superficie-2 text-tinta border border-borda'
                       }`}
                     >

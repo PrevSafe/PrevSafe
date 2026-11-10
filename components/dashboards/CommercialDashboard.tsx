@@ -113,7 +113,7 @@ export const CommercialDashboard: React.FC<{ onNavigate: (view: string) => void 
         <div className="flex items-center space-x-2">
           <button 
             onClick={() => onNavigate('proposals')}
-            className="px-4 py-2.5 bg-gradient-to-r from-marca to-teal-600 hover:from-marca hover:to-teal-500 text-white rounded-2xl text-xs font-bold shadow-lg shadow-emerald-950/40 transition flex items-center space-x-1.5"
+            className="px-4 py-2.5 bg-gradient-to-r from-marca-escura to-teal-600 hover:from-marca-escura hover:to-teal-700 text-white rounded-2xl text-xs font-bold shadow-lg shadow-emerald-950/40 transition flex items-center space-x-1.5"
           >
             <Plus className="w-4 h-4" />
             <span>Nova Proposta Comercial</span>
@@ -167,7 +167,7 @@ export const CommercialDashboard: React.FC<{ onNavigate: (view: string) => void 
         <div className="bg-superficie p-5 rounded-3xl border border-borda shadow-xl flex flex-col justify-between">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-tinta-2 uppercase tracking-wider">Pipeline Ativo</span>
-            <div className="p-2.5 rounded-2xl bg-amber-500/10 text-amber-700 border border-amber-500/20">
+            <div className="p-2.5 rounded-2xl bg-amber-500/10 text-amber-800 border border-amber-500/20">
               <TrendingUp className="w-4 h-4" />
             </div>
           </div>
@@ -300,7 +300,7 @@ export const QualityDashboard: React.FC<{ onNavigate: (view: string) => void }> 
         <div className="flex items-center space-x-2">
           <button 
             onClick={() => onNavigate('evaluations')}
-            className="px-4 py-2.5 bg-gradient-to-r from-marca to-teal-600 hover:from-marca hover:to-teal-500 text-white rounded-2xl text-xs font-bold shadow-lg shadow-emerald-950/40 transition"
+            className="px-4 py-2.5 bg-gradient-to-r from-marca-escura to-teal-600 hover:from-marca-escura hover:to-teal-700 text-white rounded-2xl text-xs font-bold shadow-lg shadow-emerald-950/40 transition"
           >
             Ver Todas as Avaliações
           </button>

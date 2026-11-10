@@ -287,7 +287,7 @@ export const ReconciliationTab: React.FC<ReconciliationTabProps> = ({
                             <span>Conciliado</span>
                           </span>
                         ) : (
-                          <span className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-700 border border-amber-500/30">
+                          <span className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-800 border border-amber-500/30">
                             <Clock className="w-3.5 h-3.5 text-amber-700" />
                             <span>Pendente Conciliação</span>
                           </span>

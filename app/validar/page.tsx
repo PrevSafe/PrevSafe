@@ -142,10 +142,10 @@ export default function ValidarPage() {
         </form>
 
         {message && searched && (
-          <div className="bg-rose-950/40 border border-rose-800/60 rounded-3xl p-5 flex gap-3">
+          <div className="bg-rose-50 border border-rose-800/60 rounded-3xl p-5 flex gap-3">
             <ShieldAlert className="w-5 h-5 text-rose-700 shrink-0 mt-0.5" aria-hidden="true" />
             <div>
-              <p className="font-bold text-rose-200 text-sm">Documento não confirmado</p>
+              <p className="font-bold text-rose-700 text-sm">Documento não confirmado</p>
               <p className="text-xs text-rose-700/90 mt-1">{message}</p>
             </div>
           </div>
@@ -153,12 +153,12 @@ export default function ValidarPage() {
 
         {result && (
           <section className="bg-superficie border border-borda rounded-3xl overflow-hidden shadow-xl">
-            <div className={`px-5 py-4 flex items-center gap-3 ${result.fully_signed ? 'bg-marca-suave border-b border-marca-escura' : 'bg-amber-950/50 border-b border-amber-800/50'}`}>
+            <div className={`px-5 py-4 flex items-center gap-3 ${result.fully_signed ? 'bg-marca-suave border-b border-marca-escura' : 'bg-amber-50 border-b border-amber-800/50'}`}>
               {result.fully_signed
                 ? <ShieldCheck className="w-6 h-6 text-marca-escura shrink-0" aria-hidden="true" />
                 : <Clock className="w-6 h-6 text-amber-700 shrink-0" aria-hidden="true" />}
               <div>
-                <p className={`font-bold text-sm ${result.fully_signed ? 'text-marca-escura' : 'text-amber-200'}`}>
+                <p className={`font-bold text-sm ${result.fully_signed ? 'text-marca-escura' : 'text-amber-700'}`}>
                   {result.fully_signed
                     ? 'Documento autêntico e assinado por todos os signatários'
                     : 'Documento autêntico, com assinaturas pendentes'}
@@ -216,7 +216,7 @@ export default function ValidarPage() {
                           s.signature_status === 'SIGNED'
                             ? 'bg-marca-suave text-marca-escura border border-marca-escura'
                             : s.signature_status === 'REJECTED'
-                              ? 'bg-rose-500/15 text-rose-700 border border-rose-600/40'
+                              ? 'bg-rose-500/15 text-rose-800 border border-rose-600/40'
                               : 'bg-superficie-3 text-tinta border border-borda'
                         }`}
                       >

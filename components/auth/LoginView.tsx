@@ -163,7 +163,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onSuccess, onNavigateHelp 
               </div>
 
               <div className="flex items-start space-x-3 p-3 rounded-xl bg-superficie border border-borda">
-                <div className="w-8 h-8 rounded-lg bg-teal-500/10 text-teal-700 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <div className="w-8 h-8 rounded-lg bg-teal-500/10 text-teal-800 flex items-center justify-center flex-shrink-0 mt-0.5">
                   <FileText className="w-4 h-4" />
                 </div>
                 <div>
@@ -228,7 +228,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onSuccess, onNavigateHelp 
 
             {/* Feedback Alerts */}
             {encerradaPorInatividade && !errorMessage && !successMessage && (
-              <div className="mt-6 p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-200 text-xs flex items-start space-x-2.5">
+              <div className="mt-6 p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-800 text-xs flex items-start space-x-2.5">
                 <Clock className="w-4 h-4 flex-shrink-0 text-amber-700 mt-0.5" />
                 <span>
                   Sua sessão foi encerrada após {INATIVIDADE_MINUTOS} minutos sem atividade.
@@ -327,7 +327,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onSuccess, onNavigateHelp 
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-3 px-4 bg-gradient-to-r from-marca to-teal-600 hover:from-marca hover:to-teal-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-emerald-950/50 transition flex items-center justify-center space-x-2 disabled:opacity-50"
+                className="w-full py-3 px-4 bg-gradient-to-r from-marca-escura to-teal-600 hover:from-marca-escura hover:to-teal-700 text-white font-bold text-xs rounded-xl shadow-lg shadow-emerald-950/50 transition flex items-center justify-center space-x-2 disabled:opacity-50"
               >
                 {isLoading ? (
                   <>

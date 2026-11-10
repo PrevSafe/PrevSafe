@@ -185,7 +185,7 @@ export const PcmsoConteudoSetorial: React.FC<PcmsoConteudoSetorialProps> = ({ se
                       <CheckCircle2 className="w-3 h-3" /> Registrado
                     </span>
                   ) : (
-                    <span className="shrink-0 px-2 py-0.5 text-[10px] font-bold rounded bg-amber-500/10 border border-amber-500/30 text-amber-700 flex items-center gap-1">
+                    <span className="shrink-0 px-2 py-0.5 text-[10px] font-bold rounded bg-amber-500/10 border border-amber-500/30 text-amber-800 flex items-center gap-1">
                       <AlertTriangle className="w-3 h-3" /> {guardado ? 'Registro incompleto' : 'Pendente'}
                     </span>
                   )}
@@ -243,7 +243,7 @@ export const PcmsoConteudoSetorial: React.FC<PcmsoConteudoSetorialProps> = ({ se
                             onClick={() => setRascunho({ ...rascunho, forma: valor })}
                             className={`px-3 py-1.5 rounded-lg text-xs font-semibold border flex items-center gap-1.5 ${
                               rascunho.forma === valor
-                                ? 'bg-teal-500/15 border-teal-500/50 text-teal-700'
+                                ? 'bg-teal-500/15 border-teal-500/50 text-teal-800'
                                 : 'bg-fundo border-borda text-tinta-2 hover:text-tinta'
                             }`}
                           >

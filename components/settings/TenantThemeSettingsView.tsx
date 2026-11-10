@@ -258,7 +258,7 @@ export const TenantThemeSettingsView: React.FC<TenantThemeSettingsViewProps> = (
                 Customização White-Label & CSS Variables
               </span>
               {enableOutdoorHighContrast ? (
-                <span className="px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-full bg-amber-500/20 text-amber-700 border border-amber-500/40 flex items-center gap-1.5 animate-pulse">
+                <span className="px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-full bg-amber-500/20 text-amber-800 border border-amber-500/40 flex items-center gap-1.5 animate-pulse">
                   <Sun className="w-3.5 h-3.5 text-amber-700" />
                   Modo Alto Contraste Solar Ativo
                 </span>
@@ -403,7 +403,7 @@ export const TenantThemeSettingsView: React.FC<TenantThemeSettingsViewProps> = (
           {/* 🌟 NEW FEATURE: OUTDOOR HIGH-CONTRAST SUNLIGHT MODE CARD */}
           <div className={`border rounded-3xl p-6 shadow-xl transition-all ${
             enableOutdoorHighContrast 
-              ? 'bg-amber-950/20 border-amber-500/50 ring-1 ring-amber-500/30' 
+              ? 'bg-amber-50 border-amber-500/50 ring-1 ring-amber-500/30' 
               : 'bg-superficie border-borda'
           }`}>
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4 pb-4 border-b border-borda">
@@ -418,7 +418,7 @@ export const TenantThemeSettingsView: React.FC<TenantThemeSettingsViewProps> = (
                     <h2 className="text-base md:text-lg font-bold text-tinta">
                       Modo de Alto Contraste para Ambientes Externos
                     </h2>
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-700 border border-amber-500/40">
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-800 border border-amber-500/40">
                       Luz Solar Intensa
                     </span>
                   </div>
@@ -452,7 +452,7 @@ export const TenantThemeSettingsView: React.FC<TenantThemeSettingsViewProps> = (
                     }`}
                   >
                     {enableOutdoorHighContrast ? (
-                      <Sun className="w-3.5 h-3.5 text-amber-600" />
+                      <Sun className="w-3.5 h-3.5 text-amber-700" />
                     ) : (
                       <Moon className="w-3.5 h-3.5 text-tinta-2" />
                     )}
@@ -473,7 +473,7 @@ export const TenantThemeSettingsView: React.FC<TenantThemeSettingsViewProps> = (
                         onClick={() => handleSelectPreset(preset)}
                         className={`text-left p-3.5 rounded-2xl border transition-all relative overflow-hidden flex flex-col justify-between ${
                           isSelected 
-                            ? 'border-amber-400 bg-amber-950/40 shadow-lg ring-2 ring-amber-400' 
+                            ? 'border-amber-400 bg-amber-50 shadow-lg ring-2 ring-amber-400' 
                             : 'border-borda bg-fundo hover:bg-superficie-2 hover:border-borda'
                         }`}
                       >
@@ -496,7 +496,7 @@ export const TenantThemeSettingsView: React.FC<TenantThemeSettingsViewProps> = (
                           <span className="text-[10px] font-mono text-amber-700 px-1.5 py-0.5 bg-superficie rounded border border-borda">
                             {preset.primary_color}
                           </span>
-                          <span className="text-[10px] text-amber-700/90 font-medium">{preset.category}</span>
+                          <span className="text-[10px] text-amber-700 font-medium">{preset.category}</span>
                         </div>
                       </button>
                     );
@@ -529,7 +529,7 @@ export const TenantThemeSettingsView: React.FC<TenantThemeSettingsViewProps> = (
                 </div>
                 <button
                   onClick={() => handleToggleOutdoorHighContrast(true)}
-                  className="px-3 py-1.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 border border-amber-500/30 text-xs font-bold flex items-center gap-1.5 shrink-0 transition-all"
+                  className="px-3 py-1.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-800 border border-amber-500/30 text-xs font-bold flex items-center gap-1.5 shrink-0 transition-all"
                 >
                   <Sun className="w-3.5 h-3.5" />
                   Ativar Modo Solar
@@ -647,7 +647,7 @@ export const TenantThemeSettingsView: React.FC<TenantThemeSettingsViewProps> = (
                 </div>
                 <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${
                   enableOutdoorHighContrast 
-                    ? 'bg-amber-500/20 text-amber-700 border-amber-500/40' 
+                    ? 'bg-amber-500/20 text-amber-800 border-amber-500/40' 
                     : 'bg-marca-suave text-marca-escura border-marca-escura'
                 }`}>
                   {enableOutdoorHighContrast ? 'AAA Conforme (Alto Contraste Solar)' : `AA Conforme (Texto ${contrastInfo.textColor === '#ffffff' ? 'Branco' : 'Preto'})`}
@@ -1134,7 +1134,7 @@ export const TenantThemeSettingsView: React.FC<TenantThemeSettingsViewProps> = (
 
                       <div className={`p-2 rounded-xl text-[10px] flex items-center justify-between ${
                         enableOutdoorHighContrast 
-                          ? 'bg-black border-2 border-white text-tinta font-semibold' 
+                          ? 'bg-black border-2 border-white text-white font-semibold' 
                           : 'bg-superficie border border-borda text-tinta-2'
                       }`}>
                         <span>Sincronização Nuvem:</span>

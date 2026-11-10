@@ -323,7 +323,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
     <div className="space-y-6" id="technical-docs-tab-container">
       {/* Top Banner Alert */}
       {successToast && (
-        <div className="p-4 bg-teal-500/10 border border-teal-500/30 rounded-xl flex items-center justify-between text-xs text-teal-700 animate-in fade-in">
+        <div className="p-4 bg-teal-500/10 border border-teal-500/30 rounded-xl flex items-center justify-between text-xs text-teal-800 animate-in fade-in">
           <div className="flex items-center gap-2">
             <CheckCircle2 className="w-5 h-5 text-teal-700" />
             <span className="font-semibold">{successToast}</span>
@@ -528,7 +528,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
           {/* Header */}
           <div className="border-b border-borda pb-4 flex justify-between items-start">
             <div>
-              <span className="px-2.5 py-1 bg-teal-500/20 text-teal-700 text-xs font-bold rounded">
+              <span className="px-2.5 py-1 bg-teal-500/20 text-teal-800 text-xs font-bold rounded">
                 PROGRAMA DE GERENCIAMENTO DE RISCOS (PGR - NR-01)
               </span>
               <h2 className="text-lg font-bold text-tinta mt-2">
@@ -721,9 +721,9 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
                         <td className="py-2.5 px-3">
                           <span className={`px-2 py-0.5 rounded font-bold text-[10px] ${
                             row.atrasada
-                              ? 'bg-rose-500/20 text-rose-700'
+                              ? 'bg-rose-500/20 text-rose-800'
                               : pendente
-                                ? 'bg-amber-500/20 text-amber-700'
+                                ? 'bg-amber-500/20 text-amber-800'
                                 : 'bg-marca-suave text-marca-escura'
                           }`}>
                             {row.status}
@@ -821,7 +821,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
               </table>
             </div>
 
-            <p className="text-[11px] text-amber-200/80">
+            <p className="text-[11px] text-amber-700">
               Escopo deste documento: o inventário acima reproduz os riscos registrados no sistema. A verificação
               específica dos itens 31.7 (agrotóxicos), 31.10 (trabalho a céu aberto), 31.12 (máquinas, implementos e
               tomada de força) e 31.14 (agentes biológicos e animais peçonhentos) da NR-31 depende de inspeção em campo
@@ -836,7 +836,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
         <div className="bg-superficie border border-borda rounded-2xl p-6 space-y-6 shadow-xl" id="pcmso-doc-view">
           <div className="border-b border-borda pb-4 flex justify-between items-start gap-4">
             <div>
-              <span className="px-2.5 py-1 bg-cyan-500/20 text-cyan-700 text-xs font-bold rounded">
+              <span className="px-2.5 py-1 bg-cyan-500/20 text-cyan-800 text-xs font-bold rounded">
                 PROGRAMA DE CONTROLE MÉDICO DE SAÚDE OCUPACIONAL (PCMSO — NR-07)
               </span>
               <h2 className="text-lg font-bold text-tinta mt-2">
@@ -925,7 +925,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
                           : r.evaluation_type === 'QUANTITATIVA' ? 'pendente' : 'avaliação qualitativa'}
                       </p>
                     </div>
-                    <span className="px-2 py-1 bg-purple-600 text-slate-950 font-bold rounded text-[10px] shrink-0">
+                    <span className="px-2 py-1 bg-purple-600 text-white font-bold rounded text-[10px] shrink-0">
                       {r.gfip_code === '02'
                         ? 'Aposentadoria Especial 15 Anos (GFIP 02)'
                         : r.gfip_code === '03'
@@ -947,7 +947,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
         <div className="bg-superficie border border-borda rounded-2xl p-6 space-y-6 shadow-xl" id="aep-doc-view">
           <div className="border-b border-borda pb-4 flex justify-between items-start">
             <div>
-              <span className="px-2.5 py-1 bg-teal-500/20 text-teal-700 text-xs font-bold rounded">
+              <span className="px-2.5 py-1 bg-teal-500/20 text-teal-800 text-xs font-bold rounded">
                 AVALIAÇÃO ERGONÔMICA PRELIMINAR (AEP - NR-17, ITEM 17.3)
               </span>
               <h2 className="text-lg font-bold text-tinta mt-2">
@@ -964,7 +964,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
           </div>
 
           {clientAeps.length === 0 ? (
-            <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 text-xs text-amber-200">
+            <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 text-xs text-amber-800">
               Nenhuma situação de trabalho avaliada. Cadastre em <strong>Engenharia SST &gt; 13. Avaliação
               Ergonômica</strong>. O item 17.2.1 aplica a NR-17 a todas as situações de trabalho: não cabe
               declarar que não há o que avaliar.
@@ -1015,7 +1015,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
         <div className="bg-superficie border border-borda rounded-2xl p-6 space-y-6 shadow-xl" id="psicossocial-doc-view">
           <div className="border-b border-borda pb-4 flex justify-between items-start gap-4">
             <div>
-              <span className="px-2.5 py-1 bg-teal-500/20 text-teal-700 text-xs font-bold rounded">
+              <span className="px-2.5 py-1 bg-teal-500/20 text-teal-800 text-xs font-bold rounded">
                 FATORES DE RISCO PSICOSSOCIAIS RELACIONADOS AO TRABALHO
               </span>
               <h2 className="text-lg font-bold text-tinta mt-2">
@@ -1033,7 +1033,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
           </div>
 
           {clientAeps.filter((a: any) => a?.status !== 'INACTIVE').length === 0 ? (
-            <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 text-xs text-amber-200">
+            <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 text-xs text-amber-800">
               Nenhuma situação de trabalho avaliada. Os fatores psicossociais são avaliados na AEP, obrigatória
               em todas as situações de trabalho (item 17.2.1 da NR-17).
             </div>
@@ -1082,7 +1082,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
         <div className="bg-superficie border border-borda rounded-2xl p-6 space-y-6 shadow-xl" id="insalubridade-doc-view">
           <div className="border-b border-borda pb-4 flex justify-between items-start">
             <div>
-              <span className="px-2.5 py-1 bg-amber-500/20 text-amber-700 text-xs font-bold rounded">
+              <span className="px-2.5 py-1 bg-amber-500/20 text-amber-800 text-xs font-bold rounded">
                 LAUDO TÉCNICO PERICIAL DE INSALUBRIDADE (NR-15 / ART. 189 A 192 CLT)
               </span>
               <h2 className="text-lg font-bold text-tinta mt-2">
@@ -1138,7 +1138,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
         <div className="bg-superficie border border-borda rounded-2xl p-6 space-y-6 shadow-xl" id="periculosidade-doc-view">
           <div className="border-b border-borda pb-4 flex justify-between items-start">
             <div>
-              <span className="px-2.5 py-1 bg-rose-500/20 text-rose-700 text-xs font-bold rounded">
+              <span className="px-2.5 py-1 bg-rose-500/20 text-rose-800 text-xs font-bold rounded">
                 LAUDO TÉCNICO PERICIAL DE PERICULOSIDADE (NR-16 / ART. 193 DA CLT)
               </span>
               <h2 className="text-lg font-bold text-tinta mt-2">
@@ -1271,7 +1271,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
                       <button
                         type="button"
                         onClick={handleTransmitSelectedEvent}
-                        className="px-3.5 py-1.5 bg-marca hover:bg-marca-escura text-slate-950 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 shadow-md"
+                        className="px-3.5 py-1.5 bg-marca hover:bg-marca-escura text-white text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 shadow-md"
                       >
                         <Send className="w-4 h-4" />
                         Validar para envio

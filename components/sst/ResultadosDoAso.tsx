@@ -131,7 +131,7 @@ export const ResultadosDoAso: React.FC<Props> = ({ employee, aso }) => {
             </ul>
           </>
         ) : (
-          <p className="text-amber-500/80">Resultados ainda não lançados para este ASO.</p>
+          <p className="text-amber-700">Resultados ainda não lançados para este ASO.</p>
         )}
       </div>
     );

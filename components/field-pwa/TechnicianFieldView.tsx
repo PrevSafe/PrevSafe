@@ -809,7 +809,7 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
                 onClick={() => setIsOffline(!isOffline)}
                 className={`text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full border flex items-center space-x-1 transition ${
                   isOffline 
-                    ? 'bg-amber-500/10 text-amber-700 border-amber-500/20 hover:bg-amber-500/20' 
+                    ? 'bg-amber-500/10 text-amber-800 border-amber-500/20 hover:bg-amber-500/20' 
                     : 'bg-marca-suave text-marca-escura border-marca-escura hover:bg-marca-suave'
                 }`}
                 title="Clique para alternar entre modo Online e Offline"
@@ -844,7 +844,7 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
           {syncQueue.length > 0 && (
             <span 
               onClick={() => setSelectedVisitTab('SYNC')}
-              className="px-2.5 py-1 bg-amber-500/20 text-amber-700 border border-amber-500/30 text-[11px] font-bold rounded-xl flex items-center space-x-1 cursor-pointer hover:bg-amber-500/30 transition"
+              className="px-2.5 py-1 bg-amber-500/20 text-amber-800 border border-amber-500/30 text-[11px] font-bold rounded-xl flex items-center space-x-1 cursor-pointer hover:bg-amber-500/30 transition"
               title="Ações pendentes no IndexedDB aguardando sincronização"
             >
               <RefreshCw className="w-3 h-3 animate-spin" />
@@ -957,7 +957,7 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
           <button
             onClick={() => setSelectedVisitTab('SYNC')}
             className={`flex-1 py-2.5 text-xs font-bold text-center rounded-xl transition flex items-center justify-center space-x-1.5 whitespace-nowrap min-w-[120px] ${
-              selectedVisitTab === 'SYNC' ? 'bg-marca text-white shadow-md' : 'text-white/80 hover:text-white'
+              selectedVisitTab === 'SYNC' ? 'bg-marca-escura text-white shadow-md' : 'text-tinta hover:text-tinta'
             }`}
           >
             <RefreshCw className="w-4 h-4" />
@@ -1047,7 +1047,7 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
                         <span className="text-[10px] font-semibold text-tinta-2 uppercase">{item.category}</span>
                         <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full border ${
                           item.severity === 'CRÍTICO' ? 'bg-rose-500/10 text-rose-700 border-rose-500/20' :
-                          item.severity === 'ALTO' ? 'bg-amber-500/10 text-amber-700 border-amber-500/20' : 
+                          item.severity === 'ALTO' ? 'bg-amber-500/10 text-amber-800 border-amber-500/20' : 
                           item.severity === 'MÉDIO' ? 'bg-blue-500/10 text-blue-700 border-blue-500/20' :
                           'bg-superficie-2 text-tinta border-borda'
                         }`}>
@@ -1073,7 +1073,7 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
                       onClick={() => handleUpdateStatus(item.id, 'CONFORME')}
                       className={`py-2 text-xs font-bold rounded-xl transition ${
                         item.status === 'CONFORME' 
-                          ? 'bg-marca text-white shadow-md' 
+                          ? 'bg-marca-escura text-white shadow-md' 
                           : 'bg-superficie text-tinta-2 border border-borda hover:text-tinta'
                       }`}
                     >
@@ -1113,7 +1113,7 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
                       className="w-full px-3 py-2 bg-superficie border border-borda rounded-xl text-xs text-tinta placeholder-tinta-3 focus:outline-none focus:border-indigo-500"
                     />
                     {item.corrective_measure && (
-                      <p className="text-[11px] text-amber-700/90 pl-1">
+                      <p className="text-[11px] text-amber-700 pl-1">
                         <strong>Recomendação PrevSafe:</strong> {item.corrective_measure}
                       </p>
                     )}
@@ -1342,7 +1342,7 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
                   <span>Revisão Geral & Sincronização de Campo</span>
                 </div>
                 <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${
-                  isOffline ? 'bg-amber-500/20 text-amber-700 border-amber-500/30' : 'bg-marca-suave text-marca-escura border-marca-escura'
+                  isOffline ? 'bg-amber-500/20 text-amber-800 border-amber-500/30' : 'bg-marca-suave text-marca-escura border-marca-escura'
                 }`}>
                   {isOffline ? 'Modo Offline Ativo' : 'Pronto para Sincronizar'}
                 </span>
@@ -1403,7 +1403,7 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
                   {syncQueue.map((item) => (
                     <div key={item.id} className="p-2.5 bg-superficie rounded-xl border border-borda flex items-center justify-between text-xs">
                       <div className="flex items-center space-x-2.5">
-                        <span className="p-1.5 rounded-lg bg-amber-500/10 text-amber-700 text-[10px] font-mono font-bold">
+                        <span className="p-1.5 rounded-lg bg-amber-500/10 text-amber-800 text-[10px] font-mono font-bold">
                           {item.actionType}
                         </span>
                         <div>
@@ -1415,7 +1415,7 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
                           </span>
                         </div>
                       </div>
-                      <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-amber-500/20 text-amber-700">
+                      <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-amber-500/20 text-amber-800">
                         {item.status}
                       </span>
                     </div>
@@ -1461,7 +1461,7 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
             {/* Main Finalize Button */}
             <button
               onClick={handleGenerateFieldReport}
-              className="w-full py-4 bg-gradient-to-r from-marca to-teal-600 hover:from-marca hover:to-teal-500 text-white font-bold rounded-2xl text-xs shadow-xl shadow-emerald-950/40 transition flex items-center justify-center space-x-2"
+              className="w-full py-4 bg-gradient-to-r from-marca-escura to-teal-600 hover:from-marca-escura hover:to-teal-700 text-white font-bold rounded-2xl text-xs shadow-xl shadow-emerald-950/40 transition flex items-center justify-center space-x-2"
             >
               <CheckCircle2 className="w-5 h-5" />
               <span>Sincronizar Vistoria de Campo & Gerar Relatório Técnico Oficial</span>
@@ -1486,7 +1486,7 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
               <div className="p-3.5 bg-fundo rounded-2xl border border-borda space-y-2.5">
                 <div className="flex justify-between items-center">
                   <span className="text-tinta-2">Status do Service Worker:</span>
-                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-teal-500/20 text-teal-700 border border-teal-500/30 flex items-center gap-1">
+                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-teal-500/20 text-teal-800 border border-teal-500/30 flex items-center gap-1">
                     <Zap className="w-3 h-3 text-teal-700" />
                     {storageStats?.serviceWorkerActive ? 'Ativo & Pré-cache Ativado' : 'Registrado'}
                   </span>
@@ -1549,7 +1549,7 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
                 </div>
               </div>
 
-              <div className="p-3 bg-teal-500/10 border border-teal-500/20 rounded-2xl text-white/80 text-[11px] leading-relaxed flex items-start space-x-2">
+              <div className="p-3 bg-teal-700/10 border border-teal-500/20 rounded-2xl text-tinta text-[11px] leading-relaxed flex items-start space-x-2">
                 <ShieldCheck className="w-4 h-4 text-teal-700 flex-shrink-0 mt-0.5" />
                 <span>
                   O <strong>Service Worker v2.2.0</strong> utiliza estratégia <em>Cache-First com Stale-While-Revalidate</em> e proteção contra timeout de rede móvel (1.5s). Isso assegura abertura instantânea e preenchimento fluido das NRs em campo mesmo em áreas industriais ou agrícolas com sinal oscilante.
@@ -1563,7 +1563,7 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
                   type="button"
                   onClick={handleForceWarmCache}
                   disabled={isWarmingCache}
-                  className="px-3 py-1.5 bg-teal-500/20 hover:bg-teal-500/30 text-teal-700 rounded-xl text-xs font-semibold border border-teal-500/30 transition flex items-center gap-1.5"
+                  className="px-3 py-1.5 bg-teal-500/20 hover:bg-teal-500/30 text-teal-800 rounded-xl text-xs font-semibold border border-teal-500/30 transition flex items-center gap-1.5"
                 >
                   <RefreshCw className={`w-3.5 h-3.5 ${isWarmingCache ? 'animate-spin' : ''}`} />
                   <span>{isWarmingCache ? 'Pré-cacheando...' : 'Aquecer Pré-cache'}</span>
@@ -1572,7 +1572,7 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
                 <button
                   type="button"
                   onClick={handlePurgeCache}
-                  className="px-3 py-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-700 rounded-xl text-xs font-semibold border border-rose-500/20 transition"
+                  className="px-3 py-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-800 rounded-xl text-xs font-semibold border border-rose-500/20 transition"
                 >
                   Limpar Cache
                 </button>
@@ -1767,7 +1767,7 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
               )}
 
               {photoError && (
-                <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-700 text-[11px]">
+                <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-800 text-[11px]">
                   {photoError}
                 </div>
               )}

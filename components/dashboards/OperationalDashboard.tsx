@@ -112,7 +112,7 @@ export const OperationalDashboard: React.FC<{ onNavigate: (view: string) => void
           </button>
           <button 
             onClick={() => onNavigate('technician-field')}
-            className="px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-tinta rounded-2xl text-xs font-bold shadow-lg shadow-blue-950/40 transition flex items-center space-x-1.5"
+            className="px-4 py-2.5 bg-gradient-to-r from-blue-700 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-2xl text-xs font-bold shadow-lg shadow-blue-950/40 transition flex items-center space-x-1.5"
           >
             <HardHat className="w-4 h-4" />
             <span>Abrir Modo Campo PWA</span>
@@ -151,7 +151,7 @@ export const OperationalDashboard: React.FC<{ onNavigate: (view: string) => void
         <div className="bg-superficie p-5 rounded-3xl border border-borda shadow-xl flex flex-col justify-between">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-tinta-2 uppercase tracking-wider">Aguardando Cliente</span>
-            <div className="p-2.5 rounded-2xl bg-amber-500/10 text-amber-700 border border-amber-500/20">
+            <div className="p-2.5 rounded-2xl bg-amber-500/10 text-amber-800 border border-amber-500/20">
               <PauseCircle className="w-4 h-4" />
             </div>
           </div>
@@ -252,7 +252,7 @@ export const OperationalDashboard: React.FC<{ onNavigate: (view: string) => void
               <div key={idx} className="p-4 bg-fundo rounded-2xl border border-borda space-y-2.5">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2.5">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-marca to-teal-600 text-white flex items-center justify-center font-bold text-xs shadow-md">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-marca-escura to-teal-600 text-white flex items-center justify-center font-bold text-xs shadow-md">
                       {tw.tech.full_name.charAt(0)}
                     </div>
                     <div>
@@ -291,11 +291,11 @@ export const OperationalDashboard: React.FC<{ onNavigate: (view: string) => void
           </div>
 
           {/* SLA Pause Rules reminder */}
-          <div className="p-4 bg-amber-500/10 rounded-2xl border border-amber-500/20 text-xs text-amber-200 space-y-1">
+          <div className="p-4 bg-amber-500/10 rounded-2xl border border-amber-500/20 text-xs text-amber-800 space-y-1">
             <div className="font-bold flex items-center text-amber-700">
               <ShieldAlert className="w-4 h-4 mr-1.5 text-amber-700" /> Regra de SLA (RN006)
             </div>
-            <p className="text-[11px] text-amber-700/90 leading-relaxed">
+            <p className="text-[11px] text-amber-700 leading-relaxed">
               Ao colocar uma etapa em <strong>WAITING_CLIENT</strong>, o relógio de SLA interno é pausado para não penalizar o prazo da consultoria enquanto o cliente não envia dados.
             </p>
           </div>

@@ -398,7 +398,7 @@ export default function Home() {
           <Briefcase className="w-5 h-5 mb-0.5" />
           <span className="text-[10px] tracking-tight">OS</span>
           {activeOSCount > 0 && (
-            <span className="absolute top-0.5 right-2 w-4 h-4 bg-blue-500 text-white rounded-full text-[9px] font-bold flex items-center justify-center">
+            <span className="absolute top-0.5 right-2 w-4 h-4 bg-blue-700 text-white rounded-full text-[9px] font-bold flex items-center justify-center">
               {activeOSCount}
             </span>
           )}
@@ -416,7 +416,7 @@ export default function Home() {
           <ShieldCheck className="w-5 h-5 mb-0.5" />
           <span className="text-[10px] tracking-tight">eSocial</span>
           {esocialEvents.length > 0 && (
-            <span className="absolute top-0.5 right-1.5 w-4 h-4 bg-marca text-white rounded-full text-[9px] font-bold flex items-center justify-center">
+            <span className="absolute top-0.5 right-1.5 w-4 h-4 bg-marca-escura text-white rounded-full text-[9px] font-bold flex items-center justify-center">
               {esocialEvents.length}
             </span>
           )}

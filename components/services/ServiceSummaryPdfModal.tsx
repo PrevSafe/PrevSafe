@@ -135,7 +135,7 @@ export const ServiceSummaryPdfModal: React.FC<ServiceSummaryPdfModalProps> = ({
             <button
               onClick={handleExportPdf}
               disabled={targetOrders.length === 0}
-              className="px-4 py-2 bg-gradient-to-r from-marca to-teal-600 hover:from-marca hover:to-teal-500 text-white rounded-2xl text-xs font-bold transition shadow-lg shadow-emerald-950/40 flex items-center space-x-2 disabled:opacity-50"
+              className="px-4 py-2 bg-gradient-to-r from-marca-escura to-teal-600 hover:from-marca-escura hover:to-teal-700 text-white rounded-2xl text-xs font-bold transition shadow-lg shadow-emerald-950/40 flex items-center space-x-2 disabled:opacity-50"
             >
               <Download className="w-4 h-4" />
               <span>Baixar Arquivo PDF ({targetOrders.length})</span>
@@ -160,7 +160,7 @@ export const ServiceSummaryPdfModal: React.FC<ServiceSummaryPdfModalProps> = ({
                 onClick={() => setMode('BATCH')}
                 className={`p-4 rounded-2xl border text-left transition flex items-start space-x-3 ${
                   mode === 'BATCH'
-                    ? 'bg-marca-suave border-marca-escura text-white'
+                    ? 'bg-marca-suave border-marca-escura text-tinta'
                     : 'bg-fundo border-borda text-tinta-2 hover:text-tinta'
                 }`}
               >
@@ -178,7 +178,7 @@ export const ServiceSummaryPdfModal: React.FC<ServiceSummaryPdfModalProps> = ({
                 onClick={() => setMode('SINGLE')}
                 className={`p-4 rounded-2xl border text-left transition flex items-start space-x-3 ${
                   mode === 'SINGLE'
-                    ? 'bg-marca-suave border-marca-escura text-white'
+                    ? 'bg-marca-suave border-marca-escura text-tinta'
                     : 'bg-fundo border-borda text-tinta-2 hover:text-tinta'
                 }`}
               >
@@ -309,7 +309,7 @@ export const ServiceSummaryPdfModal: React.FC<ServiceSummaryPdfModalProps> = ({
                       key={os.id}
                       className={`flex items-center space-x-3 p-2.5 rounded-xl border text-xs cursor-pointer transition ${
                         isChecked 
-                          ? 'bg-marca-suave border-marca-escura text-white' 
+                          ? 'bg-marca-suave border-marca-escura text-tinta' 
                           : 'bg-superficie border-borda text-tinta-2'
                       }`}
                     >

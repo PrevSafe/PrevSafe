@@ -398,7 +398,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     onClick={() => handleSelectView(item.id)}
                     className={`w-full flex items-center justify-between px-3 py-2.5 sm:py-2 rounded-xl text-xs font-medium transition touch-manipulation min-h-[42px] sm:min-h-0 ${
                       isActive
-                        ? 'bg-marca text-white border border-marca-escura shadow-sm'
+                        ? 'bg-marca-escura text-white border border-marca-escura shadow-sm'
                         : item.highlight
                         ? 'text-tinta hover:bg-superficie hover:text-tinta bg-superficie border border-borda'
                         : 'text-tinta-2 hover:bg-superficie hover:text-tinta'
@@ -420,7 +420,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       )}
                       {item.badge && (
                         <span className={`text-[10px] px-1.5 py-0.5 rounded font-mono font-semibold ${
-                          item.badgeColor || (isActive ? 'bg-marca text-white' : 'bg-superficie-2 text-white/80')
+                          item.badgeColor || (isActive ? 'bg-marca-escura text-white' : 'bg-superficie-2 text-tinta')
                         }`}>
                           {item.badge}
                         </span>
@@ -467,7 +467,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             className="flex items-center justify-center space-x-1.5 p-2 rounded-xl bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-700 hover:text-rose-800 transition text-xs font-semibold"
             title="Encerrar Sessão"
           >
-            <LogOut className="w-3.5 h-3.5 text-rose-600" />
+            <LogOut className="w-3.5 h-3.5 text-rose-700" />
             <span>Sair</span>
           </button>
         </div>

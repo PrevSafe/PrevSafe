@@ -318,7 +318,7 @@ export const SettingsView: React.FC<{ onNavigate: (view: string) => void }> = ({
           <div className={`p-4 rounded-2xl border text-xs flex items-start gap-3 ${
             connectionResult.success 
               ? 'bg-marca-suave border-marca-escura text-marca-escura' 
-              : 'bg-amber-500/10 border-amber-500/30 text-amber-200'
+              : 'bg-amber-500/10 border-amber-500/30 text-amber-800'
           }`}>
             {connectionResult.success ? (
               <CheckCircle2 className="w-4 h-4 text-marca-escura flex-shrink-0 mt-0.5" />
@@ -633,7 +633,7 @@ export const SettingsView: React.FC<{ onNavigate: (view: string) => void }> = ({
           <div className="pt-4 space-y-2.5">
             <button
               onClick={() => onNavigate('tenant-theme-settings')}
-              className="w-full px-4 py-3 bg-gradient-to-r from-marca to-teal-600/30 hover:from-marca hover:to-teal-600/40 text-marca-escura border border-marca-escura rounded-2xl text-xs font-bold transition flex items-center justify-center space-x-2 shadow-lg"
+              className="w-full px-4 py-3 bg-gradient-to-r from-marca to-teal-600/30 hover:from-marca hover:to-teal-600/40 text-tinta border border-marca-escura rounded-2xl text-xs font-bold transition flex items-center justify-center space-x-2 shadow-lg"
             >
               <Palette className="w-4 h-4 text-marca-escura" />
               <span>Personalizar Tema & Cores do Tenant (PWA/Portal)</span>
@@ -641,7 +641,7 @@ export const SettingsView: React.FC<{ onNavigate: (view: string) => void }> = ({
 
             <button
               onClick={() => onNavigate('saas-management')}
-              className="w-full px-4 py-3 bg-teal-500/10 hover:bg-teal-500/20 text-teal-700 border border-teal-500/30 rounded-2xl text-xs font-bold transition flex items-center justify-center space-x-2"
+              className="w-full px-4 py-3 bg-teal-500/10 hover:bg-teal-500/20 text-teal-800 border border-teal-500/30 rounded-2xl text-xs font-bold transition flex items-center justify-center space-x-2"
             >
               <Building className="w-4 h-4" />
               <span>Gestão de Assinantes SaaS (Super Admin)</span>
@@ -678,7 +678,7 @@ export const SettingsView: React.FC<{ onNavigate: (view: string) => void }> = ({
                 resetDatabaseToSeed();
                 alert('Todos os dados da organização foram apagados, aqui e no servidor.');
               }}
-              className="w-full px-4 py-3 bg-rose-500/10 hover:bg-rose-500/20 text-rose-700 border border-rose-500/30 rounded-2xl text-xs font-bold transition flex items-center justify-center space-x-2"
+              className="w-full px-4 py-3 bg-rose-500/10 hover:bg-rose-500/20 text-rose-800 border border-rose-500/30 rounded-2xl text-xs font-bold transition flex items-center justify-center space-x-2"
             >
               <Database className="w-4 h-4" />
               <span>Limpar Base de Dados</span>

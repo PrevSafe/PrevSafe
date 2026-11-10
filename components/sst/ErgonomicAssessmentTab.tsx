@@ -349,12 +349,12 @@ export const ErgonomicAssessmentTab: React.FC<ErgonomicAssessmentTabProps> = ({ 
                 porte, ou falta o grau de risco. O aviso dizia sempre "porte
                 não informado" — e mandava preencher o que já estava lá.
               */}
-              <p className="text-sm text-amber-200 font-semibold">
+              <p className="text-sm text-amber-700 font-semibold">
                 {String(cliente?.porte || '').trim()
                   ? 'Grau de risco NR-04 não classificado.'
                   : 'Porte da organização não informado.'}
               </p>
-              <p className="text-xs text-amber-200/70 mt-1">
+              <p className="text-xs text-amber-700 mt-1">
                 A dispensa de elaborar a AET do item 17.3.4 alcança ME e EPP de graus de risco 1 e 2
                 e o MEI — depende dos dois campos. Preencha em CRM &gt; Clientes &amp; Unidades,
                 ao editar o cliente. O PGR sai com pendência enquanto isso — a dispensa não se presume.
@@ -369,8 +369,8 @@ export const ErgonomicAssessmentTab: React.FC<ErgonomicAssessmentTabProps> = ({ 
         <div className="bg-amber-500/10 border border-amber-500/30 rounded-2xl p-4 flex items-start gap-2.5">
           <AlertTriangle className="w-4 h-4 text-amber-700 mt-0.5 shrink-0" />
           <div>
-            <p className="text-sm text-amber-200 font-semibold">Lacunas de cobertura</p>
-            <ul className="text-xs text-amber-200/70 mt-1 space-y-0.5 list-disc list-inside">
+            <p className="text-sm text-amber-700 font-semibold">Lacunas de cobertura</p>
+            <ul className="text-xs text-amber-700 mt-1 space-y-0.5 list-disc list-inside">
               {ghesSemAep.length > 0 && (
                 <li>
                   {ghesSemAep.length} GHE sem avaliação:{' '}
@@ -496,7 +496,7 @@ export const ErgonomicAssessmentTab: React.FC<ErgonomicAssessmentTabProps> = ({ 
                         >
                           <Brain className="w-3.5 h-3.5" />
                           {resumoPsicossocial(a).presentes.length > 0 && (
-                            <span className="absolute -top-0.5 -right-0.5 text-[9px] font-bold bg-rose-500 text-white rounded-full px-1 leading-tight">
+                            <span className="absolute -top-0.5 -right-0.5 text-[9px] font-bold bg-rose-700 text-white rounded-full px-1 leading-tight">
                               {resumoPsicossocial(a).presentes.length}
                             </span>
                           )}
@@ -751,7 +751,7 @@ export const ErgonomicAssessmentTab: React.FC<ErgonomicAssessmentTabProps> = ({ 
                               className={`px-2 py-1 rounded-lg border text-[10px] font-semibold transition-colors ${
                                 atual.conclusao === k
                                   ? k === 'INADEQUADO'
-                                    ? 'bg-rose-500 text-white border-rose-400'
+                                    ? 'bg-rose-700 text-white border-rose-400'
                                     : 'bg-teal-500 text-slate-950 border-teal-400'
                                   : 'bg-fundo text-tinta-2 border-borda hover:bg-superficie-2'
                               }`}
@@ -860,7 +860,7 @@ export const ErgonomicAssessmentTab: React.FC<ErgonomicAssessmentTabProps> = ({ 
                         form.workers_heard === v
                           ? v === 'SIM'
                             ? 'bg-teal-500 text-slate-950 border-teal-400'
-                            : 'bg-rose-500 text-white border-rose-400'
+                            : 'bg-rose-700 text-white border-rose-400'
                           : 'bg-superficie text-tinta border-borda hover:bg-superficie-2'
                       }`}
                     >

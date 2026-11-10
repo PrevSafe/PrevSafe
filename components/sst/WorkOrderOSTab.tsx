@@ -51,9 +51,9 @@ const COR_DA_CATEGORIA: Record<string, string> = {
   'Físico': 'bg-blue-500/10 text-blue-700 border-blue-500/30',
   'Químico': 'bg-rose-500/10 text-rose-700 border-rose-500/30',
   'Biológico': 'bg-marca-suave text-marca-escura border-marca-escura',
-  'Ergonômico': 'bg-amber-500/10 text-amber-700 border-amber-500/30',
+  'Ergonômico': 'bg-amber-500/10 text-amber-800 border-amber-500/30',
   'Psicossocial': 'bg-violet-500/10 text-violet-700 border-violet-500/30',
-  'Acidentes': 'bg-orange-500/10 text-orange-700 border-orange-500/30'
+  'Acidentes': 'bg-orange-500/10 text-orange-800 border-orange-500/30'
 };
 
 /** "Ausencia de risco" registrada no inventario: nao tem fonte, avaliacao nem medida. */
@@ -344,9 +344,9 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
           <div>
             <p className="text-xs font-semibold text-tinta-2 uppercase tracking-wider">Pendentes de Assinatura</p>
             <p className="text-2xl font-black text-amber-700 mt-1">{pendingCount}</p>
-            <p className="text-[11px] text-amber-500/80 mt-0.5">Aguardando termo / coleta</p>
+            <p className="text-[11px] text-amber-700 mt-0.5">Aguardando termo / coleta</p>
           </div>
-          <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl text-amber-700">
+          <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl text-amber-800">
             <AlertTriangle className="w-6 h-6" />
           </div>
         </div>
@@ -406,7 +406,7 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
         <div className="flex flex-wrap items-center gap-2 shrink-0">
           <button
             onClick={handleGenerateAllForClient}
-            className="px-3 py-2 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-tinta rounded-lg text-xs font-bold transition-all shadow-md shadow-indigo-600/20 flex items-center gap-1.5"
+            className="px-3 py-2 bg-gradient-to-r from-indigo-700 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white rounded-lg text-xs font-bold transition-all shadow-md shadow-indigo-600/20 flex items-center gap-1.5"
             title="Gera automaticamente as Ordens de Serviço de todos os funcionários com base nas funções, GHE e riscos do PGR"
           >
             <Sparkles className="w-3.5 h-3.5" />
@@ -416,7 +416,7 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
           <button
             onClick={handleAtualizarNaoAssinadas}
             disabled={!selectedClientId}
-            className="px-3 py-2 bg-sky-600/20 hover:bg-sky-600/30 disabled:opacity-50 disabled:cursor-not-allowed text-sky-700 border border-sky-500/30 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5"
+            className="px-3 py-2 bg-sky-600/20 hover:bg-sky-600/30 disabled:opacity-50 disabled:cursor-not-allowed text-sky-800 border border-sky-500/30 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5"
             title={selectedClientId
               ? 'Refaz as OS ainda não assinadas deste cliente com o inventário de riscos, o plano de ação e o cadastro de hoje. As assinadas não mudam.'
               : 'Selecione um cliente para atualizar as OS dele.'}
@@ -459,7 +459,7 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
           className={`p-3 rounded-xl border text-xs flex items-start justify-between gap-3 ${
             aviso.tipo === 'ok'
               ? 'bg-marca-suave border-marca-escura text-marca-escura'
-              : 'bg-rose-950/30 border-rose-900/50 text-rose-700'
+              : 'bg-rose-50 border-rose-200 text-rose-700'
           }`}
         >
           <span className="whitespace-pre-line">{aviso.texto}</span>
@@ -521,7 +521,7 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
                     <tr
                       key={os.id}
                       className={`hover:bg-superficie-2 transition-colors ${
-                        isSelected ? 'bg-indigo-950/20' : ''
+                        isSelected ? 'bg-indigo-50' : ''
                       }`}
                     >
                       <td className="py-3 px-3 text-center">
@@ -542,7 +542,7 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
                         {totalPendencias > 0 && (
                           <button
                             onClick={() => setViewingOS(os)}
-                            className="mt-1 inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 border border-amber-500/30 transition-colors"
+                            className="mt-1 inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 hover:bg-amber-500/20 text-amber-800 border border-amber-500/30 transition-colors"
                             title={os.pendencias?.join('\n')}
                           >
                             <AlertTriangle className="w-3 h-3" />
@@ -594,7 +594,7 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
                               setSigningOS(os);
                               setIsSignModalOpen(true);
                             }}
-                            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 border border-amber-500/20 transition-colors"
+                            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-500/10 hover:bg-amber-500/20 text-amber-800 border border-amber-500/20 transition-colors"
                           >
                             <Fingerprint className="w-3 h-3" />
                             Coletar Assinatura
@@ -622,7 +622,7 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
 
                           <button
                             onClick={() => handleAtualizarComInventario(os)}
-                            className="p-1.5 text-sky-700 hover:text-sky-700 hover:bg-sky-950/40 rounded-lg transition-colors"
+                            className="p-1.5 text-sky-700 hover:text-sky-700 hover:bg-sky-50 rounded-lg transition-colors"
                             title={os.employee_signed
                               ? 'Atualizar com o inventário: cria uma revisão nova, a assinar (a assinada não muda)'
                               : 'Atualizar com o inventário'}
@@ -636,7 +636,7 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
                                 deleteWorkOrderOS(os.id);
                               }
                             }}
-                            className="p-1.5 text-rose-700 hover:text-rose-700 hover:bg-rose-950/40 rounded-lg transition-colors"
+                            className="p-1.5 text-rose-700 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition-colors"
                             title="Excluir OS"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -686,7 +686,7 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
                   className={`p-3 rounded-xl border text-xs flex items-start justify-between gap-3 ${
                     aviso.tipo === 'ok'
                       ? 'bg-marca-suave border-marca-escura text-marca-escura'
-                      : 'bg-rose-950/30 border-rose-900/50 text-rose-700'
+                      : 'bg-rose-50 border-rose-200 text-rose-700'
                   }`}
                 >
                   <span className="whitespace-pre-line">{aviso.texto}</span>
@@ -698,15 +698,15 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
 
               {/* Pendencias em destaque: a OS nao deve ser entregue assim */}
               {temPendenciaNaOS && (
-                <div className="p-4 bg-amber-950/30 border border-amber-600/50 rounded-xl space-y-2">
+                <div className="p-4 bg-amber-50 border border-amber-600/50 rounded-xl space-y-2">
                   <p className="text-[11px] font-bold text-amber-700 uppercase tracking-wider flex items-center gap-1.5">
                     <AlertTriangle className="w-4 h-4" />
                     Pendências — resolva antes de entregar esta OS ao trabalhador
                   </p>
-                  <ul className="list-disc pl-5 space-y-1 text-amber-100/90">
+                  <ul className="list-disc pl-5 space-y-1 text-amber-700">
                     {viewingOS.pendencias?.map((p, i) => <li key={i}>{p}</li>)}
                   </ul>
-                  <p className="text-[11px] text-amber-700/80">
+                  <p className="text-[11px] text-amber-700">
                     Depois de corrigir o cadastro, use &quot;Atualizar com o inventário&quot; para refazer a OS.
                   </p>
                 </div>
@@ -877,7 +877,7 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
                   <AlertTriangle className="w-3.5 h-3.5" />
                   4. Em Caso de Acidente ou Emergência (NR-01, 1.4.1, &quot;e&quot;)
                 </h4>
-                <div className="p-3 bg-amber-950/20 border border-amber-900/40 rounded-lg">
+                <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg">
                   <ListaDaOS
                     itens={viewingOS.emergency_accident_conduct}
                     vazio={temPendenciaNaOS ? 'Não informado (ver as pendências acima).' : 'Não informado.'}
@@ -895,7 +895,7 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
                   <ListaDaOS itens={viewingOS.mandatory_employee_obligations} vazio="Não informado." />
                 </div>
                 {(viewingOS.prohibitions_unsafe_acts?.length || 0) > 0 && (
-                  <div className="p-3 bg-rose-950/20 border border-rose-900/30 rounded-lg">
+                  <div className="p-3 bg-rose-50 border border-rose-200 rounded-lg">
                     <p className="font-bold text-rose-700 mb-1">Proibições expressas e atos inseguros:</p>
                     <ListaDaOS itens={viewingOS.prohibitions_unsafe_acts} vazio="" />
                   </div>
@@ -904,7 +904,7 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
 
               {/* Ato faltoso: o texto gravado na OS */}
               {viewingOS.disciplinary_sanctions_text && (
-                <div className="p-3 bg-rose-950/20 border border-rose-900/30 rounded-lg text-rose-700">
+                <div className="p-3 bg-rose-50 border border-rose-200 rounded-lg text-rose-700">
                   <p className="font-bold mb-1">Ato faltoso (CLT, art. 158):</p>
                   <p className="text-[11px] leading-relaxed">{viewingOS.disciplinary_sanctions_text}</p>
                 </div>
@@ -954,7 +954,7 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
               <div className="flex flex-wrap items-center justify-end gap-2">
                 <button
                   onClick={() => handleAtualizarComInventario(viewingOS)}
-                  className="px-4 py-2 bg-sky-600/20 hover:bg-sky-600/30 text-sky-700 border border-sky-500/30 rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5"
+                  className="px-4 py-2 bg-sky-600/20 hover:bg-sky-600/30 text-sky-800 border border-sky-500/30 rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5"
                   title={viewingOS.employee_signed
                     ? 'A OS assinada não muda: será criada uma revisão nova, a assinar'
                     : 'Refaz esta OS com o inventário de riscos, o plano de ação e o cadastro de hoje'}
@@ -969,7 +969,7 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
                       setSigningOS(viewingOS);
                       setIsSignModalOpen(true);
                     }}
-                    className="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-white rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5"
+                    className="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5"
                   >
                     <Fingerprint className="w-3.5 h-3.5" />
                     Coletar Assinatura / Biometria
@@ -1028,13 +1028,13 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
                 </p>
               </div>
 
-              <div className="p-3 bg-indigo-950/30 border border-indigo-900/40 rounded-xl text-indigo-700 space-y-1">
+              <div className="p-3 bg-indigo-50 border border-indigo-200 rounded-xl text-indigo-700 space-y-1">
                 <div className="font-bold flex items-center gap-1.5">
                   <Info className="w-4 h-4" />
                   Conteúdo da OS (NR-01, 1.4.1, &quot;c&quot;)
                 </div>
                 {/* O texto antigo prometia "proibicoes do Art. 158" e diretrizes de emergencia que eram fixas; hoje tudo sai do cadastro. */}
-                <p className="text-[11px] text-indigo-200/80">
+                <p className="text-[11px] text-indigo-700">
                   A OS traz os riscos do inventário do GHE do trabalhador, as medidas de prevenção adotadas, os procedimentos
                   de emergência do estabelecimento e as obrigações do trabalhador (NR-01, 1.4.2). O que faltar no cadastro
                   aparece como pendência, e não como texto padrão.

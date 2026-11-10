@@ -197,7 +197,7 @@ export default function RedefinirSenhaPage() {
             <button
               type="submit"
               disabled={isSaving}
-              className="w-full py-3 px-4 bg-gradient-to-r from-marca to-teal-600 hover:from-marca hover:to-teal-500 text-white font-bold text-xs rounded-xl shadow-lg transition flex items-center justify-center space-x-2 disabled:opacity-50"
+              className="w-full py-3 px-4 bg-gradient-to-r from-marca-escura to-teal-600 hover:from-marca-escura hover:to-teal-700 text-white font-bold text-xs rounded-xl shadow-lg transition flex items-center justify-center space-x-2 disabled:opacity-50"
             >
               {isSaving ? (
                 <>

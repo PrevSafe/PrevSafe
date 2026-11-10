@@ -77,7 +77,7 @@ export const AICopilotModal: React.FC<{ isOpen: boolean; onClose: () => void }> 
         {/* Header */}
         <div className="flex items-center justify-between border-b border-borda pb-4 mb-4">
           <div className="flex items-center space-x-3">
-            <div className="p-2.5 bg-gradient-to-br from-marca to-teal-600 rounded-2xl text-white shadow-md">
+            <div className="p-2.5 bg-gradient-to-br from-marca-escura to-teal-600 rounded-2xl text-white shadow-md">
               <Sparkles className="w-5 h-5" />
             </div>
             <div>
@@ -177,7 +177,7 @@ export const AICopilotModal: React.FC<{ isOpen: boolean; onClose: () => void }> 
         <button
           onClick={handleGenerate}
           disabled={isLoading}
-          className="w-full py-3 bg-gradient-to-r from-marca to-teal-600 hover:from-marca hover:to-teal-500 text-white rounded-2xl text-xs font-bold shadow-lg shadow-emerald-950/30 transition flex items-center justify-center space-x-2"
+          className="w-full py-3 bg-gradient-to-r from-marca-escura to-teal-600 hover:from-marca-escura hover:to-teal-700 text-white rounded-2xl text-xs font-bold shadow-lg shadow-emerald-950/30 transition flex items-center justify-center space-x-2"
         >
           {isLoading ? (
             <>

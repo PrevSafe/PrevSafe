@@ -72,7 +72,7 @@ export const ScreenMockup: React.FC<ScreenMockupProps> = ({ step, activeNumber }
           </div>
 
           {mockupDetails.mainActionLabel && (
-            <div className="inline-flex items-center px-3.5 py-1.5 bg-gradient-to-r from-marca to-teal-600 text-white rounded-xl text-xs font-semibold shadow-lg shadow-emerald-950/50 ring-2 ring-marca-escura animate-pulse">
+            <div className="inline-flex items-center px-3.5 py-1.5 bg-gradient-to-r from-marca-escura to-teal-600 text-white rounded-xl text-xs font-semibold shadow-lg shadow-emerald-950/50 ring-2 ring-marca-escura animate-pulse">
               <span>{mockupDetails.mainActionLabel}</span>
             </div>
           )}
@@ -112,10 +112,10 @@ export const ScreenMockup: React.FC<ScreenMockupProps> = ({ step, activeNumber }
               mockupDetails.highlightBox.color === 'emerald'
                 ? 'bg-marca-suave border-marca-escura text-marca-escura'
                 : mockupDetails.highlightBox.color === 'blue'
-                ? 'bg-blue-950/30 border-blue-500/40 text-blue-200'
+                ? 'bg-blue-50 border-blue-500/40 text-blue-700'
                 : mockupDetails.highlightBox.color === 'amber'
-                ? 'bg-amber-950/30 border-amber-500/40 text-amber-200'
-                : 'bg-purple-950/30 border-purple-500/40 text-purple-200'
+                ? 'bg-amber-50 border-amber-500/40 text-amber-700'
+                : 'bg-purple-50 border-purple-500/40 text-purple-700'
             }`}>
               <div className="flex items-start space-x-2.5">
                 <div className="p-1.5 rounded-lg bg-superficie shrink-0 mt-0.5">

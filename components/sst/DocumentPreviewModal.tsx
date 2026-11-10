@@ -234,13 +234,13 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
 
   const getDocBadgeColor = () => {
     switch (docType) {
-      case 'PGR': return 'bg-teal-500/20 text-teal-700 border-teal-500/30';
+      case 'PGR': return 'bg-teal-500/20 text-teal-800 border-teal-500/30';
       case 'PGRTR': return 'bg-marca-suave text-marca-escura border-marca-escura';
-      case 'PCMSO': return 'bg-cyan-500/20 text-cyan-700 border-cyan-500/30';
+      case 'PCMSO': return 'bg-cyan-500/20 text-cyan-800 border-cyan-500/30';
       case 'LTCAT': return 'bg-purple-500/20 text-purple-700 border-purple-500/30';
-      case 'AEP': return 'bg-teal-500/20 text-teal-700 border-teal-500/30';
-      case 'INSALUBRIDADE': return 'bg-amber-500/20 text-amber-700 border-amber-500/30';
-      case 'PERICULOSIDADE': return 'bg-rose-500/20 text-rose-700 border-rose-500/30';
+      case 'AEP': return 'bg-teal-500/20 text-teal-800 border-teal-500/30';
+      case 'INSALUBRIDADE': return 'bg-amber-500/20 text-amber-800 border-amber-500/30';
+      case 'PERICULOSIDADE': return 'bg-rose-500/20 text-rose-800 border-rose-500/30';
       default: return 'bg-blue-500/20 text-blue-700 border-blue-500/30';
     }
   };
@@ -322,7 +322,7 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
         {/* Top Control Bar */}
         <div className="bg-fundo border-b border-borda px-5 py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shrink-0">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-teal-500/10 border border-teal-500/30 rounded-xl text-teal-700">
+            <div className="p-2 bg-teal-500/10 border border-teal-500/30 rounded-xl text-teal-800">
               <FileText className="w-5 h-5" />
             </div>
             <div>
@@ -395,7 +395,7 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
               type="button"
               id="modal-btn-signature"
               onClick={handleOpenSignature}
-              className="px-3 py-1.5 bg-teal-500/10 hover:bg-teal-500/20 text-teal-700 border border-teal-500/30 font-bold text-xs rounded-lg transition-all flex items-center gap-1.5"
+              className="px-3 py-1.5 bg-teal-500/10 hover:bg-teal-500/20 text-teal-800 border border-teal-500/30 font-bold text-xs rounded-lg transition-all flex items-center gap-1.5"
             >
               <PenTool className="w-3.5 h-3.5 text-teal-700" />
               <span>Assinatura Digital (Lei 14.063)</span>
@@ -456,7 +456,7 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
               <div className="border-b-2 border-borda pb-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="space-y-1">
                   <div className="flex items-center gap-2 text-teal-700 font-bold text-xs uppercase tracking-wider">
-                    <ShieldCheck className="w-4 h-4 text-teal-600" />
+                    <ShieldCheck className="w-4 h-4 text-teal-700" />
                     {organization.name || 'PREVSAFE SST - SISTEMA INTEGRADO DE SEGURANÇA'}
                   </div>
                   <h1 className="text-xl sm:text-2xl font-black tracking-tight text-slate-950 uppercase">
@@ -479,7 +479,7 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
                 <div className="bg-slate-50 p-4 rounded-lg border border-slate-200 space-y-2">
                   <h3 className="font-bold text-slate-900 uppercase text-[11px] flex items-center gap-1.5 border-b border-slate-200 pb-1.5">
-                    <Building2 className="w-3.5 h-3.5 text-teal-600" />
+                    <Building2 className="w-3.5 h-3.5 text-teal-700" />
                     Identificação do Estabelecimento
                   </h3>
                   <div className="space-y-1 text-slate-700">
@@ -500,7 +500,7 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
 
                 <div className="bg-slate-50 p-4 rounded-lg border border-slate-200 space-y-2">
                   <h3 className="font-bold text-slate-900 uppercase text-[11px] flex items-center gap-1.5 border-b border-slate-200 pb-1.5">
-                    <Award className="w-3.5 h-3.5 text-teal-600" />
+                    <Award className="w-3.5 h-3.5 text-teal-700" />
                     Responsabilidade Técnica & Enquadramento
                   </h3>
                   <div className="space-y-1 text-slate-700">
@@ -1073,7 +1073,7 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
               type="button"
               id="modal-btn-signature-footer"
               onClick={handleOpenSignature}
-              className="px-3.5 py-1.5 bg-teal-500/10 hover:bg-teal-500/20 text-teal-700 border border-teal-500/30 font-bold rounded-lg transition-all flex items-center gap-1.5"
+              className="px-3.5 py-1.5 bg-teal-500/10 hover:bg-teal-500/20 text-teal-800 border border-teal-500/30 font-bold rounded-lg transition-all flex items-center gap-1.5"
             >
               <PenTool className="w-3.5 h-3.5 text-teal-700" />
               <span>Assinatura Digital SST</span>

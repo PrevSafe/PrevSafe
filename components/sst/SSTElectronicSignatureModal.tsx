@@ -252,7 +252,7 @@ export const SSTElectronicSignatureModal: React.FC<SSTElectronicSignatureModalPr
         {/* Modal Top Header */}
         <div className="bg-fundo px-6 py-4 border-b border-borda flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className="p-2.5 rounded-2xl bg-teal-500/10 border border-teal-500/20 text-teal-700">
+            <div className="p-2.5 rounded-2xl bg-teal-500/10 border border-teal-500/20 text-teal-800">
               <ShieldCheck className="w-6 h-6" />
             </div>
             <div>
@@ -260,7 +260,7 @@ export const SSTElectronicSignatureModal: React.FC<SSTElectronicSignatureModalPr
                 <h2 className="text-lg font-bold text-tinta tracking-tight">
                   Assinatura Eletrônica & Aceite Digital SST
                 </h2>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-teal-500/10 text-teal-700 border border-teal-500/20">
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-teal-500/10 text-teal-800 border border-teal-500/20">
                   Lei 14.063/2020
                 </span>
               </div>
@@ -352,7 +352,7 @@ export const SSTElectronicSignatureModal: React.FC<SSTElectronicSignatureModalPr
                                 </span>
                               )}
                               {signer.role_type === 'EMPLOYER_REPRESENTATIVE' && (
-                                <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-amber-500/10 text-amber-700 border border-amber-500/20">
+                                <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-amber-500/10 text-amber-800 border border-amber-500/20">
                                   Empregador
                                 </span>
                               )}
@@ -383,7 +383,7 @@ export const SSTElectronicSignatureModal: React.FC<SSTElectronicSignatureModalPr
                                 <span>Recusado</span>
                               </span>
                             ) : (
-                              <span className="flex items-center space-x-1 text-amber-700 text-xs font-bold bg-amber-500/10 border border-amber-500/20 px-2.5 py-1 rounded-full">
+                              <span className="flex items-center space-x-1 text-amber-800 text-xs font-bold bg-amber-500/10 border border-amber-500/20 px-2.5 py-1 rounded-full">
                                 <span>Pendente</span>
                               </span>
                             )}
@@ -440,7 +440,7 @@ export const SSTElectronicSignatureModal: React.FC<SSTElectronicSignatureModalPr
                     href={signatureEnvelope.qr_code_verification_url}
                     target="_blank"
                     rel="noreferrer"
-                    className="px-3 py-1.5 rounded-xl bg-teal-500/10 hover:bg-teal-500/20 text-teal-700 border border-teal-500/30 text-xs font-bold flex items-center space-x-1.5 transition"
+                    className="px-3 py-1.5 rounded-xl bg-teal-500/10 hover:bg-teal-500/20 text-teal-800 border border-teal-500/30 text-xs font-bold flex items-center space-x-1.5 transition"
                   >
                     <ExternalLink className="w-3.5 h-3.5" />
                     <span>Verificar</span>
@@ -496,7 +496,7 @@ export const SSTElectronicSignatureModal: React.FC<SSTElectronicSignatureModalPr
                     onClick={() => setSignatureMode('ELECTRONIC_PORTAL')}
                     className={`p-3.5 rounded-2xl border text-left transition space-y-1.5 ${
                       signatureMode === 'ELECTRONIC_PORTAL'
-                        ? 'bg-teal-500/10 border-teal-500 text-white ring-1 ring-teal-500'
+                        ? 'bg-teal-700/10 border-teal-500 text-tinta ring-1 ring-teal-500'
                         : 'bg-fundo border-borda text-tinta-2 hover:border-borda'
                     }`}
                   >
@@ -514,7 +514,7 @@ export const SSTElectronicSignatureModal: React.FC<SSTElectronicSignatureModalPr
                     onClick={() => setSignatureMode('DIGITAL_CERTIFICATE_ICP')}
                     className={`p-3.5 rounded-2xl border text-left transition space-y-1.5 ${
                       signatureMode === 'DIGITAL_CERTIFICATE_ICP'
-                        ? 'bg-teal-500/10 border-teal-500 text-white ring-1 ring-teal-500'
+                        ? 'bg-teal-700/10 border-teal-500 text-tinta ring-1 ring-teal-500'
                         : 'bg-fundo border-borda text-tinta-2 hover:border-borda'
                     }`}
                   >
@@ -532,7 +532,7 @@ export const SSTElectronicSignatureModal: React.FC<SSTElectronicSignatureModalPr
                     onClick={() => setSignatureMode('BIOMETRIC_DRAW')}
                     className={`p-3.5 rounded-2xl border text-left transition space-y-1.5 ${
                       signatureMode === 'BIOMETRIC_DRAW'
-                        ? 'bg-teal-500/10 border-teal-500 text-white ring-1 ring-teal-500'
+                        ? 'bg-teal-700/10 border-teal-500 text-tinta ring-1 ring-teal-500'
                         : 'bg-fundo border-borda text-tinta-2 hover:border-borda'
                     }`}
                   >
@@ -695,7 +695,7 @@ export const SSTElectronicSignatureModal: React.FC<SSTElectronicSignatureModalPr
                     type="checkbox"
                     checked={acceptedTerms}
                     onChange={(e) => setAcceptedTerms(e.target.checked)}
-                    className="mt-1 w-4 h-4 rounded border-borda text-teal-500 focus:ring-teal-500 focus:ring-offset-slate-900"
+                    className="mt-1 w-4 h-4 rounded border-borda text-teal-700 focus:ring-teal-500 focus:ring-offset-slate-900"
                   />
                   <span className="text-xs text-tinta leading-relaxed">
                     Declaro, sob as penas da lei, que examinei o teor técnico deste documento ({signatureEnvelope.document_title}), 
@@ -710,7 +710,7 @@ export const SSTElectronicSignatureModal: React.FC<SSTElectronicSignatureModalPr
           {/* STEP 3: REJECTION / CONTESTATION */}
           {activeStep === 'REJECT' && currentSigner && (
             <div className="space-y-5">
-              <div className="bg-rose-950/30 p-5 rounded-2xl border border-rose-500/30 space-y-2">
+              <div className="bg-rose-50 p-5 rounded-2xl border border-rose-500/30 space-y-2">
                 <div className="flex items-center space-x-2 text-rose-700 font-bold text-sm">
                   <AlertTriangle className="w-5 h-5" />
                   <span>Recusa ou Solicitação de Ajuste Técnico</span>
@@ -784,7 +784,7 @@ export const SSTElectronicSignatureModal: React.FC<SSTElectronicSignatureModalPr
                     <button
                       type="button"
                       onClick={() => setActiveStep('REJECT')}
-                      className="px-4 py-2 rounded-xl bg-superficie-2 hover:bg-rose-950/40 text-tinta hover:text-rose-700 text-xs font-bold transition border border-borda hover:border-rose-500/40"
+                      className="px-4 py-2 rounded-xl bg-superficie-2 hover:bg-rose-50 text-tinta hover:text-rose-700 text-xs font-bold transition border border-borda hover:border-rose-500/40"
                     >
                       Recusar / Ajuste
                     </button>
@@ -858,7 +858,7 @@ export const SSTElectronicSignatureModal: React.FC<SSTElectronicSignatureModalPr
                 type="button"
                 disabled={isSubmitting}
                 onClick={handleConfirmRejection}
-                className="px-6 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold transition flex items-center space-x-2"
+                className="px-6 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition flex items-center space-x-2"
               >
                 <XCircle className="w-4 h-4" />
                 <span>Confirmar Recusa do Documento</span>

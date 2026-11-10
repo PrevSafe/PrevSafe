@@ -1089,13 +1089,13 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
   // Category Tabs Configuration
   const categoriesList: Array<{ id: ReportCategory; label: string; icon: any; count: number; badgeColor: string }> = [
     { id: 'SERVICE_ORDERS', label: 'Ordens de Serviço (OS)', icon: Briefcase, count: serviceOrders.length, badgeColor: 'bg-blue-500/20 text-blue-700' },
-    { id: 'RISKS_PGR', label: 'Riscos & PGR (NR-01)', icon: HardHat, count: environmentalRisks.length, badgeColor: 'bg-teal-500/20 text-teal-700' },
+    { id: 'RISKS_PGR', label: 'Riscos & PGR (NR-01)', icon: HardHat, count: environmentalRisks.length, badgeColor: 'bg-teal-500/20 text-teal-800' },
     { id: 'ASOS_HEALTH', label: 'Saúde & ASOs (NR-07)', icon: Users, count: employees.length, badgeColor: 'bg-marca-suave text-marca-escura' },
     { id: 'ESOCIAL_EVENTS', label: 'Eventos eSocial SST', icon: ShieldCheck, count: esocialEvents.length, badgeColor: 'bg-indigo-500/20 text-indigo-700' },
-    { id: 'EPI_MANAGEMENT', label: 'Gestão de EPIs (NR-06)', icon: SlidersHorizontal, count: epiDeliveries.length, badgeColor: 'bg-cyan-500/20 text-cyan-700' },
+    { id: 'EPI_MANAGEMENT', label: 'Gestão de EPIs (NR-06)', icon: SlidersHorizontal, count: epiDeliveries.length, badgeColor: 'bg-cyan-500/20 text-cyan-800' },
     { id: 'FINANCIAL', label: 'Financeiro & Fluxo', icon: DollarSign, count: transactions.length, badgeColor: 'bg-marca-suave text-marca-escura' },
-    { id: 'CAT_ACCIDENTS', label: 'Acidentes & CAT (S-2210)', icon: AlertTriangle, count: catRecords.length, badgeColor: 'bg-rose-500/20 text-rose-700' },
-    { id: 'TRAININGS_NR01', label: 'Treinamentos (NR-01)', icon: Activity, count: integrationTrainings.length, badgeColor: 'bg-amber-500/20 text-amber-700' },
+    { id: 'CAT_ACCIDENTS', label: 'Acidentes & CAT (S-2210)', icon: AlertTriangle, count: catRecords.length, badgeColor: 'bg-rose-500/20 text-rose-800' },
+    { id: 'TRAININGS_NR01', label: 'Treinamentos (NR-01)', icon: Activity, count: integrationTrainings.length, badgeColor: 'bg-amber-500/20 text-amber-800' },
     { id: 'COMMERCIAL_CONTRACTS', label: 'Comercial & Contratos', icon: FileSpreadsheet, count: contracts.length, badgeColor: 'bg-purple-500/20 text-purple-700' },
     { id: 'AUDIT_QUALITY', label: 'Auditoria & Logs', icon: Layers, count: auditLogs.length, badgeColor: 'bg-slate-500/20 text-tinta' }
   ];
@@ -1121,7 +1121,7 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
             <div>
               <h1 className="text-xl sm:text-2xl font-black text-tinta tracking-tight flex items-center gap-2">
                 Central de Relatórios & BI SST
-                <span className="text-xs uppercase font-mono px-2 py-0.5 bg-teal-500/20 text-teal-700 border border-teal-500/30 rounded-md">
+                <span className="text-xs uppercase font-mono px-2 py-0.5 bg-teal-500/20 text-teal-800 border border-teal-500/30 rounded-md">
                   Exportador Multi-Formato
                 </span>
               </h1>
@@ -1210,7 +1210,7 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
             onClick={() => handleApplyPreset(preset.key)}
             className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all border ${
               activePreset === preset.key
-                ? 'bg-teal-500/20 text-teal-700 border-teal-500/50 shadow-sm'
+                ? 'bg-teal-500/20 text-teal-800 border-teal-500/50 shadow-sm'
                 : 'bg-superficie hover:bg-superficie-2 text-tinta border-borda'
             }`}
           >
@@ -1239,7 +1239,7 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
               }`}
             >
               <div className="flex items-center justify-between w-full">
-                <div className={`p-2 rounded-lg ${isActive ? 'bg-teal-500/20 text-teal-700' : 'bg-superficie-2 text-white/80'}`}>
+                <div className={`p-2 rounded-lg ${isActive ? 'bg-teal-500/20 text-teal-800' : 'bg-superficie-2 text-tinta'}`}>
                   <Icon className="w-4 h-4" />
                 </div>
                 <span className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-md ${cat.badgeColor}`}>
@@ -1272,7 +1272,7 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
               type="button"
               onClick={() => setShowCharts(!showCharts)}
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold border flex items-center gap-1.5 transition ${
-                showCharts ? 'bg-teal-500/20 text-teal-700 border-teal-500/40' : 'bg-superficie-2 text-white/80 border-borda'
+                showCharts ? 'bg-teal-500/20 text-teal-800 border-teal-500/40' : 'bg-superficie-2 text-tinta border-borda'
               }`}
             >
               <PieChartIcon className="w-3.5 h-3.5" />
@@ -1768,8 +1768,8 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
                         <td className="p-3.5 font-semibold text-tinta">{os.title}</td>
                         <td className="p-3.5">
                           <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                            os.priority === 'URGENT' ? 'bg-rose-500/20 text-rose-700 border border-rose-500/30' :
-                            os.priority === 'HIGH' ? 'bg-amber-500/20 text-amber-700' : 'bg-superficie-2 text-tinta'
+                            os.priority === 'URGENT' ? 'bg-rose-500/20 text-rose-800 border border-rose-500/30' :
+                            os.priority === 'HIGH' ? 'bg-amber-500/20 text-amber-800' : 'bg-superficie-2 text-tinta'
                           }`}>
                             {os.priority}
                           </span>
@@ -1816,15 +1816,15 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
                         <td className="p-3.5 font-mono">{r.measured_value ? `${r.measured_value} ${r.measurement_unit || ''}` : 'Qualitativo'}</td>
                         <td className="p-3.5">
                           <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                            (r.risk_level || '').includes('ALTO') || (r.risk_level || '').includes('CRITICO') ? 'bg-rose-500/20 text-rose-700' :
-                            (r.risk_level || '').includes('MEDIO') ? 'bg-amber-500/20 text-amber-700' : 'bg-marca-suave text-marca-escura'
+                            (r.risk_level || '').includes('ALTO') || (r.risk_level || '').includes('CRITICO') ? 'bg-rose-500/20 text-rose-800' :
+                            (r.risk_level || '').includes('MEDIO') ? 'bg-amber-500/20 text-amber-800' : 'bg-marca-suave text-marca-escura'
                           }`}>
                             {r.risk_level || 'MEDIO'}
                           </span>
                         </td>
                         <td className="p-3.5">
-                          {r.insalubridade_applies && <span className="px-1.5 py-0.5 bg-amber-500/20 text-amber-700 rounded text-[10px] mr-1">Insalubridade</span>}
-                          {r.periculosidade_applies && <span className="px-1.5 py-0.5 bg-rose-500/20 text-rose-700 rounded text-[10px]">Periculosidade</span>}
+                          {r.insalubridade_applies && <span className="px-1.5 py-0.5 bg-amber-500/20 text-amber-800 rounded text-[10px] mr-1">Insalubridade</span>}
+                          {r.periculosidade_applies && <span className="px-1.5 py-0.5 bg-rose-500/20 text-rose-800 rounded text-[10px]">Periculosidade</span>}
                           {!r.insalubridade_applies && !r.periculosidade_applies && <span className="text-tinta-2">Não enquadrado</span>}
                         </td>
                         <td className="p-3.5 text-right">
@@ -1853,11 +1853,11 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
                         <td className="p-3.5 font-mono">{aso?.valid_until ? formatDate(aso.valid_until) : '-'}</td>
                         <td className="p-3.5">
                           {item.isOverdue ? (
-                            <span className="px-2 py-0.5 bg-rose-500/20 text-rose-700 border border-rose-500/30 rounded text-[10px] font-bold">
+                            <span className="px-2 py-0.5 bg-rose-500/20 text-rose-800 border border-rose-500/30 rounded text-[10px] font-bold">
                               VENCIDO
                             </span>
                           ) : item.isSoon ? (
-                            <span className="px-2 py-0.5 bg-amber-500/20 text-amber-700 border border-amber-500/30 rounded text-[10px] font-bold">
+                            <span className="px-2 py-0.5 bg-amber-500/20 text-amber-800 border border-amber-500/30 rounded text-[10px] font-bold">
                               A VENCER (30d)
                             </span>
                           ) : (
@@ -1896,7 +1896,7 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
                         <td className="p-3.5">
                           <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
                             ev.status === 'SUCCESS' || (ev.status as string) === 'TRANSMITTED' || (ev.status as string) === 'ACCEPTED' ? 'bg-marca-suave text-marca-escura' :
-                            ev.status === 'REJECTED' ? 'bg-rose-500/20 text-rose-700' : 'bg-amber-500/20 text-amber-700'
+                            ev.status === 'REJECTED' ? 'bg-rose-500/20 text-rose-800' : 'bg-amber-500/20 text-amber-800'
                           }`}>
                             {ev.status}
                           </span>
@@ -1924,7 +1924,7 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
                         <td className="p-3.5 font-mono text-tinta-2">{t.id.substring(0, 8)}</td>
                         <td className="p-3.5">
                           <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                            t.type === 'RECEIVABLE' ? 'bg-marca-suave text-marca-escura' : 'bg-rose-500/20 text-rose-700'
+                            t.type === 'RECEIVABLE' ? 'bg-marca-suave text-marca-escura' : 'bg-rose-500/20 text-rose-800'
                           }`}>
                             {t.type === 'RECEIVABLE' ? 'RECEITA' : 'DESPESA'}
                           </span>
@@ -1936,7 +1936,7 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
                         <td className="p-3.5">{t.due_date ? formatDate(t.due_date) : '-'}</td>
                         <td className="p-3.5">
                           <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                            t.status === 'PAID' ? 'bg-marca-suave text-marca-escura' : 'bg-amber-500/20 text-amber-700'
+                            t.status === 'PAID' ? 'bg-marca-suave text-marca-escura' : 'bg-amber-500/20 text-amber-800'
                           }`}>
                             {t.status}
                           </span>
@@ -2037,7 +2037,7 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
           <div className="bg-superficie border border-borda rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl animate-scaleIn">
             <div className="flex items-center justify-between border-b border-borda pb-3">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg bg-teal-500/20 text-teal-700 flex items-center justify-center">
+                <div className="w-8 h-8 rounded-lg bg-teal-500/20 text-teal-800 flex items-center justify-center">
                   <Send className="w-4 h-4" />
                 </div>
                 <div>
@@ -2085,7 +2085,7 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
                   id="sendWa"
                   checked={scheduleConfig.sendWhatsApp}
                   onChange={(e) => setScheduleConfig({ ...scheduleConfig, sendWhatsApp: e.target.checked })}
-                  className="rounded border-borda bg-fundo text-teal-500"
+                  className="rounded border-borda bg-fundo text-teal-700"
                 />
                 <label htmlFor="sendWa" className="text-tinta">
                   Notificar Diretoria / Gestor via WhatsApp com link seguro
@@ -2098,7 +2098,7 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
                   id="incSummary"
                   checked={scheduleConfig.includeExecutiveSummary}
                   onChange={(e) => setScheduleConfig({ ...scheduleConfig, includeExecutiveSummary: e.target.checked })}
-                  className="rounded border-borda bg-fundo text-teal-500"
+                  className="rounded border-borda bg-fundo text-teal-700"
                 />
                 <label htmlFor="incSummary" className="text-tinta">
                   Incluir Resumo Executivo em PDF e Planilha Excel anexada

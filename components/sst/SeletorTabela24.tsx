@@ -129,7 +129,7 @@ export const SeletorTabela24: React.FC<SeletorTabela24Props> = ({
                   onLimpar();
                 }
               }}
-              className="text-tinta-2 hover:text-rose-500 shrink-0"
+              className="text-tinta-2 hover:text-rose-700 shrink-0"
               title="Remover o código — risco do PGR sem enquadramento no Anexo IV"
             >
               <X className="w-3.5 h-3.5" />

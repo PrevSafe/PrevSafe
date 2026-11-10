@@ -196,7 +196,7 @@ export const WorkOrdersOSTab: React.FC<WorkOrdersOSTabProps> = ({ selectedClient
         <div className="text-xs text-tinta space-y-1">
           <p className="font-semibold text-tinta flex items-center gap-2">
             <span>Base Legal: Norma Regulamentadora NR-01 (item 1.4.1) e Artigos 157 e 158 da CLT:</span>
-            <span className="px-2 py-0.5 bg-teal-500/20 text-teal-700 text-[10px] rounded font-mono">
+            <span className="px-2 py-0.5 bg-teal-500/20 text-teal-800 text-[10px] rounded font-mono">
               Obrigação Patronal
             </span>
           </p>
@@ -217,7 +217,7 @@ export const WorkOrdersOSTab: React.FC<WorkOrdersOSTabProps> = ({ selectedClient
                     type="checkbox"
                     checked={filteredWorkOrders.length > 0 && selectedOSIds.length === filteredWorkOrders.length}
                     onChange={(e) => handleSelectAll(e.target.checked)}
-                    className="rounded border-borda text-teal-500 focus:ring-teal-500"
+                    className="rounded border-borda text-teal-700 focus:ring-teal-500"
                   />
                 </th>
                 <th className="py-3 px-4">Código OS / Versão</th>
@@ -246,7 +246,7 @@ export const WorkOrdersOSTab: React.FC<WorkOrdersOSTabProps> = ({ selectedClient
                             setSelectedOSIds(prev => prev.filter(id => id !== os.id));
                           }
                         }}
-                        className="rounded border-borda text-teal-500 focus:ring-teal-500"
+                        className="rounded border-borda text-teal-700 focus:ring-teal-500"
                       />
                     </td>
                     <td className="py-3 px-4 font-mono">
@@ -262,12 +262,12 @@ export const WorkOrdersOSTab: React.FC<WorkOrdersOSTabProps> = ({ selectedClient
                       <div className="text-[10px] text-tinta-2">{os.employee_sector} (CBO {os.employee_cbo})</div>
                     </td>
                     <td className="py-3 px-4">
-                      <span className="px-2 py-0.5 bg-amber-500/10 text-amber-700 border border-amber-500/30 rounded text-[10px] font-medium">
+                      <span className="px-2 py-0.5 bg-amber-500/10 text-amber-800 border border-amber-500/30 rounded text-[10px] font-medium">
                         {getOccupationalRisksList(os).length} riscos mapeados
                       </span>
                     </td>
                     <td className="py-3 px-4">
-                      <span className="px-2 py-0.5 bg-teal-500/10 text-teal-700 border border-teal-500/30 rounded text-[10px] font-medium">
+                      <span className="px-2 py-0.5 bg-teal-500/10 text-teal-800 border border-teal-500/30 rounded text-[10px] font-medium">
                         {os.mandatory_epis.length} EPIs normativos
                       </span>
                     </td>
@@ -275,7 +275,7 @@ export const WorkOrdersOSTab: React.FC<WorkOrdersOSTabProps> = ({ selectedClient
                       <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
                         getSignatureStatus(os) === 'SIGNED_ELECTRONIC' || getSignatureStatus(os) === 'SIGNED_PHYSICAL'
                           ? 'bg-marca-suave text-marca-escura border border-marca-escura'
-                          : 'bg-amber-500/20 text-amber-700 border border-amber-500/30'
+                          : 'bg-amber-500/20 text-amber-800 border border-amber-500/30'
                       }`}>
                         {getSignatureStatus(os) === 'SIGNED_ELECTRONIC' ? 'Assinatura Digital' : getSignatureStatus(os) === 'SIGNED_PHYSICAL' ? 'Assinado Físico' : 'Pendente de Assinatura'}
                       </span>
@@ -340,7 +340,7 @@ export const WorkOrdersOSTab: React.FC<WorkOrdersOSTabProps> = ({ selectedClient
           <div className="bg-superficie border border-borda rounded-2xl max-w-4xl w-full p-6 space-y-4 shadow-2xl animate-in fade-in zoom-in-95 duration-150 max-h-[92vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-borda pb-3">
               <div className="flex items-center gap-2.5">
-                <div className="p-2 bg-teal-500/10 text-teal-700 rounded-xl border border-teal-500/20">
+                <div className="p-2 bg-teal-500/10 text-teal-800 rounded-xl border border-teal-500/20">
                   <FileCheck2 className="w-5 h-5" />
                 </div>
                 <div>
@@ -408,7 +408,7 @@ export const WorkOrdersOSTab: React.FC<WorkOrdersOSTabProps> = ({ selectedClient
               {/* 1. Activities */}
               <div className="space-y-1.5">
                 <h4 className="font-bold text-tinta text-xs flex items-center gap-1.5">
-                  <span className="w-4 h-4 rounded-full bg-teal-500/20 text-teal-700 inline-flex items-center justify-center text-[10px]">1</span>
+                  <span className="w-4 h-4 rounded-full bg-teal-500/20 text-teal-800 inline-flex items-center justify-center text-[10px]">1</span>
                   Descrição das Atividades e Funções do Cargo:
                 </h4>
                 <ul className="list-disc list-inside bg-fundo p-3 rounded-lg border border-borda text-tinta-2 space-y-1 text-[11px]">
@@ -421,7 +421,7 @@ export const WorkOrdersOSTab: React.FC<WorkOrdersOSTabProps> = ({ selectedClient
               {/* 2. Risks */}
               <div className="space-y-1.5">
                 <h4 className="font-bold text-tinta text-xs flex items-center gap-1.5">
-                  <span className="w-4 h-4 rounded-full bg-amber-500/20 text-amber-700 inline-flex items-center justify-center text-[10px]">2</span>
+                  <span className="w-4 h-4 rounded-full bg-amber-500/20 text-amber-800 inline-flex items-center justify-center text-[10px]">2</span>
                   Inventário de Riscos Ocupacionais (PGR / NR-01):
                 </h4>
                 <div className="bg-fundo rounded-lg border border-borda overflow-x-auto">
@@ -447,7 +447,7 @@ export const WorkOrdersOSTab: React.FC<WorkOrdersOSTabProps> = ({ selectedClient
               {/* 3. Mandatory EPIs */}
               <div className="space-y-1.5">
                 <h4 className="font-bold text-tinta text-xs flex items-center gap-1.5">
-                  <span className="w-4 h-4 rounded-full bg-teal-500/20 text-teal-700 inline-flex items-center justify-center text-[10px]">3</span>
+                  <span className="w-4 h-4 rounded-full bg-teal-500/20 text-teal-800 inline-flex items-center justify-center text-[10px]">3</span>
                   Equipamentos de Proteção Individual (EPI) Obrigatórios:
                 </h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -468,7 +468,7 @@ export const WorkOrdersOSTab: React.FC<WorkOrdersOSTabProps> = ({ selectedClient
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div className="space-y-1.5">
                   <h4 className="font-bold text-tinta text-xs flex items-center gap-1.5">
-                    <span className="w-4 h-4 rounded-full bg-teal-500/20 text-teal-700 inline-flex items-center justify-center text-[10px]">4</span>
+                    <span className="w-4 h-4 rounded-full bg-teal-500/20 text-teal-800 inline-flex items-center justify-center text-[10px]">4</span>
                     Medidas Preventivas:
                   </h4>
                   <ul className="list-disc list-inside bg-fundo p-3 rounded-lg border border-borda text-tinta-2 space-y-1 text-[11px]">
@@ -480,7 +480,7 @@ export const WorkOrdersOSTab: React.FC<WorkOrdersOSTabProps> = ({ selectedClient
 
                 <div className="space-y-1.5">
                   <h4 className="font-bold text-rose-700 text-xs flex items-center gap-1.5">
-                    <span className="w-4 h-4 rounded-full bg-rose-500/20 text-rose-700 inline-flex items-center justify-center text-[10px]">5</span>
+                    <span className="w-4 h-4 rounded-full bg-rose-500/20 text-rose-800 inline-flex items-center justify-center text-[10px]">5</span>
                     Proibições e Atos Inseguros:
                   </h4>
                   <ul className="list-disc list-inside bg-fundo p-3 rounded-lg border border-rose-500/20 text-tinta-2 space-y-1 text-[11px]">

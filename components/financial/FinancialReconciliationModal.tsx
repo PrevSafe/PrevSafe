@@ -80,11 +80,11 @@ export const FinancialReconciliationModal: React.FC<FinancialReconciliationModal
       <div className="bg-superficie border border-borda w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
         {/* Header */}
         <div className={`p-4 border-b border-borda flex items-center justify-between ${
-          isAlreadyReconciled ? 'bg-marca-suave' : 'bg-blue-950/40'
+          isAlreadyReconciled ? 'bg-marca-suave' : 'bg-blue-50'
         }`}>
           <div className="flex items-center space-x-2.5">
             <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-              isAlreadyReconciled ? 'bg-marca text-white' : 'bg-blue-500 text-white'
+              isAlreadyReconciled ? 'bg-marca-escura text-white' : 'bg-blue-700 text-white'
             }`}>
               <ShieldCheck className="w-5 h-5" />
             </div>
@@ -107,7 +107,7 @@ export const FinancialReconciliationModal: React.FC<FinancialReconciliationModal
           <div className="p-3.5 bg-fundo rounded-xl border border-borda space-y-2">
             <div className="flex items-center justify-between">
               <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                transaction.type === 'RECEIVABLE' ? 'bg-marca-suave text-marca-escura' : 'bg-rose-500/20 text-rose-700'
+                transaction.type === 'RECEIVABLE' ? 'bg-marca-suave text-marca-escura' : 'bg-rose-500/20 text-rose-800'
               }`}>
                 {transaction.type === 'RECEIVABLE' ? 'Receita a Receber' : 'Despesa a Pagar'}
               </span>
@@ -193,7 +193,7 @@ export const FinancialReconciliationModal: React.FC<FinancialReconciliationModal
               </div>
             </>
           ) : (
-            <div className="p-3.5 rounded-xl bg-amber-950/30 border border-amber-500/40 space-y-2">
+            <div className="p-3.5 rounded-xl bg-amber-50 border border-amber-500/40 space-y-2">
               <div className="flex items-center space-x-1.5 text-amber-700 font-bold">
                 <AlertCircle className="w-4 h-4" />
                 <span>Confirmar Estorno de Conciliação</span>
@@ -221,7 +221,7 @@ export const FinancialReconciliationModal: React.FC<FinancialReconciliationModal
               <button
                 type="button"
                 onClick={() => setIsUnreconcileMode(true)}
-                className="px-3 py-1.5 rounded-xl bg-superficie-2 hover:bg-amber-950/60 text-amber-700 text-xs font-semibold flex items-center space-x-1 transition"
+                className="px-3 py-1.5 rounded-xl bg-superficie-2 hover:bg-amber-50 text-amber-700 text-xs font-semibold flex items-center space-x-1 transition"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
                 <span>Estornar Conciliação</span>

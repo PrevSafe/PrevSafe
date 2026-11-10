@@ -98,7 +98,7 @@ export const SSTUnifiedEngineeringView: React.FC<SSTUnifiedEngineeringViewProps>
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
           <div className="space-y-2">
             <div className="flex items-center gap-2">
-              <span className="px-3 py-1 bg-teal-500/20 text-teal-700 font-bold text-xs rounded-full border border-teal-500/30 flex items-center gap-1.5">
+              <span className="px-3 py-1 bg-teal-500/20 text-teal-800 font-bold text-xs rounded-full border border-teal-500/30 flex items-center gap-1.5">
                 <ShieldCheck className="w-3.5 h-3.5" />
                 Módulo Integrado SST & eSocial (PGR • PCMSO • LTCAT • S-2210/2220/2240)
               </span>

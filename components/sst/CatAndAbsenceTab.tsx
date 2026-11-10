@@ -255,7 +255,7 @@ export const CatAndAbsenceTab: React.FC<CatAndAbsenceTabProps> = ({ selectedClie
   return (
     <div className="space-y-6" id="cat-absence-tab-container">
       {notificationMsg && (
-        <div className={`p-4 rounded-xl flex items-center justify-between gap-3 text-xs animate-in fade-in ${notificationMsg.erro ? 'bg-amber-500/10 border border-amber-500/30 text-amber-200' : 'bg-teal-500/10 border border-teal-500/30 text-teal-700'}`}>
+        <div className={`p-4 rounded-xl flex items-center justify-between gap-3 text-xs animate-in fade-in ${notificationMsg.erro ? 'bg-amber-500/10 border border-amber-500/30 text-amber-800' : 'bg-teal-500/10 border border-teal-500/30 text-teal-800'}`}>
           <div className="flex items-center gap-2">
             {notificationMsg.erro
               ? <AlertOctagon className="w-5 h-5 text-amber-700 shrink-0" />
@@ -375,7 +375,7 @@ export const CatAndAbsenceTab: React.FC<CatAndAbsenceTabProps> = ({ selectedClie
                     <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
                       cat.status === 'TRANSMITTED'
                         ? 'bg-marca-suave text-marca-escura border border-marca-escura'
-                        : 'bg-amber-500/10 text-amber-700 border border-amber-500/30'
+                        : 'bg-amber-500/10 text-amber-800 border border-amber-500/30'
                     }`}>
                       {cat.status}
                     </span>
@@ -455,7 +455,7 @@ export const CatAndAbsenceTab: React.FC<CatAndAbsenceTabProps> = ({ selectedClie
                         <div className="text-[10px] text-tinta-2 font-mono">Matrícula: {abs.worker_registration}</div>
                       </td>
                       <td className="py-3 px-4 text-tinta">
-                        <span className="px-2 py-0.5 bg-amber-500/10 border border-amber-500/30 text-amber-700 text-[10px] font-mono rounded">
+                        <span className="px-2 py-0.5 bg-amber-500/10 border border-amber-500/30 text-amber-800 text-[10px] font-mono rounded">
                           Cód {abs.reason_code_table_18}
                         </span>
                         <div className="text-[11px] text-tinta-2 mt-0.5">
@@ -499,7 +499,7 @@ export const CatAndAbsenceTab: React.FC<CatAndAbsenceTabProps> = ({ selectedClie
           <div className="bg-superficie border border-borda rounded-2xl max-w-2xl w-full p-6 space-y-4 shadow-2xl animate-in fade-in zoom-in-95 duration-150 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-borda pb-3">
               <h3 className="text-base font-bold text-tinta flex items-center gap-2">
-                <AlertOctagon className="w-5 h-5 text-rose-500" />
+                <AlertOctagon className="w-5 h-5 text-rose-700" />
                 Registrar Comunicação de Acidente de Trabalho (CAT / S-2210)
               </h3>
               <button 

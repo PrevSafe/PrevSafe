@@ -467,7 +467,7 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
           <button 
             id="btn-new-client"
             onClick={handleOpenNewClient}
-            className="px-4 py-2.5 bg-gradient-to-r from-marca to-teal-600 hover:from-marca hover:to-teal-500 text-white rounded-2xl text-xs font-bold shadow-lg shadow-emerald-950/40 transition flex items-center space-x-1.5"
+            className="px-4 py-2.5 bg-gradient-to-r from-marca-escura to-teal-600 hover:from-marca-escura hover:to-teal-700 text-white rounded-2xl text-xs font-bold shadow-lg shadow-emerald-950/40 transition flex items-center space-x-1.5"
           >
             <Plus className="w-4 h-4" />
             <span>Novo Cliente / Empregador</span>
@@ -560,7 +560,7 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
                         <span className="text-sm font-bold text-tinta">{client.trade_name}</span>
                         <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
                           client.risk_degree === 4 ? 'bg-rose-500/10 text-rose-700 border-rose-500/20' :
-                          client.risk_degree === 3 ? 'bg-amber-500/10 text-amber-700 border-amber-500/20' :
+                          client.risk_degree === 3 ? 'bg-amber-500/10 text-amber-800 border-amber-500/20' :
                           'bg-indigo-500/10 text-indigo-700 border-indigo-500/20'
                         }`}>
                           Grau {client.risk_degree}
@@ -574,7 +574,7 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
                   <div className="mt-3 pt-3 border-t border-borda flex items-center justify-between text-[11px] text-tinta-2 font-mono">
                     <div className="flex items-center gap-1.5">
                       <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold border ${
-                        docType === 'CAEPF' ? 'bg-amber-500/10 text-amber-700 border-amber-500/20' :
+                        docType === 'CAEPF' ? 'bg-amber-500/10 text-amber-800 border-amber-500/20' :
                         docType === 'CNO' ? 'bg-blue-500/10 text-blue-700 border-blue-500/20' :
                         docType === 'CPF' ? 'bg-purple-500/10 text-purple-700 border-purple-500/20' :
                         'bg-superficie-2 text-tinta border-borda'
@@ -602,7 +602,7 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
                     <h2 className="text-xl font-bold text-tinta">{selectedClient.trade_name}</h2>
                     <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full border ${
                       selectedClient.risk_degree === 4 ? 'bg-rose-500/10 text-rose-700 border-rose-500/20' :
-                      selectedClient.risk_degree === 3 ? 'bg-amber-500/10 text-amber-700 border-amber-500/20' :
+                      selectedClient.risk_degree === 3 ? 'bg-amber-500/10 text-amber-800 border-amber-500/20' :
                       'bg-marca-suave text-marca-escura border-marca-escura'
                     }`}>
                       Grau de Risco {selectedClient.risk_degree} (NR-04)
@@ -627,7 +627,7 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
                   <button
                     id="btn-delete-client"
                     onClick={() => setShowDeleteConfirmModal(true)}
-                    className="p-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-700 rounded-xl text-xs font-semibold transition border border-rose-500/20 flex items-center space-x-1"
+                    className="p-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-800 rounded-xl text-xs font-semibold transition border border-rose-500/20 flex items-center space-x-1"
                     title="Excluir Cliente"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
@@ -679,7 +679,7 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
 
                 {/* SESMT Staff Matrix if required */}
                 {activeClientSesmt && (activeClientSesmt.tecnicoSeguranca + activeClientSesmt.engenheiroSeguranca + activeClientSesmt.medicoTrabalho + activeClientSesmt.enfermeiroTrabalho > 0) && (
-                  <div className="bg-superficie border border-amber-500/20 rounded-xl p-2.5 text-[11px] flex items-center justify-between text-amber-200">
+                  <div className="bg-superficie border border-amber-500/20 rounded-xl p-2.5 text-[11px] flex items-center justify-between text-amber-700">
                     <span>Equipe SESMT Mínima:</span>
                     <div className="flex items-center gap-3 font-mono font-bold">
                       {activeClientSesmt.tecnicoSeguranca > 0 && <span>{activeClientSesmt.tecnicoSeguranca} TST</span>}
@@ -988,13 +988,13 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
                     <p className="text-[11px] text-marca-escura">{lookupFeedback.esocial_explanation}</p>
                   </div>
                 ) : (
-                  <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl text-xs text-amber-700 space-y-1">
+                  <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl text-xs text-amber-800 space-y-1">
                     <div className="flex items-center justify-between font-bold">
                       <span>Documento classificado — preencha os dados manualmente</span>
                       <span className="font-mono text-[10px]">{lookupFeedback.esocial_tp_insc}</span>
                     </div>
-                    <p className="text-[11px] text-amber-200">{lookupFeedback.esocial_explanation}</p>
-                    <p className="text-[11px] text-amber-200/80">
+                    <p className="text-[11px] text-amber-700">{lookupFeedback.esocial_explanation}</p>
+                    <p className="text-[11px] text-amber-700">
                       Não há consulta pública para este tipo de documento. Informe razão social, endereço e o CNAE
                       (que define o grau de risco do PGR/PCMSO).
                     </p>
@@ -1041,7 +1041,7 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
                   <span className="font-semibold text-tinta">CNAE Principal & Grau de Risco (NR-04 Automático)</span>
                   {currentClientNr4 && (
                     currentClientNr4.riskDegree === null ? (
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full border bg-amber-500/10 text-amber-700 border-amber-500/20">
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full border bg-amber-500/10 text-amber-800 border-amber-500/20">
                         CNAE não classificado — informe o grau
                       </span>
                     ) : (
@@ -1537,7 +1537,7 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
               <button
                 type="button"
                 onClick={handleDeleteClient}
-                className="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white rounded-xl text-xs font-semibold shadow-md"
+                className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-semibold shadow-md"
               >
                 Confirmar Exclusão
               </button>

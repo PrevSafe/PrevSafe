@@ -183,7 +183,7 @@ export const PcmsoPendencias: React.FC<Omit<PcmsoResumoProps, 'tema'>> = (props)
     );
   }
   return (
-    <div className="p-4 rounded-xl border border-amber-500/30 bg-amber-500/10 text-xs text-amber-200 space-y-1">
+    <div className="p-4 rounded-xl border border-amber-500/30 bg-amber-500/10 text-xs text-amber-800 space-y-1">
       <p className="font-bold text-amber-700">
         {montado.faltas.length} pendência(s) no PCMSO deste cliente — saem impressas no documento, com o item da NR-07
       </p>

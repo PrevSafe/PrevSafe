@@ -48,7 +48,7 @@ export const CatAbsencesView: React.FC<CatAbsencesViewProps> = ({ onNavigate }) 
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
           <div className="space-y-2">
             <div className="flex items-center gap-2">
-              <span className="px-3 py-1 bg-rose-500/20 text-rose-700 font-bold text-xs rounded-full border border-rose-500/30 flex items-center gap-1.5">
+              <span className="px-3 py-1 bg-rose-500/20 text-rose-800 font-bold text-xs rounded-full border border-rose-500/30 flex items-center gap-1.5">
                 <AlertOctagon className="w-3.5 h-3.5" />
                 eSocial S-2210 & S-2230 • Lei 8.213/91 Art. 22
               </span>
@@ -130,7 +130,7 @@ export const CatAbsencesView: React.FC<CatAbsencesViewProps> = ({ onNavigate }) 
               {pendingCats > 0 ? (
                 <>
                   <span className="text-lg font-black text-amber-700">{pendingCats} pendentes</span>
-                  <span className="text-[10px] text-amber-500">atenção ao prazo</span>
+                  <span className="text-[10px] text-amber-700">atenção ao prazo</span>
                 </>
               ) : (
                 <>

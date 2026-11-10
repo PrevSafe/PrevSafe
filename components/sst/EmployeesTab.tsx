@@ -434,7 +434,7 @@ export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) 
               type="button"
               id="btn-emp-batch-generate-os"
               onClick={handleBatchGenerateOS}
-              className="px-2.5 py-1.5 bg-indigo-950 hover:bg-indigo-900 text-indigo-700 border border-indigo-800 rounded-lg font-bold flex items-center gap-1.5 transition-colors"
+              className="px-2.5 py-1.5 bg-indigo-950 hover:bg-indigo-900 text-white border border-indigo-800 rounded-lg font-bold flex items-center gap-1.5 transition-colors"
             >
               <Sparkles className="w-3.5 h-3.5 text-indigo-700" />
               Gerar OS em Lote
@@ -464,7 +464,7 @@ export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) 
               type="button"
               id="btn-emp-batch-print-kit"
               onClick={handleBatchPrintKitAdmissional}
-              className="px-2.5 py-1.5 bg-teal-950 hover:bg-teal-900 text-teal-700 border border-teal-800 rounded-lg font-bold flex items-center gap-1.5 transition-colors shadow-sm"
+              className="px-2.5 py-1.5 bg-teal-950 hover:bg-teal-900 text-white border border-teal-800 rounded-lg font-bold flex items-center gap-1.5 transition-colors shadow-sm"
               title="Imprime o Kit de Admissão Completo (OS NR-01 + Ficha de EPI NR-06 + Lista de Presença do Treinamento de Integração NR-01 item 1.7)"
             >
               <CheckCheck className="w-3.5 h-3.5 text-teal-700" />
@@ -498,7 +498,7 @@ export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) 
                     type="checkbox"
                     checked={selectedEmpIds.length > 0 && selectedEmpIds.length === filteredEmployees.length}
                     onChange={handleSelectAll}
-                    className="rounded border-borda text-teal-500 focus:ring-0 w-4 h-4 bg-superficie"
+                    className="rounded border-borda text-teal-700 focus:ring-0 w-4 h-4 bg-superficie"
                   />
                 </th>
                 <th className="py-3 px-4">Trabalhador / CPF</th>
@@ -518,13 +518,13 @@ export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) 
                 const isSelected = selectedEmpIds.includes(emp.id);
 
                 return (
-                  <tr key={emp.id} id={`employee-row-${emp.id}`} className={`hover:bg-superficie-2 transition-colors ${isSelected ? 'bg-teal-950/20' : ''}`}>
+                  <tr key={emp.id} id={`employee-row-${emp.id}`} className={`hover:bg-superficie-2 transition-colors ${isSelected ? 'bg-teal-50' : ''}`}>
                     <td className="py-3 px-3 text-center">
                       <input
                         type="checkbox"
                         checked={isSelected}
                         onChange={() => handleToggleSelect(emp.id)}
-                        className="rounded border-borda text-teal-500 focus:ring-0 w-4 h-4 bg-superficie"
+                        className="rounded border-borda text-teal-700 focus:ring-0 w-4 h-4 bg-superficie"
                       />
                     </td>
                     <td className="py-3 px-4">
@@ -549,7 +549,7 @@ export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) 
                         <button
                           type="button"
                           onClick={() => handleIndividualPrintOS(emp)}
-                          className="px-2 py-0.5 bg-indigo-950/80 hover:bg-indigo-900 text-indigo-700 border border-indigo-800 text-[10px] rounded font-bold transition-colors flex items-center gap-1"
+                          className="px-2 py-0.5 bg-indigo-50 hover:bg-indigo-900 text-white border border-indigo-800 text-[10px] rounded font-bold transition-colors flex items-center gap-1"
                           title="Imprimir Ordem de Serviço NR-01"
                         >
                           <Printer className="w-3 h-3 text-indigo-700" />
@@ -560,7 +560,7 @@ export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) 
                         <button
                           type="button"
                           onClick={() => handleIndividualPrintEPI(emp)}
-                          className="px-2 py-0.5 bg-amber-950/80 hover:bg-amber-900 text-amber-700 border border-amber-800 text-[10px] rounded font-bold transition-colors flex items-center gap-1"
+                          className="px-2 py-0.5 bg-amber-50 hover:bg-amber-900 text-white border border-amber-800 text-[10px] rounded font-bold transition-colors flex items-center gap-1"
                           title="Imprimir Ficha de Entrega de EPI NR-06"
                         >
                           <HardHat className="w-3 h-3 text-amber-700" />
@@ -578,7 +578,7 @@ export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) 
                         <button
                           type="button"
                           onClick={() => handleIndividualPrintKitAdmissional(emp)}
-                          className="p-1.5 text-teal-700 hover:text-teal-700 hover:bg-teal-950/60 rounded transition-colors"
+                          className="p-1.5 text-teal-700 hover:text-teal-700 hover:bg-teal-50 rounded transition-colors"
                           title="Imprimir Kit de Admissão (OS + EPI + Lista de Presença Treinamento de Integração)"
                         >
                           <CheckCheck className="w-3.5 h-3.5" />
@@ -860,7 +860,7 @@ export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) 
                     type="checkbox"
                     checked={epiForm.term_signed}
                     onChange={(e) => setEpiForm({ ...epiForm, term_signed: e.target.checked })}
-                    className="rounded border-borda text-teal-500 focus:ring-teal-500"
+                    className="rounded border-borda text-teal-700 focus:ring-teal-500"
                   />
                   Termo de Responsabilidade e Guarda Assinado pelo Colaborador (NR-06)
                 </label>
@@ -911,7 +911,7 @@ export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) 
                     <h4 className="font-bold text-tinta text-sm">{viewingEmpDossier.name}</h4>
                     <p className="text-teal-700 font-semibold">{viewingEmpDossier.job_title} (CBO {viewingEmpDossier.cbo})</p>
                   </div>
-                  <span className="px-2 py-0.5 bg-teal-500/10 text-teal-700 font-mono text-xs rounded border border-teal-500/30">
+                  <span className="px-2 py-0.5 bg-teal-500/10 text-teal-800 font-mono text-xs rounded border border-teal-500/30">
                     Matrícula: {viewingEmpDossier.registration_number}
                   </span>
                 </div>
@@ -992,7 +992,7 @@ export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) 
                             ))}
                           </ul>
                         ) : (
-                          <p className="pl-3 border-l border-borda text-amber-500/80">
+                          <p className="pl-3 border-l border-borda text-amber-700">
                             Sem exames lançados — o S-2220 deste ASO fica retido até serem registrados.
                           </p>
                         )}

@@ -282,7 +282,7 @@ export const TechnicalResponsibilityTab: React.FC<TechnicalResponsibilityTabProp
             Papéis em {cliente?.trade_name || cliente?.legal_name || 'cliente'}
           </h4>
           {semResponsavel.length > 0 && (
-            <span className="text-[11px] font-semibold text-amber-700 bg-amber-500/10 border border-amber-500/30 rounded-full px-3 py-1">
+            <span className="text-[11px] font-semibold text-amber-800 bg-amber-500/10 border border-amber-500/30 rounded-full px-3 py-1">
               {semResponsavel.length} papel(éis) sem responsável
             </span>
           )}
@@ -649,7 +649,7 @@ export const TechnicalResponsibilityTab: React.FC<TechnicalResponsibilityTabProp
               {erro && (
                 <div className="flex items-start gap-2 bg-red-500/10 border border-red-500/30 rounded-lg p-3">
                   <AlertTriangle className="w-4 h-4 text-red-700 mt-0.5 shrink-0" />
-                  <p className="text-xs text-red-200">{erro}</p>
+                  <p className="text-xs text-red-700">{erro}</p>
                 </div>
               )}
 
@@ -722,7 +722,7 @@ export const TechnicalResponsibilityTab: React.FC<TechnicalResponsibilityTabProp
               {candidato && habilitacao && !habilitacao.apto && (
                 <div className="flex items-start gap-2 bg-red-500/10 border border-red-500/30 rounded-lg p-3">
                   <AlertTriangle className="w-4 h-4 text-red-700 mt-0.5 shrink-0" />
-                  <p className="text-xs text-red-200">{habilitacao.motivo}</p>
+                  <p className="text-xs text-red-700">{habilitacao.motivo}</p>
                 </div>
               )}
 
@@ -801,7 +801,7 @@ export const TechnicalResponsibilityTab: React.FC<TechnicalResponsibilityTabProp
                 <button
                   type="submit"
                   disabled={!candidato || !habilitacao?.apto || clientesAlvo.length === 0}
-                  className="px-4 py-2 bg-teal-500 hover:bg-teal-400 disabled:bg-superficie-2 disabled:text-white/80 text-slate-950 font-bold rounded-lg"
+                  className="px-4 py-2 bg-teal-500 hover:bg-teal-400 disabled:bg-superficie-2 disabled:text-tinta text-slate-950 font-bold rounded-lg"
                 >
                   Atribuir
                 </button>

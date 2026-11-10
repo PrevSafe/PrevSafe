@@ -397,7 +397,7 @@ export const SSTSignaturesManagementTab: React.FC<SSTSignaturesManagementTabProp
                 {/* Header Row */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-borda pb-4">
                   <div className="flex items-start space-x-3">
-                    <div className="p-3 rounded-2xl bg-teal-500/10 border border-teal-500/20 text-teal-700 flex-shrink-0">
+                    <div className="p-3 rounded-2xl bg-teal-500/10 border border-teal-500/20 text-teal-800 flex-shrink-0">
                       <FileCheck className="w-6 h-6" />
                     </div>
                     <div>
@@ -409,7 +409,7 @@ export const SSTSignaturesManagementTab: React.FC<SSTSignaturesManagementTabProp
                         <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${
                           isSigned ? 'bg-marca-suave text-marca-escura border-marca-escura' :
                           isRejected ? 'bg-rose-500/10 text-rose-700 border-rose-500/20' :
-                          'bg-amber-500/10 text-amber-700 border-amber-500/20 animate-pulse'
+                          'bg-amber-500/10 text-amber-800 border-amber-500/20 animate-pulse'
                         }`}>
                           {isSigned ? 'CONCLUÍDO / ASSINADO' : isRejected ? 'RECUSADO PELO CLIENTE' : `AGUARDANDO (${signedCount}/${totalSigners})`}
                         </span>
@@ -460,7 +460,7 @@ export const SSTSignaturesManagementTab: React.FC<SSTSignaturesManagementTabProp
                           signerIsSigned 
                             ? 'bg-marca-suave border-marca-escura hover:border-marca-escura' 
                             : signerIsRejected
-                            ? 'bg-rose-950/20 border-rose-500/30 hover:border-rose-500/50'
+                            ? 'bg-rose-50 border-rose-500/30 hover:border-rose-500/50'
                             : 'bg-fundo border-borda hover:border-teal-500/40'
                         }`}
                       >
@@ -547,7 +547,7 @@ export const SSTSignaturesManagementTab: React.FC<SSTSignaturesManagementTabProp
           <div className="bg-superficie border border-borda rounded-3xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden text-tinta">
             <div className="bg-fundo px-6 py-4 border-b border-borda flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <div className="p-2.5 rounded-2xl bg-teal-500/10 border border-teal-500/20 text-teal-700">
+                <div className="p-2.5 rounded-2xl bg-teal-500/10 border border-teal-500/20 text-teal-800">
                   <ShieldCheck className="w-6 h-6" />
                 </div>
                 <div>
@@ -636,7 +636,7 @@ export const SSTSignaturesManagementTab: React.FC<SSTSignaturesManagementTabProp
                       <div>
                         <div className="flex items-center space-x-2">
                           <span className="font-bold text-tinta">{signer.name}</span>
-                          <span className="px-2 py-0.5 rounded text-[9px] font-bold bg-teal-500/10 text-teal-700 border border-teal-500/20">
+                          <span className="px-2 py-0.5 rounded text-[9px] font-bold bg-teal-500/10 text-teal-800 border border-teal-500/20">
                             {signer.role_type}
                           </span>
                         </div>
@@ -733,7 +733,7 @@ export const SSTSignaturesManagementTab: React.FC<SSTSignaturesManagementTabProp
           <div className="bg-superficie border border-borda rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden text-tinta">
             <div className="bg-fundo px-6 py-4 border-b border-borda flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <div className="p-2.5 rounded-2xl bg-teal-500/10 border border-teal-500/20 text-teal-700">
+                <div className="p-2.5 rounded-2xl bg-teal-500/10 border border-teal-500/20 text-teal-800">
                   <QrCode className="w-6 h-6" />
                 </div>
                 <div>
@@ -778,7 +778,7 @@ export const SSTSignaturesManagementTab: React.FC<SSTSignaturesManagementTabProp
                 <div className={`p-4 rounded-2xl border space-y-2 animate-in fade-in ${
                   verifyResult.isValid 
                     ? 'bg-marca-suave border-marca-escura text-marca-escura' 
-                    : 'bg-rose-950/30 border-rose-500/40 text-rose-700'
+                    : 'bg-rose-50 border-rose-500/40 text-rose-700'
                 }`}>
                   <div className="flex items-center space-x-2 font-bold text-sm">
                     {verifyResult.isValid ? (

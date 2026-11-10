@@ -507,7 +507,7 @@ export const AccidentIncidentReportView: React.FC<AccidentIncidentReportViewProp
       {/* Sub Header & Navigation */}
       <div className="bg-superficie border border-borda rounded-2xl p-5 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-xl bg-rose-500/20 border border-rose-500/30 flex items-center justify-center text-rose-700">
+          <div className="w-12 h-12 rounded-xl bg-rose-500/20 border border-rose-500/30 flex items-center justify-center text-rose-800">
             <AlertOctagon className="w-6 h-6" />
           </div>
           <div>
@@ -515,7 +515,7 @@ export const AccidentIncidentReportView: React.FC<AccidentIncidentReportViewProp
               <h2 className="text-xl font-black text-tinta">
                 Relatório de Acidentes & Cadastro de Incidentes
               </h2>
-              <span className="px-2 py-0.5 bg-rose-500/20 text-rose-700 font-mono text-[11px] font-bold rounded">
+              <span className="px-2 py-0.5 bg-rose-500/20 text-rose-800 font-mono text-[11px] font-bold rounded">
                 NR-01 • NR-04 • NR-05 • NBR 14280
               </span>
             </div>
@@ -562,7 +562,7 @@ export const AccidentIncidentReportView: React.FC<AccidentIncidentReportViewProp
             className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
               activeSubTab === 'FORM'
                 ? 'bg-marca text-slate-950 shadow-md shadow-emerald-500/20'
-                : 'text-marca-escura hover:text-white bg-marca-suave border border-marca-escura hover:bg-marca-suave'
+                : 'text-marca-escura hover:text-tinta bg-marca-suave border border-marca-escura hover:bg-marca-suave'
             }`}
           >
             <Plus className="w-4 h-4" />
@@ -587,7 +587,7 @@ export const AccidentIncidentReportView: React.FC<AccidentIncidentReportViewProp
               <div className="text-[11px] text-tinta-2 mt-0.5">no período selecionado</div>
             </div>
 
-            <div className="bg-superficie border border-rose-900/40 p-4 rounded-2xl">
+            <div className="bg-superficie border border-rose-200 p-4 rounded-2xl">
               <div className="flex items-center justify-between text-rose-700 text-[11px] font-bold uppercase">
                 <span>C/ Afastamento</span>
                 <AlertTriangle className="w-4 h-4 text-rose-700" />
@@ -615,7 +615,7 @@ export const AccidentIncidentReportView: React.FC<AccidentIncidentReportViewProp
             </div>
 
             {/* NBR 14280: TF */}
-            <div className="bg-superficie border border-teal-900/50 p-4 rounded-2xl bg-gradient-to-br from-teal-950/30 to-slate-900">
+            <div className="bg-superficie border border-teal-200 p-4 rounded-2xl bg-gradient-to-br from-teal-950/30 to-slate-900">
               <div className="flex items-center justify-between text-teal-700 text-[11px] font-bold uppercase">
                 <span>Taxa Frequência (TF)</span>
                 <Activity className="w-4 h-4 text-teal-700" />
@@ -625,7 +625,7 @@ export const AccidentIncidentReportView: React.FC<AccidentIncidentReportViewProp
             </div>
 
             {/* NBR 14280: TG */}
-            <div className="bg-superficie border border-indigo-900/50 p-4 rounded-2xl bg-gradient-to-br from-indigo-950/30 to-slate-900">
+            <div className="bg-superficie border border-indigo-200 p-4 rounded-2xl bg-gradient-to-br from-indigo-950/30 to-slate-900">
               <div className="flex items-center justify-between text-indigo-700 text-[11px] font-bold uppercase">
                 <span>Taxa Gravidade (TG)</span>
                 <Award className="w-4 h-4 text-indigo-700" />
@@ -740,10 +740,10 @@ export const AccidentIncidentReportView: React.FC<AccidentIncidentReportViewProp
                   <span className="text-sm font-black text-marca-escura font-mono">{stats.actionsCompleted}</span>
                 </div>
 
-                <div className="flex items-center justify-between p-3 bg-amber-950/30 border border-amber-800/40 rounded-xl">
+                <div className="flex items-center justify-between p-3 bg-amber-50 border border-amber-800/40 rounded-xl">
                   <div className="flex items-center gap-2.5">
                     <Clock className="w-4 h-4 text-amber-700" />
-                    <span className="text-xs font-semibold text-amber-200">Ações em Andamento</span>
+                    <span className="text-xs font-semibold text-amber-700">Ações em Andamento</span>
                   </div>
                   <span className="text-sm font-black text-amber-700 font-mono">{stats.actionsInProgress}</span>
                 </div>
@@ -855,7 +855,7 @@ export const AccidentIncidentReportView: React.FC<AccidentIncidentReportViewProp
                 <button
                   type="button"
                   onClick={handleStartNew}
-                  className="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white rounded-xl text-xs font-bold transition-colors inline-flex items-center gap-1.5"
+                  className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold transition-colors inline-flex items-center gap-1.5"
                 >
                   <Plus className="w-4 h-4" /> Cadastrar Primeira Ocorrência
                 </button>
@@ -882,8 +882,8 @@ export const AccidentIncidentReportView: React.FC<AccidentIncidentReportViewProp
 
                           <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold ${
                             isWithAbsence
-                              ? 'bg-rose-500/20 text-rose-700 border border-rose-500/30'
-                              : 'bg-amber-500/20 text-amber-700 border border-amber-500/30'
+                              ? 'bg-rose-500/20 text-rose-800 border border-rose-500/30'
+                              : 'bg-amber-500/20 text-amber-800 border border-amber-500/30'
                           }`}>
                             {isWithAbsence ? 'Com Afastamento' : 'Sem Afastamento / Quase-Acidente'}
                           </span>
@@ -899,7 +899,7 @@ export const AccidentIncidentReportView: React.FC<AccidentIncidentReportViewProp
                           <span className={`px-2 py-0.5 text-[10px] font-bold rounded ${
                             record.investigation_status === 'COMPLETED' ? 'bg-marca-suave text-marca-escura' :
                             record.investigation_status === 'ACTION_PLAN' ? 'bg-indigo-500/20 text-indigo-700' :
-                            record.investigation_status === 'INVESTIGATING' ? 'bg-amber-500/20 text-amber-700' :
+                            record.investigation_status === 'INVESTIGATING' ? 'bg-amber-500/20 text-amber-800' :
                             'bg-superficie-3 text-tinta'
                           }`}>
                             {record.investigation_status === 'COMPLETED' ? 'Concluída' :
@@ -908,7 +908,7 @@ export const AccidentIncidentReportView: React.FC<AccidentIncidentReportViewProp
                           </span>
 
                           {hasCat && (
-                            <span className="px-2 py-0.5 bg-teal-500/20 text-teal-700 text-[10px] font-semibold rounded flex items-center gap-1 border border-teal-500/30">
+                            <span className="px-2 py-0.5 bg-teal-500/20 text-teal-800 text-[10px] font-semibold rounded flex items-center gap-1 border border-teal-500/30">
                               <FileCheck2 className="w-3 h-3" /> CAT S-2210 Vinculada
                             </span>
                           )}
@@ -961,7 +961,7 @@ export const AccidentIncidentReportView: React.FC<AccidentIncidentReportViewProp
                               deleteAccidentIncident(record.id);
                             }
                           }}
-                          className="p-1.5 bg-superficie-2 hover:bg-rose-950 text-tinta-2 hover:text-rose-700 rounded-xl transition-colors border border-borda"
+                          className="p-1.5 bg-superficie-2 hover:bg-rose-950 text-white hover:text-white rounded-xl transition-colors border border-borda"
                           title="Excluir Ocorrência"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -1065,7 +1065,7 @@ export const AccidentIncidentReportView: React.FC<AccidentIncidentReportViewProp
                 type="button"
                 onClick={() => handleImportCAT(selectedCatIdToImport)}
                 disabled={!selectedCatIdToImport}
-                className="w-full sm:w-auto px-4 py-2 bg-rose-600 hover:bg-rose-500 disabled:opacity-50 text-white rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-1.5 shrink-0"
+                className="w-full sm:w-auto px-4 py-2 bg-rose-600 hover:bg-rose-700 disabled:opacity-50 text-white rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-1.5 shrink-0"
               >
                 <Download className="w-3.5 h-3.5" />
                 Puxar Dados da CAT
@@ -1448,7 +1448,7 @@ export const AccidentIncidentReportView: React.FC<AccidentIncidentReportViewProp
                 <button
                   type="button"
                   onClick={handleAddWitnessToForm}
-                  className="px-3 py-1.5 bg-sky-600 hover:bg-sky-500 text-white rounded-xl text-xs font-bold flex items-center gap-1 transition-colors"
+                  className="px-3 py-1.5 bg-sky-600 hover:bg-sky-700 text-white rounded-xl text-xs font-bold flex items-center gap-1 transition-colors"
                 >
                   <Plus className="w-3.5 h-3.5" /> Adicionar Testemunha
                 </button>
@@ -1486,7 +1486,7 @@ export const AccidentIncidentReportView: React.FC<AccidentIncidentReportViewProp
                   {att.file_type === 'IMAGE' ? (
                     <div className="h-28 bg-superficie rounded-lg overflow-hidden border border-borda relative">
                       <img src={att.file_url} alt={att.title} className="w-full h-full object-cover" />
-                      <span className="absolute bottom-1 right-1 px-1.5 py-0.5 bg-black/70 text-[10px] text-amber-700 font-mono rounded">
+                      <span className="absolute bottom-1 right-1 px-1.5 py-0.5 bg-black/70 text-[10px] text-white font-mono rounded">
                         FOTO
                       </span>
                     </div>
@@ -1494,7 +1494,7 @@ export const AccidentIncidentReportView: React.FC<AccidentIncidentReportViewProp
                     <div className="h-28 bg-superficie rounded-lg border border-borda flex flex-col items-center justify-center p-3 text-center space-y-1">
                       <FileCode className="w-8 h-8 text-rose-700" />
                       <span className="text-[11px] text-tinta font-mono truncate max-w-full">{att.file_name}</span>
-                      <span className="px-2 py-0.5 bg-rose-500/20 text-rose-700 text-[10px] rounded font-bold">
+                      <span className="px-2 py-0.5 bg-rose-500/20 text-rose-800 text-[10px] rounded font-bold">
                         DOCUMENTO PDF
                       </span>
                     </div>
@@ -1754,7 +1754,7 @@ export const AccidentIncidentReportView: React.FC<AccidentIncidentReportViewProp
                         <td className="py-2.5 px-3">
                           <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
                             item.status === 'COMPLETED' ? 'bg-marca-suave text-marca-escura' :
-                            item.status === 'IN_PROGRESS' ? 'bg-amber-500/20 text-amber-700' :
+                            item.status === 'IN_PROGRESS' ? 'bg-amber-500/20 text-amber-800' :
                             'bg-superficie-2 text-tinta-2'
                           }`}>
                             {item.status}
@@ -1915,7 +1915,7 @@ export const AccidentIncidentReportView: React.FC<AccidentIncidentReportViewProp
 
             <button
               type="submit"
-              className="px-6 py-2.5 bg-gradient-to-r from-rose-600 to-rose-500 hover:from-rose-500 hover:to-rose-400 text-tinta rounded-xl text-xs font-bold transition-all shadow-lg shadow-rose-600/30 flex items-center gap-2"
+              className="px-6 py-2.5 bg-gradient-to-r from-rose-600 to-rose-500 hover:from-rose-500 hover:to-rose-400 text-white rounded-xl text-xs font-bold transition-all shadow-lg shadow-rose-600/30 flex items-center gap-2"
             >
               <CheckCircle2 className="w-4 h-4" />
               {selectedIncidentForEdit ? 'Atualizar Investigação' : 'Salvar Relatório de Acidente'}
@@ -1934,7 +1934,7 @@ export const AccidentIncidentReportView: React.FC<AccidentIncidentReportViewProp
             {/* Print action header (hidden on physical print) */}
             <div className="flex items-center justify-between border-b pb-4 print:hidden">
               <div className="flex items-center gap-2">
-                <FileText className="w-5 h-5 text-rose-600" />
+                <FileText className="w-5 h-5 text-rose-700" />
                 <h3 className="text-base font-bold text-slate-900">
                   Modelo Oficial de Relatório de Investigação de Acidente (RIAA)
                 </h3>
@@ -1944,7 +1944,7 @@ export const AccidentIncidentReportView: React.FC<AccidentIncidentReportViewProp
                 <button
                   type="button"
                   onClick={handlePrintDocument}
-                  className="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-colors shadow-md"
+                  className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-colors shadow-md"
                 >
                   <Printer className="w-4 h-4" /> Imprimir / Salvar em PDF
                 </button>

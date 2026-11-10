@@ -124,8 +124,8 @@ export const ServiceWorkerManager: React.FC = () => {
     /* CANTO-FLUTUANTE: aviso de app pronto para uso offline, dispensavel */
     <div className="fixed bottom-4 right-4 z-50 max-w-md bg-superficie border border-borda text-tinta p-4 rounded-2xl shadow-2xl flex items-start space-x-3 animate-in fade-in slide-in-from-bottom-5 duration-300">
       <div className={`p-2 rounded-xl flex-shrink-0 ${
-        bannerType === 'OFFLINE' ? 'bg-amber-500/20 text-amber-700' :
-        bannerType === 'SUCCESS' ? 'bg-teal-500/20 text-teal-700' :
+        bannerType === 'OFFLINE' ? 'bg-amber-500/20 text-amber-800' :
+        bannerType === 'SUCCESS' ? 'bg-teal-500/20 text-teal-800' :
         'bg-indigo-500/20 text-indigo-700'
       }`}>
         {bannerType === 'OFFLINE' ? <WifiOff className="w-5 h-5" /> : 

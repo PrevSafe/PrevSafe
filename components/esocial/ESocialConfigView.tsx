@@ -148,7 +148,7 @@ export const ESocialConfigView: React.FC<ESocialConfigViewProps> = ({ onBack }) 
               <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border uppercase tracking-wider ${
                 environment === 'PRODUCAO' 
                   ? 'bg-marca-suave text-marca-escura border-marca-escura' 
-                  : 'bg-amber-500/10 text-amber-700 border-amber-500/30'
+                  : 'bg-amber-500/10 text-amber-800 border-amber-500/30'
               }`}>
                 {environment === 'PRODUCAO' ? 'Produção Oficial' : 'Ambiente de Homologação'}
               </span>
@@ -186,7 +186,7 @@ export const ESocialConfigView: React.FC<ESocialConfigViewProps> = ({ onBack }) 
       )}
 
       {slaFeedback && (
-        <div className="p-4 bg-indigo-950/40 border border-indigo-500/30 rounded-2xl flex items-center space-x-3 text-indigo-700 text-xs font-medium">
+        <div className="p-4 bg-indigo-50 border border-indigo-500/30 rounded-2xl flex items-center space-x-3 text-indigo-700 text-xs font-medium">
           <Bell className="w-5 h-5 text-indigo-700 flex-shrink-0" />
           <span>{slaFeedback.message}</span>
         </div>
@@ -212,7 +212,7 @@ export const ESocialConfigView: React.FC<ESocialConfigViewProps> = ({ onBack }) 
                 isCertValid
                   ? 'bg-marca-suave text-marca-escura border-marca-escura'
                   : certNaoVerificado
-                    ? 'bg-amber-500/10 text-amber-700 border-amber-500/30'
+                    ? 'bg-amber-500/10 text-amber-800 border-amber-500/30'
                     : 'bg-rose-500/10 text-rose-700 border-rose-500/30'
               }`}>
                 {isCertValid
@@ -242,7 +242,7 @@ export const ESocialConfigView: React.FC<ESocialConfigViewProps> = ({ onBack }) 
                   LIDOS do certificado. Antes eram preenchidos no upload sem
                   abrir o arquivo, e a tela os exibia como fato. */}
               {certNaoVerificado ? (
-                <div className="pt-2 border-t border-borda text-xs text-amber-200/90 space-y-1">
+                <div className="pt-2 border-t border-borda text-xs text-amber-700 space-y-1">
                   <p className="font-semibold text-amber-700">Conteúdo do certificado não verificado</p>
                   <p>
                     O PrevSafe guarda o arquivo, mas não abre o .PFX/.P12: titular, autoridade
@@ -292,7 +292,7 @@ export const ESocialConfigView: React.FC<ESocialConfigViewProps> = ({ onBack }) 
                 }
               }}
               className={`border-2 border-dashed rounded-2xl p-6 text-center transition flex flex-col items-center justify-center space-y-2 cursor-pointer ${
-                isDragging ? 'border-indigo-400 bg-indigo-950/20' : 'border-borda hover:border-borda bg-fundo'
+                isDragging ? 'border-indigo-400 bg-indigo-50' : 'border-borda hover:border-borda bg-fundo'
               }`}
               onClick={() => {
                 const input = document.createElement('input');
@@ -366,7 +366,7 @@ export const ESocialConfigView: React.FC<ESocialConfigViewProps> = ({ onBack }) 
                 <div className={`p-3.5 rounded-xl border text-xs flex items-start space-x-2.5 ${
                   certTestResult.success 
                     ? 'bg-marca-suave border-marca-escura text-marca-escura' 
-                    : 'bg-rose-950/40 border-rose-500/30 text-rose-700'
+                    : 'bg-rose-50 border-rose-500/30 text-rose-700'
                 }`}>
                   {certTestResult.success ? (
                     <CheckCircle2 className="w-4 h-4 text-marca-escura flex-shrink-0 mt-0.5" />
@@ -391,7 +391,7 @@ export const ESocialConfigView: React.FC<ESocialConfigViewProps> = ({ onBack }) 
           <div className="bg-superficie border border-borda rounded-3xl p-6 shadow-xl space-y-4">
             <div className="flex items-center justify-between border-b border-borda pb-3">
               <div className="flex items-center space-x-3">
-                <div className="p-2.5 rounded-2xl bg-teal-500/10 text-teal-700 border border-teal-500/20">
+                <div className="p-2.5 rounded-2xl bg-teal-500/10 text-teal-800 border border-teal-500/20">
                   <Bell className="w-5 h-5" />
                 </div>
                 <div>
@@ -402,7 +402,7 @@ export const ESocialConfigView: React.FC<ESocialConfigViewProps> = ({ onBack }) 
 
               <button
                 onClick={handleTriggerSlaCheck}
-                className="px-3 py-1.5 bg-teal-600/20 hover:bg-teal-600/30 text-teal-700 border border-teal-500/30 rounded-xl text-xs font-semibold transition flex items-center space-x-1.5"
+                className="px-3 py-1.5 bg-teal-600/20 hover:bg-teal-600/30 text-teal-800 border border-teal-500/30 rounded-xl text-xs font-semibold transition flex items-center space-x-1.5"
               >
                 <Zap className="w-3.5 h-3.5 text-teal-700" />
                 <span>Auditar Prazos Agora</span>
@@ -478,7 +478,7 @@ export const ESocialConfigView: React.FC<ESocialConfigViewProps> = ({ onBack }) 
           {/* Environment Switcher */}
           <div className="bg-superficie border border-borda rounded-3xl p-6 shadow-xl space-y-4">
             <div className="flex items-center space-x-3 border-b border-borda pb-3">
-              <div className="p-2.5 rounded-2xl bg-amber-500/10 text-amber-700 border border-amber-500/20">
+              <div className="p-2.5 rounded-2xl bg-amber-500/10 text-amber-800 border border-amber-500/20">
                 <Server className="w-5 h-5" />
               </div>
               <div>
@@ -512,7 +512,7 @@ export const ESocialConfigView: React.FC<ESocialConfigViewProps> = ({ onBack }) 
                 onClick={() => setEnvironment('PRODUCAO_RESTRITA')}
                 className={`p-4 rounded-2xl border text-left transition flex flex-col justify-between ${
                   environment === 'PRODUCAO_RESTRITA'
-                    ? 'bg-amber-950/30 border-amber-500/50 shadow-lg shadow-amber-950/30'
+                    ? 'bg-amber-50 border-amber-500/50 shadow-lg shadow-amber-950/30'
                     : 'bg-fundo border-borda hover:border-borda'
                 }`}
               >

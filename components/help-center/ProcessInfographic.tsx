@@ -57,7 +57,7 @@ export const ProcessInfographic: React.FC<ProcessInfographicProps> = ({ infograp
         </div>
 
         <div className="p-3.5 bg-fundo rounded-xl border border-borda flex items-start space-x-3">
-          <div className="p-2 rounded-lg bg-amber-500/10 text-amber-700 shrink-0">
+          <div className="p-2 rounded-lg bg-amber-500/10 text-amber-800 shrink-0">
             <AlertCircle className="w-5 h-5" />
           </div>
           <div>
@@ -86,10 +86,10 @@ export const ProcessInfographic: React.FC<ProcessInfographicProps> = ({ infograp
                   node.actorColor === 'emerald'
                     ? 'bg-marca-suave border-marca-escura'
                     : node.actorColor === 'blue'
-                    ? 'bg-blue-950/20 border-blue-500/30'
+                    ? 'bg-blue-50 border-blue-500/30'
                     : node.actorColor === 'purple'
-                    ? 'bg-purple-950/20 border-purple-500/30'
-                    : 'bg-amber-950/20 border-amber-500/30'
+                    ? 'bg-purple-50 border-purple-500/30'
+                    : 'bg-amber-50 border-amber-500/30'
                 }`}>
                   {/* Phase & Step Pill */}
                   <div>
@@ -130,7 +130,7 @@ export const ProcessInfographic: React.FC<ProcessInfographicProps> = ({ infograp
 
                   {/* Decision branching if any */}
                   {node.isDecision && node.decisionChoices && (
-                    <div className="mt-2 text-[10px] p-1.5 bg-amber-950/40 border border-amber-500/30 rounded text-amber-200">
+                    <div className="mt-2 text-[10px] p-1.5 bg-amber-50 border border-amber-500/30 rounded text-amber-700">
                       <strong>Ramificação:</strong> {node.decisionChoices.yes}
                     </div>
                   )}

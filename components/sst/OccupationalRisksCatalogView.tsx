@@ -480,8 +480,8 @@ const CARTOES_DE_GRUPO: Array<{
 
 const getGroupBadgeColor = (group: string | undefined) => {
   switch (grupoDoItem(group)) {
-    case 'FÍSICO': return 'bg-amber-500/15 text-amber-700 border-amber-500/30';
-    case 'QUÍMICO': return 'bg-rose-500/15 text-rose-700 border-rose-500/30';
+    case 'FÍSICO': return 'bg-amber-500/15 text-amber-800 border-amber-500/30';
+    case 'QUÍMICO': return 'bg-rose-500/15 text-rose-800 border-rose-500/30';
     case 'BIOLÓGICO': return 'bg-marca-suave text-marca-escura border-marca-escura';
     case 'ERGONÔMICO': return 'bg-purple-500/15 text-purple-700 border-purple-500/30';
     case 'ACIDENTES': return 'bg-sky-500/15 text-sky-700 border-sky-500/30';
@@ -1164,7 +1164,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                   <button
                     type="button"
                     onClick={() => handleOpenEditModal(item)}
-                    className="text-xs font-semibold px-2 py-0.5 rounded bg-amber-500/15 text-amber-700 border border-amber-500/30 hover:bg-amber-500/25"
+                    className="text-xs font-semibold px-2 py-0.5 rounded bg-amber-500/15 text-amber-800 border border-amber-500/30 hover:bg-amber-500/25"
                     title={item.code_table_24_pending}
                   >
                     código a definir · preencher
@@ -1182,7 +1182,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                     01.01.001, que é Arsênio. */}
                 {!!codigoBruto && !agenteOficial && (
                   <span
-                    className="text-xs font-bold px-2 py-0.5 rounded bg-rose-500/15 text-rose-700 border border-rose-500/30"
+                    className="text-xs font-bold px-2 py-0.5 rounded bg-rose-500/15 text-rose-800 border border-rose-500/30"
                     title={formatoDoCodigoTabela24(codigoBruto).motivo || 'Este código não consta na Tabela 24.'}
                   >
                     código inexistente
@@ -1190,7 +1190,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                 )}
                 {repetidoCom && (
                   <span
-                    className="text-xs font-semibold px-2 py-0.5 rounded bg-amber-500/15 text-amber-700 border border-amber-500/30"
+                    className="text-xs font-semibold px-2 py-0.5 rounded bg-amber-500/15 text-amber-800 border border-amber-500/30"
                     title={`Mesmo enquadramento de: ${repetidoCom.join('; ')}`}
                   >
                     enquadramento compartilhado
@@ -1261,7 +1261,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                     {item.esocial_enquadramento_nota}
                   </p>
                 ) : (
-                  <p className="text-xs text-amber-700 bg-amber-500/15 border border-amber-500/30 rounded p-2">
+                  <p className="text-xs text-amber-800 bg-amber-500/15 border border-amber-500/30 rounded p-2">
                     <span className="font-semibold">Enquadramento no eSocial:</span>{' '}
                     {item.esocial_enquadramento_nota}
                   </p>
@@ -1290,7 +1290,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                         Limite de tolerância:
                         {item.tolerance_limit_is_ceiling && (
                           <span
-                            className="px-1.5 py-px rounded text-[10px] font-bold bg-rose-500/15 text-rose-700 border border-rose-500/30"
+                            className="px-1.5 py-px rounded text-[10px] font-bold bg-rose-500/15 text-rose-800 border border-rose-500/30"
                             title="Valor teto: não pode ser ultrapassado em momento algum da jornada."
                           >
                             valor teto
@@ -1300,7 +1300,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                             ausente e "nao conferido" - nenhum dos dois e selo. */}
                         {item.skin_absorption === true && (
                           <span
-                            className="px-1.5 py-px rounded text-[10px] font-bold bg-amber-500/15 text-amber-700 border border-amber-500/30"
+                            className="px-1.5 py-px rounded text-[10px] font-bold bg-amber-500/15 text-amber-800 border border-amber-500/30"
                             title="O Quadro n. 1 do Anexo 11 da NR-15 marca este agente com absorção também pela pele: a via cutânea conta na avaliação e na proteção."
                           >
                             absorção também pela pele
@@ -1372,7 +1372,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                         <HardHat className="w-3.5 h-3.5" /> EPIs Sugeridos:
                       </span>
                       {epis.map((epi, idx) => (
-                        <span key={idx} className="text-[11px] px-2 py-0.5 rounded bg-amber-500/15 text-amber-700 border border-amber-500/30">
+                        <span key={idx} className="text-[11px] px-2 py-0.5 rounded bg-amber-500/15 text-amber-800 border border-amber-500/30">
                           {epi.name}{epi.ca_example ? ` (CA ${epi.ca_example})` : ''}
                         </span>
                       ))}
@@ -1423,7 +1423,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
               onClick={() => handleAlternarSituacao(item)}
               className={`inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold rounded-lg border transition-colors ${
                 ativo
-                  ? 'text-tinta-2 border-borda hover:text-amber-700 hover:bg-amber-500/15'
+                  ? 'text-tinta-2 border-borda hover:text-amber-800 hover:bg-amber-500/15'
                   : 'text-marca-escura border-marca-escura bg-marca-suave hover:bg-marca-suave'
               }`}
               title={
@@ -1443,7 +1443,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
               <button
                 id={`btn-delete-risk-${item.id}`}
                 onClick={() => handleExcluir(item)}
-                className="p-1.5 text-tinta-2 hover:text-rose-700 hover:bg-rose-500/15 rounded-lg border border-borda transition-colors"
+                className="p-1.5 text-tinta-2 hover:text-rose-800 hover:bg-rose-500/15 rounded-lg border border-borda transition-colors"
                 title="Excluir este item criado aqui (não pode ser desfeito)"
               >
                 <Trash2 className="w-4 h-4" />
@@ -1511,7 +1511,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
             <button
               id="btn-add-catalog-risk"
               onClick={handleOpenAddModal}
-              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-marca hover:bg-marca rounded-lg shadow-sm transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-marca-escura hover:bg-marca-escura rounded-lg shadow-sm transition-colors"
             >
               <Plus className="w-4 h-4" />
               Novo Risco no Catálogo
@@ -2049,7 +2049,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                               suggested_exams: form.suggested_exams.filter((_, j) => j !== i),
                             })
                           }
-                          className="text-tinta-2 hover:text-rose-500 shrink-0"
+                          className="text-tinta-2 hover:text-rose-700 shrink-0"
                           title="Remover exame"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
@@ -2252,7 +2252,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 text-sm font-semibold text-white bg-marca hover:bg-marca rounded-lg shadow-sm"
+                  className="px-5 py-2 text-sm font-semibold text-white bg-marca-escura hover:bg-marca-escura rounded-lg shadow-sm"
                 >
                   {editingItem ? 'Salvar Alterações' : 'Cadastrar no Catálogo'}
                 </button>
@@ -2448,7 +2448,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                     Selecione os GHEs de Destino ({selectedTargetGheIds.length} selecionados):
                   </label>
                   {clientGhesForModal.length === 0 ? (
-                    <p className="text-xs text-amber-700 p-3 bg-amber-500/15 rounded-lg">
+                    <p className="text-xs text-amber-800 p-3 bg-amber-500/15 rounded-lg">
                       Nenhum GHE cadastrado para este cliente. Cadastre ou vincule um GHE antes de aplicar.
                     </p>
                   ) : (
@@ -2485,7 +2485,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                     Selecione os Cargos de Destino ({selectedTargetJobIds.length} selecionados):
                   </label>
                   {clientJobsForModal.length === 0 ? (
-                    <p className="text-xs text-amber-700 p-3 bg-amber-500/15 rounded-lg">
+                    <p className="text-xs text-amber-800 p-3 bg-amber-500/15 rounded-lg">
                       Nenhum cargo cadastrado na hierarquia desta empresa.
                     </p>
                   ) : (
@@ -2522,7 +2522,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                     Selecione os Setores / Árvore da Empresa:
                   </label>
                   {clientSectorsForModal.length === 0 ? (
-                    <p className="text-xs text-amber-700 p-3 bg-amber-500/15 rounded-lg">
+                    <p className="text-xs text-amber-800 p-3 bg-amber-500/15 rounded-lg">
                       Nenhum setor cadastrado na estrutura hierárquica.
                     </p>
                   ) : (
@@ -2581,7 +2581,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                         }
                         className={`text-left px-3 py-2 rounded-lg border transition-colors ${
                           marcada
-                            ? 'bg-teal-500/15 border-teal-500/50 text-teal-200'
+                            ? 'bg-teal-500/15 border-teal-500/50 text-teal-800'
                             : 'bg-superficie border-borda text-tinta-2 hover:border-borda'
                         }`}
                       >

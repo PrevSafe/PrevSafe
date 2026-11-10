@@ -129,10 +129,10 @@ export const RequestsView: React.FC<{ onNavigate: (view: string) => void }> = ({
     const due = new Date(dueDateStr);
     const diffDays = Math.ceil((due.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
 
-    if (diffDays === 0) return { label: 'D-0 (Vence Hoje)', color: 'bg-rose-500/20 text-rose-700 border border-rose-500/30' };
-    if (diffDays === 1) return { label: 'D-1 (Amanhã)', color: 'bg-amber-500/20 text-amber-700 border border-amber-500/30' };
+    if (diffDays === 0) return { label: 'D-0 (Vence Hoje)', color: 'bg-rose-500/20 text-rose-800 border border-rose-500/30' };
+    if (diffDays === 1) return { label: 'D-1 (Amanhã)', color: 'bg-amber-500/20 text-amber-800 border border-amber-500/30' };
     if (diffDays === 3) return { label: 'D-3 (Alerta Preventivo)', color: 'bg-blue-500/20 text-blue-700 border border-blue-500/30' };
-    if (diffDays < 0) return { label: `D+${Math.abs(diffDays)} (Vencido!)`, color: 'bg-rose-600/30 text-rose-200 border border-rose-500/40 animate-pulse' };
+    if (diffDays < 0) return { label: `D+${Math.abs(diffDays)} (Vencido!)`, color: 'bg-rose-600/30 text-rose-900 border border-rose-500/40 animate-pulse' };
     return { label: `Em ${diffDays} dias`, color: 'bg-superficie-2 text-tinta border border-borda' };
   };
 
@@ -141,7 +141,7 @@ export const RequestsView: React.FC<{ onNavigate: (view: string) => void }> = ({
       {/* Header Bento Card */}
       <div id="requests-header" className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-superficie border border-borda rounded-3xl p-6 shadow-xl">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex items-center justify-center text-amber-700">
+          <div className="w-10 h-10 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex items-center justify-center text-amber-800">
             <Clock className="w-5 h-5" />
           </div>
           <div>
@@ -179,7 +179,7 @@ export const RequestsView: React.FC<{ onNavigate: (view: string) => void }> = ({
           <button
             onClick={() => setStatusFilter('OPEN')}
             className={`px-3.5 py-2 rounded-2xl text-xs font-bold transition ${
-              statusFilter === 'OPEN' ? 'bg-amber-500 text-slate-950 shadow-md' : 'bg-fundo text-white/85 hover:text-white border border-borda'
+              statusFilter === 'OPEN' ? 'bg-amber-500 text-slate-950 shadow-md' : 'bg-fundo text-tinta hover:text-tinta border border-borda'
             }`}
           >
             Em Aberto ({requests.filter(r => r.status === 'OPEN' || r.status === 'SENT').length})
@@ -187,7 +187,7 @@ export const RequestsView: React.FC<{ onNavigate: (view: string) => void }> = ({
           <button
             onClick={() => setStatusFilter('RESOLVED')}
             className={`px-3.5 py-2 rounded-2xl text-xs font-bold transition ${
-              statusFilter === 'RESOLVED' ? 'bg-marca text-white shadow-md' : 'bg-fundo text-white/80 hover:text-white border border-borda'
+              statusFilter === 'RESOLVED' ? 'bg-marca-escura text-white shadow-md' : 'bg-fundo text-tinta hover:text-tinta border border-borda'
             }`}
           >
             Resolvidas ({requests.filter(r => r.status === 'RESOLVED').length})
@@ -242,7 +242,7 @@ export const RequestsView: React.FC<{ onNavigate: (view: string) => void }> = ({
                     </button>
                     <button
                       onClick={() => setDeletingRequest(req)}
-                      className="p-1 hover:bg-rose-500/20 text-tinta-2 hover:text-rose-700 rounded transition"
+                      className="p-1 hover:bg-rose-500/20 text-tinta-2 hover:text-rose-800 rounded transition"
                       title="Excluir Solicitação"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
@@ -395,7 +395,7 @@ export const RequestsView: React.FC<{ onNavigate: (view: string) => void }> = ({
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-white rounded-xl font-bold shadow-md"
+                  className="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl font-bold shadow-md"
                 >
                   {editingRequest ? 'Atualizar Solicitação' : 'Salvar Solicitação'}
                 </button>
@@ -434,7 +434,7 @@ export const RequestsView: React.FC<{ onNavigate: (view: string) => void }> = ({
               <button
                 type="button"
                 onClick={handleDeleteRequestConfirm}
-                className="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white rounded-xl text-xs font-semibold shadow-md"
+                className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-semibold shadow-md"
               >
                 Confirmar Exclusão
               </button>
@@ -560,7 +560,7 @@ export const ServiceTemplatesView: React.FC<{ onNavigate: (view: string) => void
           <button 
             id="btn-new-template"
             onClick={handleOpenNewTemplate}
-            className="px-4 py-2.5 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-tinta rounded-2xl text-xs font-bold shadow-lg shadow-indigo-950/40 transition flex items-center space-x-1.5"
+            className="px-4 py-2.5 bg-gradient-to-r from-indigo-700 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white rounded-2xl text-xs font-bold shadow-lg shadow-indigo-950/40 transition flex items-center space-x-1.5"
           >
             <Plus className="w-4 h-4" />
             <span>Novo Modelo de Serviço</span>
@@ -627,7 +627,7 @@ export const ServiceTemplatesView: React.FC<{ onNavigate: (view: string) => void
                   </button>
                   <button
                     onClick={() => setDeletingTemplate(selectedTemplate)}
-                    className="p-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-700 rounded-xl text-xs font-semibold border border-rose-500/20 transition"
+                    className="p-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-800 rounded-xl text-xs font-semibold border border-rose-500/20 transition"
                     title="Excluir Modelo"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
@@ -801,7 +801,7 @@ export const ServiceTemplatesView: React.FC<{ onNavigate: (view: string) => void
               <button
                 type="button"
                 onClick={handleDeleteTemplateConfirm}
-                className="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white rounded-xl text-xs font-semibold shadow-md"
+                className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-semibold shadow-md"
               >
                 Confirmar Exclusão
               </button>
