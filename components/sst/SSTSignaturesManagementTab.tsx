@@ -206,7 +206,7 @@ export const SSTSignaturesManagementTab: React.FC<SSTSignaturesManagementTabProp
     <div className="space-y-6">
       
       {/* Top Banner / Metrics & Action Header */}
-      <div className="bg-superficie border border-borda p-6 rounded-3xl text-tinta flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative overflow-hidden shadow-xl">
+      <div className="bg-superficie border border-borda p-6 rounded-3xl text-tinta flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative overflow-hidden shadow-sm">
         <div className="space-y-2 relative z-10">
           <div className="flex items-center space-x-2 text-teal-700 text-xs font-bold uppercase tracking-wider">
             <ShieldCheck className="w-5 h-5" />
@@ -235,7 +235,7 @@ export const SSTSignaturesManagementTab: React.FC<SSTSignaturesManagementTabProp
 
           <button
             onClick={() => setIsNewEnvelopeModalOpen(true)}
-            className="px-5 py-2.5 bg-teal-500 hover:bg-teal-400 text-slate-950 text-xs font-bold rounded-2xl shadow-lg shadow-teal-500/20 flex items-center space-x-2 transition"
+            className="bg-marca-escura text-white px-5 py-2.5 text-xs font-bold rounded-2xl shadow-sm flex items-center space-x-2 transition hover:opacity-90"
           >
             <Plus className="w-4 h-4" />
             <span>Novo Envelope de Assinatura</span>
@@ -248,7 +248,7 @@ export const SSTSignaturesManagementTab: React.FC<SSTSignaturesManagementTabProp
         <div 
           onClick={() => setStatusFilter('ALL')}
           className={`p-4 rounded-2xl border transition cursor-pointer ${
-            statusFilter === 'ALL' ? 'bg-superficie border-teal-500 ring-1 ring-teal-500/30' : 'bg-superficie border-borda hover:border-borda'
+            statusFilter === 'ALL' ? 'bg-superficie border-teal-200 ring-1 ring-teal-500/30' : 'bg-superficie border-borda hover:border-borda'
           }`}
         >
           <div className="flex items-center justify-between text-tinta-2 text-xs font-semibold">
@@ -262,7 +262,7 @@ export const SSTSignaturesManagementTab: React.FC<SSTSignaturesManagementTabProp
         <div 
           onClick={() => setStatusFilter('PENDING')}
           className={`p-4 rounded-2xl border transition cursor-pointer ${
-            statusFilter === 'PENDING' ? 'bg-superficie border-amber-500 ring-1 ring-amber-500/30' : 'bg-superficie border-borda hover:border-borda'
+            statusFilter === 'PENDING' ? 'bg-superficie border-amber-200 ring-1 ring-amber-500/30' : 'bg-superficie border-borda hover:border-borda'
           }`}
         >
           <div className="flex items-center justify-between text-tinta-2 text-xs font-semibold">
@@ -278,7 +278,7 @@ export const SSTSignaturesManagementTab: React.FC<SSTSignaturesManagementTabProp
         <div 
           onClick={() => setStatusFilter('SIGNED')}
           className={`p-4 rounded-2xl border transition cursor-pointer ${
-            statusFilter === 'SIGNED' ? 'bg-superficie border-marca-escura ring-1 ring-marca-escura' : 'bg-superficie border-borda hover:border-borda'
+            statusFilter === 'SIGNED' ? 'bg-superficie border-borda ring-1 ring-marca-escura' : 'bg-superficie border-borda hover:border-borda'
           }`}
         >
           <div className="flex items-center justify-between text-tinta-2 text-xs font-semibold">
@@ -294,7 +294,7 @@ export const SSTSignaturesManagementTab: React.FC<SSTSignaturesManagementTabProp
         <div 
           onClick={() => setStatusFilter('REJECTED')}
           className={`p-4 rounded-2xl border transition cursor-pointer ${
-            statusFilter === 'REJECTED' ? 'bg-superficie border-rose-500 ring-1 ring-rose-500/30' : 'bg-superficie border-borda hover:border-borda'
+            statusFilter === 'REJECTED' ? 'bg-superficie border-rose-200 ring-1 ring-rose-500/30' : 'bg-superficie border-borda hover:border-borda'
           }`}
         >
           <div className="flex items-center justify-between text-tinta-2 text-xs font-semibold">
@@ -375,7 +375,7 @@ export const SSTSignaturesManagementTab: React.FC<SSTSignaturesManagementTabProp
             </p>
             <button
               onClick={() => setIsNewEnvelopeModalOpen(true)}
-              className="px-4 py-2 bg-teal-500 text-slate-950 font-bold rounded-xl text-xs inline-flex items-center space-x-1.5"
+              className="bg-marca-escura text-white px-4 py-2 font-bold rounded-xl text-xs inline-flex items-center space-x-1.5"
             >
               <Plus className="w-4 h-4" />
               <span>Criar Envelope</span>
@@ -392,7 +392,7 @@ export const SSTSignaturesManagementTab: React.FC<SSTSignaturesManagementTabProp
             return (
               <div 
                 key={envelope.id}
-                className="bg-superficie border border-borda hover:border-borda p-5 rounded-3xl shadow-lg transition space-y-4"
+                className="bg-superficie border border-borda hover:border-borda p-5 rounded-3xl shadow-sm transition space-y-4"
               >
                 {/* Header Row */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-borda pb-4">
@@ -426,7 +426,7 @@ export const SSTSignaturesManagementTab: React.FC<SSTSignaturesManagementTabProp
                   <div className="flex items-center space-x-2">
                     <button
                       onClick={() => handleOpenSigning(envelope)}
-                      className="px-4 py-2 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold rounded-xl text-xs flex items-center space-x-1.5 transition shadow-md shadow-teal-500/20"
+                      className="bg-marca-escura text-white px-4 py-2 font-bold rounded-xl text-xs flex items-center space-x-1.5 transition shadow-sm hover:opacity-90"
                     >
                       <PenTool className="w-3.5 h-3.5" />
                       <span>{isSigned ? 'Ver Certificado / Trilha' : 'Gerenciar / Assinar'}</span>
@@ -460,7 +460,7 @@ export const SSTSignaturesManagementTab: React.FC<SSTSignaturesManagementTabProp
                           signerIsSigned 
                             ? 'bg-marca-suave border-marca-escura hover:border-marca-escura' 
                             : signerIsRejected
-                            ? 'bg-rose-50 border-rose-500/30 hover:border-rose-500/50'
+                            ? 'bg-rose-50 border-rose-200 hover:border-rose-500/50'
                             : 'bg-fundo border-borda hover:border-teal-500/40'
                         }`}
                       >
@@ -544,7 +544,7 @@ export const SSTSignaturesManagementTab: React.FC<SSTSignaturesManagementTabProp
       {/* MODAL 2: Create New Signature Envelope */}
       {isNewEnvelopeModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-fundo backdrop-blur-sm overflow-y-auto">
-          <div className="bg-superficie border border-borda rounded-3xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden text-tinta">
+          <div className="bg-superficie border border-borda rounded-3xl shadow-sm w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden text-tinta">
             <div className="bg-fundo px-6 py-4 border-b border-borda flex items-center justify-between">
               <div className="flex items-center space-x-3">
                 <div className="p-2.5 rounded-2xl bg-teal-500/10 border border-teal-500/20 text-teal-800">
@@ -717,7 +717,7 @@ export const SSTSignaturesManagementTab: React.FC<SSTSignaturesManagementTabProp
               <button
                 type="button"
                 onClick={handleCreateEnvelopeSubmit}
-                className="px-6 py-2.5 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold rounded-2xl text-xs shadow-lg shadow-teal-500/20 flex items-center space-x-2"
+                className="bg-marca-escura text-white px-6 py-2.5 font-bold rounded-2xl text-xs shadow-sm flex items-center space-x-2 hover:opacity-90"
               >
                 <CheckCircle2 className="w-4 h-4" />
                 <span>Salvar & Disparar Envelope</span>
@@ -730,7 +730,7 @@ export const SSTSignaturesManagementTab: React.FC<SSTSignaturesManagementTabProp
       {/* MODAL 3: Hash / QR Code Verification Dialog */}
       {isVerifyModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-fundo backdrop-blur-sm overflow-y-auto">
-          <div className="bg-superficie border border-borda rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden text-tinta">
+          <div className="bg-superficie border border-borda rounded-3xl shadow-sm w-full max-w-2xl overflow-hidden text-tinta">
             <div className="bg-fundo px-6 py-4 border-b border-borda flex items-center justify-between">
               <div className="flex items-center space-x-3">
                 <div className="p-2.5 rounded-2xl bg-teal-500/10 border border-teal-500/20 text-teal-800">
@@ -766,7 +766,7 @@ export const SSTSignaturesManagementTab: React.FC<SSTSignaturesManagementTabProp
                   <button
                     type="button"
                     onClick={handleExecuteVerification}
-                    className="px-5 py-2.5 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold rounded-xl text-xs flex items-center space-x-1.5 transition"
+                    className="bg-marca-escura text-white px-5 py-2.5 font-bold rounded-xl text-xs flex items-center space-x-1.5 transition hover:opacity-90"
                   >
                     <Search className="w-4 h-4" />
                     <span>Verificar</span>
@@ -778,7 +778,7 @@ export const SSTSignaturesManagementTab: React.FC<SSTSignaturesManagementTabProp
                 <div className={`p-4 rounded-2xl border space-y-2 animate-in fade-in ${
                   verifyResult.isValid 
                     ? 'bg-marca-suave border-marca-escura text-marca-escura' 
-                    : 'bg-rose-50 border-rose-500/40 text-rose-700'
+                    : 'bg-rose-50 border-rose-200 text-rose-700'
                 }`}>
                   <div className="flex items-center space-x-2 font-bold text-sm">
                     {verifyResult.isValid ? (

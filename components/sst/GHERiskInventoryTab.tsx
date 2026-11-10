@@ -842,7 +842,7 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left Side: GHE Selector and Management (4 cols) */}
         <div className="lg:col-span-4 space-y-4">
-          <div className="bg-superficie border border-borda rounded-xl p-4 shadow-lg space-y-4">
+          <div className="bg-superficie border border-borda rounded-xl p-4 shadow-sm space-y-4">
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="font-bold text-tinta text-sm flex items-center gap-2">
@@ -855,7 +855,7 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
                 type="button"
                 id="create-ghe-btn"
                 onClick={() => handleOpenGheModal()}
-                className="px-2.5 py-1.5 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs rounded-lg transition-all flex items-center gap-1 shadow-sm"
+                className="bg-marca-escura text-white px-2.5 py-1.5 font-bold text-xs rounded-lg transition-all flex items-center gap-1 shadow-sm hover:opacity-90"
               >
                 <Plus className="w-3.5 h-3.5" />
                 Novo GHE
@@ -868,20 +868,20 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
                 type="button"
                 id="sidebar-btn-search-catalog"
                 onClick={handleOpenCatalogModal}
-                className="px-2 py-2 bg-indigo-50 hover:bg-indigo-50 text-indigo-700 border border-indigo-700/60 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors"
+                className="px-2 py-2 bg-teal-50 hover:bg-teal-50 text-teal-700 border border-teal-700/60 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors"
                 title="Buscar no catálogo global da Tabela 24 do eSocial e aplicar em lote"
               >
-                <Search className="w-3.5 h-3.5 text-indigo-700" />
+                <Search className="w-3.5 h-3.5 text-teal-700" />
                 <span>Buscar Riscos</span>
               </button>
               <button
                 type="button"
                 id="sidebar-btn-multi-exam"
                 onClick={handleOpenMultiExamModal}
-                className="px-2 py-2 bg-blue-50 hover:bg-blue-50 text-blue-700 border border-blue-700/60 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors"
+                className="px-2 py-2 bg-teal-50 hover:bg-teal-50 text-teal-700 border border-teal-700/60 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors"
                 title="Aplicar exames clínicos e complementares a múltiplos GHEs ou cargos"
               >
-                <Stethoscope className="w-3.5 h-3.5 text-blue-700" />
+                <Stethoscope className="w-3.5 h-3.5 text-teal-700" />
                 <span>Aplicar Exame</span>
               </button>
             </div>
@@ -906,7 +906,7 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
                       <div className="space-y-1">
                         <div className="flex items-center gap-1.5">
                           <span className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded ${
-                            isSelected ? 'bg-teal-500 text-slate-950' : 'bg-superficie-2 text-tinta'
+                            isSelected ? 'bg-marca-escura text-white' : 'bg-superficie-2 text-tinta'
                           }`}>
                             {ghe.code}
                           </span>
@@ -953,12 +953,12 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
         {/* Right Side: Active GHE Detailed Risk Inventory (8 cols) */}
         <div className="lg:col-span-8 space-y-4">
           {activeGhe ? (
-            <div className="bg-superficie border border-borda rounded-xl p-5 shadow-lg space-y-5">
+            <div className="bg-superficie border border-borda rounded-xl p-5 shadow-sm space-y-5">
               {/* Header GHE Details */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-borda">
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="px-2 py-0.5 bg-teal-500 text-slate-950 font-bold text-xs font-mono rounded">
+                    <span className="bg-marca-escura text-white px-2 py-0.5 font-bold text-xs font-mono rounded">
                       {activeGhe.code}
                     </span>
                     <h3 className="font-bold text-base text-tinta">{activeGhe.name}</h3>
@@ -971,7 +971,7 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
                     type="button"
                     id="btn-search-catalog-header"
                     onClick={handleOpenCatalogModal}
-                    className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 shadow-sm"
+                    className="px-3 py-1.5 bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 shadow-sm"
                     title="Buscar no catálogo oficial de riscos (Tabela 24) e aplicar"
                   >
                     <Search className="w-4 h-4" />
@@ -981,7 +981,7 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
                     type="button"
                     id="btn-multi-exam-header"
                     onClick={handleOpenMultiExamModal}
-                    className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 shadow-sm"
+                    className="px-3 py-1.5 bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 shadow-sm"
                     title="Aplicar exames a este ou múltiplos GHEs/Cargos"
                   >
                     <Stethoscope className="w-4 h-4" />
@@ -1000,7 +1000,7 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
                     type="button"
                     id="add-risk-btn"
                     onClick={() => handleOpenRiskModal()}
-                    className="px-3 py-1.5 bg-teal-500 hover:bg-teal-400 text-slate-950 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 shadow-sm"
+                    className="bg-marca-escura text-white px-3 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 shadow-sm hover:opacity-90"
                   >
                     <Plus className="w-4 h-4" />
                     Caracterizar Manual
@@ -1018,7 +1018,7 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
                       onClick={() => setFilterCategory(cat)}
                       className={`px-2.5 py-1 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors ${
                         filterCategory === cat
-                          ? 'bg-teal-500 text-slate-950'
+                          ? 'bg-marca-escura text-white'
                           : 'bg-fundo text-tinta-2 hover:text-tinta border border-borda'
                       }`}
                     >
@@ -1088,7 +1088,7 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
                                       </span>
                                     )}
                                     {plano.sugeridas > 0 && (
-                                      <span className="px-1.5 py-0.5 bg-indigo-500/10 border border-indigo-500/30 text-indigo-700 text-[10px] font-semibold rounded">
+                                      <span className="px-1.5 py-0.5 bg-teal-500/10 border border-teal-500/30 text-teal-800 text-[10px] font-semibold rounded">
                                         {plano.sugeridas} sugestão(ões)
                                       </span>
                                     )}
@@ -1203,7 +1203,7 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
       {/* GHE Modal */}
       {isGheModalOpen && (
         <div className="fixed inset-0 bg-fundo backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-superficie border border-borda rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl animate-in fade-in zoom-in-95 duration-150">
+          <div className="bg-superficie border border-borda rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-sm animate-in fade-in zoom-in-95 duration-150">
             <div className="flex items-center justify-between border-b border-borda pb-3">
               <h3 className="text-base font-bold text-tinta flex items-center gap-2">
                 <Layers className="w-5 h-5 text-teal-700" />
@@ -1287,7 +1287,7 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold rounded-lg shadow-md"
+                  className="bg-marca-escura text-white px-4 py-2 font-bold rounded-lg shadow-sm hover:opacity-90"
                 >
                   Salvar GHE
                 </button>
@@ -1300,7 +1300,7 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
       {/* Risk Characterization Modal */}
       {isRiskModalOpen && (
         <div className="fixed inset-0 bg-fundo backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-superficie border border-borda rounded-2xl max-w-2xl w-full p-6 space-y-4 shadow-2xl animate-in fade-in zoom-in-95 duration-150 max-h-[90vh] overflow-y-auto">
+          <div className="bg-superficie border border-borda rounded-2xl max-w-2xl w-full p-6 space-y-4 shadow-sm animate-in fade-in zoom-in-95 duration-150 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-borda pb-3">
               <h3 className="text-base font-bold text-tinta flex items-center gap-2">
                 <ShieldAlert className="w-5 h-5 text-teal-700" />
@@ -1751,7 +1751,7 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold rounded-lg shadow-md"
+                  className="bg-marca-escura text-white px-4 py-2 font-bold rounded-lg shadow-sm hover:opacity-90"
                 >
                   Salvar Caracterização
                 </button>
@@ -1764,17 +1764,17 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
       {/* Modal: Search & Apply from Global Catalog (Tabela 24 eSocial) */}
       {isCatalogModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-fundo backdrop-blur-sm overflow-y-auto">
-          <div className="bg-superficie border border-borda rounded-2xl w-full max-w-4xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden my-6">
+          <div className="bg-superficie border border-borda rounded-2xl w-full max-w-4xl max-h-[90vh] flex flex-col shadow-sm overflow-hidden my-6">
             {/* Header */}
             <div className="px-6 py-4 border-b border-borda flex items-center justify-between bg-fundo">
               <div className="flex items-center gap-2.5">
-                <div className="p-2 bg-indigo-500/10 border border-indigo-500/20 rounded-lg text-indigo-700">
+                <div className="p-2 bg-teal-500/10 border border-teal-500/20 rounded-lg text-teal-800">
                   <Search className="w-5 h-5" />
                 </div>
                 <div>
                   <h3 className="text-base font-bold text-tinta flex items-center gap-2">
                     Buscar Riscos no Catálogo Global (Tabela 24)
-                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-500/20 text-indigo-700 border border-indigo-500/30">
+                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-teal-500/20 text-teal-800 border border-teal-500/30">
                       eSocial & NRs
                     </span>
                   </h3>
@@ -1803,7 +1803,7 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
                     value={catalogSearch}
                     onChange={(e) => setCatalogSearch(e.target.value)}
                     placeholder="Buscar por nome do agente (ex: ruído, acido sulfurico) ou código (ex: 01.18.001)"
-                    className="w-full bg-fundo border border-borda rounded-lg pl-9 pr-3 py-2 text-xs text-tinta placeholder-tinta-3 focus:outline-none focus:border-indigo-500"
+                    className="w-full bg-fundo border border-borda rounded-lg pl-9 pr-3 py-2 text-xs text-tinta placeholder-tinta-3 focus:outline-none focus:border-teal-500"
                   />
                 </div>
 
@@ -1814,7 +1814,7 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
                   <select
                     value={catalogGroupFilter}
                     onChange={(e) => setCatalogGroupFilter(e.target.value as GrupoDoSeletor | 'ALL')}
-                    className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-xs text-tinta focus:outline-none focus:border-indigo-500"
+                    className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-xs text-tinta focus:outline-none focus:border-teal-500"
                   >
                     <option value="ALL">Todos os grupos ({indiceDoCatalogo.length})</option>
                     {GRUPOS_DO_SELETOR
@@ -1832,7 +1832,7 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
               <div className="p-4 bg-fundo border border-borda rounded-xl space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="font-bold text-tinta flex items-center gap-1.5">
-                    <Sliders className="w-4 h-4 text-indigo-700" />
+                    <Sliders className="w-4 h-4 text-teal-700" />
                     Onde aplicar os riscos selecionados?
                   </span>
                   <span className="text-[11px] text-tinta-2">
@@ -1846,7 +1846,7 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
                     onClick={() => setCatalogTargetMode('CURRENT_GHE')}
                     className={`p-2.5 rounded-lg border text-left transition-all ${
                       catalogTargetMode === 'CURRENT_GHE'
-                        ? 'border-indigo-500 bg-indigo-500/10 text-indigo-700 font-bold ring-1 ring-indigo-500'
+                        ? 'border-teal-500 bg-teal-500/10 text-teal-800 font-bold ring-1 ring-teal-500'
                         : 'border-borda text-tinta-2 hover:border-borda hover:text-tinta'
                     }`}
                   >
@@ -1864,7 +1864,7 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
                     }}
                     className={`p-2.5 rounded-lg border text-left transition-all ${
                       catalogTargetMode === 'MULTI_GHE'
-                        ? 'border-indigo-500 bg-indigo-500/10 text-indigo-700 font-bold ring-1 ring-indigo-500'
+                        ? 'border-teal-500 bg-teal-500/10 text-teal-800 font-bold ring-1 ring-teal-500'
                         : 'border-borda text-tinta-2 hover:border-borda hover:text-tinta'
                     }`}
                   >
@@ -1877,7 +1877,7 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
                     onClick={() => setCatalogTargetMode('JOB')}
                     className={`p-2.5 rounded-lg border text-left transition-all ${
                       catalogTargetMode === 'JOB'
-                        ? 'border-indigo-500 bg-indigo-500/10 text-indigo-700 font-bold ring-1 ring-indigo-500'
+                        ? 'border-teal-500 bg-teal-500/10 text-teal-800 font-bold ring-1 ring-teal-500'
                         : 'border-borda text-tinta-2 hover:border-borda hover:text-tinta'
                     }`}
                   >
@@ -1890,7 +1890,7 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
                     onClick={() => setCatalogTargetMode('SECTOR_TREE')}
                     className={`p-2.5 rounded-lg border text-left transition-all ${
                       catalogTargetMode === 'SECTOR_TREE'
-                        ? 'border-indigo-500 bg-indigo-500/10 text-indigo-700 font-bold ring-1 ring-indigo-500'
+                        ? 'border-teal-500 bg-teal-500/10 text-teal-800 font-bold ring-1 ring-teal-500'
                         : 'border-borda text-tinta-2 hover:border-borda hover:text-tinta'
                     }`}
                   >
@@ -1918,7 +1918,7 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
                                   setCatalogSelectedGheIds(prev => [...prev, g.id]);
                                 }
                               }}
-                              className="rounded border-borda text-indigo-600 focus:ring-indigo-500"
+                              className="rounded border-borda text-teal-700 focus:ring-teal-500"
                             />
                             <span className="text-tinta font-semibold truncate">{g.name}</span>
                             <span className="text-tinta-2 font-mono text-[10px]">({g.code})</span>
@@ -1947,7 +1947,7 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
                                   setCatalogSelectedJobIds(prev => [...prev, job.id]);
                                 }
                               }}
-                              className="rounded border-borda text-indigo-600 focus:ring-indigo-500"
+                              className="rounded border-borda text-teal-700 focus:ring-teal-500"
                             />
                             <span className="text-tinta font-semibold truncate">{job.name}</span>
                             <span className="text-tinta-2 text-[10px]">CBO: {job.cbo || 'N/A'}</span>
@@ -1976,7 +1976,7 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
                                   setCatalogSelectedSectorIds(prev => [...prev, sec.id]);
                                 }
                               }}
-                              className="rounded border-borda text-indigo-600 focus:ring-indigo-500"
+                              className="rounded border-borda text-teal-700 focus:ring-teal-500"
                             />
                             <span className="text-tinta font-semibold truncate">{sec.name}</span>
                             <span className="text-tinta-2 text-[10px]">({sec.code})</span>
@@ -2008,7 +2008,7 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
                         ? prev.filter(id => !ids.includes(id))
                         : [...prev, ...ids.filter(id => !prev.includes(id))]));
                     }}
-                    className="text-[11px] text-indigo-700 hover:text-indigo-700 disabled:opacity-50 font-semibold"
+                    className="text-[11px] text-teal-700 hover:text-teal-700 disabled:opacity-50 font-semibold"
                   >
                     Marcar ou desmarcar os {exibidosDoCatalogo.length} exibidos
                   </button>
@@ -2022,7 +2022,7 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
                         type="button"
                         onClick={() => setSelectedCatalogRiskIds(prev => prev.filter(id => id !== item.id))}
                         title="Desmarcar"
-                        className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-indigo-50 border border-indigo-500/40 text-indigo-700 hover:text-tinta text-[10px] font-semibold"
+                        className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-teal-50 border border-teal-500/40 text-teal-700 hover:text-tinta text-[10px] font-semibold"
                       >
                         <span className="truncate max-w-[220px]">{item.name}</span>
                         <X className="w-3 h-3 flex-shrink-0" />
@@ -2064,13 +2064,13 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
                         }}
                         className={`p-3 rounded-lg border cursor-pointer transition-all flex items-start gap-3 ${
                           checked
-                            ? 'bg-indigo-50 border-indigo-500/70 shadow-sm'
+                            ? 'bg-teal-50 border-teal-500/70 shadow-sm'
                             : 'bg-superficie border-borda hover:border-borda'
                         }`}
                       >
                         <div className="mt-0.5">
                           {checked ? (
-                            <CheckSquare className="w-4 h-4 text-indigo-700" />
+                            <CheckSquare className="w-4 h-4 text-teal-700" />
                           ) : (
                             <Square className="w-4 h-4 text-tinta-2" />
                           )}
@@ -2114,7 +2114,7 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
                               </span>
                             )}
                             {exames.length > 0 && (
-                              <span className="text-blue-700 flex items-center gap-1">
+                              <span className="text-teal-700 flex items-center gap-1">
                                 <Stethoscope className="w-3 h-3" />
                                 Exames PCMSO: {exames.map(e => e.exam_name).join(', ')}
                               </span>
@@ -2135,19 +2135,19 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
               </div>
 
               {/* Include PCMSO Exams checkbox */}
-              <div className="p-3 bg-blue-50 border border-blue-800/60 rounded-xl flex items-center justify-between">
+              <div className="p-3 bg-teal-50 border border-teal-800/60 rounded-xl flex items-center justify-between">
                 <label className="flex items-center gap-2.5 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={catalogIncludeExams}
                     onChange={(e) => setCatalogIncludeExams(e.target.checked)}
-                    className="rounded border-borda text-blue-700 focus:ring-blue-400"
+                    className="rounded border-borda text-teal-700 focus:ring-teal-400"
                   />
                   <div>
-                    <span className="font-bold text-blue-700 block text-xs">
+                    <span className="font-bold text-teal-700 block text-xs">
                       Gerar automaticamente protocolos de exames PCMSO (Tabela 27)
                     </span>
-                    <span className="text-[11px] text-blue-700">
+                    <span className="text-[11px] text-teal-700">
                       Cria os protocolos de audiometria, exames complementares e radiológicos vinculados aos GHEs de destino.
                     </span>
                   </div>
@@ -2196,7 +2196,7 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
                   type="button"
                   onClick={handleExecuteCatalogApply}
                   disabled={selectedCatalogRiskIds.length === 0}
-                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white font-bold rounded-lg text-xs shadow-md flex items-center gap-1.5"
+                  className="px-4 py-2 bg-teal-600 hover:bg-teal-700 disabled:opacity-50 text-white font-bold rounded-lg text-xs shadow-md flex items-center gap-1.5"
                 >
                   <ArrowUpRight className="w-4 h-4" />
                   Aplicar Riscos em Lote
@@ -2210,10 +2210,10 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
       {/* Modal: Apply Exam to Multiple GHEs or Jobs */}
       {isMultiExamModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-fundo backdrop-blur-sm overflow-y-auto">
-          <div className="bg-superficie border border-borda rounded-2xl w-full max-w-3xl flex flex-col shadow-2xl overflow-hidden my-6">
+          <div className="bg-superficie border border-borda rounded-2xl w-full max-w-3xl flex flex-col shadow-sm overflow-hidden my-6">
             <div className="px-6 py-4 border-b border-borda flex items-center justify-between bg-fundo">
               <div className="flex items-center gap-2.5">
-                <div className="p-2 bg-blue-500/10 border border-blue-500/20 rounded-lg text-blue-700">
+                <div className="p-2 bg-teal-500/10 border border-teal-500/20 rounded-lg text-teal-800">
                   <Stethoscope className="w-5 h-5" />
                 </div>
                 <div>
@@ -2274,7 +2274,7 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
                       })}
                       className={`p-2 rounded-lg border text-left transition-all ${
                         multiExamForm.exam_code_table_27 === preset.code
-                          ? 'border-blue-500 bg-blue-500/10 text-blue-700 font-bold'
+                          ? 'border-teal-500 bg-teal-500/10 text-teal-800 font-bold'
                           : 'border-borda text-tinta-2 hover:border-borda hover:text-tinta'
                       }`}
                     >
@@ -2353,7 +2353,7 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
                     }}
                     className={`p-2 rounded-lg border text-left transition-all ${
                       multiExamForm.target_mode === 'ALL_GHES'
-                        ? 'border-blue-500 bg-blue-500/10 text-blue-700 font-bold'
+                        ? 'border-teal-500 bg-teal-500/10 text-teal-800 font-bold'
                         : 'border-borda text-tinta-2 hover:text-tinta'
                     }`}
                   >
@@ -2366,7 +2366,7 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
                     onClick={() => setMultiExamForm({ ...multiExamForm, target_mode: 'MULTI_GHE' })}
                     className={`p-2 rounded-lg border text-left transition-all ${
                       multiExamForm.target_mode === 'MULTI_GHE'
-                        ? 'border-blue-500 bg-blue-500/10 text-blue-700 font-bold'
+                        ? 'border-teal-500 bg-teal-500/10 text-teal-800 font-bold'
                         : 'border-borda text-tinta-2 hover:text-tinta'
                     }`}
                   >
@@ -2379,7 +2379,7 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
                     onClick={() => setMultiExamForm({ ...multiExamForm, target_mode: 'JOB' })}
                     className={`p-2 rounded-lg border text-left transition-all ${
                       multiExamForm.target_mode === 'JOB'
-                        ? 'border-blue-500 bg-blue-500/10 text-blue-700 font-bold'
+                        ? 'border-teal-500 bg-teal-500/10 text-teal-800 font-bold'
                         : 'border-borda text-tinta-2 hover:text-tinta'
                     }`}
                   >
@@ -2392,7 +2392,7 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
                     onClick={() => setMultiExamForm({ ...multiExamForm, target_mode: 'CURRENT_GHE' })}
                     className={`p-2 rounded-lg border text-left transition-all ${
                       multiExamForm.target_mode === 'CURRENT_GHE'
-                        ? 'border-blue-500 bg-blue-500/10 text-blue-700 font-bold'
+                        ? 'border-teal-500 bg-teal-500/10 text-teal-800 font-bold'
                         : 'border-borda text-tinta-2 hover:text-tinta'
                     }`}
                   >
@@ -2425,7 +2425,7 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
                                   });
                                 }
                               }}
-                              className="rounded border-borda text-blue-600 focus:ring-blue-500"
+                              className="rounded border-borda text-teal-700 focus:ring-teal-500"
                             />
                             <span className="text-tinta font-semibold truncate">{g.name}</span>
                             <span className="text-tinta-2 font-mono text-[10px]">({g.code})</span>
@@ -2460,7 +2460,7 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
                                   });
                                 }
                               }}
-                              className="rounded border-borda text-blue-600 focus:ring-blue-500"
+                              className="rounded border-borda text-teal-700 focus:ring-teal-500"
                             />
                             <span className="text-tinta font-semibold truncate">{job.name}</span>
                             <span className="text-tinta-2 text-[10px]">CBO: {job.cbo || 'N/A'}</span>
@@ -2502,7 +2502,7 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg text-xs shadow-md flex items-center gap-1.5"
+                  className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-lg text-xs shadow-md flex items-center gap-1.5"
                 >
                   <Stethoscope className="w-4 h-4" />
                   Confirmar Aplicação de Exame

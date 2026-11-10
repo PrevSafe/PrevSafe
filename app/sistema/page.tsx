@@ -371,7 +371,7 @@ export default function Home() {
       {/* Mobile Bottom Quick Navigation Bar */}
       <nav 
         aria-label="Navegação rápida inferior"
-        className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-superficie backdrop-blur-lg border-t border-borda px-2 py-1.5 flex items-center justify-around shadow-2xl select-none"
+        className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-superficie backdrop-blur-lg border-t border-borda px-2 py-1.5 flex items-center justify-around shadow-sm select-none"
       >
         <button
           onClick={() => {
@@ -398,7 +398,7 @@ export default function Home() {
           <Briefcase className="w-5 h-5 mb-0.5" />
           <span className="text-[10px] tracking-tight">OS</span>
           {activeOSCount > 0 && (
-            <span className="absolute top-0.5 right-2 w-4 h-4 bg-blue-700 text-white rounded-full text-[9px] font-bold flex items-center justify-center">
+            <span className="absolute top-0.5 right-2 w-4 h-4 bg-teal-700 text-white rounded-full text-[9px] font-bold flex items-center justify-center">
               {activeOSCount}
             </span>
           )}
@@ -428,7 +428,7 @@ export default function Home() {
             setIsSidebarOpen(false);
           }}
           className={`flex flex-col items-center justify-center py-1 px-2 rounded-xl transition touch-manipulation min-w-[56px] ${
-            activeView === 'technician-field' ? 'text-blue-700 font-semibold' : 'text-tinta-2 hover:text-tinta'
+            activeView === 'technician-field' ? 'text-teal-700 font-semibold' : 'text-tinta-2 hover:text-tinta'
           }`}
         >
           <Smartphone className="w-5 h-5 mb-0.5" />

@@ -77,14 +77,14 @@ export const FinancialReconciliationModal: React.FC<FinancialReconciliationModal
 
   return (
     <div className="fixed inset-0 z-50 bg-fundo backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-      <div className="bg-superficie border border-borda w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+      <div className="bg-superficie border border-borda w-full max-w-lg rounded-2xl shadow-sm overflow-hidden animate-in fade-in zoom-in-95 duration-200">
         {/* Header */}
         <div className={`p-4 border-b border-borda flex items-center justify-between ${
-          isAlreadyReconciled ? 'bg-marca-suave' : 'bg-blue-50'
+          isAlreadyReconciled ? 'bg-marca-suave' : 'bg-teal-50'
         }`}>
           <div className="flex items-center space-x-2.5">
             <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-              isAlreadyReconciled ? 'bg-marca-escura text-white' : 'bg-blue-700 text-white'
+              isAlreadyReconciled ? 'bg-marca-escura text-white' : 'bg-teal-700 text-white'
             }`}>
               <ShieldCheck className="w-5 h-5" />
             </div>
@@ -193,7 +193,7 @@ export const FinancialReconciliationModal: React.FC<FinancialReconciliationModal
               </div>
             </>
           ) : (
-            <div className="p-3.5 rounded-xl bg-amber-50 border border-amber-500/40 space-y-2">
+            <div className="p-3.5 rounded-xl bg-amber-50 border border-amber-200 space-y-2">
               <div className="flex items-center space-x-1.5 text-amber-700 font-bold">
                 <AlertCircle className="w-4 h-4" />
                 <span>Confirmar Estorno de Conciliação</span>
@@ -242,8 +242,8 @@ export const FinancialReconciliationModal: React.FC<FinancialReconciliationModal
                 type="submit"
                 className={`px-4 py-2 rounded-xl text-tinta font-semibold shadow-lg transition ${
                   isUnreconcileMode 
-                    ? 'bg-amber-600 hover:bg-amber-500 shadow-amber-950/40' 
-                    : 'bg-marca hover:bg-marca-escura shadow-emerald-950/40'
+                    ? 'bg-amber-600 hover:bg-amber-500' 
+                    : 'bg-marca hover:bg-marca-escura'
                 }`}
               >
                 {isUnreconcileMode ? 'Confirmar Estorno' : (isAlreadyReconciled ? 'Atualizar Dados' : 'Confirmar Conciliação')}

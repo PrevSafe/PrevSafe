@@ -146,7 +146,7 @@ export const ExecutiveDashboard: React.FC<{ onNavigate: (view: string) => void }
       <SSTDeadlineAlertBanner onNavigate={onNavigate} />
 
       {/* Header Bento Banner */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-superficie border border-borda rounded-3xl p-6 shadow-xl">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-superficie border border-borda rounded-3xl p-6 shadow-sm">
         <div>
           <div className="flex items-center space-x-2.5">
             <div className="w-2.5 h-2.5 rounded-full bg-marca animate-pulse" />
@@ -168,7 +168,7 @@ export const ExecutiveDashboard: React.FC<{ onNavigate: (view: string) => void }
 
           <button 
             onClick={() => onNavigate('service-orders')}
-            className="px-4 py-2.5 bg-gradient-to-r from-marca-escura to-teal-600 hover:from-marca-escura hover:to-teal-700 text-white rounded-2xl text-xs font-bold shadow-lg shadow-emerald-950/40 transition flex items-center space-x-2"
+            className="bg-marca-escura px-4 py-2.5 text-white rounded-2xl text-xs font-bold shadow-sm transition flex items-center space-x-2"
           >
             <span>Gerenciar Ordens de Serviço</span>
             <ArrowRight className="w-4 h-4" />
@@ -181,7 +181,7 @@ export const ExecutiveDashboard: React.FC<{ onNavigate: (view: string) => void }
         {/* Active Clients */}
         <div 
           onClick={() => onNavigate('crm-clients')}
-          className="bg-superficie p-5 rounded-3xl border border-borda hover:border-marca-escura hover:bg-superficie cursor-pointer transition shadow-lg flex flex-col justify-between"
+          className="bg-superficie p-5 rounded-3xl border border-borda hover:border-marca-escura hover:bg-superficie cursor-pointer transition shadow-sm flex flex-col justify-between"
         >
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-tinta-2 uppercase tracking-wider">Clientes Ativos</span>
@@ -200,17 +200,17 @@ export const ExecutiveDashboard: React.FC<{ onNavigate: (view: string) => void }
         {/* Proposals */}
         <div 
           onClick={() => onNavigate('proposals')}
-          className="bg-superficie p-5 rounded-3xl border border-borda hover:border-indigo-500/50 hover:bg-superficie cursor-pointer transition shadow-lg flex flex-col justify-between"
+          className="bg-superficie p-5 rounded-3xl border border-borda hover:border-teal-500/50 hover:bg-superficie cursor-pointer transition shadow-sm flex flex-col justify-between"
         >
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-tinta-2 uppercase tracking-wider">Propostas Abertas</span>
-            <div className="p-2.5 rounded-2xl bg-indigo-500/10 text-indigo-700 border border-indigo-500/20">
+            <div className="p-2.5 rounded-2xl bg-teal-500/10 text-teal-800 border border-teal-500/20">
               <FileSpreadsheet className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-4">
             <div className="text-3xl font-bold text-tinta tracking-tight">{openProposalsCount}</div>
-            <div className="text-[11px] text-indigo-700 mt-1.5 font-medium">
+            <div className="text-[11px] text-teal-700 mt-1.5 font-medium">
               {approvedProposalsCount} aprovadas no ciclo
             </div>
           </div>
@@ -219,17 +219,17 @@ export const ExecutiveDashboard: React.FC<{ onNavigate: (view: string) => void }
         {/* Active Contracts */}
         <div 
           onClick={() => onNavigate('contracts')}
-          className="bg-superficie p-5 rounded-3xl border border-borda hover:border-violet-500/50 hover:bg-superficie cursor-pointer transition shadow-lg flex flex-col justify-between"
+          className="bg-superficie p-5 rounded-3xl border border-borda hover:border-teal-500/50 hover:bg-superficie cursor-pointer transition shadow-sm flex flex-col justify-between"
         >
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-tinta-2 uppercase tracking-wider">Contratos Vigentes</span>
-            <div className="p-2.5 rounded-2xl bg-violet-500/10 text-violet-700 border border-violet-500/20">
+            <div className="p-2.5 rounded-2xl bg-teal-500/10 text-teal-800 border border-teal-500/20">
               <FileSignature className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-4">
             <div className="text-3xl font-bold text-tinta tracking-tight">{activeContractsCount}</div>
-            <div className="text-[11px] text-violet-700 mt-1.5 font-medium font-mono">
+            <div className="text-[11px] text-teal-700 mt-1.5 font-medium font-mono">
               R$ {totalContractedValue.toLocaleString('pt-BR')}
             </div>
           </div>
@@ -238,7 +238,7 @@ export const ExecutiveDashboard: React.FC<{ onNavigate: (view: string) => void }
         {/* Active OS */}
         <div 
           onClick={() => onNavigate('service-orders')}
-          className="bg-superficie p-5 rounded-3xl border border-borda hover:border-teal-500/50 hover:bg-superficie cursor-pointer transition shadow-lg flex flex-col justify-between"
+          className="bg-superficie p-5 rounded-3xl border border-borda hover:border-teal-500/50 hover:bg-superficie cursor-pointer transition shadow-sm flex flex-col justify-between"
         >
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-tinta-2 uppercase tracking-wider">OS em Execução</span>
@@ -261,7 +261,7 @@ export const ExecutiveDashboard: React.FC<{ onNavigate: (view: string) => void }
         {/* Customer NPS */}
         <div 
           onClick={() => onNavigate('evaluations')}
-          className="bg-superficie p-5 rounded-3xl border border-borda hover:border-amber-500/50 hover:bg-superficie cursor-pointer transition shadow-lg flex flex-col justify-between"
+          className="bg-superficie p-5 rounded-3xl border border-borda hover:border-amber-500/50 hover:bg-superficie cursor-pointer transition shadow-sm flex flex-col justify-between"
         >
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-tinta-2 uppercase tracking-wider">NPS / Satisfação</span>
@@ -280,7 +280,7 @@ export const ExecutiveDashboard: React.FC<{ onNavigate: (view: string) => void }
 
       {/* Critical Action Banner if any delay or open pendencies */}
       {(delayedOSCount > 0 || openRequestsCount > 0) && (
-        <div className="p-5 bg-amber-50 border border-amber-500/30 rounded-3xl flex items-center justify-between gap-4">
+        <div className="p-5 bg-amber-50 border border-amber-200 rounded-3xl flex items-center justify-between gap-4">
           <div className="flex items-center space-x-3.5">
             <div className="p-3 bg-amber-500/10 rounded-2xl text-amber-800 border border-amber-500/20 flex-shrink-0">
               <AlertTriangle className="w-5 h-5" />
@@ -295,7 +295,7 @@ export const ExecutiveDashboard: React.FC<{ onNavigate: (view: string) => void }
           <div className="flex items-center space-x-2">
             <button 
               onClick={() => onNavigate('requests')}
-              className="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 rounded-2xl text-xs font-bold transition shadow-lg"
+              className="px-4 py-2 bg-amber-100 hover:bg-amber-200 text-amber-900 rounded-2xl text-xs font-bold transition shadow-sm border border-amber-200"
             >
               Resolver Pendências
             </button>
@@ -304,10 +304,10 @@ export const ExecutiveDashboard: React.FC<{ onNavigate: (view: string) => void }
       )}
 
       {/* Card de Visualização Rápida: Status de Transmissão do eSocial */}
-      <div className="bg-superficie border border-borda rounded-3xl p-6 shadow-xl relative overflow-hidden">
+      <div className="bg-superficie border border-borda rounded-3xl p-6 shadow-sm relative overflow-hidden">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-5 border-b border-borda">
           <div className="flex items-center space-x-3.5">
-            <div className="p-3 rounded-2xl bg-indigo-500/10 text-indigo-700 border border-indigo-500/20 flex-shrink-0">
+            <div className="p-3 rounded-2xl bg-teal-500/10 text-teal-800 border border-teal-500/20 flex-shrink-0">
               <ShieldCheck className="w-6 h-6" />
             </div>
             <div>
@@ -340,10 +340,10 @@ export const ExecutiveDashboard: React.FC<{ onNavigate: (view: string) => void }
                   events: esocialEvents
                 });
               }}
-              className="px-3.5 py-2 bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-700 border border-indigo-500/30 rounded-2xl text-xs font-bold transition flex items-center space-x-1.5 shadow-sm"
+              className="px-3.5 py-2 bg-teal-500/10 hover:bg-teal-500/20 text-teal-800 border border-teal-500/30 rounded-2xl text-xs font-bold transition flex items-center space-x-1.5 shadow-sm"
               title="Exportar Relatório e Log Completo de Transmissões eSocial em PDF"
             >
-              <Download className="w-4 h-4 text-indigo-700" />
+              <Download className="w-4 h-4 text-teal-700" />
               <span>Exportar Logs eSocial (PDF)</span>
             </button>
 
@@ -355,7 +355,7 @@ export const ExecutiveDashboard: React.FC<{ onNavigate: (view: string) => void }
             </button>
             <button
               onClick={() => onNavigate('esocial_events')}
-              className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-2xl text-xs font-bold transition shadow-lg shadow-indigo-950/40 flex items-center space-x-2"
+              className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-2xl text-xs font-bold transition shadow-sm flex items-center space-x-2"
             >
               <span>Painel de Eventos</span>
               <ArrowRight className="w-4 h-4" />
@@ -385,15 +385,15 @@ export const ExecutiveDashboard: React.FC<{ onNavigate: (view: string) => void }
           {/* Em Processamento */}
           <div 
             onClick={() => onNavigate('esocial_events')}
-            className="bg-fundo p-4 rounded-2xl border border-borda hover:border-blue-500/40 hover:bg-fundo cursor-pointer transition flex flex-col justify-between group"
+            className="bg-fundo p-4 rounded-2xl border border-borda hover:border-teal-500/40 hover:bg-fundo cursor-pointer transition flex flex-col justify-between group"
           >
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold text-tinta-2 uppercase tracking-wider">Em Processamento</span>
-              <span className="w-2.5 h-2.5 rounded-full bg-blue-400 animate-pulse" />
+              <span className="w-2.5 h-2.5 rounded-full bg-teal-400 animate-pulse" />
             </div>
             <div className="mt-3 flex items-baseline justify-between">
-              <span className="text-2xl font-bold text-blue-700 font-mono">{esocialProcessingCount}</span>
-              <span className="text-[11px] text-blue-700 group-hover:text-blue-700 font-medium flex items-center">
+              <span className="text-2xl font-bold text-teal-700 font-mono">{esocialProcessingCount}</span>
+              <span className="text-[11px] text-teal-700 group-hover:text-teal-700 font-medium flex items-center">
                 Consultar Serpro <ArrowRight className="w-3 h-3 ml-1" />
               </span>
             </div>
@@ -421,7 +421,7 @@ export const ExecutiveDashboard: React.FC<{ onNavigate: (view: string) => void }
             onClick={() => onNavigate('esocial_events')}
             className={`p-4 rounded-2xl border cursor-pointer transition flex flex-col justify-between group ${
               esocialErrorCount > 0 
-                ? 'bg-rose-50 border-rose-500/50 hover:bg-rose-50 shadow-lg shadow-rose-950/40' 
+                ? 'bg-rose-50 border-rose-200 hover:bg-rose-50 shadow-sm' 
                 : 'bg-fundo border-borda hover:border-borda'
             }`}
           >
@@ -470,7 +470,7 @@ export const ExecutiveDashboard: React.FC<{ onNavigate: (view: string) => void }
       {/* Bento Grid - Main Section (Revenue + OS Distribution) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
         {/* Revenue Progress Chart - Span 7 */}
-        <div className="lg:col-span-7 bg-superficie p-6 rounded-3xl border border-borda shadow-xl flex flex-col justify-between">
+        <div className="lg:col-span-7 bg-superficie p-6 rounded-3xl border border-borda shadow-sm flex flex-col justify-between">
           <div className="flex items-center justify-between mb-4">
             <div>
               <h2 className="text-sm font-bold text-tinta">Evolução de Receita Contratada x Faturada (R$)</h2>
@@ -502,7 +502,7 @@ export const ExecutiveDashboard: React.FC<{ onNavigate: (view: string) => void }
         </div>
 
         {/* Services Status & Funnel - Span 5 */}
-        <div className="lg:col-span-5 bg-superficie p-6 rounded-3xl border border-borda shadow-xl flex flex-col justify-between">
+        <div className="lg:col-span-5 bg-superficie p-6 rounded-3xl border border-borda shadow-sm flex flex-col justify-between">
           <div className="flex items-center justify-between mb-4">
             <div>
               <h2 className="text-sm font-bold text-tinta">Distribuição das Ordens de Serviço</h2>
@@ -510,7 +510,7 @@ export const ExecutiveDashboard: React.FC<{ onNavigate: (view: string) => void }
             </div>
             <button 
               onClick={() => onNavigate('service-orders')}
-              className="text-xs text-indigo-700 font-semibold hover:underline"
+              className="text-xs text-teal-700 font-semibold hover:underline"
             >
               Ver Todas
             </button>
@@ -534,7 +534,7 @@ export const ExecutiveDashboard: React.FC<{ onNavigate: (view: string) => void }
       {/* Bento Grid - Bottom Row (Demanded Services + Monitor Table) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
         {/* Catálogo mais demandado - Span 4 */}
-        <div className="lg:col-span-4 bg-superficie p-6 rounded-3xl border border-borda shadow-xl space-y-4">
+        <div className="lg:col-span-4 bg-superficie p-6 rounded-3xl border border-borda shadow-sm space-y-4">
           <div>
             <h2 className="text-sm font-bold text-tinta">Serviços Mais Demandados (NRs)</h2>
             <p className="text-xs text-tinta-2 mt-0.5">Distribuição por norma técnica</p>
@@ -563,7 +563,7 @@ export const ExecutiveDashboard: React.FC<{ onNavigate: (view: string) => void }
         </div>
 
         {/* Live Service Orders Monitor - Span 8 */}
-        <div className="lg:col-span-8 bg-superficie p-6 rounded-3xl border border-borda shadow-xl space-y-4">
+        <div className="lg:col-span-8 bg-superficie p-6 rounded-3xl border border-borda shadow-sm space-y-4">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-sm font-bold text-tinta">Monitor de Serviços Ativos (Fluxo Master)</h2>
@@ -594,7 +594,7 @@ export const ExecutiveDashboard: React.FC<{ onNavigate: (view: string) => void }
                   const client = clients.find(c => c.id === os.client_id);
                   return (
                     <tr key={os.id} className="hover:bg-superficie-2 transition">
-                      <td className="py-3.5 px-3 font-mono font-bold text-indigo-700">{os.os_number}</td>
+                      <td className="py-3.5 px-3 font-mono font-bold text-teal-700">{os.os_number}</td>
                       <td className="py-3.5 px-3">
                         <div className="font-semibold text-tinta">{client?.trade_name || 'Cliente'}</div>
                         <div className="text-[11px] text-tinta-2">{os.service_name}</div>
@@ -602,8 +602,8 @@ export const ExecutiveDashboard: React.FC<{ onNavigate: (view: string) => void }
                       <td className="py-3.5 px-3 text-tinta">{os.technical_responsible_name}</td>
                       <td className="py-3.5 px-3">
                         <span className={`inline-flex px-2.5 py-0.5 rounded-full text-[10px] font-semibold border ${
-                          os.status === 'IN_PROGRESS' ? 'bg-indigo-500/10 text-indigo-700 border-indigo-500/20' :
-                          os.status === 'WAITING_ACCEPTANCE' ? 'bg-purple-500/10 text-purple-700 border-purple-500/20' :
+                          os.status === 'IN_PROGRESS' ? 'bg-teal-500/10 text-teal-800 border-teal-500/20' :
+                          os.status === 'WAITING_ACCEPTANCE' ? 'bg-teal-500/10 text-teal-800 border-teal-500/20' :
                           os.status === 'ACCEPTED' ? 'bg-marca-suave text-marca-escura border-marca-escura' :
                           os.status === 'WAITING_CLIENT' ? 'bg-amber-500/10 text-amber-800 border-amber-500/20' :
                           os.status === 'REWORK' ? 'bg-rose-500/10 text-rose-700 border-rose-500/20' : 'bg-superficie-2 text-tinta border-borda'
@@ -616,7 +616,7 @@ export const ExecutiveDashboard: React.FC<{ onNavigate: (view: string) => void }
                           <div className="w-16 h-2 bg-fundo rounded-full overflow-hidden border border-borda">
                             <div 
                               className={`h-full rounded-full ${
-                                os.progress === 100 ? 'bg-marca' : 'bg-indigo-500'
+                                os.progress === 100 ? 'bg-marca' : 'bg-teal-500'
                               }`} 
                               style={{ width: `${os.progress}%` }} 
                             />

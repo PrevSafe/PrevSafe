@@ -236,12 +236,12 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
     switch (docType) {
       case 'PGR': return 'bg-teal-500/20 text-teal-800 border-teal-500/30';
       case 'PGRTR': return 'bg-marca-suave text-marca-escura border-marca-escura';
-      case 'PCMSO': return 'bg-cyan-500/20 text-cyan-800 border-cyan-500/30';
-      case 'LTCAT': return 'bg-purple-500/20 text-purple-700 border-purple-500/30';
+      case 'PCMSO': return 'bg-teal-500/20 text-teal-800 border-teal-500/30';
+      case 'LTCAT': return 'bg-teal-500/20 text-teal-800 border-teal-500/30';
       case 'AEP': return 'bg-teal-500/20 text-teal-800 border-teal-500/30';
       case 'INSALUBRIDADE': return 'bg-amber-500/20 text-amber-800 border-amber-500/30';
       case 'PERICULOSIDADE': return 'bg-rose-500/20 text-rose-800 border-rose-500/30';
-      default: return 'bg-blue-500/20 text-blue-700 border-blue-500/30';
+      default: return 'bg-teal-500/20 text-teal-800 border-teal-500/30';
     }
   };
 
@@ -316,7 +316,7 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
       id="document-preview-modal-backdrop"
     >
       <div 
-        className="bg-superficie border border-borda rounded-2xl w-full max-w-6xl max-h-[94vh] flex flex-col shadow-2xl overflow-hidden"
+        className="bg-superficie border border-borda rounded-2xl w-full max-w-6xl max-h-[94vh] flex flex-col shadow-sm overflow-hidden"
         id="document-preview-modal-container"
       >
         {/* Top Control Bar */}
@@ -405,7 +405,7 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
               type="button"
               id="modal-btn-download-pdf"
               onClick={handleDownloadPdf}
-              className="px-3 py-1.5 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs rounded-lg transition-all flex items-center gap-1.5 shadow-md shadow-teal-500/20"
+              className="bg-marca-escura text-white px-3 py-1.5 font-bold text-xs rounded-lg transition-all flex items-center gap-1.5 shadow-sm hover:opacity-90"
             >
               <Download className="w-3.5 h-3.5" />
               Baixar PDF
@@ -450,7 +450,7 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
             style={{ transform: `scale(${zoomLevel / 100})`, width: zoomLevel > 100 ? `${zoomLevel}%` : '100%' }}
           >
             {/* Sheet Page Container (White paper look or high-contrast clean document design) */}
-            <div className="w-full max-w-4xl bg-white text-slate-900 rounded-xl shadow-2xl border border-slate-300 p-8 sm:p-12 space-y-6 select-text">
+            <div className="w-full max-w-4xl bg-white text-slate-900 rounded-xl shadow-sm border border-slate-300 p-8 sm:p-12 space-y-6 select-text">
               
               {/* Document Official Header */}
               <div className="border-b-2 border-borda pb-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -576,7 +576,7 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
                                   {c ? (
                                     <span className={`px-2 py-0.5 font-bold rounded text-[10px] whitespace-nowrap ${
                                       c.nivel === 'MUITO_ALTO' ? 'bg-rose-100 text-rose-800' :
-                                      c.nivel === 'ALTO' ? 'bg-orange-100 text-orange-800' :
+                                      c.nivel === 'ALTO' ? 'bg-amber-100 text-amber-800' :
                                       c.nivel === 'MEDIO' ? 'bg-amber-100 text-amber-800' :
                                       'bg-teal-100 text-teal-800'
                                     }`}>
@@ -758,10 +758,10 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
                   <div className="border border-slate-300 rounded-lg overflow-hidden">
                     <div className="bg-superficie text-tinta px-4 py-2.5 flex items-center justify-between">
                       <span className="font-bold text-xs uppercase tracking-wide flex items-center gap-2">
-                        <Award className="w-4 h-4 text-purple-700" />
+                        <Award className="w-4 h-4 text-teal-700" />
                         Conclusão Técnica Previdenciária & Aposentadoria Especial (INSS / S-2240)
                       </span>
-                      <span className="text-[10px] text-purple-700 font-bold">Decreto 3.048/99</span>
+                      <span className="text-[10px] text-teal-700 font-bold">Decreto 3.048/99</span>
                     </div>
 
                     <div className="overflow-x-auto">
@@ -1083,7 +1083,7 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
               type="button"
               id="modal-btn-download-footer"
               onClick={handleDownloadPdf}
-              className="px-3.5 py-1.5 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold rounded-lg transition-all flex items-center gap-1.5 shadow-md shadow-teal-500/20"
+              className="bg-marca-escura text-white px-3.5 py-1.5 font-bold rounded-lg transition-all flex items-center gap-1.5 shadow-sm hover:opacity-90"
             >
               <Download className="w-3.5 h-3.5" />
               Baixar Laudo Oficial em PDF

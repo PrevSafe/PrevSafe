@@ -100,9 +100,9 @@ export const CommercialDashboard: React.FC<{ onNavigate: (view: string) => void 
   return (
     <div className="space-y-6 pb-12">
       {/* Header Bento Card */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-superficie border border-borda rounded-3xl p-6 shadow-xl">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-superficie border border-borda rounded-3xl p-6 shadow-sm">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-indigo-500/10 border border-indigo-500/20 rounded-2xl flex items-center justify-center text-indigo-700">
+          <div className="w-10 h-10 bg-teal-500/10 border border-teal-500/20 rounded-2xl flex items-center justify-center text-teal-800">
             <TrendingUp className="w-5 h-5" />
           </div>
           <div>
@@ -113,7 +113,7 @@ export const CommercialDashboard: React.FC<{ onNavigate: (view: string) => void 
         <div className="flex items-center space-x-2">
           <button 
             onClick={() => onNavigate('proposals')}
-            className="px-4 py-2.5 bg-gradient-to-r from-marca-escura to-teal-600 hover:from-marca-escura hover:to-teal-700 text-white rounded-2xl text-xs font-bold shadow-lg shadow-emerald-950/40 transition flex items-center space-x-1.5"
+            className="bg-marca-escura px-4 py-2.5 text-white rounded-2xl text-xs font-bold shadow-sm transition flex items-center space-x-1.5"
           >
             <Plus className="w-4 h-4" />
             <span>Nova Proposta Comercial</span>
@@ -123,7 +123,7 @@ export const CommercialDashboard: React.FC<{ onNavigate: (view: string) => void 
 
       {/* KPIs Bento Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-5">
-        <div className="bg-superficie p-5 rounded-3xl border border-borda shadow-xl flex flex-col justify-between">
+        <div className="bg-superficie p-5 rounded-3xl border border-borda shadow-sm flex flex-col justify-between">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-tinta-2 uppercase tracking-wider">Taxa de Conversão</span>
             <div className="p-2.5 rounded-2xl bg-marca-suave text-marca-escura border border-marca-escura">
@@ -136,10 +136,10 @@ export const CommercialDashboard: React.FC<{ onNavigate: (view: string) => void 
           </div>
         </div>
 
-        <div className="bg-superficie p-5 rounded-3xl border border-borda shadow-xl flex flex-col justify-between">
+        <div className="bg-superficie p-5 rounded-3xl border border-borda shadow-sm flex flex-col justify-between">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-tinta-2 uppercase tracking-wider">Ticket Médio</span>
-            <div className="p-2.5 rounded-2xl bg-indigo-500/10 text-indigo-700 border border-indigo-500/20">
+            <div className="p-2.5 rounded-2xl bg-teal-500/10 text-teal-800 border border-teal-500/20">
               <DollarSign className="w-4 h-4" />
             </div>
           </div>
@@ -147,24 +147,24 @@ export const CommercialDashboard: React.FC<{ onNavigate: (view: string) => void 
             <div className="text-2xl font-extrabold text-tinta mt-3">
               R$ {averageTicket.toLocaleString('pt-BR')}
             </div>
-            <div className="text-[11px] text-indigo-700 mt-1 font-medium">+15% em pacotes integrados</div>
+            <div className="text-[11px] text-teal-700 mt-1 font-medium">+15% em pacotes integrados</div>
           </div>
         </div>
 
-        <div className="bg-superficie p-5 rounded-3xl border border-borda shadow-xl flex flex-col justify-between">
+        <div className="bg-superficie p-5 rounded-3xl border border-borda shadow-sm flex flex-col justify-between">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-tinta-2 uppercase tracking-wider">Tempo Fechamento</span>
-            <div className="p-2.5 rounded-2xl bg-purple-500/10 text-purple-700 border border-purple-500/20">
+            <div className="p-2.5 rounded-2xl bg-teal-500/10 text-teal-800 border border-teal-500/20">
               <Clock className="w-4 h-4" />
             </div>
           </div>
           <div>
             <div className="text-3xl font-extrabold text-tinta mt-3">{averageApprovalDays} dias</div>
-            <div className="text-[11px] text-purple-700 mt-1">Agilizado pelo envio via WhatsApp</div>
+            <div className="text-[11px] text-teal-700 mt-1">Agilizado pelo envio via WhatsApp</div>
           </div>
         </div>
 
-        <div className="bg-superficie p-5 rounded-3xl border border-borda shadow-xl flex flex-col justify-between">
+        <div className="bg-superficie p-5 rounded-3xl border border-borda shadow-sm flex flex-col justify-between">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-tinta-2 uppercase tracking-wider">Pipeline Ativo</span>
             <div className="p-2.5 rounded-2xl bg-amber-500/10 text-amber-800 border border-amber-500/20">
@@ -183,7 +183,7 @@ export const CommercialDashboard: React.FC<{ onNavigate: (view: string) => void 
       {/* Funnel & Source Charts in Bento Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         {/* Sales Funnel */}
-        <div className="bg-superficie p-6 rounded-3xl border border-borda shadow-xl lg:col-span-2 flex flex-col justify-between">
+        <div className="bg-superficie p-6 rounded-3xl border border-borda shadow-sm lg:col-span-2 flex flex-col justify-between">
           <div className="flex items-center justify-between mb-4">
             <div>
               <h2 className="text-base font-bold text-tinta">Funil Comercial Completo (Lead → Contrato)</h2>
@@ -212,7 +212,7 @@ export const CommercialDashboard: React.FC<{ onNavigate: (view: string) => void 
         </div>
 
         {/* Lead Sources Pie */}
-        <div className="bg-superficie p-6 rounded-3xl border border-borda shadow-xl flex flex-col justify-between">
+        <div className="bg-superficie p-6 rounded-3xl border border-borda shadow-sm flex flex-col justify-between">
           <div>
             <h2 className="text-base font-bold text-tinta mb-0.5">Origem dos Leads</h2>
             <p className="text-xs text-tinta-2 mb-3">Canais de captação de clientes SST</p>
@@ -287,7 +287,7 @@ export const QualityDashboard: React.FC<{ onNavigate: (view: string) => void }> 
   return (
     <div className="space-y-6 pb-12">
       {/* Header Bento Card */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-superficie border border-borda rounded-3xl p-6 shadow-xl">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-superficie border border-borda rounded-3xl p-6 shadow-sm">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-marca-suave border border-marca-escura rounded-2xl flex items-center justify-center text-marca-escura">
             <Star className="w-5 h-5" />
@@ -300,7 +300,7 @@ export const QualityDashboard: React.FC<{ onNavigate: (view: string) => void }> 
         <div className="flex items-center space-x-2">
           <button 
             onClick={() => onNavigate('evaluations')}
-            className="px-4 py-2.5 bg-gradient-to-r from-marca-escura to-teal-600 hover:from-marca-escura hover:to-teal-700 text-white rounded-2xl text-xs font-bold shadow-lg shadow-emerald-950/40 transition"
+            className="bg-marca-escura px-4 py-2.5 text-white rounded-2xl text-xs font-bold shadow-sm transition"
           >
             Ver Todas as Avaliações
           </button>
@@ -309,7 +309,7 @@ export const QualityDashboard: React.FC<{ onNavigate: (view: string) => void }> 
 
       {/* Quality KPI Cards in Bento Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-5">
-        <div className="bg-superficie p-5 rounded-3xl border border-borda shadow-xl flex flex-col justify-between">
+        <div className="bg-superficie p-5 rounded-3xl border border-borda shadow-sm flex flex-col justify-between">
           <div className="text-xs font-semibold text-tinta-2 uppercase tracking-wider">NPS Global</div>
           <div>
             <div className="text-3xl font-extrabold text-marca-escura mt-2">{averageNps}</div>
@@ -317,7 +317,7 @@ export const QualityDashboard: React.FC<{ onNavigate: (view: string) => void }> 
           </div>
         </div>
 
-        <div className="bg-superficie p-5 rounded-3xl border border-borda shadow-xl flex flex-col justify-between">
+        <div className="bg-superficie p-5 rounded-3xl border border-borda shadow-sm flex flex-col justify-between">
           <div className="text-xs font-semibold text-tinta-2 uppercase tracking-wider">Índice de Retrabalho</div>
           <div>
             <div className="text-3xl font-extrabold text-tinta mt-2">{reworkRate}%</div>
@@ -325,7 +325,7 @@ export const QualityDashboard: React.FC<{ onNavigate: (view: string) => void }> 
           </div>
         </div>
 
-        <div className="bg-superficie p-5 rounded-3xl border border-borda shadow-xl flex flex-col justify-between">
+        <div className="bg-superficie p-5 rounded-3xl border border-borda shadow-sm flex flex-col justify-between">
           <div className="text-xs font-semibold text-tinta-2 uppercase tracking-wider">Entregas no Prazo</div>
           <div>
             <div className="text-3xl font-extrabold text-marca-escura mt-2">96.4%</div>
@@ -333,7 +333,7 @@ export const QualityDashboard: React.FC<{ onNavigate: (view: string) => void }> 
           </div>
         </div>
 
-        <div className="bg-superficie p-5 rounded-3xl border border-borda shadow-xl flex flex-col justify-between">
+        <div className="bg-superficie p-5 rounded-3xl border border-borda shadow-sm flex flex-col justify-between">
           <div className="text-xs font-semibold text-tinta-2 uppercase tracking-wider">Reclamações Formais</div>
           <div>
             <div className="text-3xl font-extrabold text-tinta mt-2">0</div>
@@ -345,7 +345,7 @@ export const QualityDashboard: React.FC<{ onNavigate: (view: string) => void }> 
       {/* Criteria Breakdown & Reviews List in Bento Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         {/* Quality Criteria Progress Bars */}
-        <div className="bg-superficie p-6 rounded-3xl border border-borda shadow-xl space-y-4 flex flex-col justify-between">
+        <div className="bg-superficie p-6 rounded-3xl border border-borda shadow-sm space-y-4 flex flex-col justify-between">
           <div>
             <h2 className="text-base font-bold text-tinta">Média por Critério de Avaliação (1 a 5)</h2>
             <p className="text-xs text-tinta-2 mt-0.5">Notas atribuídas pelos clientes após aceite formal</p>
@@ -370,7 +370,7 @@ export const QualityDashboard: React.FC<{ onNavigate: (view: string) => void }> 
         </div>
 
         {/* Real Customer Testimonials */}
-        <div className="bg-superficie p-6 rounded-3xl border border-borda shadow-xl space-y-4 flex flex-col justify-between">
+        <div className="bg-superficie p-6 rounded-3xl border border-borda shadow-sm space-y-4 flex flex-col justify-between">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-base font-bold text-tinta">Últimos Feedbacks Registrados</h2>

@@ -48,12 +48,12 @@ const METODO_DA_ASSINATURA: Record<SSTWorkOrderSignatureMethod, string> = {
 };
 
 const COR_DA_CATEGORIA: Record<string, string> = {
-  'Físico': 'bg-blue-500/10 text-blue-700 border-blue-500/30',
+  'Físico': 'bg-teal-500/10 text-teal-800 border-teal-500/30',
   'Químico': 'bg-rose-500/10 text-rose-700 border-rose-500/30',
   'Biológico': 'bg-marca-suave text-marca-escura border-marca-escura',
   'Ergonômico': 'bg-amber-500/10 text-amber-800 border-amber-500/30',
-  'Psicossocial': 'bg-violet-500/10 text-violet-700 border-violet-500/30',
-  'Acidentes': 'bg-orange-500/10 text-orange-800 border-orange-500/30'
+  'Psicossocial': 'bg-teal-500/10 text-teal-800 border-teal-500/30',
+  'Acidentes': 'bg-amber-500/10 text-amber-800 border-amber-500/30'
 };
 
 /** "Ausencia de risco" registrada no inventario: nao tem fonte, avaliacao nem medida. */
@@ -322,7 +322,7 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
             <p className="text-2xl font-black text-tinta mt-1">{totalCount}</p>
             <p className="text-[11px] text-tinta-2 mt-0.5">NR-01 item 1.4.1</p>
           </div>
-          <div className="p-3 bg-indigo-500/10 border border-indigo-500/20 rounded-xl text-indigo-700">
+          <div className="p-3 bg-teal-500/10 border border-teal-500/20 rounded-xl text-teal-800">
             <FileText className="w-6 h-6" />
           </div>
         </div>
@@ -359,7 +359,7 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
             </p>
             <p className="text-[11px] text-tinta-2 mt-0.5">CNPJ: {activeClient?.document_number || 'S/N'}</p>
           </div>
-          <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-xl text-blue-700">
+          <div className="p-3 bg-teal-500/10 border border-teal-500/20 rounded-xl text-teal-800">
             <Building2 className="w-6 h-6" />
           </div>
         </div>
@@ -376,14 +376,14 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
               placeholder="Buscar por colaborador, CPF, função ou código OS..."
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
-              className="w-full pl-9 pr-3 py-2 bg-fundo border border-borda rounded-lg text-xs text-tinta placeholder-tinta-3 focus:outline-none focus:border-indigo-500 transition-colors"
+              className="w-full pl-9 pr-3 py-2 bg-fundo border border-borda rounded-lg text-xs text-tinta placeholder-tinta-3 focus:outline-none focus:border-teal-500 transition-colors"
             />
           </div>
 
           <select
             value={filterGhe}
             onChange={e => setFilterGhe(e.target.value)}
-            className="bg-fundo border border-borda rounded-lg text-xs text-tinta py-2 px-3 focus:outline-none focus:border-indigo-500"
+            className="bg-fundo border border-borda rounded-lg text-xs text-tinta py-2 px-3 focus:outline-none focus:border-teal-500"
           >
             <option value="ALL">Todos os GHEs</option>
             {uniqueGhes.map(ghe => (
@@ -394,7 +394,7 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
           <select
             value={filterSignature}
             onChange={e => setFilterSignature(e.target.value)}
-            className="bg-fundo border border-borda rounded-lg text-xs text-tinta py-2 px-3 focus:outline-none focus:border-indigo-500"
+            className="bg-fundo border border-borda rounded-lg text-xs text-tinta py-2 px-3 focus:outline-none focus:border-teal-500"
           >
             <option value="ALL">Status Assinatura (Todos)</option>
             <option value="SIGNED">Assinadas ✓</option>
@@ -406,7 +406,7 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
         <div className="flex flex-wrap items-center gap-2 shrink-0">
           <button
             onClick={handleGenerateAllForClient}
-            className="px-3 py-2 bg-gradient-to-r from-indigo-700 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white rounded-lg text-xs font-bold transition-all shadow-md shadow-indigo-600/20 flex items-center gap-1.5"
+            className="bg-teal-700 px-3 py-2 text-white rounded-lg text-xs font-bold transition-all shadow-md flex items-center gap-1.5"
             title="Gera automaticamente as Ordens de Serviço de todos os funcionários com base nas funções, GHE e riscos do PGR"
           >
             <Sparkles className="w-3.5 h-3.5" />
@@ -416,7 +416,7 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
           <button
             onClick={handleAtualizarNaoAssinadas}
             disabled={!selectedClientId}
-            className="px-3 py-2 bg-sky-600/20 hover:bg-sky-600/30 disabled:opacity-50 disabled:cursor-not-allowed text-sky-800 border border-sky-500/30 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5"
+            className="px-3 py-2 bg-teal-600/20 hover:bg-teal-600/30 disabled:opacity-50 disabled:cursor-not-allowed text-teal-800 border border-teal-500/30 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5"
             title={selectedClientId
               ? 'Refaz as OS ainda não assinadas deste cliente com o inventário de riscos, o plano de ação e o cadastro de hoje. As assinadas não mudam.'
               : 'Selecione um cliente para atualizar as OS dele.'}
@@ -480,7 +480,7 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
                     type="checkbox"
                     checked={selectedOSIds.length === filteredOS.length && filteredOS.length > 0}
                     onChange={handleSelectAll}
-                    className="rounded bg-superficie border-borda text-indigo-600 focus:ring-0"
+                    className="rounded bg-superficie border-borda text-teal-700 focus:ring-0"
                   />
                 </th>
                 <th className="py-3 px-3">Código OS / Emissão</th>
@@ -521,7 +521,7 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
                     <tr
                       key={os.id}
                       className={`hover:bg-superficie-2 transition-colors ${
-                        isSelected ? 'bg-indigo-50' : ''
+                        isSelected ? 'bg-teal-50' : ''
                       }`}
                     >
                       <td className="py-3 px-3 text-center">
@@ -529,12 +529,12 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
                           type="checkbox"
                           checked={isSelected}
                           onChange={() => handleToggleSelect(os.id)}
-                          className="rounded bg-superficie border-borda text-indigo-600 focus:ring-0"
+                          className="rounded bg-superficie border-borda text-teal-700 focus:ring-0"
                         />
                       </td>
 
                       <td className="py-3 px-3">
-                        <div className="font-mono font-bold text-indigo-700">{os.os_code}</div>
+                        <div className="font-mono font-bold text-teal-700">{os.os_code}</div>
                         <div className="text-[11px] text-tinta-2 flex items-center gap-1 mt-0.5">
                           <Clock className="w-3 h-3" />
                           {formatDate(os.issue_date)} (Rev {os.revision})
@@ -622,7 +622,7 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
 
                           <button
                             onClick={() => handleAtualizarComInventario(os)}
-                            className="p-1.5 text-sky-700 hover:text-sky-700 hover:bg-sky-50 rounded-lg transition-colors"
+                            className="p-1.5 text-teal-700 hover:text-teal-700 hover:bg-teal-50 rounded-lg transition-colors"
                             title={os.employee_signed
                               ? 'Atualizar com o inventário: cria uma revisão nova, a assinar (a assinada não muda)'
                               : 'Atualizar com o inventário'}
@@ -655,11 +655,11 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
       {/* ================= MODAL: VIEW WORK ORDER ================= */}
       {viewingOS && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-superficie border border-borda rounded-2xl w-full max-w-4xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-superficie border border-borda rounded-2xl w-full max-w-4xl max-h-[90vh] flex flex-col shadow-sm overflow-hidden animate-in fade-in zoom-in-95 duration-200">
             {/* Modal Header */}
             <div className="px-6 py-4 bg-fundo border-b border-borda flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-indigo-500/10 border border-indigo-500/20 rounded-xl text-indigo-700">
+                <div className="p-2 bg-teal-500/10 border border-teal-500/20 rounded-xl text-teal-800">
                   <FileText className="w-5 h-5" />
                 </div>
                 <div>
@@ -698,7 +698,7 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
 
               {/* Pendencias em destaque: a OS nao deve ser entregue assim */}
               {temPendenciaNaOS && (
-                <div className="p-4 bg-amber-50 border border-amber-600/50 rounded-xl space-y-2">
+                <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl space-y-2">
                   <p className="text-[11px] font-bold text-amber-700 uppercase tracking-wider flex items-center gap-1.5">
                     <AlertTriangle className="w-4 h-4" />
                     Pendências — resolva antes de entregar esta OS ao trabalhador
@@ -715,7 +715,7 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
               {/* OS gravada antes de risks_detail: sem o detalhe do inventario nem as pendencias */}
               {!osComDetalhe && (
                 <div className="p-3 bg-fundo border border-borda rounded-xl text-[11px] text-tinta-2 flex items-start gap-2">
-                  <Info className="w-4 h-4 shrink-0 text-sky-700" />
+                  <Info className="w-4 h-4 shrink-0 text-teal-700" />
                   <span>
                     OS gerada antes da regra atual: não traz o detalhe dos riscos do inventário (fonte, danos,
                     avaliação e medidas) nem a lista de pendências. Use &quot;Atualizar com o inventário&quot; para refazê-la
@@ -727,7 +727,7 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
               {/* Employer & Employee Banner */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-fundo p-4 rounded-xl border border-borda">
                 <div>
-                  <h4 className="text-[11px] font-bold text-indigo-700 uppercase tracking-wider mb-2">Dados do Empregador</h4>
+                  <h4 className="text-[11px] font-bold text-teal-700 uppercase tracking-wider mb-2">Dados do Empregador</h4>
                   <p><span className="text-tinta-2">Empresa:</span> <strong className="text-tinta">{viewingOS.employer_name || 'Não informado'}</strong></p>
                   <p><span className="text-tinta-2">CNPJ:</span> <span className="font-mono text-tinta">{viewingOS.employer_document || 'Não informado'}</span></p>
                   <p><span className="text-tinta-2">CNAE / Grau de Risco:</span> {viewingOS.employer_cnae || 'Não informado'} (Grau {viewingOS.employer_risk_grade || 'não informado'})</p>
@@ -735,7 +735,7 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
                 </div>
 
                 <div>
-                  <h4 className="text-[11px] font-bold text-indigo-700 uppercase tracking-wider mb-2">Dados do Trabalhador</h4>
+                  <h4 className="text-[11px] font-bold text-teal-700 uppercase tracking-wider mb-2">Dados do Trabalhador</h4>
                   <p><span className="text-tinta-2">Nome:</span> <strong className="text-tinta">{viewingOS.employee_name}</strong></p>
                   <p><span className="text-tinta-2">CPF:</span> <span className="font-mono text-tinta">{viewingOS.employee_cpf || 'Não informado'}</span></p>
                   <p><span className="text-tinta-2">Cargo / CBO:</span> {viewingOS.employee_job_title || 'Não informado'} (CBO: {viewingOS.employee_cbo || 'não informado'})</p>
@@ -745,7 +745,7 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
 
               {/* Job Description */}
               <div className="space-y-2">
-                <h4 className="text-xs font-bold text-tinta uppercase tracking-wider flex items-center gap-1.5 text-indigo-700">
+                <h4 className="text-xs font-bold text-tinta uppercase tracking-wider flex items-center gap-1.5 text-teal-700">
                   <Layers className="w-3.5 h-3.5" />
                   1. Atividades do Cargo
                 </h4>
@@ -760,7 +760,7 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
 
               {/* Risks Inventory */}
               <div className="space-y-2">
-                <h4 className="text-xs font-bold text-tinta uppercase tracking-wider flex items-center gap-1.5 text-indigo-700">
+                <h4 className="text-xs font-bold text-tinta uppercase tracking-wider flex items-center gap-1.5 text-teal-700">
                   <ShieldCheck className="w-3.5 h-3.5" />
                   2. Riscos Ocupacionais do Inventário (NR-01, 1.4.1, &quot;b&quot;, I e IV)
                 </h4>
@@ -799,7 +799,7 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
                   // OS antiga: as listas por categoria, como foram gravadas.
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div className="p-3 bg-fundo border border-borda rounded-lg">
-                      <p className="font-bold text-blue-700 mb-1">Riscos Físicos:</p>
+                      <p className="font-bold text-teal-700 mb-1">Riscos Físicos:</p>
                       <ListaDaOS itens={viewingOS.physical_risks} vazio="Nenhum registrado nesta OS." />
                     </div>
                     <div className="p-3 bg-fundo border border-borda rounded-lg">
@@ -811,7 +811,7 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
                       <ListaDaOS itens={viewingOS.ergonomic_risks} vazio="Nenhum registrado nesta OS." />
                     </div>
                     <div className="p-3 bg-fundo border border-borda rounded-lg">
-                      <p className="font-bold text-orange-700 mb-1">Riscos de Acidentes / Mecânicos:</p>
+                      <p className="font-bold text-amber-700 mb-1">Riscos de Acidentes / Mecânicos:</p>
                       <ListaDaOS itens={viewingOS.accident_mechanical_risks} vazio="Nenhum registrado nesta OS." />
                     </div>
                   </div>
@@ -820,13 +820,13 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
 
               {/* Medidas de prevencao adotadas: EPC, medidas administrativas e EPI */}
               <div className="space-y-2">
-                <h4 className="text-xs font-bold text-tinta uppercase tracking-wider flex items-center gap-1.5 text-indigo-700">
+                <h4 className="text-xs font-bold text-tinta uppercase tracking-wider flex items-center gap-1.5 text-teal-700">
                   <HardHat className="w-3.5 h-3.5" />
                   3. Medidas de Prevenção Adotadas (NR-01, 1.4.1, &quot;b&quot;, II)
                 </h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <div className="p-3 bg-fundo border border-borda rounded-lg">
-                    <p className="font-bold text-sky-700 mb-1">Proteção coletiva (EPC)</p>
+                    <p className="font-bold text-teal-700 mb-1">Proteção coletiva (EPC)</p>
                     <ListaDaOS
                       itens={viewingOS.collective_protections_epc}
                       vazio={osComDetalhe
@@ -836,7 +836,7 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
                   </div>
                   <div className="p-3 bg-fundo border border-borda rounded-lg">
                     {/* Na OS antiga eram boas praticas genericas, nao medidas adotadas */}
-                    <p className="font-bold text-sky-700 mb-1">
+                    <p className="font-bold text-teal-700 mb-1">
                       {osComDetalhe ? 'Medidas administrativas e de organização do trabalho' : 'Procedimentos registrados nesta OS'}
                     </p>
                     <ListaDaOS
@@ -846,14 +846,14 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
                   </div>
                 </div>
                 <div className="p-3 bg-fundo border border-borda rounded-lg">
-                  <p className="font-bold text-sky-700 mb-1">Proteção individual (EPI, NR-06)</p>
+                  <p className="font-bold text-teal-700 mb-1">Proteção individual (EPI, NR-06)</p>
                   {viewingOS.mandatory_epis && viewingOS.mandatory_epis.length > 0 ? (
                     <div className="divide-y divide-borda">
                       {viewingOS.mandatory_epis.map((epi, idx) => (
                         <div key={idx} className="py-2 flex flex-wrap items-center justify-between gap-2">
                           <div>
                             <strong className="text-tinta">{epi.epi_name}</strong>
-                            <span className="ml-2 px-2 py-0.5 bg-indigo-500/10 text-indigo-700 rounded text-[10px] font-mono">
+                            <span className="ml-2 px-2 py-0.5 bg-teal-500/10 text-teal-800 rounded text-[10px] font-mono">
                               CA {epi.ca_number || 'não informado'}
                             </span>
                           </div>
@@ -873,7 +873,7 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
 
               {/* Emergencia: os procedimentos do estabelecimento */}
               <div className="space-y-2">
-                <h4 className="text-xs font-bold text-tinta uppercase tracking-wider flex items-center gap-1.5 text-indigo-700">
+                <h4 className="text-xs font-bold text-tinta uppercase tracking-wider flex items-center gap-1.5 text-teal-700">
                   <AlertTriangle className="w-3.5 h-3.5" />
                   4. Em Caso de Acidente ou Emergência (NR-01, 1.4.1, &quot;e&quot;)
                 </h4>
@@ -887,7 +887,7 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
 
               {/* Obrigacoes e, so quando houver, proibicoes do posto */}
               <div className="space-y-2">
-                <h4 className="text-xs font-bold text-tinta uppercase tracking-wider flex items-center gap-1.5 text-indigo-700">
+                <h4 className="text-xs font-bold text-tinta uppercase tracking-wider flex items-center gap-1.5 text-teal-700">
                   <UserCheck className="w-3.5 h-3.5" />
                   5. Obrigações do Trabalhador
                 </h4>
@@ -954,7 +954,7 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
               <div className="flex flex-wrap items-center justify-end gap-2">
                 <button
                   onClick={() => handleAtualizarComInventario(viewingOS)}
-                  className="px-4 py-2 bg-sky-600/20 hover:bg-sky-600/30 text-sky-800 border border-sky-500/30 rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5"
+                  className="px-4 py-2 bg-teal-600/20 hover:bg-teal-600/30 text-teal-800 border border-teal-500/30 rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5"
                   title={viewingOS.employee_signed
                     ? 'A OS assinada não muda: será criada uma revisão nova, a assinar'
                     : 'Refaz esta OS com o inventário de riscos, o plano de ação e o cadastro de hoje'}
@@ -978,7 +978,7 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
 
                 <button
                   onClick={() => exportWorkOrderOSPDF(viewingOS, organization)}
-                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5 shadow-md shadow-indigo-600/20"
+                  className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5 shadow-md"
                 >
                   <Printer className="w-3.5 h-3.5" />
                   Imprimir PDF Oficial
@@ -992,10 +992,10 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
       {/* ================= MODAL: CREATE / GENERATE SINGLE OS ================= */}
       {isCreateModalOpen && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-superficie border border-borda rounded-2xl w-full max-w-[32rem] shadow-2xl p-6 space-y-5 animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-superficie border border-borda rounded-2xl w-full max-w-[32rem] shadow-sm p-6 space-y-5 animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between border-b border-borda pb-3">
               <h3 className="text-base font-bold text-tinta flex items-center gap-2">
-                <FileText className="w-5 h-5 text-indigo-700" />
+                <FileText className="w-5 h-5 text-teal-700" />
                 Gerar Nova Ordem de Serviço (NR-01)
               </h3>
               <button
@@ -1012,7 +1012,7 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
                 <select
                   value={selectedEmployeeToGenerate}
                   onChange={e => setSelectedEmployeeToGenerate(e.target.value)}
-                  className="w-full bg-fundo border border-borda rounded-xl p-2.5 text-tinta focus:border-indigo-500 focus:outline-none"
+                  className="w-full bg-fundo border border-borda rounded-xl p-2.5 text-tinta focus:border-teal-500 focus:outline-none"
                 >
                   <option value="">-- Selecione um colaborador --</option>
                   {employees
@@ -1028,13 +1028,13 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
                 </p>
               </div>
 
-              <div className="p-3 bg-indigo-50 border border-indigo-200 rounded-xl text-indigo-700 space-y-1">
+              <div className="p-3 bg-teal-50 border border-teal-200 rounded-xl text-teal-700 space-y-1">
                 <div className="font-bold flex items-center gap-1.5">
                   <Info className="w-4 h-4" />
                   Conteúdo da OS (NR-01, 1.4.1, &quot;c&quot;)
                 </div>
                 {/* O texto antigo prometia "proibicoes do Art. 158" e diretrizes de emergencia que eram fixas; hoje tudo sai do cadastro. */}
-                <p className="text-[11px] text-indigo-700">
+                <p className="text-[11px] text-teal-700">
                   A OS traz os riscos do inventário do GHE do trabalhador, as medidas de prevenção adotadas, os procedimentos
                   de emergência do estabelecimento e as obrigações do trabalhador (NR-01, 1.4.2). O que faltar no cadastro
                   aparece como pendência, e não como texto padrão.
@@ -1052,7 +1052,7 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
               <button
                 onClick={handleGenerateIndividual}
                 disabled={!selectedEmployeeToGenerate}
-                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5"
+                className="px-4 py-2 bg-teal-600 hover:bg-teal-700 disabled:opacity-50 text-white rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5"
               >
                 <Sparkles className="w-3.5 h-3.5" />
                 Gerar Ordem de Serviço
@@ -1065,7 +1065,7 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
       {/* ================= MODAL: COLLECT SIGNATURE / BIOMETRICS ================= */}
       {isSignModalOpen && signingOS && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-superficie border border-borda rounded-2xl w-full max-w-[28rem] shadow-2xl p-6 space-y-5 animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-superficie border border-borda rounded-2xl w-full max-w-[28rem] shadow-sm p-6 space-y-5 animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between border-b border-borda pb-3">
               <h3 className="text-base font-bold text-tinta flex items-center gap-2">
                 <Fingerprint className="w-5 h-5 text-marca-escura" />

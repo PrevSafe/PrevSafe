@@ -252,7 +252,7 @@ export const TechnicalResponsibilityTab: React.FC<TechnicalResponsibilityTabProp
           <button
             type="button"
             onClick={() => abrirCadastro()}
-            className="px-4 py-2 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold rounded-lg shadow-md transition-all flex items-center gap-1.5 text-sm shrink-0"
+            className="bg-marca-escura text-white px-4 py-2 font-bold rounded-lg shadow-sm transition-all flex items-center gap-1.5 text-sm shrink-0 hover:opacity-90"
           >
             <Plus className="w-4 h-4" />
             Cadastrar Profissional
@@ -261,7 +261,7 @@ export const TechnicalResponsibilityTab: React.FC<TechnicalResponsibilityTabProp
       </div>
 
       {resultado && (
-        <div className="bg-superficie border border-teal-500/30 rounded-2xl p-4 flex items-start gap-2.5">
+        <div className="bg-superficie border border-teal-200 rounded-2xl p-4 flex items-start gap-2.5">
           <CheckCircle2 className="w-4 h-4 text-teal-700 mt-0.5 shrink-0" />
           <p className="text-xs text-tinta flex-1">{resultado}</p>
           <button
@@ -507,7 +507,7 @@ export const TechnicalResponsibilityTab: React.FC<TechnicalResponsibilityTabProp
       {/* ------------------------------------------------ modal: profissional */}
       {modalProfissional && (
         <div className="fixed inset-0 bg-fundo backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-superficie border border-borda rounded-2xl max-w-[46rem] w-full p-6 space-y-4 shadow-2xl animate-in fade-in zoom-in-95 duration-150 max-h-[90vh] overflow-y-auto">
+          <div className="bg-superficie border border-borda rounded-2xl max-w-[46rem] w-full p-6 space-y-4 shadow-sm animate-in fade-in zoom-in-95 duration-150 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-borda pb-3">
               <h3 className="text-base font-bold text-tinta flex items-center gap-2">
                 <BadgeCheck className="w-5 h-5 text-teal-700" />
@@ -663,7 +663,7 @@ export const TechnicalResponsibilityTab: React.FC<TechnicalResponsibilityTabProp
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold rounded-lg"
+                  className="bg-marca-escura text-white px-4 py-2 font-bold rounded-lg hover:opacity-90"
                 >
                   Salvar
                 </button>
@@ -676,7 +676,7 @@ export const TechnicalResponsibilityTab: React.FC<TechnicalResponsibilityTabProp
       {/* ------------------------------------------------ modal: atribuir papel */}
       {modalAtribuir && (
         <div className="fixed inset-0 bg-fundo backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-superficie border border-borda rounded-2xl max-w-[46rem] w-full p-6 space-y-4 shadow-2xl animate-in fade-in zoom-in-95 duration-150 max-h-[90vh] overflow-y-auto">
+          <div className="bg-superficie border border-borda rounded-2xl max-w-[46rem] w-full p-6 space-y-4 shadow-sm animate-in fade-in zoom-in-95 duration-150 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-borda pb-3">
               <div>
                 <h3 className="text-base font-bold text-tinta flex items-center gap-2">
@@ -801,7 +801,7 @@ export const TechnicalResponsibilityTab: React.FC<TechnicalResponsibilityTabProp
                 <button
                   type="submit"
                   disabled={!candidato || !habilitacao?.apto || clientesAlvo.length === 0}
-                  className="px-4 py-2 bg-teal-500 hover:bg-teal-400 disabled:bg-superficie-2 disabled:text-tinta text-slate-950 font-bold rounded-lg"
+                  className="bg-marca-escura text-tinta px-4 py-2 disabled:bg-superficie-2 disabled:text-tinta font-bold rounded-lg hover:opacity-90"
                 >
                   Atribuir
                 </button>

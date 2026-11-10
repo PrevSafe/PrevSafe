@@ -131,7 +131,7 @@ export const RequestsView: React.FC<{ onNavigate: (view: string) => void }> = ({
 
     if (diffDays === 0) return { label: 'D-0 (Vence Hoje)', color: 'bg-rose-500/20 text-rose-800 border border-rose-500/30' };
     if (diffDays === 1) return { label: 'D-1 (Amanhã)', color: 'bg-amber-500/20 text-amber-800 border border-amber-500/30' };
-    if (diffDays === 3) return { label: 'D-3 (Alerta Preventivo)', color: 'bg-blue-500/20 text-blue-700 border border-blue-500/30' };
+    if (diffDays === 3) return { label: 'D-3 (Alerta Preventivo)', color: 'bg-teal-500/20 text-teal-800 border border-teal-500/30' };
     if (diffDays < 0) return { label: `D+${Math.abs(diffDays)} (Vencido!)`, color: 'bg-rose-600/30 text-rose-900 border border-rose-500/40 animate-pulse' };
     return { label: `Em ${diffDays} dias`, color: 'bg-superficie-2 text-tinta border border-borda' };
   };
@@ -139,7 +139,7 @@ export const RequestsView: React.FC<{ onNavigate: (view: string) => void }> = ({
   return (
     <div id="requests-view-container" className="space-y-6 pb-12">
       {/* Header Bento Card */}
-      <div id="requests-header" className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-superficie border border-borda rounded-3xl p-6 shadow-xl">
+      <div id="requests-header" className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-superficie border border-borda rounded-3xl p-6 shadow-sm">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex items-center justify-center text-amber-800">
             <Clock className="w-5 h-5" />
@@ -153,7 +153,7 @@ export const RequestsView: React.FC<{ onNavigate: (view: string) => void }> = ({
           <button 
             id="btn-new-request"
             onClick={handleOpenNewRequest}
-            className="px-4 py-2.5 bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-tinta rounded-2xl text-xs font-bold shadow-lg shadow-amber-950/40 transition flex items-center space-x-1.5"
+            className="bg-amber-100 px-4 py-2.5 text-amber-900 rounded-2xl text-xs font-bold shadow-sm transition flex items-center space-x-1.5"
           >
             <Plus className="w-4 h-4" />
             <span>Nova Solicitação</span>
@@ -162,7 +162,7 @@ export const RequestsView: React.FC<{ onNavigate: (view: string) => void }> = ({
       </div>
 
       {/* Filter and Stats Bento Bar */}
-      <div id="requests-filter-bar" className="flex flex-col sm:flex-row gap-3 items-center justify-between bg-superficie p-4 rounded-3xl border border-borda shadow-xl">
+      <div id="requests-filter-bar" className="flex flex-col sm:flex-row gap-3 items-center justify-between bg-superficie p-4 rounded-3xl border border-borda shadow-sm">
         <div className="relative w-full sm:w-80">
           <Search className="w-4 h-4 text-tinta-2 absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
@@ -179,7 +179,7 @@ export const RequestsView: React.FC<{ onNavigate: (view: string) => void }> = ({
           <button
             onClick={() => setStatusFilter('OPEN')}
             className={`px-3.5 py-2 rounded-2xl text-xs font-bold transition ${
-              statusFilter === 'OPEN' ? 'bg-amber-500 text-slate-950 shadow-md' : 'bg-fundo text-tinta hover:text-tinta border border-borda'
+              statusFilter === 'OPEN' ? 'bg-marca-escura text-white shadow-sm' : 'bg-fundo text-tinta hover:text-tinta border border-borda'
             }`}
           >
             Em Aberto ({requests.filter(r => r.status === 'OPEN' || r.status === 'SENT').length})
@@ -216,7 +216,7 @@ export const RequestsView: React.FC<{ onNavigate: (view: string) => void }> = ({
               id={`req-card-${req.id}`}
               className={`p-6 rounded-3xl border flex flex-col justify-between space-y-4 transition group ${
                 req.status !== 'RESOLVED' 
-                  ? 'bg-superficie border-amber-500/30 shadow-xl' 
+                  ? 'bg-superficie border-amber-200 shadow-sm' 
                   : 'bg-superficie border-borda opacity-75'
               }`}
             >
@@ -242,7 +242,7 @@ export const RequestsView: React.FC<{ onNavigate: (view: string) => void }> = ({
                     </button>
                     <button
                       onClick={() => setDeletingRequest(req)}
-                      className="p-1 hover:bg-rose-500/20 text-tinta-2 hover:text-rose-800 rounded transition"
+                      className="p-1 hover:bg-rose-50 text-tinta-2 hover:text-rose-800 rounded transition"
                       title="Excluir Solicitação"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
@@ -255,7 +255,7 @@ export const RequestsView: React.FC<{ onNavigate: (view: string) => void }> = ({
 
                 <div className="mt-4 pt-3.5 border-t border-borda space-y-1.5 text-[11px] text-tinta-2">
                   <div>Cliente: <strong className="text-tinta">{client?.trade_name}</strong></div>
-                  {os && <div>OS Vinculada: <strong className="text-indigo-700 font-mono">{os.os_number}</strong> ({os.service_name})</div>}
+                  {os && <div>OS Vinculada: <strong className="text-teal-700 font-mono">{os.os_number}</strong> ({os.service_name})</div>}
                   <div className="font-mono text-tinta-2">Prazo: {formatDate(req.due_date)}</div>
                 </div>
               </div>
@@ -292,7 +292,7 @@ export const RequestsView: React.FC<{ onNavigate: (view: string) => void }> = ({
       {/* New / Edit Request Modal */}
       {showNewRequestModal && (
         <div id="modal-request-form" className="fixed inset-0 bg-fundo backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-superficie rounded-3xl max-w-md w-full p-6 shadow-2xl border border-borda text-tinta">
+          <div className="bg-superficie rounded-3xl max-w-md w-full p-6 shadow-sm border border-borda text-tinta">
             <div className="flex items-center justify-between border-b border-borda pb-3 mb-4">
               <h3 className="text-base font-bold text-tinta">
                 {editingRequest ? 'Editar Solicitação de Pendência' : 'Nova Solicitação ao Cliente'}
@@ -408,7 +408,7 @@ export const RequestsView: React.FC<{ onNavigate: (view: string) => void }> = ({
       {/* Delete Request Modal */}
       {deletingRequest && (
         <div id="modal-delete-request" className="fixed inset-0 bg-fundo backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-superficie rounded-3xl max-w-md w-full p-6 shadow-2xl border border-rose-500/20 text-tinta space-y-4">
+          <div className="bg-superficie rounded-3xl max-w-md w-full p-6 shadow-sm border border-rose-200 text-tinta space-y-4">
             <div className="flex items-center space-x-3 text-rose-700">
               <div className="p-3 bg-rose-500/10 rounded-2xl border border-rose-500/20">
                 <AlertTriangle className="w-6 h-6" />
@@ -546,9 +546,9 @@ export const ServiceTemplatesView: React.FC<{ onNavigate: (view: string) => void
   return (
     <div id="service-templates-view-container" className="space-y-6 pb-12">
       {/* Header Bento Card */}
-      <div id="service-templates-header" className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-superficie border border-borda rounded-3xl p-6 shadow-xl">
+      <div id="service-templates-header" className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-superficie border border-borda rounded-3xl p-6 shadow-sm">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-indigo-500/10 border border-indigo-500/20 rounded-2xl flex items-center justify-center text-indigo-700">
+          <div className="w-10 h-10 bg-teal-500/10 border border-teal-500/20 rounded-2xl flex items-center justify-center text-teal-800">
             <BookOpen className="w-5 h-5" />
           </div>
           <div>
@@ -560,7 +560,7 @@ export const ServiceTemplatesView: React.FC<{ onNavigate: (view: string) => void
           <button 
             id="btn-new-template"
             onClick={handleOpenNewTemplate}
-            className="px-4 py-2.5 bg-gradient-to-r from-indigo-700 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white rounded-2xl text-xs font-bold shadow-lg shadow-indigo-950/40 transition flex items-center space-x-1.5"
+            className="bg-teal-700 px-4 py-2.5 text-white rounded-2xl text-xs font-bold shadow-sm transition flex items-center space-x-1.5"
           >
             <Plus className="w-4 h-4" />
             <span>Novo Modelo de Serviço</span>
@@ -581,13 +581,13 @@ export const ServiceTemplatesView: React.FC<{ onNavigate: (view: string) => void
                 onClick={() => setSelectedTemplate(tmpl)}
                 className={`p-5 rounded-3xl border cursor-pointer transition flex flex-col justify-between ${
                   isSelected 
-                    ? 'bg-superficie border-indigo-500/80 shadow-lg shadow-indigo-500/10 ring-1 ring-indigo-500/40' 
+                    ? 'bg-superficie border-borda shadow-sm ring-1 ring-teal-500/40' 
                     : 'bg-superficie border-borda hover:border-borda hover:bg-superficie'
                 }`}
               >
                 <div className="flex items-start justify-between">
                   <div>
-                    <span className="font-mono text-xs font-bold bg-fundo text-indigo-700 px-2.5 py-0.5 rounded-full border border-borda">
+                    <span className="font-mono text-xs font-bold bg-fundo text-teal-700 px-2.5 py-0.5 rounded-full border border-borda">
                       {tmpl.code}
                     </span>
                     <h3 className="text-sm font-bold text-tinta mt-2.5">{tmpl.name}</h3>
@@ -606,11 +606,11 @@ export const ServiceTemplatesView: React.FC<{ onNavigate: (view: string) => void
 
         {/* Selected Template Details & Stages Breakdown */}
         {selectedTemplate ? (
-          <div id="template-detail-pane" className="lg:col-span-8 bg-superficie p-6 rounded-3xl border border-borda shadow-xl space-y-6 flex flex-col justify-between">
+          <div id="template-detail-pane" className="lg:col-span-8 bg-superficie p-6 rounded-3xl border border-borda shadow-sm space-y-6 flex flex-col justify-between">
             <div>
               <div className="flex items-start justify-between border-b border-borda pb-4">
                 <div>
-                  <span className="font-mono text-xs font-bold text-indigo-700 bg-indigo-500/10 border border-indigo-500/20 px-2.5 py-0.5 rounded-full">
+                  <span className="font-mono text-xs font-bold text-teal-800 bg-teal-500/10 border border-teal-500/20 px-2.5 py-0.5 rounded-full">
                     {selectedTemplate.code}
                   </span>
                   <h2 className="text-lg font-bold text-tinta mt-2">{selectedTemplate.name}</h2>
@@ -652,7 +652,7 @@ export const ServiceTemplatesView: React.FC<{ onNavigate: (view: string) => void
                     <div key={stg.id || idx} className="p-3.5 bg-fundo border border-borda rounded-2xl flex items-center justify-between text-xs">
                       <div className="space-y-0.5">
                         <div className="flex items-center space-x-2">
-                          <span className="font-mono font-bold text-indigo-700 bg-superficie px-2 py-0.5 rounded-lg border border-borda text-[10px]">
+                          <span className="font-mono font-bold text-teal-700 bg-superficie px-2 py-0.5 rounded-lg border border-borda text-[10px]">
                             {stg.order_index}
                           </span>
                           <span className="font-bold text-tinta">{stg.name}</span>
@@ -676,7 +676,7 @@ export const ServiceTemplatesView: React.FC<{ onNavigate: (view: string) => void
       {/* New / Edit Template Modal */}
       {showNewTemplateModal && (
         <div id="modal-template-form" className="fixed inset-0 bg-fundo backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-superficie rounded-3xl max-w-md w-full p-6 shadow-2xl border border-borda text-tinta">
+          <div className="bg-superficie rounded-3xl max-w-md w-full p-6 shadow-sm border border-borda text-tinta">
             <div className="flex items-center justify-between border-b border-borda pb-3 mb-4">
               <h3 className="text-base font-bold text-tinta">
                 {editingTemplate ? 'Editar Modelo de Serviço' : 'Novo Modelo de Serviço SST'}
@@ -702,7 +702,7 @@ export const ServiceTemplatesView: React.FC<{ onNavigate: (view: string) => void
                     placeholder="Ex: NR-12"
                     value={templateForm.code}
                     onChange={(e) => setTemplateForm({ ...templateForm, code: e.target.value })}
-                    className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta uppercase font-mono focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta uppercase font-mono focus:outline-none focus:border-teal-500"
                   />
                 </div>
                 <div className="col-span-2">
@@ -713,7 +713,7 @@ export const ServiceTemplatesView: React.FC<{ onNavigate: (view: string) => void
                     placeholder="Ex: Laudo de Segurança em Máquinas"
                     value={templateForm.name}
                     onChange={(e) => setTemplateForm({ ...templateForm, name: e.target.value })}
-                    className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                   />
                 </div>
               </div>
@@ -724,7 +724,7 @@ export const ServiceTemplatesView: React.FC<{ onNavigate: (view: string) => void
                   rows={3}
                   value={templateForm.description}
                   onChange={(e) => setTemplateForm({ ...templateForm, description: e.target.value })}
-                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                 />
               </div>
 
@@ -735,7 +735,7 @@ export const ServiceTemplatesView: React.FC<{ onNavigate: (view: string) => void
                     type="number"
                     value={templateForm.default_duration_days}
                     onChange={(e) => setTemplateForm({ ...templateForm, default_duration_days: Number(e.target.value) })}
-                    className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                   />
                 </div>
                 <div>
@@ -744,7 +744,7 @@ export const ServiceTemplatesView: React.FC<{ onNavigate: (view: string) => void
                     type="number"
                     value={templateForm.default_price}
                     onChange={(e) => setTemplateForm({ ...templateForm, default_price: Number(e.target.value) })}
-                    className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                   />
                 </div>
               </div>
@@ -762,7 +762,7 @@ export const ServiceTemplatesView: React.FC<{ onNavigate: (view: string) => void
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-bold shadow-md"
+                  className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl font-bold shadow-md"
                 >
                   {editingTemplate ? 'Atualizar Modelo' : 'Salvar Modelo'}
                 </button>
@@ -775,7 +775,7 @@ export const ServiceTemplatesView: React.FC<{ onNavigate: (view: string) => void
       {/* Delete Template Modal */}
       {deletingTemplate && (
         <div id="modal-delete-template" className="fixed inset-0 bg-fundo backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-superficie rounded-3xl max-w-md w-full p-6 shadow-2xl border border-rose-500/20 text-tinta space-y-4">
+          <div className="bg-superficie rounded-3xl max-w-md w-full p-6 shadow-sm border border-rose-200 text-tinta space-y-4">
             <div className="flex items-center space-x-3 text-rose-700">
               <div className="p-3 bg-rose-500/10 rounded-2xl border border-rose-500/20">
                 <AlertTriangle className="w-6 h-6" />

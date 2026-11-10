@@ -436,9 +436,9 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
   return (
     <div id="clients-view-container" className="space-y-6 pb-12">
       {/* Header Bento Card */}
-      <div id="clients-header" className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-superficie border border-borda rounded-3xl p-6 shadow-xl">
+      <div id="clients-header" className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-superficie border border-borda rounded-3xl p-6 shadow-sm">
         <div className="flex items-center gap-3.5">
-          <div className="w-11 h-11 bg-indigo-500/10 border border-indigo-500/20 rounded-2xl flex items-center justify-center text-indigo-700 shrink-0">
+          <div className="w-11 h-11 bg-teal-500/10 border border-teal-500/20 rounded-2xl flex items-center justify-center text-teal-800 shrink-0">
             <Building2 className="w-5 h-5" />
           </div>
           <div>
@@ -458,16 +458,16 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
           <button
             id="btn-open-esocial-info"
             onClick={() => setShowESocialInfoModal(true)}
-            className="px-3.5 py-2.5 bg-superficie-2 hover:bg-superficie-2 text-indigo-700 hover:text-indigo-800 border border-indigo-500/20 rounded-2xl text-xs font-semibold transition flex items-center gap-1.5"
+            className="px-3.5 py-2.5 bg-superficie-2 hover:bg-superficie-2 text-teal-700 hover:text-teal-800 border border-teal-500/20 rounded-2xl text-xs font-semibold transition flex items-center gap-1.5"
           >
-            <Info className="w-4 h-4 text-indigo-700" />
+            <Info className="w-4 h-4 text-teal-700" />
             <span>Regras eSocial (CAEPF / CPF / CNO)</span>
           </button>
           
           <button 
             id="btn-new-client"
             onClick={handleOpenNewClient}
-            className="px-4 py-2.5 bg-gradient-to-r from-marca-escura to-teal-600 hover:from-marca-escura hover:to-teal-700 text-white rounded-2xl text-xs font-bold shadow-lg shadow-emerald-950/40 transition flex items-center space-x-1.5"
+            className="bg-marca-escura px-4 py-2.5 text-white rounded-2xl text-xs font-bold shadow-sm transition flex items-center space-x-1.5"
           >
             <Plus className="w-4 h-4" />
             <span>Novo Cliente / Empregador</span>
@@ -476,7 +476,7 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
       </div>
 
       {/* Filters Bar Bento Card with Multi-Document Types */}
-      <div id="clients-filter-bar" className="flex flex-col md:flex-row gap-3 items-center justify-between bg-superficie p-4 rounded-3xl border border-borda shadow-xl">
+      <div id="clients-filter-bar" className="flex flex-col md:flex-row gap-3 items-center justify-between bg-superficie p-4 rounded-3xl border border-borda shadow-sm">
         <div className="relative w-full md:w-96">
           <Search className="w-4 h-4 text-tinta-2 absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
@@ -485,7 +485,7 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
             placeholder="Buscar por CNPJ, CAEPF, CPF, CNO, Razão Social ou CNAE..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-3 py-2 bg-fundo border border-borda rounded-2xl text-xs text-tinta placeholder-tinta-3 focus:outline-none focus:border-indigo-500"
+            className="w-full pl-10 pr-3 py-2 bg-fundo border border-borda rounded-2xl text-xs text-tinta placeholder-tinta-3 focus:outline-none focus:border-teal-500"
           />
         </div>
 
@@ -504,7 +504,7 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
                 onClick={() => setSelectedDocTypeFilter(tab.id)}
                 className={`px-2.5 py-1 rounded-xl font-medium transition ${
                   selectedDocTypeFilter === tab.id
-                    ? 'bg-indigo-600 text-white shadow-sm'
+                    ? 'bg-teal-700 text-white shadow-sm'
                     : 'text-tinta-2 hover:text-tinta'
                 }`}
               >
@@ -518,7 +518,7 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
               id="select-risk-filter"
               value={selectedRiskFilter}
               onChange={(e) => setSelectedRiskFilter(e.target.value)}
-              className="px-3 py-2 bg-fundo border border-borda rounded-2xl text-xs font-medium text-tinta focus:outline-none focus:border-indigo-500"
+              className="px-3 py-2 bg-fundo border border-borda rounded-2xl text-xs font-medium text-tinta focus:outline-none focus:border-teal-500"
             >
               <option value="ALL">Todos os Graus NR-04</option>
               <option value="1">Grau 1 (Leve)</option>
@@ -550,7 +550,7 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
                   onClick={() => setSelectedClient(client)}
                   className={`p-5 rounded-3xl border cursor-pointer transition flex flex-col justify-between ${
                     isSelected 
-                      ? 'bg-superficie border-indigo-500/80 shadow-lg shadow-indigo-500/10 ring-1 ring-indigo-500/40' 
+                      ? 'bg-superficie border-borda shadow-sm ring-1 ring-teal-500/40' 
                       : 'bg-superficie border-borda hover:border-borda hover:bg-superficie'
                   }`}
                 >
@@ -561,7 +561,7 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
                         <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
                           client.risk_degree === 4 ? 'bg-rose-500/10 text-rose-700 border-rose-500/20' :
                           client.risk_degree === 3 ? 'bg-amber-500/10 text-amber-800 border-amber-500/20' :
-                          'bg-indigo-500/10 text-indigo-700 border-indigo-500/20'
+                          'bg-teal-500/10 text-teal-800 border-teal-500/20'
                         }`}>
                           Grau {client.risk_degree}
                         </span>
@@ -575,8 +575,8 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
                     <div className="flex items-center gap-1.5">
                       <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold border ${
                         docType === 'CAEPF' ? 'bg-amber-500/10 text-amber-800 border-amber-500/20' :
-                        docType === 'CNO' ? 'bg-blue-500/10 text-blue-700 border-blue-500/20' :
-                        docType === 'CPF' ? 'bg-purple-500/10 text-purple-700 border-purple-500/20' :
+                        docType === 'CNO' ? 'bg-teal-500/10 text-teal-800 border-teal-500/20' :
+                        docType === 'CPF' ? 'bg-teal-500/10 text-teal-800 border-teal-500/20' :
                         'bg-superficie-2 text-tinta border-borda'
                       }`}>
                         {docType}
@@ -593,7 +593,7 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
 
         {/* Right Detail Pane */}
         {selectedClient ? (
-          <div id="client-detail-pane" className="lg:col-span-7 bg-superficie p-6 rounded-3xl border border-borda shadow-xl space-y-6 flex flex-col justify-between">
+          <div id="client-detail-pane" className="lg:col-span-7 bg-superficie p-6 rounded-3xl border border-borda shadow-sm space-y-6 flex flex-col justify-between">
             <div className="space-y-6">
               {/* Header of Detail with Edit & Delete actions */}
               <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 border-b border-borda pb-4">
@@ -607,7 +607,7 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
                     }`}>
                       Grau de Risco {selectedClient.risk_degree} (NR-04)
                     </span>
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-700 border border-indigo-500/20 font-mono">
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-teal-500/10 text-teal-800 border border-teal-500/20 font-mono">
                       Tipo: {selectedClient.document_type || 'CNPJ'}
                     </span>
                   </div>
@@ -636,10 +636,10 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
               </div>
 
               {/* NR-04 Automatic Validation & SESMT Dimensioning Card */}
-              <div className="bg-gradient-to-br from-slate-950 to-slate-900 border border-indigo-500/20 rounded-2xl p-4 space-y-3">
+              <div className="bg-superficie border border-borda rounded-2xl p-4 space-y-3">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-xs font-bold text-indigo-700">
-                    <Shield className="w-4 h-4 text-indigo-700" />
+                  <div className="flex items-center gap-2 text-xs font-bold text-teal-700">
+                    <Shield className="w-4 h-4 text-teal-700" />
                     <span>Enquadramento Técnico NR-04 (MTE) & Dimensionamento SESMT</span>
                   </div>
                   <span className="text-[10px] font-mono text-tinta-2 bg-superficie-2 px-2 py-0.5 rounded-full border border-borda">
@@ -679,7 +679,7 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
 
                 {/* SESMT Staff Matrix if required */}
                 {activeClientSesmt && (activeClientSesmt.tecnicoSeguranca + activeClientSesmt.engenheiroSeguranca + activeClientSesmt.medicoTrabalho + activeClientSesmt.enfermeiroTrabalho > 0) && (
-                  <div className="bg-superficie border border-amber-500/20 rounded-xl p-2.5 text-[11px] flex items-center justify-between text-amber-700">
+                  <div className="bg-superficie border border-amber-200 rounded-xl p-2.5 text-[11px] flex items-center justify-between text-amber-700">
                     <span>Equipe SESMT Mínima:</span>
                     <div className="flex items-center gap-3 font-mono font-bold">
                       {activeClientSesmt.tecnicoSeguranca > 0 && <span>{activeClientSesmt.tecnicoSeguranca} TST</span>}
@@ -699,7 +699,7 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
                         ideEmpregador/tpInsc: "1 - CNPJ, 2 - CPF". */}
                     <span>eSocial leiaute S-1.3: pré-visualização dos eventos S-2210, S-2220, S-2230 e S-2240 (XML não validado contra o XSD, não assinado)</span>
                   </span>
-                  <span className="font-mono text-indigo-700">
+                  <span className="font-mono text-teal-700">
                     {selectedClient.document_type === 'CAEPF' || selectedClient.document_type === 'CNO'
                       ? `${selectedClient.document_type}: só no ambiente de trabalho; empregador sem CNPJ/CPF`
                       : <>&lt;ideEmpregador/tpInsc: {selectedClient.document_type === 'CPF' ? '2 (CPF)' : '1 (CNPJ)'}&gt;</>}
@@ -725,7 +725,7 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
                     {selectedClient.cno && (
                       <div className="flex justify-between">
                         <span className="text-tinta-2">Matrícula CNO (Obras):</span>
-                        <span className="font-mono text-blue-700 font-medium">{selectedClient.cno}</span>
+                        <span className="font-mono text-teal-700 font-medium">{selectedClient.cno}</span>
                       </div>
                     )}
                     <div className="flex justify-between">
@@ -771,7 +771,7 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
                   <button
                     id="btn-add-unit"
                     onClick={() => setShowNewUnitModal(true)}
-                    className="text-xs text-indigo-700 hover:text-indigo-700 font-semibold flex items-center space-x-1"
+                    className="text-xs text-teal-700 hover:text-teal-700 font-semibold flex items-center space-x-1"
                   >
                     <Plus className="w-3.5 h-3.5" />
                     <span>Adicionar Unidade / CNO</span>
@@ -788,7 +788,7 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
                           <div className="flex items-center gap-2">
                             <span className="font-bold text-tinta">{u.name}</span>
                             {u.document_type && (
-                              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-superficie-2 text-indigo-700 border border-borda">
+                              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-superficie-2 text-teal-700 border border-borda">
                                 {u.document_type}
                               </span>
                             )}
@@ -818,7 +818,7 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
                   <button
                     id="btn-add-contact"
                     onClick={() => setShowNewContactModal(true)}
-                    className="text-xs text-indigo-700 hover:text-indigo-700 font-semibold flex items-center space-x-1"
+                    className="text-xs text-teal-700 hover:text-teal-700 font-semibold flex items-center space-x-1"
                   >
                     <UserPlus className="w-3.5 h-3.5" />
                     <span>Adicionar Contato</span>
@@ -870,11 +870,11 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
                         className="p-3.5 bg-fundo border border-borda rounded-2xl flex items-center justify-between hover:border-borda cursor-pointer transition text-xs"
                       >
                         <div>
-                          <span className="font-mono font-bold text-indigo-700">{os.os_number}</span>
+                          <span className="font-mono font-bold text-teal-700">{os.os_number}</span>
                           <div className="font-medium text-tinta mt-0.5">{os.service_name}</div>
                         </div>
                         <div className="text-right">
-                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-700 border border-indigo-500/20">
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-teal-500/10 text-teal-800 border border-teal-500/20">
                             {os.status}
                           </span>
                           <div className="text-[11px] text-tinta-2 font-mono mt-1">{os.progress}% Concluído</div>
@@ -896,7 +896,7 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
       {/* New / Edit Client Modal with Automatic Document Lookup & NR-04 Validation */}
       {(showNewClientModal || showEditClientModal) && (
         <div id="modal-client-form" className="fixed inset-0 bg-fundo backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-superficie rounded-3xl max-w-3xl w-full p-6 shadow-2xl border border-borda max-h-[92vh] overflow-y-auto text-tinta space-y-4">
+          <div className="bg-superficie rounded-3xl max-w-3xl w-full p-6 shadow-sm border border-borda max-h-[92vh] overflow-y-auto text-tinta space-y-4">
             <div className="flex items-center justify-between border-b border-borda pb-4">
               <div>
                 <h3 className="text-lg font-bold text-tinta">
@@ -918,10 +918,10 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
             </div>
 
             {/* Document Auto-Lookup Bar */}
-            <div className="p-4 bg-fundo border border-indigo-500/30 rounded-2xl space-y-3">
+            <div className="p-4 bg-fundo border border-teal-500/30 rounded-2xl space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-indigo-700 flex items-center gap-1.5">
-                  <Sparkles className="w-4 h-4 text-indigo-700" />
+                <span className="text-xs font-bold text-teal-700 flex items-center gap-1.5">
+                  <Sparkles className="w-4 h-4 text-teal-700" />
                   Busca Inteligente por Documento (CNPJ / CAEPF / CPF / CNO)
                 </span>
                 <span className="text-[10px] text-tinta-2 font-mono">Receita Federal & NR-04</span>
@@ -932,7 +932,7 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
                   <select
                     value={clientForm.document_type}
                     onChange={(e) => setClientForm({ ...clientForm, document_type: e.target.value as DocumentType })}
-                    className="w-full px-3 py-2 bg-superficie border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3 py-2 bg-superficie border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                   >
                     <option value="CNPJ">CNPJ (Empresas)</option>
                     <option value="CAEPF">CAEPF (Produtor Rural / Autônomo)</option>
@@ -952,7 +952,7 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
                     }
                     value={clientForm.document_number}
                     onChange={(e) => setClientForm({ ...clientForm, document_number: e.target.value })}
-                    className="w-full px-3 py-2 bg-superficie border border-borda rounded-xl text-xs text-tinta font-mono focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3 py-2 bg-superficie border border-borda rounded-xl text-xs text-tinta font-mono focus:outline-none focus:border-teal-500"
                   />
                 </div>
 
@@ -961,7 +961,7 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
                     type="button"
                     onClick={() => handlePerformDocumentLookup()}
                     disabled={isSearchingDoc}
-                    className="w-full py-2 px-3 bg-indigo-600 hover:bg-indigo-500 disabled:bg-indigo-800 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-md"
+                    className="w-full py-2 px-3 bg-teal-600 hover:bg-teal-500 disabled:bg-teal-800 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-md"
                   >
                     {isSearchingDoc ? (
                       <>
@@ -1019,7 +1019,7 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
                     placeholder="Ex: Indústria Mecânica Alpha S/A"
                     value={clientForm.legal_name}
                     onChange={(e) => setClientForm({ ...clientForm, legal_name: e.target.value })}
-                    className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                   />
                 </div>
                 <div>
@@ -1030,7 +1030,7 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
                     placeholder="Ex: Alpha Mecânica"
                     value={clientForm.trade_name}
                     onChange={(e) => setClientForm({ ...clientForm, trade_name: e.target.value })}
-                    className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                   />
                 </div>
               </div>
@@ -1071,7 +1071,7 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
                           cnae_description: nr4.description || clientForm.cnae_description
                         });
                       }}
-                      className="w-full px-3 py-2 bg-superficie border border-borda rounded-xl text-xs text-tinta font-mono focus:outline-none focus:border-indigo-500"
+                      className="w-full px-3 py-2 bg-superficie border border-borda rounded-xl text-xs text-tinta font-mono focus:outline-none focus:border-teal-500"
                     />
                   </div>
 
@@ -1082,7 +1082,7 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
                       placeholder="Descrição oficial do CNAE"
                       value={clientForm.cnae_description}
                       onChange={(e) => setClientForm({ ...clientForm, cnae_description: e.target.value })}
-                      className="w-full px-3 py-2 bg-superficie border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
+                      className="w-full px-3 py-2 bg-superficie border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                     />
                   </div>
 
@@ -1091,7 +1091,7 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
                     <select
                       value={clientForm.risk_degree ?? ''}
                       onChange={(e) => setClientForm({ ...clientForm, risk_degree: (e.target.value ? Number(e.target.value) : null) as any })}
-                      className={`w-full px-3 py-2 bg-superficie border rounded-xl text-xs text-tinta font-bold focus:outline-none focus:border-indigo-500 ${
+                      className={`w-full px-3 py-2 bg-superficie border rounded-xl text-xs text-tinta font-bold focus:outline-none focus:border-teal-500 ${
                         clientForm.risk_degree ? 'border-borda' : 'border-amber-500/60'
                       }`}
                     >
@@ -1124,7 +1124,7 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
                         if (e.target.value === '__OUTRO__') return;
                         setClientForm({ ...clientForm, porte: e.target.value });
                       }}
-                      className={`w-full px-3 py-2 bg-superficie border rounded-xl text-xs text-tinta font-bold focus:outline-none focus:border-indigo-500 ${
+                      className={`w-full px-3 py-2 bg-superficie border rounded-xl text-xs text-tinta font-bold focus:outline-none focus:border-teal-500 ${
                         clientForm.porte ? 'border-borda' : 'border-amber-500/60'
                       }`}
                     >
@@ -1162,7 +1162,7 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
                     placeholder="000.000.000/000-00"
                     value={clientForm.caepf}
                     onChange={(e) => setClientForm({ ...clientForm, caepf: e.target.value })}
-                    className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta font-mono focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta font-mono focus:outline-none focus:border-teal-500"
                   />
                 </div>
                 <div>
@@ -1172,7 +1172,7 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
                     placeholder="00.000.00000/00"
                     value={clientForm.cno}
                     onChange={(e) => setClientForm({ ...clientForm, cno: e.target.value })}
-                    className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta font-mono focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta font-mono focus:outline-none focus:border-teal-500"
                   />
                 </div>
               </div>
@@ -1184,7 +1184,7 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
                     type="number"
                     value={clientForm.employee_count}
                     onChange={(e) => setClientForm({ ...clientForm, employee_count: Number(e.target.value) })}
-                    className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                   />
                 </div>
                 <div>
@@ -1194,7 +1194,7 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
                     placeholder="contato@empresa.com.br"
                     value={clientForm.email}
                     onChange={(e) => setClientForm({ ...clientForm, email: e.target.value })}
-                    className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                   />
                 </div>
                 <div>
@@ -1204,7 +1204,7 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
                     placeholder="(11) 99999-9999"
                     value={clientForm.phone}
                     onChange={(e) => setClientForm({ ...clientForm, phone: e.target.value })}
-                    className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                   />
                 </div>
               </div>
@@ -1217,7 +1217,7 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
                     placeholder="Rua, número, bairro"
                     value={clientForm.address}
                     onChange={(e) => setClientForm({ ...clientForm, address: e.target.value })}
-                    className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                   />
                 </div>
                 <div>
@@ -1229,7 +1229,7 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
                       const [c, s] = e.target.value.split('/');
                       setClientForm({ ...clientForm, city: c || 'São Paulo', state: s || 'SP' });
                     }}
-                    className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                   />
                 </div>
               </div>
@@ -1241,7 +1241,7 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
                   placeholder="Ex: Trabalho com pontes rolantes, ruído contínuo na estamparia, defensivos agrícolas..."
                   value={clientForm.notes}
                   onChange={(e) => setClientForm({ ...clientForm, notes: e.target.value })}
-                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                 />
               </div>
 
@@ -1271,7 +1271,7 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
       {/* New Unit Modal with NR-04 & Document Lookup */}
       {showNewUnitModal && selectedClient && (
         <div id="modal-new-unit" className="fixed inset-0 bg-fundo backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-superficie rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-borda text-tinta space-y-4">
+          <div className="bg-superficie rounded-3xl max-w-lg w-full p-6 shadow-sm border border-borda text-tinta space-y-4">
             <div className="flex items-center justify-between border-b border-borda pb-3">
               <div>
                 <h3 className="text-sm font-bold text-tinta">Adicionar Unidade, Filial ou CNO</h3>
@@ -1287,7 +1287,7 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
                   <select
                     value={unitForm.document_type}
                     onChange={(e) => setUnitForm({ ...unitForm, document_type: e.target.value as DocumentType })}
-                    className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                   >
                     <option value="CNPJ">CNPJ (Filial)</option>
                     <option value="CNO">CNO (Canteiro de Obras)</option>
@@ -1304,13 +1304,13 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
                       placeholder="00.000.000/0000-00"
                       value={unitForm.document_number}
                       onChange={(e) => setUnitForm({ ...unitForm, document_number: e.target.value })}
-                      className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta font-mono focus:outline-none focus:border-indigo-500"
+                      className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta font-mono focus:outline-none focus:border-teal-500"
                     />
                     <button
                       type="button"
                       onClick={handlePerformUnitDocumentLookup}
                       disabled={isSearchingUnitDoc}
-                      className="p-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs shrink-0"
+                      className="p-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs shrink-0"
                       title="Buscar dados do documento"
                     >
                       {isSearchingUnitDoc ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Search className="w-3.5 h-3.5" />}
@@ -1327,7 +1327,7 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
                   placeholder="Ex: Canteiro Edifício Sky Tower / CD Guarulhos"
                   value={unitForm.name}
                   onChange={(e) => setUnitForm({ ...unitForm, name: e.target.value })}
-                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                 />
               </div>
 
@@ -1339,7 +1339,7 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
                   placeholder="Av. Brigadeiro Faria Lima, 3400"
                   value={unitForm.address}
                   onChange={(e) => setUnitForm({ ...unitForm, address: e.target.value })}
-                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                 />
               </div>
 
@@ -1350,7 +1350,7 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
                     type="text"
                     value={unitForm.city}
                     onChange={(e) => setUnitForm({ ...unitForm, city: e.target.value })}
-                    className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                   />
                 </div>
                 <div>
@@ -1359,7 +1359,7 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
                     type="text"
                     value={unitForm.state}
                     onChange={(e) => setUnitForm({ ...unitForm, state: e.target.value })}
-                    className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                   />
                 </div>
               </div>
@@ -1381,7 +1381,7 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
                         cnae_description: nr4.description
                       });
                     }}
-                    className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta font-mono focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta font-mono focus:outline-none focus:border-teal-500"
                   />
                 </div>
 
@@ -1390,7 +1390,7 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
                   <select
                     value={unitForm.risk_degree ?? ''}
                     onChange={(e) => setUnitForm({ ...unitForm, risk_degree: (e.target.value ? Number(e.target.value) : null) as any })}
-                    className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta font-bold focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta font-bold focus:outline-none focus:border-teal-500"
                   >
                     <option value={1}>Grau 1 (Leve)</option>
                     <option value={2}>Grau 2 (Médio)</option>
@@ -1406,7 +1406,7 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
                   type="number"
                   value={unitForm.employee_count}
                   onChange={(e) => setUnitForm({ ...unitForm, employee_count: Number(e.target.value) })}
-                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                 />
               </div>
 
@@ -1420,7 +1420,7 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold shadow-md"
+                  className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-semibold shadow-md"
                 >
                   Salvar Unidade
                 </button>
@@ -1433,10 +1433,10 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
       {/* Educational eSocial Info Modal */}
       {showESocialInfoModal && (
         <div id="modal-esocial-rules" className="fixed inset-0 bg-fundo backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-superficie rounded-3xl max-w-2xl w-full p-6 shadow-2xl border border-indigo-500/30 text-tinta space-y-4">
+          <div className="bg-superficie rounded-3xl max-w-2xl w-full p-6 shadow-sm border border-borda text-tinta space-y-4">
             <div className="flex items-center justify-between border-b border-borda pb-3">
               <div className="flex items-center gap-2">
-                <FileCheck2 className="w-5 h-5 text-indigo-700" />
+                <FileCheck2 className="w-5 h-5 text-teal-700" />
                 <h3 className="text-sm font-bold text-tinta">Manual eSocial: Enquadramento de Documentos e tpInsc</h3>
               </div>
               <button onClick={() => setShowESocialInfoModal(false)} className="text-tinta-2 hover:text-tinta">✕</button>
@@ -1449,7 +1449,7 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
                   seu CPF" e o CNO "como estabelecimento ou lotacao tributaria". Regra
                   em lib/esocialEmpregador.ts. */}
               <p>
-                No eSocial (leiaute S-1.3), os eventos de SST (<strong className="text-indigo-700">S-2210</strong>, <strong className="text-indigo-700">S-2220</strong>, <strong className="text-indigo-700">S-2230</strong> e <strong className="text-indigo-700">S-2240</strong>) identificam o <strong>empregador</strong> só por CNPJ ou CPF (Tabela 05, campo ideEmpregador/tpInsc). CAEPF e CNO identificam o <strong>estabelecimento</strong> ou a obra, nunca o empregador.
+                No eSocial (leiaute S-1.3), os eventos de SST (<strong className="text-teal-700">S-2210</strong>, <strong className="text-teal-700">S-2220</strong>, <strong className="text-teal-700">S-2230</strong> e <strong className="text-teal-700">S-2240</strong>) identificam o <strong>empregador</strong> só por CNPJ ou CPF (Tabela 05, campo ideEmpregador/tpInsc). CAEPF e CNO identificam o <strong>estabelecimento</strong> ou a obra, nunca o empregador.
               </p>
 
               <div className="space-y-2">
@@ -1464,9 +1464,9 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
                 </div>
 
                 <div className="p-3 bg-fundo rounded-2xl border border-borda">
-                  <div className="flex items-center justify-between font-mono font-bold text-purple-700">
+                  <div className="flex items-center justify-between font-mono font-bold text-teal-700">
                     <span>2. CPF &lt;ideEmpregador/tpInsc: 2&gt;</span>
-                    <span className="text-[10px] bg-purple-500/10 px-2 py-0.5 rounded-full">Pessoa Física Empregadora</span>
+                    <span className="text-[10px] bg-teal-500/10 px-2 py-0.5 rounded-full">Pessoa Física Empregadora</span>
                   </div>
                   <p className="text-[11px] text-tinta-2 mt-1">
                     Empregador pessoa física, inclusive o produtor rural e o titular de cartório. 11 dígitos.
@@ -1484,9 +1484,9 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
                 </div>
 
                 <div className="p-3 bg-fundo rounded-2xl border border-borda">
-                  <div className="flex items-center justify-between font-mono font-bold text-blue-700">
+                  <div className="flex items-center justify-between font-mono font-bold text-teal-700">
                     <span>CNO &lt;tpInsc 4, só da obra&gt;</span>
-                    <span className="text-[10px] bg-blue-500/10 px-2 py-0.5 rounded-full">Não identifica o empregador</span>
+                    <span className="text-[10px] bg-teal-500/10 px-2 py-0.5 rounded-full">Não identifica o empregador</span>
                   </div>
                   <p className="text-[11px] text-tinta-2 mt-1">
                     Cadastro Nacional de Obras: a obra, vinculada a um CNPJ ou CPF. Entra como local de trabalho (no S-2240, infoAmb/tpInsc 4). O empregador é o CNPJ ou o CPF a que a obra está vinculada.
@@ -1499,7 +1499,7 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
               <button
                 type="button"
                 onClick={() => setShowESocialInfoModal(false)}
-                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold"
+                className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-semibold"
               >
                 Entendi
               </button>
@@ -1511,7 +1511,7 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
       {/* Delete Confirmation Modal */}
       {showDeleteConfirmModal && selectedClient && (
         <div id="modal-delete-client" className="fixed inset-0 bg-fundo backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-superficie rounded-3xl max-w-md w-full p-6 shadow-2xl border border-rose-500/20 text-tinta space-y-4">
+          <div className="bg-superficie rounded-3xl max-w-md w-full p-6 shadow-sm border border-rose-200 text-tinta space-y-4">
             <div className="flex items-center space-x-3 text-rose-700">
               <div className="p-3 bg-rose-500/10 rounded-2xl border border-rose-500/20">
                 <AlertTriangle className="w-6 h-6" />
@@ -1549,7 +1549,7 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
       {/* New Contact Modal */}
       {showNewContactModal && selectedClient && (
         <div id="modal-new-contact" className="fixed inset-0 bg-fundo backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-superficie rounded-3xl max-w-md w-full p-6 shadow-2xl border border-borda text-tinta space-y-4">
+          <div className="bg-superficie rounded-3xl max-w-md w-full p-6 shadow-sm border border-borda text-tinta space-y-4">
             <div className="flex items-center justify-between border-b border-borda pb-3">
               <h3 className="text-sm font-bold text-tinta">Adicionar Contato / Responsável</h3>
               <button onClick={() => setShowNewContactModal(false)} className="text-tinta-2 hover:text-tinta">✕</button>
@@ -1564,7 +1564,7 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
                   placeholder="Ex: João da Silva"
                   value={contactForm.name}
                   onChange={(e) => setContactForm({ ...contactForm, name: e.target.value })}
-                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                 />
               </div>
 
@@ -1575,7 +1575,7 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
                   placeholder="Ex: Coordenador de SST / Gerente de RH"
                   value={contactForm.role}
                   onChange={(e) => setContactForm({ ...contactForm, role: e.target.value })}
-                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                 />
               </div>
 
@@ -1587,7 +1587,7 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
                   placeholder="joao@empresa.com.br"
                   value={contactForm.email}
                   onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })}
-                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                 />
               </div>
 
@@ -1598,7 +1598,7 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
                   placeholder="(11) 99999-9999"
                   value={contactForm.phone}
                   onChange={(e) => setContactForm({ ...contactForm, phone: e.target.value })}
-                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                 />
               </div>
 
@@ -1608,7 +1608,7 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
                   id="chk-primary"
                   checked={contactForm.is_primary}
                   onChange={(e) => setContactForm({ ...contactForm, is_primary: e.target.checked })}
-                  className="rounded bg-fundo border-borda text-indigo-600 focus:ring-0"
+                  className="rounded bg-fundo border-borda text-teal-700 focus:ring-0"
                 />
                 <label htmlFor="chk-primary" className="text-tinta cursor-pointer">Contato Principal da Empresa</label>
               </div>
@@ -1623,7 +1623,7 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold shadow-md"
+                  className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-semibold shadow-md"
                 >
                   Salvar Contato
                 </button>

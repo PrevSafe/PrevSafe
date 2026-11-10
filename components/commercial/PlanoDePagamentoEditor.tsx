@@ -36,7 +36,7 @@ interface PlanoDePagamentoEditorProps {
   somenteLeitura?: boolean;
 }
 
-const CAMPO = 'w-full px-3 py-2 bg-superficie border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500 disabled:opacity-60';
+const CAMPO = 'w-full px-3 py-2 bg-superficie border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500 disabled:opacity-60';
 const ROTULO = 'block font-semibold text-tinta mb-1 text-[11px]';
 const DICA = 'text-[10px] text-tinta-2 mt-1 block';
 
@@ -110,7 +110,7 @@ export const PlanoDePagamentoEditor: React.FC<PlanoDePagamentoEditorProps> = ({ 
         return (
           <div key={parte.id} className="p-3 bg-fundo rounded-xl border border-borda space-y-2.5">
             <div className="flex items-center justify-between gap-2">
-              <span className="text-[11px] font-bold text-indigo-700">
+              <span className="text-[11px] font-bold text-teal-700">
                 Forma {i + 1} · {ROTULO_DO_TIPO[parte.tipo]}
               </span>
               {!somenteLeitura && (
@@ -169,7 +169,7 @@ export const PlanoDePagamentoEditor: React.FC<PlanoDePagamentoEditorProps> = ({ 
                   />
                   {!somenteLeitura && saldoParaParte(parte) > 0 && (
                     <button type="button" onClick={() => atualizarParte(parte.id, { valor: saldoParaParte(parte) })}
-                      className="text-[10px] text-indigo-700 hover:text-indigo-700 mt-1">
+                      className="text-[10px] text-teal-700 hover:text-teal-700 mt-1">
                       Usar o saldo ({formatCurrency(saldoParaParte(parte))})
                     </button>
                   )}
@@ -224,7 +224,7 @@ export const PlanoDePagamentoEditor: React.FC<PlanoDePagamentoEditorProps> = ({ 
                   />
                   {!somenteLeitura && saldoParaParte(parte) > 0 && (
                     <button type="button" onClick={() => atualizarParte(parte.id, { valor: saldoParaParte(parte) })}
-                      className="text-[10px] text-indigo-700 hover:text-indigo-700 mt-1">
+                      className="text-[10px] text-teal-700 hover:text-teal-700 mt-1">
                       Usar o saldo ({formatCurrency(saldoParaParte(parte))})
                     </button>
                   )}
@@ -312,7 +312,7 @@ export const PlanoDePagamentoEditor: React.FC<PlanoDePagamentoEditorProps> = ({ 
                   <button
                     type="button"
                     onClick={() => atualizarParte(parte.id, { parcelas: [...(parte.parcelas || []), {}] })}
-                    className="text-[11px] text-indigo-700 hover:text-indigo-700 flex items-center gap-1"
+                    className="text-[11px] text-teal-700 hover:text-teal-700 flex items-center gap-1"
                   >
                     <Plus className="w-3 h-3" /> Incluir parcela
                   </button>

@@ -119,15 +119,12 @@ export const LoginView: React.FC<LoginViewProps> = ({ onSuccess, onNavigateHelp 
   return (
     <div className="min-h-screen w-full bg-fundo flex items-center justify-center p-4 sm:p-6 lg:p-8 font-sans relative overflow-hidden">
       {/* Background Decorative Ambient Gradients */}
-      <div className="absolute -top-40 -left-40 w-96 h-96 bg-marca-suave rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-teal-600/15 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[500px] bg-superficie rounded-full blur-3xl pointer-events-none" />
 
       {/* Main Container */}
-      <div className="w-full max-w-6xl bg-superficie border border-borda rounded-3xl shadow-2xl backdrop-blur-xl overflow-hidden grid grid-cols-1 lg:grid-cols-12 z-10 relative">
+      <div className="w-full max-w-6xl bg-superficie border border-borda rounded-3xl shadow-sm backdrop-blur-xl overflow-hidden grid grid-cols-1 lg:grid-cols-12 z-10 relative">
 
         {/* Left Side: Brand Showcase & Compliance Highlights (Desktop) */}
-        <div className="lg:col-span-5 bg-gradient-to-br from-slate-950 via-slate-900 to-emerald-950/40 p-6 sm:p-8 lg:p-10 border-b lg:border-b-0 lg:border-r border-borda flex flex-col justify-between relative">
+        <div className="bg-superficie lg:col-span-5 p-6 sm:p-8 lg:p-10 border-b lg:border-b-0 lg:border-r border-borda flex flex-col justify-between relative">
 
           {/* Top Brand Info */}
           <div>
@@ -173,7 +170,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onSuccess, onNavigateHelp 
               </div>
 
               <div className="flex items-start space-x-3 p-3 rounded-xl bg-superficie border border-borda">
-                <div className="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-700 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <div className="w-8 h-8 rounded-lg bg-teal-500/10 text-teal-800 flex items-center justify-center flex-shrink-0 mt-0.5">
                   <Smartphone className="w-4 h-4" />
                 </div>
                 <div>
@@ -327,7 +324,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onSuccess, onNavigateHelp 
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-3 px-4 bg-gradient-to-r from-marca-escura to-teal-600 hover:from-marca-escura hover:to-teal-700 text-white font-bold text-xs rounded-xl shadow-lg shadow-emerald-950/50 transition flex items-center justify-center space-x-2 disabled:opacity-50"
+                className="bg-marca-escura w-full py-3 px-4 text-white font-bold text-xs rounded-xl shadow-sm transition flex items-center justify-center space-x-2 disabled:opacity-50"
               >
                 {isLoading ? (
                   <>
@@ -366,7 +363,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onSuccess, onNavigateHelp 
       {/* Password Recovery: envia link de redefinicao por e-mail (Supabase Auth) */}
       {showRecoveryModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-superficie border border-borda rounded-2xl w-full max-w-md p-6 shadow-2xl relative">
+          <div className="bg-superficie border border-borda rounded-2xl w-full max-w-md p-6 shadow-sm relative">
             <div className="flex items-center space-x-3 pb-4 border-b border-borda">
               <div className="w-10 h-10 rounded-xl bg-marca-suave text-marca-escura flex items-center justify-center flex-shrink-0">
                 <KeyRound className="w-5 h-5" />

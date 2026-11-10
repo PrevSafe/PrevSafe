@@ -114,7 +114,7 @@ export const DueSoonAlertsTab: React.FC<DueSoonAlertsTabProps> = ({
   return (
     <div className="space-y-6">
       {/* Top Banner with Automated Scan Trigger */}
-      <div className="p-6 bg-gradient-to-r from-slate-900 via-slate-900 to-amber-950/30 rounded-2xl border border-amber-500/30 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+      <div className="bg-amber-50 p-6 rounded-2xl border border-amber-200 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div className="space-y-1">
           <div className="flex items-center space-x-2">
             <span className="p-1.5 rounded-lg bg-amber-500/20 text-amber-800">
@@ -137,7 +137,7 @@ export const DueSoonAlertsTab: React.FC<DueSoonAlertsTabProps> = ({
           <button
             onClick={handleRunScan}
             disabled={isScanning}
-            className="px-4 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold shadow-lg shadow-amber-950/40 flex items-center space-x-2 transition active:scale-95"
+            className="px-4 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold shadow-sm flex items-center space-x-2 transition active:scale-95"
           >
             <RefreshCw className={`w-4 h-4 ${isScanning ? 'animate-spin' : ''}`} />
             <span>{isScanning ? 'Executando Varredura...' : 'Executar Varredura & Disparar Alertas'}</span>
@@ -152,7 +152,7 @@ export const DueSoonAlertsTab: React.FC<DueSoonAlertsTabProps> = ({
           onClick={() => setFilterType(filterType === 'OVERDUE' ? 'ALL' : 'OVERDUE')}
           className={`p-4 rounded-2xl border transition cursor-pointer ${
             filterType === 'OVERDUE'
-              ? 'bg-rose-50 border-rose-500 text-tinta'
+              ? 'bg-rose-50 border-rose-200 text-tinta'
               : 'bg-superficie border-borda hover:border-rose-500/50'
           }`}
         >
@@ -174,7 +174,7 @@ export const DueSoonAlertsTab: React.FC<DueSoonAlertsTabProps> = ({
           onClick={() => setFilterType(filterType === 'TODAY' ? 'ALL' : 'TODAY')}
           className={`p-4 rounded-2xl border transition cursor-pointer ${
             filterType === 'TODAY'
-              ? 'bg-amber-50 border-amber-500 text-tinta'
+              ? 'bg-amber-50 border-amber-200 text-tinta'
               : 'bg-superficie border-borda hover:border-amber-500/50'
           }`}
         >
@@ -196,20 +196,20 @@ export const DueSoonAlertsTab: React.FC<DueSoonAlertsTabProps> = ({
           onClick={() => setFilterType(filterType === 'DUE_SOON' ? 'ALL' : 'DUE_SOON')}
           className={`p-4 rounded-2xl border transition cursor-pointer ${
             filterType === 'DUE_SOON'
-              ? 'bg-blue-50 border-blue-500 text-tinta'
-              : 'bg-superficie border-borda hover:border-blue-500/50'
+              ? 'bg-teal-50 border-teal-500 text-tinta'
+              : 'bg-superficie border-borda hover:border-teal-500/50'
           }`}
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-blue-700 flex items-center space-x-1">
+            <span className="text-xs font-semibold text-teal-700 flex items-center space-x-1">
               <Calendar className="w-3.5 h-3.5" />
               <span>Próximos 5 Dias</span>
             </span>
-            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-500/20 text-blue-700">
+            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-teal-500/20 text-teal-800">
               {categorized.dueSoon.length} títulos
             </span>
           </div>
-          <div className="mt-2 text-2xl font-bold text-blue-700">{formatCurrency(totalDueSoonAmount)}</div>
+          <div className="mt-2 text-2xl font-bold text-teal-700">{formatCurrency(totalDueSoonAmount)}</div>
           <p className="text-[11px] text-tinta-2 mt-1">Ideal para envio preventivo de lembrete</p>
         </div>
       </div>
@@ -250,8 +250,8 @@ export const DueSoonAlertsTab: React.FC<DueSoonAlertsTabProps> = ({
           onClick={() => setFilterType('DUE_SOON')}
           className={`px-3 py-1.5 rounded-xl font-semibold transition ${
             filterType === 'DUE_SOON'
-              ? 'bg-blue-500/20 text-blue-700 border border-blue-500/40'
-              : 'text-tinta-2 hover:text-blue-700'
+              ? 'bg-teal-500/20 text-teal-800 border border-teal-500/40'
+              : 'text-tinta-2 hover:text-teal-700'
           }`}
         >
           Próximos 5 dias ({categorized.dueSoon.length})
@@ -276,9 +276,9 @@ export const DueSoonAlertsTab: React.FC<DueSoonAlertsTabProps> = ({
                 key={item.id}
                 className={`p-4 rounded-2xl border transition flex flex-col md:flex-row md:items-center md:justify-between gap-4 ${
                   isOverdue
-                    ? 'bg-rose-50 border-rose-500/30 hover:border-rose-500/60'
+                    ? 'bg-rose-50 border-rose-200 hover:border-rose-500/60'
                     : isToday
-                    ? 'bg-amber-50 border-amber-500/30 hover:border-amber-500/60'
+                    ? 'bg-amber-50 border-amber-200 hover:border-amber-500/60'
                     : 'bg-superficie border-borda hover:border-borda'
                 }`}
               >
@@ -289,7 +289,7 @@ export const DueSoonAlertsTab: React.FC<DueSoonAlertsTabProps> = ({
                       ? 'bg-rose-500/20 text-rose-800'
                       : isToday
                       ? 'bg-amber-500/20 text-amber-800'
-                      : 'bg-blue-500/20 text-blue-700'
+                      : 'bg-teal-500/20 text-teal-800'
                   }`}>
                     {isOverdue ? <AlertTriangle className="w-5 h-5" /> : isToday ? <Clock className="w-5 h-5" /> : <Calendar className="w-5 h-5" />}
                   </div>
@@ -301,7 +301,7 @@ export const DueSoonAlertsTab: React.FC<DueSoonAlertsTabProps> = ({
                           ? 'bg-rose-500/20 text-rose-800'
                           : isToday
                           ? 'bg-amber-500/20 text-amber-800'
-                          : 'bg-blue-500/20 text-blue-700'
+                          : 'bg-teal-500/20 text-teal-800'
                       }`}>
                         {isOverdue
                           ? `Atrasado há ${Math.abs(item.diffDays)} dia(s)`
@@ -319,7 +319,7 @@ export const DueSoonAlertsTab: React.FC<DueSoonAlertsTabProps> = ({
                     <div className="text-xs text-tinta-2 flex items-center space-x-3">
                       <span className="flex items-center space-x-1">
                         {item.type === 'RECEIVABLE' ? (
-                          <Building className="w-3.5 h-3.5 text-blue-700" />
+                          <Building className="w-3.5 h-3.5 text-teal-700" />
                         ) : (
                           <User className="w-3.5 h-3.5 text-rose-700" />
                         )}
@@ -364,7 +364,7 @@ export const DueSoonAlertsTab: React.FC<DueSoonAlertsTabProps> = ({
                     {/* Fast Mark as Paid / Settle */}
                     <button
                       onClick={() => onOpenSettlementModal(item)}
-                      className="px-3 py-1.5 rounded-xl bg-marca hover:bg-marca-escura text-white text-xs font-bold flex items-center space-x-1.5 shadow-lg shadow-emerald-950/40 transition"
+                      className="px-3 py-1.5 rounded-xl bg-marca hover:bg-marca-escura text-white text-xs font-bold flex items-center space-x-1.5 shadow-sm transition"
                       title="Confirmar Baixa / Quitação"
                     >
                       <Check className="w-3.5 h-3.5" />

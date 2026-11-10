@@ -156,7 +156,7 @@ export default async function ServicoPage({ params }: Props) {
                 </p>
                 <Link
                   href={servico.ctaDestino || `/contato?interesse=${encodeURIComponent(servico.titulo)}`}
-                  className="mt-5 w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold transition"
+                  className="bg-marca-escura text-white mt-5 w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-bold transition hover:opacity-90"
                 >
                   {servico.ctaTexto || 'Solicitar diagnóstico'}
                   <ArrowRight className="w-4 h-4" aria-hidden="true" />

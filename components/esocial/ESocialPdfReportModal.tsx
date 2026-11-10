@@ -133,17 +133,17 @@ export const ESocialPdfReportModal: React.FC<ESocialPdfReportModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-fundo backdrop-blur-sm animate-in fade-in">
-      <div className="bg-superficie border border-borda rounded-3xl w-full max-w-6xl max-h-[90vh] shadow-2xl flex flex-col overflow-hidden">
+      <div className="bg-superficie border border-borda rounded-3xl w-full max-w-6xl max-h-[90vh] shadow-sm flex flex-col overflow-hidden">
         {/* Header */}
         <div className="px-6 py-4 border-b border-borda flex items-center justify-between bg-superficie">
           <div className="flex items-center space-x-3">
-            <div className="p-2.5 rounded-2xl bg-indigo-500/10 text-indigo-700 border border-indigo-500/20">
+            <div className="p-2.5 rounded-2xl bg-teal-500/10 text-teal-800 border border-teal-500/20">
               <FileText className="w-5 h-5" />
             </div>
             <div>
               <div className="flex items-center space-x-2">
                 <h2 className="text-base font-bold text-tinta">Exportação e Emissão de Relatórios em PDF - eSocial SST</h2>
-                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-indigo-500/10 text-indigo-700 border border-indigo-500/30 uppercase">
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-teal-500/10 text-teal-800 border border-teal-500/30 uppercase">
                   S-2210 • S-2220 • S-2230 • S-2240
                 </span>
               </div>
@@ -157,7 +157,7 @@ export const ESocialPdfReportModal: React.FC<ESocialPdfReportModalProps> = ({
             <button
               onClick={handleDownloadDirectPdf}
               disabled={targetEvents.length === 0}
-              className="px-3.5 py-2 bg-marca hover:bg-marca-escura text-white rounded-2xl text-xs font-bold transition shadow-lg shadow-emerald-950/40 flex items-center space-x-1.5 disabled:opacity-50"
+              className="px-3.5 py-2 bg-marca hover:bg-marca-escura text-white rounded-2xl text-xs font-bold transition shadow-sm flex items-center space-x-1.5 disabled:opacity-50"
               title="Baixar arquivo .PDF gerado vetorialmente pelo jsPDF"
             >
               <Download className="w-4 h-4" />
@@ -166,7 +166,7 @@ export const ESocialPdfReportModal: React.FC<ESocialPdfReportModalProps> = ({
             <button
               onClick={handlePrint}
               disabled={targetEvents.length === 0}
-              className="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-2xl text-xs font-bold transition shadow-lg shadow-indigo-950/40 flex items-center space-x-1.5 disabled:opacity-50"
+              className="px-3.5 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-2xl text-xs font-bold transition shadow-sm flex items-center space-x-1.5 disabled:opacity-50"
             >
               <Printer className="w-4 h-4" />
               <span>Visualizar / Imprimir</span>
@@ -193,7 +193,7 @@ export const ESocialPdfReportModal: React.FC<ESocialPdfReportModalProps> = ({
                   onClick={() => setReportMode('SINGLE')}
                   className={`p-3 rounded-2xl border text-left transition ${
                     reportMode === 'SINGLE'
-                      ? 'bg-indigo-600/20 border-indigo-500/50 text-tinta'
+                      ? 'bg-teal-600/20 border-teal-500/50 text-tinta'
                       : 'bg-superficie border-borda text-tinta-2 hover:text-tinta'
                   }`}
                 >
@@ -206,7 +206,7 @@ export const ESocialPdfReportModal: React.FC<ESocialPdfReportModalProps> = ({
                   onClick={() => setReportMode('BATCH')}
                   className={`p-3 rounded-2xl border text-left transition ${
                     reportMode === 'BATCH'
-                      ? 'bg-indigo-600/20 border-indigo-500/50 text-tinta'
+                      ? 'bg-teal-600/20 border-teal-500/50 text-tinta'
                       : 'bg-superficie border-borda text-tinta-2 hover:text-tinta'
                   }`}
                 >
@@ -223,7 +223,7 @@ export const ESocialPdfReportModal: React.FC<ESocialPdfReportModalProps> = ({
                 <select
                   value={selectedSingleEventId}
                   onChange={(e) => setSelectedSingleEventId(e.target.value)}
-                  className="w-full bg-superficie border border-borda rounded-xl px-3 py-2 text-xs text-tinta focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-superficie border border-borda rounded-xl px-3 py-2 text-xs text-tinta focus:outline-none focus:border-teal-500"
                 >
                   {esocialEvents.map(evt => (
                     <option key={evt.id} value={evt.id}>
@@ -245,7 +245,7 @@ export const ESocialPdfReportModal: React.FC<ESocialPdfReportModalProps> = ({
                       <select
                         value={filterType}
                         onChange={(e) => setFilterType(e.target.value)}
-                        className="w-full bg-superficie border border-borda rounded-xl px-3 py-1.5 text-tinta focus:outline-none focus:border-indigo-500"
+                        className="w-full bg-superficie border border-borda rounded-xl px-3 py-1.5 text-tinta focus:outline-none focus:border-teal-500"
                       >
                         <option value="ALL">Todos os Tipos (S-2210, S-2220, S-2230, S-2240)</option>
                         <option value="S-2210">S-2210 (CAT - Acidentes de Trabalho)</option>
@@ -260,7 +260,7 @@ export const ESocialPdfReportModal: React.FC<ESocialPdfReportModalProps> = ({
                       <select
                         value={filterClient}
                         onChange={(e) => setFilterClient(e.target.value)}
-                        className="w-full bg-superficie border border-borda rounded-xl px-3 py-1.5 text-tinta focus:outline-none focus:border-indigo-500"
+                        className="w-full bg-superficie border border-borda rounded-xl px-3 py-1.5 text-tinta focus:outline-none focus:border-teal-500"
                       >
                         <option value="ALL">Todas as Empresas Clientes</option>
                         {clients.map(c => (
@@ -274,7 +274,7 @@ export const ESocialPdfReportModal: React.FC<ESocialPdfReportModalProps> = ({
                       <select
                         value={filterStatus}
                         onChange={(e) => setFilterStatus(e.target.value)}
-                        className="w-full bg-superficie border border-borda rounded-xl px-3 py-1.5 text-tinta focus:outline-none focus:border-indigo-500"
+                        className="w-full bg-superficie border border-borda rounded-xl px-3 py-1.5 text-tinta focus:outline-none focus:border-teal-500"
                       >
                         <option value="ALL">Todos os Status</option>
                         <option value="READY_TO_SEND">Prontos / Validados</option>
@@ -295,7 +295,7 @@ export const ESocialPdfReportModal: React.FC<ESocialPdfReportModalProps> = ({
                     <button
                       type="button"
                       onClick={toggleSelectAllBatch}
-                      className="text-indigo-700 hover:text-indigo-700 text-[11px] font-medium"
+                      className="text-teal-700 hover:text-teal-700 text-[11px] font-medium"
                     >
                       {batchSelectedIds.length === filteredEvents.length ? 'Desmarcar Todos' : 'Marcar Todos'}
                     </button>
@@ -309,7 +309,7 @@ export const ESocialPdfReportModal: React.FC<ESocialPdfReportModalProps> = ({
                           key={evt.id}
                           className={`flex items-center space-x-2.5 p-2 rounded-xl border text-xs cursor-pointer transition ${
                             isChecked 
-                              ? 'bg-indigo-50 border-indigo-500/40 text-tinta' 
+                              ? 'bg-teal-50 border-teal-500/40 text-tinta' 
                               : 'bg-superficie border-borda text-tinta-2'
                           }`}
                         >
@@ -317,10 +317,10 @@ export const ESocialPdfReportModal: React.FC<ESocialPdfReportModalProps> = ({
                             type="checkbox"
                             checked={isChecked}
                             onChange={() => toggleEventSelection(evt.id)}
-                            className="w-3.5 h-3.5 rounded text-indigo-600 focus:ring-indigo-500 border-borda bg-superficie-2"
+                            className="w-3.5 h-3.5 rounded text-teal-700 focus:ring-teal-500 border-borda bg-superficie-2"
                           />
                           <div className="flex-1 truncate">
-                            <span className="font-bold font-mono text-indigo-700">[{evt.event_type}]</span>{' '}
+                            <span className="font-bold font-mono text-teal-700">[{evt.event_type}]</span>{' '}
                             <span>{evt.worker_name}</span>
                           </div>
                           <span className={`text-[10px] px-1.5 py-0.5 rounded font-mono ${
@@ -346,7 +346,7 @@ export const ESocialPdfReportModal: React.FC<ESocialPdfReportModalProps> = ({
                   type="checkbox"
                   checked={includeSignatures}
                   onChange={(e) => setIncludeSignatures(e.target.checked)}
-                  className="w-3.5 h-3.5 rounded text-indigo-600 focus:ring-indigo-500 border-borda bg-superficie-2"
+                  className="w-3.5 h-3.5 rounded text-teal-700 focus:ring-teal-500 border-borda bg-superficie-2"
                 />
                 <span>Incluir campos de assinatura e carimbo SST</span>
               </label>
@@ -356,7 +356,7 @@ export const ESocialPdfReportModal: React.FC<ESocialPdfReportModalProps> = ({
                   type="checkbox"
                   checked={includeErrors}
                   onChange={(e) => setIncludeErrors(e.target.checked)}
-                  className="w-3.5 h-3.5 rounded text-indigo-600 focus:ring-indigo-500 border-borda bg-superficie-2"
+                  className="w-3.5 h-3.5 rounded text-teal-700 focus:ring-teal-500 border-borda bg-superficie-2"
                 />
                 <span>Destacar inconsistências e apontamentos</span>
               </label>
@@ -366,7 +366,7 @@ export const ESocialPdfReportModal: React.FC<ESocialPdfReportModalProps> = ({
                   type="checkbox"
                   checked={includeXmlPreview}
                   onChange={(e) => setIncludeXmlPreview(e.target.checked)}
-                  className="w-3.5 h-3.5 rounded text-indigo-600 focus:ring-indigo-500 border-borda bg-superficie-2"
+                  className="w-3.5 h-3.5 rounded text-teal-700 focus:ring-teal-500 border-borda bg-superficie-2"
                 />
                 <span>Incluir anexo com XML completo</span>
               </label>
@@ -377,7 +377,7 @@ export const ESocialPdfReportModal: React.FC<ESocialPdfReportModalProps> = ({
           <div className="lg:col-span-8 bg-fundo p-4 overflow-hidden flex flex-col justify-between">
             <div className="flex items-center justify-between pb-2 border-b border-borda text-xs">
               <div className="flex items-center space-x-2 text-tinta-2">
-                <Eye className="w-4 h-4 text-indigo-700" />
+                <Eye className="w-4 h-4 text-teal-700" />
                 <span>Pré-visualização do Relatório Oficial (Layout A4)</span>
               </div>
               <span className="text-tinta-2 font-mono text-[11px]">
@@ -385,7 +385,7 @@ export const ESocialPdfReportModal: React.FC<ESocialPdfReportModalProps> = ({
               </span>
             </div>
 
-            <div className="flex-1 mt-3 bg-white rounded-2xl overflow-hidden shadow-2xl border border-borda">
+            <div className="flex-1 mt-3 bg-white rounded-2xl overflow-hidden shadow-sm border border-borda">
               <iframe
                 title="Preview eSocial PDF"
                 srcDoc={previewHtml}

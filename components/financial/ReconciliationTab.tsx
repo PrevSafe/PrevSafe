@@ -136,11 +136,11 @@ export const ReconciliationTab: React.FC<ReconciliationTabProps> = ({
         <div className="p-4 bg-superficie rounded-2xl border border-borda relative overflow-hidden">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-tinta-2">Total Já Conciliado</span>
-            <div className="w-8 h-8 rounded-lg bg-blue-500/10 border border-blue-500/30 flex items-center justify-center">
-              <CheckCircle2 className="w-4 h-4 text-blue-700" />
+            <div className="w-8 h-8 rounded-lg bg-teal-500/10 border border-teal-500/30 flex items-center justify-center">
+              <CheckCircle2 className="w-4 h-4 text-teal-700" />
             </div>
           </div>
-          <div className="mt-2 text-2xl font-bold text-blue-700">{formatCurrency(totalAmountReconciled)}</div>
+          <div className="mt-2 text-2xl font-bold text-teal-700">{formatCurrency(totalAmountReconciled)}</div>
           <p className="text-[11px] text-tinta-2 mt-1">Extrato bancário e NSU validados</p>
         </div>
 
@@ -157,7 +157,7 @@ export const ReconciliationTab: React.FC<ReconciliationTabProps> = ({
         </div>
 
         {/* Ação Rápida em Lote */}
-        <div className="p-4 bg-gradient-to-br from-slate-900 to-emerald-950/40 rounded-2xl border border-marca-escura flex flex-col justify-between">
+        <div className="bg-superficie p-4 rounded-2xl border border-borda flex flex-col justify-between">
           <div>
             <div className="text-xs font-bold text-marca-escura flex items-center space-x-1.5">
               <Sparkles className="w-4 h-4 text-marca-escura" />
@@ -172,7 +172,7 @@ export const ReconciliationTab: React.FC<ReconciliationTabProps> = ({
             disabled={selectedIds.length === 0}
             className={`mt-2 px-3 py-1.5 rounded-xl text-xs font-bold flex items-center justify-center space-x-1.5 transition ${
               selectedIds.length > 0
-                ? 'bg-marca hover:bg-marca-escura text-white shadow-lg shadow-emerald-950/40'
+                ? 'bg-marca hover:bg-marca-escura text-white shadow-sm'
                 : 'bg-superficie-2 text-tinta-2 cursor-not-allowed'
             }`}
           >
@@ -313,7 +313,7 @@ export const ReconciliationTab: React.FC<ReconciliationTabProps> = ({
                       <td className="py-3 px-4 text-tinta max-w-[180px] truncate">
                         <div className="flex items-center space-x-1.5">
                           {tx.type === 'RECEIVABLE' ? (
-                            <Building className="w-3.5 h-3.5 text-blue-700 shrink-0" />
+                            <Building className="w-3.5 h-3.5 text-teal-700 shrink-0" />
                           ) : (
                             <User className="w-3.5 h-3.5 text-rose-700 shrink-0" />
                           )}

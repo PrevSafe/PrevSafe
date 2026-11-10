@@ -73,11 +73,11 @@ export const AICopilotModal: React.FC<{ isOpen: boolean; onClose: () => void }> 
 
   return (
     <div className="fixed inset-0 bg-fundo backdrop-blur-md z-50 flex items-center justify-center p-4">
-      <div className="bg-superficie rounded-3xl max-w-2xl w-full p-6 shadow-2xl border border-borda max-h-[90vh] overflow-y-auto flex flex-col text-tinta">
+      <div className="bg-superficie rounded-3xl max-w-2xl w-full p-6 shadow-sm border border-borda max-h-[90vh] overflow-y-auto flex flex-col text-tinta">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-borda pb-4 mb-4">
           <div className="flex items-center space-x-3">
-            <div className="p-2.5 bg-gradient-to-br from-marca-escura to-teal-600 rounded-2xl text-white shadow-md">
+            <div className="bg-marca-escura p-2.5 rounded-2xl text-white shadow-md">
               <Sparkles className="w-5 h-5" />
             </div>
             <div>
@@ -142,7 +142,7 @@ export const AICopilotModal: React.FC<{ isOpen: boolean; onClose: () => void }> 
                     setEmployeeCount(cl.employee_count);
                   }
                 }}
-                className="w-full p-2.5 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
+                className="w-full p-2.5 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
               >
                 {clients.map(c => (
                   <option key={c.id} value={c.id}>{c.trade_name} ({c.main_cnae})</option>
@@ -155,7 +155,7 @@ export const AICopilotModal: React.FC<{ isOpen: boolean; onClose: () => void }> 
                 type="text"
                 value={cnaeInput}
                 onChange={(e) => setCnaeInput(e.target.value)}
-                className="w-full p-2.5 bg-fundo border border-borda rounded-xl text-xs font-mono text-tinta focus:outline-none focus:border-indigo-500"
+                className="w-full p-2.5 bg-fundo border border-borda rounded-xl text-xs font-mono text-tinta focus:outline-none focus:border-teal-500"
               />
             </div>
           </div>
@@ -167,7 +167,7 @@ export const AICopilotModal: React.FC<{ isOpen: boolean; onClose: () => void }> 
                 rows={3}
                 value={fieldNotes}
                 onChange={(e) => setFieldNotes(e.target.value)}
-                className="w-full p-2.5 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
+                className="w-full p-2.5 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
               />
             </div>
           )}
@@ -177,7 +177,7 @@ export const AICopilotModal: React.FC<{ isOpen: boolean; onClose: () => void }> 
         <button
           onClick={handleGenerate}
           disabled={isLoading}
-          className="w-full py-3 bg-gradient-to-r from-marca-escura to-teal-600 hover:from-marca-escura hover:to-teal-700 text-white rounded-2xl text-xs font-bold shadow-lg shadow-emerald-950/30 transition flex items-center justify-center space-x-2"
+          className="bg-marca-escura w-full py-3 text-white rounded-2xl text-xs font-bold shadow-sm transition flex items-center justify-center space-x-2"
         >
           {isLoading ? (
             <>
@@ -280,7 +280,7 @@ export const FastTrackFlowModal: React.FC<{ isOpen: boolean; onClose: () => void
 
   return (
     <div className="fixed inset-0 bg-fundo backdrop-blur-md z-50 flex items-center justify-center p-4">
-      <div className="bg-superficie rounded-3xl max-w-3xl w-full p-6 shadow-2xl border border-borda max-h-[90vh] overflow-y-auto text-tinta">
+      <div className="bg-superficie rounded-3xl max-w-3xl w-full p-6 shadow-sm border border-borda max-h-[90vh] overflow-y-auto text-tinta">
         <div className="flex items-center justify-between border-b border-borda pb-4 mb-4">
           <div>
             <h3 className="text-lg font-bold text-tinta">Fluxo Master PrevSafe SST (Ponta a Ponta)</h3>
@@ -305,7 +305,7 @@ export const FastTrackFlowModal: React.FC<{ isOpen: boolean; onClose: () => void
                   onNavigate(s.view);
                   onClose();
                 }}
-                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold shadow-md transition whitespace-nowrap"
+                className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-semibold shadow-md transition whitespace-nowrap"
               >
                 {s.actionLabel} →
               </button>

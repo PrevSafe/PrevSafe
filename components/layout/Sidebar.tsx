@@ -164,7 +164,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           icon: AlertTriangle, 
           code: '070',
           badge: 'Tabela 24 / NRs',
-          badgeColor: 'bg-indigo-500',
+          badgeColor: 'bg-teal-500',
           highlight: true
         },
         { id: 'service-orders', label: 'Ordens de Serviço (OS NR-01)', icon: Briefcase, code: '050', badge: (serviceOrders || []).length.toString() },
@@ -500,7 +500,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             onClick={handleClose}
             aria-hidden="true"
           />
-          <div className="relative w-80 max-w-[90vw] bg-superficie border-r border-borda shadow-2xl z-10 flex flex-col h-full animate-in slide-in-from-left duration-200">
+          <div className="relative w-80 max-w-[90vw] bg-superficie border-r border-borda shadow-sm z-10 flex flex-col h-full animate-in slide-in-from-left duration-200">
             {renderContent()}
           </div>
         </div>

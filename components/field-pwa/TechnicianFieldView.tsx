@@ -791,7 +791,7 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
   return (
     <div className="max-w-4xl mx-auto space-y-6 pb-20">
       {/* Mobile-Friendly App Header Bento Card with Offline Simulator & Service Worker Status */}
-      <div className="bg-superficie text-tinta p-6 rounded-3xl shadow-xl border border-borda flex flex-col sm:flex-row sm:items-center justify-between gap-4 relative overflow-hidden">
+      <div className="bg-superficie text-tinta p-6 rounded-3xl shadow-sm border border-borda flex flex-col sm:flex-row sm:items-center justify-between gap-4 relative overflow-hidden">
         <div 
           className="absolute -right-16 -top-16 w-60 h-60 rounded-full blur-3xl opacity-10 pointer-events-none"
           style={{ backgroundColor: 'var(--tenant-primary)' }}
@@ -872,7 +872,7 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
       </div>
 
       {/* Inspection Target Selector & Details Bento Card */}
-      <div className="bg-superficie p-6 rounded-3xl border border-borda shadow-xl space-y-4">
+      <div className="bg-superficie p-6 rounded-3xl border border-borda shadow-sm space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-borda pb-4">
           <div>
             <div className="flex items-center space-x-2">
@@ -1026,7 +1026,7 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
               <div className="flex items-center space-x-2">
                 <button
                   onClick={() => setShowAddHazardModal(true)}
-                  className="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold shadow-md transition flex items-center space-x-1 self-start sm:self-auto"
+                  className="px-3.5 py-1.5 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-bold shadow-md transition flex items-center space-x-1 self-start sm:self-auto"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>+ Adicionar Ponto de Inspeção</span>
@@ -1041,14 +1041,14 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
                   <div className="flex items-start justify-between gap-2">
                     <div>
                       <div className="flex flex-wrap items-center gap-2">
-                        <span className="text-[10px] font-bold bg-superficie px-2 py-0.5 rounded-full border border-borda text-indigo-700 font-mono">
+                        <span className="text-[10px] font-bold bg-superficie px-2 py-0.5 rounded-full border border-borda text-teal-700 font-mono">
                           {item.nr}
                         </span>
                         <span className="text-[10px] font-semibold text-tinta-2 uppercase">{item.category}</span>
                         <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full border ${
                           item.severity === 'CRÍTICO' ? 'bg-rose-500/10 text-rose-700 border-rose-500/20' :
                           item.severity === 'ALTO' ? 'bg-amber-500/10 text-amber-800 border-amber-500/20' : 
-                          item.severity === 'MÉDIO' ? 'bg-blue-500/10 text-blue-700 border-blue-500/20' :
+                          item.severity === 'MÉDIO' ? 'bg-teal-500/10 text-teal-800 border-teal-500/20' :
                           'bg-superficie-2 text-tinta border-borda'
                         }`}>
                           Severidade {item.severity}
@@ -1110,7 +1110,7 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
                       placeholder="Observação técnica constatada em campo..."
                       value={item.observation}
                       onChange={(e) => handleUpdateObservation(item.id, e.target.value)}
-                      className="w-full px-3 py-2 bg-superficie border border-borda rounded-xl text-xs text-tinta placeholder-tinta-3 focus:outline-none focus:border-indigo-500"
+                      className="w-full px-3 py-2 bg-superficie border border-borda rounded-xl text-xs text-tinta placeholder-tinta-3 focus:outline-none focus:border-teal-500"
                     />
                     {item.corrective_measure && (
                       <p className="text-[11px] text-amber-700 pl-1">
@@ -1131,7 +1131,7 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
               <span className="text-xs text-tinta-2 font-semibold">Galeria de Evidências Fotográficas ({photos.length})</span>
               <button
                 onClick={() => setShowAddPhotoModal(true)}
-                className="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold shadow-md transition flex items-center space-x-1"
+                className="px-3.5 py-1.5 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-bold shadow-md transition flex items-center space-x-1"
               >
                 <Camera className="w-3.5 h-3.5" />
                 <span>+ Capturar / Adicionar Foto</span>
@@ -1156,7 +1156,7 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
                       <Eye className="w-6 h-6 text-tinta drop-shadow" />
                     </div>
                     {item.nr_ref && (
-                      <span className="absolute top-2 left-2 z-10 bg-fundo text-indigo-700 text-[10px] font-mono font-bold px-2 py-0.5 rounded-full border border-borda">
+                      <span className="absolute top-2 left-2 z-10 bg-fundo text-teal-700 text-[10px] font-mono font-bold px-2 py-0.5 rounded-full border border-borda">
                         {item.nr_ref}
                       </span>
                     )}
@@ -1262,7 +1262,7 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
                     setRepName(e.target.value);
                     persistSessionNow(checklist, photos, isSigned, gpsLocation, { name: e.target.value, cpf: repCpf, role: repRole });
                   }}
-                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                 />
               </div>
               <div>
@@ -1275,7 +1275,7 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
                     setRepCpf(e.target.value);
                     persistSessionNow(checklist, photos, isSigned, gpsLocation, { name: repName, cpf: e.target.value, role: repRole });
                   }}
-                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                 />
               </div>
               <div>
@@ -1288,7 +1288,7 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
                     setRepRole(e.target.value);
                     persistSessionNow(checklist, photos, isSigned, gpsLocation, { name: repName, cpf: repCpf, role: e.target.value });
                   }}
-                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                 />
               </div>
             </div>
@@ -1335,9 +1335,9 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
         {selectedVisitTab === 'SYNC' && (
           <div className="space-y-5 pt-2 text-xs">
             {/* Sync Summary Banner */}
-            <div className="p-5 bg-indigo-500/10 border border-indigo-500/20 rounded-2xl space-y-3">
+            <div className="p-5 bg-teal-500/10 border border-teal-500/20 rounded-2xl space-y-3">
               <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2 text-indigo-700 font-bold text-sm">
+                <div className="flex items-center space-x-2 text-teal-700 font-bold text-sm">
                   <CheckCircle2 className="w-5 h-5 text-marca-escura" />
                   <span>Revisão Geral & Sincronização de Campo</span>
                 </div>
@@ -1441,7 +1441,7 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
                 onClick={handleExportBackup}
                 className="p-3 bg-fundo hover:bg-superficie text-tinta border border-borda rounded-2xl transition flex items-center justify-center space-x-2 font-semibold text-xs"
               >
-                <UploadCloud className="w-4 h-4 text-indigo-700" />
+                <UploadCloud className="w-4 h-4 text-teal-700" />
                 <span>Exportar Backup Offline</span>
               </button>
 
@@ -1461,7 +1461,7 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
             {/* Main Finalize Button */}
             <button
               onClick={handleGenerateFieldReport}
-              className="w-full py-4 bg-gradient-to-r from-marca-escura to-teal-600 hover:from-marca-escura hover:to-teal-700 text-white font-bold rounded-2xl text-xs shadow-xl shadow-emerald-950/40 transition flex items-center justify-center space-x-2"
+              className="bg-marca-escura w-full py-4 text-white font-bold rounded-2xl text-xs shadow-sm transition flex items-center justify-center space-x-2"
             >
               <CheckCircle2 className="w-5 h-5" />
               <span>Sincronizar Vistoria de Campo & Gerar Relatório Técnico Oficial</span>
@@ -1473,7 +1473,7 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
       {/* ==================== MODAL: DIAGNÓSTICO DO CACHE & SERVICE WORKER ==================== */}
       {showStorageModal && (
         <div className="fixed inset-0 bg-fundo backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-superficie rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-borda text-tinta animate-in fade-in zoom-in-95 duration-200 space-y-4">
+          <div className="bg-superficie rounded-3xl max-w-lg w-full p-6 shadow-sm border border-borda text-tinta animate-in fade-in zoom-in-95 duration-200 space-y-4">
             <div className="flex items-center justify-between border-b border-borda pb-3">
               <div className="flex items-center space-x-2">
                 <HardDrive className="w-5 h-5 text-marca-escura" />
@@ -1593,7 +1593,7 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
       {/* ==================== MODAL: ADICIONAR ITEM DE RISCO (CRUD CREATE) ==================== */}
       {showAddHazardModal && (
         <div className="fixed inset-0 bg-fundo backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-superficie rounded-3xl max-w-md w-full p-6 shadow-2xl border border-borda text-tinta animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-superficie rounded-3xl max-w-md w-full p-6 shadow-sm border border-borda text-tinta animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between border-b border-borda pb-3 mb-4">
               <h3 className="text-base font-bold text-tinta">Adicionar Ponto de Inspeção / Risco</h3>
               <button onClick={() => setShowAddHazardModal(false)} className="text-tinta-2 hover:text-tinta">✕</button>
@@ -1645,7 +1645,7 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
                   placeholder="Ex: Trabalho em escadas sem ancoragem na manutenção"
                   value={newHazard}
                   onChange={(e) => setNewHazard(e.target.value)}
-                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                 />
               </div>
 
@@ -1684,7 +1684,7 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
                   placeholder="Detalhes específicos da situação encontrada..."
                   value={newObs}
                   onChange={(e) => setNewObs(e.target.value)}
-                  className="w-full p-2.5 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
+                  className="w-full p-2.5 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                 />
               </div>
 
@@ -1695,7 +1695,7 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
                   placeholder="Ex: Treinamento NR-35 e instalação de ponto de ancoragem"
                   value={newCorrective}
                   onChange={(e) => setNewCorrective(e.target.value)}
-                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                 />
               </div>
 
@@ -1709,7 +1709,7 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-bold shadow-md"
+                  className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl font-bold shadow-md"
                 >
                   Salvar Item de Risco
                 </button>
@@ -1722,7 +1722,7 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
       {/* ==================== MODAL: CAPTURAR NOVA FOTO ==================== */}
       {showAddPhotoModal && (
         <div className="fixed inset-0 bg-fundo backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-superficie rounded-3xl max-w-md w-full p-6 shadow-2xl border border-borda text-tinta animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-superficie rounded-3xl max-w-md w-full p-6 shadow-sm border border-borda text-tinta animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between border-b border-borda pb-3 mb-4">
               <h3 className="text-base font-bold text-tinta">Capturar Foto / Evidência</h3>
               <button onClick={() => setShowAddPhotoModal(false)} className="text-tinta-2 hover:text-tinta">✕</button>
@@ -1758,9 +1758,9 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
                 <button
                   type="button"
                   onClick={() => photoInputRef.current?.click()}
-                  className="w-full p-6 bg-fundo border-2 border-dashed border-borda hover:border-indigo-600 rounded-2xl text-center space-y-2 transition"
+                  className="w-full p-6 bg-fundo border-2 border-dashed border-borda hover:border-teal-600 rounded-2xl text-center space-y-2 transition"
                 >
-                  <Camera className="w-8 h-8 mx-auto text-indigo-700" />
+                  <Camera className="w-8 h-8 mx-auto text-teal-700" />
                   <div className="text-tinta font-semibold">Tirar foto ou escolher da galeria</div>
                   <p className="text-[11px] text-tinta-2">A imagem é enviada para o armazenamento privado da organização.</p>
                 </button>
@@ -1781,7 +1781,7 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
                     placeholder="Ex: Almoxarifado / Prensa 04"
                     value={newPhotoSector}
                     onChange={(e) => setNewPhotoSector(e.target.value)}
-                    className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                   />
                 </div>
                 <div>
@@ -1809,7 +1809,7 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
                   placeholder="Descreva o que a imagem comprova (não conformidade ou condição segura)..."
                   value={newPhotoCaption}
                   onChange={(e) => setNewPhotoCaption(e.target.value)}
-                  className="w-full p-2.5 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
+                  className="w-full p-2.5 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                 />
               </div>
 
@@ -1824,7 +1824,7 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
                 <button
                   type="submit"
                   disabled={isUploadingPhoto}
-                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white rounded-xl font-bold shadow-md"
+                  className="px-4 py-2 bg-teal-600 hover:bg-teal-700 disabled:opacity-50 text-white rounded-xl font-bold shadow-md"
                 >
                   {isUploadingPhoto ? 'Enviando...' : 'Anexar Evidência Fotográfica'}
                 </button>
@@ -1837,10 +1837,10 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
       {/* ==================== MODAL: ZOOM DE FOTO ==================== */}
       {zoomedPhoto && (
         <div className="fixed inset-0 bg-fundo backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-superficie rounded-3xl max-w-2xl w-full p-5 shadow-2xl border border-borda text-tinta animate-in fade-in zoom-in-95 duration-200 space-y-3">
+          <div className="bg-superficie rounded-3xl max-w-2xl w-full p-5 shadow-sm border border-borda text-tinta animate-in fade-in zoom-in-95 duration-200 space-y-3">
             <div className="flex items-center justify-between border-b border-borda pb-2">
               <div className="flex items-center space-x-2">
-                <span className="font-mono text-xs font-bold text-indigo-700 bg-fundo px-2 py-0.5 rounded-full border border-borda">
+                <span className="font-mono text-xs font-bold text-teal-700 bg-fundo px-2 py-0.5 rounded-full border border-borda">
                   {zoomedPhoto.nr_ref || 'NR Geral'}
                 </span>
                 <span className="text-xs font-bold text-tinta">{zoomedPhoto.sector}</span>

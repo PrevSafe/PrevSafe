@@ -146,7 +146,7 @@ export default function ParaTrabalhadoresPage() {
               href={linkWhatsApp('uma dúvida como trabalhador')}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 mt-5 px-6 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold transition"
+              className="bg-marca-escura text-white inline-flex items-center gap-2 mt-5 px-6 py-3 rounded-xl font-bold transition hover:opacity-90"
             >
               Tirar dúvida no WhatsApp
             </a>

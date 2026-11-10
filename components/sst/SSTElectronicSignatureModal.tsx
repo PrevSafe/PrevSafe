@@ -247,7 +247,7 @@ export const SSTElectronicSignatureModal: React.FC<SSTElectronicSignatureModalPr
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-fundo backdrop-blur-sm overflow-y-auto">
-      <div className="bg-superficie border border-borda rounded-3xl shadow-2xl w-full max-w-4xl max-h-[92vh] flex flex-col overflow-hidden text-tinta animate-in fade-in zoom-in-95 duration-200">
+      <div className="bg-superficie border border-borda rounded-3xl shadow-sm w-full max-w-4xl max-h-[92vh] flex flex-col overflow-hidden text-tinta animate-in fade-in zoom-in-95 duration-200">
         
         {/* Modal Top Header */}
         <div className="bg-fundo px-6 py-4 border-b border-borda flex items-center justify-between">
@@ -347,7 +347,7 @@ export const SSTElectronicSignatureModal: React.FC<SSTElectronicSignatureModalPr
                             <div className="flex items-center space-x-2">
                               <span className="font-bold text-sm text-tinta">{signer.name}</span>
                               {signer.role_type === 'TECHNICAL_RESPONSIBLE' && (
-                                <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-indigo-500/10 text-indigo-700 border border-indigo-500/20">
+                                <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-teal-500/10 text-teal-800 border border-teal-500/20">
                                   Técnico / RT
                                 </span>
                               )}
@@ -404,7 +404,7 @@ export const SSTElectronicSignatureModal: React.FC<SSTElectronicSignatureModalPr
               </div>
 
               {/* Compliance & Legal Information Notice */}
-              <div className="bg-gradient-to-r from-teal-950/40 via-slate-900 to-indigo-950/40 p-4 rounded-2xl border border-teal-500/30 flex items-start space-x-3 text-xs">
+              <div className="bg-superficie p-4 rounded-2xl border border-teal-200 flex items-start space-x-3 text-xs">
                 <ShieldCheck className="w-5 h-5 text-teal-700 flex-shrink-0 mt-0.5" />
                 <div className="space-y-1 text-tinta">
                   <span className="font-bold text-tinta block">Validade Jurídica e Limites desta Assinatura</span>
@@ -518,7 +518,7 @@ export const SSTElectronicSignatureModal: React.FC<SSTElectronicSignatureModalPr
                         : 'bg-fundo border-borda text-tinta-2 hover:border-borda'
                     }`}
                   >
-                    <div className="flex items-center space-x-2 text-indigo-700">
+                    <div className="flex items-center space-x-2 text-teal-700">
                       <Lock className="w-4 h-4" />
                       <span className="font-bold text-xs">Certificado ICP-Brasil (indisponível)</span>
                     </div>
@@ -536,7 +536,7 @@ export const SSTElectronicSignatureModal: React.FC<SSTElectronicSignatureModalPr
                         : 'bg-fundo border-borda text-tinta-2 hover:border-borda'
                     }`}
                   >
-                    <div className="flex items-center space-x-2 text-sky-700">
+                    <div className="flex items-center space-x-2 text-teal-700">
                       <PenTool className="w-4 h-4" />
                       <span className="font-bold text-xs">Rubrica / Manuscrita</span>
                     </div>
@@ -561,7 +561,7 @@ export const SSTElectronicSignatureModal: React.FC<SSTElectronicSignatureModalPr
                     <button
                       type="button"
                       onClick={handleSendOtp}
-                      className="px-4 py-2 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold rounded-xl text-xs flex items-center space-x-1.5 transition shadow-md shadow-teal-500/20"
+                      className="bg-marca-escura text-white px-4 py-2 font-bold rounded-xl text-xs flex items-center space-x-1.5 transition shadow-sm hover:opacity-90"
                     >
                       <KeyRound className="w-4 h-4" />
                       <span>{isOtpSent ? 'Reenviar Código' : 'Gerar Código OTP'}</span>
@@ -569,7 +569,7 @@ export const SSTElectronicSignatureModal: React.FC<SSTElectronicSignatureModalPr
                   </div>
 
                   {isOtpSent && (
-                    <div className="bg-superficie p-4 rounded-xl border border-teal-500/30 space-y-3 animate-in fade-in">
+                    <div className="bg-superficie p-4 rounded-xl border border-teal-200 space-y-3 animate-in fade-in">
                       <div className="flex items-center justify-between">
                         <span className="text-xs font-bold text-teal-700">Digite o código de 6 dígitos recebido:</span>
                         <span className="text-[11px] text-tinta-2">Expira em {otpCountdown}s</span>
@@ -607,12 +607,12 @@ export const SSTElectronicSignatureModal: React.FC<SSTElectronicSignatureModalPr
                     <div 
                       onClick={() => setSelectedCert('CERT_ICP_A1')}
                       className={`p-3.5 rounded-xl border cursor-pointer transition space-y-1 ${
-                        selectedCert === 'CERT_ICP_A1' ? 'bg-indigo-500/10 border-indigo-500 text-tinta' : 'bg-superficie border-borda text-tinta-2'
+                        selectedCert === 'CERT_ICP_A1' ? 'bg-teal-500/10 border-teal-500 text-tinta' : 'bg-superficie border-borda text-tinta-2'
                       }`}
                     >
                       <div className="flex items-center justify-between">
-                        <span className="font-bold text-xs text-indigo-700">Certificado A1 (e-CPF Nuvem)</span>
-                        <Award className="w-4 h-4 text-indigo-700" />
+                        <span className="font-bold text-xs text-teal-700">Certificado A1 (e-CPF Nuvem)</span>
+                        <Award className="w-4 h-4 text-teal-700" />
                       </div>
                       <span className="text-[11px] text-tinta block">{currentSigner.name}:00000000000</span>
                       <span className="text-[10px] text-tinta-2 block font-mono">AC VALID RFB v5 • Validade: 2027</span>
@@ -621,12 +621,12 @@ export const SSTElectronicSignatureModal: React.FC<SSTElectronicSignatureModalPr
                     <div 
                       onClick={() => setSelectedCert('CERT_ICP_A3')}
                       className={`p-3.5 rounded-xl border cursor-pointer transition space-y-1 ${
-                        selectedCert === 'CERT_ICP_A3' ? 'bg-indigo-500/10 border-indigo-500 text-tinta' : 'bg-superficie border-borda text-tinta-2'
+                        selectedCert === 'CERT_ICP_A3' ? 'bg-teal-500/10 border-teal-500 text-tinta' : 'bg-superficie border-borda text-tinta-2'
                       }`}
                     >
                       <div className="flex items-center justify-between">
-                        <span className="font-bold text-xs text-indigo-700">Certificado A3 (Token Físico / HSM)</span>
-                        <Lock className="w-4 h-4 text-indigo-700" />
+                        <span className="font-bold text-xs text-teal-700">Certificado A3 (Token Físico / HSM)</span>
+                        <Lock className="w-4 h-4 text-teal-700" />
                       </div>
                       <span className="text-[11px] text-tinta block">Dispositivo Conectado: SafeNet eToken</span>
                       <span className="text-[10px] text-tinta-2 block font-mono">AC SERPRO • Validade: 2028</span>
@@ -640,7 +640,7 @@ export const SSTElectronicSignatureModal: React.FC<SSTElectronicSignatureModalPr
                       value={certPin}
                       onChange={(e) => setCertPin(e.target.value)}
                       placeholder="••••••••"
-                      className="bg-superficie border border-borda text-tinta px-3 py-2 rounded-xl text-xs w-64 focus:outline-none focus:border-indigo-500 font-mono"
+                      className="bg-superficie border border-borda text-tinta px-3 py-2 rounded-xl text-xs w-64 focus:outline-none focus:border-teal-500 font-mono"
                     />
                   </div>
                 </div>
@@ -710,7 +710,7 @@ export const SSTElectronicSignatureModal: React.FC<SSTElectronicSignatureModalPr
           {/* STEP 3: REJECTION / CONTESTATION */}
           {activeStep === 'REJECT' && currentSigner && (
             <div className="space-y-5">
-              <div className="bg-rose-50 p-5 rounded-2xl border border-rose-500/30 space-y-2">
+              <div className="bg-rose-50 p-5 rounded-2xl border border-rose-200 space-y-2">
                 <div className="flex items-center space-x-2 text-rose-700 font-bold text-sm">
                   <AlertTriangle className="w-5 h-5" />
                   <span>Recusa ou Solicitação de Ajuste Técnico</span>
@@ -792,7 +792,7 @@ export const SSTElectronicSignatureModal: React.FC<SSTElectronicSignatureModalPr
                     <button
                       type="button"
                       onClick={() => setActiveStep('SIGN')}
-                      className="px-5 py-2 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 text-xs font-bold transition shadow-lg shadow-teal-500/20 flex items-center space-x-1.5"
+                      className="bg-marca-escura text-white px-5 py-2 rounded-xl text-xs font-bold transition shadow-sm flex items-center space-x-1.5 hover:opacity-90"
                     >
                       <PenTool className="w-4 h-4" />
                       <span>Assinar Documento</span>
@@ -827,7 +827,7 @@ export const SSTElectronicSignatureModal: React.FC<SSTElectronicSignatureModalPr
                 type="button"
                 disabled={isSubmitting || !acceptedTerms}
                 onClick={handleConfirmSignature}
-                className="px-6 py-2 rounded-xl bg-teal-500 hover:bg-teal-400 disabled:opacity-50 text-slate-950 text-xs font-bold transition shadow-lg shadow-teal-500/20 flex items-center space-x-2"
+                className="bg-marca-escura text-white px-6 py-2 rounded-xl disabled:opacity-50 text-xs font-bold transition shadow-sm flex items-center space-x-2 hover:opacity-90"
               >
                 {isSubmitting ? (
                   <>
@@ -871,7 +871,7 @@ export const SSTElectronicSignatureModal: React.FC<SSTElectronicSignatureModalPr
               <button
                 type="button"
                 onClick={onClose}
-                className="px-6 py-2 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 text-xs font-bold transition"
+                className="bg-marca-escura text-white px-6 py-2 rounded-xl text-xs font-bold transition hover:opacity-90"
               >
                 Concluir & Retornar ao Portal
               </button>

@@ -262,7 +262,7 @@ export const CatAndAbsenceTab: React.FC<CatAndAbsenceTabProps> = ({ selectedClie
               : <CheckCircle2 className="w-5 h-5 text-teal-700 shrink-0" />}
             <span className="font-semibold">{notificationMsg.texto}</span>
           </div>
-          <span className={`text-[11px] font-bold px-2 py-1 rounded shrink-0 ${notificationMsg.erro ? 'bg-amber-500 text-slate-950' : 'bg-teal-500 text-slate-950'}`}>
+          <span className={`text-[11px] font-bold px-2 py-1 rounded shrink-0 ${notificationMsg.erro ? 'bg-marca-escura text-white' : 'bg-marca-escura text-white'}`}>
             {notificationMsg.erro ? 'Com pendências' : 'Não transmitido'}
           </span>
         </div>
@@ -276,7 +276,7 @@ export const CatAndAbsenceTab: React.FC<CatAndAbsenceTabProps> = ({ selectedClie
             onClick={() => setActiveSubTab('CAT')}
             className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-2 ${
               activeSubTab === 'CAT'
-                ? 'bg-rose-500 text-slate-950 shadow-md shadow-rose-500/20'
+                ? 'bg-marca-escura text-white shadow-sm'
                 : 'text-tinta-2 hover:text-tinta hover:bg-superficie-2'
             }`}
           >
@@ -289,7 +289,7 @@ export const CatAndAbsenceTab: React.FC<CatAndAbsenceTabProps> = ({ selectedClie
             onClick={() => setActiveSubTab('ABSENCE')}
             className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-2 ${
               activeSubTab === 'ABSENCE'
-                ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20'
+                ? 'bg-marca-escura text-white shadow-sm'
                 : 'text-tinta-2 hover:text-tinta hover:bg-superficie-2'
             }`}
           >
@@ -316,7 +316,7 @@ export const CatAndAbsenceTab: React.FC<CatAndAbsenceTabProps> = ({ selectedClie
               type="button"
               id="add-cat-btn"
               onClick={() => setIsCatModalOpen(true)}
-              className="px-3.5 py-1.5 bg-rose-500 hover:bg-rose-400 text-slate-950 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 shadow-sm"
+              className="px-3.5 py-1.5 bg-rose-100 hover:bg-rose-200 text-rose-900 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 shadow-sm border border-rose-200"
             >
               <Plus className="w-4 h-4" />
               Emitir Nova CAT (S-2210)
@@ -326,7 +326,7 @@ export const CatAndAbsenceTab: React.FC<CatAndAbsenceTabProps> = ({ selectedClie
               type="button"
               id="add-absence-btn"
               onClick={() => setIsAbsenceModalOpen(true)}
-              className="px-3.5 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 shadow-sm"
+              className="px-3.5 py-1.5 bg-amber-100 hover:bg-amber-200 text-amber-900 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 shadow-sm border border-amber-200"
             >
               <Plus className="w-4 h-4" />
               Lançar Afastamento (S-2230)
@@ -355,7 +355,7 @@ export const CatAndAbsenceTab: React.FC<CatAndAbsenceTabProps> = ({ selectedClie
               <div 
                 key={cat.id} 
                 id={`cat-card-${cat.id}`}
-                className="bg-superficie border border-borda rounded-xl p-5 space-y-4 shadow-lg"
+                className="bg-superficie border border-borda rounded-xl p-5 space-y-4 shadow-sm"
               >
                 <div className="flex items-start justify-between">
                   <div>
@@ -413,7 +413,7 @@ export const CatAndAbsenceTab: React.FC<CatAndAbsenceTabProps> = ({ selectedClie
                     <button
                       type="button"
                       onClick={() => handleTransmitCat(cat.id)}
-                      className="px-3 py-1.5 bg-rose-500 hover:bg-rose-400 text-slate-950 font-bold rounded-lg transition-all flex items-center gap-1 text-xs"
+                      className="px-3 py-1.5 bg-rose-100 hover:bg-rose-200 text-rose-900 font-bold rounded-lg transition-all flex items-center gap-1 text-xs border border-rose-200"
                     >
                       <Send className="w-3.5 h-3.5" />
                       Preparar S-2210 para envio
@@ -432,7 +432,7 @@ export const CatAndAbsenceTab: React.FC<CatAndAbsenceTabProps> = ({ selectedClie
       )}
 
       {activeSubTab === 'ABSENCE' && (
-        <div className="bg-superficie border border-borda rounded-xl overflow-hidden shadow-lg" id="absences-table-container">
+        <div className="bg-superficie border border-borda rounded-xl overflow-hidden shadow-sm" id="absences-table-container">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs text-tinta">
               <thead className="bg-fundo text-tinta-2 uppercase text-[10px] tracking-wider border-b border-borda">
@@ -480,7 +480,7 @@ export const CatAndAbsenceTab: React.FC<CatAndAbsenceTabProps> = ({ selectedClie
                         <button
                           type="button"
                           onClick={() => handleTransmitAbsence(abs.id)}
-                          className="px-2.5 py-1 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded text-[11px] transition-colors"
+                          className="px-2.5 py-1 bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold rounded text-[11px] transition-colors border border-amber-200"
                         >
                           Preparar S-2230 para envio
                         </button>
@@ -496,7 +496,7 @@ export const CatAndAbsenceTab: React.FC<CatAndAbsenceTabProps> = ({ selectedClie
 
       {isCatModalOpen && (
         <div className="fixed inset-0 bg-fundo backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-superficie border border-borda rounded-2xl max-w-2xl w-full p-6 space-y-4 shadow-2xl animate-in fade-in zoom-in-95 duration-150 max-h-[90vh] overflow-y-auto">
+          <div className="bg-superficie border border-borda rounded-2xl max-w-2xl w-full p-6 space-y-4 shadow-sm animate-in fade-in zoom-in-95 duration-150 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-borda pb-3">
               <h3 className="text-base font-bold text-tinta flex items-center gap-2">
                 <AlertOctagon className="w-5 h-5 text-rose-700" />
@@ -670,7 +670,7 @@ export const CatAndAbsenceTab: React.FC<CatAndAbsenceTabProps> = ({ selectedClie
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-rose-500 hover:bg-rose-400 text-slate-950 font-bold rounded-lg shadow-md"
+                  className="px-4 py-2 bg-rose-100 hover:bg-rose-200 text-rose-900 font-bold rounded-lg shadow-sm border border-rose-200"
                 >
                   Emitir CAT & Gerar S-2210
                 </button>
@@ -682,7 +682,7 @@ export const CatAndAbsenceTab: React.FC<CatAndAbsenceTabProps> = ({ selectedClie
 
       {isAbsenceModalOpen && (
         <div className="fixed inset-0 bg-fundo backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-superficie border border-borda rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl animate-in fade-in zoom-in-95 duration-150">
+          <div className="bg-superficie border border-borda rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-sm animate-in fade-in zoom-in-95 duration-150">
             <div className="flex items-center justify-between border-b border-borda pb-3">
               <h3 className="text-base font-bold text-tinta flex items-center gap-2">
                 <BedDouble className="w-5 h-5 text-amber-700" />
@@ -812,7 +812,7 @@ export const CatAndAbsenceTab: React.FC<CatAndAbsenceTabProps> = ({ selectedClie
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-lg shadow-md"
+                  className="px-4 py-2 bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold rounded-lg shadow-sm border border-amber-200"
                 >
                   Salvar Afastamento & Gerar S-2230
                 </button>

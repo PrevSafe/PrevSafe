@@ -82,9 +82,9 @@ export const OperationalDashboard: React.FC<{ onNavigate: (view: string) => void
   return (
     <div className="space-y-6 pb-12">
       {/* Header Bento Card */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-superficie border border-borda rounded-3xl p-6 shadow-xl">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-superficie border border-borda rounded-3xl p-6 shadow-sm">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-blue-500/10 border border-blue-500/20 rounded-2xl flex items-center justify-center text-blue-700">
+          <div className="w-10 h-10 bg-teal-500/10 border border-teal-500/20 rounded-2xl flex items-center justify-center text-teal-800">
             <CheckSquare className="w-5 h-5" />
           </div>
           <div>
@@ -112,7 +112,7 @@ export const OperationalDashboard: React.FC<{ onNavigate: (view: string) => void
           </button>
           <button 
             onClick={() => onNavigate('technician-field')}
-            className="px-4 py-2.5 bg-gradient-to-r from-blue-700 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-2xl text-xs font-bold shadow-lg shadow-blue-950/40 transition flex items-center space-x-1.5"
+            className="bg-teal-700 px-4 py-2.5 text-white rounded-2xl text-xs font-bold shadow-sm transition flex items-center space-x-1.5"
           >
             <HardHat className="w-4 h-4" />
             <span>Abrir Modo Campo PWA</span>
@@ -122,20 +122,20 @@ export const OperationalDashboard: React.FC<{ onNavigate: (view: string) => void
 
       {/* Operational KPIs in Bento Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-5">
-        <div className="bg-superficie p-5 rounded-3xl border border-borda shadow-xl flex flex-col justify-between">
+        <div className="bg-superficie p-5 rounded-3xl border border-borda shadow-sm flex flex-col justify-between">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-tinta-2 uppercase tracking-wider">Tarefas Ativas</span>
-            <div className="p-2.5 rounded-2xl bg-blue-500/10 text-blue-700 border border-blue-500/20">
+            <div className="p-2.5 rounded-2xl bg-teal-500/10 text-teal-800 border border-teal-500/20">
               <CheckSquare className="w-4 h-4" />
             </div>
           </div>
           <div>
             <div className="text-3xl font-extrabold text-tinta mt-3">{todayTasks.length}</div>
-            <div className="text-[11px] text-blue-700 mt-1">Em execução pela equipe</div>
+            <div className="text-[11px] text-teal-700 mt-1">Em execução pela equipe</div>
           </div>
         </div>
 
-        <div className="bg-superficie p-5 rounded-3xl border border-borda shadow-xl flex flex-col justify-between">
+        <div className="bg-superficie p-5 rounded-3xl border border-borda shadow-sm flex flex-col justify-between">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-tinta-2 uppercase tracking-wider">Tarefas Atrasadas</span>
             <div className="p-2.5 rounded-2xl bg-rose-500/10 text-rose-700 border border-rose-500/20">
@@ -148,7 +148,7 @@ export const OperationalDashboard: React.FC<{ onNavigate: (view: string) => void
           </div>
         </div>
 
-        <div className="bg-superficie p-5 rounded-3xl border border-borda shadow-xl flex flex-col justify-between">
+        <div className="bg-superficie p-5 rounded-3xl border border-borda shadow-sm flex flex-col justify-between">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-tinta-2 uppercase tracking-wider">Aguardando Cliente</span>
             <div className="p-2.5 rounded-2xl bg-amber-500/10 text-amber-800 border border-amber-500/20">
@@ -161,16 +161,16 @@ export const OperationalDashboard: React.FC<{ onNavigate: (view: string) => void
           </div>
         </div>
 
-        <div className="bg-superficie p-5 rounded-3xl border border-borda shadow-xl flex flex-col justify-between">
+        <div className="bg-superficie p-5 rounded-3xl border border-borda shadow-sm flex flex-col justify-between">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-tinta-2 uppercase tracking-wider">OS Vencendo (7d)</span>
-            <div className="p-2.5 rounded-2xl bg-purple-500/10 text-purple-700 border border-purple-500/20">
+            <div className="p-2.5 rounded-2xl bg-teal-500/10 text-teal-800 border border-teal-500/20">
               <Clock className="w-4 h-4" />
             </div>
           </div>
           <div>
-            <div className="text-3xl font-extrabold text-purple-700 mt-3">{expiringSoonOS.length}</div>
-            <div className="text-[11px] text-purple-700 mt-1">Em fase final de elaboração</div>
+            <div className="text-3xl font-extrabold text-teal-700 mt-3">{expiringSoonOS.length}</div>
+            <div className="text-[11px] text-teal-700 mt-1">Em fase final de elaboração</div>
           </div>
         </div>
       </div>
@@ -178,7 +178,7 @@ export const OperationalDashboard: React.FC<{ onNavigate: (view: string) => void
       {/* Main Operational Grids in Bento Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         {/* Left Column: Urgent Tasks & Next Milestones */}
-        <div className="bg-superficie p-6 rounded-3xl border border-borda shadow-xl lg:col-span-2 space-y-4 flex flex-col justify-between">
+        <div className="bg-superficie p-6 rounded-3xl border border-borda shadow-sm lg:col-span-2 space-y-4 flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between pb-3 border-b border-borda">
               <div>
@@ -198,7 +198,7 @@ export const OperationalDashboard: React.FC<{ onNavigate: (view: string) => void
                 >
                   <div className="space-y-1">
                     <div className="flex items-center space-x-2">
-                      <span className="font-mono text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-700 border border-indigo-500/20">
+                      <span className="font-mono text-[10px] font-bold px-2 py-0.5 rounded-full bg-teal-500/10 text-teal-800 border border-teal-500/20">
                         {item.os.os_number}
                       </span>
                       <span className="text-xs font-bold text-tinta">{item.task.name}</span>
@@ -241,7 +241,7 @@ export const OperationalDashboard: React.FC<{ onNavigate: (view: string) => void
         </div>
 
         {/* Right Column: Workload per Technical Specialist */}
-        <div className="bg-superficie p-6 rounded-3xl border border-borda shadow-xl space-y-4 flex flex-col justify-between">
+        <div className="bg-superficie p-6 rounded-3xl border border-borda shadow-sm space-y-4 flex flex-col justify-between">
           <div>
             <h2 className="text-base font-bold text-tinta">Carga de Trabalho por Técnico</h2>
             <p className="text-xs text-tinta-2 mt-0.5">Distribuição de OS e vistorias</p>
@@ -252,7 +252,7 @@ export const OperationalDashboard: React.FC<{ onNavigate: (view: string) => void
               <div key={idx} className="p-4 bg-fundo rounded-2xl border border-borda space-y-2.5">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2.5">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-marca-escura to-teal-600 text-white flex items-center justify-center font-bold text-xs shadow-md">
+                    <div className="bg-marca-escura w-8 h-8 rounded-full text-white flex items-center justify-center font-bold text-xs shadow-md">
                       {tw.tech.full_name.charAt(0)}
                     </div>
                     <div>

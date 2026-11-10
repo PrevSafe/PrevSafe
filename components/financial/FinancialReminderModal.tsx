@@ -79,7 +79,7 @@ export const FinancialReminderModal: React.FC<FinancialReminderModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 bg-fundo backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-      <div className="bg-superficie border border-borda w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+      <div className="bg-superficie border border-borda w-full max-w-lg rounded-2xl shadow-sm overflow-hidden animate-in fade-in zoom-in-95 duration-200">
         {/* Header */}
         <div className="p-4 border-b border-borda bg-marca-suave flex items-center justify-between">
           <div className="flex items-center space-x-2.5">
@@ -106,7 +106,7 @@ export const FinancialReminderModal: React.FC<FinancialReminderModalProps> = ({
             <div className="flex items-center justify-between text-[11px]">
               <span className="text-tinta-2">Destinatário:</span>
               <span className="font-bold text-tinta flex items-center space-x-1">
-                <Building className="w-3.5 h-3.5 text-blue-700" />
+                <Building className="w-3.5 h-3.5 text-teal-700" />
                 <span>{recipientName}</span>
               </span>
             </div>
@@ -144,11 +144,11 @@ export const FinancialReminderModal: React.FC<FinancialReminderModalProps> = ({
                 onClick={() => setChannel('EMAIL')}
                 className={`p-2.5 rounded-xl border flex flex-col items-center justify-center space-y-1 transition ${
                   channel === 'EMAIL'
-                    ? 'bg-blue-500/20 border-blue-500 text-blue-700 font-bold'
+                    ? 'bg-teal-500/20 border-teal-500 text-teal-800 font-bold'
                     : 'bg-fundo border-borda text-tinta-2 hover:border-borda'
                 }`}
               >
-                <Mail className="w-4 h-4 text-blue-700" />
+                <Mail className="w-4 h-4 text-teal-700" />
                 <span className="text-[11px]">E-mail</span>
               </button>
 
@@ -188,7 +188,7 @@ export const FinancialReminderModal: React.FC<FinancialReminderModalProps> = ({
               type="button"
               disabled={isSending}
               onClick={handleSend}
-              className="px-4 py-2 rounded-xl bg-marca hover:bg-marca-escura text-white font-semibold shadow-lg shadow-emerald-950/40 flex items-center space-x-1.5 transition active:scale-95"
+              className="px-4 py-2 rounded-xl bg-marca hover:bg-marca-escura text-white font-semibold shadow-sm flex items-center space-x-1.5 transition active:scale-95"
             >
               <Send className="w-3.5 h-3.5" />
               <span>{isSending ? 'Abrindo...' : 'Abrir mensagem'}</span>

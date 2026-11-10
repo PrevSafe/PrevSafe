@@ -313,7 +313,7 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
   return (
     <div id="service-orders-view-container" className="space-y-6 pb-12">
       {/* Header Bento Card */}
-      <div id="os-header-card" className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-superficie border border-borda rounded-3xl p-6 shadow-xl">
+      <div id="os-header-card" className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-superficie border border-borda rounded-3xl p-6 shadow-sm">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-marca-suave border border-marca-escura rounded-2xl flex items-center justify-center text-marca-escura">
             <Briefcase className="w-5 h-5" />
@@ -331,10 +331,10 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
               setPdfInitialOS(null);
               setShowPdfModal(true);
             }}
-            className="px-3.5 py-2 bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-700 border border-indigo-500/30 rounded-2xl text-xs font-bold transition flex items-center space-x-1.5 shadow-sm"
+            className="px-3.5 py-2 bg-teal-600/20 hover:bg-teal-600/30 text-teal-900 border border-teal-500/30 rounded-2xl text-xs font-bold transition flex items-center space-x-1.5 shadow-sm"
             title="Exportar Resumo Consolidado de Ordens de Serviço em PDF"
           >
-            <Download className="w-4 h-4 text-indigo-700" />
+            <Download className="w-4 h-4 text-teal-700" />
             <span>Exportar Resumo (PDF)</span>
           </button>
 
@@ -350,7 +350,7 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
           <button 
             id="btn-new-service-order"
             onClick={handleOpenNewOS}
-            className="px-4 py-2 bg-gradient-to-r from-marca-escura to-teal-600 hover:from-marca-escura hover:to-teal-700 text-white rounded-2xl text-xs font-bold shadow-lg shadow-emerald-950/40 transition flex items-center space-x-1.5"
+            className="bg-marca-escura px-4 py-2 text-white rounded-2xl text-xs font-bold shadow-sm transition flex items-center space-x-1.5"
             title="Criar Nova Ordem de Serviço (Ctrl + N)"
           >
             <Plus className="w-4 h-4" />
@@ -368,26 +368,26 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
           <div className="text-[10px] font-bold uppercase tracking-wider text-tinta-2">Total de OS</div>
           <div className="text-xl font-bold text-tinta mt-1">{totalCount}</div>
         </div>
-        <div className="p-3.5 bg-superficie border border-indigo-500/20 rounded-2xl">
-          <div className="text-[10px] font-bold uppercase tracking-wider text-indigo-700">Em Execução</div>
-          <div className="text-xl font-bold text-indigo-700 mt-1">{inProgressCount}</div>
+        <div className="p-3.5 bg-superficie border border-borda rounded-2xl">
+          <div className="text-[10px] font-bold uppercase tracking-wider text-teal-700">Em Execução</div>
+          <div className="text-xl font-bold text-teal-700 mt-1">{inProgressCount}</div>
         </div>
-        <div className="p-3.5 bg-superficie border border-purple-500/20 rounded-2xl">
-          <div className="text-[10px] font-bold uppercase tracking-wider text-purple-700">Aguardando Aceite</div>
-          <div className="text-xl font-bold text-purple-700 mt-1">{waitingAcceptanceCount}</div>
+        <div className="p-3.5 bg-superficie border border-borda rounded-2xl">
+          <div className="text-[10px] font-bold uppercase tracking-wider text-teal-700">Aguardando Aceite</div>
+          <div className="text-xl font-bold text-teal-700 mt-1">{waitingAcceptanceCount}</div>
         </div>
-        <div className="p-3.5 bg-superficie border border-amber-500/20 rounded-2xl">
+        <div className="p-3.5 bg-superficie border border-amber-200 rounded-2xl">
           <div className="text-[10px] font-bold uppercase tracking-wider text-amber-700">SLA Pausado</div>
           <div className="text-xl font-bold text-amber-700 mt-1">{pausedCount}</div>
         </div>
-        <div className="p-3.5 bg-superficie border border-marca-escura rounded-2xl">
+        <div className="p-3.5 bg-superficie border border-borda rounded-2xl">
           <div className="text-[10px] font-bold uppercase tracking-wider text-marca-escura">Concluídas</div>
           <div className="text-xl font-bold text-marca-escura mt-1">{completedCount}</div>
         </div>
       </div>
 
       {/* Filter and Search Bar */}
-      <div id="os-filter-bar" className="p-4 bg-superficie border border-borda rounded-3xl shadow-xl flex flex-col md:flex-row items-center justify-between gap-3">
+      <div id="os-filter-bar" className="p-4 bg-superficie border border-borda rounded-3xl shadow-sm flex flex-col md:flex-row items-center justify-between gap-3">
         <div className="relative w-full md:w-80">
           <Search className="w-4 h-4 text-tinta-2 absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
@@ -396,7 +396,7 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
             placeholder="Buscar por OS, cliente, laudo ou responsável..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-3 py-2 bg-fundo border border-borda rounded-2xl text-xs text-tinta placeholder-tinta-3 focus:outline-none focus:border-indigo-500"
+            className="w-full pl-10 pr-3 py-2 bg-fundo border border-borda rounded-2xl text-xs text-tinta placeholder-tinta-3 focus:outline-none focus:border-teal-500"
           />
         </div>
 
@@ -405,7 +405,7 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
             id="select-status-filter"
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-3 py-2 bg-fundo border border-borda rounded-2xl text-xs font-medium text-tinta focus:outline-none focus:border-indigo-500"
+            className="px-3 py-2 bg-fundo border border-borda rounded-2xl text-xs font-medium text-tinta focus:outline-none focus:border-teal-500"
           >
             <option value="ALL">Status: Todos</option>
             <option value="IN_PROGRESS">Em Andamento</option>
@@ -420,7 +420,7 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
             id="select-priority-filter"
             value={priorityFilter}
             onChange={(e) => setPriorityFilter(e.target.value)}
-            className="px-3 py-2 bg-fundo border border-borda rounded-2xl text-xs font-medium text-tinta focus:outline-none focus:border-indigo-500"
+            className="px-3 py-2 bg-fundo border border-borda rounded-2xl text-xs font-medium text-tinta focus:outline-none focus:border-teal-500"
           >
             <option value="ALL">Prioridade: Todas</option>
             <option value="URGENT">Urgente</option>
@@ -433,7 +433,7 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
             id="select-client-filter"
             value={clientFilter}
             onChange={(e) => setClientFilter(e.target.value)}
-            className="px-3 py-2 bg-fundo border border-borda rounded-2xl text-xs font-medium text-tinta focus:outline-none focus:border-indigo-500"
+            className="px-3 py-2 bg-fundo border border-borda rounded-2xl text-xs font-medium text-tinta focus:outline-none focus:border-teal-500"
           >
             <option value="ALL">Cliente: Todos</option>
             {clients.map(c => (
@@ -457,7 +457,7 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
                   setPriorityFilter('ALL');
                   setClientFilter('ALL');
                 }}
-                className="text-[10px] text-indigo-700 hover:underline lowercase font-normal"
+                className="text-[10px] text-teal-700 hover:underline lowercase font-normal"
               >
                 limpar filtros
               </button>
@@ -482,7 +482,7 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
                     onClick={() => setSelectedOSId(os.id)}
                     className={`p-4 rounded-3xl border cursor-pointer transition flex flex-col justify-between ${
                       isSelected 
-                        ? 'bg-superficie border-marca-escura shadow-lg shadow-emerald-500/10 ring-1 ring-marca-escura' 
+                        ? 'bg-superficie border-borda shadow-sm ring-1 ring-marca-escura' 
                         : 'bg-superficie border-borda hover:border-borda hover:bg-superficie'
                     }`}
                   >
@@ -490,7 +490,7 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
                       <div className="flex items-start justify-between">
                         <div>
                           <div className="flex items-center space-x-2">
-                            <span className="font-mono text-xs font-bold text-indigo-700">{os.os_number}</span>
+                            <span className="font-mono text-xs font-bold text-teal-700">{os.os_number}</span>
                             {os.sla_is_paused && (
                               <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-800 border border-amber-500/20 flex items-center">
                                 <PauseCircle className="w-3 h-3 mr-0.5" /> SLA Pausado
@@ -507,8 +507,8 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
                         </div>
                         <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${
                           os.status === 'ACCEPTED' || os.status === 'COMPLETED' ? 'bg-marca-suave text-marca-escura border-marca-escura' :
-                          os.status === 'WAITING_ACCEPTANCE' ? 'bg-purple-500/10 text-purple-700 border-purple-500/20' :
-                          os.status === 'IN_PROGRESS' ? 'bg-indigo-500/10 text-indigo-700 border-indigo-500/20' :
+                          os.status === 'WAITING_ACCEPTANCE' ? 'bg-teal-500/10 text-teal-800 border-teal-500/20' :
+                          os.status === 'IN_PROGRESS' ? 'bg-teal-500/10 text-teal-800 border-teal-500/20' :
                           os.status === 'REWORK' ? 'bg-rose-500/10 text-rose-700 border-rose-500/20' : 'bg-superficie-2 text-tinta border-borda'
                         }`}>
                           {os.status}
@@ -525,7 +525,7 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
                       <div className="w-full h-1.5 bg-fundo rounded-full overflow-hidden border border-borda">
                         <div 
                           className={`h-full rounded-full transition-all duration-300 ${
-                            os.progress === 100 ? 'bg-marca' : 'bg-indigo-500'
+                            os.progress === 100 ? 'bg-marca' : 'bg-teal-500'
                           }`} 
                           style={{ width: `${os.progress}%` }} 
                         />
@@ -540,13 +540,13 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
 
         {/* Right: Selected OS Workspace */}
         {selectedOS ? (
-          <div id="os-workspace-card" className="lg:col-span-8 bg-superficie rounded-3xl border border-borda shadow-xl overflow-hidden flex flex-col justify-between">
+          <div id="os-workspace-card" className="lg:col-span-8 bg-superficie rounded-3xl border border-borda shadow-sm overflow-hidden flex flex-col justify-between">
             {/* Top OS Summary Bar & Actions */}
             <div className="p-6 border-b border-borda bg-superficie space-y-4">
               <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
                 <div>
                   <div className="flex items-center space-x-2">
-                    <span className="font-mono text-sm font-bold text-indigo-700">{selectedOS.os_number}</span>
+                    <span className="font-mono text-sm font-bold text-teal-700">{selectedOS.os_number}</span>
                     <span className="text-tinta-2">•</span>
                     <span className="text-xs text-tinta font-medium">{selectedClient?.trade_name} (CNPJ {selectedClient?.document_number})</span>
                   </div>
@@ -556,7 +556,7 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
                     <span>•</span>
                     <span>Prazo: <strong className="font-mono text-tinta">{formatDate(selectedOS.due_date)}</strong></span>
                     <span>•</span>
-                    <span>Prioridade: <span className="font-bold text-indigo-700">{selectedOS.priority}</span></span>
+                    <span>Prioridade: <span className="font-bold text-teal-700">{selectedOS.priority}</span></span>
                   </div>
                 </div>
 
@@ -570,7 +570,7 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
                         setShowPdfModal(true);
                       }
                     }}
-                    className="px-3 py-1.5 bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-700 border border-indigo-500/30 rounded-xl text-xs font-semibold transition flex items-center space-x-1.5"
+                    className="px-3 py-1.5 bg-teal-500/10 hover:bg-teal-500/20 text-teal-800 border border-teal-500/30 rounded-xl text-xs font-semibold transition flex items-center space-x-1.5"
                     title="Exportar Dossiê Técnico desta O.S. em PDF"
                   >
                     <Download className="w-3.5 h-3.5" />
@@ -613,7 +613,7 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
                     <button
                       id="btn-deliver-os"
                       onClick={handleDeliver}
-                      className="px-3.5 py-1.5 bg-gradient-to-r from-purple-700 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-xs font-bold rounded-xl shadow-lg shadow-purple-950/40 transition flex items-center space-x-1.5"
+                      className="bg-teal-700 px-3.5 py-1.5 text-white text-xs font-bold rounded-xl shadow-sm transition flex items-center space-x-1.5"
                     >
                       <Send className="w-3.5 h-3.5" />
                       <span>Realizar Entrega Técnica (RN007)</span>
@@ -633,7 +633,7 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
                       <button
                         id="btn-confirm-accept"
                         onClick={handleAccept}
-                        className="px-3.5 py-1.5 bg-marca hover:bg-marca-escura text-white text-xs font-bold rounded-xl shadow-lg shadow-emerald-950/40 transition flex items-center space-x-1.5"
+                        className="px-3.5 py-1.5 bg-marca hover:bg-marca-escura text-white text-xs font-bold rounded-xl shadow-sm transition flex items-center space-x-1.5"
                       >
                         <CheckCircle2 className="w-3.5 h-3.5" />
                         <span>Confirmar Aceite Formal (RN008)</span>
@@ -696,7 +696,7 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
                     <button
                       id="btn-add-task-to-stage"
                       onClick={() => handleOpenAddTask()}
-                      className="px-3 py-1.5 bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-700 border border-indigo-500/30 rounded-xl text-xs font-semibold transition flex items-center space-x-1"
+                      className="px-3 py-1.5 bg-teal-600/20 hover:bg-teal-600/30 text-teal-900 border border-teal-500/30 rounded-xl text-xs font-semibold transition flex items-center space-x-1"
                     >
                       <Plus className="w-3.5 h-3.5" />
                       <span>Adicionar Tarefa</span>
@@ -714,7 +714,7 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
                           key={stage.id} 
                           id={`stage-card-${stage.id}`}
                           className={`p-4 rounded-2xl border transition ${
-                            isInProgress ? 'bg-indigo-500/10 border-indigo-500/40 shadow-sm' :
+                            isInProgress ? 'bg-teal-500/10 border-teal-500/40 shadow-sm' :
                             isCompleted ? 'bg-marca-suave border-marca-escura' :
                             isWaitingClient ? 'bg-amber-500/10 border-amber-500/30' :
                             'bg-fundo border-borda text-tinta-2'
@@ -723,13 +723,13 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
                           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                             <div className="space-y-1">
                               <div className="flex items-center space-x-2">
-                                <span className="text-xs font-mono font-bold bg-fundo px-2 py-0.5 rounded-lg border border-borda text-indigo-700">
+                                <span className="text-xs font-mono font-bold bg-fundo px-2 py-0.5 rounded-lg border border-borda text-teal-700">
                                   Etapa {stage.order_index + 1}
                                 </span>
                                 <h4 className="text-xs font-bold text-tinta">{stage.name}</h4>
                                 <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
                                   isCompleted ? 'bg-marca-suave text-marca-escura border-marca-escura' :
-                                  isInProgress ? 'bg-indigo-500/10 text-indigo-700 border-indigo-500/20' :
+                                  isInProgress ? 'bg-teal-500/10 text-teal-800 border-teal-500/20' :
                                   isWaitingClient ? 'bg-amber-500/10 text-amber-800 border-amber-500/20' : 'bg-superficie-2 text-tinta-2 border-borda'
                                 }`}>
                                   {stage.status}
@@ -832,7 +832,7 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
                       </button>
                       <button 
                         onClick={() => onNavigate('technician-field')}
-                        className="text-xs text-indigo-700 font-semibold hover:underline"
+                        className="text-xs text-teal-700 font-semibold hover:underline"
                       >
                         Abrir no App de Campo PWA →
                       </button>
@@ -884,7 +884,7 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
                     <button
                       id="btn-new-request-os"
                       onClick={() => setShowNewRequestModal(true)}
-                      className="px-3.5 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 rounded-xl text-xs font-bold shadow-md transition flex items-center space-x-1"
+                      className="px-3.5 py-2 bg-amber-100 hover:bg-amber-200 text-amber-900 rounded-xl text-xs font-bold shadow-sm transition flex items-center space-x-1 border border-amber-200"
                     >
                       <Plus className="w-3.5 h-3.5" />
                       <span>Nova Pendência</span>
@@ -990,7 +990,7 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
                       <div className="text-amber-700">• [{formatDate(selectedOS.updated_at)}] SLA Pausado: {selectedOS.sla_pause_reason}</div>
                     )}
                     {selectedOS.status === 'WAITING_ACCEPTANCE' && (
-                      <div className="text-purple-700">• [{formatDate(selectedOS.updated_at)}] Entrega Técnica realizada. Aguardando validação do cliente.</div>
+                      <div className="text-teal-700">• [{formatDate(selectedOS.updated_at)}] Entrega Técnica realizada. Aguardando validação do cliente.</div>
                     )}
                     {selectedOS.status === 'COMPLETED' && (
                       <div className="text-marca-escura">• [{formatDate(selectedOS.updated_at)}] Aceite formal emitido pelo cliente. OS Concluída com sucesso.</div>
@@ -1009,7 +1009,7 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
       {/* Modal: New Service Order (Create) */}
       {showNewOSModal && (
         <div id="modal-new-os" className="fixed inset-0 bg-fundo backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-superficie rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-borda text-tinta">
+          <div className="bg-superficie rounded-3xl max-w-lg w-full p-6 shadow-sm border border-borda text-tinta">
             <div className="flex items-center justify-between border-b border-borda pb-3 mb-4">
               <div className="flex items-center space-x-2">
                 <div className="p-2 bg-marca-suave rounded-xl text-marca-escura border border-marca-escura">
@@ -1030,7 +1030,7 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
                   required
                   value={osForm.client_id}
                   onChange={(e) => setOsForm({ ...osForm, client_id: e.target.value })}
-                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                 >
                   {clients.map(c => (
                     <option key={c.id} value={c.id}>{c.trade_name} ({c.document_number})</option>
@@ -1050,7 +1050,7 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
                       title: tmpl ? `Elaboração do ${tmpl.name} 2026` : osForm.title 
                     });
                   }}
-                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                 >
                   {serviceTemplates.map(t => (
                     <option key={t.id} value={t.id}>{t.name} ({t.category}) - {t.default_duration_days} dias</option>
@@ -1065,7 +1065,7 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
                   required
                   value={osForm.title}
                   onChange={(e) => setOsForm({ ...osForm, title: e.target.value })}
-                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                 />
               </div>
 
@@ -1075,7 +1075,7 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
                   <select
                     value={osForm.priority}
                     onChange={(e) => setOsForm({ ...osForm, priority: e.target.value as PriorityLevel })}
-                    className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                   >
                     <option value="LOW">Baixa</option>
                     <option value="MEDIUM">Média</option>
@@ -1091,7 +1091,7 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
                     required
                     value={osForm.due_date}
                     onChange={(e) => setOsForm({ ...osForm, due_date: e.target.value })}
-                    className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                   />
                 </div>
               </div>
@@ -1103,7 +1103,7 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
                   value={osForm.technical_responsible_name}
                   onChange={(e) => setOsForm({ ...osForm, technical_responsible_name: e.target.value })}
                   placeholder="Ex: Eng. Eduardo Vasconcelos"
-                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                 />
               </div>
 
@@ -1130,10 +1130,10 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
       {/* Modal: Edit Service Order (Update) */}
       {showEditOSModal && selectedOS && (
         <div id="modal-edit-os" className="fixed inset-0 bg-fundo backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-superficie rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-borda text-tinta">
+          <div className="bg-superficie rounded-3xl max-w-lg w-full p-6 shadow-sm border border-borda text-tinta">
             <div className="flex items-center justify-between border-b border-borda pb-3 mb-4">
               <div className="flex items-center space-x-2">
-                <div className="p-2 bg-indigo-500/10 rounded-xl text-indigo-700 border border-indigo-500/20">
+                <div className="p-2 bg-teal-500/10 rounded-xl text-teal-800 border border-teal-500/20">
                   <Edit2 className="w-5 h-5" />
                 </div>
                 <div>
@@ -1152,7 +1152,7 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
                   required
                   value={editOsForm.title}
                   onChange={(e) => setEditOsForm({ ...editOsForm, title: e.target.value })}
-                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                 />
               </div>
 
@@ -1162,7 +1162,7 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
                   <select
                     value={editOsForm.priority}
                     onChange={(e) => setEditOsForm({ ...editOsForm, priority: e.target.value as PriorityLevel })}
-                    className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                   >
                     <option value="LOW">Baixa</option>
                     <option value="MEDIUM">Média</option>
@@ -1178,7 +1178,7 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
                     required
                     value={editOsForm.due_date}
                     onChange={(e) => setEditOsForm({ ...editOsForm, due_date: e.target.value })}
-                    className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                   />
                 </div>
               </div>
@@ -1190,7 +1190,7 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
                     type="text"
                     value={editOsForm.technical_responsible_name}
                     onChange={(e) => setEditOsForm({ ...editOsForm, technical_responsible_name: e.target.value })}
-                    className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                   />
                 </div>
 
@@ -1200,7 +1200,7 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
                     type="text"
                     value={editOsForm.manager_name}
                     onChange={(e) => setEditOsForm({ ...editOsForm, manager_name: e.target.value })}
-                    className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                   />
                 </div>
               </div>
@@ -1211,7 +1211,7 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
                   rows={3}
                   value={editOsForm.description}
                   onChange={(e) => setEditOsForm({ ...editOsForm, description: e.target.value })}
-                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                 />
               </div>
 
@@ -1225,7 +1225,7 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-bold shadow-md"
+                  className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl font-bold shadow-md"
                 >
                   Salvar Alterações
                 </button>
@@ -1238,7 +1238,7 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
       {/* Modal: Delete Service Order (Delete) */}
       {showDeleteOSModal && selectedOS && (
         <div id="modal-delete-os" className="fixed inset-0 bg-fundo backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-superficie rounded-3xl max-w-md w-full p-6 shadow-2xl border border-rose-500/20 text-tinta space-y-4">
+          <div className="bg-superficie rounded-3xl max-w-md w-full p-6 shadow-sm border border-rose-200 text-tinta space-y-4">
             <div className="flex items-center space-x-3 text-rose-700">
               <div className="p-3 bg-rose-500/10 rounded-2xl border border-rose-500/20">
                 <AlertTriangle className="w-6 h-6" />
@@ -1276,7 +1276,7 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
       {/* Modal: Add Task to Stage */}
       {showNewTaskModal && selectedOS && (
         <div id="modal-new-task" className="fixed inset-0 bg-fundo backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-superficie rounded-3xl max-w-md w-full p-6 shadow-2xl border border-borda text-tinta">
+          <div className="bg-superficie rounded-3xl max-w-md w-full p-6 shadow-sm border border-borda text-tinta">
             <div className="flex items-center justify-between border-b border-borda pb-3 mb-4">
               <h3 className="text-sm font-bold text-tinta">Adicionar Tarefa na Etapa</h3>
               <button onClick={() => setShowNewTaskModal(false)} className="text-tinta-2 hover:text-tinta">✕</button>
@@ -1288,7 +1288,7 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
                 <select
                   value={taskForm.stage_id}
                   onChange={(e) => setTaskForm({ ...taskForm, stage_id: e.target.value })}
-                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                 >
                   {selectedOS.stages.map((stg, idx) => (
                     <option key={stg.id} value={stg.id}>Etapa {idx + 1}: {stg.name}</option>
@@ -1303,7 +1303,7 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
                   required
                   value={taskForm.name}
                   onChange={(e) => setTaskForm({ ...taskForm, name: e.target.value })}
-                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                 />
               </div>
 
@@ -1313,7 +1313,7 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
                   rows={2}
                   value={taskForm.description}
                   onChange={(e) => setTaskForm({ ...taskForm, description: e.target.value })}
-                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                 />
               </div>
 
@@ -1340,7 +1340,7 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-bold shadow-md"
+                  className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl font-bold shadow-md"
                 >
                   Adicionar Tarefa
                 </button>
@@ -1353,7 +1353,7 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
       {/* Modal: Pause SLA */}
       {showSlaPauseModal && selectedOS && (
         <div id="modal-pause-sla" className="fixed inset-0 bg-fundo backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-superficie rounded-3xl max-w-md w-full p-6 shadow-2xl border border-amber-500/30 text-tinta">
+          <div className="bg-superficie rounded-3xl max-w-md w-full p-6 shadow-sm border border-amber-200 text-tinta">
             <div className="flex items-center justify-between border-b border-borda pb-3 mb-3">
               <h3 className="text-sm font-bold text-amber-700 flex items-center space-x-1.5">
                 <PauseCircle className="w-4 h-4" />
@@ -1382,7 +1382,7 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 rounded-xl font-bold shadow-md"
+                  className="px-4 py-2 bg-amber-100 hover:bg-amber-200 text-amber-900 rounded-xl font-bold shadow-sm border border-amber-200"
                 >
                   Confirmar Pausa de SLA
                 </button>
@@ -1395,7 +1395,7 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
       {/* Modal: Rework */}
       {showReworkModal && selectedOS && (
         <div id="modal-rework-os" className="fixed inset-0 bg-fundo backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-superficie rounded-3xl max-w-md w-full p-6 shadow-2xl border border-borda text-tinta">
+          <div className="bg-superficie rounded-3xl max-w-md w-full p-6 shadow-sm border border-borda text-tinta">
             <div className="flex items-center justify-between border-b border-borda pb-3 mb-3">
               <h3 className="text-sm font-bold text-tinta">Solicitar Retrabalho / Ajuste Técnico (RN009)</h3>
               <button onClick={() => setShowReworkModal(false)} className="text-tinta-2 hover:text-tinta">✕</button>
@@ -1434,7 +1434,7 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
       {/* Modal: New Request */}
       {showNewRequestModal && selectedOS && (
         <div id="modal-new-request-os" className="fixed inset-0 bg-fundo backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-superficie rounded-3xl max-w-md w-full p-6 shadow-2xl border border-borda text-tinta">
+          <div className="bg-superficie rounded-3xl max-w-md w-full p-6 shadow-sm border border-borda text-tinta">
             <div className="flex items-center justify-between border-b border-borda pb-3 mb-3">
               <h3 className="text-sm font-bold text-tinta">Criar Nova Pendência para o Cliente</h3>
               <button onClick={() => setShowNewRequestModal(false)} className="text-tinta-2 hover:text-tinta">✕</button>
@@ -1474,7 +1474,7 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 rounded-xl font-bold shadow-md"
+                  className="px-4 py-2 bg-amber-100 hover:bg-amber-200 text-amber-900 rounded-xl font-bold shadow-sm border border-amber-200"
                 >
                   Criar Pendência
                 </button>

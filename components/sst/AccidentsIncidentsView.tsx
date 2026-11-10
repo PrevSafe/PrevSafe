@@ -38,8 +38,7 @@ export const AccidentsIncidentsView: React.FC<AccidentsIncidentsViewProps> = ({ 
   return (
     <div className="space-y-6" id="accidents-incidents-workspace">
       {/* Top Header Card */}
-      <div className="bg-superficie border border-borda rounded-2xl p-6 relative overflow-hidden shadow-2xl">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-rose-600/10 via-amber-600/5 to-transparent rounded-full blur-3xl pointer-events-none" />
+      <div className="bg-superficie border border-borda rounded-2xl p-6 relative overflow-hidden shadow-sm">
 
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
           <div className="space-y-2">
@@ -125,8 +124,8 @@ export const AccidentsIncidentsView: React.FC<AccidentsIncidentsViewProps> = ({ 
           <div className="bg-superficie-2 rounded-xl p-3 border border-borda">
             <span className="text-[11px] font-medium text-tinta-2 block">Metodologia Aplicada</span>
             <div className="flex items-baseline gap-2 mt-1">
-              <span className="text-lg font-black text-cyan-700">NBR 14280</span>
-              <span className="text-[10px] text-cyan-700">TF • TG • 6M</span>
+              <span className="text-lg font-black text-teal-700">NBR 14280</span>
+              <span className="text-[10px] text-teal-700">TF • TG • 6M</span>
             </div>
           </div>
         </div>

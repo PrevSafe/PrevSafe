@@ -127,7 +127,7 @@ export const InteractiveVideoSimulator: React.FC<InteractiveVideoSimulatorProps>
         <div className="absolute inset-0 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:16px_16px] opacity-40 pointer-events-none" />
 
         {/* Top Simulated System App Bar */}
-        <div className="relative z-10 p-3 bg-superficie backdrop-blur rounded-xl border border-borda flex items-center justify-between shadow-lg">
+        <div className="relative z-10 p-3 bg-superficie backdrop-blur rounded-xl border border-borda flex items-center justify-between shadow-sm">
           <div className="flex items-center space-x-2.5">
             <div className="w-6 h-6 rounded-lg bg-marca flex items-center justify-center">
               <ShieldCheck className="w-4 h-4 text-tinta" />
@@ -148,7 +148,7 @@ export const InteractiveVideoSimulator: React.FC<InteractiveVideoSimulatorProps>
         {/* Dynamic Interactive Stage */}
         <div className="relative z-10 my-auto py-6 flex flex-col items-center justify-center text-center">
           {activeKeyframe.screenState.modalOpen ? (
-            <div className="w-full max-w-md p-5 bg-superficie border border-marca-escura rounded-2xl shadow-2xl text-left space-y-3 animate-in fade-in zoom-in-95 duration-200">
+            <div className="w-full max-w-md p-5 bg-superficie border border-borda rounded-2xl shadow-sm text-left space-y-3 animate-in fade-in zoom-in-95 duration-200">
               <div className="flex items-center justify-between pb-2 border-b border-borda">
                 <span className="text-xs font-bold text-tinta flex items-center space-x-1.5">
                   <Sparkles className="w-3.5 h-3.5 text-marca-escura" />
@@ -167,7 +167,7 @@ export const InteractiveVideoSimulator: React.FC<InteractiveVideoSimulatorProps>
               </div>
             </div>
           ) : (
-            <div className="w-full max-w-lg p-6 bg-superficie backdrop-blur rounded-2xl border border-borda shadow-xl space-y-4">
+            <div className="w-full max-w-lg p-6 bg-superficie backdrop-blur rounded-2xl border border-borda shadow-sm space-y-4">
               <div className="flex items-center justify-center space-x-2 text-marca-escura text-xs font-bold uppercase tracking-wider">
                 <Sparkles className="w-4 h-4" />
                 <span>{activeKeyframe.actionTitle}</span>
@@ -197,12 +197,12 @@ export const InteractiveVideoSimulator: React.FC<InteractiveVideoSimulatorProps>
           >
             <div className="relative">
               {/* Cursor Icon */}
-              <div className="p-1 rounded-full bg-marca text-slate-950 shadow-xl shadow-emerald-400/50 ring-2 ring-white animate-pulse">
+              <div className="p-1 rounded-full bg-marca text-slate-950 shadow-sm ring-2 ring-white animate-pulse">
                 <MousePointer className="w-4 h-4 fill-slate-950" />
               </div>
 
               {/* Cursor Action Label */}
-              <div className="absolute left-6 top-0 px-2 py-0.5 rounded bg-superficie text-marca-escura text-[10px] font-bold border border-marca-escura whitespace-nowrap shadow-lg">
+              <div className="absolute left-6 top-0 px-2 py-0.5 rounded bg-superficie text-marca-escura text-[10px] font-bold border border-borda whitespace-nowrap shadow-sm">
                 {activeKeyframe.cursorTarget.label}
               </div>
 
@@ -263,7 +263,7 @@ export const InteractiveVideoSimulator: React.FC<InteractiveVideoSimulatorProps>
           <div className="flex items-center space-x-2">
             <button 
               onClick={handlePlayPause}
-              className="p-2.5 rounded-xl bg-marca hover:bg-marca-escura text-white font-semibold transition active:scale-95 shadow-md shadow-emerald-950/40"
+              className="p-2.5 rounded-xl bg-marca hover:bg-marca-escura text-white font-semibold transition active:scale-95 shadow-md"
               title={isPlaying ? "Pausar Vídeo" : "Reproduzir Vídeo"}
             >
               {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 fill-white" />}

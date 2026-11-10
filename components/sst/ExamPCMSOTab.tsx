@@ -508,7 +508,7 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
             <CheckCircle2 className="w-5 h-5 text-teal-700" />
             <span className="font-semibold">{generatedS2220Success}</span>
           </div>
-          <span className="text-[11px] bg-teal-500 text-slate-950 font-bold px-2 py-1 rounded">S-2220 Criado</span>
+          <span className="bg-marca-escura text-white text-[11px] font-bold px-2 py-1 rounded">S-2220 Criado</span>
         </div>
       )}
 
@@ -521,7 +521,7 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
             onClick={() => setActiveSubTab('PROTOCOLS')}
             className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-2 ${
               subAba === 'PROTOCOLS'
-                ? 'bg-teal-500 text-slate-950 shadow-md shadow-teal-500/20'
+                ? 'bg-marca-escura text-white shadow-sm'
                 : 'text-tinta-2 hover:text-tinta hover:bg-superficie-2'
             }`}
           >
@@ -534,7 +534,7 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
             onClick={() => setActiveSubTab('APPLICATIONS')}
             className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-2 ${
               subAba === 'APPLICATIONS'
-                ? 'bg-teal-500 text-slate-950 shadow-md shadow-teal-500/20'
+                ? 'bg-marca-escura text-white shadow-sm'
                 : 'text-tinta-2 hover:text-tinta hover:bg-superficie-2'
             }`}
           >
@@ -550,7 +550,7 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
               onClick={() => setActiveSubTab('SETORIAIS')}
               className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-2 ${
                 subAba === 'SETORIAIS'
-                  ? 'bg-teal-500 text-slate-950 shadow-md shadow-teal-500/20'
+                  ? 'bg-marca-escura text-white shadow-sm'
                   : 'text-tinta-2 hover:text-tinta hover:bg-superficie-2'
               }`}
             >
@@ -579,7 +579,7 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
               type="button"
               id="add-protocol-btn"
               onClick={() => handleOpenProtocolModal()}
-              className="px-3.5 py-1.5 bg-teal-500 hover:bg-teal-400 text-slate-950 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 shadow-sm"
+              className="bg-marca-escura text-white px-3.5 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 shadow-sm hover:opacity-90"
             >
               <Plus className="w-4 h-4" />
               Novo Protocolo de Exame
@@ -592,7 +592,7 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
                 carregarExamesSugeridos(selectedEmployeeId, asoForm.aso_type, asoForm.issue_date);
                 setIsAsoModalOpen(true);
               }}
-              className="px-3.5 py-1.5 bg-teal-500 hover:bg-teal-400 text-slate-950 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 shadow-sm"
+              className="bg-marca-escura text-white px-3.5 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 shadow-sm hover:opacity-90"
             >
               <Plus className="w-4 h-4" />
               Emitir ASO & Gerar S-2220
@@ -632,7 +632,7 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
               <div 
                 key={protocol.id} 
                 id={`protocol-card-${protocol.id}`}
-                className="bg-superficie border border-borda rounded-xl p-4 space-y-3 shadow-lg flex flex-col justify-between"
+                className="bg-superficie border border-borda rounded-xl p-4 space-y-3 shadow-sm flex flex-col justify-between"
               >
                 <div>
                   <div className="flex items-center justify-between">
@@ -743,7 +743,7 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
 
       {/* Applications (ASO / S-2220) View */}
       {subAba === 'APPLICATIONS' && (
-        <div className="bg-superficie border border-borda rounded-xl overflow-hidden shadow-lg" id="aso-applications-table">
+        <div className="bg-superficie border border-borda rounded-xl overflow-hidden shadow-sm" id="aso-applications-table">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs text-tinta">
               <thead className="bg-fundo text-tinta-2 uppercase text-[10px] tracking-wider border-b border-borda">
@@ -791,7 +791,7 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
                             carregarExamesSugeridos(emp.id, asoForm.aso_type, asoForm.issue_date);
                             setIsAsoModalOpen(true);
                           }}
-                          className="px-2.5 py-1 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold rounded text-[11px] transition-colors"
+                          className="bg-marca-escura text-white px-2.5 py-1 font-bold rounded text-[11px] transition-colors hover:opacity-90"
                         >
                           Novo ASO S-2220
                         </button>
@@ -808,7 +808,7 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
       {/* Protocol Modal */}
       {isProtocolModalOpen && (
         <div className="fixed inset-0 bg-fundo backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-superficie border border-borda rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl animate-in fade-in zoom-in-95 duration-150">
+          <div className="bg-superficie border border-borda rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-sm animate-in fade-in zoom-in-95 duration-150">
             <div className="flex items-center justify-between border-b border-borda pb-3">
               <h3 className="text-base font-bold text-tinta flex items-center gap-2">
                 <Stethoscope className="w-5 h-5 text-teal-700" />
@@ -830,7 +830,7 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
                   /* Sem GHE nao ha onde aplicar o exame. Antes o select ficava
                      vazio e o botao de salvar nao respondia - sem dizer por
                      que, nem onde resolver. */
-                  <div className="rounded-lg border border-amber-700/60 bg-amber-50 p-3 text-[11px] text-amber-700 space-y-1">
+                  <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-[11px] text-amber-700 space-y-1">
                     <p className="font-bold text-amber-700">Este cliente ainda não tem GHE.</p>
                     <p>
                       O protocolo de exame é vinculado a um Grupo Homogêneo de Exposição. Crie o GHE
@@ -955,7 +955,7 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold rounded-lg shadow-md"
+                  className="bg-marca-escura text-white px-4 py-2 font-bold rounded-lg shadow-sm hover:opacity-90"
                 >
                   Salvar Protocolo
                 </button>
@@ -968,7 +968,7 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
       {/* ASO Application Modal */}
       {isAsoModalOpen && (
         <div className="fixed inset-0 bg-fundo backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-superficie border border-borda rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl animate-in fade-in zoom-in-95 duration-150">
+          <div className="bg-superficie border border-borda rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-sm animate-in fade-in zoom-in-95 duration-150">
             <div className="flex items-center justify-between border-b border-borda pb-3">
               <h3 className="text-base font-bold text-tinta flex items-center gap-2">
                 <FileCheck2 className="w-5 h-5 text-teal-700" />
@@ -1261,7 +1261,7 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold rounded-lg shadow-md"
+                  className="bg-marca-escura text-white px-4 py-2 font-bold rounded-lg shadow-sm hover:opacity-90"
                 >
                   Emitir ASO & Criar S-2220
                 </button>

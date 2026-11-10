@@ -42,8 +42,7 @@ export const CatAbsencesView: React.FC<CatAbsencesViewProps> = ({ onNavigate }) 
   return (
     <div className="space-y-6" id="cat-absences-workspace">
       {/* Top Header Card */}
-      <div className="bg-superficie border border-borda rounded-2xl p-6 relative overflow-hidden shadow-2xl">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-rose-500/10 via-red-500/5 to-transparent rounded-full blur-3xl pointer-events-none" />
+      <div className="bg-superficie border border-borda rounded-2xl p-6 relative overflow-hidden shadow-sm">
 
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
           <div className="space-y-2">

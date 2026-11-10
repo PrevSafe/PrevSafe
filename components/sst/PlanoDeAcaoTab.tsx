@@ -91,9 +91,9 @@ const ROTULO_DA_ORIGEM: Record<PgrActionPlanItem['origin'], string> = {
 };
 
 const COR_DO_STATUS: Record<StatusDaAcaoDoPlano, string> = {
-  SUGERIDA: 'bg-indigo-500/15 text-indigo-700 border-indigo-500/30',
+  SUGERIDA: 'bg-teal-500/15 text-teal-800 border-teal-500/30',
   NAO_INICIADA: 'bg-superficie-2 text-tinta border-borda',
-  EM_ANDAMENTO: 'bg-sky-500/15 text-sky-700 border-sky-500/30',
+  EM_ANDAMENTO: 'bg-teal-500/15 text-teal-800 border-teal-500/30',
   CONCLUIDA: 'bg-teal-500/15 text-teal-800 border-teal-500/30',
   EFICACIA_VERIFICADA: 'bg-marca-suave text-marca-escura border-marca-escura',
   DESCARTADA: 'bg-superficie text-tinta-2 border-borda'
@@ -102,7 +102,7 @@ const COR_ATRASADA = 'bg-rose-500/15 text-rose-800 border-rose-500/30';
 
 const COR_DO_NIVEL: Record<string, string> = {
   MUITO_ALTO: 'bg-rose-500/15 text-rose-800 border-rose-500/30',
-  ALTO: 'bg-orange-500/15 text-orange-800 border-orange-500/30',
+  ALTO: 'bg-amber-500/15 text-amber-800 border-amber-500/30',
   MEDIO: 'bg-amber-500/15 text-amber-800 border-amber-500/30',
   BAIXO: 'bg-marca-suave text-marca-escura border-marca-escura'
 };
@@ -112,7 +112,7 @@ const CAMPO =
   'w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta text-xs focus:outline-none focus:border-teal-500';
 const BOTAO = 'px-2.5 py-1.5 rounded-lg text-[11px] font-semibold flex items-center gap-1 transition-colors border';
 const BOTAO_NEUTRO = `${BOTAO} bg-superficie border-borda text-tinta hover:border-borda-forte hover:text-tinta`;
-const BOTAO_PRINCIPAL = `${BOTAO} bg-teal-500 border-teal-400 text-slate-950 hover:bg-teal-400`;
+const BOTAO_PRINCIPAL = `bg-marca-escura text-white ${BOTAO} border-teal-400 hover:opacity-90`;
 const BOTAO_PERIGO = `${BOTAO} bg-rose-500/10 border-rose-500/30 text-rose-700 hover:bg-rose-500/20`;
 
 const acaoConcluida = (a: PgrActionPlanItem | null | undefined) =>
@@ -215,7 +215,7 @@ const Modal: React.FC<{
 }> = ({ titulo, subtitulo, icone, largura, aoFechar, children }) => (
   <div className="fixed inset-0 bg-fundo backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div
-      className={`bg-superficie border border-borda rounded-2xl w-full ${largura} p-5 sm:p-6 space-y-4 shadow-2xl animate-in fade-in zoom-in-95 duration-150 max-h-[90vh] overflow-y-auto`}
+      className={`bg-superficie border border-borda rounded-2xl w-full ${largura} p-5 sm:p-6 space-y-4 shadow-sm animate-in fade-in zoom-in-95 duration-150 max-h-[90vh] overflow-y-auto`}
     >
       <div className="flex items-start justify-between gap-3 border-b border-borda pb-3">
         <div className="min-w-0">
@@ -578,7 +578,7 @@ export const PlanoDeAcaoTab: React.FC<PlanoDeAcaoTabProps> = ({ selectedClientId
             ? 'bg-fundo border-borda opacity-80'
             : aceita
               ? 'bg-fundo border-borda'
-              : 'bg-indigo-50 border-dashed border-indigo-700/50'
+              : 'bg-teal-50 border-dashed border-teal-700/50'
         }`}
       >
         <div className="flex items-center gap-1.5 flex-wrap">
@@ -815,7 +815,7 @@ export const PlanoDeAcaoTab: React.FC<PlanoDeAcaoTabProps> = ({ selectedClientId
             id="btn-sugerir-acoes-plano"
             onClick={sugerir}
             disabled={grupos.length === 0}
-            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white font-bold rounded-lg shadow-md flex items-center justify-center gap-1.5 text-xs shrink-0"
+            className="px-4 py-2 bg-teal-600 hover:bg-teal-700 disabled:opacity-50 text-white font-bold rounded-lg shadow-md flex items-center justify-center gap-1.5 text-xs shrink-0"
           >
             <Sparkles className="w-4 h-4" />
             Sugerir ações para riscos sem plano
@@ -834,7 +834,7 @@ export const PlanoDeAcaoTab: React.FC<PlanoDeAcaoTabProps> = ({ selectedClientId
           </div>
           <div className="bg-fundo p-3 rounded-xl border border-borda">
             <span className="text-[10px] uppercase font-bold text-tinta-2 block">Sugestões</span>
-            <span className={`text-lg font-black ${sugeridas > 0 ? 'text-indigo-700' : 'text-tinta'}`}>
+            <span className={`text-lg font-black ${sugeridas > 0 ? 'text-teal-700' : 'text-tinta'}`}>
               {sugeridas}
             </span>
             <span className="text-[10px] text-tinta-2 block">aguardando aceite</span>
@@ -934,7 +934,7 @@ export const PlanoDeAcaoTab: React.FC<PlanoDeAcaoTabProps> = ({ selectedClientId
                 <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
                   <div className="min-w-0 space-y-1">
                     <div className="flex items-center gap-1.5 flex-wrap">
-                      <span className="px-2 py-0.5 bg-teal-500 text-slate-950 font-mono font-bold text-[10px] rounded">
+                      <span className="bg-marca-escura text-white px-2 py-0.5 font-mono font-bold text-[10px] rounded">
                         {g.id}
                       </span>
                       <span
@@ -1312,7 +1312,7 @@ export const PlanoDeAcaoTab: React.FC<PlanoDeAcaoTabProps> = ({ selectedClientId
               </button>
               <button
                 type="submit"
-                className="px-4 py-2 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold rounded-lg shadow-md"
+                className="bg-marca-escura text-white px-4 py-2 font-bold rounded-lg shadow-sm hover:opacity-90"
               >
                 {formulario.modo === 'ACEITAR'
                   ? 'Aceitar e incluir no plano'
@@ -1517,7 +1517,7 @@ export const PlanoDeAcaoTab: React.FC<PlanoDeAcaoTabProps> = ({ selectedClientId
                 className={`px-4 py-2 font-bold rounded-lg shadow-md ${
                   registro.tipo === 'DESCARTAR'
                     ? 'bg-rose-500 hover:bg-rose-700 text-white'
-                    : 'bg-teal-500 hover:bg-teal-400 text-slate-950'
+                    : 'bg-marca-escura text-white hover:opacity-90'
                 }`}
               >
                 {registro.tipo === 'CONCLUIR'

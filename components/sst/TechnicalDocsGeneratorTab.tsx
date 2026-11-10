@@ -328,7 +328,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
             <CheckCircle2 className="w-5 h-5 text-teal-700" />
             <span className="font-semibold">{successToast}</span>
           </div>
-          <span className="text-[11px] bg-teal-500 text-slate-950 font-bold px-2 py-1 rounded">Processado</span>
+          <span className="bg-marca-escura text-white text-[11px] font-bold px-2 py-1 rounded">Processado</span>
         </div>
       )}
 
@@ -341,7 +341,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
             onClick={() => setActiveDocType('PGR')}
             className={`px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 ${
               activeDocType === 'PGR'
-                ? 'bg-teal-500 text-slate-950 shadow-md shadow-teal-500/20 font-bold'
+                ? 'bg-marca-escura text-white shadow-sm font-bold'
                 : 'text-tinta-2 hover:text-tinta hover:bg-superficie-2'
             }`}
           >
@@ -355,7 +355,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
             onClick={() => setActiveDocType('PGRTR')}
             className={`px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 ${
               activeDocType === 'PGRTR'
-                ? 'bg-marca text-slate-950 shadow-md shadow-emerald-500/20 font-bold'
+                ? 'bg-marca text-slate-950 shadow-md font-bold'
                 : 'text-tinta-2 hover:text-tinta hover:bg-superficie-2'
             }`}
           >
@@ -369,7 +369,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
             onClick={() => setActiveDocType('PCMSO')}
             className={`px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 ${
               activeDocType === 'PCMSO'
-                ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/20 font-bold'
+                ? 'bg-marca-escura text-white shadow-sm font-bold'
                 : 'text-tinta-2 hover:text-tinta hover:bg-superficie-2'
             }`}
           >
@@ -383,7 +383,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
             onClick={() => setActiveDocType('LTCAT')}
             className={`px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 ${
               activeDocType === 'LTCAT'
-                ? 'bg-purple-500 text-slate-950 shadow-md shadow-purple-500/20 font-bold'
+                ? 'bg-marca-escura text-white shadow-sm font-bold'
                 : 'text-tinta-2 hover:text-tinta hover:bg-superficie-2'
             }`}
           >
@@ -397,7 +397,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
             onClick={() => setActiveDocType('AEP')}
             className={`px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 ${
               activeDocType === 'AEP'
-                ? 'bg-teal-500 text-slate-950 shadow-md shadow-teal-500/20 font-bold'
+                ? 'bg-marca-escura text-white shadow-sm font-bold'
                 : 'text-tinta-2 hover:text-tinta hover:bg-superficie-2'
             }`}
           >
@@ -411,7 +411,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
             onClick={() => setActiveDocType('PSICOSSOCIAL')}
             className={`px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 ${
               activeDocType === 'PSICOSSOCIAL'
-                ? 'bg-teal-500 text-slate-950 shadow-md shadow-teal-500/20 font-bold'
+                ? 'bg-marca-escura text-white shadow-sm font-bold'
                 : 'text-tinta-2 hover:text-tinta hover:bg-superficie-2'
             }`}
           >
@@ -425,7 +425,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
             onClick={() => setActiveDocType('INSALUBRIDADE')}
             className={`px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 ${
               activeDocType === 'INSALUBRIDADE'
-                ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20 font-bold'
+                ? 'bg-marca-escura text-white shadow-sm font-bold'
                 : 'text-tinta-2 hover:text-tinta hover:bg-superficie-2'
             }`}
           >
@@ -439,7 +439,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
             onClick={() => setActiveDocType('PERICULOSIDADE')}
             className={`px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 ${
               activeDocType === 'PERICULOSIDADE'
-                ? 'bg-rose-500 text-slate-950 shadow-md shadow-rose-500/20 font-bold'
+                ? 'bg-marca-escura text-white shadow-sm font-bold'
                 : 'text-tinta-2 hover:text-tinta hover:bg-superficie-2'
             }`}
           >
@@ -453,7 +453,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
             onClick={() => setActiveDocType('XML_ESOCIAL')}
             className={`px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 ${
               activeDocType === 'XML_ESOCIAL'
-                ? 'bg-blue-500 text-slate-950 shadow-md shadow-blue-500/20 font-bold'
+                ? 'bg-marca-escura text-white shadow-sm font-bold'
                 : 'text-tinta-2 hover:text-tinta hover:bg-superficie-2'
             }`}
           >
@@ -485,7 +485,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
                 type="button"
                 id="btn-download-pdf-doc"
                 onClick={handleDownloadActivePdf}
-                className="px-3.5 py-2 bg-teal-500 hover:bg-teal-400 text-slate-950 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 shadow-lg shadow-teal-500/20"
+                className="bg-marca-escura text-white px-3.5 py-2 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 shadow-sm hover:opacity-90"
                 title="Baixar Laudo Técnico Completo em PDF formatado conforme Normas Regulamentadoras"
               >
                 <Download className="w-4 h-4" />
@@ -524,7 +524,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
 
       {/* VIEW 1: PGR (NR-01) */}
       {activeDocType === 'PGR' && (
-        <div className="bg-superficie border border-borda rounded-2xl p-6 space-y-6 shadow-xl" id="pgr-doc-view">
+        <div className="bg-superficie border border-borda rounded-2xl p-6 space-y-6 shadow-sm" id="pgr-doc-view">
           {/* Header */}
           <div className="border-b border-borda pb-4 flex justify-between items-start">
             <div>
@@ -741,7 +741,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
 
       {/* VIEW 2: PGRTR (NR-31) */}
       {activeDocType === 'PGRTR' && (
-        <div className="bg-superficie border border-borda rounded-2xl p-6 space-y-6 shadow-xl" id="pgrtr-doc-view">
+        <div className="bg-superficie border border-borda rounded-2xl p-6 space-y-6 shadow-sm" id="pgrtr-doc-view">
           <div className="border-b border-borda pb-4 flex justify-between items-start">
             <div>
               <span className="px-2.5 py-1 bg-marca-suave text-marca-escura text-xs font-bold rounded">
@@ -833,10 +833,10 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
 
       {/* VIEW 3: PCMSO (NR-07) */}
       {activeDocType === 'PCMSO' && (
-        <div className="bg-superficie border border-borda rounded-2xl p-6 space-y-6 shadow-xl" id="pcmso-doc-view">
+        <div className="bg-superficie border border-borda rounded-2xl p-6 space-y-6 shadow-sm" id="pcmso-doc-view">
           <div className="border-b border-borda pb-4 flex justify-between items-start gap-4">
             <div>
-              <span className="px-2.5 py-1 bg-cyan-500/20 text-cyan-800 text-xs font-bold rounded">
+              <span className="px-2.5 py-1 bg-teal-500/20 text-teal-800 text-xs font-bold rounded">
                 PROGRAMA DE CONTROLE MÉDICO DE SAÚDE OCUPACIONAL (PCMSO — NR-07)
               </span>
               <h2 className="text-lg font-bold text-tinta mt-2">
@@ -848,7 +848,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
               </p>
             </div>
             <div className="text-right text-xs text-tinta-2 space-y-1 shrink-0">
-              <div>Base: <span className="text-cyan-700 font-semibold">NR-07, subitem 7.5.1</span></div>
+              <div>Base: <span className="text-teal-700 font-semibold">NR-07, subitem 7.5.1</span></div>
               <div>Validade: <span className="text-tinta">a NR-07 não fixa</span></div>
             </div>
           </div>
@@ -866,10 +866,10 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
       )}
       {/* VIEW 4: LTCAT */}
       {activeDocType === 'LTCAT' && (
-        <div className="bg-superficie border border-borda rounded-2xl p-6 space-y-6 shadow-xl" id="ltcat-doc-view">
+        <div className="bg-superficie border border-borda rounded-2xl p-6 space-y-6 shadow-sm" id="ltcat-doc-view">
           <div className="border-b border-borda pb-4 flex justify-between items-start">
             <div>
-              <span className="px-2.5 py-1 bg-purple-500/20 text-purple-700 text-xs font-bold rounded">
+              <span className="px-2.5 py-1 bg-teal-500/20 text-teal-800 text-xs font-bold rounded">
                 LAUDO TÉCNICO DE CONDIÇÕES AMBIENTAIS DO TRABALHO (LTCAT - INSS)
               </span>
               <h2 className="text-lg font-bold text-tinta mt-2">
@@ -885,7 +885,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
                   informados no inventario deste cliente. */}
               <div>
                 Enquadramento GFIP:{' '}
-                <span className="text-purple-700 font-bold">
+                <span className="text-teal-700 font-bold">
                   {(() => {
                     const codigos = Array.from(new Set(
                       riscosDoCliente.filter(r => r.special_retirement_applies && r.gfip_code).map(r => r.gfip_code)
@@ -912,9 +912,9 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
                   <p className="text-tinta-2">Nenhum agente do inventário deste cliente está marcado para aposentadoria especial.</p>
                 )}
                 {riscosDoCliente.filter(r => r.special_retirement_applies).map(r => (
-                  <div key={r.id} className="p-3 bg-purple-500/10 border border-purple-500/30 rounded-lg flex flex-col sm:flex-row justify-between sm:items-center gap-2">
+                  <div key={r.id} className="p-3 bg-teal-500/10 border border-teal-500/30 rounded-lg flex flex-col sm:flex-row justify-between sm:items-center gap-2">
                     <div className="min-w-0">
-                      <span className="font-bold text-purple-700">{r.agent_name}</span>
+                      <span className="font-bold text-teal-700">{r.agent_name}</span>
                       {r.risk_code_table_24 && (
                         <span className="ml-2 font-mono text-[11px] text-teal-700">Tab. 24: {r.risk_code_table_24}</span>
                       )}
@@ -925,7 +925,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
                           : r.evaluation_type === 'QUANTITATIVA' ? 'pendente' : 'avaliação qualitativa'}
                       </p>
                     </div>
-                    <span className="px-2 py-1 bg-purple-600 text-white font-bold rounded text-[10px] shrink-0">
+                    <span className="px-2 py-1 bg-teal-700 text-white font-bold rounded text-[10px] shrink-0">
                       {r.gfip_code === '02'
                         ? 'Aposentadoria Especial 15 Anos (GFIP 02)'
                         : r.gfip_code === '03'
@@ -944,7 +944,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
 
       {/* VIEW 5: AEP (NR-17) */}
       {activeDocType === 'AEP' && (
-        <div className="bg-superficie border border-borda rounded-2xl p-6 space-y-6 shadow-xl" id="aep-doc-view">
+        <div className="bg-superficie border border-borda rounded-2xl p-6 space-y-6 shadow-sm" id="aep-doc-view">
           <div className="border-b border-borda pb-4 flex justify-between items-start">
             <div>
               <span className="px-2.5 py-1 bg-teal-500/20 text-teal-800 text-xs font-bold rounded">
@@ -1012,7 +1012,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
 
       {/* VIEW 5.1: FATORES PSICOSSOCIAIS (recorte da AEP e do PGR) */}
       {activeDocType === 'PSICOSSOCIAL' && (
-        <div className="bg-superficie border border-borda rounded-2xl p-6 space-y-6 shadow-xl" id="psicossocial-doc-view">
+        <div className="bg-superficie border border-borda rounded-2xl p-6 space-y-6 shadow-sm" id="psicossocial-doc-view">
           <div className="border-b border-borda pb-4 flex justify-between items-start gap-4">
             <div>
               <span className="px-2.5 py-1 bg-teal-500/20 text-teal-800 text-xs font-bold rounded">
@@ -1079,7 +1079,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
 
       {/* VIEW 6: LAUDO DE INSALUBRIDADE (NR-15) */}
       {activeDocType === 'INSALUBRIDADE' && (
-        <div className="bg-superficie border border-borda rounded-2xl p-6 space-y-6 shadow-xl" id="insalubridade-doc-view">
+        <div className="bg-superficie border border-borda rounded-2xl p-6 space-y-6 shadow-sm" id="insalubridade-doc-view">
           <div className="border-b border-borda pb-4 flex justify-between items-start">
             <div>
               <span className="px-2.5 py-1 bg-amber-500/20 text-amber-800 text-xs font-bold rounded">
@@ -1135,7 +1135,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
 
       {/* VIEW 6: LAUDO DE PERICULOSIDADE (NR-16) */}
       {activeDocType === 'PERICULOSIDADE' && (
-        <div className="bg-superficie border border-borda rounded-2xl p-6 space-y-6 shadow-xl" id="periculosidade-doc-view">
+        <div className="bg-superficie border border-borda rounded-2xl p-6 space-y-6 shadow-sm" id="periculosidade-doc-view">
           <div className="border-b border-borda pb-4 flex justify-between items-start">
             <div>
               <span className="px-2.5 py-1 bg-rose-500/20 text-rose-800 text-xs font-bold rounded">
@@ -1195,7 +1195,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
           {/* Events Sidebar */}
           <div className="lg:col-span-1 bg-superficie border border-borda rounded-xl p-4 space-y-3">
             <h3 className="font-bold text-tinta text-sm flex items-center gap-2">
-              <FileCode2 className="w-4 h-4 text-blue-700" />
+              <FileCode2 className="w-4 h-4 text-teal-700" />
               Eventos Gerados ({esocialEvents.length})
             </h3>
 
@@ -1209,12 +1209,12 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
                     onClick={() => setSelectedXmlEventId(evt.id)}
                     className={`p-3 rounded-lg border text-left cursor-pointer transition-all ${
                       isSelected
-                        ? 'bg-blue-500/10 border-blue-500/40 text-tinta'
+                        ? 'bg-teal-500/10 border-teal-500/40 text-tinta'
                         : 'bg-fundo border-borda hover:border-borda text-tinta'
                     }`}
                   >
                     <div className="flex items-center justify-between">
-                      <span className="font-mono text-xs font-bold text-blue-700">{evt.event_type}</span>
+                      <span className="font-mono text-xs font-bold text-teal-700">{evt.event_type}</span>
                       <span className="text-[10px] text-tinta-2 font-mono">{evt.event_number}</span>
                     </div>
                     <h4 className="font-bold text-xs mt-1 truncate text-tinta">{evt.worker_name}</h4>
@@ -1237,7 +1237,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-borda pb-3">
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="px-2 py-0.5 bg-blue-500/20 text-blue-700 font-mono text-xs font-bold rounded">
+                      <span className="px-2 py-0.5 bg-teal-500/20 text-teal-800 font-mono text-xs font-bold rounded">
                         {selectedEvent.event_type}
                       </span>
                       <h3 className="font-bold text-tinta text-sm">

@@ -261,9 +261,9 @@ export const ROLE_INFO: Record<RoleType, {
   },
   GESTOR: {
     label: 'Gestor Operacional & Técnico',
-    badgeColor: 'text-cyan-700',
-    bgBadge: 'bg-cyan-500/10',
-    borderBadge: 'border-cyan-500/20',
+    badgeColor: 'text-teal-700',
+    bgBadge: 'bg-teal-500/10',
+    borderBadge: 'border-teal-500/20',
     description: 'Coordenação de equipes de campo, controle de SLA RN004, validação de laudos e eSocial. Vê tipo, data, validade e apto/inapto do ASO; o resultado de exame é do papel Saúde.',
     targetAudience: 'Coordenadores de SST e Engenheiros Chefes'
   },
@@ -277,9 +277,9 @@ export const ROLE_INFO: Record<RoleType, {
   },
   SAUDE: {
     label: 'Saúde Ocupacional (Médico)',
-    badgeColor: 'text-pink-700',
-    bgBadge: 'bg-pink-500/10',
-    borderBadge: 'border-pink-500/20',
+    badgeColor: 'text-rose-700',
+    bgBadge: 'bg-rose-500/10',
+    borderBadge: 'border-rose-500/20',
     description: 'PCMSO, ASO e prontuário: único papel, além do Administrador, que lê e lança resultado de exame, observação clínica e restrição.',
     targetAudience: 'Médico do Trabalho coordenador do PCMSO e a equipe que ele supervisiona'
   },
@@ -301,17 +301,17 @@ export const ROLE_INFO: Record<RoleType, {
   },
   CLIENTE_ADMIN: {
     label: 'Cliente - Gestor / RH',
-    badgeColor: 'text-purple-700',
-    bgBadge: 'bg-purple-500/10',
-    borderBadge: 'border-purple-500/20',
+    badgeColor: 'text-teal-700',
+    bgBadge: 'bg-teal-500/10',
+    borderBadge: 'border-teal-500/20',
     description: 'Portal do cliente da própria empresa: aceite de OS, laudos liberados, pendências e assinaturas.',
     targetAudience: 'Diretores de RH, Coordenadores SESMT e Gestores da Contratante'
   },
   CLIENTE_USER: {
     label: 'Cliente - Colaborador',
-    badgeColor: 'text-blue-700',
-    bgBadge: 'bg-blue-500/10',
-    borderBadge: 'border-blue-500/20',
+    badgeColor: 'text-teal-700',
+    bgBadge: 'bg-teal-500/10',
+    borderBadge: 'border-teal-500/20',
     description: 'Portal do cliente da própria empresa, com o mesmo alcance do Gestor/RH do cliente.',
     targetAudience: 'Supervisores de setor, CIPA e Colaboradores da empresa'
   }
@@ -774,7 +774,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
         <div className={`fixed top-4 right-4 z-50 flex items-center space-x-3 px-4 py-3 rounded-2xl shadow-2xl border backdrop-blur-xl animate-in fade-in slide-in-from-top-4 duration-300 ${
           feedbackMessage.type === 'success' 
             ? 'bg-marca-suave border-marca-escura text-marca-escura' 
-            : 'bg-rose-50 border-rose-500/30 text-rose-700'
+            : 'bg-rose-50 border-rose-200 text-rose-700'
         }`}>
           {feedbackMessage.type === 'success' ? (
             <CheckCircle2 className="w-5 h-5 text-marca-escura flex-shrink-0" />
@@ -786,12 +786,11 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
       )}
 
       {/* Header Bento Card */}
-      <div className="bg-superficie border border-borda rounded-3xl p-6 shadow-xl relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-teal-500/10 via-emerald-500/5 to-transparent rounded-full blur-3xl pointer-events-none" />
+      <div className="bg-superficie border border-borda rounded-3xl p-6 shadow-sm relative overflow-hidden">
         
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
           <div className="flex items-start sm:items-center space-x-4">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-teal-700 to-marca-escura flex items-center justify-center text-white shadow-lg shadow-teal-950/50 flex-shrink-0">
+            <div className="bg-teal-700 w-12 h-12 rounded-2xl flex items-center justify-center text-white shadow-sm flex-shrink-0">
               <Users className="w-6 h-6" />
             </div>
             <div>
@@ -819,7 +818,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
 
             <button
               onClick={handleOpenCreateModal}
-              className="flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-teal-500 to-marca-escura hover:from-teal-400 hover:to-marca-escura text-slate-950 font-bold text-xs shadow-lg shadow-emerald-950/40 hover:shadow-emerald-900/60 transition active:scale-95"
+              className="bg-marca-escura text-white flex items-center space-x-2 px-4 py-2.5 rounded-xl font-bold text-xs shadow-sm hover:shadow-emerald-900/60 transition active:scale-95"
             >
               <UserPlus className="w-4 h-4" />
               <span>Novo Usuário / Convidar</span>
@@ -830,7 +829,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
         {/* Quick KPI Stat Strip */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mt-6 pt-6 border-t border-borda">
           <div className="p-3.5 rounded-2xl bg-fundo border border-borda flex items-center space-x-3">
-            <div className="w-9 h-9 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-700">
+            <div className="w-9 h-9 rounded-xl bg-teal-500/10 border border-teal-500/20 flex items-center justify-center text-teal-800">
               <Users className="w-4 h-4" />
             </div>
             <div>
@@ -850,21 +849,21 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
           </div>
 
           <div className="p-3.5 rounded-2xl bg-fundo border border-borda flex items-center space-x-3">
-            <div className="w-9 h-9 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-800">
+            <div className="w-9 h-9 rounded-xl bg-teal-500/10 border border-teal-500/20 flex items-center justify-center text-teal-800">
               <Smartphone className="w-4 h-4" />
             </div>
             <div>
-              <div className="text-lg font-black text-cyan-700">{techUsers}</div>
+              <div className="text-lg font-black text-teal-700">{techUsers}</div>
               <div className="text-[11px] text-tinta-2 font-medium">Técnicos (PWA Campo)</div>
             </div>
           </div>
 
           <div className="p-3.5 rounded-2xl bg-fundo border border-borda flex items-center space-x-3">
-            <div className="w-9 h-9 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-700">
+            <div className="w-9 h-9 rounded-xl bg-teal-500/10 border border-teal-500/20 flex items-center justify-center text-teal-800">
               <Building2 className="w-4 h-4" />
             </div>
             <div>
-              <div className="text-lg font-black text-purple-700">{clientUsers}</div>
+              <div className="text-lg font-black text-teal-700">{clientUsers}</div>
               <div className="text-[11px] text-tinta-2 font-medium">Clientes no Portal</div>
             </div>
           </div>
@@ -886,7 +885,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
             onClick={() => setActiveTab('users')}
             className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center space-x-2 ${
               activeTab === 'users'
-                ? 'bg-teal-500 text-slate-950 shadow-md shadow-teal-950/40'
+                ? 'bg-marca-escura text-white shadow-sm'
                 : 'bg-superficie-2 hover:bg-superficie-2 text-tinta hover:text-tinta'
             }`}
           >
@@ -898,7 +897,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
             onClick={() => setActiveTab('rbac')}
             className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center space-x-2 ${
               activeTab === 'rbac'
-                ? 'bg-teal-500 text-slate-950 shadow-md shadow-teal-950/40'
+                ? 'bg-marca-escura text-white shadow-sm'
                 : 'bg-superficie-2 hover:bg-superficie-2 text-tinta hover:text-tinta'
             }`}
           >
@@ -910,7 +909,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
             onClick={() => setActiveTab('security')}
             className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center space-x-2 ${
               activeTab === 'security'
-                ? 'bg-teal-500 text-slate-950 shadow-md shadow-teal-950/40'
+                ? 'bg-marca-escura text-white shadow-sm'
                 : 'bg-superficie-2 hover:bg-superficie-2 text-tinta hover:text-tinta'
             }`}
           >
@@ -924,7 +923,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
       {activeTab === 'users' && (
         <div className="space-y-4">
           {/* Filters Bar */}
-          <div className="bg-superficie border border-borda rounded-3xl p-4 shadow-xl flex flex-col lg:flex-row gap-3 items-center justify-between">
+          <div className="bg-superficie border border-borda rounded-3xl p-4 shadow-sm flex flex-col lg:flex-row gap-3 items-center justify-between">
             <div className="relative w-full lg:w-96">
               <Search className="w-4 h-4 text-tinta-2 absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
@@ -1013,7 +1012,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
                       p.status === 'INACTIVE' 
                         ? 'border-borda opacity-75' 
                         : isCurrentLoggedUser 
-                          ? 'border-teal-500/50 bg-superficie shadow-teal-950/30 ring-1 ring-teal-500/20' 
+                          ? 'border-teal-200 bg-superficie ring-1 ring-teal-500/20' 
                           : 'border-borda hover:border-borda'
                     }`}
                   >
@@ -1172,7 +1171,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
             </div>
           ) : (
             /* Table View */
-            <div className="bg-superficie border border-borda rounded-3xl shadow-xl overflow-hidden">
+            <div className="bg-superficie border border-borda rounded-3xl shadow-sm overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs">
                   <thead className="bg-fundo text-tinta-2 font-semibold border-b border-borda">
@@ -1320,7 +1319,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
       {/* TAB 2: RBAC PERMISSIONS MATRIX */}
       {activeTab === 'rbac' && (
         <div className="space-y-6">
-          <div className="bg-superficie border border-borda rounded-3xl p-6 shadow-xl">
+          <div className="bg-superficie border border-borda rounded-3xl p-6 shadow-sm">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
               <div>
                 <h2 className="text-lg font-bold text-tinta flex items-center space-x-2">
@@ -1347,13 +1346,13 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
                     <tr>
                       <th className="py-3.5 px-4 w-72">Módulo & Funcionalidade</th>
                       <th className="py-3.5 px-2 text-center text-rose-700">ADMIN</th>
-                      <th className="py-3.5 px-2 text-center text-cyan-700">GESTOR</th>
+                      <th className="py-3.5 px-2 text-center text-teal-700">GESTOR</th>
                       <th className="py-3.5 px-2 text-center text-amber-700">COMERCIAL</th>
                       <th className="py-3.5 px-2 text-center text-marca-escura">TÉCNICO</th>
                       <th className="py-3.5 px-2 text-center text-marca-escura">FINANCEIRO</th>
-                      <th className="py-3.5 px-2 text-center text-pink-700">SAÚDE</th>
-                      <th className="py-3.5 px-2 text-center text-purple-700">CLIENTE ADMIN</th>
-                      <th className="py-3.5 px-2 text-center text-blue-700">CLIENTE USER</th>
+                      <th className="py-3.5 px-2 text-center text-rose-700">SAÚDE</th>
+                      <th className="py-3.5 px-2 text-center text-teal-700">CLIENTE ADMIN</th>
+                      <th className="py-3.5 px-2 text-center text-teal-700">CLIENTE USER</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-borda">
@@ -1396,7 +1395,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
         <div className="space-y-6">
           {/* Security Cards Grid */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-superficie border border-borda rounded-3xl p-5 shadow-xl space-y-3">
+            <div className="bg-superficie border border-borda rounded-3xl p-5 shadow-sm space-y-3">
               <div className="w-10 h-10 rounded-2xl bg-teal-500/10 border border-teal-500/20 flex items-center justify-center text-teal-800">
                 <ShieldCheck className="w-5 h-5" />
               </div>
@@ -1411,8 +1410,8 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
               </div>
             </div>
 
-            <div className="bg-superficie border border-borda rounded-3xl p-5 shadow-xl space-y-3">
-              <div className="w-10 h-10 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-700">
+            <div className="bg-superficie border border-borda rounded-3xl p-5 shadow-sm space-y-3">
+              <div className="w-10 h-10 rounded-2xl bg-teal-500/10 border border-teal-500/20 flex items-center justify-center text-teal-800">
                 <Lock className="w-5 h-5" />
               </div>
               <h3 className="text-sm font-bold text-tinta">Política de Senhas & LGPD</h3>
@@ -1420,14 +1419,14 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
                 Criptografia forte (bcrypt), expiração periódica de 90 dias e bloqueio após 5 tentativas incorretas.
               </p>
               <div className="pt-2">
-                <span className="px-3 py-1 rounded-xl text-xs font-bold bg-blue-500/10 text-blue-700 border border-blue-500/20">
+                <span className="px-3 py-1 rounded-xl text-xs font-bold bg-teal-500/10 text-teal-800 border border-teal-500/20">
                   Padrão Bancário Ativo
                 </span>
               </div>
             </div>
 
-            <div className="bg-superficie border border-borda rounded-3xl p-5 shadow-xl space-y-3">
-              <div className="w-10 h-10 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-700">
+            <div className="bg-superficie border border-borda rounded-3xl p-5 shadow-sm space-y-3">
+              <div className="w-10 h-10 rounded-2xl bg-teal-500/10 border border-teal-500/20 flex items-center justify-center text-teal-800">
                 <History className="w-5 h-5" />
               </div>
               <h3 className="text-sm font-bold text-tinta">Trilha de Auditoria (RN011)</h3>
@@ -1437,7 +1436,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
               <div className="pt-2">
                 <button
                   onClick={() => onNavigate('audit-logs')}
-                  className="text-xs font-bold text-purple-700 hover:text-purple-700 flex items-center space-x-1"
+                  className="text-xs font-bold text-teal-700 hover:text-teal-700 flex items-center space-x-1"
                 >
                   <span>Ver Todos os Logs de Auditoria</span>
                   <ExternalLink className="w-3 h-3" />
@@ -1447,7 +1446,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
           </div>
 
           {/* Recent Access & Auth Audit Logs */}
-          <div className="bg-superficie border border-borda rounded-3xl p-6 shadow-xl space-y-4">
+          <div className="bg-superficie border border-borda rounded-3xl p-6 shadow-sm space-y-4">
             <h2 className="text-sm font-bold text-tinta flex items-center space-x-2">
               <History className="w-4 h-4 text-teal-700" />
               <span>Eventos Recentes de Acesso & Segurança</span>
@@ -1497,7 +1496,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
       {/* MODAL: CREATE / EDIT USER */}
       {isNewUserModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-fundo backdrop-blur-md animate-in fade-in duration-200">
-          <div className="bg-superficie border border-borda rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl p-6 space-y-6">
+          <div className="bg-superficie border border-borda rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-sm p-6 space-y-6">
             <div className="flex items-center justify-between border-b border-borda pb-4">
               <div className="flex items-center space-x-3">
                 <div className="w-10 h-10 rounded-2xl bg-teal-500/10 border border-teal-500/20 flex items-center justify-center text-teal-800">
@@ -1581,20 +1580,20 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
                 </div>
 
                 {formData.role.startsWith('CLIENTE_') && (
-                  <div className="space-y-1 sm:col-span-2 p-3 bg-purple-50 border border-purple-200 rounded-2xl">
-                    <label className="text-xs font-semibold text-purple-700">Empresa Cliente Vinculada *</label>
+                  <div className="space-y-1 sm:col-span-2 p-3 bg-teal-50 border border-teal-200 rounded-2xl">
+                    <label className="text-xs font-semibold text-teal-700">Empresa Cliente Vinculada *</label>
                     <select
                       required
                       value={formData.client_id}
                       onChange={(e) => setFormData({ ...formData, client_id: e.target.value })}
-                      className="w-full px-3.5 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-purple-500 mt-1"
+                      className="w-full px-3.5 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500 mt-1"
                     >
                       <option value="">Selecione a empresa cliente...</option>
                       {clients.map(c => (
                         <option key={c.id} value={c.id}>{c.trade_name} ({c.document_number})</option>
                       ))}
                     </select>
-                    <p className="text-[10px] text-purple-700 mt-1">
+                    <p className="text-[10px] text-teal-700 mt-1">
                       O banco (RLS) limita esta conta à empresa selecionada: OS, contratos, laudos liberados, pendências e assinaturas. Nenhum dado de saúde, de outro cliente ou interno.
                     </p>
                   </div>
@@ -1743,7 +1742,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
                 <button
                   type="submit"
                   disabled={isSavingUser}
-                  className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-teal-500 to-marca-escura hover:from-teal-400 hover:to-marca-escura text-slate-950 font-bold text-xs shadow-lg shadow-emerald-950/40 transition disabled:opacity-50"
+                  className="bg-marca-escura text-white px-5 py-2.5 rounded-xl font-bold text-xs shadow-sm transition disabled:opacity-50"
                 >
                   {isSavingUser ? 'Criando conta real...' : editingProfile ? 'Salvar Alterações' : 'Concluir Cadastro & Convidar'}
                 </button>
@@ -1756,7 +1755,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
       {/* MODAL: INVITE LINK GENERATED */}
       {inviteModalData && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-fundo backdrop-blur-md animate-in fade-in duration-200">
-          <div className="bg-superficie border border-borda rounded-3xl w-full max-w-lg shadow-2xl p-6 space-y-5">
+          <div className="bg-superficie border border-borda rounded-3xl w-full max-w-lg shadow-sm p-6 space-y-5">
             <div className="flex items-center space-x-3 text-marca-escura">
               <div className="w-10 h-10 rounded-2xl bg-marca-suave border border-marca-escura flex items-center justify-center">
                 <Send className="w-5 h-5" />
@@ -1778,7 +1777,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
                 />
                 <button
                   onClick={() => copyToClipboard(inviteModalData.url)}
-                  className="p-2 rounded-xl bg-teal-500 text-slate-950 font-bold text-xs transition hover:bg-teal-400 flex items-center space-x-1"
+                  className="bg-marca-escura text-white p-2 rounded-xl font-bold text-xs transition flex items-center space-x-1 hover:opacity-90"
                 >
                   {copySuccess ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                 </button>
@@ -1804,7 +1803,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
               </button>
               <button
                 onClick={() => handleShareInvite('EMAIL')}
-                className="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition flex items-center justify-center space-x-1.5"
+                className="px-4 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold transition flex items-center justify-center space-x-1.5"
               >
                 <Mail className="w-3.5 h-3.5" />
                 <span>Abrir no E-mail</span>
@@ -1831,7 +1830,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
       {/* MODAL: PASSWORD RESET SUCCESS */}
       {passwordResetSuccess && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-fundo backdrop-blur-md animate-in fade-in duration-200">
-          <div className="bg-superficie border border-borda rounded-3xl w-full max-w-md shadow-2xl p-6 space-y-4">
+          <div className="bg-superficie border border-borda rounded-3xl w-full max-w-md shadow-sm p-6 space-y-4">
             <div className="flex items-center space-x-3 text-amber-700">
               <div className="w-10 h-10 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center">
                 <KeyRound className="w-5 h-5" />
@@ -1855,7 +1854,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
             <div className="flex items-center justify-end">
               <button
                 onClick={() => setPasswordResetSuccess(null)}
-                className="px-4 py-2 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs transition"
+                className="bg-marca-escura text-white px-4 py-2 rounded-xl font-bold text-xs transition hover:opacity-90"
               >
                 Entendido
               </button>
@@ -1867,7 +1866,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
       {/* MODAL: DELETE CONFIRMATION */}
       {deleteConfirmId && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-fundo backdrop-blur-md animate-in fade-in duration-200">
-          <div className="bg-superficie border border-borda rounded-3xl w-full max-w-md shadow-2xl p-6 space-y-4">
+          <div className="bg-superficie border border-borda rounded-3xl w-full max-w-md shadow-sm p-6 space-y-4">
             <div className="flex items-center space-x-3 text-rose-700">
               <div className="w-10 h-10 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center">
                 <ShieldAlert className="w-5 h-5" />
@@ -1891,7 +1890,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
               </button>
               <button
                 onClick={() => handleDeleteUser(deleteConfirmId)}
-                className="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-lg shadow-rose-950/50 transition"
+                className="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-sm transition"
               >
                 Sim, Excluir Usuário
               </button>

@@ -201,7 +201,7 @@ export const SaaSManagementView: React.FC<{ onNavigate: (view: string) => void }
       case 'ACTIVE':
         return <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-marca-suave text-marca-escura border border-marca-escura"><CheckCircle2 className="w-3 h-3 mr-1" /> Ativo</span>;
       case 'TRIAL':
-        return <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-blue-500/10 text-blue-700 border border-blue-500/20"><Sparkles className="w-3 h-3 mr-1" /> Em Teste (Trial)</span>;
+        return <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-teal-500/10 text-teal-800 border border-teal-500/20"><Sparkles className="w-3 h-3 mr-1" /> Em Teste (Trial)</span>;
       case 'PAST_DUE':
         return <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-amber-500/10 text-amber-800 border border-amber-500/20"><AlertTriangle className="w-3 h-3 mr-1" /> Pendente / Vencido</span>;
       case 'SUSPENDED':
@@ -218,9 +218,9 @@ export const SaaSManagementView: React.FC<{ onNavigate: (view: string) => void }
       case 'PRO':
         return <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-semibold bg-teal-500/20 text-teal-800 border border-teal-500/40">Professional</span>;
       case 'ENTERPRISE':
-        return <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-semibold bg-purple-500/20 text-purple-700 border border-purple-500/40">Enterprise</span>;
+        return <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-semibold bg-teal-500/20 text-teal-800 border border-teal-500/40">Enterprise</span>;
       case 'CUSTOM':
-        return <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-semibold bg-indigo-500/20 text-indigo-700 border border-indigo-500/40">Custom</span>;
+        return <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-semibold bg-teal-500/20 text-teal-800 border border-teal-500/40">Custom</span>;
     }
   };
 
@@ -228,7 +228,7 @@ export const SaaSManagementView: React.FC<{ onNavigate: (view: string) => void }
     <div className="space-y-6 pb-12">
       {/* Active Impersonation Context Alert */}
       {activeTenantContext && (
-        <div className="bg-gradient-to-r from-amber-500/20 via-amber-600/20 to-orange-500/20 border border-amber-500/40 rounded-2xl p-4 flex items-center justify-between text-amber-800 shadow-xl backdrop-blur-md">
+        <div className="bg-amber-500 border border-amber-500/40 rounded-2xl p-4 flex items-center justify-between text-amber-950 shadow-sm backdrop-blur-md">
           <div className="flex items-center space-x-3">
             <div className="p-2 bg-amber-500/20 rounded-xl">
               <Eye className="w-5 h-5 text-amber-700" />
@@ -242,7 +242,7 @@ export const SaaSManagementView: React.FC<{ onNavigate: (view: string) => void }
           </div>
           <button
             onClick={() => switchTenantContext(null)}
-            className="flex items-center space-x-1.5 px-3 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-xl text-xs transition shadow-md"
+            className="flex items-center space-x-1.5 px-3 py-1.5 bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold rounded-xl text-xs transition shadow-sm border border-amber-200"
           >
             <LogOut className="w-3.5 h-3.5" />
             <span>Sair do Modo Suporte</span>
@@ -252,7 +252,7 @@ export const SaaSManagementView: React.FC<{ onNavigate: (view: string) => void }
 
       {/* Success Notification Alert */}
       {inviteSuccessMsg && (
-        <div className="bg-marca-suave border border-marca-escura rounded-2xl p-4 flex items-center justify-between text-marca-escura shadow-xl animate-in fade-in duration-200">
+        <div className="bg-marca-suave border border-marca-escura rounded-2xl p-4 flex items-center justify-between text-marca-escura shadow-sm animate-in fade-in duration-200">
           <div className="flex items-center space-x-3">
             <CheckCircle2 className="w-5 h-5 text-marca-escura shrink-0" />
             <p className="text-xs sm:text-sm font-medium">{inviteSuccessMsg}</p>
@@ -264,12 +264,11 @@ export const SaaSManagementView: React.FC<{ onNavigate: (view: string) => void }
       )}
 
       {/* Main Header Bento Card */}
-      <div className="bg-superficie border border-borda rounded-3xl p-6 sm:p-7 shadow-2xl relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-teal-500/5 rounded-full blur-3xl pointer-events-none" />
+      <div className="bg-superficie border border-borda rounded-3xl p-6 sm:p-7 shadow-sm relative overflow-hidden">
         
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
           <div className="flex items-start space-x-4">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-teal-500 to-marca-escura flex items-center justify-center shadow-lg shadow-teal-950/50 shrink-0">
+            <div className="bg-teal-500 w-14 h-14 rounded-2xl flex items-center justify-center shadow-sm shrink-0">
               <Building2 className="w-7 h-7 text-tinta" />
             </div>
             <div>
@@ -296,7 +295,7 @@ export const SaaSManagementView: React.FC<{ onNavigate: (view: string) => void }
 
             <button
               onClick={() => setIsNewTenantModalOpen(true)}
-              className="flex items-center space-x-2 px-4 py-2.5 bg-gradient-to-r from-teal-500 to-marca-escura hover:from-teal-400 hover:to-marca-escura text-slate-950 font-bold rounded-2xl text-xs transition shadow-lg shadow-teal-950/50"
+              className="bg-marca-escura text-white flex items-center space-x-2 px-4 py-2.5 font-bold rounded-2xl text-xs transition shadow-sm"
             >
               <Plus className="w-4 h-4" />
               <span>Cadastrar Nova Consultoria</span>
@@ -325,7 +324,7 @@ export const SaaSManagementView: React.FC<{ onNavigate: (view: string) => void }
           <div className="p-3.5 bg-fundo border border-borda rounded-2xl">
             <div className="flex items-center justify-between text-tinta-2 text-xs mb-1">
               <span>Empresas Gerenciadas</span>
-              <Layers className="w-4 h-4 text-blue-700" />
+              <Layers className="w-4 h-4 text-teal-700" />
             </div>
             <p className="text-lg sm:text-xl font-bold text-tinta">{totalManagedClients} <span className="text-xs font-normal text-tinta-2">clientes finais</span></p>
           </div>
@@ -333,7 +332,7 @@ export const SaaSManagementView: React.FC<{ onNavigate: (view: string) => void }
           <div className="p-3.5 bg-fundo border border-borda rounded-2xl">
             <div className="flex items-center justify-between text-tinta-2 text-xs mb-1">
               <span>Usuários Internos SST</span>
-              <Users className="w-4 h-4 text-purple-700" />
+              <Users className="w-4 h-4 text-teal-700" />
             </div>
             <p className="text-lg sm:text-xl font-bold text-tinta">{totalInternalUsers} <span className="text-xs font-normal text-tinta-2">técnicos / admins</span></p>
           </div>
@@ -371,7 +370,7 @@ export const SaaSManagementView: React.FC<{ onNavigate: (view: string) => void }
       {activeTab === 'TENANTS' && (
         <div className="space-y-4">
           {/* Search & Filter Bar */}
-          <div className="flex flex-col sm:flex-row gap-3 items-center justify-between bg-superficie p-4 rounded-3xl border border-borda shadow-lg">
+          <div className="flex flex-col sm:flex-row gap-3 items-center justify-between bg-superficie p-4 rounded-3xl border border-borda shadow-sm">
             <div className="relative w-full sm:w-80">
               <Search className="w-4 h-4 text-tinta-2 absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
@@ -420,7 +419,7 @@ export const SaaSManagementView: React.FC<{ onNavigate: (view: string) => void }
             {filteredTenants.map((tenant) => (
               <div 
                 key={tenant.id}
-                className="bg-superficie border border-borda hover:border-borda rounded-3xl p-5 sm:p-6 shadow-xl transition space-y-4"
+                className="bg-superficie border border-borda hover:border-borda rounded-3xl p-5 sm:p-6 shadow-sm transition space-y-4"
               >
                 <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                   {/* Company Info */}
@@ -607,7 +606,7 @@ export const SaaSManagementView: React.FC<{ onNavigate: (view: string) => void }
                   }`}
                 >
                   {isPopular && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 bg-gradient-to-r from-teal-500 to-marca-escura text-slate-950 font-black text-[10px] uppercase rounded-full shadow-md">
+                    <div className="bg-marca-escura text-white absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 font-black text-[10px] uppercase rounded-full shadow-sm">
                       Plano Mais Vendido
                     </div>
                   )}
@@ -685,7 +684,7 @@ export const SaaSManagementView: React.FC<{ onNavigate: (view: string) => void }
       {/* MODAL: NEW TENANT / SUBSCRIBER ONBOARDING */}
       {isNewTenantModalOpen && (
         <div className="fixed inset-0 z-50 bg-fundo backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-superficie border border-borda rounded-3xl max-w-2xl w-full p-6 sm:p-7 shadow-2xl space-y-6 my-8">
+          <div className="bg-superficie border border-borda rounded-3xl max-w-2xl w-full p-6 sm:p-7 shadow-sm space-y-6 my-8">
             <div className="flex items-center justify-between border-b border-borda pb-4">
               <div className="flex items-center space-x-3">
                 <div className="w-10 h-10 rounded-xl bg-teal-500/20 text-teal-800 flex items-center justify-center font-bold">
@@ -855,7 +854,7 @@ export const SaaSManagementView: React.FC<{ onNavigate: (view: string) => void }
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2.5 bg-gradient-to-r from-teal-500 to-marca-escura hover:from-teal-400 hover:to-marca-escura text-slate-950 font-bold rounded-xl text-xs transition shadow-lg shadow-teal-950/40"
+                  className="bg-marca-escura text-white px-5 py-2.5 font-bold rounded-xl text-xs transition shadow-sm"
                 >
                   Criar Ambiente e Gerar Acesso
                 </button>
@@ -868,7 +867,7 @@ export const SaaSManagementView: React.FC<{ onNavigate: (view: string) => void }
       {/* MODAL: EDIT TENANT */}
       {isEditModalOpen && selectedTenantForEdit && (
         <div className="fixed inset-0 z-50 bg-fundo backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-superficie border border-borda rounded-3xl max-w-xl w-full p-6 shadow-2xl space-y-5 my-8">
+          <div className="bg-superficie border border-borda rounded-3xl max-w-xl w-full p-6 shadow-sm space-y-5 my-8">
             <div className="flex items-center justify-between border-b border-borda pb-3">
               <h3 className="text-base font-bold text-tinta">Editar Consultoria: {selectedTenantForEdit.trade_name}</h3>
               <button onClick={() => setIsEditModalOpen(false)} className="text-tinta-2 hover:text-tinta">
@@ -959,7 +958,7 @@ export const SaaSManagementView: React.FC<{ onNavigate: (view: string) => void }
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold rounded-xl text-xs"
+                  className="bg-marca-escura text-white px-4 py-2 font-bold rounded-xl text-xs hover:opacity-90"
                 >
                   Salvar Alterações
                 </button>
@@ -972,7 +971,7 @@ export const SaaSManagementView: React.FC<{ onNavigate: (view: string) => void }
       {/* MODAL: ARCHITECTURAL EXPLAINER (HOW MULTI-TENANCY WORKS IN PRACTICE) */}
       {isArchitectureModalOpen && (
         <div className="fixed inset-0 z-50 bg-fundo backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-superficie border border-borda rounded-3xl max-w-3xl w-full p-6 sm:p-8 shadow-2xl space-y-6 my-8">
+          <div className="bg-superficie border border-borda rounded-3xl max-w-3xl w-full p-6 sm:p-8 shadow-sm space-y-6 my-8">
             <div className="flex items-center justify-between border-b border-borda pb-4">
               <div className="flex items-center space-x-3">
                 <div className="w-10 h-10 rounded-xl bg-teal-500/20 text-teal-800 flex items-center justify-center font-bold">
@@ -1004,7 +1003,7 @@ export const SaaSManagementView: React.FC<{ onNavigate: (view: string) => void }
               </div>
 
               <div className="p-4 bg-fundo border border-borda rounded-2xl">
-                <h4 className="text-sm font-bold text-blue-700 mb-1">3. Como Funciona a Liberação do Acesso na Prática?</h4>
+                <h4 className="text-sm font-bold text-teal-700 mb-1">3. Como Funciona a Liberação do Acesso na Prática?</h4>
                 <ol className="list-decimal pl-4 space-y-1.5 mt-2">
                   <li><strong>Venda Fechada:</strong> Você entra neste painel Super Admin e clica em <em>&quot;Cadastrar Nova Consultoria&quot;</em>.</li>
                   <li><strong>Geração do Token:</strong> O sistema cria o registro da consultoria e gera um <strong>Token Criptografado de Primeiro Acesso</strong>.</li>
@@ -1018,7 +1017,7 @@ export const SaaSManagementView: React.FC<{ onNavigate: (view: string) => void }
             <div className="flex justify-end pt-3 border-t border-borda">
               <button
                 onClick={() => setIsArchitectureModalOpen(false)}
-                className="px-5 py-2.5 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold rounded-xl text-xs transition"
+                className="bg-marca-escura text-white px-5 py-2.5 font-bold rounded-xl text-xs transition hover:opacity-90"
               >
                 Entendi, Fechar
               </button>

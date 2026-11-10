@@ -244,7 +244,7 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
             <p className="text-2xl font-black text-tinta mt-1">{totalTrainingsCount}</p>
             <p className="text-[11px] text-tinta-2 mt-0.5">NR-01 item 1.7 (Capacitação)</p>
           </div>
-          <div className="p-3 bg-indigo-500/10 border border-indigo-500/20 rounded-xl text-indigo-700">
+          <div className="p-3 bg-teal-500/10 border border-teal-500/20 rounded-xl text-teal-800">
             <GraduationCap className="w-6 h-6" />
           </div>
         </div>
@@ -265,10 +265,10 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
         <div className="bg-superficie border border-borda p-4 rounded-xl flex items-center justify-between shadow-sm">
           <div>
             <p className="text-xs font-semibold text-tinta-2 uppercase tracking-wider">Atas com Validade Jurídica</p>
-            <p className="text-2xl font-black text-violet-700 mt-1">{clientTrainings.filter(t => t.status === 'COMPLETED').length}</p>
-            <p className="text-[11px] text-violet-700 mt-0.5">Instrutor & RT com ART/CREA</p>
+            <p className="text-2xl font-black text-teal-700 mt-1">{clientTrainings.filter(t => t.status === 'COMPLETED').length}</p>
+            <p className="text-[11px] text-teal-700 mt-0.5">Instrutor & RT com ART/CREA</p>
           </div>
-          <div className="p-3 bg-violet-500/10 border border-violet-500/20 rounded-xl text-violet-700">
+          <div className="p-3 bg-teal-500/10 border border-teal-500/20 rounded-xl text-teal-800">
             <Award className="w-6 h-6" />
           </div>
         </div>
@@ -281,7 +281,7 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
             </p>
             <p className="text-[11px] text-tinta-2 mt-0.5">CNPJ: {activeClient?.document_number || 'S/N'}</p>
           </div>
-          <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-xl text-blue-700">
+          <div className="p-3 bg-teal-500/10 border border-teal-500/20 rounded-xl text-teal-800">
             <Building2 className="w-6 h-6" />
           </div>
         </div>
@@ -298,14 +298,14 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
               placeholder="Buscar treinamento por título, código, instrutor ou participante..."
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
-              className="w-full pl-9 pr-3 py-2 bg-fundo border border-borda rounded-lg text-xs text-tinta placeholder-tinta-3 focus:outline-none focus:border-indigo-500 transition-colors"
+              className="w-full pl-9 pr-3 py-2 bg-fundo border border-borda rounded-lg text-xs text-tinta placeholder-tinta-3 focus:outline-none focus:border-teal-500 transition-colors"
             />
           </div>
 
           <select
             value={filterType}
             onChange={e => setFilterType(e.target.value)}
-            className="bg-fundo border border-borda rounded-lg text-xs text-tinta py-2 px-3 focus:outline-none focus:border-indigo-500"
+            className="bg-fundo border border-borda rounded-lg text-xs text-tinta py-2 px-3 focus:outline-none focus:border-teal-500"
           >
             <option value="ALL">Todos os Tipos</option>
             <option value="ADMISSION_INTEGRATION">Integração Admissional</option>
@@ -318,7 +318,7 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
           <select
             value={filterStatus}
             onChange={e => setFilterStatus(e.target.value)}
-            className="bg-fundo border border-borda rounded-lg text-xs text-tinta py-2 px-3 focus:outline-none focus:border-indigo-500"
+            className="bg-fundo border border-borda rounded-lg text-xs text-tinta py-2 px-3 focus:outline-none focus:border-teal-500"
           >
             <option value="ALL">Status (Todos)</option>
             <option value="COMPLETED">Concluído ✓</option>
@@ -331,7 +331,7 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
         <div className="flex flex-wrap items-center gap-2 shrink-0">
           <button
             onClick={handleQuickCreateAdmissionTraining}
-            className="px-3 py-2 bg-gradient-to-r from-indigo-700 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white rounded-lg text-xs font-bold transition-all shadow-md shadow-indigo-600/20 flex items-center gap-1.5"
+            className="bg-teal-700 px-3 py-2 text-white rounded-lg text-xs font-bold transition-all shadow-md flex items-center gap-1.5"
             title="Cria automaticamente o Treinamento de Integração com todos os colaboradores admitidos da empresa"
           >
             <Sparkles className="w-3.5 h-3.5" />
@@ -383,7 +383,7 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
                   return (
                     <tr key={t.id} className="hover:bg-superficie-2 transition-colors">
                       <td className="py-3 px-3">
-                        <div className="font-mono font-bold text-indigo-700">{t.training_code}</div>
+                        <div className="font-mono font-bold text-teal-700">{t.training_code}</div>
                         <div className="text-[11px] text-tinta-2 flex items-center gap-1 mt-0.5">
                           <Calendar className="w-3 h-3" />
                           {formatDate(t.start_date)}
@@ -490,11 +490,11 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
       {/* ================= MODAL: VIEW / PRINT ATTENDANCE LIST (ATA) ================= */}
       {viewingTraining && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-superficie border border-borda rounded-2xl w-full max-w-5xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-superficie border border-borda rounded-2xl w-full max-w-5xl max-h-[90vh] flex flex-col shadow-sm overflow-hidden animate-in fade-in zoom-in-95 duration-200">
             {/* Header */}
             <div className="px-6 py-4 bg-fundo border-b border-borda flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-indigo-500/10 border border-indigo-500/20 rounded-xl text-indigo-700">
+                <div className="p-2 bg-teal-500/10 border border-teal-500/20 rounded-xl text-teal-800">
                   <GraduationCap className="w-5 h-5" />
                 </div>
                 <div>
@@ -519,7 +519,7 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
               {/* Top Legal Metadata */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-fundo p-4 rounded-xl border border-borda">
                 <div className="space-y-1">
-                  <p className="text-indigo-700 font-bold uppercase tracking-wider text-[11px] mb-2">Dados do Treinamento</p>
+                  <p className="text-teal-700 font-bold uppercase tracking-wider text-[11px] mb-2">Dados do Treinamento</p>
                   <p><span className="text-tinta-2">Empresa:</span> <strong className="text-tinta">{viewingTraining.client_name}</strong></p>
                   <p><span className="text-tinta-2">Carga Horária:</span> {viewingTraining.workload_hours} horas ({viewingTraining.modality === 'PRESENTIAL' ? 'Presencial' : 'Híbrido'})</p>
                   <p><span className="text-tinta-2">Período de Realização:</span> {formatDate(viewingTraining.start_date)} a {formatDate(viewingTraining.end_date)}</p>
@@ -528,7 +528,7 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
                 </div>
 
                 <div className="space-y-1">
-                  <p className="text-indigo-700 font-bold uppercase tracking-wider text-[11px] mb-2">Responsabilidade Técnica & Docência</p>
+                  <p className="text-teal-700 font-bold uppercase tracking-wider text-[11px] mb-2">Responsabilidade Técnica & Docência</p>
                   <p><span className="text-tinta-2">Instrutor Docente:</span> <strong className="text-tinta">{viewingTraining.instructor_name}</strong></p>
                   <p><span className="text-tinta-2">Qualificação / Registro:</span> {viewingTraining.instructor_qualification} ({viewingTraining.instructor_registration_number})</p>
                   <p><span className="text-tinta-2">Responsável Técnico (RT):</span> <strong className="text-tinta">{viewingTraining.technical_supervisor_name}</strong></p>
@@ -539,7 +539,7 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
 
               {/* Syllabus / Conteúdo Programático */}
               <div className="space-y-2">
-                <h4 className="font-bold text-tinta uppercase tracking-wider flex items-center gap-1.5 text-indigo-700">
+                <h4 className="font-bold text-tinta uppercase tracking-wider flex items-center gap-1.5 text-teal-700">
                   <BookOpen className="w-3.5 h-3.5" />
                   Conteúdo Programático Ministrado (NR-01 subitem 1.7.1)
                 </h4>
@@ -556,7 +556,7 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
               {/* Attendees & Attendance Table */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <h4 className="font-bold text-tinta uppercase tracking-wider flex items-center gap-1.5 text-indigo-700">
+                  <h4 className="font-bold text-tinta uppercase tracking-wider flex items-center gap-1.5 text-teal-700">
                     <Users className="w-3.5 h-3.5" />
                     Lista Nominal de Presença & Assinaturas ({viewingTraining.attendees.length})
                   </h4>
@@ -628,7 +628,7 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
                           <td className="py-2.5 px-3 text-right">
                             <button
                               onClick={() => exportTrainingCertificatePDF(viewingTraining, attendee, organization)}
-                              className="p-1.5 text-indigo-700 hover:text-indigo-700 hover:bg-indigo-50 rounded-lg transition-colors inline-flex items-center gap-1 text-[11px] font-semibold"
+                              className="p-1.5 text-teal-700 hover:text-teal-700 hover:bg-teal-50 rounded-lg transition-colors inline-flex items-center gap-1 text-[11px] font-semibold"
                               title="Emitir Certificado Individual de Capacitação"
                             >
                               <Award className="w-3.5 h-3.5" />
@@ -643,8 +643,8 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
               </div>
 
               {/* Legal Validity Term */}
-              <div className="p-3.5 bg-indigo-50 border border-indigo-200 rounded-xl text-indigo-700 text-[11px] leading-relaxed">
-                <strong className="text-indigo-700 block mb-1">Declaração de Validade Jurídica (NR-01 item 1.7.4):</strong>
+              <div className="p-3.5 bg-teal-50 border border-teal-200 rounded-xl text-teal-700 text-[11px] leading-relaxed">
+                <strong className="text-teal-700 block mb-1">Declaração de Validade Jurídica (NR-01 item 1.7.4):</strong>
                 {viewingTraining.certificate_validity_legal_statement}
               </div>
             </div>
@@ -669,7 +669,7 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
 
                 <button
                   onClick={() => exportTrainingAttendanceListPDF(viewingTraining, organization)}
-                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5 shadow-md shadow-indigo-600/20"
+                  className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5 shadow-md"
                 >
                   <Printer className="w-3.5 h-3.5" />
                   Imprimir Ata de Presença Oficial (PDF)
@@ -683,10 +683,10 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
       {/* ================= MODAL: CREATE NEW TRAINING ================= */}
       {isCreateModalOpen && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-superficie border border-borda rounded-2xl w-full max-w-3xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-superficie border border-borda rounded-2xl w-full max-w-3xl max-h-[90vh] flex flex-col shadow-sm overflow-hidden animate-in fade-in zoom-in-95 duration-200">
             <div className="px-6 py-4 bg-fundo border-b border-borda flex items-center justify-between">
               <h3 className="text-base font-bold text-tinta flex items-center gap-2">
-                <GraduationCap className="w-5 h-5 text-indigo-700" />
+                <GraduationCap className="w-5 h-5 text-teal-700" />
                 Cadastrar Treinamento de Integração (NR-01)
               </h3>
               <button onClick={() => setIsCreateModalOpen(false)} className="text-tinta-2 hover:text-tinta">
@@ -702,7 +702,7 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
                     type="text"
                     value={newTrainingTitle}
                     onChange={e => setNewTrainingTitle(e.target.value)}
-                    className="w-full bg-fundo border border-borda rounded-xl p-2.5 text-tinta focus:border-indigo-500 focus:outline-none"
+                    className="w-full bg-fundo border border-borda rounded-xl p-2.5 text-tinta focus:border-teal-500 focus:outline-none"
                   />
                 </div>
 
@@ -711,7 +711,7 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
                   <select
                     value={newTrainingType}
                     onChange={e => setNewTrainingType(e.target.value as any)}
-                    className="w-full bg-fundo border border-borda rounded-xl p-2.5 text-tinta focus:border-indigo-500 focus:outline-none"
+                    className="w-full bg-fundo border border-borda rounded-xl p-2.5 text-tinta focus:border-teal-500 focus:outline-none"
                   >
                     <option value="ADMISSION_INTEGRATION">Integração Admissional (NR-01)</option>
                     <option value="PERIODIC_REFRESHER">Reciclagem Periódica</option>
@@ -728,7 +728,7 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
                   <select
                     value={newModality}
                     onChange={e => setNewModality(e.target.value as any)}
-                    className="w-full bg-fundo border border-borda rounded-xl p-2.5 text-tinta focus:border-indigo-500 focus:outline-none"
+                    className="w-full bg-fundo border border-borda rounded-xl p-2.5 text-tinta focus:border-teal-500 focus:outline-none"
                   >
                     <option value="PRESENTIAL">Presencial</option>
                     <option value="HYBRID">Híbrido (Semipresencial)</option>
@@ -742,7 +742,7 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
                     type="number"
                     value={newWorkloadHours}
                     onChange={e => setNewWorkloadHours(Number(e.target.value))}
-                    className="w-full bg-fundo border border-borda rounded-xl p-2.5 text-tinta focus:border-indigo-500 focus:outline-none"
+                    className="w-full bg-fundo border border-borda rounded-xl p-2.5 text-tinta focus:border-teal-500 focus:outline-none"
                   />
                 </div>
 
@@ -752,7 +752,7 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
                     type="number"
                     value={newValidityMonths}
                     onChange={e => setNewValidityMonths(Number(e.target.value))}
-                    className="w-full bg-fundo border border-borda rounded-xl p-2.5 text-tinta focus:border-indigo-500 focus:outline-none"
+                    className="w-full bg-fundo border border-borda rounded-xl p-2.5 text-tinta focus:border-teal-500 focus:outline-none"
                   />
                 </div>
               </div>
@@ -764,7 +764,7 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
                     type="date"
                     value={newStartDate}
                     onChange={e => setNewStartDate(e.target.value)}
-                    className="w-full bg-fundo border border-borda rounded-xl p-2.5 text-tinta focus:border-indigo-500 focus:outline-none"
+                    className="w-full bg-fundo border border-borda rounded-xl p-2.5 text-tinta focus:border-teal-500 focus:outline-none"
                   />
                 </div>
 
@@ -774,7 +774,7 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
                     type="date"
                     value={newEndDate}
                     onChange={e => setNewEndDate(e.target.value)}
-                    className="w-full bg-fundo border border-borda rounded-xl p-2.5 text-tinta focus:border-indigo-500 focus:outline-none"
+                    className="w-full bg-fundo border border-borda rounded-xl p-2.5 text-tinta focus:border-teal-500 focus:outline-none"
                   />
                 </div>
               </div>
@@ -785,14 +785,14 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
                   type="text"
                   value={newLocation}
                   onChange={e => setNewLocation(e.target.value)}
-                  className="w-full bg-fundo border border-borda rounded-xl p-2.5 text-tinta focus:border-indigo-500 focus:outline-none"
+                  className="w-full bg-fundo border border-borda rounded-xl p-2.5 text-tinta focus:border-teal-500 focus:outline-none"
                 />
               </div>
 
               {/* Instructor & Technical Supervisor */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3.5 bg-fundo rounded-xl border border-borda">
                 <div className="space-y-2">
-                  <p className="font-bold text-indigo-700 text-[11px] uppercase">Instrutor Docente</p>
+                  <p className="font-bold text-teal-700 text-[11px] uppercase">Instrutor Docente</p>
                   <input
                     type="text"
                     placeholder="Nome do Instrutor"
@@ -817,7 +817,7 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
                 </div>
 
                 <div className="space-y-2">
-                  <p className="font-bold text-indigo-700 text-[11px] uppercase">Responsável Técnico (RT)</p>
+                  <p className="font-bold text-teal-700 text-[11px] uppercase">Responsável Técnico (RT)</p>
                   <input
                     type="text"
                     placeholder="Nome do Responsável Técnico"
@@ -849,7 +849,7 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
                   rows={4}
                   value={newSyllabusText}
                   onChange={e => setNewSyllabusText(e.target.value)}
-                  className="w-full bg-fundo border border-borda rounded-xl p-2.5 text-tinta focus:border-indigo-500 focus:outline-none text-[11px] font-mono leading-relaxed"
+                  className="w-full bg-fundo border border-borda rounded-xl p-2.5 text-tinta focus:border-teal-500 focus:outline-none text-[11px] font-mono leading-relaxed"
                 />
               </div>
 
@@ -862,7 +862,7 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
                   <button
                     type="button"
                     onClick={handleSelectAllEmployees}
-                    className="text-xs text-indigo-700 hover:text-indigo-700 font-semibold"
+                    className="text-xs text-teal-700 hover:text-teal-700 font-semibold"
                   >
                     {selectedEmployeesForNewTraining.length === clientEmployees.length ? 'Desmarcar Todos' : 'Selecionar Todos da Empresa'}
                   </button>
@@ -875,7 +875,7 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
                         type="checkbox"
                         checked={selectedEmployeesForNewTraining.includes(emp.id)}
                         onChange={() => handleToggleSelectEmployee(emp.id)}
-                        className="rounded bg-superficie border-borda text-indigo-600 focus:ring-0"
+                        className="rounded bg-superficie border-borda text-teal-700 focus:ring-0"
                       />
                       <div className="flex-1 min-w-0">
                         <p className="font-bold text-tinta truncate">{emp.name} (CPF: {emp.cpf})</p>
@@ -897,7 +897,7 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
 
               <button
                 onClick={handleCreateTraining}
-                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5 shadow-md shadow-indigo-600/20"
+                className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5 shadow-md"
               >
                 <Sparkles className="w-3.5 h-3.5" />
                 Cadastrar e Homologar Ata
@@ -910,7 +910,7 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
       {/* ================= MODAL: COLLECT SIGNATURE / BIOMETRICS ================= */}
       {isSignModalOpen && signingEmployee && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-superficie border border-borda rounded-2xl w-full max-w-md shadow-2xl p-6 space-y-5 animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-superficie border border-borda rounded-2xl w-full max-w-md shadow-sm p-6 space-y-5 animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between border-b border-borda pb-3">
               <h3 className="text-base font-bold text-tinta flex items-center gap-2">
                 <Fingerprint className="w-5 h-5 text-marca-escura" />

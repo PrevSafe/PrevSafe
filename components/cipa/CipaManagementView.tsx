@@ -303,7 +303,7 @@ export const CipaManagementView: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Top Banner & Selector */}
-      <div className="rounded-2xl bg-gradient-to-r from-slate-900 via-teal-950 to-slate-900 p-6 text-white shadow-xl border border-teal-800/30">
+      <div className="bg-superficie rounded-2xl p-6 text-tinta shadow-sm border border-teal-200">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="space-y-2">
             <div className="flex flex-wrap items-center gap-2.5">
@@ -314,7 +314,7 @@ export const CipaManagementView: React.FC = () => {
               <span className="rounded-full bg-marca-suave border border-marca-escura px-3 py-1 text-xs font-semibold text-marca-escura">
                 Lei nº 14.457/2022 (Combate ao Assédio)
               </span>
-              <span className="rounded-full bg-blue-500/20 border border-blue-400/30 px-3 py-1 text-xs font-semibold text-blue-700">
+              <span className="rounded-full bg-teal-500/20 border border-teal-400/30 px-3 py-1 text-xs font-semibold text-teal-800">
                 LGPD &amp; Votação Auditável SHA-256
               </span>
             </div>
@@ -329,14 +329,14 @@ export const CipaManagementView: React.FC = () => {
           <div className="flex flex-wrap items-center gap-3">
             <button
               onClick={() => setIsNewProcessModalOpen(true)}
-              className="flex items-center gap-2 rounded-xl bg-teal-600 hover:bg-teal-700 px-4 py-2.5 text-xs font-bold text-white shadow-lg shadow-teal-900/40 transition active:scale-95"
+              className="flex items-center gap-2 rounded-xl bg-teal-600 hover:bg-teal-700 px-4 py-2.5 text-xs font-bold text-white shadow-sm transition active:scale-95"
             >
               <Plus className="h-4 w-4" />
               Novo Processo CIPA
             </button>
             <button
               onClick={() => setIsVotingModalOpen(true)}
-              className="flex items-center gap-2 rounded-xl bg-marca hover:bg-marca-escura px-4 py-2.5 text-xs font-bold text-white shadow-lg shadow-emerald-900/40 transition active:scale-95"
+              className="flex items-center gap-2 rounded-xl bg-marca hover:bg-marca-escura px-4 py-2.5 text-xs font-bold text-white shadow-sm transition active:scale-95"
             >
               <Vote className="h-4 w-4" />
               Cabine de Votação
@@ -356,7 +356,7 @@ export const CipaManagementView: React.FC = () => {
               onClick={() => setSelectedNormFilter(normKey)}
               className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
                 selectedNormFilter === normKey
-                  ? 'bg-teal-500 text-slate-950 font-bold shadow-sm'
+                  ? 'bg-marca-escura text-white font-bold shadow-sm'
                   : 'bg-superficie-2 text-tinta hover:bg-superficie-3 border border-borda'
               }`}
             >
@@ -1075,7 +1075,7 @@ export const CipaManagementView: React.FC = () => {
       {/* New CIPA Process Modal */}
       {isNewProcessModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-superficie p-4 backdrop-blur-sm">
-          <div className="w-full max-w-xl rounded-2xl bg-white p-6 shadow-2xl border border-slate-200 max-h-[90vh] overflow-y-auto space-y-5 text-xs text-slate-700">
+          <div className="w-full max-w-xl rounded-2xl bg-white p-6 shadow-sm border border-slate-200 max-h-[90vh] overflow-y-auto space-y-5 text-xs text-slate-700">
             <div className="flex items-center justify-between border-b pb-3">
               <h3 className="text-base font-bold text-slate-900">Novo Processo Eleitoral CIPA</h3>
               <button onClick={() => setIsNewProcessModalOpen(false)} className="text-tinta-2 hover:text-tinta-2 font-bold text-sm">✕</button>
@@ -1196,7 +1196,7 @@ export const CipaManagementView: React.FC = () => {
       {/* Add Candidate Modal */}
       {isAddCandidateModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-superficie p-4 backdrop-blur-sm">
-          <div className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-2xl border border-slate-200 max-h-[90vh] overflow-y-auto space-y-4 text-xs text-slate-700">
+          <div className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-sm border border-slate-200 max-h-[90vh] overflow-y-auto space-y-4 text-xs text-slate-700">
             <div className="flex items-center justify-between border-b pb-3">
               <h3 className="text-base font-bold text-slate-900">Inscrição de Candidato da CIPA</h3>
               <button onClick={() => setIsAddCandidateModalOpen(false)} className="text-tinta-2 font-bold">✕</button>
@@ -1311,7 +1311,7 @@ export const CipaManagementView: React.FC = () => {
       {/* Add Commission Member Modal */}
       {isAddCommissionModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-superficie p-4 backdrop-blur-sm">
-          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl border border-slate-200 space-y-4 text-xs text-slate-700">
+          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-sm border border-slate-200 space-y-4 text-xs text-slate-700">
             <div className="flex items-center justify-between border-b pb-3">
               <h3 className="text-base font-bold text-slate-900">Adicionar Membro da Comissão Eleitoral</h3>
               <button onClick={() => setIsAddCommissionModalOpen(false)} className="text-tinta-2 font-bold">✕</button>
@@ -1398,7 +1398,7 @@ export const CipaManagementView: React.FC = () => {
       {/* Add Appointee Modal */}
       {isAddAppointeeModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-superficie p-4 backdrop-blur-sm">
-          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl border border-slate-200 space-y-4 text-xs text-slate-700">
+          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-sm border border-slate-200 space-y-4 text-xs text-slate-700">
             <div className="flex items-center justify-between border-b pb-3">
               <h3 className="text-base font-bold text-slate-900">Novo Indicado pelo Empregador</h3>
               <button onClick={() => setIsAddAppointeeModalOpen(false)} className="text-tinta-2 font-bold">✕</button>
@@ -1484,7 +1484,7 @@ export const CipaManagementView: React.FC = () => {
       {/* Add Meeting Modal */}
       {isAddMeetingModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-superficie p-4 backdrop-blur-sm">
-          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl border border-slate-200 space-y-4 text-xs text-slate-700">
+          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-sm border border-slate-200 space-y-4 text-xs text-slate-700">
             <div className="flex items-center justify-between border-b pb-3">
               <h3 className="text-base font-bold text-slate-900">Registrar Reunião da CIPA</h3>
               <button onClick={() => setIsAddMeetingModalOpen(false)} className="text-tinta-2 font-bold">✕</button>
@@ -1557,7 +1557,7 @@ export const CipaManagementView: React.FC = () => {
       {/* View Meeting & Ata Details Modal */}
       {selectedMeetingForView && currentProcess && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-superficie p-4 backdrop-blur-sm">
-          <div className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-2xl border border-slate-200 space-y-4 text-xs text-slate-700">
+          <div className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-sm border border-slate-200 space-y-4 text-xs text-slate-700">
             <div className="flex items-center justify-between border-b pb-3">
               <div>
                 <span className="text-[11px] font-bold text-teal-700 uppercase">

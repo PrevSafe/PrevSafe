@@ -28,7 +28,7 @@ export const NumericQuickJumpIndicator: React.FC<NumericQuickJumpIndicatorProps>
 
   return (
     <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 animate-in fade-in zoom-in-95 duration-150">
-      <div className="bg-superficie border-2 border-marca-escura rounded-2xl shadow-2xl shadow-emerald-950/60 p-3 sm:p-4 backdrop-blur-md flex items-center gap-3 sm:gap-4 max-w-md w-full">
+      <div className="bg-superficie border-2 border-borda rounded-2xl shadow-sm p-3 sm:p-4 backdrop-blur-md flex items-center gap-3 sm:gap-4 max-w-md w-full">
         {/* Animated Badge with Typed Digits */}
         <div className="flex flex-col items-center justify-center bg-fundo border border-marca-escura rounded-xl px-3 sm:px-4 py-2 min-w-[72px] shadow-inner">
           <div className="flex items-center gap-1 text-[10px] text-marca-escura font-semibold uppercase tracking-wider">
@@ -76,7 +76,7 @@ export const NumericQuickJumpIndicator: React.FC<NumericQuickJumpIndicatorProps>
             <button
               type="button"
               onClick={onConfirm}
-              className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-marca hover:bg-marca-escura text-white text-xs font-bold shadow-md shadow-emerald-950/40 transition active:scale-95"
+              className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-marca hover:bg-marca-escura text-white text-xs font-bold shadow-md transition active:scale-95"
               title="Pressione Enter para ir imediatamente"
             >
               <span>Ir</span>

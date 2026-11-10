@@ -102,15 +102,15 @@ export const ResultadosDoAso: React.FC<Props> = ({ employee, aso }) => {
 
   if (!editando) {
     return (
-      <div className="pl-3 border-l border-pink-500/30 space-y-1">
+      <div className="pl-3 border-l border-rose-500/30 space-y-1">
         <div className="flex items-center justify-between gap-2">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-pink-700 flex items-center gap-1">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-rose-700 flex items-center gap-1">
             <Stethoscope className="w-3 h-3" /> Prontuário (papel Saúde)
           </span>
           <button
             type="button"
             onClick={abrirEdicao}
-            className="text-[10px] font-semibold text-pink-700 hover:text-pink-800 flex items-center gap-1"
+            className="text-[10px] font-semibold text-rose-700 hover:text-rose-800 flex items-center gap-1"
           >
             <Edit3 className="w-3 h-3" /> {registro ? 'Editar resultados' : 'Lançar resultados'}
           </button>
@@ -138,7 +138,7 @@ export const ResultadosDoAso: React.FC<Props> = ({ employee, aso }) => {
   }
 
   return (
-    <div className="pl-3 border-l border-pink-500/40 space-y-2">
+    <div className="pl-3 border-l border-rose-500/40 space-y-2">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
         <label className="space-y-0.5">
           <span className="text-[10px] font-semibold text-tinta-2">Conclusão clínica</span>
@@ -206,7 +206,7 @@ export const ResultadosDoAso: React.FC<Props> = ({ employee, aso }) => {
         <button
           type="button"
           onClick={salvar}
-          className="px-2 py-1 rounded bg-pink-500 text-slate-950 font-bold flex items-center gap-1"
+          className="px-2 py-1 rounded bg-rose-100 text-rose-900 font-bold flex items-center gap-1 border border-rose-200"
         >
           <Save className="w-3 h-3" /> Gravar no prontuário
         </button>

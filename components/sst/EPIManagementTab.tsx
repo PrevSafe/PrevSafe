@@ -403,7 +403,7 @@ export const EPIManagementTab: React.FC<EPIManagementTabProps> = ({ selectedClie
   return (
     <div className="space-y-6" id="epi-management-workspace">
       {/* Top Banner KPI / Header */}
-      <div className="bg-superficie border border-borda rounded-2xl p-6 relative overflow-hidden shadow-xl">
+      <div className="bg-superficie border border-borda rounded-2xl p-6 relative overflow-hidden shadow-sm">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
           <div className="space-y-2">
             <div className="flex items-center gap-2">
@@ -431,7 +431,7 @@ export const EPIManagementTab: React.FC<EPIManagementTabProps> = ({ selectedClie
               type="button"
               id="btn-delivery-facial"
               onClick={() => handleOpenDeliveryModal('FACIAL')}
-              className="px-4 py-2.5 bg-gradient-to-r from-teal-500 to-marca-escura hover:from-teal-600 hover:to-marca-escura text-slate-950 font-extrabold text-xs rounded-xl shadow-lg shadow-emerald-500/20 flex items-center gap-2 transition-all"
+              className="bg-marca-escura text-white px-4 py-2.5 font-extrabold text-xs rounded-xl shadow-sm flex items-center gap-2 transition-all"
             >
               <Camera className="w-4 h-4" />
               Entrega com Reconhecimento Facial
@@ -511,7 +511,7 @@ export const EPIManagementTab: React.FC<EPIManagementTabProps> = ({ selectedClie
           onClick={() => setActiveSubTab('DELIVERIES')}
           className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition-all ${
             activeSubTab === 'DELIVERIES'
-              ? 'bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/20'
+              ? 'bg-marca-escura text-white shadow-sm'
               : 'text-tinta-2 hover:text-tinta hover:bg-superficie'
           }`}
         >
@@ -525,7 +525,7 @@ export const EPIManagementTab: React.FC<EPIManagementTabProps> = ({ selectedClie
           onClick={() => setActiveSubTab('CATALOG')}
           className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition-all ${
             activeSubTab === 'CATALOG'
-              ? 'bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/20'
+              ? 'bg-marca-escura text-white shadow-sm'
               : 'text-tinta-2 hover:text-tinta hover:bg-superficie'
           }`}
         >
@@ -539,7 +539,7 @@ export const EPIManagementTab: React.FC<EPIManagementTabProps> = ({ selectedClie
           onClick={() => setActiveSubTab('SIGNATURE_SHEET')}
           className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition-all ${
             activeSubTab === 'SIGNATURE_SHEET'
-              ? 'bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/20'
+              ? 'bg-marca-escura text-white shadow-sm'
               : 'text-tinta-2 hover:text-tinta hover:bg-superficie'
           }`}
         >
@@ -594,7 +594,7 @@ export const EPIManagementTab: React.FC<EPIManagementTabProps> = ({ selectedClie
           </div>
 
           {/* Deliveries Table */}
-          <div className="bg-superficie border border-borda rounded-xl overflow-hidden shadow-lg">
+          <div className="bg-superficie border border-borda rounded-xl overflow-hidden shadow-sm">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs border-collapse">
                 <thead>
@@ -740,7 +740,7 @@ export const EPIManagementTab: React.FC<EPIManagementTabProps> = ({ selectedClie
             <button
               type="button"
               onClick={() => handleOpenCatalogModal()}
-              className="px-3.5 py-1.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs rounded-lg flex items-center gap-1.5 transition-colors"
+              className="px-3.5 py-1.5 bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold text-xs rounded-lg flex items-center gap-1.5 transition-colors border border-amber-200"
             >
               <Plus className="w-3.5 h-3.5" />
               Adicionar EPI ao Catálogo
@@ -879,7 +879,7 @@ export const EPIManagementTab: React.FC<EPIManagementTabProps> = ({ selectedClie
                 type="button"
                 id="btn-print-sheet-action"
                 onClick={handlePrintSheet}
-                className="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs rounded-lg flex items-center gap-2 shadow transition-colors"
+                className="px-4 py-2 bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold text-xs rounded-lg flex items-center gap-2 shadow-sm transition-colors border border-amber-200"
               >
                 <Printer className="w-4 h-4" />
                 Imprimir Ficha de EPI (PDF / Papel)
@@ -888,7 +888,7 @@ export const EPIManagementTab: React.FC<EPIManagementTabProps> = ({ selectedClie
           </div>
 
           {/* TEMA-CLARO-INICIO: ficha de EPI impressa em papel (NR-06, alinea "h" do subitem 6.6.1) */}
-          <div className="bg-white text-slate-900 p-8 rounded-2xl shadow-2xl border border-slate-300 max-w-4xl mx-auto space-y-6 font-sans text-xs">
+          <div className="bg-white text-slate-900 p-8 rounded-2xl shadow-sm border border-slate-300 max-w-4xl mx-auto space-y-6 font-sans text-xs">
             {/* Sheet Header */}
             <div className="border-b-2 border-borda pb-4 flex items-center justify-between">
               <div>
@@ -1031,7 +1031,7 @@ export const EPIManagementTab: React.FC<EPIManagementTabProps> = ({ selectedClie
       {/* ========================================================================= */}
       {isDeliveryModalOpen && (
         <div className="fixed inset-0 bg-fundo backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-superficie border border-borda rounded-2xl max-w-2xl w-full p-6 space-y-5 shadow-2xl my-8">
+          <div className="bg-superficie border border-borda rounded-2xl max-w-2xl w-full p-6 space-y-5 shadow-sm my-8">
             <div className="flex items-center justify-between border-b border-borda pb-3">
               <div className="flex items-center gap-2">
                 {deliveryMode === 'FACIAL' ? (
@@ -1148,7 +1148,7 @@ export const EPIManagementTab: React.FC<EPIManagementTabProps> = ({ selectedClie
                       type="button"
                       onClick={() => setDeliveryMode('MANUAL')}
                       className={`flex-1 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all ${
-                        deliveryMode === 'MANUAL' ? 'bg-amber-500 text-slate-950' : 'bg-fundo text-tinta border border-borda'
+                        deliveryMode === 'MANUAL' ? 'bg-marca-escura text-white' : 'bg-fundo text-tinta border border-borda'
                       }`}
                     >
                       <FileText className="w-3.5 h-3.5" />
@@ -1185,7 +1185,7 @@ export const EPIManagementTab: React.FC<EPIManagementTabProps> = ({ selectedClie
                         <button
                           type="button"
                           onClick={capturePhoto}
-                          className="px-4 py-2 bg-marca hover:bg-marca-escura text-white font-bold text-xs rounded-xl flex items-center gap-1.5 shadow-lg shadow-emerald-500/20"
+                          className="px-4 py-2 bg-marca hover:bg-marca-escura text-white font-bold text-xs rounded-xl flex items-center gap-1.5 shadow-sm"
                         >
                           <Camera className="w-4 h-4" />
                           Capturar Rosto do Trabalhador
@@ -1230,7 +1230,7 @@ export const EPIManagementTab: React.FC<EPIManagementTabProps> = ({ selectedClie
                         <button
                           type="button"
                           onClick={startCamera}
-                          className="px-4 py-2 bg-teal-500 hover:bg-teal-600 text-slate-950 font-bold text-xs rounded-xl flex items-center gap-1.5 mx-auto"
+                          className="bg-marca-escura text-white px-4 py-2 font-bold text-xs rounded-xl flex items-center gap-1.5 mx-auto hover:opacity-90"
                         >
                           <Camera className="w-4 h-4" />
                           Ativar Câmera Biométrica
@@ -1285,7 +1285,7 @@ export const EPIManagementTab: React.FC<EPIManagementTabProps> = ({ selectedClie
                 <button
                   type="submit"
                   disabled={selectedEpiIds.length === 0}
-                  className="px-5 py-2.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-extrabold text-xs rounded-xl shadow-lg shadow-amber-500/20 flex items-center gap-2 transition-all disabled:opacity-50"
+                  className="bg-amber-100 px-5 py-2.5 text-amber-900 font-extrabold text-xs rounded-xl shadow-sm flex items-center gap-2 transition-all disabled:opacity-50 border border-amber-200"
                 >
                   <CheckCircle2 className="w-4 h-4" />
                   Confirmar Entrega de {selectedEpiIds.length} EPI(s)
@@ -1301,7 +1301,7 @@ export const EPIManagementTab: React.FC<EPIManagementTabProps> = ({ selectedClie
       {/* ========================================================================= */}
       {isCatalogModalOpen && (
         <div className="fixed inset-0 bg-fundo backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-superficie border border-borda rounded-2xl max-w-xl w-full p-6 space-y-4 shadow-2xl my-8">
+          <div className="bg-superficie border border-borda rounded-2xl max-w-xl w-full p-6 space-y-4 shadow-sm my-8">
             <div className="flex items-center justify-between border-b border-borda pb-3">
               <div className="flex items-center gap-2">
                 <Package className="w-5 h-5 text-amber-700" />
@@ -1463,7 +1463,7 @@ export const EPIManagementTab: React.FC<EPIManagementTabProps> = ({ selectedClie
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold rounded-xl shadow transition-colors"
+                  className="px-5 py-2 bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold rounded-xl shadow-sm transition-colors border border-amber-200"
                 >
                   Salvar no Catálogo
                 </button>

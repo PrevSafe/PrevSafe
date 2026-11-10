@@ -97,7 +97,7 @@ export default function ValidarPage() {
 
         <form
           onSubmit={(e) => { e.preventDefault(); void verify(doc, hash); }}
-          className="bg-superficie border border-borda rounded-3xl p-5 space-y-4 shadow-xl"
+          className="bg-superficie border border-borda rounded-3xl p-5 space-y-4 shadow-sm"
         >
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
@@ -142,7 +142,7 @@ export default function ValidarPage() {
         </form>
 
         {message && searched && (
-          <div className="bg-rose-50 border border-rose-800/60 rounded-3xl p-5 flex gap-3">
+          <div className="bg-rose-50 border border-rose-200 rounded-3xl p-5 flex gap-3">
             <ShieldAlert className="w-5 h-5 text-rose-700 shrink-0 mt-0.5" aria-hidden="true" />
             <div>
               <p className="font-bold text-rose-700 text-sm">Documento não confirmado</p>
@@ -152,8 +152,8 @@ export default function ValidarPage() {
         )}
 
         {result && (
-          <section className="bg-superficie border border-borda rounded-3xl overflow-hidden shadow-xl">
-            <div className={`px-5 py-4 flex items-center gap-3 ${result.fully_signed ? 'bg-marca-suave border-b border-marca-escura' : 'bg-amber-50 border-b border-amber-800/50'}`}>
+          <section className="bg-superficie border border-borda rounded-3xl overflow-hidden shadow-sm">
+            <div className={`px-5 py-4 flex items-center gap-3 ${result.fully_signed ? 'bg-marca-suave border-b border-marca-escura' : 'bg-amber-50 border-b border-amber-200'}`}>
               {result.fully_signed
                 ? <ShieldCheck className="w-6 h-6 text-marca-escura shrink-0" aria-hidden="true" />
                 : <Clock className="w-6 h-6 text-amber-700 shrink-0" aria-hidden="true" />}

@@ -540,7 +540,7 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
         const onTimeRate = total > 0 ? Math.round(((total - delayed) / total) * 100) : 100;
 
         return [
-          { label: 'Total de O.S. Filtradas', value: total, icon: Briefcase, color: 'text-blue-700', bg: 'bg-blue-500/10' },
+          { label: 'Total de O.S. Filtradas', value: total, icon: Briefcase, color: 'text-teal-700', bg: 'bg-teal-500/10' },
           { label: 'Em Execução / Agendadas', value: inProgress, icon: Clock, color: 'text-amber-700', bg: 'bg-amber-500/10' },
           { label: 'Concluídas / Homologadas', value: completed, icon: CheckCircle2, color: 'text-marca-escura', bg: 'bg-marca-suave' },
           { label: 'Atrasadas (Fora SLA)', value: delayed, icon: AlertTriangle, color: 'text-rose-700', bg: 'bg-rose-500/10' },
@@ -557,8 +557,8 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
 
         return [
           { label: 'Total de Riscos PGR', value: total, icon: HardHat, color: 'text-teal-700', bg: 'bg-teal-500/10' },
-          { label: 'Riscos Físicos (Ruído/Calor)', value: physical, icon: Activity, color: 'text-sky-700', bg: 'bg-sky-500/10' },
-          { label: 'Riscos Químicos', value: chemical, icon: SlidersHorizontal, color: 'text-indigo-700', bg: 'bg-indigo-500/10' },
+          { label: 'Riscos Físicos (Ruído/Calor)', value: physical, icon: Activity, color: 'text-teal-700', bg: 'bg-teal-500/10' },
+          { label: 'Riscos Químicos', value: chemical, icon: SlidersHorizontal, color: 'text-teal-700', bg: 'bg-teal-500/10' },
           { label: 'Insalubridade (NR-15)', value: insalubre, icon: AlertTriangle, color: 'text-amber-700', bg: 'bg-amber-500/10' },
           { label: 'Periculosidade (NR-16)', value: periculoso, icon: ShieldCheck, color: 'text-rose-700', bg: 'bg-rose-500/10' }
         ];
@@ -576,7 +576,7 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
           { label: 'ASOs Vencidos (Crítico)', value: overdue, icon: AlertTriangle, color: 'text-rose-700', bg: 'bg-rose-500/10' },
           { label: 'A Vencer em até 30d', value: soon, icon: Clock, color: 'text-amber-700', bg: 'bg-amber-500/10' },
           { label: 'ASOs Vigentes e Regulares', value: valid, icon: CheckCircle2, color: 'text-marca-escura', bg: 'bg-marca-suave' },
-          { label: 'Índice de Regularidade NR-07', value: `${complianceRate}%`, icon: TrendingUp, color: 'text-cyan-700', bg: 'bg-cyan-500/10' }
+          { label: 'Índice de Regularidade NR-07', value: `${complianceRate}%`, icon: TrendingUp, color: 'text-teal-700', bg: 'bg-teal-500/10' }
         ];
       }
 
@@ -588,7 +588,7 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
         const successRate = total > 0 ? Math.round((transmitted / total) * 100) : 100;
 
         return [
-          { label: 'Total de Eventos SST', value: total, icon: ShieldCheck, color: 'text-indigo-700', bg: 'bg-indigo-500/10' },
+          { label: 'Total de Eventos SST', value: total, icon: ShieldCheck, color: 'text-teal-700', bg: 'bg-teal-500/10' },
           { label: 'Transmitidos com Recibo Gov', value: transmitted, icon: CheckCircle2, color: 'text-marca-escura', bg: 'bg-marca-suave' },
           { label: 'Pendentes de Transmissão', value: pending, icon: Clock, color: 'text-amber-700', bg: 'bg-amber-500/10' },
           { label: 'Erros / Rejeitados', value: rejected, icon: AlertTriangle, color: 'text-rose-700', bg: 'bg-rose-500/10' },
@@ -604,7 +604,7 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
         const balance = receivable - payable;
 
         return [
-          { label: 'Lançamentos Filtrados', value: total, icon: DollarSign, color: 'text-blue-700', bg: 'bg-blue-500/10' },
+          { label: 'Lançamentos Filtrados', value: total, icon: DollarSign, color: 'text-teal-700', bg: 'bg-teal-500/10' },
           { label: 'Receitas Totais', value: new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(receivable), icon: TrendingUp, color: 'text-marca-escura', bg: 'bg-marca-suave' },
           { label: 'Receitas Liquidadas', value: new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(received), icon: CheckCircle2, color: 'text-teal-700', bg: 'bg-teal-500/10' },
           { label: 'Despesas Totais', value: new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(payable), icon: AlertTriangle, color: 'text-rose-700', bg: 'bg-rose-500/10' },
@@ -615,7 +615,7 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
       default: {
         return [
           { label: 'Total de Registros', value: total, icon: FileText, color: 'text-teal-700', bg: 'bg-teal-500/10' },
-          { label: 'Clientes Envolvidos', value: selectedClientId === 'ALL' ? clients.length : 1, icon: Building2, color: 'text-blue-700', bg: 'bg-blue-500/10' },
+          { label: 'Clientes Envolvidos', value: selectedClientId === 'ALL' ? clients.length : 1, icon: Building2, color: 'text-teal-700', bg: 'bg-teal-500/10' },
           { label: 'Filtro de Período', value: selectedPeriod === 'ALL_TIME' ? 'Todo o Histórico' : selectedPeriod, icon: Calendar, color: 'text-amber-700', bg: 'bg-amber-500/10' },
           { label: 'Status da Exportação', value: 'Pronto para Download', icon: Download, color: 'text-marca-escura', bg: 'bg-marca-suave' }
         ];
@@ -1088,15 +1088,15 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
 
   // Category Tabs Configuration
   const categoriesList: Array<{ id: ReportCategory; label: string; icon: any; count: number; badgeColor: string }> = [
-    { id: 'SERVICE_ORDERS', label: 'Ordens de Serviço (OS)', icon: Briefcase, count: serviceOrders.length, badgeColor: 'bg-blue-500/20 text-blue-700' },
+    { id: 'SERVICE_ORDERS', label: 'Ordens de Serviço (OS)', icon: Briefcase, count: serviceOrders.length, badgeColor: 'bg-teal-500/20 text-teal-800' },
     { id: 'RISKS_PGR', label: 'Riscos & PGR (NR-01)', icon: HardHat, count: environmentalRisks.length, badgeColor: 'bg-teal-500/20 text-teal-800' },
     { id: 'ASOS_HEALTH', label: 'Saúde & ASOs (NR-07)', icon: Users, count: employees.length, badgeColor: 'bg-marca-suave text-marca-escura' },
-    { id: 'ESOCIAL_EVENTS', label: 'Eventos eSocial SST', icon: ShieldCheck, count: esocialEvents.length, badgeColor: 'bg-indigo-500/20 text-indigo-700' },
-    { id: 'EPI_MANAGEMENT', label: 'Gestão de EPIs (NR-06)', icon: SlidersHorizontal, count: epiDeliveries.length, badgeColor: 'bg-cyan-500/20 text-cyan-800' },
+    { id: 'ESOCIAL_EVENTS', label: 'Eventos eSocial SST', icon: ShieldCheck, count: esocialEvents.length, badgeColor: 'bg-teal-500/20 text-teal-800' },
+    { id: 'EPI_MANAGEMENT', label: 'Gestão de EPIs (NR-06)', icon: SlidersHorizontal, count: epiDeliveries.length, badgeColor: 'bg-teal-500/20 text-teal-800' },
     { id: 'FINANCIAL', label: 'Financeiro & Fluxo', icon: DollarSign, count: transactions.length, badgeColor: 'bg-marca-suave text-marca-escura' },
     { id: 'CAT_ACCIDENTS', label: 'Acidentes & CAT (S-2210)', icon: AlertTriangle, count: catRecords.length, badgeColor: 'bg-rose-500/20 text-rose-800' },
     { id: 'TRAININGS_NR01', label: 'Treinamentos (NR-01)', icon: Activity, count: integrationTrainings.length, badgeColor: 'bg-amber-500/20 text-amber-800' },
-    { id: 'COMMERCIAL_CONTRACTS', label: 'Comercial & Contratos', icon: FileSpreadsheet, count: contracts.length, badgeColor: 'bg-purple-500/20 text-purple-700' },
+    { id: 'COMMERCIAL_CONTRACTS', label: 'Comercial & Contratos', icon: FileSpreadsheet, count: contracts.length, badgeColor: 'bg-teal-500/20 text-teal-800' },
     { id: 'AUDIT_QUALITY', label: 'Auditoria & Logs', icon: Layers, count: auditLogs.length, badgeColor: 'bg-slate-500/20 text-tinta' }
   ];
 
@@ -1105,7 +1105,7 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
       
       {/* Toast Notification */}
       {successToast && (
-        <div className="fixed top-5 right-5 z-50 bg-marca text-slate-950 font-bold px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2 border border-marca-escura animate-bounce">
+        <div className="fixed top-5 right-5 z-50 bg-marca text-slate-950 font-bold px-4 py-3 rounded-xl shadow-sm flex items-center gap-2 border border-marca-escura animate-bounce">
           <CheckCircle2 className="w-5 h-5 text-slate-950 shrink-0" />
           <span>{successToast}</span>
         </div>
@@ -1115,7 +1115,7 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-superficie border border-borda rounded-2xl p-5 sm:p-6 backdrop-blur-sm">
         <div className="space-y-1.5">
           <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-500 to-marca-escura flex items-center justify-center shadow-lg shadow-teal-900/40">
+            <div className="bg-teal-500 w-10 h-10 rounded-xl flex items-center justify-center shadow-sm">
               <FileSpreadsheet className="w-5 h-5 text-slate-950 font-bold" />
             </div>
             <div>
@@ -1161,7 +1161,7 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
             className="px-3.5 py-2.5 bg-superficie-2 hover:bg-superficie-3 text-tinta hover:text-tinta border border-borda text-xs font-semibold rounded-xl transition flex items-center gap-1.5 disabled:opacity-50"
             title="Exportar dados tabulados em CSV para PowerBI / Looker Studio"
           >
-            <Download className="w-4 h-4 text-cyan-700" />
+            <Download className="w-4 h-4 text-teal-700" />
             CSV (BI)
           </button>
 
@@ -1169,7 +1169,7 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
             type="button"
             onClick={handleExportExcel}
             disabled={isExporting || categoryData.length === 0}
-            className="px-4 py-2.5 bg-marca hover:bg-marca-escura text-white text-xs font-bold rounded-xl transition flex items-center gap-2 shadow-lg shadow-emerald-950/40 active:scale-95 disabled:opacity-50"
+            className="px-4 py-2.5 bg-marca hover:bg-marca-escura text-white text-xs font-bold rounded-xl transition flex items-center gap-2 shadow-sm active:scale-95 disabled:opacity-50"
             title="Exportar planilha Excel completa (.xlsx) com tabelas formatadas e KPIs"
           >
             <FileSpreadsheet className="w-4 h-4 text-tinta" />
@@ -1180,7 +1180,7 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
             type="button"
             onClick={handleExportPdf}
             disabled={isExporting || categoryData.length === 0}
-            className="px-4 py-2.5 bg-teal-500 hover:bg-teal-400 text-slate-950 text-xs font-bold rounded-xl transition flex items-center gap-2 shadow-lg shadow-teal-950/40 active:scale-95 disabled:opacity-50"
+            className="bg-marca-escura text-white px-4 py-2.5 text-xs font-bold rounded-xl transition flex items-center gap-2 shadow-sm active:scale-95 disabled:opacity-50 hover:opacity-90"
             title="Exportar Laudo/Relatório em PDF com cabeçalho oficial e paginação"
           >
             <FileText className="w-4 h-4 text-slate-950" />
@@ -1234,7 +1234,7 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
               }}
               className={`p-3 rounded-xl border text-left transition-all flex flex-col justify-between gap-2 ${
                 isActive 
-                  ? 'bg-superficie border-teal-500/80 shadow-md shadow-teal-950/20 ring-1 ring-teal-500/30' 
+                  ? 'bg-superficie border-teal-200 shadow-md ring-1 ring-teal-500/30' 
                   : 'bg-superficie hover:bg-superficie border-borda text-tinta-2 hover:text-tinta'
               }`}
             >
@@ -1560,7 +1560,7 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
       )}
 
       {/* Main Interactive Data Table */}
-      <div className="bg-superficie border border-borda rounded-2xl overflow-hidden shadow-lg">
+      <div className="bg-superficie border border-borda rounded-2xl overflow-hidden shadow-sm">
         <div className="p-4 sm:p-5 border-b border-borda flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <TableIcon className="w-4 h-4 text-teal-700" />
@@ -1777,7 +1777,7 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
                         <td className="p-3.5">
                           <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
                             os.status === 'COMPLETED' ? 'bg-marca-suave text-marca-escura' :
-                            os.status === 'IN_PROGRESS' ? 'bg-blue-500/20 text-blue-700' : 'bg-superficie-2 text-tinta'
+                            os.status === 'IN_PROGRESS' ? 'bg-teal-500/20 text-teal-800' : 'bg-superficie-2 text-tinta'
                           }`}>
                             {os.status}
                           </span>
@@ -1988,7 +1988,7 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
       {/* Detail Inspection Modal */}
       {selectedRowDetail && (
         <div className="fixed inset-0 z-50 bg-fundo backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-superficie border border-borda rounded-2xl max-w-2xl w-full p-6 space-y-4 shadow-2xl animate-scaleIn max-h-[90vh] overflow-y-auto">
+          <div className="bg-superficie border border-borda rounded-2xl max-w-2xl w-full p-6 space-y-4 shadow-sm animate-scaleIn max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-borda pb-3">
               <h3 className="text-base font-bold text-tinta flex items-center gap-2">
                 <FileText className="w-5 h-5 text-teal-700" />
@@ -2034,7 +2034,7 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
       {/* Schedule Automation Modal */}
       {isScheduleModalOpen && (
         <div className="fixed inset-0 z-50 bg-fundo backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-superficie border border-borda rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl animate-scaleIn">
+          <div className="bg-superficie border border-borda rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-sm animate-scaleIn">
             <div className="flex items-center justify-between border-b border-borda pb-3">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-lg bg-teal-500/20 text-teal-800 flex items-center justify-center">
@@ -2121,7 +2121,7 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
                   setSuccessToast('Agendamento de relatório configurado e salvo com sucesso!');
                   setTimeout(() => setSuccessToast(null), 4000);
                 }}
-                className="px-4 py-2 bg-teal-500 hover:bg-teal-400 text-slate-950 rounded-xl text-xs font-bold shadow-md shadow-teal-950/30"
+                className="bg-marca-escura text-white px-4 py-2 rounded-xl text-xs font-bold shadow-sm hover:opacity-90"
               >
                 Salvar Agendamento
               </button>

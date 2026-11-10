@@ -125,8 +125,7 @@ export const HelpCenterView: React.FC<HelpCenterViewProps> = ({ onNavigate }) =>
   return (
     <div className="space-y-6 animate-in fade-in duration-300">
       {/* Hero Header Banner */}
-      <div className="relative rounded-3xl bg-gradient-to-br from-slate-900 via-slate-900 to-emerald-950/50 border border-borda p-6 sm:p-8 overflow-hidden shadow-2xl">
-        <div className="absolute right-0 top-0 w-96 h-96 bg-marca-suave rounded-full blur-3xl pointer-events-none" />
+      <div className="bg-superficie relative rounded-3xl border border-borda p-6 sm:p-8 overflow-hidden shadow-sm">
 
         <div className="relative z-10 space-y-4 max-w-3xl">
           <div className="flex items-center space-x-2">
@@ -155,7 +154,7 @@ export const HelpCenterView: React.FC<HelpCenterViewProps> = ({ onNavigate }) =>
               placeholder="Buscar por funcionalidade (ex: eSocial S-2240, CNPJ Receita, Pausa de SLA RN004, PWA Offline, Pix)..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 bg-fundo border border-borda rounded-2xl text-sm text-tinta placeholder-tinta-3 focus:outline-none focus:border-marca-escura shadow-xl"
+              className="w-full pl-12 pr-4 py-3 bg-fundo border border-borda rounded-2xl text-sm text-tinta placeholder-tinta-3 focus:outline-none focus:border-marca-escura shadow-sm"
             />
             {searchTerm && (
               <button
@@ -194,11 +193,11 @@ export const HelpCenterView: React.FC<HelpCenterViewProps> = ({ onNavigate }) =>
           </div>
           <div className="p-3 bg-fundo rounded-xl border border-borda">
             <div className="text-[10px] text-tinta-2 uppercase font-bold">Simuladores de Vídeo</div>
-            <div className="text-xl font-bold text-rose-700 mt-0.5">100% Interativos</div>
+            <div className="text-xl font-bold text-tinta mt-0.5">100% Interativos</div>
           </div>
           <div className="p-3 bg-fundo rounded-xl border border-borda">
             <div className="text-[10px] text-tinta-2 uppercase font-bold">Conformidade Normativa</div>
-            <div className="text-xl font-bold text-blue-700 mt-0.5">NRs 01 a 38 & eSocial</div>
+            <div className="text-xl font-bold text-teal-700 mt-0.5">NRs 01 a 38 & eSocial</div>
           </div>
         </div>
       </div>
@@ -218,7 +217,7 @@ export const HelpCenterView: React.FC<HelpCenterViewProps> = ({ onNavigate }) =>
                 const targetTut = TUTORIALS_DATA.find(t => t.id === trk.tutId);
                 if (targetTut) setActiveTutorial(targetTut);
               }}
-              className="p-4 bg-superficie hover:bg-superficie-2 border border-borda hover:border-marca-escura rounded-2xl cursor-pointer transition shadow-lg group space-y-2"
+              className="p-4 bg-superficie hover:bg-superficie-2 border border-borda hover:border-marca-escura rounded-2xl cursor-pointer transition shadow-sm group space-y-2"
             >
               <div className="flex items-center justify-between">
                 <span className="text-sm font-bold text-tinta group-hover:text-marca-escura transition">
@@ -251,7 +250,7 @@ export const HelpCenterView: React.FC<HelpCenterViewProps> = ({ onNavigate }) =>
                 onClick={() => setSelectedCategory(cat.id)}
                 className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition ${
                   selectedCategory === cat.id
-                    ? 'bg-marca text-slate-950 shadow-md shadow-emerald-950/40'
+                    ? 'bg-marca text-slate-950 shadow-md'
                     : 'bg-fundo text-tinta-2 hover:text-tinta border border-borda'
                 }`}
               >
@@ -346,7 +345,7 @@ export const HelpCenterView: React.FC<HelpCenterViewProps> = ({ onNavigate }) =>
             <div
               key={tut.id}
               onClick={() => setActiveTutorial(tut)}
-              className="bg-superficie hover:bg-superficie-2 border border-borda hover:border-marca-escura rounded-2xl p-5 flex flex-col justify-between cursor-pointer transition-all duration-200 shadow-xl group space-y-4"
+              className="bg-superficie hover:bg-superficie-2 border border-borda hover:border-marca-escura rounded-2xl p-5 flex flex-col justify-between cursor-pointer transition-all duration-200 shadow-sm group space-y-4"
             >
               <div className="space-y-3">
                 {/* Category & Badge header */}
@@ -409,7 +408,7 @@ export const HelpCenterView: React.FC<HelpCenterViewProps> = ({ onNavigate }) =>
         </div>
       ) : (
         /* List / Table Directory View */
-        <div className="bg-superficie border border-borda rounded-2xl overflow-hidden shadow-xl">
+        <div className="bg-superficie border border-borda rounded-2xl overflow-hidden shadow-sm">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs text-tinta">
               <thead className="bg-fundo text-tinta-2 uppercase font-bold text-[10px] border-b border-borda">

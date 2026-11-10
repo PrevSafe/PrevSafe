@@ -182,7 +182,7 @@ export const WorkOrdersOSTab: React.FC<WorkOrdersOSTabProps> = ({ selectedClient
             id="generate-mass-os-btn"
             onClick={handleGenerateAllMissingOS}
             disabled={isGeneratingBatch}
-            className="px-3.5 py-1.5 bg-teal-500 hover:bg-teal-400 text-slate-950 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 shadow-sm"
+            className="bg-marca-escura text-white px-3.5 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 shadow-sm hover:opacity-90"
           >
             <Sparkles className="w-4 h-4" />
             Gerar OS em Massa (NR-01)
@@ -191,7 +191,7 @@ export const WorkOrdersOSTab: React.FC<WorkOrdersOSTabProps> = ({ selectedClient
       </div>
 
       {/* Regulatory Context Banner */}
-      <div className="bg-superficie border border-teal-500/20 rounded-xl p-4 flex items-start gap-3">
+      <div className="bg-superficie border border-teal-200 rounded-xl p-4 flex items-start gap-3">
         <ScrollText className="w-5 h-5 text-teal-700 shrink-0 mt-0.5" />
         <div className="text-xs text-tinta space-y-1">
           <p className="font-semibold text-tinta flex items-center gap-2">
@@ -207,7 +207,7 @@ export const WorkOrdersOSTab: React.FC<WorkOrdersOSTabProps> = ({ selectedClient
       </div>
 
       {/* Work Orders Table */}
-      <div className="bg-superficie border border-borda rounded-xl overflow-hidden shadow-lg" id="work-orders-table-container">
+      <div className="bg-superficie border border-borda rounded-xl overflow-hidden shadow-sm" id="work-orders-table-container">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs text-tinta">
             <thead className="bg-fundo text-tinta-2 uppercase text-[10px] tracking-wider border-b border-borda">
@@ -337,7 +337,7 @@ export const WorkOrdersOSTab: React.FC<WorkOrdersOSTabProps> = ({ selectedClient
       {/* View Work Order Modal */}
       {selectedOSForView && (
         <div className="fixed inset-0 bg-fundo backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-superficie border border-borda rounded-2xl max-w-4xl w-full p-6 space-y-4 shadow-2xl animate-in fade-in zoom-in-95 duration-150 max-h-[92vh] overflow-y-auto">
+          <div className="bg-superficie border border-borda rounded-2xl max-w-4xl w-full p-6 space-y-4 shadow-sm animate-in fade-in zoom-in-95 duration-150 max-h-[92vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-borda pb-3">
               <div className="flex items-center gap-2.5">
                 <div className="p-2 bg-teal-500/10 text-teal-800 rounded-xl border border-teal-500/20">
@@ -357,7 +357,7 @@ export const WorkOrdersOSTab: React.FC<WorkOrdersOSTabProps> = ({ selectedClient
                 <button
                   type="button"
                   onClick={() => exportWorkOrderOSPDF(selectedOSForView, organization)}
-                  className="px-3 py-1.5 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs rounded-lg flex items-center gap-1.5 shadow-sm"
+                  className="bg-marca-escura text-white px-3 py-1.5 font-bold text-xs rounded-lg flex items-center gap-1.5 shadow-sm hover:opacity-90"
                 >
                   <Download className="w-3.5 h-3.5" />
                   Baixar PDF
@@ -513,7 +513,7 @@ export const WorkOrdersOSTab: React.FC<WorkOrdersOSTabProps> = ({ selectedClient
                         signed_at: new Date().toISOString()
                       });
                     }}
-                    className="px-2.5 py-1 bg-teal-500 hover:bg-teal-400 text-slate-950 text-[10px] font-bold rounded"
+                    className="bg-marca-escura text-white px-2.5 py-1 text-[10px] font-bold rounded hover:opacity-90"
                   >
                     Assinar Digitalmente
                   </button>

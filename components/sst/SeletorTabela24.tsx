@@ -178,7 +178,7 @@ export const SeletorTabela24: React.FC<SeletorTabela24Props> = ({
       )}
 
       {aberto && (
-        <div className="absolute z-50 mt-1 w-full bg-fundo border border-borda rounded-lg shadow-2xl overflow-hidden">
+        <div className="absolute z-50 mt-1 w-full bg-fundo border border-borda rounded-lg shadow-sm overflow-hidden">
           <div className="px-2.5 py-1.5 border-b border-borda text-[10px] text-tinta-2 flex items-center justify-between">
             <span>
               {termo.trim() ? `${resultados.length} resultado(s)` : 'Agentes mais comuns — digite para buscar'}

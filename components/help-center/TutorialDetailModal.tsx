@@ -49,7 +49,7 @@ export const TutorialDetailModal: React.FC<TutorialDetailModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 bg-fundo backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto animate-in fade-in duration-200">
-      <div className="bg-superficie border border-borda rounded-3xl w-full max-w-5xl max-h-[92vh] flex flex-col shadow-2xl overflow-hidden">
+      <div className="bg-superficie border border-borda rounded-3xl w-full max-w-5xl max-h-[92vh] flex flex-col shadow-sm overflow-hidden">
         {/* Modal Top Header */}
         <div className="p-4 sm:p-6 border-b border-borda bg-fundo flex items-start justify-between gap-4">
           <div className="space-y-1.5 flex-1">
@@ -65,7 +65,7 @@ export const TutorialDetailModal: React.FC<TutorialDetailModalProps> = ({
                 <span>{tutorial.estimatedMinutes} min de leitura</span>
               </span>
               {tutorial.regulatoryRef && (
-                <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-purple-500/20 text-purple-700 border border-purple-500/30 font-medium">
+                <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-teal-500/20 text-teal-800 border border-teal-500/30 font-medium">
                   {tutorial.regulatoryRef}
                 </span>
               )}
@@ -83,7 +83,7 @@ export const TutorialDetailModal: React.FC<TutorialDetailModalProps> = ({
           <div className="flex items-center space-x-2 shrink-0">
             <button
               onClick={handleLaunchTool}
-              className="hidden sm:flex items-center space-x-1.5 px-3.5 py-2 bg-gradient-to-r from-marca-escura to-teal-600 hover:from-marca-escura hover:to-teal-700 text-white rounded-xl text-xs font-semibold shadow-lg shadow-emerald-950/50 transition active:scale-95"
+              className="bg-marca-escura hidden sm:flex items-center space-x-1.5 px-3.5 py-2 text-white rounded-xl text-xs font-semibold shadow-sm transition active:scale-95"
             >
               <span>Abrir no Sistema</span>
               <ExternalLink className="w-3.5 h-3.5" />
@@ -145,7 +145,7 @@ export const TutorialDetailModal: React.FC<TutorialDetailModalProps> = ({
                 : 'border-transparent text-tinta-2 hover:text-tinta'
             }`}
           >
-            <CheckSquare className="w-4 h-4 text-blue-700" />
+            <CheckSquare className="w-4 h-4 text-teal-700" />
             <span>4. Boas Práticas & Erros Comuns</span>
           </button>
 
@@ -336,7 +336,7 @@ export const TutorialDetailModal: React.FC<TutorialDetailModalProps> = ({
 
             <button
               onClick={handleLaunchTool}
-              className="flex-1 sm:flex-none flex items-center justify-center space-x-2 px-5 py-2 bg-gradient-to-r from-marca-escura to-teal-600 hover:from-marca-escura hover:to-teal-700 text-white rounded-xl text-xs font-bold shadow-lg shadow-emerald-950/50 transition active:scale-95"
+              className="bg-marca-escura flex-1 sm:flex-none flex items-center justify-center space-x-2 px-5 py-2 text-white rounded-xl text-xs font-bold shadow-sm transition active:scale-95"
             >
               <span>Experimentar Ferramenta no Sistema</span>
               <ArrowRight className="w-4 h-4" />

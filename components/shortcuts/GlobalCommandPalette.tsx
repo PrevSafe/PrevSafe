@@ -436,7 +436,7 @@ export const GlobalCommandPalette: React.FC<GlobalCommandPaletteProps> = ({
       onClick={onClose}
     >
       <div 
-        className="w-full max-w-2xl bg-superficie border border-borda rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[80vh] animate-in zoom-in-95 duration-150"
+        className="w-full max-w-2xl bg-superficie border border-borda rounded-2xl shadow-sm overflow-hidden flex flex-col max-h-[80vh] animate-in zoom-in-95 duration-150"
         onClick={e => e.stopPropagation()}
         onKeyDown={handleKeyDown}
       >
@@ -500,7 +500,7 @@ export const GlobalCommandPalette: React.FC<GlobalCommandPaletteProps> = ({
                         item.category === 'ACTIONS'
                           ? 'bg-marca-suave text-marca-escura'
                           : item.category === 'SERVICE_ORDERS'
-                          ? 'bg-blue-500/20 text-blue-700'
+                          ? 'bg-teal-500/20 text-teal-800'
                           : item.category === 'CLIENTS'
                           ? 'bg-amber-500/20 text-amber-800'
                           : 'bg-superficie-2 text-tinta'
@@ -681,7 +681,7 @@ export const QuickNewOSModal: React.FC<QuickNewOSModalProps> = ({
       onClick={onClose}
     >
       <div 
-        className="w-full max-w-xl bg-superficie border border-borda rounded-2xl shadow-2xl overflow-hidden flex flex-col animate-in zoom-in-95 duration-150"
+        className="w-full max-w-xl bg-superficie border border-borda rounded-2xl shadow-sm overflow-hidden flex flex-col animate-in zoom-in-95 duration-150"
         onClick={e => e.stopPropagation()}
         onKeyDown={handleModalKeyDown}
       >
@@ -857,7 +857,7 @@ export const QuickNewOSModal: React.FC<QuickNewOSModalProps> = ({
 
               <button
                 type="submit"
-                className="px-4 py-2 rounded-xl text-xs font-semibold text-white bg-marca hover:bg-marca-escura border border-marca-escura flex items-center gap-2 shadow-lg shadow-emerald-950/40 transition"
+                className="px-4 py-2 rounded-xl text-xs font-semibold text-white bg-marca hover:bg-marca-escura border border-marca-escura flex items-center gap-2 shadow-sm transition"
               >
                 <Plus className="w-4 h-4" />
                 <span>Criar Ordem de Serviço</span>
@@ -897,7 +897,7 @@ export const ShortcutsHelpModal: React.FC<ShortcutsHelpModalProps> = ({ isOpen, 
       onClick={onClose}
     >
       <div 
-        className="w-full max-w-md bg-superficie border border-borda rounded-2xl shadow-2xl p-6 space-y-4"
+        className="w-full max-w-md bg-superficie border border-borda rounded-2xl shadow-sm p-6 space-y-4"
         onClick={e => e.stopPropagation()}
       >
         <div className="flex items-center justify-between pb-3 border-b border-borda">

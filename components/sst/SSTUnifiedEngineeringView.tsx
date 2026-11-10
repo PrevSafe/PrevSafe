@@ -92,8 +92,7 @@ export const SSTUnifiedEngineeringView: React.FC<SSTUnifiedEngineeringViewProps>
   return (
     <div className="space-y-6" id="sst-unified-workspace">
       {/* Top Header Card */}
-      <div className="bg-superficie border border-borda rounded-2xl p-6 relative overflow-hidden shadow-2xl">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-teal-500/10 via-emerald-500/5 to-transparent rounded-full blur-3xl pointer-events-none" />
+      <div className="bg-superficie border border-borda rounded-2xl p-6 relative overflow-hidden shadow-sm">
 
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
           <div className="space-y-2">
@@ -173,7 +172,7 @@ export const SSTUnifiedEngineeringView: React.FC<SSTUnifiedEngineeringViewProps>
           <div className="bg-fundo p-3 rounded-xl border border-borda">
             <div className="flex items-center justify-between text-tinta-2 text-[10px] uppercase font-bold">
               <span>PCMSO & Exames</span>
-              <Stethoscope className="w-3.5 h-3.5 text-blue-700" />
+              <Stethoscope className="w-3.5 h-3.5 text-teal-700" />
             </div>
             <div className="text-lg font-black text-tinta mt-1">{clientExamProtocols.length} exames</div>
             <div className="text-[10px] text-tinta-2">Tabela 27 eSocial</div>
@@ -216,7 +215,7 @@ export const SSTUnifiedEngineeringView: React.FC<SSTUnifiedEngineeringViewProps>
           onClick={() => setActiveTab('HIERARCHY')}
           className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 shrink-0 ${
             activeTab === 'HIERARCHY'
-              ? 'bg-teal-500 text-slate-950 shadow-lg shadow-teal-500/20'
+              ? 'bg-marca-escura text-white shadow-sm'
               : 'text-tinta-2 hover:text-tinta hover:bg-superficie'
           }`}
         >
@@ -230,7 +229,7 @@ export const SSTUnifiedEngineeringView: React.FC<SSTUnifiedEngineeringViewProps>
           onClick={() => setActiveTab('GHE_RISKS')}
           className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 shrink-0 ${
             activeTab === 'GHE_RISKS'
-              ? 'bg-teal-500 text-slate-950 shadow-lg shadow-teal-500/20'
+              ? 'bg-marca-escura text-white shadow-sm'
               : 'text-tinta-2 hover:text-tinta hover:bg-superficie'
           }`}
         >
@@ -247,7 +246,7 @@ export const SSTUnifiedEngineeringView: React.FC<SSTUnifiedEngineeringViewProps>
           onClick={() => setActiveTab('ACTION_PLAN')}
           className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 shrink-0 ${
             activeTab === 'ACTION_PLAN'
-              ? 'bg-teal-500 text-slate-950 shadow-lg shadow-teal-500/20'
+              ? 'bg-marca-escura text-white shadow-sm'
               : 'text-tinta-2 hover:text-tinta hover:bg-superficie'
           }`}
         >
@@ -261,7 +260,7 @@ export const SSTUnifiedEngineeringView: React.FC<SSTUnifiedEngineeringViewProps>
           onClick={() => setActiveTab('EXAMS_PCMSO')}
           className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 shrink-0 ${
             activeTab === 'EXAMS_PCMSO'
-              ? 'bg-teal-500 text-slate-950 shadow-lg shadow-teal-500/20'
+              ? 'bg-marca-escura text-white shadow-sm'
               : 'text-tinta-2 hover:text-tinta hover:bg-superficie'
           }`}
         >
@@ -275,7 +274,7 @@ export const SSTUnifiedEngineeringView: React.FC<SSTUnifiedEngineeringViewProps>
           onClick={() => setActiveTab('EMPLOYEES')}
           className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 shrink-0 ${
             activeTab === 'EMPLOYEES'
-              ? 'bg-teal-500 text-slate-950 shadow-lg shadow-teal-500/20'
+              ? 'bg-marca-escura text-white shadow-sm'
               : 'text-tinta-2 hover:text-tinta hover:bg-superficie'
           }`}
         >
@@ -289,7 +288,7 @@ export const SSTUnifiedEngineeringView: React.FC<SSTUnifiedEngineeringViewProps>
           onClick={() => setActiveTab('WORK_ORDERS_OS')}
           className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 shrink-0 ${
             activeTab === 'WORK_ORDERS_OS'
-              ? 'bg-indigo-500 text-white shadow-lg shadow-indigo-500/20'
+              ? 'bg-teal-700 text-white shadow-sm'
               : 'text-tinta-2 hover:text-tinta hover:bg-superficie'
           }`}
         >
@@ -303,7 +302,7 @@ export const SSTUnifiedEngineeringView: React.FC<SSTUnifiedEngineeringViewProps>
           onClick={() => setActiveTab('DOCS_XML')}
           className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 shrink-0 ${
             activeTab === 'DOCS_XML'
-              ? 'bg-marca text-slate-950 shadow-lg shadow-emerald-500/20'
+              ? 'bg-marca text-slate-950 shadow-sm'
               : 'text-tinta-2 hover:text-tinta hover:bg-superficie'
           }`}
         >
@@ -317,7 +316,7 @@ export const SSTUnifiedEngineeringView: React.FC<SSTUnifiedEngineeringViewProps>
           onClick={() => setActiveTab('INTEGRATION_TRAINING')}
           className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 shrink-0 ${
             activeTab === 'INTEGRATION_TRAINING'
-              ? 'bg-cyan-500 text-slate-950 shadow-lg shadow-cyan-500/20'
+              ? 'bg-marca-escura text-white shadow-sm'
               : 'text-tinta-2 hover:text-tinta hover:bg-superficie'
           }`}
         >
@@ -331,7 +330,7 @@ export const SSTUnifiedEngineeringView: React.FC<SSTUnifiedEngineeringViewProps>
           onClick={() => setActiveTab('SIGNATURES')}
           className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 shrink-0 ${
             activeTab === 'SIGNATURES'
-              ? 'bg-teal-500 text-slate-950 shadow-lg shadow-teal-500/20'
+              ? 'bg-marca-escura text-white shadow-sm'
               : 'text-tinta-2 hover:text-tinta hover:bg-superficie'
           }`}
         >
@@ -345,7 +344,7 @@ export const SSTUnifiedEngineeringView: React.FC<SSTUnifiedEngineeringViewProps>
           onClick={() => setActiveTab('CONTRACTED')}
           className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 shrink-0 ${
             activeTab === 'CONTRACTED'
-              ? 'bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/20'
+              ? 'bg-marca-escura text-white shadow-sm'
               : 'text-tinta-2 hover:text-tinta hover:bg-superficie'
           }`}
         >
@@ -359,7 +358,7 @@ export const SSTUnifiedEngineeringView: React.FC<SSTUnifiedEngineeringViewProps>
           onClick={() => setActiveTab('MACHINES')}
           className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 shrink-0 ${
             activeTab === 'MACHINES'
-              ? 'bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/20'
+              ? 'bg-marca-escura text-white shadow-sm'
               : 'text-tinta-2 hover:text-tinta hover:bg-superficie'
           }`}
         >
@@ -373,7 +372,7 @@ export const SSTUnifiedEngineeringView: React.FC<SSTUnifiedEngineeringViewProps>
           onClick={() => setActiveTab('CHEMICALS')}
           className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 shrink-0 ${
             activeTab === 'CHEMICALS'
-              ? 'bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/20'
+              ? 'bg-marca-escura text-white shadow-sm'
               : 'text-tinta-2 hover:text-tinta hover:bg-superficie'
           }`}
         >
@@ -387,7 +386,7 @@ export const SSTUnifiedEngineeringView: React.FC<SSTUnifiedEngineeringViewProps>
           onClick={() => setActiveTab('TRAINING_MATRIX')}
           className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 shrink-0 ${
             activeTab === 'TRAINING_MATRIX'
-              ? 'bg-cyan-500 text-slate-950 shadow-lg shadow-cyan-500/20'
+              ? 'bg-marca-escura text-white shadow-sm'
               : 'text-tinta-2 hover:text-tinta hover:bg-superficie'
           }`}
         >
@@ -401,7 +400,7 @@ export const SSTUnifiedEngineeringView: React.FC<SSTUnifiedEngineeringViewProps>
           onClick={() => setActiveTab('ERGONOMICS')}
           className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 shrink-0 ${
             activeTab === 'ERGONOMICS'
-              ? 'bg-cyan-500 text-slate-950 shadow-lg shadow-cyan-500/20'
+              ? 'bg-marca-escura text-white shadow-sm'
               : 'text-tinta-2 hover:text-tinta hover:bg-superficie'
           }`}
         >
@@ -415,7 +414,7 @@ export const SSTUnifiedEngineeringView: React.FC<SSTUnifiedEngineeringViewProps>
           onClick={() => setActiveTab('TECHNICAL_RESPONSIBILITY')}
           className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 shrink-0 ${
             activeTab === 'TECHNICAL_RESPONSIBILITY'
-              ? 'bg-teal-500 text-slate-950 shadow-lg shadow-teal-500/20'
+              ? 'bg-marca-escura text-white shadow-sm'
               : 'text-tinta-2 hover:text-tinta hover:bg-superficie'
           }`}
         >

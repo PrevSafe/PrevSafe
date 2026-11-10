@@ -376,7 +376,7 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
     <div className="space-y-6">
       {/* Toast Alert */}
       {actionSuccessMessage && (
-        <div className="fixed top-20 right-6 z-50 bg-marca-suave border border-marca-escura text-marca-escura px-4 py-3 rounded-xl shadow-2xl backdrop-blur-md flex items-center space-x-3 animate-in fade-in slide-in-from-top-2 duration-300">
+        <div className="fixed top-20 right-6 z-50 bg-marca-suave border border-marca-escura text-marca-escura px-4 py-3 rounded-xl shadow-sm backdrop-blur-md flex items-center space-x-3 animate-in fade-in slide-in-from-top-2 duration-300">
           <ShieldCheck className="w-5 h-5 text-marca-escura shrink-0" />
           <span className="text-sm font-medium">{actionSuccessMessage}</span>
         </div>
@@ -386,7 +386,7 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 bg-superficie p-5 rounded-2xl border border-borda backdrop-blur-md">
         <div>
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-marca to-teal-700 flex items-center justify-center shadow-lg shadow-emerald-950/50">
+            <div className="bg-marca w-10 h-10 rounded-xl flex items-center justify-center shadow-sm">
               <DollarSign className="w-6 h-6 text-tinta" />
             </div>
             <div>
@@ -407,14 +407,14 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
         <div className="flex flex-wrap items-center gap-2.5">
           <button
             onClick={() => handleOpenNewModal('RECEIVABLE')}
-            className="px-3.5 py-2 rounded-xl bg-marca hover:bg-marca-escura text-white text-xs font-semibold shadow-lg shadow-emerald-950/40 flex items-center space-x-1.5 transition active:scale-95 touch-manipulation"
+            className="px-3.5 py-2 rounded-xl bg-marca hover:bg-marca-escura text-white text-xs font-semibold shadow-sm flex items-center space-x-1.5 transition active:scale-95 touch-manipulation"
           >
             <Plus className="w-4 h-4" />
             <span>+ Nova Receita</span>
           </button>
           <button
             onClick={() => handleOpenNewModal('PAYABLE')}
-            className="px-3.5 py-2 rounded-xl bg-rose-600/90 hover:bg-rose-700 text-white text-xs font-semibold shadow-lg shadow-rose-950/40 flex items-center space-x-1.5 transition active:scale-95 touch-manipulation"
+            className="px-3.5 py-2 rounded-xl bg-rose-600/90 hover:bg-rose-700 text-white text-xs font-semibold shadow-sm flex items-center space-x-1.5 transition active:scale-95 touch-manipulation"
           >
             <Plus className="w-4 h-4" />
             <span>+ Nova Despesa</span>
@@ -424,7 +424,7 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
             className="px-3.5 py-2 rounded-xl bg-superficie-2 hover:bg-superficie-3 text-tinta border border-borda text-xs font-semibold flex items-center space-x-1.5 transition active:scale-95 touch-manipulation"
             title="Gera cobranças de mensalidade de todos os contratos SST ativos"
           >
-            <RefreshCw className="w-3.5 h-3.5 text-cyan-700" />
+            <RefreshCw className="w-3.5 h-3.5 text-teal-700" />
             <span>Faturar Contratos (MRR)</span>
           </button>
         </div>
@@ -454,15 +454,15 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
         </div>
 
         {/* A Receber no Mês */}
-        <div className="bg-superficie p-3.5 rounded-xl border border-borda relative overflow-hidden group hover:border-blue-500/40 transition">
+        <div className="bg-superficie p-3.5 rounded-xl border border-borda relative overflow-hidden group hover:border-teal-500/40 transition">
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-semibold text-tinta-2 uppercase tracking-wider">A Receber (Mês)</span>
-            <div className="w-6 h-6 rounded-lg bg-blue-500/10 border border-blue-500/30 flex items-center justify-center">
-              <TrendingUp className="w-3.5 h-3.5 text-blue-700" />
+            <div className="w-6 h-6 rounded-lg bg-teal-500/10 border border-teal-500/30 flex items-center justify-center">
+              <TrendingUp className="w-3.5 h-3.5 text-teal-700" />
             </div>
           </div>
           <div className="mt-1.5">
-            <div className="text-lg font-bold text-blue-700 tracking-tight">
+            <div className="text-lg font-bold text-teal-700 tracking-tight">
               {formatCurrency(cashFlowSummary.total_receivable_month)}
             </div>
             <div className="mt-0.5 text-[10px] text-tinta-2 truncate">
@@ -571,7 +571,7 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
             onClick={() => setActiveTab('receivables')}
             className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition flex items-center space-x-2 whitespace-nowrap ${
               activeTab === 'receivables'
-                ? 'bg-blue-500/20 text-blue-700 border border-blue-500/40'
+                ? 'bg-teal-500/20 text-teal-800 border border-teal-500/40'
                 : 'text-tinta-2 hover:text-tinta hover:bg-superficie-2'
             }`}
           >
@@ -622,7 +622,7 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
             onClick={() => setActiveTab('dre')}
             className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition flex items-center space-x-2 whitespace-nowrap ${
               activeTab === 'dre'
-                ? 'bg-purple-500/20 text-purple-700 border border-purple-500/40'
+                ? 'bg-teal-500/20 text-teal-800 border border-teal-500/40'
                 : 'text-tinta-2 hover:text-tinta hover:bg-superficie-2'
             }`}
           >
@@ -699,7 +699,7 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
                   <span className="text-tinta">Saídas (Custos/Despesas)</span>
                 </div>
                 <div className="flex items-center space-x-1.5">
-                  <div className="w-3 h-3 rounded-sm bg-cyan-400" />
+                  <div className="w-3 h-3 rounded-sm bg-teal-400" />
                   <span className="text-tinta">Saldo Caixa</span>
                 </div>
               </div>
@@ -857,15 +857,15 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
               </div>
             </div>
 
-            <div className="p-4 rounded-xl bg-superficie border border-borda hover:border-purple-500/50 transition cursor-pointer" onClick={() => setActiveTab('dre')}>
+            <div className="p-4 rounded-xl bg-superficie border border-borda hover:border-teal-500/50 transition cursor-pointer" onClick={() => setActiveTab('dre')}>
               <div className="flex items-center justify-between mb-2">
                 <span className="text-xs font-bold text-tinta">Margem de Lucro SST</span>
-                <ChevronRight className="w-4 h-4 text-purple-700" />
+                <ChevronRight className="w-4 h-4 text-teal-700" />
               </div>
               <p className="text-xs text-tinta-2">
                 DRE Gerencial detalhado com apuração de margem por contrato.
               </p>
-              <div className="mt-3 text-sm font-bold text-purple-700">
+              <div className="mt-3 text-sm font-bold text-teal-700">
                 Margem Operacional ~48.5%
               </div>
             </div>
@@ -950,8 +950,8 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
                                 </span>
                               )}
                               {isPending && (
-                                <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-blue-500/15 text-blue-700 border border-blue-500/30 w-fit">
-                                  <Clock className="w-3 h-3 text-blue-700" />
+                                <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-teal-500/15 text-teal-800 border border-teal-500/30 w-fit">
+                                  <Clock className="w-3 h-3 text-teal-700" />
                                   <span>A Vencer</span>
                                 </span>
                               )}
@@ -1050,7 +1050,7 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
                           <td className="py-3 px-4 text-tinta max-w-[180px] truncate">
                             {activeTab === 'receivables' ? (
                               <div className="flex items-center space-x-1.5" title={tx.client_name}>
-                                <Building className="w-3.5 h-3.5 text-blue-700 shrink-0" />
+                                <Building className="w-3.5 h-3.5 text-teal-700 shrink-0" />
                                 <span>{tx.client_name || 'Cliente Geral'}</span>
                               </div>
                             ) : (
@@ -1214,7 +1214,7 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 pb-4 border-b border-borda">
               <div>
                 <h3 className="text-lg font-bold text-tinta flex items-center space-x-2">
-                  <PieChartIcon className="w-5 h-5 text-purple-700" />
+                  <PieChartIcon className="w-5 h-5 text-teal-700" />
                   <span>Demonstrativo do Resultado do Exercício (DRE Gerencial SST)</span>
                 </h3>
                 <p className="text-xs text-tinta-2">
@@ -1275,10 +1275,10 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
               {/* (=) Receita Líquida */}
               <div className="p-3.5 rounded-xl bg-superficie-2 border border-borda flex items-center justify-between font-bold text-tinta">
                 <div className="flex items-center space-x-2">
-                  <span className="text-cyan-700 font-mono">(=)</span>
+                  <span className="text-teal-700 font-mono">(=)</span>
                   <span>RECEITA OPERACIONAL LÍQUIDA</span>
                 </div>
-                <span className="font-mono text-cyan-700 text-base">{formatCurrency(cashFlowSummary.total_receivable_month * 0.97)}</span>
+                <span className="font-mono text-teal-700 text-base">{formatCurrency(cashFlowSummary.total_receivable_month * 0.97)}</span>
               </div>
 
               {/* (-) Custos Diretos SST */}
@@ -1343,7 +1343,7 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
               </div>
 
               {/* (=) Lucro Operacional Líquido */}
-              <div className="p-4 rounded-xl bg-gradient-to-r from-emerald-950/80 to-teal-950/80 border border-marca-escura flex items-center justify-between font-bold text-white shadow-lg">
+              <div className="bg-superficie p-4 rounded-xl border border-borda flex items-center justify-between font-bold text-tinta shadow-sm">
                 <div>
                   <div className="text-sm font-bold text-marca-escura flex items-center space-x-2">
                     <CheckCircle2 className="w-4 h-4 text-marca-escura" />
@@ -1370,7 +1370,7 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
               <div>
                 <h3 className="text-base font-bold text-tinta flex items-center space-x-2">
-                  <FileSignature className="w-4 h-4 text-blue-700" />
+                  <FileSignature className="w-4 h-4 text-teal-700" />
                   <span>Contratos Ativos & Recorrência (MRR)</span>
                 </h3>
                 <p className="text-xs text-tinta-2">
@@ -1380,7 +1380,7 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
 
               <button
                 onClick={handleBatchContractBilling}
-                className="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold flex items-center space-x-1.5 shadow-lg shadow-blue-950/40 transition active:scale-95 touch-manipulation"
+                className="px-3.5 py-2 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold flex items-center space-x-1.5 shadow-sm transition active:scale-95 touch-manipulation"
               >
                 <RefreshCw className="w-3.5 h-3.5" />
                 <span>Gerar Faturamento do Mês</span>
@@ -1392,7 +1392,7 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
                 const clientObj = clients.find(c => c.id === contract.client_id);
                 const clientName = clientObj?.trade_name || clientObj?.legal_name || 'Cliente PrevSafe';
                 return (
-                  <div key={contract.id} className="p-4 rounded-xl bg-superficie border border-borda hover:border-blue-500/40 transition flex flex-col justify-between">
+                  <div key={contract.id} className="p-4 rounded-xl bg-superficie border border-borda hover:border-teal-500/40 transition flex flex-col justify-between">
                     <div>
                       <div className="flex items-center justify-between text-xs font-mono text-tinta-2 mb-1">
                         <span>{contract.contract_number}</span>
@@ -1458,7 +1458,7 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
                     <div>
                       <div className="flex items-center justify-between text-xs font-mono text-tinta-2 mb-1">
                         <span>{os.os_number}</span>
-                        <span className="px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-700 border border-blue-500/30 text-[10px]">
+                        <span className="px-2 py-0.5 rounded-full bg-teal-500/10 text-teal-800 border border-teal-500/30 text-[10px]">
                           {os.status}
                         </span>
                       </div>
@@ -1502,7 +1502,7 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
       {/* ========================================================================= */}
       {isNewTxModalOpen && (
         <div className="fixed inset-0 z-50 bg-fundo backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-superficie border border-borda w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-superficie border border-borda w-full max-w-lg rounded-2xl shadow-sm overflow-hidden animate-in fade-in zoom-in-95 duration-200">
             <div className={`p-4 border-b border-borda flex items-center justify-between ${
               txTypeToCreate === 'RECEIVABLE' ? 'bg-marca-suave' : 'bg-rose-50'
             }`}>
@@ -1682,7 +1682,7 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
                 <button
                   type="submit"
                   className={`px-4 py-2 rounded-xl text-tinta font-semibold shadow-lg transition ${
-                    txTypeToCreate === 'RECEIVABLE' ? 'bg-marca hover:bg-marca-escura shadow-emerald-950/40' : 'bg-rose-600 hover:bg-rose-500 shadow-rose-950/40'
+                    txTypeToCreate === 'RECEIVABLE' ? 'bg-marca hover:bg-marca-escura' : 'bg-rose-600 hover:bg-rose-500'
                   }`}
                 >
                   Salvar Lançamento
@@ -1698,7 +1698,7 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
       {/* ========================================================================= */}
       {selectedTxForSettlement && (
         <div className="fixed inset-0 z-50 bg-fundo backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-superficie border border-borda w-full max-w-md rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-superficie border border-borda w-full max-w-md rounded-2xl shadow-sm overflow-hidden animate-in fade-in zoom-in-95 duration-200">
             <div className="p-4 border-b border-borda bg-marca-suave flex items-center justify-between">
               <div className="flex items-center space-x-2.5">
                 <div className="w-8 h-8 rounded-lg bg-marca-escura text-white flex items-center justify-center">
@@ -1806,7 +1806,7 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
                 <button
                   type="button"
                   onClick={handleConfirmSettlement}
-                  className="px-4 py-2 rounded-xl bg-marca hover:bg-marca-escura text-white font-semibold shadow-lg shadow-emerald-950/40 transition"
+                  className="px-4 py-2 rounded-xl bg-marca hover:bg-marca-escura text-white font-semibold shadow-sm transition"
                 >
                   Confirmar Baixa
                 </button>
@@ -1821,7 +1821,7 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
       {/* ========================================================================= */}
       {selectedTxForReceipt && (
         <div className="fixed inset-0 z-50 bg-fundo backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-superficie border border-borda w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-superficie border border-borda w-full max-w-2xl rounded-2xl shadow-sm overflow-hidden animate-in fade-in zoom-in-95 duration-200">
             <div className="p-4 border-b border-borda bg-fundo flex items-center justify-between">
               <div className="flex items-center space-x-2">
                 <ShieldCheck className="w-5 h-5 text-marca-escura" />

@@ -36,7 +36,7 @@ export const AvisoDeInatividade: React.FC = () => {
       aria-labelledby="aviso-inatividade-titulo"
       className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-fundo backdrop-blur-sm"
     >
-      <div className="w-full max-w-[27rem] rounded-2xl bg-superficie border border-amber-500/40 shadow-2xl p-6">
+      <div className="w-full max-w-[27rem] rounded-2xl bg-superficie border border-amber-200 shadow-sm p-6">
         <div className="flex items-start gap-3">
           <div className="w-10 h-10 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center flex-shrink-0">
             <ShieldAlert className="w-5 h-5 text-amber-700" />

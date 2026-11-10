@@ -26,7 +26,7 @@ export const ScreenMockup: React.FC<ScreenMockupProps> = ({ step, activeNumber }
   const { mockupDetails, screenType, tip, highlightAction } = step;
 
   return (
-    <div className="rounded-2xl border border-borda bg-superficie overflow-hidden shadow-2xl transition-all">
+    <div className="rounded-2xl border border-borda bg-superficie overflow-hidden shadow-sm transition-all">
       {/* Browser / App Window Chrome */}
       <div className="bg-fundo px-4 py-2.5 border-b border-borda flex items-center justify-between select-none">
         <div className="flex items-center space-x-2">
@@ -52,7 +52,7 @@ export const ScreenMockup: React.FC<ScreenMockupProps> = ({ step, activeNumber }
       </div>
 
       {/* Screen Body */}
-      <div className="p-4 sm:p-6 bg-gradient-to-b from-slate-900 to-slate-950 space-y-4">
+      <div className="bg-superficie p-4 sm:p-6 space-y-4">
         {/* Mockup Header & Breadcrumb */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-borda">
           <div>
@@ -72,7 +72,7 @@ export const ScreenMockup: React.FC<ScreenMockupProps> = ({ step, activeNumber }
           </div>
 
           {mockupDetails.mainActionLabel && (
-            <div className="inline-flex items-center px-3.5 py-1.5 bg-gradient-to-r from-marca-escura to-teal-600 text-white rounded-xl text-xs font-semibold shadow-lg shadow-emerald-950/50 ring-2 ring-marca-escura animate-pulse">
+            <div className="bg-marca-escura inline-flex items-center px-3.5 py-1.5 text-white rounded-xl text-xs font-semibold shadow-sm ring-2 ring-marca-escura animate-pulse">
               <span>{mockupDetails.mainActionLabel}</span>
             </div>
           )}
@@ -97,7 +97,7 @@ export const ScreenMockup: React.FC<ScreenMockupProps> = ({ step, activeNumber }
                   </div>
                   <p className="text-xs text-tinta-2 font-mono">{item.value}</p>
                   {item.badge && (
-                    <span className="inline-block mt-2 text-[10px] px-2 py-0.5 bg-blue-500/20 text-blue-700 rounded font-sans border border-blue-500/30">
+                    <span className="inline-block mt-2 text-[10px] px-2 py-0.5 bg-teal-500/20 text-teal-800 rounded font-sans border border-teal-500/30">
                       {item.badge}
                     </span>
                   )}
@@ -112,10 +112,10 @@ export const ScreenMockup: React.FC<ScreenMockupProps> = ({ step, activeNumber }
               mockupDetails.highlightBox.color === 'emerald'
                 ? 'bg-marca-suave border-marca-escura text-marca-escura'
                 : mockupDetails.highlightBox.color === 'blue'
-                ? 'bg-blue-50 border-blue-500/40 text-blue-700'
+                ? 'bg-teal-50 border-teal-500/40 text-teal-700'
                 : mockupDetails.highlightBox.color === 'amber'
-                ? 'bg-amber-50 border-amber-500/40 text-amber-700'
-                : 'bg-purple-50 border-purple-500/40 text-purple-700'
+                ? 'bg-amber-50 border-amber-200 text-amber-700'
+                : 'bg-teal-50 border-teal-500/40 text-teal-700'
             }`}>
               <div className="flex items-start space-x-2.5">
                 <div className="p-1.5 rounded-lg bg-superficie shrink-0 mt-0.5">

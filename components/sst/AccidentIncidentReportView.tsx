@@ -505,7 +505,7 @@ export const AccidentIncidentReportView: React.FC<AccidentIncidentReportViewProp
   return (
     <div className="space-y-6" id="accident-incident-management-container">
       {/* Sub Header & Navigation */}
-      <div className="bg-superficie border border-borda rounded-2xl p-5 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="bg-superficie border border-borda rounded-2xl p-5 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 rounded-xl bg-rose-500/20 border border-rose-500/30 flex items-center justify-center text-rose-800">
             <AlertOctagon className="w-6 h-6" />
@@ -515,7 +515,7 @@ export const AccidentIncidentReportView: React.FC<AccidentIncidentReportViewProp
               <h2 className="text-xl font-black text-tinta">
                 Relatório de Acidentes & Cadastro de Incidentes
               </h2>
-              <span className="px-2 py-0.5 bg-rose-500/20 text-rose-800 font-mono text-[11px] font-bold rounded">
+              <span className="px-2 py-0.5 bg-superficie-3 text-tinta-2 font-mono text-[11px] font-bold rounded">
                 NR-01 • NR-04 • NR-05 • NBR 14280
               </span>
             </div>
@@ -533,7 +533,7 @@ export const AccidentIncidentReportView: React.FC<AccidentIncidentReportViewProp
             onClick={() => setActiveSubTab('DASHBOARD')}
             className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
               activeSubTab === 'DASHBOARD'
-                ? 'bg-rose-500 text-slate-950 shadow-md shadow-rose-500/20'
+                ? 'bg-marca-escura text-white shadow-sm'
                 : 'text-tinta-2 hover:text-tinta bg-superficie-2 hover:bg-superficie-2'
             }`}
           >
@@ -547,7 +547,7 @@ export const AccidentIncidentReportView: React.FC<AccidentIncidentReportViewProp
             onClick={() => setActiveSubTab('LIST')}
             className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
               activeSubTab === 'LIST'
-                ? 'bg-rose-500 text-slate-950 shadow-md shadow-rose-500/20'
+                ? 'bg-marca-escura text-white shadow-sm'
                 : 'text-tinta-2 hover:text-tinta bg-superficie-2 hover:bg-superficie-2'
             }`}
           >
@@ -561,7 +561,7 @@ export const AccidentIncidentReportView: React.FC<AccidentIncidentReportViewProp
             onClick={handleStartNew}
             className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
               activeSubTab === 'FORM'
-                ? 'bg-marca text-slate-950 shadow-md shadow-emerald-500/20'
+                ? 'bg-marca text-slate-950 shadow-md'
                 : 'text-marca-escura hover:text-tinta bg-marca-suave border border-marca-escura hover:bg-marca-suave'
             }`}
           >
@@ -608,14 +608,14 @@ export const AccidentIncidentReportView: React.FC<AccidentIncidentReportViewProp
             <div className="bg-superficie border border-borda p-4 rounded-2xl">
               <div className="flex items-center justify-between text-tinta-2 text-[11px] font-bold uppercase">
                 <span>Quase-Acidentes</span>
-                <HelpCircle className="w-4 h-4 text-sky-700" />
+                <HelpCircle className="w-4 h-4 text-teal-700" />
               </div>
-              <div className="text-2xl font-black text-sky-700 mt-2">{stats.nearMisses}</div>
+              <div className="text-2xl font-black text-teal-700 mt-2">{stats.nearMisses}</div>
               <div className="text-[11px] text-tinta-2 mt-0.5">Near-misses relatados</div>
             </div>
 
             {/* NBR 14280: TF */}
-            <div className="bg-superficie border border-teal-200 p-4 rounded-2xl bg-gradient-to-br from-teal-950/30 to-slate-900">
+            <div className="bg-superficie border border-teal-200 p-4 rounded-2xl">
               <div className="flex items-center justify-between text-teal-700 text-[11px] font-bold uppercase">
                 <span>Taxa Frequência (TF)</span>
                 <Activity className="w-4 h-4 text-teal-700" />
@@ -625,12 +625,12 @@ export const AccidentIncidentReportView: React.FC<AccidentIncidentReportViewProp
             </div>
 
             {/* NBR 14280: TG */}
-            <div className="bg-superficie border border-indigo-200 p-4 rounded-2xl bg-gradient-to-br from-indigo-950/30 to-slate-900">
-              <div className="flex items-center justify-between text-indigo-700 text-[11px] font-bold uppercase">
+            <div className="bg-superficie border border-teal-200 p-4 rounded-2xl">
+              <div className="flex items-center justify-between text-teal-700 text-[11px] font-bold uppercase">
                 <span>Taxa Gravidade (TG)</span>
-                <Award className="w-4 h-4 text-indigo-700" />
+                <Award className="w-4 h-4 text-teal-700" />
               </div>
-              <div className="text-2xl font-black text-indigo-700 mt-2">{stats.severityRate}</div>
+              <div className="text-2xl font-black text-teal-700 mt-2">{stats.severityRate}</div>
               <div className="text-[10px] text-tinta-2 mt-0.5 font-mono">NBR 14280 / 1M HHT</div>
             </div>
           </div>
@@ -680,7 +680,7 @@ export const AccidentIncidentReportView: React.FC<AccidentIncidentReportViewProp
                           <span className="text-rose-700 font-mono font-bold">{count} ({percent}%)</span>
                         </div>
                         <div className="w-full bg-superficie-2 rounded-full h-2 overflow-hidden">
-                          <div className="bg-gradient-to-r from-rose-500 to-amber-500 h-2 rounded-full" style={{ width: `${percent}%` }} />
+                          <div className="bg-rose-500 h-2 rounded-full" style={{ width: `${percent}%` }} />
                         </div>
                       </div>
                     );
@@ -712,7 +712,7 @@ export const AccidentIncidentReportView: React.FC<AccidentIncidentReportViewProp
                           <span className="text-amber-700 font-mono font-bold">{count} ({percent}%)</span>
                         </div>
                         <div className="w-full bg-superficie-2 rounded-full h-2 overflow-hidden">
-                          <div className="bg-gradient-to-r from-amber-500 to-yellow-500 h-2 rounded-full" style={{ width: `${percent}%` }} />
+                          <div className="bg-amber-500 h-2 rounded-full" style={{ width: `${percent}%` }} />
                         </div>
                       </div>
                     );
@@ -740,7 +740,7 @@ export const AccidentIncidentReportView: React.FC<AccidentIncidentReportViewProp
                   <span className="text-sm font-black text-marca-escura font-mono">{stats.actionsCompleted}</span>
                 </div>
 
-                <div className="flex items-center justify-between p-3 bg-amber-50 border border-amber-800/40 rounded-xl">
+                <div className="flex items-center justify-between p-3 bg-amber-50 border border-amber-200 rounded-xl">
                   <div className="flex items-center gap-2.5">
                     <Clock className="w-4 h-4 text-amber-700" />
                     <span className="text-xs font-semibold text-amber-700">Ações em Andamento</span>
@@ -871,7 +871,7 @@ export const AccidentIncidentReportView: React.FC<AccidentIncidentReportViewProp
                 return (
                   <div
                     key={record.id}
-                    className="bg-superficie border border-borda hover:border-borda transition-all rounded-2xl p-5 shadow-lg space-y-4"
+                    className="bg-superficie border border-borda hover:border-borda transition-all rounded-2xl p-5 shadow-sm space-y-4"
                   >
                     <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-borda pb-4">
                       <div className="space-y-1.5">
@@ -898,7 +898,7 @@ export const AccidentIncidentReportView: React.FC<AccidentIncidentReportViewProp
 
                           <span className={`px-2 py-0.5 text-[10px] font-bold rounded ${
                             record.investigation_status === 'COMPLETED' ? 'bg-marca-suave text-marca-escura' :
-                            record.investigation_status === 'ACTION_PLAN' ? 'bg-indigo-500/20 text-indigo-700' :
+                            record.investigation_status === 'ACTION_PLAN' ? 'bg-teal-500/20 text-teal-800' :
                             record.investigation_status === 'INVESTIGATING' ? 'bg-amber-500/20 text-amber-800' :
                             'bg-superficie-3 text-tinta'
                           }`}>
@@ -941,7 +941,7 @@ export const AccidentIncidentReportView: React.FC<AccidentIncidentReportViewProp
                           onClick={() => setSelectedIncidentForPrint(record)}
                           className="px-3 py-1.5 bg-superficie-2 hover:bg-superficie-3 text-tinta rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-colors border border-borda shadow-sm"
                         >
-                          <Printer className="w-3.5 h-3.5 text-indigo-700" />
+                          <Printer className="w-3.5 h-3.5 text-teal-700" />
                           Relatório PDF / Impressão
                         </button>
 
@@ -1034,7 +1034,7 @@ export const AccidentIncidentReportView: React.FC<AccidentIncidentReportViewProp
       {activeSubTab === 'FORM' && (
         <form onSubmit={handleSaveIncident} className="space-y-6" id="accident-form">
           {/* CAT Import Banner */}
-          <div className="bg-gradient-to-r from-rose-950/40 via-slate-900 to-teal-950/30 border border-rose-500/30 rounded-2xl p-5 shadow-xl space-y-3">
+          <div className="bg-rose-50 border border-rose-200 rounded-2xl p-5 shadow-sm space-y-3">
             <div className="flex items-center justify-between flex-wrap gap-3">
               <div className="flex items-center gap-2.5">
                 <Sparkles className="w-5 h-5 text-rose-700" />
@@ -1294,7 +1294,7 @@ export const AccidentIncidentReportView: React.FC<AccidentIncidentReportViewProp
           <div className="bg-superficie border border-borda rounded-2xl p-6 space-y-4">
             <div className="flex items-center justify-between border-b border-borda pb-3">
               <div className="flex items-center gap-2">
-                <Users className="w-4 h-4 text-sky-700" />
+                <Users className="w-4 h-4 text-teal-700" />
                 <h3 className="text-sm font-bold text-tinta">3. Relato de Testemunhas Presenciais (Oitivas)</h3>
               </div>
               <span className="text-[11px] text-tinta-2">
@@ -1312,7 +1312,7 @@ export const AccidentIncidentReportView: React.FC<AccidentIncidentReportViewProp
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
                         <span className="text-xs font-bold text-tinta">{idx + 1}. {w.witness_name}</span>
-                        <span className="px-2 py-0.5 bg-superficie-2 text-sky-700 text-[10px] rounded font-semibold">
+                        <span className="px-2 py-0.5 bg-superficie-2 text-teal-700 text-[10px] rounded font-semibold">
                           {w.is_company_employee ? 'Funcionário da Empresa' : 'Terceiro / Externo'}
                         </span>
                         {w.witness_job_title && (
@@ -1448,7 +1448,7 @@ export const AccidentIncidentReportView: React.FC<AccidentIncidentReportViewProp
                 <button
                   type="button"
                   onClick={handleAddWitnessToForm}
-                  className="px-3 py-1.5 bg-sky-600 hover:bg-sky-700 text-white rounded-xl text-xs font-bold flex items-center gap-1 transition-colors"
+                  className="px-3 py-1.5 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-bold flex items-center gap-1 transition-colors"
                 >
                   <Plus className="w-3.5 h-3.5" /> Adicionar Testemunha
                 </button>
@@ -1563,7 +1563,7 @@ export const AccidentIncidentReportView: React.FC<AccidentIncidentReportViewProp
                 <button
                   type="button"
                   onClick={handleAddAttachmentToForm}
-                  className="px-3 py-1.5 bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold rounded-xl text-xs flex items-center gap-1 transition-colors"
+                  className="px-3 py-1.5 bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold rounded-xl text-xs flex items-center gap-1 transition-colors border border-amber-200"
                 >
                   <Plus className="w-3.5 h-3.5" /> Adicionar Evidência
                 </button>
@@ -1574,13 +1574,13 @@ export const AccidentIncidentReportView: React.FC<AccidentIncidentReportViewProp
           {/* Section 5: Metodologia de Análise Causal (Ishikawa & 5 Porquês) */}
           <div className="bg-superficie border border-borda rounded-2xl p-6 space-y-4">
             <div className="flex items-center gap-2 border-b border-borda pb-3">
-              <Layers className="w-4 h-4 text-indigo-700" />
+              <Layers className="w-4 h-4 text-teal-700" />
               <h3 className="text-sm font-bold text-tinta">5. Análise de Causa Raiz (Ishikawa 6M & 5 Porquês)</h3>
             </div>
 
             {/* Ishikawa 6M */}
             <div className="space-y-3">
-              <span className="text-xs font-bold text-indigo-700 block">Diagrama de Espinha de Peixe (Ishikawa 6M):</span>
+              <span className="text-xs font-bold text-teal-700 block">Diagrama de Espinha de Peixe (Ishikawa 6M):</span>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                 <div>
                   <label className="block text-[11px] text-tinta-2 mb-1">1. Método (Procedimento)</label>
@@ -1915,7 +1915,7 @@ export const AccidentIncidentReportView: React.FC<AccidentIncidentReportViewProp
 
             <button
               type="submit"
-              className="px-6 py-2.5 bg-gradient-to-r from-rose-600 to-rose-500 hover:from-rose-500 hover:to-rose-400 text-white rounded-xl text-xs font-bold transition-all shadow-lg shadow-rose-600/30 flex items-center gap-2"
+              className="bg-rose-600 px-6 py-2.5 text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-2"
             >
               <CheckCircle2 className="w-4 h-4" />
               {selectedIncidentForEdit ? 'Atualizar Investigação' : 'Salvar Relatório de Acidente'}
@@ -1930,7 +1930,7 @@ export const AccidentIncidentReportView: React.FC<AccidentIncidentReportViewProp
       {/* ========================================================================= */}
       {selectedIncidentForPrint && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto print:p-0 print:bg-white">
-          <div className="bg-white text-slate-900 rounded-2xl max-w-4xl w-full p-8 space-y-6 shadow-2xl print:shadow-none print:max-w-none print:w-full print:rounded-none print:p-0">
+          <div className="bg-white text-slate-900 rounded-2xl max-w-4xl w-full p-8 space-y-6 shadow-sm print:shadow-none print:max-w-none print:w-full print:rounded-none print:p-0">
             {/* Print action header (hidden on physical print) */}
             <div className="flex items-center justify-between border-b pb-4 print:hidden">
               <div className="flex items-center gap-2">

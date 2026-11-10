@@ -117,9 +117,9 @@ export const CipaVotingModal: React.FC<CipaVotingModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-superficie p-4 backdrop-blur-sm">
-      <div className="relative w-full max-w-2xl rounded-2xl bg-white shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[92vh]">
+      <div className="relative w-full max-w-2xl rounded-2xl bg-white shadow-sm border border-slate-200 overflow-hidden flex flex-col max-h-[92vh]">
         {/* Header */}
-        <div className="bg-gradient-to-r from-teal-700 via-teal-800 to-marca-escura p-5 text-white flex items-center justify-between">
+        <div className="bg-superficie p-5 text-tinta flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/15 border border-white/20 text-tinta shadow-inner">
               <Vote className="h-6 w-6" />

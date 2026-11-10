@@ -257,7 +257,7 @@ export const AepPhotoEvidenceModal: React.FC<AepPhotoEvidenceModalProps> = ({ ae
 
   return (
     <div className="fixed inset-0 bg-fundo backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-superficie border border-borda rounded-2xl max-w-[60rem] w-full p-6 space-y-4 shadow-2xl max-h-[92vh] overflow-y-auto">
+      <div className="bg-superficie border border-borda rounded-2xl max-w-[60rem] w-full p-6 space-y-4 shadow-sm max-h-[92vh] overflow-y-auto">
         <div className="flex items-start justify-between gap-4 border-b border-borda pb-3">
           <div>
             <h3 className="text-base font-bold text-tinta flex items-center gap-2">
@@ -385,7 +385,7 @@ export const AepPhotoEvidenceModal: React.FC<AepPhotoEvidenceModalProps> = ({ ae
               <button
                 type="button"
                 onClick={confirmarDescarte}
-                className="px-3 py-1.5 bg-rose-500 hover:bg-rose-400 text-slate-950 font-bold rounded-lg"
+                className="px-3 py-1.5 bg-rose-100 hover:bg-rose-200 text-rose-900 font-bold rounded-lg border border-rose-200"
               >
                 Descartar arquivo
               </button>
@@ -537,7 +537,7 @@ export const AepPhotoEvidenceModal: React.FC<AepPhotoEvidenceModalProps> = ({ ae
             <button
               type="submit"
               disabled={enviando}
-              className="px-4 py-2 bg-teal-500 hover:bg-teal-400 disabled:bg-superficie-2 disabled:text-tinta text-slate-950 font-bold rounded-lg flex items-center gap-1.5"
+              className="bg-marca-escura text-tinta px-4 py-2 disabled:bg-superficie-2 disabled:text-tinta font-bold rounded-lg flex items-center gap-1.5 hover:opacity-90"
             >
               {enviando && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
               {substituindo ? 'Substituir' : 'Anexar'}

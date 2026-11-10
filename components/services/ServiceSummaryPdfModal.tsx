@@ -111,7 +111,7 @@ export const ServiceSummaryPdfModal: React.FC<ServiceSummaryPdfModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-fundo backdrop-blur-sm animate-in fade-in">
-      <div className="bg-superficie border border-borda rounded-3xl w-full max-w-4xl max-h-[90vh] shadow-2xl flex flex-col overflow-hidden">
+      <div className="bg-superficie border border-borda rounded-3xl w-full max-w-4xl max-h-[90vh] shadow-sm flex flex-col overflow-hidden">
         {/* Header */}
         <div className="px-6 py-4 border-b border-borda flex items-center justify-between bg-superficie">
           <div className="flex items-center space-x-3">
@@ -135,7 +135,7 @@ export const ServiceSummaryPdfModal: React.FC<ServiceSummaryPdfModalProps> = ({
             <button
               onClick={handleExportPdf}
               disabled={targetOrders.length === 0}
-              className="px-4 py-2 bg-gradient-to-r from-marca-escura to-teal-600 hover:from-marca-escura hover:to-teal-700 text-white rounded-2xl text-xs font-bold transition shadow-lg shadow-emerald-950/40 flex items-center space-x-2 disabled:opacity-50"
+              className="bg-marca-escura px-4 py-2 text-white rounded-2xl text-xs font-bold transition shadow-sm flex items-center space-x-2 disabled:opacity-50"
             >
               <Download className="w-4 h-4" />
               <span>Baixar Arquivo PDF ({targetOrders.length})</span>

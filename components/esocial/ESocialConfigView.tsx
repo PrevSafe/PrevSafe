@@ -137,9 +137,9 @@ export const ESocialConfigView: React.FC<ESocialConfigViewProps> = ({ onBack }) 
   return (
     <div className="space-y-6 pb-16">
       {/* Top Banner */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-superficie border border-borda rounded-3xl p-6 shadow-xl">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-superficie border border-borda rounded-3xl p-6 shadow-sm">
         <div className="flex items-center space-x-4">
-          <div className="p-3 bg-gradient-to-br from-indigo-500/20 to-teal-500/20 text-indigo-700 rounded-2xl border border-indigo-500/30">
+          <div className="bg-teal-500 p-3 text-teal-950 rounded-2xl border border-teal-500/30">
             <Sliders className="w-7 h-7" />
           </div>
           <div>
@@ -170,7 +170,7 @@ export const ESocialConfigView: React.FC<ESocialConfigViewProps> = ({ onBack }) 
           )}
           <button
             onClick={handleSaveConfig}
-            className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-2xl text-xs font-bold transition shadow-lg shadow-indigo-950/40 flex items-center space-x-2"
+            className="px-5 py-2.5 bg-teal-600 hover:bg-teal-700 text-white rounded-2xl text-xs font-bold transition shadow-sm flex items-center space-x-2"
           >
             {isSaved ? <Check className="w-4 h-4 text-marca-escura" /> : <Save className="w-4 h-4" />}
             <span>{isSaved ? 'Configurações Salvas!' : 'Salvar Alterações'}</span>
@@ -186,8 +186,8 @@ export const ESocialConfigView: React.FC<ESocialConfigViewProps> = ({ onBack }) 
       )}
 
       {slaFeedback && (
-        <div className="p-4 bg-indigo-50 border border-indigo-500/30 rounded-2xl flex items-center space-x-3 text-indigo-700 text-xs font-medium">
-          <Bell className="w-5 h-5 text-indigo-700 flex-shrink-0" />
+        <div className="p-4 bg-teal-50 border border-teal-500/30 rounded-2xl flex items-center space-x-3 text-teal-700 text-xs font-medium">
+          <Bell className="w-5 h-5 text-teal-700 flex-shrink-0" />
           <span>{slaFeedback.message}</span>
         </div>
       )}
@@ -196,10 +196,10 @@ export const ESocialConfigView: React.FC<ESocialConfigViewProps> = ({ onBack }) 
         {/* Left Column: Digital Certificate A1 (PFX) - Span 7 */}
         <div className="lg:col-span-7 space-y-6">
           {/* Certificate Card */}
-          <div className="bg-superficie border border-borda rounded-3xl p-6 shadow-xl space-y-5">
+          <div className="bg-superficie border border-borda rounded-3xl p-6 shadow-sm space-y-5">
             <div className="flex items-center justify-between border-b border-borda pb-4">
               <div className="flex items-center space-x-3">
-                <div className="p-2.5 rounded-2xl bg-indigo-500/10 text-indigo-700 border border-indigo-500/20">
+                <div className="p-2.5 rounded-2xl bg-teal-500/10 text-teal-800 border border-teal-500/20">
                   <Key className="w-5 h-5" />
                 </div>
                 <div>
@@ -292,7 +292,7 @@ export const ESocialConfigView: React.FC<ESocialConfigViewProps> = ({ onBack }) 
                 }
               }}
               className={`border-2 border-dashed rounded-2xl p-6 text-center transition flex flex-col items-center justify-center space-y-2 cursor-pointer ${
-                isDragging ? 'border-indigo-400 bg-indigo-50' : 'border-borda hover:border-borda bg-fundo'
+                isDragging ? 'border-teal-400 bg-teal-50' : 'border-borda hover:border-borda bg-fundo'
               }`}
               onClick={() => {
                 const input = document.createElement('input');
@@ -306,11 +306,11 @@ export const ESocialConfigView: React.FC<ESocialConfigViewProps> = ({ onBack }) 
                 input.click();
               }}
             >
-              <div className="p-3 bg-indigo-500/10 text-indigo-700 rounded-full">
+              <div className="p-3 bg-teal-500/10 text-teal-800 rounded-full">
                 <Upload className="w-6 h-6" />
               </div>
               <div className="text-sm font-semibold text-tinta">
-                Clique para selecionar ou arraste o arquivo <span className="text-indigo-700 font-mono font-bold">.PFX</span> ou <span className="text-indigo-700 font-mono font-bold">.P12</span>
+                Clique para selecionar ou arraste o arquivo <span className="text-teal-700 font-mono font-bold">.PFX</span> ou <span className="text-teal-700 font-mono font-bold">.P12</span>
               </div>
               <p className="text-xs text-tinta-2 max-w-sm">
                 Certificado Digital de Pessoa Jurídica (e-CNPJ) ou Procuração Eletrônica RFB para transmissão de SST.
@@ -340,7 +340,7 @@ export const ESocialConfigView: React.FC<ESocialConfigViewProps> = ({ onBack }) 
                     value={certPassword}
                     onChange={(e) => setCertPassword(e.target.value)}
                     placeholder="Digite a senha do certificado..."
-                    className="w-full bg-superficie border border-borda rounded-xl px-3.5 py-2.5 text-xs text-tinta placeholder-tinta-3 focus:outline-none focus:border-indigo-500 pr-10"
+                    className="w-full bg-superficie border border-borda rounded-xl px-3.5 py-2.5 text-xs text-tinta placeholder-tinta-3 focus:outline-none focus:border-teal-500 pr-10"
                   />
                   <button
                     type="button"
@@ -355,7 +355,7 @@ export const ESocialConfigView: React.FC<ESocialConfigViewProps> = ({ onBack }) 
                   type="button"
                   disabled={isTestingCert}
                   onClick={handleTestCertificate}
-                  className="px-4 py-2.5 bg-indigo-600/80 hover:bg-indigo-600 text-white rounded-xl text-xs font-semibold transition flex items-center space-x-1.5 disabled:opacity-50"
+                  className="px-4 py-2.5 bg-teal-700/80 hover:bg-teal-700 text-white rounded-xl text-xs font-semibold transition flex items-center space-x-1.5 disabled:opacity-50"
                 >
                   <RefreshCw className={`w-3.5 h-3.5 ${isTestingCert ? 'animate-spin' : ''}`} />
                   <span>{isTestingCert ? 'Verificando...' : 'Verificar certificado'}</span>
@@ -366,7 +366,7 @@ export const ESocialConfigView: React.FC<ESocialConfigViewProps> = ({ onBack }) 
                 <div className={`p-3.5 rounded-xl border text-xs flex items-start space-x-2.5 ${
                   certTestResult.success 
                     ? 'bg-marca-suave border-marca-escura text-marca-escura' 
-                    : 'bg-rose-50 border-rose-500/30 text-rose-700'
+                    : 'bg-rose-50 border-rose-200 text-rose-700'
                 }`}>
                   {certTestResult.success ? (
                     <CheckCircle2 className="w-4 h-4 text-marca-escura flex-shrink-0 mt-0.5" />
@@ -388,7 +388,7 @@ export const ESocialConfigView: React.FC<ESocialConfigViewProps> = ({ onBack }) 
           </div>
 
           {/* SLA & Deadlines Automatic Notifications Settings */}
-          <div className="bg-superficie border border-borda rounded-3xl p-6 shadow-xl space-y-4">
+          <div className="bg-superficie border border-borda rounded-3xl p-6 shadow-sm space-y-4">
             <div className="flex items-center justify-between border-b border-borda pb-3">
               <div className="flex items-center space-x-3">
                 <div className="p-2.5 rounded-2xl bg-teal-500/10 text-teal-800 border border-teal-500/20">
@@ -453,7 +453,7 @@ export const ESocialConfigView: React.FC<ESocialConfigViewProps> = ({ onBack }) 
                   type="checkbox"
                   checked={autoBatchTransmission}
                   onChange={(e) => setAutoBatchTransmission(e.target.checked)}
-                  className="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 border-borda bg-superficie"
+                  className="w-4 h-4 rounded text-teal-700 focus:ring-teal-500 border-borda bg-superficie"
                 />
               </label>
 
@@ -466,7 +466,7 @@ export const ESocialConfigView: React.FC<ESocialConfigViewProps> = ({ onBack }) 
                   type="checkbox"
                   checked={notifyRh}
                   onChange={(e) => setNotifyRh(e.target.checked)}
-                  className="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 border-borda bg-superficie"
+                  className="w-4 h-4 rounded text-teal-700 focus:ring-teal-500 border-borda bg-superficie"
                 />
               </label>
             </div>
@@ -476,7 +476,7 @@ export const ESocialConfigView: React.FC<ESocialConfigViewProps> = ({ onBack }) 
         {/* Right Column: Environment & Transmitter Credentials - Span 5 */}
         <div className="lg:col-span-5 space-y-6">
           {/* Environment Switcher */}
-          <div className="bg-superficie border border-borda rounded-3xl p-6 shadow-xl space-y-4">
+          <div className="bg-superficie border border-borda rounded-3xl p-6 shadow-sm space-y-4">
             <div className="flex items-center space-x-3 border-b border-borda pb-3">
               <div className="p-2.5 rounded-2xl bg-amber-500/10 text-amber-800 border border-amber-500/20">
                 <Server className="w-5 h-5" />
@@ -493,7 +493,7 @@ export const ESocialConfigView: React.FC<ESocialConfigViewProps> = ({ onBack }) 
                 onClick={() => setEnvironment('PRODUCAO')}
                 className={`p-4 rounded-2xl border text-left transition flex flex-col justify-between ${
                   environment === 'PRODUCAO'
-                    ? 'bg-marca-suave border-marca-escura shadow-lg shadow-emerald-950/30'
+                    ? 'bg-marca-suave border-marca-escura shadow-sm'
                     : 'bg-fundo border-borda hover:border-borda'
                 }`}
               >
@@ -512,7 +512,7 @@ export const ESocialConfigView: React.FC<ESocialConfigViewProps> = ({ onBack }) 
                 onClick={() => setEnvironment('PRODUCAO_RESTRITA')}
                 className={`p-4 rounded-2xl border text-left transition flex flex-col justify-between ${
                   environment === 'PRODUCAO_RESTRITA'
-                    ? 'bg-amber-50 border-amber-500/50 shadow-lg shadow-amber-950/30'
+                    ? 'bg-amber-50 border-amber-200 shadow-sm'
                     : 'bg-fundo border-borda hover:border-borda'
                 }`}
               >
@@ -539,9 +539,9 @@ export const ESocialConfigView: React.FC<ESocialConfigViewProps> = ({ onBack }) 
           </div>
 
           {/* Software House & Transmitter Credentials */}
-          <div className="bg-superficie border border-borda rounded-3xl p-6 shadow-xl space-y-4">
+          <div className="bg-superficie border border-borda rounded-3xl p-6 shadow-sm space-y-4">
             <div className="flex items-center space-x-3 border-b border-borda pb-3">
-              <div className="p-2.5 rounded-2xl bg-indigo-500/10 text-indigo-700 border border-indigo-500/20">
+              <div className="p-2.5 rounded-2xl bg-teal-500/10 text-teal-800 border border-teal-500/20">
                 <Building2 className="w-5 h-5" />
               </div>
               <div>
@@ -556,7 +556,7 @@ export const ESocialConfigView: React.FC<ESocialConfigViewProps> = ({ onBack }) 
                 <select
                   value={transmitterType}
                   onChange={(e: any) => setTransmitterType(e.target.value)}
-                  className="w-full bg-fundo border border-borda rounded-xl px-3.5 py-2 text-tinta focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-fundo border border-borda rounded-xl px-3.5 py-2 text-tinta focus:outline-none focus:border-teal-500"
                 >
                   <option value="SOFTWARE_HOUSE">Software House / Consultoria SST (Procuração Eletrônica)</option>
                   <option value="EMPREGADOR_DIRETO">Próprio Empregador (Certificado do Cliente)</option>
@@ -570,7 +570,7 @@ export const ESocialConfigView: React.FC<ESocialConfigViewProps> = ({ onBack }) 
                   type="text"
                   value={transmitterCnpj}
                   onChange={(e) => setTransmitterCnpj(e.target.value)}
-                  className="w-full bg-fundo border border-borda rounded-xl px-3.5 py-2 font-mono text-tinta focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-fundo border border-borda rounded-xl px-3.5 py-2 font-mono text-tinta focus:outline-none focus:border-teal-500"
                 />
               </div>
 
@@ -580,7 +580,7 @@ export const ESocialConfigView: React.FC<ESocialConfigViewProps> = ({ onBack }) 
                   type="text"
                   value={softwareHouseName}
                   onChange={(e) => setSoftwareHouseName(e.target.value)}
-                  className="w-full bg-fundo border border-borda rounded-xl px-3.5 py-2 text-tinta focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-fundo border border-borda rounded-xl px-3.5 py-2 text-tinta focus:outline-none focus:border-teal-500"
                 />
               </div>
 
@@ -591,7 +591,7 @@ export const ESocialConfigView: React.FC<ESocialConfigViewProps> = ({ onBack }) 
                   value={webhookUrl}
                   onChange={(e) => setWebhookUrl(e.target.value)}
                   placeholder="https://api.empresa.com.br/webhooks/esocial"
-                  className="w-full bg-fundo border border-borda rounded-xl px-3.5 py-2 text-tinta placeholder-tinta-3 focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-fundo border border-borda rounded-xl px-3.5 py-2 text-tinta placeholder-tinta-3 focus:outline-none focus:border-teal-500"
                 />
               </div>
             </div>

@@ -51,9 +51,9 @@ export const AuditLogsView: React.FC<{ onNavigate: (view: string) => void }> = (
   return (
     <div className="space-y-6 pb-12">
       {/* Header Bento Card */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-superficie border border-borda rounded-3xl p-6 shadow-xl">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-superficie border border-borda rounded-3xl p-6 shadow-sm">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-indigo-500/10 border border-indigo-500/20 rounded-2xl flex items-center justify-center text-indigo-700">
+          <div className="w-10 h-10 bg-teal-500/10 border border-teal-500/20 rounded-2xl flex items-center justify-center text-teal-800">
             <History className="w-5 h-5" />
           </div>
           <div>
@@ -64,7 +64,7 @@ export const AuditLogsView: React.FC<{ onNavigate: (view: string) => void }> = (
       </div>
 
       {/* Filter Bento Bar */}
-      <div className="flex flex-col sm:flex-row gap-3 items-center justify-between bg-superficie p-4 rounded-3xl border border-borda shadow-xl">
+      <div className="flex flex-col sm:flex-row gap-3 items-center justify-between bg-superficie p-4 rounded-3xl border border-borda shadow-sm">
         <div className="relative w-full sm:w-80">
           <Search className="w-4 h-4 text-tinta-2 absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
@@ -72,7 +72,7 @@ export const AuditLogsView: React.FC<{ onNavigate: (view: string) => void }> = (
             placeholder="Buscar por ação, usuário ou número..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-3 py-2 bg-fundo border border-borda rounded-2xl text-xs text-tinta placeholder-tinta-3 focus:outline-none focus:border-indigo-500"
+            className="w-full pl-10 pr-3 py-2 bg-fundo border border-borda rounded-2xl text-xs text-tinta placeholder-tinta-3 focus:outline-none focus:border-teal-500"
           />
         </div>
 
@@ -81,7 +81,7 @@ export const AuditLogsView: React.FC<{ onNavigate: (view: string) => void }> = (
           <select
             value={selectedEntity}
             onChange={(e) => setSelectedEntity(e.target.value)}
-            className="px-3 py-2 bg-fundo border border-borda rounded-2xl text-xs font-medium text-tinta focus:outline-none focus:border-indigo-500"
+            className="px-3 py-2 bg-fundo border border-borda rounded-2xl text-xs font-medium text-tinta focus:outline-none focus:border-teal-500"
           >
             <option value="ALL">Todas as Entidades</option>
             <option value="SERVICE_ORDER">Ordem de Serviço (OS)</option>
@@ -95,7 +95,7 @@ export const AuditLogsView: React.FC<{ onNavigate: (view: string) => void }> = (
       </div>
 
       {/* Logs Table in Bento Card */}
-      <div className="bg-superficie rounded-3xl border border-borda shadow-xl overflow-hidden">
+      <div className="bg-superficie rounded-3xl border border-borda shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
             <thead className="bg-fundo text-tinta-2 font-semibold border-b border-borda">
@@ -121,7 +121,7 @@ export const AuditLogsView: React.FC<{ onNavigate: (view: string) => void }> = (
                     {log.action}
                   </td>
                   <td className="py-3.5 px-5">
-                    <span className="bg-fundo text-indigo-700 border border-borda px-2 py-0.5 rounded-full text-[10px] mr-2">
+                    <span className="bg-fundo text-teal-700 border border-borda px-2 py-0.5 rounded-full text-[10px] mr-2">
                       {log.entity_type}
                     </span>
                     <span className="text-tinta font-bold">{log.entity_number || log.entity_id}</span>
@@ -262,9 +262,9 @@ export const SettingsView: React.FC<{ onNavigate: (view: string) => void }> = ({
   return (
     <div className="space-y-6 pb-12">
       {/* Header Bento Card */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-superficie border border-borda rounded-3xl p-6 shadow-xl">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-superficie border border-borda rounded-3xl p-6 shadow-sm">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-indigo-500/10 border border-indigo-500/20 rounded-2xl flex items-center justify-center text-indigo-700">
+          <div className="w-10 h-10 bg-teal-500/10 border border-teal-500/20 rounded-2xl flex items-center justify-center text-teal-800">
             <Sliders className="w-5 h-5" />
           </div>
           <div>
@@ -275,7 +275,7 @@ export const SettingsView: React.FC<{ onNavigate: (view: string) => void }> = ({
       </div>
 
       {/* Supabase Prev Workflow Card */}
-      <div className="bg-gradient-to-br from-slate-900 via-slate-900 to-emerald-950/30 p-6 rounded-3xl border border-marca-escura shadow-2xl space-y-5">
+      <div className="bg-superficie p-6 rounded-3xl border border-borda shadow-sm space-y-5">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-marca-suave border border-marca-escura rounded-2xl flex items-center justify-center text-marca-escura">
@@ -307,7 +307,7 @@ export const SettingsView: React.FC<{ onNavigate: (view: string) => void }> = ({
               onClick={() => setShowSqlModal(true)}
               className="px-3.5 py-2 bg-superficie-2 hover:bg-superficie-3 text-tinta border border-borda rounded-xl text-xs font-semibold transition flex items-center gap-2"
             >
-              <Layers className="w-3.5 h-3.5 text-indigo-700" />
+              <Layers className="w-3.5 h-3.5 text-teal-700" />
               <span>Ver Migrations SQL</span>
             </button>
           </div>
@@ -431,7 +431,7 @@ export const SettingsView: React.FC<{ onNavigate: (view: string) => void }> = ({
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-        <div className="bg-superficie p-6 rounded-3xl border border-borda shadow-xl space-y-5 lg:col-span-2">
+        <div className="bg-superficie p-6 rounded-3xl border border-borda shadow-sm space-y-5 lg:col-span-2">
           <div className="flex items-start justify-between gap-3">
             <div>
               <h2 className="text-base font-bold text-tinta">Dados da Empresa</h2>
@@ -453,7 +453,7 @@ export const SettingsView: React.FC<{ onNavigate: (view: string) => void }> = ({
                 type="text"
                 value={orgForm.legal_name}
                 onChange={(e) => setOrgForm({ ...orgForm, legal_name: e.target.value })}
-                className="w-full p-2.5 bg-fundo border border-borda rounded-2xl text-tinta focus:outline-none focus:border-indigo-500"
+                className="w-full p-2.5 bg-fundo border border-borda rounded-2xl text-tinta focus:outline-none focus:border-teal-500"
               />
             </div>
             <div>
@@ -462,7 +462,7 @@ export const SettingsView: React.FC<{ onNavigate: (view: string) => void }> = ({
                 type="text"
                 value={orgForm.name}
                 onChange={(e) => setOrgForm({ ...orgForm, name: e.target.value })}
-                className="w-full p-2.5 bg-fundo border border-borda rounded-2xl text-tinta focus:outline-none focus:border-indigo-500"
+                className="w-full p-2.5 bg-fundo border border-borda rounded-2xl text-tinta focus:outline-none focus:border-teal-500"
               />
             </div>
             <div>
@@ -471,7 +471,7 @@ export const SettingsView: React.FC<{ onNavigate: (view: string) => void }> = ({
                 type="text"
                 value={orgForm.document_number}
                 onChange={(e) => setOrgForm({ ...orgForm, document_number: e.target.value })}
-                className="w-full p-2.5 bg-fundo border border-borda rounded-2xl font-mono text-tinta focus:outline-none focus:border-indigo-500"
+                className="w-full p-2.5 bg-fundo border border-borda rounded-2xl font-mono text-tinta focus:outline-none focus:border-teal-500"
               />
             </div>
             <div>
@@ -480,7 +480,7 @@ export const SettingsView: React.FC<{ onNavigate: (view: string) => void }> = ({
                 type="email"
                 value={orgForm.email}
                 onChange={(e) => setOrgForm({ ...orgForm, email: e.target.value })}
-                className="w-full p-2.5 bg-fundo border border-borda rounded-2xl text-tinta focus:outline-none focus:border-indigo-500"
+                className="w-full p-2.5 bg-fundo border border-borda rounded-2xl text-tinta focus:outline-none focus:border-teal-500"
               />
             </div>
             <div>
@@ -489,7 +489,7 @@ export const SettingsView: React.FC<{ onNavigate: (view: string) => void }> = ({
                 type="text"
                 value={orgForm.phone}
                 onChange={(e) => setOrgForm({ ...orgForm, phone: e.target.value })}
-                className="w-full p-2.5 bg-fundo border border-borda rounded-2xl text-tinta focus:outline-none focus:border-indigo-500"
+                className="w-full p-2.5 bg-fundo border border-borda rounded-2xl text-tinta focus:outline-none focus:border-teal-500"
               />
             </div>
 
@@ -507,7 +507,7 @@ export const SettingsView: React.FC<{ onNavigate: (view: string) => void }> = ({
                 placeholder="Nome completo do engenheiro(a)"
                 value={orgForm.technical_responsible_name}
                 onChange={(e) => setOrgForm({ ...orgForm, technical_responsible_name: e.target.value })}
-                className="w-full p-2.5 bg-fundo border border-borda rounded-2xl text-tinta focus:outline-none focus:border-indigo-500"
+                className="w-full p-2.5 bg-fundo border border-borda rounded-2xl text-tinta focus:outline-none focus:border-teal-500"
               />
             </div>
             <div>
@@ -517,7 +517,7 @@ export const SettingsView: React.FC<{ onNavigate: (view: string) => void }> = ({
                 placeholder="Ex.: Engenheiro de Segurança do Trabalho"
                 value={orgForm.technical_responsible_title}
                 onChange={(e) => setOrgForm({ ...orgForm, technical_responsible_title: e.target.value })}
-                className="w-full p-2.5 bg-fundo border border-borda rounded-2xl text-tinta focus:outline-none focus:border-indigo-500"
+                className="w-full p-2.5 bg-fundo border border-borda rounded-2xl text-tinta focus:outline-none focus:border-teal-500"
               />
             </div>
             <div>
@@ -527,7 +527,7 @@ export const SettingsView: React.FC<{ onNavigate: (view: string) => void }> = ({
                 placeholder="Ex.: CREA-BA 201812345-D"
                 value={orgForm.technical_responsible_council}
                 onChange={(e) => setOrgForm({ ...orgForm, technical_responsible_council: e.target.value })}
-                className="w-full p-2.5 bg-fundo border border-borda rounded-2xl font-mono text-tinta focus:outline-none focus:border-indigo-500"
+                className="w-full p-2.5 bg-fundo border border-borda rounded-2xl font-mono text-tinta focus:outline-none focus:border-teal-500"
               />
             </div>
             <div>
@@ -537,7 +537,7 @@ export const SettingsView: React.FC<{ onNavigate: (view: string) => void }> = ({
                 placeholder="Número da ART"
                 value={orgForm.technical_responsible_art}
                 onChange={(e) => setOrgForm({ ...orgForm, technical_responsible_art: e.target.value })}
-                className="w-full p-2.5 bg-fundo border border-borda rounded-2xl font-mono text-tinta focus:outline-none focus:border-indigo-500"
+                className="w-full p-2.5 bg-fundo border border-borda rounded-2xl font-mono text-tinta focus:outline-none focus:border-teal-500"
               />
             </div>
             <div>
@@ -547,7 +547,7 @@ export const SettingsView: React.FC<{ onNavigate: (view: string) => void }> = ({
                 placeholder="Nome completo do médico(a)"
                 value={orgForm.pcmso_physician_name}
                 onChange={(e) => setOrgForm({ ...orgForm, pcmso_physician_name: e.target.value })}
-                className="w-full p-2.5 bg-fundo border border-borda rounded-2xl text-tinta focus:outline-none focus:border-indigo-500"
+                className="w-full p-2.5 bg-fundo border border-borda rounded-2xl text-tinta focus:outline-none focus:border-teal-500"
               />
             </div>
             <div>
@@ -557,7 +557,7 @@ export const SettingsView: React.FC<{ onNavigate: (view: string) => void }> = ({
                 placeholder="Ex.: CRM 189204/BA"
                 value={orgForm.pcmso_physician_crm}
                 onChange={(e) => setOrgForm({ ...orgForm, pcmso_physician_crm: e.target.value })}
-                className="w-full p-2.5 bg-fundo border border-borda rounded-2xl font-mono text-tinta focus:outline-none focus:border-indigo-500"
+                className="w-full p-2.5 bg-fundo border border-borda rounded-2xl font-mono text-tinta focus:outline-none focus:border-teal-500"
               />
             </div>
             <div className="sm:col-span-2">
@@ -567,7 +567,7 @@ export const SettingsView: React.FC<{ onNavigate: (view: string) => void }> = ({
                 placeholder="Registro de Qualificação de Especialista"
                 value={orgForm.pcmso_physician_rqe}
                 onChange={(e) => setOrgForm({ ...orgForm, pcmso_physician_rqe: e.target.value })}
-                className="w-full p-2.5 bg-fundo border border-borda rounded-2xl font-mono text-tinta focus:outline-none focus:border-indigo-500"
+                className="w-full p-2.5 bg-fundo border border-borda rounded-2xl font-mono text-tinta focus:outline-none focus:border-teal-500"
               />
             </div>
           </div>
@@ -591,7 +591,7 @@ export const SettingsView: React.FC<{ onNavigate: (view: string) => void }> = ({
               type="button"
               onClick={handleSaveOrg}
               disabled={!orgDirty}
-              className="px-5 py-2 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition disabled:opacity-40"
+              className="px-5 py-2 rounded-2xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold transition disabled:opacity-40"
             >
               Salvar alterações
             </button>
@@ -622,7 +622,7 @@ export const SettingsView: React.FC<{ onNavigate: (view: string) => void }> = ({
         </div>
 
         {/* Database & Demo Reset */}
-        <div className="bg-superficie p-6 rounded-3xl border border-borda shadow-xl space-y-4 flex flex-col justify-between">
+        <div className="bg-superficie p-6 rounded-3xl border border-borda shadow-sm space-y-4 flex flex-col justify-between">
           <div>
             <h2 className="text-base font-bold text-tinta">Demonstração & Reset Local</h2>
             <p className="text-xs text-tinta-2 mt-2 leading-relaxed">
@@ -633,7 +633,7 @@ export const SettingsView: React.FC<{ onNavigate: (view: string) => void }> = ({
           <div className="pt-4 space-y-2.5">
             <button
               onClick={() => onNavigate('tenant-theme-settings')}
-              className="w-full px-4 py-3 bg-gradient-to-r from-marca to-teal-600/30 hover:from-marca hover:to-teal-600/40 text-tinta border border-marca-escura rounded-2xl text-xs font-bold transition flex items-center justify-center space-x-2 shadow-lg"
+              className="bg-marca-escura w-full px-4 py-3 hover:opacity-90 text-white border border-marca-escura rounded-2xl text-xs font-bold transition flex items-center justify-center space-x-2 shadow-sm"
             >
               <Palette className="w-4 h-4 text-marca-escura" />
               <span>Personalizar Tema & Cores do Tenant (PWA/Portal)</span>
@@ -690,7 +690,7 @@ export const SettingsView: React.FC<{ onNavigate: (view: string) => void }> = ({
       {/* Migrations Modal with Tabs */}
       {showSqlModal && (
         <div className="fixed inset-0 z-50 bg-fundo backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-superficie border border-borda rounded-3xl max-w-4xl w-full max-h-[85vh] flex flex-col shadow-2xl overflow-hidden">
+          <div className="bg-superficie border border-borda rounded-3xl max-w-4xl w-full max-h-[85vh] flex flex-col shadow-sm overflow-hidden">
             <div className="p-5 border-b border-borda flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-xl bg-marca-suave border border-marca-escura flex items-center justify-center text-marca-escura">

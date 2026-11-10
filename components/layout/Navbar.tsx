@@ -94,13 +94,13 @@ export const Navbar: React.FC<NavbarProps> = ({
       case 'LOADING':
         return { icon: Loader2, spin: true, label: 'Carregando dados...', tone: 'text-tinta border-borda bg-superficie-2', title: 'Baixando os dados da organização do servidor.' };
       case 'SAVING':
-        return { icon: CloudUpload, spin: false, label: 'Salvando...', tone: 'text-sky-700 border-sky-700/50 bg-sky-50', title: 'Enviando as alterações para o Supabase.' };
+        return { icon: CloudUpload, spin: false, label: 'Salvando...', tone: 'text-teal-700 border-teal-700/50 bg-teal-50', title: 'Enviando as alterações para o Supabase.' };
       case 'SAVED':
         return { icon: Cloud, spin: false, label: 'Salvo', tone: 'text-marca-escura border-marca-escura bg-marca-suave', title: lastSyncedAt ? `Última gravação no servidor às ${formatTime(lastSyncedAt)}.` : 'Dados salvos no servidor.' };
       case 'OFFLINE':
-        return { icon: CloudOff, spin: false, label: 'Sem conexão', tone: 'text-amber-700 border-amber-700/50 bg-amber-50', title: syncMessage || 'Sem conexão com o servidor. As alterações sobem quando a conexão voltar.' };
+        return { icon: CloudOff, spin: false, label: 'Sem conexão', tone: 'text-amber-700 border-amber-200 bg-amber-50', title: syncMessage || 'Sem conexão com o servidor. As alterações sobem quando a conexão voltar.' };
       case 'ERROR':
-        return { icon: AlertTriangle, spin: false, label: 'Não salvo', tone: 'text-rose-700 border-rose-700/50 bg-rose-50', title: syncMessage || 'Não foi possível salvar no servidor.' };
+        return { icon: AlertTriangle, spin: false, label: 'Não salvo', tone: 'text-rose-700 border-rose-200 bg-rose-50', title: syncMessage || 'Não foi possível salvar no servidor.' };
       default:
         return null;
     }
@@ -172,7 +172,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 onClick={toggleMenu}
                 className={`p-2 rounded-xl border transition-all duration-200 active:scale-95 touch-manipulation min-w-[42px] min-h-[42px] shrink-0 flex items-center justify-center space-x-2 ${
                   menuIsOpen 
-                    ? 'bg-marca-escura text-white border-marca-escura shadow-sm shadow-emerald-950/50' 
+                    ? 'bg-marca-escura text-white border-marca-escura shadow-sm' 
                     : 'text-tinta hover:text-tinta bg-superficie-2 hover:bg-superficie-2 border-borda'
                 }`}
                 aria-label={menuIsOpen ? "Recolher menu lateral" : "Abrir menu lateral"}
@@ -186,7 +186,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <span className="text-xs font-semibold hidden md:inline-block">
                   {menuIsOpen ? 'Recolher Menu' : 'Menu Lateral'}
                 </span>
-                <span className="hidden lg:inline-block text-[9px] px-1.5 py-0.5 rounded bg-superficie text-marca-escura font-mono border border-marca-escura">
+                <span className="hidden lg:inline-block text-[9px] px-1.5 py-0.5 rounded bg-superficie text-marca-escura font-mono border border-borda">
                   {menuIsOpen ? 'Aberto' : 'Recolhido'}
                 </span>
               </button>
@@ -217,7 +217,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             </div>
             <div className="w-px h-3.5 bg-superficie-3" />
             <div className="flex items-center space-x-1.5 text-tinta">
-              <Clock className="w-3.5 h-3.5 text-blue-700" />
+              <Clock className="w-3.5 h-3.5 text-teal-700" />
               <span>OS Ativas: <strong>{serviceOrders.filter(o => o.status === 'IN_PROGRESS').length}</strong></span>
             </div>
             {delayedOSCount > 0 && (
@@ -273,7 +273,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               <button
                 type="button"
                 onClick={onOpenNewOS}
-                className="flex items-center space-x-1.5 px-3 py-1.5 bg-marca-escura hover:bg-marca-escura text-white rounded-xl text-xs font-semibold shadow-md shadow-emerald-950/40 transition active:scale-95 group"
+                className="flex items-center space-x-1.5 px-3 py-1.5 bg-marca-escura hover:bg-marca-escura text-white rounded-xl text-xs font-semibold shadow-md transition active:scale-95 group"
                 title="Criar Nova Ordem de Serviço (Ctrl + N)"
                 aria-label="Criar Nova Ordem de Serviço"
               >
@@ -331,7 +331,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               {showMoreMenu && (
                 <div
                   role="menu"
-                  className="absolute right-0 mt-2 w-64 bg-superficie border border-borda rounded-xl shadow-2xl z-50 p-2 text-tinta"
+                  className="absolute right-0 mt-2 w-64 bg-superficie border border-borda rounded-xl shadow-sm z-50 p-2 text-tinta"
                 >
                   <button
                     role="menuitem"
@@ -366,10 +366,10 @@ export const Navbar: React.FC<NavbarProps> = ({
                     role="menuitem"
                     onClick={() => { setActiveView('technician-field'); setShowMoreMenu(false); }}
                     className={`w-full text-left px-2.5 py-2 rounded-lg text-xs font-semibold transition flex items-center space-x-2 ${
-                      activeView === 'technician-field' ? 'bg-blue-600/20 text-blue-700' : 'text-tinta hover:bg-superficie-2 hover:text-tinta'
+                      activeView === 'technician-field' ? 'bg-teal-600/20 text-teal-800' : 'text-tinta hover:bg-superficie-2 hover:text-tinta'
                     }`}
                   >
-                    <Smartphone className="w-4 h-4 text-blue-700 shrink-0" />
+                    <Smartphone className="w-4 h-4 text-teal-700 shrink-0" />
                     <span>Campo PWA (Modo Técnico)</span>
                   </button>
 
@@ -415,7 +415,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
               {/* Notification Dropdown */}
               {showNotifMenu && (
-                <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-superficie border border-borda rounded-xl shadow-2xl z-50 p-3 text-tinta">
+                <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-superficie border border-borda rounded-xl shadow-sm z-50 p-3 text-tinta">
                   <div className="flex items-center justify-between pb-2 border-b border-borda">
                     <span className="text-xs font-bold uppercase tracking-wider text-tinta-2">
                       Notificações ({notifications.length})
@@ -490,7 +490,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
               {/* Role Switcher Dropdown */}
               {showRoleMenu && (
-                <div className="absolute right-0 mt-2 w-72 bg-superficie border border-borda rounded-xl shadow-2xl z-50 p-2 text-tinta">
+                <div className="absolute right-0 mt-2 w-72 bg-superficie border border-borda rounded-xl shadow-sm z-50 p-2 text-tinta">
                   <div className="px-2 py-1.5 border-b border-borda">
                     <div className="text-[10px] uppercase font-bold text-tinta-2">Alternar Perfil (RBAC Multi-Role)</div>
                     <p className="text-[11px] text-tinta-2 mt-0.5">Teste o sistema com permissões reais:</p>

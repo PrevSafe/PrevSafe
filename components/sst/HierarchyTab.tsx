@@ -446,7 +446,7 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
             onClick={() => setActiveSubTab('SECTORS')}
             className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-2 ${
               activeSubTab === 'SECTORS'
-                ? 'bg-teal-500 text-slate-950 shadow-md shadow-teal-500/20'
+                ? 'bg-marca-escura text-white shadow-sm'
                 : 'text-tinta-2 hover:text-tinta hover:bg-superficie-2'
             }`}
           >
@@ -459,7 +459,7 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
             onClick={() => setActiveSubTab('JOBS')}
             className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-2 ${
               activeSubTab === 'JOBS'
-                ? 'bg-teal-500 text-slate-950 shadow-md shadow-teal-500/20'
+                ? 'bg-marca-escura text-white shadow-sm'
                 : 'text-tinta-2 hover:text-tinta hover:bg-superficie-2'
             }`}
           >
@@ -472,7 +472,7 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
             onClick={() => setActiveSubTab('UNITS')}
             className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-2 ${
               activeSubTab === 'UNITS'
-                ? 'bg-teal-500 text-slate-950 shadow-md shadow-teal-500/20'
+                ? 'bg-marca-escura text-white shadow-sm'
                 : 'text-tinta-2 hover:text-tinta hover:bg-superficie-2'
             }`}
           >
@@ -499,7 +499,7 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
               type="button"
               id="add-sector-btn"
               onClick={() => handleOpenSectorModal()}
-              className="px-3.5 py-1.5 bg-teal-500 hover:bg-teal-400 text-slate-950 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 shadow-sm"
+              className="bg-marca-escura text-white px-3.5 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 shadow-sm hover:opacity-90"
             >
               <Plus className="w-4 h-4" />
               Novo Setor
@@ -511,7 +511,7 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
               type="button"
               id="add-job-btn"
               onClick={() => handleOpenJobModal()}
-              className="px-3.5 py-1.5 bg-teal-500 hover:bg-teal-400 text-slate-950 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 shadow-sm"
+              className="bg-marca-escura text-white px-3.5 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 shadow-sm hover:opacity-90"
             >
               <Plus className="w-4 h-4" />
               Novo Cargo / CBO
@@ -523,7 +523,7 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
               type="button"
               id="add-unit-btn"
               onClick={() => handleOpenUnitModal()}
-              className="px-3.5 py-1.5 bg-teal-500 hover:bg-teal-400 text-slate-950 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 shadow-sm"
+              className="bg-marca-escura text-white px-3.5 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 shadow-sm hover:opacity-90"
             >
               <Plus className="w-4 h-4" />
               Nova Unidade
@@ -556,7 +556,7 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
               <div 
                 key={sector.id} 
                 id={`sector-card-${sector.id}`}
-                className="bg-superficie border border-borda rounded-xl p-4 space-y-3 shadow-lg flex flex-col justify-between"
+                className="bg-superficie border border-borda rounded-xl p-4 space-y-3 shadow-sm flex flex-col justify-between"
               >
                 <div>
                   <div className="flex items-center justify-between">
@@ -615,7 +615,7 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
               <div 
                 key={job.id} 
                 id={`job-card-${job.id}`}
-                className="bg-superficie border border-borda rounded-xl p-4 space-y-3 shadow-lg flex flex-col justify-between"
+                className="bg-superficie border border-borda rounded-xl p-4 space-y-3 shadow-sm flex flex-col justify-between"
               >
                 <div>
                   <div className="flex items-center justify-between">
@@ -667,7 +667,7 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
 
       {/* Units Table */}
       {activeSubTab === 'UNITS' && (
-        <div className="bg-superficie border border-borda rounded-xl overflow-x-auto shadow-lg" id="units-table">
+        <div className="bg-superficie border border-borda rounded-xl overflow-x-auto shadow-sm" id="units-table">
           <table className="w-full text-left text-xs text-tinta">
             <thead className="bg-fundo text-tinta-2 uppercase text-[10px] tracking-wider border-b border-borda">
               <tr>
@@ -748,7 +748,7 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
       {/* Sector Modal */}
       {isSectorModalOpen && (
         <div className="fixed inset-0 bg-fundo backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-superficie border border-borda rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl animate-in fade-in zoom-in-95 duration-150">
+          <div className="bg-superficie border border-borda rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-sm animate-in fade-in zoom-in-95 duration-150">
             <div className="flex items-center justify-between border-b border-borda pb-3">
               <h3 className="text-base font-bold text-tinta flex items-center gap-2">
                 <Layers className="w-5 h-5 text-teal-700" />
@@ -839,7 +839,7 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold rounded-lg shadow-md"
+                  className="bg-marca-escura text-white px-4 py-2 font-bold rounded-lg shadow-sm hover:opacity-90"
                 >
                   Salvar Setor
                 </button>
@@ -852,7 +852,7 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
       {/* Job Modal */}
       {isJobModalOpen && (
         <div className="fixed inset-0 bg-fundo backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-superficie border border-borda rounded-2xl max-w-2xl w-full p-6 space-y-4 shadow-2xl animate-in fade-in zoom-in-95 duration-150 my-6 max-h-[90vh] flex flex-col">
+          <div className="bg-superficie border border-borda rounded-2xl max-w-2xl w-full p-6 space-y-4 shadow-sm animate-in fade-in zoom-in-95 duration-150 my-6 max-h-[90vh] flex flex-col">
             <div className="flex items-center justify-between border-b border-borda pb-3 flex-shrink-0">
               <div className="flex items-center gap-2">
                 <div className="p-2 rounded-lg bg-teal-500/10 border border-teal-500/30 text-teal-800">
@@ -937,7 +937,7 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
                       }}
                       className={`px-2 py-0.5 rounded-full text-[10px] font-medium transition-all ${
                         cboCategoryFilter === cat.id
-                          ? 'bg-teal-500 text-slate-950 font-bold'
+                          ? 'bg-marca-escura text-white font-bold'
                           : 'bg-superficie text-tinta-2 hover:text-tinta border border-borda'
                       }`}
                     >
@@ -948,7 +948,7 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
 
                 {/* Dropdown list of results */}
                 {isCboDropdownOpen && (
-                  <div className="bg-superficie border border-borda rounded-lg max-h-48 overflow-y-auto divide-y divide-borda mt-1 shadow-xl">
+                  <div className="bg-superficie border border-borda rounded-lg max-h-48 overflow-y-auto divide-y divide-borda mt-1 shadow-sm">
                     {cboSearchResults.length === 0 ? (
                       <div className="p-3 text-center text-tinta-2 text-[11px]">
                         Nenhuma ocupação encontrada para &quot;{cboSearchQuery}&quot;. Você pode preencher os campos manualmente abaixo.
@@ -978,7 +978,7 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
                           </div>
                           <button
                             type="button"
-                            className="px-2.5 py-1 bg-teal-600/20 hover:bg-teal-500 group-hover:bg-teal-500 text-teal-950 group-hover:text-slate-950 font-bold rounded text-[10px] whitespace-nowrap transition-colors flex-shrink-0"
+                            className="bg-teal-100 group-hover:bg-teal-200 text-teal-900 px-2.5 py-1 font-bold rounded text-[10px] whitespace-nowrap"
                           >
                             Preencher
                           </button>
@@ -1157,7 +1157,7 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
               <button
                 type="submit"
                 form="job-form"
-                className="px-5 py-2 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold rounded-lg shadow-md transition-all flex items-center gap-1.5"
+                className="bg-marca-escura text-white px-5 py-2 font-bold rounded-lg shadow-sm transition-all flex items-center gap-1.5 hover:opacity-90"
               >
                 <Check className="w-4 h-4" />
                 {editingJob ? 'Atualizar Cargo' : 'Salvar Cargo'}
@@ -1170,7 +1170,7 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
       {/* Unit Modal */}
       {isUnitModalOpen && (
         <div className="fixed inset-0 bg-fundo backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-superficie border border-borda rounded-2xl max-w-2xl w-full p-6 space-y-4 shadow-2xl animate-in fade-in zoom-in-95 duration-150 max-h-[90vh] overflow-y-auto">
+          <div className="bg-superficie border border-borda rounded-2xl max-w-2xl w-full p-6 space-y-4 shadow-sm animate-in fade-in zoom-in-95 duration-150 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-borda pb-3">
               <h3 className="text-base font-bold text-tinta flex items-center gap-2">
                 <Building2 className="w-5 h-5 text-teal-700" />
@@ -1710,7 +1710,7 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold rounded-lg shadow-md"
+                  className="bg-marca-escura text-white px-4 py-2 font-bold rounded-lg shadow-sm hover:opacity-90"
                 >
                   Salvar Unidade
                 </button>

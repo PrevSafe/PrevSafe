@@ -97,7 +97,7 @@ export const ServiceWorkerManager: React.FC = () => {
   if (precisaRecarregar) {
     return (
       /* CANTO-FLUTUANTE: aviso de nova versao, sai da tela no primeiro clique */
-      <div className="fixed bottom-4 right-4 z-50 w-[min(24rem,calc(100vw-2rem))] bg-superficie border border-marca-escura text-tinta p-4 rounded-2xl shadow-2xl flex items-start space-x-3">
+      <div className="fixed bottom-4 right-4 z-50 w-[min(24rem,calc(100vw-2rem))] bg-superficie border border-borda text-tinta p-4 rounded-2xl shadow-sm flex items-start space-x-3">
         <div className="p-2 rounded-xl shrink-0 bg-marca-suave text-marca-escura">
           <RefreshCw className="w-5 h-5" />
         </div>
@@ -122,11 +122,11 @@ export const ServiceWorkerManager: React.FC = () => {
 
   return (
     /* CANTO-FLUTUANTE: aviso de app pronto para uso offline, dispensavel */
-    <div className="fixed bottom-4 right-4 z-50 max-w-md bg-superficie border border-borda text-tinta p-4 rounded-2xl shadow-2xl flex items-start space-x-3 animate-in fade-in slide-in-from-bottom-5 duration-300">
+    <div className="fixed bottom-4 right-4 z-50 max-w-md bg-superficie border border-borda text-tinta p-4 rounded-2xl shadow-sm flex items-start space-x-3 animate-in fade-in slide-in-from-bottom-5 duration-300">
       <div className={`p-2 rounded-xl flex-shrink-0 ${
         bannerType === 'OFFLINE' ? 'bg-amber-500/20 text-amber-800' :
         bannerType === 'SUCCESS' ? 'bg-teal-500/20 text-teal-800' :
-        'bg-indigo-500/20 text-indigo-700'
+        'bg-teal-500/20 text-teal-800'
       }`}>
         {bannerType === 'OFFLINE' ? <WifiOff className="w-5 h-5" /> : 
          bannerType === 'SUCCESS' ? <Zap className="w-5 h-5" /> :

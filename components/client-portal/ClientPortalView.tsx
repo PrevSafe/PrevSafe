@@ -256,7 +256,7 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
   return (
     <div className="space-y-6 pb-16">
       {/* Header Bento Card with Client Selector & Tenant Branding */}
-      <div className="bg-superficie border border-borda text-tinta p-6 rounded-3xl shadow-xl flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative overflow-hidden">
+      <div className="bg-superficie border border-borda text-tinta p-6 rounded-3xl shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative overflow-hidden">
         <div 
           className="absolute -right-20 -top-20 w-72 h-72 rounded-full blur-3xl opacity-10 pointer-events-none transition-all"
           style={{ backgroundColor: 'var(--tenant-primary)' }}
@@ -271,7 +271,7 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
             <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-marca-suave text-marca-escura border border-marca-escura">
               Grau de Risco {currentClient.risk_degree}
             </span>
-            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-500/10 text-blue-700 border border-blue-500/20">
+            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-teal-500/10 text-teal-800 border border-teal-500/20">
               {currentClient.employee_count} Colaboradores
             </span>
             {activeTenantContext && (
@@ -353,7 +353,7 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
         <div 
           onClick={() => setActiveTab('SIGNATURES')}
           className={`p-3.5 rounded-2xl border transition cursor-pointer ${
-            activeTab === 'SIGNATURES' ? 'bg-superficie border-teal-500 shadow-teal-500/20' : 'bg-superficie border-borda hover:border-borda'
+            activeTab === 'SIGNATURES' ? 'bg-superficie border-teal-200' : 'bg-superficie border-borda hover:border-borda'
           }`}
         >
           <div className="flex items-center justify-between text-tinta-2 text-xs font-semibold">
@@ -424,13 +424,13 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
         <button
           onClick={() => setActiveTab('SIGNATURES')}
           className={`px-4 py-2.5 rounded-xl text-xs font-bold transition whitespace-nowrap flex items-center space-x-2 ${
-            activeTab === 'SIGNATURES' ? 'bg-teal-500 text-slate-950 font-black shadow-lg shadow-teal-500/20' : 'text-tinta hover:text-tinta'
+            activeTab === 'SIGNATURES' ? 'bg-marca-escura text-white font-black shadow-sm' : 'text-tinta hover:text-tinta'
           }`}
         >
           <ShieldCheck className="w-4 h-4" />
           <span>Assinaturas Digitais ({clientSignatures.length})</span>
           {clientSignatures.filter(s => s.status === 'PENDING' || s.status === 'PARTIALLY_SIGNED').length > 0 && (
-            <span className="px-1.5 py-0.2 bg-amber-400 text-slate-950 text-[10px] font-black rounded-full animate-pulse">
+            <span className="px-1.5 py-0.2 bg-amber-100 text-amber-900 text-[10px] font-black rounded-full animate-pulse border border-amber-200">
               {clientSignatures.filter(s => s.status === 'PENDING' || s.status === 'PARTIALLY_SIGNED').length}
             </span>
           )}
@@ -445,7 +445,7 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
           <AlertCircle className="w-4 h-4" />
           <span>Pendências & Chamados ({clientRequests.length})</span>
           {openRequestsCount > 0 && (
-            <span className="px-1.5 py-0.2 bg-amber-500 text-slate-950 text-[10px] font-black rounded-full">
+            <span className="px-1.5 py-0.2 bg-amber-100 text-amber-900 text-[10px] font-black rounded-full border border-amber-200">
               {openRequestsCount}
             </span>
           )}
@@ -485,7 +485,7 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
                   onClick={() => setSelectedOS(os)}
                   className={`px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-2 border ${
                     selectedOS?.id === os.id
-                      ? 'bg-indigo-600 text-white border-indigo-500 shadow-md'
+                      ? 'bg-teal-700 text-white border-teal-500 shadow-md'
                       : 'bg-fundo text-tinta border-borda hover:border-borda'
                   }`}
                 >
@@ -500,21 +500,21 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
           )}
 
           {selectedOS ? (
-            <div className="bg-superficie p-6 rounded-3xl border border-borda shadow-xl space-y-6">
+            <div className="bg-superficie p-6 rounded-3xl border border-borda shadow-sm space-y-6">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-borda pb-5">
                 <div>
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="font-mono text-xs font-bold bg-fundo text-indigo-700 border border-borda px-2.5 py-0.5 rounded-full">
+                    <span className="font-mono text-xs font-bold bg-fundo text-teal-700 border border-borda px-2.5 py-0.5 rounded-full">
                       {selectedOS.os_number}
                     </span>
                     <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${
                       selectedOS.status === 'ACCEPTED' || selectedOS.status === 'COMPLETED' 
                         ? 'bg-marca-suave text-marca-escura border-marca-escura' :
                       selectedOS.status === 'WAITING_ACCEPTANCE' || selectedOS.status === 'DELIVERED' 
-                        ? 'bg-purple-500/10 text-purple-700 border-purple-500/20 animate-pulse' :
+                        ? 'bg-teal-500/10 text-teal-800 border-teal-500/20 animate-pulse' :
                       selectedOS.status === 'REWORK'
                         ? 'bg-rose-500/10 text-rose-700 border-rose-500/20' :
-                        'bg-blue-500/10 text-blue-700 border-blue-500/20'
+                        'bg-teal-500/10 text-teal-800 border-teal-500/20'
                     }`}>
                       {selectedOS.status === 'WAITING_ACCEPTANCE' || selectedOS.status === 'DELIVERED' 
                         ? 'AGUARDANDO SEU ACEITE FORMAL' 
@@ -544,7 +544,7 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
                       </button>
                       <button
                         onClick={() => setShowAcceptModal(true)}
-                        className="px-5 py-2 bg-gradient-to-r from-marca-escura to-teal-600 hover:from-marca-escura hover:to-teal-700 text-white text-xs font-bold rounded-2xl shadow-lg shadow-emerald-950/40 transition flex items-center space-x-1.5"
+                        className="bg-marca-escura px-5 py-2 text-white text-xs font-bold rounded-2xl shadow-sm transition flex items-center space-x-1.5"
                       >
                         <CheckCircle2 className="w-4 h-4" />
                         <span>Dar Aceite Formal no Laudo</span>
@@ -595,7 +595,7 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
                             <span>Concluída</span>
                           </span>
                         ) : stage.status === 'IN_PROGRESS' ? (
-                          <span className="flex items-center space-x-1 text-blue-700 text-[11px] font-bold">
+                          <span className="flex items-center space-x-1 text-teal-700 text-[11px] font-bold">
                             <Clock className="w-3.5 h-3.5 animate-spin" />
                             <span>Em Execução</span>
                           </span>
@@ -629,7 +629,7 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
       {/* ==================== TAB 2: LAUDOS & DOCUMENTOS ==================== */}
       {activeTab === 'DOCS' && (
         <div className="space-y-6">
-          <div className="bg-superficie p-6 rounded-3xl border border-borda shadow-xl space-y-5">
+          <div className="bg-superficie p-6 rounded-3xl border border-borda shadow-sm space-y-5">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
                 <h2 className="text-base font-bold text-tinta">Laudos Técnicos e Documentos Emitidos</h2>
@@ -645,14 +645,14 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
                     placeholder="Buscar laudo ou documento..."
                     value={docSearch}
                     onChange={(e) => setDocSearch(e.target.value)}
-                    className="pl-8 pr-3 py-1.5 bg-fundo border border-borda rounded-xl text-xs text-tinta placeholder-tinta-3 focus:outline-none focus:border-indigo-500"
+                    className="pl-8 pr-3 py-1.5 bg-fundo border border-borda rounded-xl text-xs text-tinta placeholder-tinta-3 focus:outline-none focus:border-teal-500"
                   />
                 </div>
 
                 <select
                   value={docTypeFilter}
                   onChange={(e) => setDocTypeFilter(e.target.value)}
-                  className="px-3 py-1.5 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
+                  className="px-3 py-1.5 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                 >
                   <option value="ALL">Todos os Tipos</option>
                   <option value="PGR">PGR</option>
@@ -676,7 +676,7 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
                         </div>
                         <div>
                           <div className="flex items-center space-x-2">
-                            <span className="font-mono text-[10px] font-bold text-indigo-700 bg-superficie px-2 py-0.5 rounded-full border border-borda">
+                            <span className="font-mono text-[10px] font-bold text-teal-700 bg-superficie px-2 py-0.5 rounded-full border border-borda">
                               {doc.doc_number}
                             </span>
                             <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-marca-suave text-marca-escura border border-marca-escura">
@@ -708,7 +708,7 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
                         </button>
                         <button
                           onClick={() => alert(`Baixando cópia oficial do laudo ${doc.name} com certificado digital e ART vinculada.`)}
-                          className="px-3 py-1.5 bg-marca hover:bg-marca-escura text-white rounded-xl font-bold transition flex items-center space-x-1 shadow-md shadow-emerald-950/30"
+                          className="px-3 py-1.5 bg-marca hover:bg-marca-escura text-white rounded-xl font-bold transition flex items-center space-x-1 shadow-md"
                         >
                           <Download className="w-3.5 h-3.5" />
                           <span>Baixar PDF</span>
@@ -730,7 +730,7 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
       {/* ==================== TAB: ASSINATURAS ELETRÔNICAS & ACEITE DIGITAL (LEI 14.063/2020) ==================== */}
       {activeTab === 'SIGNATURES' && (
         <div className="space-y-6">
-          <div className="bg-superficie p-6 rounded-3xl border border-borda shadow-xl space-y-5">
+          <div className="bg-superficie p-6 rounded-3xl border border-borda shadow-sm space-y-5">
             
             {/* Header & Legal Framework Notice */}
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-borda pb-5">
@@ -845,7 +845,7 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
                                   setActiveSignerForPortal(employerSigner.id);
                                   setShowSignatureModal(true);
                                 }}
-                                className="px-5 py-2.5 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold rounded-xl text-xs flex items-center space-x-1.5 transition shadow-lg shadow-teal-500/20"
+                                className="bg-marca-escura text-white px-5 py-2.5 font-bold rounded-xl text-xs flex items-center space-x-1.5 transition shadow-sm hover:opacity-90"
                               >
                                 <PenTool className="w-4 h-4" />
                                 <span>Assinar & Dar Aceite</span>
@@ -912,7 +912,7 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
       {/* ==================== TAB 3: PENDÊNCIAS & CHAMADOS (CRUD) ==================== */}
       {activeTab === 'REQUESTS' && (
         <div className="space-y-6">
-          <div className="bg-superficie p-6 rounded-3xl border border-borda shadow-xl space-y-5">
+          <div className="bg-superficie p-6 rounded-3xl border border-borda shadow-sm space-y-5">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
                 <h2 className="text-base font-bold text-tinta">Central de Pendências & Solicitações</h2>
@@ -923,7 +923,7 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
 
               <button
                 onClick={() => setShowNewRequestModal(true)}
-                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-2xl shadow-lg transition flex items-center space-x-1.5 self-start sm:self-auto"
+                className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold rounded-2xl shadow-sm transition flex items-center space-x-1.5 self-start sm:self-auto"
               >
                 <Plus className="w-4 h-4" />
                 <span>+ Abrir Novo Chamado</span>
@@ -1011,7 +1011,7 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
       {/* ==================== TAB 4: CONTRATOS & VIGÊNCIA ==================== */}
       {activeTab === 'CONTRACTS' && (
         <div className="space-y-6">
-          <div className="bg-superficie p-6 rounded-3xl border border-borda shadow-xl space-y-5">
+          <div className="bg-superficie p-6 rounded-3xl border border-borda shadow-sm space-y-5">
             <div>
               <h2 className="text-base font-bold text-tinta">Contratos de Prestação de Serviços SST</h2>
               <p className="text-xs text-tinta-2 mt-0.5">Gestão de vigência, cobertura de programas e termos de responsabilidade técnica.</p>
@@ -1024,7 +1024,7 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
                     <div className="flex items-start justify-between">
                       <div>
                         <div className="flex items-center space-x-2">
-                          <span className="font-mono text-xs font-bold text-indigo-700 bg-superficie px-2 py-0.5 rounded-full border border-borda">
+                          <span className="font-mono text-xs font-bold text-teal-700 bg-superficie px-2 py-0.5 rounded-full border border-borda">
                             {contract.contract_number}
                           </span>
                           <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-marca-suave text-marca-escura border border-marca-escura">
@@ -1078,7 +1078,7 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
       {/* ==================== TAB 5: AVALIAÇÕES & NPS (CRUD) ==================== */}
       {activeTab === 'EVALUATIONS' && (
         <div className="space-y-6">
-          <div className="bg-superficie p-6 rounded-3xl border border-borda shadow-xl space-y-5">
+          <div className="bg-superficie p-6 rounded-3xl border border-borda shadow-sm space-y-5">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
                 <h2 className="text-base font-bold text-tinta">Pesquisas de Satisfação & Histórico de NPS</h2>
@@ -1090,7 +1090,7 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
                   setEvalOSId(clientOS[0]?.id || '');
                   setShowFeedbackModal(true);
                 }}
-                className="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold rounded-2xl shadow-lg transition flex items-center space-x-1.5 self-start sm:self-auto"
+                className="px-4 py-2 bg-amber-100 hover:bg-amber-200 text-amber-900 text-xs font-bold rounded-2xl shadow-sm transition flex items-center space-x-1.5 self-start sm:self-auto border border-amber-200"
               >
                 <Star className="w-4 h-4 fill-slate-950" />
                 <span>+ Enviar Nova Avaliação</span>
@@ -1140,7 +1140,7 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
       {/* ==================== MODAL: TERMO DE ACEITE TÉCNICO FORMAL (RN008) ==================== */}
       {showAcceptModal && selectedOS && (
         <div className="fixed inset-0 bg-fundo backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-superficie rounded-3xl max-w-md w-full p-6 shadow-2xl border border-borda text-tinta animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-superficie rounded-3xl max-w-md w-full p-6 shadow-sm border border-borda text-tinta animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between border-b border-borda pb-3 mb-4">
               <div className="flex items-center space-x-2">
                 <ShieldCheck className="w-5 h-5 text-marca-escura" />
@@ -1161,7 +1161,7 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
                   required
                   value={acceptorName}
                   onChange={(e) => setAcceptorName(e.target.value)}
-                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                 />
               </div>
 
@@ -1172,7 +1172,7 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
                   required
                   value={acceptorCpf}
                   onChange={(e) => setAcceptorCpf(e.target.value)}
-                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                 />
               </div>
 
@@ -1183,7 +1183,7 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
                   required
                   value={acceptorRole}
                   onChange={(e) => setAcceptorRole(e.target.value)}
-                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                 />
               </div>
 
@@ -1216,7 +1216,7 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
       {/* ==================== MODAL: SOLICITAR AJUSTE / REWORK (RN009) ==================== */}
       {showReworkModal && selectedOS && (
         <div className="fixed inset-0 bg-fundo backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-superficie rounded-3xl max-w-md w-full p-6 shadow-2xl border border-borda text-tinta animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-superficie rounded-3xl max-w-md w-full p-6 shadow-sm border border-borda text-tinta animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between border-b border-borda pb-3 mb-4">
               <h3 className="text-base font-bold text-tinta">Solicitar Revisão / Ajuste Técnico</h3>
               <button onClick={() => setShowReworkModal(false)} className="text-tinta-2 hover:text-tinta">✕</button>
@@ -1231,7 +1231,7 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
                 required
                 value={reworkComment}
                 onChange={(e) => setReworkComment(e.target.value)}
-                className="w-full p-3 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
+                className="w-full p-3 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
               />
 
               <div className="flex justify-end space-x-2 pt-4 border-t border-borda">
@@ -1257,7 +1257,7 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
       {/* ==================== MODAL: PESQUISA DE SATISFAÇÃO & NPS (RN010) ==================== */}
       {showFeedbackModal && (
         <div className="fixed inset-0 bg-fundo backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-superficie rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-borda text-tinta max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-superficie rounded-3xl max-w-lg w-full p-6 shadow-sm border border-borda text-tinta max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between border-b border-borda pb-3 mb-4">
               <div className="flex items-center space-x-2">
                 <Star className="w-5 h-5 text-amber-700 fill-amber-400" />
@@ -1345,7 +1345,7 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
                   rows={2}
                   value={evalComment}
                   onChange={(e) => setEvalComment(e.target.value)}
-                  className="w-full p-2.5 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
+                  className="w-full p-2.5 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                 />
               </div>
 
@@ -1372,7 +1372,7 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
       {/* ==================== MODAL: ABRIR NOVO CHAMADO PELO CLIENTE ==================== */}
       {showNewRequestModal && (
         <div className="fixed inset-0 bg-fundo backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-superficie rounded-3xl max-w-md w-full p-6 shadow-2xl border border-borda text-tinta animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-superficie rounded-3xl max-w-md w-full p-6 shadow-sm border border-borda text-tinta animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between border-b border-borda pb-3 mb-4">
               <h3 className="text-base font-bold text-tinta">Abrir Nova Solicitação / Dúvida</h3>
               <button onClick={() => setShowNewRequestModal(false)} className="text-tinta-2 hover:text-tinta">✕</button>
@@ -1402,7 +1402,7 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
                   placeholder="Ex: Dúvida sobre enquadramento NR-15 ruído"
                   value={reqTitle}
                   onChange={(e) => setReqTitle(e.target.value)}
-                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                 />
               </div>
 
@@ -1414,7 +1414,7 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
                   placeholder="Explique detalhadamente o que você precisa..."
                   value={reqDescription}
                   onChange={(e) => setReqDescription(e.target.value)}
-                  className="w-full p-3 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
+                  className="w-full p-3 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                 />
               </div>
 
@@ -1442,7 +1442,7 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-bold shadow-md"
+                  className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl font-bold shadow-md"
                 >
                   Registrar Chamado
                 </button>
@@ -1455,7 +1455,7 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
       {/* ==================== MODAL: RESOLVER PENDÊNCIA / ENVIAR ARQUIVO ==================== */}
       {showResolveModal && selectedRequestToResolve && (
         <div className="fixed inset-0 bg-fundo backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-superficie rounded-3xl max-w-md w-full p-6 shadow-2xl border border-borda text-tinta animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-superficie rounded-3xl max-w-md w-full p-6 shadow-sm border border-borda text-tinta animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between border-b border-borda pb-3 mb-4">
               <h3 className="text-base font-bold text-tinta">Responder Pendência Técnica</h3>
               <button onClick={() => setShowResolveModal(false)} className="text-tinta-2 hover:text-tinta">✕</button>
@@ -1463,7 +1463,7 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
 
             <form onSubmit={handleResolvePendingRequest} className="space-y-3.5 text-xs">
               <div className="p-3 bg-fundo rounded-2xl border border-borda">
-                <span className="text-[10px] font-mono text-indigo-700 font-bold">{selectedRequestToResolve.req_number}</span>
+                <span className="text-[10px] font-mono text-teal-700 font-bold">{selectedRequestToResolve.req_number}</span>
                 <h4 className="font-bold text-tinta mt-1">{selectedRequestToResolve.title}</h4>
                 <p className="text-tinta-2 text-xs mt-1">{selectedRequestToResolve.description}</p>
               </div>
@@ -1476,7 +1476,7 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
                     placeholder="Nome do arquivo (ex: lista_colaboradores_2026.xlsx)"
                     value={attachedFileName}
                     onChange={(e) => setAttachedFileName(e.target.value)}
-                    className="flex-1 px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
+                    className="flex-1 px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                   />
                   <button
                     type="button"
@@ -1495,7 +1495,7 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
                   placeholder="Informações adicionais para a PrevSafe..."
                   value={resolveNotes}
                   onChange={(e) => setResolveNotes(e.target.value)}
-                  className="w-full p-3 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
+                  className="w-full p-3 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                 />
               </div>
 
@@ -1522,10 +1522,10 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
       {/* ==================== MODAL: PRÉVIA DETALHADA DO LAUDO ==================== */}
       {showDocPreviewModal && selectedDocPreview && (
         <div className="fixed inset-0 bg-fundo backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-superficie rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-borda text-tinta animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-superficie rounded-3xl max-w-lg w-full p-6 shadow-sm border border-borda text-tinta animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between border-b border-borda pb-3 mb-4">
               <div className="flex items-center space-x-2">
-                <FileText className="w-5 h-5 text-indigo-700" />
+                <FileText className="w-5 h-5 text-teal-700" />
                 <h3 className="text-base font-bold text-tinta">Ficha Técnica do Documento</h3>
               </div>
               <button onClick={() => setShowDocPreviewModal(false)} className="text-tinta-2 hover:text-tinta">✕</button>
@@ -1534,7 +1534,7 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
             <div className="space-y-3.5 text-xs">
               <div className="p-4 bg-fundo rounded-2xl border border-borda space-y-2">
                 <div className="flex justify-between items-center">
-                  <span className="font-mono text-xs font-bold text-indigo-700">{selectedDocPreview.doc_number}</span>
+                  <span className="font-mono text-xs font-bold text-teal-700">{selectedDocPreview.doc_number}</span>
                   <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-marca-suave text-marca-escura border border-marca-escura">
                     {selectedDocPreview.status}
                   </span>
@@ -1556,7 +1556,7 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
                 </div>
               </div>
 
-              <div className="p-3 bg-indigo-500/10 border border-indigo-500/20 rounded-xl text-indigo-700 text-[11px] space-y-1">
+              <div className="p-3 bg-teal-500/10 border border-teal-500/20 rounded-xl text-teal-800 text-[11px] space-y-1">
                 <div>✓ Anotação de Responsabilidade Técnica (ART/CREA) assinada digitalmente.</div>
                 <div>✓ Conformidade com a Portaria MTP nº 672/2021 e layout S-2240 eSocial.</div>
               </div>

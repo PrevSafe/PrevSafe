@@ -59,7 +59,7 @@ export const SSTDeadlineAlertBanner: React.FC<SSTDeadlineAlertBannerProps> = ({ 
   if (totalUrgent === 0 || isDismissed) return null;
 
   return (
-    <div className="bg-gradient-to-r from-amber-950/40 via-slate-900 to-indigo-950/40 border border-amber-500/30 rounded-3xl p-5 shadow-xl relative overflow-hidden">
+    <div className="bg-amber-50 border border-amber-200 rounded-3xl p-5 shadow-sm relative overflow-hidden">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-center space-x-3.5">
           <div className="p-3 bg-amber-500/10 rounded-2xl text-amber-800 border border-amber-500/20 flex-shrink-0 animate-pulse">
@@ -92,7 +92,7 @@ export const SSTDeadlineAlertBanner: React.FC<SSTDeadlineAlertBannerProps> = ({ 
           {onNavigate && (
             <button
               onClick={() => onNavigate('esocial_events')}
-              className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-2xl text-xs font-bold transition shadow-lg shadow-indigo-950/40 flex items-center space-x-1.5"
+              className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-2xl text-xs font-bold transition shadow-sm flex items-center space-x-1.5"
             >
               <span>Gerar S-2220 / Eventos</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -152,8 +152,8 @@ export const SSTDeadlineAlertBanner: React.FC<SSTDeadlineAlertBannerProps> = ({ 
           {/* Urgent Technical Documents (PGR/PCMSO) */}
           <div className="bg-fundo p-4 rounded-2xl border border-borda space-y-2.5">
             <div className="flex items-center justify-between">
-              <span className="font-bold text-indigo-700 flex items-center space-x-1.5">
-                <FileText className="w-4 h-4 text-indigo-700" />
+              <span className="font-bold text-teal-700 flex items-center space-x-1.5">
+                <FileText className="w-4 h-4 text-teal-700" />
                 <span>Laudos e Documentos Técnicos no SLA ({urgentDocs.length})</span>
               </span>
               <span className="text-[10px] font-mono text-tinta-2">PGR / PCMSO</span>
@@ -171,7 +171,7 @@ export const SSTDeadlineAlertBanner: React.FC<SSTDeadlineAlertBannerProps> = ({ 
                     </div>
                     <div className="text-right">
                       <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full font-mono ${
-                        isOverdue ? 'bg-rose-500/20 text-rose-800 border border-rose-500/30' : 'bg-indigo-500/20 text-indigo-700 border border-indigo-500/30'
+                        isOverdue ? 'bg-rose-500/20 text-rose-800 border border-rose-500/30' : 'bg-teal-500/20 text-teal-800 border border-teal-500/30'
                       }`}>
                         {isOverdue ? 'SLA ESTOURADO' : 'PRÓXIMO DO SLA'}
                       </span>

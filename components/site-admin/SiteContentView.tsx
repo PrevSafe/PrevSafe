@@ -288,7 +288,7 @@ export const SiteContentView: React.FC<{ onNavigate: (view: string) => void }> =
 
   return (
     <div className="space-y-6 pb-12">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-superficie border border-borda rounded-3xl p-6 shadow-xl">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-superficie border border-borda rounded-3xl p-6 shadow-sm">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-marca-suave border border-marca-escura rounded-2xl flex items-center justify-center text-marca-escura">
             <Newspaper className="w-5 h-5" aria-hidden="true" />
@@ -319,7 +319,7 @@ export const SiteContentView: React.FC<{ onNavigate: (view: string) => void }> =
           </button>
           <button
             onClick={() => abrirNovo('ARTIGO')}
-            className="px-4 py-2.5 bg-gradient-to-r from-marca-escura to-teal-600 hover:from-marca-escura hover:to-teal-700 text-white rounded-2xl text-xs font-bold shadow-lg shadow-emerald-950/40 transition flex items-center gap-1.5"
+            className="bg-marca-escura px-4 py-2.5 text-white rounded-2xl text-xs font-bold shadow-sm transition flex items-center gap-1.5"
           >
             <Plus className="w-4 h-4" aria-hidden="true" />
             Nova publicação
@@ -363,7 +363,7 @@ export const SiteContentView: React.FC<{ onNavigate: (view: string) => void }> =
         </select>
       </div>
 
-      <div className="bg-superficie border border-borda rounded-3xl overflow-hidden shadow-xl">
+      <div className="bg-superficie border border-borda rounded-3xl overflow-hidden shadow-sm">
         {carregando ? (
           <div className="p-12 text-center text-tinta-2 flex items-center justify-center gap-2">
             <Loader2 className="w-5 h-5 animate-spin" aria-hidden="true" />
@@ -438,7 +438,7 @@ export const SiteContentView: React.FC<{ onNavigate: (view: string) => void }> =
                         <button
                           onClick={() => abrirEdicao(p)}
                           title="Editar"
-                          className="p-2 rounded-lg hover:bg-superficie-2 text-tinta-2 hover:text-indigo-700 transition"
+                          className="p-2 rounded-lg hover:bg-superficie-2 text-tinta-2 hover:text-teal-700 transition"
                         >
                           <Edit3 className="w-4 h-4" />
                         </button>
@@ -461,7 +461,7 @@ export const SiteContentView: React.FC<{ onNavigate: (view: string) => void }> =
 
       {modalAberto && (
         <div className="fixed inset-0 bg-fundo backdrop-blur-sm z-50 flex items-start justify-center p-4 overflow-y-auto">
-          <div className="bg-superficie border border-borda rounded-3xl w-full max-w-[56rem] my-8 shadow-2xl">
+          <div className="bg-superficie border border-borda rounded-3xl w-full max-w-[56rem] my-8 shadow-sm">
             <div className="flex items-center justify-between p-5 border-b border-borda sticky top-0 bg-superficie rounded-t-3xl z-10">
               <div>
                 <h2 className="font-bold text-tinta">

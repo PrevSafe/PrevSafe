@@ -255,9 +255,9 @@ export const ContractsView: React.FC<{ onNavigate: (view: string) => void }> = (
   return (
     <div id="contracts-view-container" className="space-y-6 pb-12">
       {/* Header Bento Card */}
-      <div id="contracts-header" className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-superficie border border-borda rounded-3xl p-6 shadow-xl">
+      <div id="contracts-header" className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-superficie border border-borda rounded-3xl p-6 shadow-sm">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-indigo-500/10 border border-indigo-500/20 rounded-2xl flex items-center justify-center text-indigo-700">
+          <div className="w-10 h-10 bg-teal-500/10 border border-teal-500/20 rounded-2xl flex items-center justify-center text-teal-800">
             <FileSignature className="w-5 h-5" />
           </div>
           <div>
@@ -269,7 +269,7 @@ export const ContractsView: React.FC<{ onNavigate: (view: string) => void }> = (
           <button 
             id="btn-new-contract"
             onClick={() => handleOpenNewContract()}
-            className="px-4 py-2.5 bg-gradient-to-r from-marca-escura to-teal-600 hover:from-marca-escura hover:to-teal-700 text-white rounded-2xl text-xs font-bold shadow-lg shadow-emerald-950/40 transition flex items-center space-x-1.5"
+            className="bg-marca-escura px-4 py-2.5 text-white rounded-2xl text-xs font-bold shadow-sm transition flex items-center space-x-1.5"
           >
             <Plus className="w-4 h-4" />
             <span>Novo Contrato</span>
@@ -278,10 +278,10 @@ export const ContractsView: React.FC<{ onNavigate: (view: string) => void }> = (
       </div>
 
       {propostasAceitasSemContrato.length > 0 && (
-        <div className="bg-indigo-50 border border-indigo-500/30 rounded-3xl p-5 space-y-3">
+        <div className="bg-teal-50 border border-teal-500/30 rounded-3xl p-5 space-y-3">
           <div className="flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-indigo-700 shrink-0" />
-            <span className="text-sm font-bold text-indigo-700">
+            <Sparkles className="w-4 h-4 text-teal-700 shrink-0" />
+            <span className="text-sm font-bold text-teal-700">
               {propostasAceitasSemContrato.length === 1
                 ? 'Uma proposta aceita ainda sem contrato'
                 : `${propostasAceitasSemContrato.length} propostas aceitas ainda sem contrato`}
@@ -313,7 +313,7 @@ export const ContractsView: React.FC<{ onNavigate: (view: string) => void }> = (
                     </button>
                     <button
                       onClick={() => handleGerarDaProposta(prop)}
-                      className="px-3 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5"
+                      className="px-3 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5"
                     >
                       <span>Gerar contrato</span>
                       <ArrowRight className="w-3.5 h-3.5" />
@@ -342,7 +342,7 @@ export const ContractsView: React.FC<{ onNavigate: (view: string) => void }> = (
                 onClick={() => setSelectedContract(contract)}
                 className={`p-5 rounded-3xl border cursor-pointer transition flex flex-col justify-between ${
                   isSelected 
-                    ? 'bg-superficie border-indigo-500/80 shadow-lg shadow-indigo-500/10 ring-1 ring-indigo-500/40' 
+                    ? 'bg-superficie border-borda shadow-sm ring-1 ring-teal-500/40' 
                     : 'bg-superficie border-borda hover:border-borda hover:bg-superficie'
                 }`}
               >
@@ -376,13 +376,13 @@ export const ContractsView: React.FC<{ onNavigate: (view: string) => void }> = (
 
         {/* Selected Contract Details Bento Card */}
         {selectedContract ? (
-          <div id="contract-detail-pane" className="lg:col-span-7 bg-superficie border border-borda rounded-3xl p-6 shadow-xl space-y-6 flex flex-col justify-between">
+          <div id="contract-detail-pane" className="lg:col-span-7 bg-superficie border border-borda rounded-3xl p-6 shadow-sm space-y-6 flex flex-col justify-between">
             <div className="space-y-5">
               {/* Header */}
               <div className="flex items-start justify-between border-b border-borda pb-4">
                 <div>
                   <div className="flex items-center space-x-2 font-mono text-xs text-tinta-2">
-                    <FileSignature className="w-4 h-4 text-indigo-700" />
+                    <FileSignature className="w-4 h-4 text-teal-700" />
                     <span className="font-bold text-tinta">{selectedContract.contract_number}</span>
                   </div>
                   <h2 className="text-lg font-bold text-tinta mt-1">{selectedContract.title}</h2>
@@ -422,7 +422,7 @@ export const ContractsView: React.FC<{ onNavigate: (view: string) => void }> = (
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-xs font-semibold uppercase text-tinta-2 tracking-wider">Cláusulas e Termos SST</span>
                   {selectedContract.proposal_id && (
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-700 border border-indigo-500/20 shrink-0">
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-teal-500/10 text-teal-800 border border-teal-500/20 shrink-0">
                       {proposals.find(pr => pr.id === selectedContract.proposal_id)?.proposal_number || 'Proposta vinculada'}
                     </span>
                   )}
@@ -554,7 +554,7 @@ export const ContractsView: React.FC<{ onNavigate: (view: string) => void }> = (
                 <button
                   id="btn-sign-contract"
                   onClick={() => setShowSignModal(true)}
-                  className="px-4 py-2.5 bg-gradient-to-r from-indigo-700 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white text-xs font-bold rounded-xl shadow-lg shadow-indigo-500/20 transition flex items-center space-x-1.5"
+                  className="bg-teal-700 px-4 py-2.5 text-white text-xs font-bold rounded-xl shadow-sm transition flex items-center space-x-1.5"
                 >
                   <FileSignature className="w-4 h-4" />
                   <span>Assinar Digitalmente (Disparar OS - RN002)</span>
@@ -562,7 +562,7 @@ export const ContractsView: React.FC<{ onNavigate: (view: string) => void }> = (
               ) : (
                 <button
                   onClick={() => onNavigate('service-orders')}
-                  className="px-4 py-2.5 bg-marca hover:bg-marca-escura text-white text-xs font-bold rounded-xl shadow-lg shadow-emerald-500/20 transition flex items-center space-x-1.5"
+                  className="px-4 py-2.5 bg-marca hover:bg-marca-escura text-white text-xs font-bold rounded-xl shadow-sm transition flex items-center space-x-1.5"
                 >
                   <span>Ver Ordens de Serviço deste Contrato</span>
                   <ArrowRight className="w-4 h-4" />
@@ -578,7 +578,7 @@ export const ContractsView: React.FC<{ onNavigate: (view: string) => void }> = (
         <div id="modal-contract-form" className="fixed inset-0 bg-fundo backdrop-blur-md z-50 flex items-center justify-center p-4">
           {/* Largura em valor arbitrario: max-w-lg colide com os tokens de
               espacamento do projeto. Rola, porque o plano de pagamento cresce. */}
-          <div className="bg-superficie rounded-3xl max-w-[760px] w-full max-h-[92vh] overflow-y-auto p-6 shadow-2xl border border-borda text-tinta">
+          <div className="bg-superficie rounded-3xl max-w-[760px] w-full max-h-[92vh] overflow-y-auto p-6 shadow-sm border border-borda text-tinta">
             <div className="flex items-center justify-between border-b border-borda pb-3 mb-4">
               <h3 className="text-base font-bold text-tinta">
                 {editingContract ? 'Editar Contrato SST' : 'Novo Contrato Comercial SST'}
@@ -600,7 +600,7 @@ export const ContractsView: React.FC<{ onNavigate: (view: string) => void }> = (
                 <select
                   value={contractForm.client_id}
                   onChange={(e) => setContractForm({ ...contractForm, client_id: e.target.value })}
-                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                 >
                   {clients.map(c => (
                     <option key={c.id} value={c.id}>{c.trade_name} ({c.document_number})</option>
@@ -615,7 +615,7 @@ export const ContractsView: React.FC<{ onNavigate: (view: string) => void }> = (
                   required
                   value={contractForm.title}
                   onChange={(e) => setContractForm({ ...contractForm, title: e.target.value })}
-                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                 />
               </div>
 
@@ -626,7 +626,7 @@ export const ContractsView: React.FC<{ onNavigate: (view: string) => void }> = (
                     type="number"
                     value={contractForm.total_value}
                     onChange={(e) => setContractForm({ ...contractForm, total_value: Number(e.target.value) })}
-                    className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                   />
                 </div>
                 <div>
@@ -635,7 +635,7 @@ export const ContractsView: React.FC<{ onNavigate: (view: string) => void }> = (
                     type="date"
                     value={contractForm.start_date}
                     onChange={(e) => setContractForm({ ...contractForm, start_date: e.target.value })}
-                    className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                   />
                 </div>
                 <div>
@@ -644,7 +644,7 @@ export const ContractsView: React.FC<{ onNavigate: (view: string) => void }> = (
                     type="date"
                     value={contractForm.end_date}
                     onChange={(e) => setContractForm({ ...contractForm, end_date: e.target.value })}
-                    className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                   />
                 </div>
               </div>
@@ -676,7 +676,7 @@ export const ContractsView: React.FC<{ onNavigate: (view: string) => void }> = (
                         }
                         setContractForm(f => ({ ...f, terms: termos }));
                       }}
-                      className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-[11px] font-semibold shrink-0"
+                      className="px-3 py-1.5 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-[11px] font-semibold shrink-0"
                     >
                       Atualizar Cláusula 7ª com o plano
                     </button>
@@ -704,7 +704,7 @@ export const ContractsView: React.FC<{ onNavigate: (view: string) => void }> = (
                         }),
                       }));
                     }}
-                    className="text-[11px] text-indigo-700 hover:text-indigo-800 font-semibold shrink-0"
+                    className="text-[11px] text-teal-700 hover:text-teal-800 font-semibold shrink-0"
                   >
                     Regerar minuta padrão
                   </button>
@@ -713,7 +713,7 @@ export const ContractsView: React.FC<{ onNavigate: (view: string) => void }> = (
                   rows={16}
                   value={contractForm.terms}
                   onChange={(e) => setContractForm({ ...contractForm, terms: e.target.value })}
-                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-[11px] text-tinta font-mono leading-relaxed focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-[11px] text-tinta font-mono leading-relaxed focus:outline-none focus:border-teal-500"
                 />
                 <p className="text-[10px] text-tinta-2 mt-1">
                   Minuta padrão: revise com assessoria jurídica e preencha os campos entre colchetes antes de enviar para assinatura.
@@ -746,7 +746,7 @@ export const ContractsView: React.FC<{ onNavigate: (view: string) => void }> = (
       {/* Delete Contract Modal */}
       {deletingContract && (
         <div id="modal-delete-contract" className="fixed inset-0 bg-fundo backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-superficie rounded-3xl max-w-md w-full p-6 shadow-2xl border border-rose-500/20 text-tinta space-y-4">
+          <div className="bg-superficie rounded-3xl max-w-md w-full p-6 shadow-sm border border-rose-200 text-tinta space-y-4">
             <div className="flex items-center space-x-3 text-rose-700">
               <div className="p-3 bg-rose-500/10 rounded-2xl border border-rose-500/20">
                 <AlertTriangle className="w-6 h-6" />
@@ -784,7 +784,7 @@ export const ContractsView: React.FC<{ onNavigate: (view: string) => void }> = (
       {/* Signature Simulator Modal */}
       {showSignModal && selectedContract && (
         <div className="fixed inset-0 bg-fundo backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-superficie rounded-3xl max-w-md w-full p-6 shadow-2xl border border-borda text-tinta">
+          <div className="bg-superficie rounded-3xl max-w-md w-full p-6 shadow-sm border border-borda text-tinta">
             <div className="flex items-center justify-between border-b border-borda pb-3 mb-3">
               <div className="flex items-center space-x-2">
                 <ShieldCheck className="w-5 h-5 text-marca-escura" />
@@ -805,7 +805,7 @@ export const ContractsView: React.FC<{ onNavigate: (view: string) => void }> = (
                   required
                   value={signerName}
                   onChange={(e) => setSignerName(e.target.value)}
-                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                 />
               </div>
 
@@ -815,7 +815,7 @@ export const ContractsView: React.FC<{ onNavigate: (view: string) => void }> = (
                   type="text"
                   value={signerRole}
                   onChange={(e) => setSignerRole(e.target.value)}
-                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                 />
               </div>
 
@@ -825,7 +825,7 @@ export const ContractsView: React.FC<{ onNavigate: (view: string) => void }> = (
                   type="text"
                   value={signerCpf}
                   onChange={(e) => setSignerCpf(e.target.value)}
-                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta font-mono focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta font-mono focus:outline-none focus:border-teal-500"
                 />
               </div>
 
@@ -843,7 +843,7 @@ export const ContractsView: React.FC<{ onNavigate: (view: string) => void }> = (
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-gradient-to-r from-indigo-700 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white rounded-xl text-xs font-bold shadow-md"
+                  className="bg-teal-700 px-4 py-2 text-white rounded-xl text-xs font-bold shadow-md"
                 >
                   Confirmar & Assinar
                 </button>

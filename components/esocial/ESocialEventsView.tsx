@@ -412,12 +412,12 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
           toastMessage.type === 'success' 
             ? 'bg-marca-suave text-marca-escura border-marca-escura' 
             : toastMessage.type === 'error'
-            ? 'bg-rose-50 text-rose-700 border-rose-700/60'
-            : 'bg-indigo-50 text-indigo-700 border-indigo-700/60'
+            ? 'bg-rose-50 text-rose-700 border-rose-200'
+            : 'bg-teal-50 text-teal-700 border-teal-700/60'
         }`}>
           {toastMessage.type === 'success' && <CheckCircle2 className="w-5 h-5 text-marca-escura shrink-0" />}
           {toastMessage.type === 'error' && <AlertTriangle className="w-5 h-5 text-rose-700 shrink-0" />}
-          {toastMessage.type === 'info' && <ShieldCheck className="w-5 h-5 text-indigo-700 shrink-0" />}
+          {toastMessage.type === 'info' && <ShieldCheck className="w-5 h-5 text-teal-700 shrink-0" />}
           <span className="text-xs md:text-sm font-medium">{toastMessage.message}</span>
         </div>
       )}
@@ -438,7 +438,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                 <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-marca-suave text-marca-escura border border-marca-escura">
                   Leiaute S-1.3 · pré-visualização
                 </span>
-                <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-blue-500/20 text-blue-700 border border-blue-500/30 font-mono">
+                <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-teal-500/20 text-teal-800 border border-teal-500/30 font-mono">
                   Ambiente Simulado
                 </span>
               </div>
@@ -457,10 +457,10 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
               setSelectedPdfEvent(null);
               setIsPdfModalOpen(true);
             }}
-            className="flex items-center space-x-2 px-3.5 py-2 rounded-xl bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-700 hover:text-indigo-800 border border-indigo-500/30 text-xs font-bold transition shadow-sm"
+            className="flex items-center space-x-2 px-3.5 py-2 rounded-xl bg-superficie hover:bg-superficie-2 text-tinta border border-borda text-xs font-semibold transition shadow-sm"
             title="Gera relatórios oficiais em PDF para conferência individual ou em massa dos eventos S-2210, S-2220, S-2230 e S-2240"
           >
-            <Printer className="w-4 h-4 text-indigo-700" />
+            <Printer className="w-4 h-4 text-tinta-2" />
             <span>Relatórios em PDF (S-2210/20/30/40)</span>
           </button>
 
@@ -468,7 +468,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
             id="btn-run-esocial-automation-job"
             onClick={handleExecuteAutomation}
             disabled={isAutomating}
-            className="flex items-center space-x-2 px-4 py-2 rounded-xl bg-gradient-to-r from-marca-escura to-teal-600 hover:from-marca-escura hover:to-teal-700 text-white text-xs font-bold transition shadow-lg shadow-emerald-950/50 border border-marca-escura active:scale-95 touch-manipulation"
+            className="bg-marca-escura flex items-center space-x-2 px-4 py-2 rounded-xl text-white text-xs font-bold transition shadow-sm border border-marca-escura active:scale-95 touch-manipulation"
             title="Executa a varredura de OSs e gera os eventos eSocial. A assinatura e o envio ao Serpro são simulados."
           >
             <Zap className={`w-4 h-4 text-amber-700 ${isAutomating ? 'animate-bounce' : 'fill-amber-300'}`} />
@@ -479,7 +479,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
             id="btn-run-esocial-tests"
             onClick={handleRunTests}
             disabled={isRunningTests}
-            className="flex items-center space-x-2 px-3.5 py-2 rounded-xl bg-superficie hover:bg-superficie-2 text-indigo-700 hover:text-indigo-800 border border-indigo-200 text-xs font-semibold transition shadow-sm"
+            className="flex items-center space-x-2 px-3.5 py-2 rounded-xl bg-superficie hover:bg-superficie-2 text-tinta border border-borda text-xs font-semibold transition shadow-sm"
           >
             <Play className={`w-3.5 h-3.5 ${isRunningTests ? 'animate-spin' : ''}`} />
             <span>{isRunningTests ? 'Executando Testes...' : '🧪 Testes Automatizados'}</span>
@@ -489,9 +489,9 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
             <button
               id="btn-nav-to-sst-engineering"
               onClick={() => onNavigate('sst-engineering')}
-              className="flex items-center space-x-2 px-3.5 py-2 rounded-xl bg-teal-500/10 hover:bg-teal-500/20 text-teal-800 hover:text-teal-800 border border-teal-500/30 text-xs font-bold transition shadow-sm"
+              className="flex items-center space-x-2 px-3.5 py-2 rounded-xl bg-superficie hover:bg-superficie-2 text-tinta border border-borda text-xs font-semibold transition shadow-sm"
             >
-              <HardHat className="w-3.5 h-3.5 text-teal-700" />
+              <HardHat className="w-3.5 h-3.5 text-tinta-2" />
               <span>Engenharia SST Unificada (PGR/PCMSO)</span>
             </button>
           )}
@@ -499,7 +499,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
           <button
             id="btn-extract-from-so"
             onClick={() => setIsExtractModalOpen(true)}
-            className="flex items-center space-x-2 px-3.5 py-2 rounded-xl bg-superficie hover:bg-superficie-2 text-amber-700 hover:text-amber-800 border border-amber-200 text-xs font-semibold transition shadow-sm"
+            className="flex items-center space-x-2 px-3.5 py-2 rounded-xl bg-superficie hover:bg-superficie-2 text-tinta border border-borda text-xs font-semibold transition shadow-sm"
           >
             <Sparkles className="w-3.5 h-3.5" />
             <span>Extrair de OS (PGR/PCMSO)</span>
@@ -532,7 +532,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
           </div>
         </div>
 
-        <div className="p-4 rounded-2xl bg-superficie border border-marca-escura shadow-sm flex flex-col justify-between">
+        <div className="p-4 rounded-2xl bg-superficie border border-borda shadow-sm flex flex-col justify-between">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-semibold text-marca-escura uppercase tracking-wider">Transmitidos / Recibo</span>
             <CheckCircle2 className="w-4 h-4 text-marca-escura" />
@@ -543,14 +543,14 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
           </div>
         </div>
 
-        <div className="p-4 rounded-2xl bg-superficie border border-blue-200 shadow-sm flex flex-col justify-between">
+        <div className="p-4 rounded-2xl bg-superficie border border-teal-200 shadow-sm flex flex-col justify-between">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-semibold text-blue-700 uppercase tracking-wider">Prontos p/ Envio</span>
-            <Send className="w-4 h-4 text-blue-700" />
+            <span className="text-[11px] font-semibold text-teal-700 uppercase tracking-wider">Prontos p/ Envio</span>
+            <Send className="w-4 h-4 text-teal-700" />
           </div>
           <div className="mt-2 flex items-baseline justify-between">
-            <span className="text-2xl font-bold text-blue-700 tracking-tight">{stats.ready}</span>
-            <span className="text-[10px] text-blue-700 font-medium">Campos conferidos · não assinados</span>
+            <span className="text-2xl font-bold text-teal-700 tracking-tight">{stats.ready}</span>
+            <span className="text-[10px] text-teal-700 font-medium">Campos conferidos · não assinados</span>
           </div>
         </div>
 
@@ -584,7 +584,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
               <span className="text-xs font-bold text-tinta">{stats.s2210Count}</span>
             </div>
             <div className="bg-fundo p-1 rounded-lg">
-              <span className="block text-[9px] text-purple-700 font-bold">3000</span>
+              <span className="block text-[9px] text-teal-700 font-bold">3000</span>
               <span className="text-xs font-bold text-tinta">{stats.s3000Count}</span>
             </div>
           </div>
@@ -681,11 +681,11 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
             onClick={() => setActiveTab('config')}
             className={`flex items-center space-x-2 px-3.5 py-2.5 text-xs font-semibold border-b-2 transition ${
               activeTab === 'config'
-                ? 'border-indigo-500 text-indigo-700 bg-indigo-500/10 font-bold'
+                ? 'border-teal-500 text-teal-800 bg-teal-500/10 font-bold'
                 : 'border-transparent text-tinta-2 hover:text-tinta hover:border-borda'
             }`}
           >
-            <Settings2 className="w-4 h-4 text-indigo-700" />
+            <Settings2 className="w-4 h-4 text-teal-700" />
             <span>Configurações & Certificado A1</span>
           </button>
         </div>
@@ -698,7 +698,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
             <button
               id="btn-open-batch-transmission"
               onClick={() => setIsBatchModalOpen(true)}
-              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold transition shadow-md"
+              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold transition shadow-md"
             >
               <Send className="w-3.5 h-3.5" />
               <span>Transmitir Lote ({selectedEventIds.length})</span>
@@ -711,8 +711,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
       {activeTab === 'automation' && (
         <div className="space-y-6">
           {/* Automation Robot Header Banner */}
-          <div className="p-6 rounded-3xl bg-gradient-to-br from-slate-900 via-slate-900/90 to-emerald-950/40 border border-marca-escura shadow-2xl relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-96 h-96 bg-marca-suave rounded-full blur-3xl pointer-events-none" />
+          <div className="bg-superficie p-6 rounded-3xl border border-borda shadow-sm relative overflow-hidden">
             
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 relative z-10">
               <div className="space-y-2">
@@ -759,7 +758,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                   className={`flex items-center justify-center space-x-3 px-6 py-3.5 rounded-2xl font-bold text-sm text-tinta transition-all duration-300 shadow-xl touch-manipulation ${
                     isAutomating
                       ? 'bg-superficie-2 text-tinta-2 border border-borda cursor-not-allowed'
-                      : 'bg-gradient-to-r from-marca to-teal-600 hover:from-marca hover:to-teal-500 border border-marca-escura shadow-emerald-950/60 hover:scale-[1.02] active:scale-95'
+                      : 'bg-marca border border-marca-escura hover:scale-[1.02] active:scale-95'
                   }`}
                 >
                   <Zap className={`w-5 h-5 text-amber-700 ${isAutomating ? 'animate-bounce' : 'fill-amber-300'}`} />
@@ -798,7 +797,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                     key={item.step}
                     className={`p-4 rounded-xl border transition-all duration-300 flex flex-col justify-between ${
                       isCurrent
-                        ? 'bg-marca-suave border-marca-escura shadow-lg shadow-emerald-950/50 scale-[1.03]'
+                        ? 'bg-marca-suave border-marca-escura shadow-sm scale-[1.03]'
                         : isPassed
                         ? 'bg-marca-suave border-marca-escura text-marca-escura'
                         : 'bg-fundo border-borda text-tinta-2'
@@ -1082,7 +1081,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                                   ? 'bg-teal-500/20 text-teal-800 border border-teal-500/30'
                                   : evt.event_type === 'S-2210'
                                   ? 'bg-rose-500/20 text-rose-800 border border-rose-500/30'
-                                  : 'bg-purple-500/20 text-purple-700 border border-purple-500/30'
+                                  : 'bg-teal-500/20 text-teal-800 border border-teal-500/30'
                               }`}>
                                 {evt.event_type}
                               </span>
@@ -1156,7 +1155,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                             {evt.event_type === 'S-3000' && (
                               <div className="text-[11px] text-tinta space-y-0.5">
                                 <div><span className="text-tinta-2">Alvo:</span> {evt.exclusion_data?.target_event_type}</div>
-                                <div className="text-[10px] text-purple-700 font-mono truncate max-w-[200px]">
+                                <div className="text-[10px] text-teal-700 font-mono truncate max-w-[200px]">
                                   Recibo: {evt.exclusion_data?.target_receipt_number}
                                 </div>
                               </div>
@@ -1179,7 +1178,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
 
                             {evt.status === 'READY_TO_SEND' && (
                               <div>
-                                <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-blue-500/20 text-blue-700 border border-blue-500/30">
+                                <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-teal-500/20 text-teal-800 border border-teal-500/30">
                                   <Send className="w-3 h-3" />
                                   <span>Pronto p/ Envio</span>
                                 </span>
@@ -1234,7 +1233,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                                   setIsPdfModalOpen(true);
                                 }}
                                 title="Gerar Espelho / Relatório PDF deste Evento SST"
-                                className="p-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-900 text-white hover:text-white transition border border-indigo-800/40"
+                                className="p-1.5 rounded-lg bg-teal-50 hover:bg-teal-900 text-white hover:text-white transition border border-teal-800/40"
                               >
                                 <Printer className="w-3.5 h-3.5" />
                               </button>
@@ -1245,7 +1244,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                                   id={`btn-validate-${evt.id}`}
                                   onClick={() => handleValidateSingle(evt.id)}
                                   title="Conferir os campos do leiaute (não valida contra o XSD)"
-                                  className="p-1.5 rounded-lg bg-superficie-2 hover:bg-superficie-3 text-blue-700 hover:text-blue-800 transition"
+                                  className="p-1.5 rounded-lg bg-superficie-2 hover:bg-superficie-3 text-teal-700 hover:text-teal-800 transition"
                                 >
                                   <Check className="w-3.5 h-3.5" />
                                 </button>
@@ -1290,7 +1289,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                                     }
                                   }}
                                   title="Gerar Evento de Exclusão S-3000"
-                                  className="p-1.5 rounded-lg bg-purple-50 hover:bg-purple-900 text-white transition border border-purple-800/40"
+                                  className="p-1.5 rounded-lg bg-teal-50 hover:bg-teal-900 text-white transition border border-teal-800/40"
                                 >
                                   <Ban className="w-3.5 h-3.5" />
                                 </button>
@@ -1447,7 +1446,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                     onClick={() => setExtractionType('S-2240')}
                     className={`p-3 rounded-xl border text-left transition ${
                       extractionType === 'S-2240'
-                        ? 'bg-amber-50 border-amber-500/50 text-amber-700'
+                        ? 'bg-amber-50 border-amber-200 text-amber-700'
                         : 'bg-fundo border-borda text-tinta-2 hover:border-borda'
                     }`}
                   >
@@ -1474,7 +1473,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
             <div className="pt-4 flex justify-end">
               <button
                 onClick={handleExecuteExtraction}
-                className="flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-marca hover:bg-marca-escura text-white text-xs font-semibold transition shadow-lg"
+                className="flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-marca hover:bg-marca-escura text-white text-xs font-semibold transition shadow-sm"
               >
                 <Sparkles className="w-4 h-4" />
                 <span>Processar Extração e Gerar Evento</span>
@@ -1491,7 +1490,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
             <div>
               <div className="flex items-center space-x-2">
                 <h2 className="text-base font-bold text-tinta">Suíte de Testes Automatizados eSocial & Regras de Negócio</h2>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-indigo-500/20 text-indigo-700 border border-indigo-500/30">
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-teal-500/20 text-teal-800 border border-teal-500/30">
                   eSocial End-to-End Runner
                 </span>
               </div>
@@ -1503,7 +1502,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
             <button
               onClick={handleRunTests}
               disabled={isRunningTests}
-              className="flex items-center space-x-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold transition shadow-md shrink-0"
+              className="flex items-center space-x-2 px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold transition shadow-md shrink-0"
             >
               <Play className={`w-3.5 h-3.5 ${isRunningTests ? 'animate-spin' : ''}`} />
               <span>{isRunningTests ? 'Executando Testes...' : 'Reexecutar Bateria Completa'}</span>
@@ -1516,7 +1515,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
               <div className={`p-4 rounded-2xl border flex items-center justify-between ${
                 testResults.failed === 0 
                   ? 'bg-marca-suave border-marca-escura text-marca-escura' 
-                  : 'bg-rose-50 border-rose-700/50 text-rose-700'
+                  : 'bg-rose-50 border-rose-200 text-rose-700'
               }`}>
                 <div className="flex items-center space-x-3">
                   {testResults.failed === 0 ? (
@@ -1546,7 +1545,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                     className={`p-3.5 rounded-xl border flex items-start justify-between space-x-3 ${
                       res.passed 
                         ? 'bg-superficie border-borda' 
-                        : 'bg-rose-50 border-rose-800/40'
+                        : 'bg-rose-50 border-rose-200'
                     }`}
                   >
                     <div className="flex items-start space-x-3">
@@ -1561,7 +1560,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                         <div className="text-xs font-bold text-tinta">{res.testName}</div>
                         <div className="text-xs text-tinta-2 mt-0.5">{res.message}</div>
                         {res.details && (
-                          <div className="text-[10px] text-indigo-700 font-mono mt-1">{res.details}</div>
+                          <div className="text-[10px] text-teal-700 font-mono mt-1">{res.details}</div>
                         )}
                       </div>
                     </div>
@@ -1596,7 +1595,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
       {/* ========================================================================= */}
       {xmlModalEvent && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="bg-superficie border border-borda rounded-3xl w-full max-w-4xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+          <div className="bg-superficie border border-borda rounded-3xl w-full max-w-4xl max-h-[90vh] flex flex-col shadow-sm overflow-hidden">
             
             {/* Modal Header */}
             <div className="p-5 border-b border-borda flex items-center justify-between bg-fundo">
@@ -1684,7 +1683,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                   </div>
 
                   {avisoDoEmpregadorNoXml && (
-                    <div className="flex items-start gap-2 p-3 rounded-lg bg-amber-50 border border-amber-700/50 text-amber-700 font-sans text-[11px] leading-relaxed">
+                    <div className="flex items-start gap-2 p-3 rounded-lg bg-amber-50 border border-amber-200 text-amber-700 font-sans text-[11px] leading-relaxed">
                       <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5 text-amber-700" />
                       <span><strong>Identificação do empregador:</strong> {avisoDoEmpregadorNoXml}</span>
                     </div>
@@ -1748,7 +1747,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                     {(xmlModalEvent.history || []).map((h, idx) => (
                       <div key={idx} className="p-3 rounded-xl bg-fundo border border-borda text-xs">
                         <div className="flex items-center justify-between text-tinta-2 text-[10px] pb-1 border-b border-borda">
-                          <span className="font-bold text-indigo-700">{h.action}</span>
+                          <span className="font-bold text-teal-700">{h.action}</span>
                           <span>{new Date(h.date).toLocaleString('pt-BR')} • {h.user_name}</span>
                         </div>
                         <p className="text-tinta mt-1 text-[11px]">{h.details}</p>
@@ -1798,10 +1797,10 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
       {/* ========================================================================= */}
       {isBatchModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="bg-superficie border border-borda rounded-3xl w-full max-w-lg p-6 shadow-2xl space-y-4">
+          <div className="bg-superficie border border-borda rounded-3xl w-full max-w-lg p-6 shadow-sm space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-borda">
               <div className="flex items-center space-x-2.5">
-                <Send className="w-5 h-5 text-blue-700" />
+                <Send className="w-5 h-5 text-teal-700" />
                 <h3 className="font-bold text-tinta text-base">Transmissão em Lote WebService</h3>
               </div>
               <button onClick={() => setIsBatchModalOpen(false)} className="text-tinta-2 hover:text-tinta">
@@ -1823,7 +1822,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                   onClick={() => setBatchCertificate('A1_DIGITAL')}
                   className={`p-3 rounded-xl border text-left transition ${
                     batchCertificate === 'A1_DIGITAL'
-                      ? 'bg-blue-50 border-blue-500 text-blue-700'
+                      ? 'bg-teal-50 border-teal-500 text-teal-700'
                       : 'bg-fundo border-borda text-tinta-2'
                   }`}
                 >
@@ -1836,7 +1835,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                   onClick={() => setBatchCertificate('A3_TOKEN_SMARTCARD')}
                   className={`p-3 rounded-xl border text-left transition ${
                     batchCertificate === 'A3_TOKEN_SMARTCARD'
-                      ? 'bg-blue-50 border-blue-500 text-blue-700'
+                      ? 'bg-teal-50 border-teal-500 text-teal-700'
                       : 'bg-fundo border-borda text-tinta-2'
                   }`}
                 >
@@ -1890,7 +1889,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
       {/* ========================================================================= */}
       {isExtractModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="bg-superficie border border-borda rounded-3xl w-full max-w-md p-6 shadow-2xl space-y-4">
+          <div className="bg-superficie border border-borda rounded-3xl w-full max-w-md p-6 shadow-sm space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-borda">
               <div className="flex items-center space-x-2.5">
                 <Sparkles className="w-5 h-5 text-amber-700" />
@@ -1927,7 +1926,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                   type="button"
                   onClick={() => setExtractionType('S-2240')}
                   className={`p-2.5 rounded-xl border text-xs font-bold ${
-                    extractionType === 'S-2240' ? 'bg-amber-50 border-amber-500 text-amber-700' : 'bg-fundo border-borda text-tinta-2'
+                    extractionType === 'S-2240' ? 'bg-amber-50 border-amber-200 text-amber-700' : 'bg-fundo border-borda text-tinta-2'
                   }`}
                 >
                   S-2240 (Riscos)
@@ -1945,7 +1944,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
             </div>
 
             {extractionPendencias.length > 0 && (
-              <div className="rounded-xl border border-amber-800/60 bg-amber-50 p-3 space-y-1.5 max-h-56 overflow-y-auto">
+              <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 space-y-1.5 max-h-56 overflow-y-auto">
                 <p className="text-xs font-bold text-amber-700">
                   {extractionPendencias.length} pendência(s) no cadastro
                 </p>
@@ -2221,7 +2220,7 @@ const CreateEditEventModal: React.FC<CreateEditEventModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-      <div className="bg-superficie border border-borda rounded-3xl w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+      <div className="bg-superficie border border-borda rounded-3xl w-full max-w-2xl max-h-[90vh] flex flex-col shadow-sm overflow-hidden">
         
         {/* Modal Header */}
         <div className="p-5 border-b border-borda flex items-center justify-between bg-fundo">
@@ -2699,9 +2698,9 @@ const CreateEditEventModal: React.FC<CreateEditEventModalProps> = ({
 
           {/* DYNAMIC FORM SECTION: S-3000 */}
           {eventType === 'S-3000' && (
-            <div className="p-4 rounded-2xl bg-fundo border border-purple-200 space-y-3">
-              <h4 className="font-bold text-purple-700 text-xs uppercase tracking-wide flex items-center space-x-1.5">
-                <Ban className="w-3.5 h-3.5 text-purple-700" />
+            <div className="p-4 rounded-2xl bg-fundo border border-teal-200 space-y-3">
+              <h4 className="font-bold text-teal-700 text-xs uppercase tracking-wide flex items-center space-x-1.5">
+                <Ban className="w-3.5 h-3.5 text-teal-700" />
                 <span>Evento de Exclusão S-3000</span>
               </h4>
 
@@ -2759,7 +2758,7 @@ const CreateEditEventModal: React.FC<CreateEditEventModalProps> = ({
             </button>
             <button
               type="submit"
-              className="px-5 py-2 bg-marca hover:bg-marca-escura text-white text-xs font-semibold rounded-xl transition shadow-lg"
+              className="px-5 py-2 bg-marca hover:bg-marca-escura text-white text-xs font-semibold rounded-xl transition shadow-sm"
             >
               {initialEvent ? 'Salvar Alterações' : 'Salvar Evento (Rascunho)'}
             </button>

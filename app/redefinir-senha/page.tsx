@@ -96,7 +96,7 @@ export default function RedefinirSenhaPage() {
 
   return (
     <div className="min-h-screen w-full bg-fundo flex items-center justify-center p-4 font-sans">
-      <div className="w-full max-w-md bg-superficie border border-borda rounded-3xl shadow-2xl p-6 sm:p-8">
+      <div className="w-full max-w-md bg-superficie border border-borda rounded-3xl shadow-sm p-6 sm:p-8">
         <div className="mb-6">
           <div>
             <div className="text-lg font-bold text-tinta tracking-tight">PrevSafe</div>
@@ -197,7 +197,7 @@ export default function RedefinirSenhaPage() {
             <button
               type="submit"
               disabled={isSaving}
-              className="w-full py-3 px-4 bg-gradient-to-r from-marca-escura to-teal-600 hover:from-marca-escura hover:to-teal-700 text-white font-bold text-xs rounded-xl shadow-lg transition flex items-center justify-center space-x-2 disabled:opacity-50"
+              className="bg-marca-escura w-full py-3 px-4 text-white font-bold text-xs rounded-xl shadow-sm transition flex items-center justify-center space-x-2 disabled:opacity-50"
             >
               {isSaving ? (
                 <>

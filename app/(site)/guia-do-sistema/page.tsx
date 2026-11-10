@@ -98,7 +98,7 @@ export default function GuiaDoSistemaPage() {
           <div className="mt-7 flex flex-col sm:flex-row gap-3">
             <Link
               href="/sistema"
-              className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold transition"
+              className="bg-marca-escura text-white inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-bold transition hover:opacity-90"
             >
               <LogIn className="w-4 h-4" aria-hidden="true" />
               Entrar no sistema
@@ -183,7 +183,7 @@ export default function GuiaDoSistemaPage() {
               href={linkWhatsApp('acesso ao sistema')}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 mt-5 px-6 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold transition"
+              className="bg-marca-escura text-white inline-flex items-center gap-2 mt-5 px-6 py-3 rounded-xl font-bold transition hover:opacity-90"
             >
               Chamar no WhatsApp
               <ArrowRight className="w-4 h-4" aria-hidden="true" />

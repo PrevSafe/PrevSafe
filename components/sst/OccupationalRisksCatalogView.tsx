@@ -466,15 +466,15 @@ const CARTOES_DE_GRUPO: Array<{
   },
   {
     grupo: 'ERGONÔMICO', rotulo: 'Ergonômicos · grupo 4', exemplo: 'Postura, carga, repetição', Icone: Sliders,
-    marcado: 'border-purple-500 bg-purple-500/25 shadow-sm ring-2 ring-purple-500/40',
-    desmarcado: 'border-borda hover:border-purple-500/30 hover:bg-purple-500/10',
-    texto: 'text-purple-700', icone: 'text-purple-700'
+    marcado: 'border-teal-500 bg-teal-500/25 shadow-sm ring-2 ring-teal-500/40',
+    desmarcado: 'border-borda hover:border-teal-500/30 hover:bg-teal-500/10',
+    texto: 'text-teal-700', icone: 'text-teal-700'
   },
   {
     grupo: 'ACIDENTES', rotulo: 'Acidentes · grupo 5', exemplo: 'Queda, choque, máquinas', Icone: Zap,
-    marcado: 'border-sky-500 bg-sky-500/25 shadow-sm ring-2 ring-sky-500/40',
-    desmarcado: 'border-borda hover:border-sky-500/30 hover:bg-sky-500/10',
-    texto: 'text-sky-700', icone: 'text-sky-700'
+    marcado: 'border-teal-500 bg-teal-500/25 shadow-sm ring-2 ring-teal-500/40',
+    desmarcado: 'border-borda hover:border-teal-500/30 hover:bg-teal-500/10',
+    texto: 'text-teal-700', icone: 'text-teal-700'
   }
 ];
 
@@ -483,8 +483,8 @@ const getGroupBadgeColor = (group: string | undefined) => {
     case 'FÍSICO': return 'bg-amber-500/15 text-amber-800 border-amber-500/30';
     case 'QUÍMICO': return 'bg-rose-500/15 text-rose-800 border-rose-500/30';
     case 'BIOLÓGICO': return 'bg-marca-suave text-marca-escura border-marca-escura';
-    case 'ERGONÔMICO': return 'bg-purple-500/15 text-purple-700 border-purple-500/30';
-    case 'ACIDENTES': return 'bg-sky-500/15 text-sky-700 border-sky-500/30';
+    case 'ERGONÔMICO': return 'bg-teal-500/15 text-teal-800 border-teal-500/30';
+    case 'ACIDENTES': return 'bg-teal-500/15 text-teal-800 border-teal-500/30';
     default: return 'bg-fundo text-tinta border-borda';
   }
 };
@@ -502,7 +502,7 @@ const SELO_DA_ORIGEM: Record<OrigemDoItem, { rotulo: string; classe: string; aju
   },
   USUARIO: {
     rotulo: 'Criado aqui',
-    classe: 'bg-indigo-500/15 text-indigo-700 border-indigo-500/30',
+    classe: 'bg-teal-500/15 text-teal-800 border-teal-500/30',
     ajuda: 'Item criado neste catálogo pelo usuário.'
   }
 };
@@ -1117,7 +1117,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
       <div
         key={item.id}
         className={`p-5 transition-colors hover:bg-superficie-2 ${
-          isSelected ? 'bg-indigo-500/20 border-l-4 border-l-indigo-600' : ''
+          isSelected ? 'bg-teal-500/20 border-l-4 border-l-teal-600' : ''
         } ${ativo ? '' : 'opacity-60'}`}
       >
         <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
@@ -1126,7 +1126,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
             <button
               onClick={() => toggleSelectRisk(item)}
               disabled={!ativo}
-              className="mt-1 flex-shrink-0 text-tinta-2 hover:text-indigo-700 disabled:cursor-not-allowed disabled:hover:text-tinta-2"
+              className="mt-1 flex-shrink-0 text-tinta-2 hover:text-teal-700 disabled:cursor-not-allowed disabled:hover:text-tinta-2"
               title={
                 !ativo
                   ? 'Item inativo: reative para aplicar'
@@ -1134,7 +1134,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
               }
             >
               {isSelected ? (
-                <CheckSquare className="w-5 h-5 text-indigo-700" />
+                <CheckSquare className="w-5 h-5 text-teal-700" />
               ) : (
                 <Square className={`w-5 h-5 ${ativo ? 'text-tinta' : 'text-tinta-2'}`} />
               )}
@@ -1217,7 +1217,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                 )}
                 <span className={`text-[11px] font-medium px-2 py-0.5 rounded-full ${
                   item.evaluation_type === 'QUANTITATIVA'
-                    ? 'bg-blue-500/15 text-blue-700 border border-blue-500/30'
+                    ? 'bg-teal-500/15 text-teal-800 border border-teal-500/30'
                     : 'bg-superficie-2 text-tinta'
                 }`}>
                   Avaliação {item.evaluation_type}
@@ -1381,11 +1381,11 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
 
                   {exames.length > 0 && (
                     <div className="flex items-center gap-1.5 flex-wrap">
-                      <span className="text-[11px] font-bold text-blue-700 flex items-center gap-1">
+                      <span className="text-[11px] font-bold text-teal-700 flex items-center gap-1">
                         <Stethoscope className="w-3.5 h-3.5" /> Exames PCMSO (Tab 27):
                       </span>
                       {exames.map((ex, idx) => (
-                        <span key={idx} className="text-[11px] px-2 py-0.5 rounded bg-blue-500/15 text-blue-700 border border-blue-500/30">
+                        <span key={idx} className="text-[11px] px-2 py-0.5 rounded bg-teal-500/15 text-teal-800 border border-teal-500/30">
                           {ex.exam_name} [{ex.exam_code}] ({ex.periodicity_months}m)
                         </span>
                       ))}
@@ -1402,7 +1402,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
               id={`btn-apply-single-risk-${item.id}`}
               onClick={() => handleOpenApplyModal(item.id)}
               disabled={!ativo}
-              className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-indigo-700 bg-indigo-500/15 hover:bg-indigo-500/20 rounded-lg border border-indigo-500/30 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-teal-800 bg-teal-500/15 hover:bg-teal-500/20 rounded-lg border border-teal-500/30 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
               title={ativo ? 'Aplicar este risco a um GHE ou Árvore de Cargos' : 'Item inativo: reative para aplicar'}
             >
               <ArrowUpRight className="w-3.5 h-3.5" />
@@ -1500,7 +1500,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
             <button
               id="btn-apply-selected-risks"
               onClick={() => handleOpenApplyModal()}
-              className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm transition-colors"
+              className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-semibold text-white bg-teal-600 hover:bg-teal-700 rounded-lg shadow-sm transition-colors"
             >
               <ArrowUpRight className="w-4 h-4" />
               {riscosSelecionados.length > 0
@@ -1712,7 +1712,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
       {/* Modal Add / Edit Risk in Catalog */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-superficie backdrop-blur-sm overflow-y-auto">
-          <div className="bg-superficie rounded-xl shadow-2xl border border-borda w-full max-w-3xl my-8 overflow-hidden">
+          <div className="bg-superficie rounded-xl shadow-sm border border-borda w-full max-w-3xl my-8 overflow-hidden">
             <div className="px-6 py-4 border-b border-borda flex items-center justify-between bg-fundo">
               <div className="flex items-center gap-2">
                 <ShieldAlert className="w-5 h-5 text-marca-escura" />
@@ -2265,10 +2265,10 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
       {/* Modal Apply Selected Risks to Client GHE / Jobs / Sector Tree */}
       {isApplyModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-superficie backdrop-blur-sm overflow-y-auto">
-          <div className="bg-superficie rounded-xl shadow-2xl border border-borda w-full max-w-2xl my-8 overflow-hidden">
-            <div className="px-6 py-4 border-b border-borda flex items-center justify-between bg-indigo-500/15">
+          <div className="bg-superficie rounded-xl shadow-sm border border-borda w-full max-w-2xl my-8 overflow-hidden">
+            <div className="px-6 py-4 border-b border-borda flex items-center justify-between bg-teal-500/15">
               <div className="flex items-center gap-2">
-                <ArrowUpRight className="w-5 h-5 text-indigo-700" />
+                <ArrowUpRight className="w-5 h-5 text-teal-700" />
                 <h3 className="text-lg font-bold text-tinta">
                   Aplicar Riscos Ocupacionais a GHEs ou Árvore de Cargos
                 </h3>
@@ -2330,7 +2330,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                   <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-tinta-2" />
                   <input
                     type="text"
-                    className="w-full pl-8 pr-3 py-1.5 text-xs bg-superficie text-tinta placeholder-tinta-3 border border-borda rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full pl-8 pr-3 py-1.5 text-xs bg-superficie text-tinta placeholder-tinta-3 border border-borda rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
                     placeholder="Incluir risco: busque por nome, código da Tabela 24 ou unidade..."
                     value={buscaNoModal}
                     onChange={(e) => setBuscaNoModal(e.target.value)}
@@ -2350,7 +2350,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                               type="checkbox"
                               checked={marcado}
                               onChange={() => toggleSelectRisk(r)}
-                              className="rounded border-borda text-indigo-700 focus:ring-indigo-500"
+                              className="rounded border-borda text-teal-700 focus:ring-teal-500"
                             />
                             <span className="font-semibold text-tinta min-w-0 truncate">{r.name}</span>
                             {r.code_table_24 && (
@@ -2378,7 +2378,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                   Empresa / Cliente de Destino *
                 </label>
                 <select
-                  className="w-full px-3 py-2 text-sm border border-borda rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-fundo text-tinta placeholder-tinta-3"
+                  className="w-full px-3 py-2 text-sm border border-borda rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 bg-fundo text-tinta placeholder-tinta-3"
                   value={applyClientId}
                   onChange={(e) => {
                     setApplyClientId(e.target.value);
@@ -2405,11 +2405,11 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                     onClick={() => setApplyTargetMode('GHE')}
                     className={`p-3 rounded-lg border text-left text-xs font-bold transition-all ${
                       applyTargetMode === 'GHE'
-                        ? 'border-indigo-600 bg-indigo-500/15 text-indigo-700 ring-2 ring-indigo-500/40'
+                        ? 'border-teal-600 bg-teal-500/15 text-teal-800 ring-2 ring-teal-500/40'
                         : 'border-borda text-tinta hover:bg-superficie-2'
                     }`}
                   >
-                    <Layers className="w-4 h-4 mb-1 text-indigo-700" />
+                    <Layers className="w-4 h-4 mb-1 text-teal-700" />
                     Vários / Específico GHE
                   </button>
 
@@ -2418,11 +2418,11 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                     onClick={() => setApplyTargetMode('JOB')}
                     className={`p-3 rounded-lg border text-left text-xs font-bold transition-all ${
                       applyTargetMode === 'JOB'
-                        ? 'border-indigo-600 bg-indigo-500/15 text-indigo-700 ring-2 ring-indigo-500/40'
+                        ? 'border-teal-600 bg-teal-500/15 text-teal-800 ring-2 ring-teal-500/40'
                         : 'border-borda text-tinta hover:bg-superficie-2'
                     }`}
                   >
-                    <Briefcase className="w-4 h-4 mb-1 text-indigo-700" />
+                    <Briefcase className="w-4 h-4 mb-1 text-teal-700" />
                     Cargos Específicos
                   </button>
 
@@ -2431,11 +2431,11 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                     onClick={() => setApplyTargetMode('SECTOR_TREE')}
                     className={`p-3 rounded-lg border text-left text-xs font-bold transition-all ${
                       applyTargetMode === 'SECTOR_TREE'
-                        ? 'border-indigo-600 bg-indigo-500/15 text-indigo-700 ring-2 ring-indigo-500/40'
+                        ? 'border-teal-600 bg-teal-500/15 text-teal-800 ring-2 ring-teal-500/40'
                         : 'border-borda text-tinta hover:bg-superficie-2'
                     }`}
                   >
-                    <Building2 className="w-4 h-4 mb-1 text-indigo-700" />
+                    <Building2 className="w-4 h-4 mb-1 text-teal-700" />
                     Árvore de Setores / Áreas
                   </button>
                 </div>
@@ -2467,7 +2467,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                                   setSelectedTargetGheIds(prev => [...prev, g.id]);
                                 }
                               }}
-                              className="rounded border-borda text-indigo-700 focus:ring-indigo-500"
+                              className="rounded border-borda text-teal-700 focus:ring-teal-500"
                             />
                             <span className="font-semibold text-tinta">{g.name}</span>
                             <span className="text-tinta-2 font-mono text-[11px]">({g.code})</span>
@@ -2504,7 +2504,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                                   setSelectedTargetJobIds(prev => [...prev, job.id]);
                                 }
                               }}
-                              className="rounded border-borda text-indigo-700 focus:ring-indigo-500"
+                              className="rounded border-borda text-teal-700 focus:ring-teal-500"
                             />
                             <span className="font-semibold text-tinta">{job.name}</span>
                             <span className="text-tinta-2 text-[11px]">CBO: {job.cbo || 'N/A'}</span>
@@ -2541,7 +2541,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                                   setSelectedTargetSectorIds(prev => [...prev, sec.id]);
                                 }
                               }}
-                              className="rounded border-borda text-indigo-700 focus:ring-indigo-500"
+                              className="rounded border-borda text-teal-700 focus:ring-teal-500"
                             />
                             <span className="font-semibold text-tinta">{sec.name}</span>
                             <span className="text-tinta-2 text-[11px]">({sec.code})</span>
@@ -2605,19 +2605,19 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
               </div>
 
               {/* Include PCMSO Exams Checkbox */}
-              <div className="p-3 bg-blue-500/15 border border-blue-500/30 rounded-lg">
+              <div className="p-3 bg-teal-500/15 border border-teal-500/30 rounded-lg">
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={includeSuggestedExams}
                     onChange={(e) => setIncludeSuggestedExams(e.target.checked)}
-                    className="rounded border-blue-500/30 text-blue-700 focus:ring-blue-500"
+                    className="rounded border-teal-500/30 text-teal-700 focus:ring-teal-500"
                   />
                   <div className="text-xs">
-                    <span className="font-bold text-blue-700 block">
+                    <span className="font-bold text-teal-700 block">
                       Vincular automaticamente os exames PCMSO sugeridos (Tabela 27)
                     </span>
-                    <span className="text-blue-700">
+                    <span className="text-teal-700">
                       Gera os protocolos com os exames sugeridos no catálogo para os GHEs de destino.
                       {selecionadosSemExame > 0 &&
                         ` ${selecionadosSemExame} dos riscos selecionados não têm exame sugerido e não geram protocolo.`}
@@ -2648,7 +2648,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                   type="button"
                   onClick={handleExecuteApply}
                   disabled={riscosSelecionados.length === 0}
-                  className="px-5 py-2 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm flex items-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed"
+                  className="px-5 py-2 text-sm font-semibold text-white bg-teal-600 hover:bg-teal-700 rounded-lg shadow-sm flex items-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   <ArrowUpRight className="w-4 h-4" />
                   Confirmar Aplicação em Lote

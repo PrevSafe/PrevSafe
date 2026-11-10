@@ -413,7 +413,7 @@ export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) 
               type="button"
               id="add-employee-btn"
               onClick={() => handleOpenEmployeeModal()}
-              className="px-3.5 py-1.5 bg-teal-500 hover:bg-teal-400 text-slate-950 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 shadow-sm"
+              className="bg-marca-escura text-white px-3.5 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 shadow-sm hover:opacity-90"
             >
               <Plus className="w-4 h-4" />
               Novo Colaborador (eSocial)
@@ -434,9 +434,9 @@ export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) 
               type="button"
               id="btn-emp-batch-generate-os"
               onClick={handleBatchGenerateOS}
-              className="px-2.5 py-1.5 bg-indigo-950 hover:bg-indigo-900 text-white border border-indigo-800 rounded-lg font-bold flex items-center gap-1.5 transition-colors"
+              className="px-2.5 py-1.5 bg-teal-950 hover:bg-teal-900 text-white border border-teal-800 rounded-lg font-bold flex items-center gap-1.5 transition-colors"
             >
-              <Sparkles className="w-3.5 h-3.5 text-indigo-700" />
+              <Sparkles className="w-3.5 h-3.5 text-teal-700" />
               Gerar OS em Lote
             </button>
 
@@ -446,7 +446,7 @@ export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) 
               onClick={handleBatchPrintOS}
               className="px-2.5 py-1.5 bg-superficie-2 hover:bg-superficie-3 text-tinta border border-borda rounded-lg font-bold flex items-center gap-1.5 transition-colors"
             >
-              <Printer className="w-3.5 h-3.5 text-indigo-700" />
+              <Printer className="w-3.5 h-3.5 text-teal-700" />
               Imprimir OS (Lote PDF)
             </button>
 
@@ -488,7 +488,7 @@ export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) 
       </div>
 
       {/* Employees Table */}
-      <div className="bg-superficie border border-borda rounded-xl overflow-hidden shadow-lg" id="employees-table-container">
+      <div className="bg-superficie border border-borda rounded-xl overflow-hidden shadow-sm" id="employees-table-container">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs text-tinta">
             <thead className="bg-fundo text-tinta-2 uppercase text-[10px] tracking-wider border-b border-borda">
@@ -549,10 +549,10 @@ export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) 
                         <button
                           type="button"
                           onClick={() => handleIndividualPrintOS(emp)}
-                          className="px-2 py-0.5 bg-indigo-50 hover:bg-indigo-900 text-white border border-indigo-800 text-[10px] rounded font-bold transition-colors flex items-center gap-1"
+                          className="px-2 py-0.5 bg-teal-50 hover:bg-teal-900 text-white border border-teal-800 text-[10px] rounded font-bold transition-colors flex items-center gap-1"
                           title="Imprimir Ordem de Serviço NR-01"
                         >
-                          <Printer className="w-3 h-3 text-indigo-700" />
+                          <Printer className="w-3 h-3 text-teal-700" />
                           {empOS ? `OS ${empOS.os_code}` : 'Gerar OS'}
                         </button>
 
@@ -560,7 +560,7 @@ export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) 
                         <button
                           type="button"
                           onClick={() => handleIndividualPrintEPI(emp)}
-                          className="px-2 py-0.5 bg-amber-50 hover:bg-amber-900 text-white border border-amber-800 text-[10px] rounded font-bold transition-colors flex items-center gap-1"
+                          className="px-2 py-0.5 bg-amber-50 hover:bg-amber-900 text-white border border-amber-200 text-[10px] rounded font-bold transition-colors flex items-center gap-1"
                           title="Imprimir Ficha de Entrega de EPI NR-06"
                         >
                           <HardHat className="w-3 h-3 text-amber-700" />
@@ -620,7 +620,7 @@ export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) 
       {/* Employee Modal */}
       {isEmployeeModalOpen && (
         <div className="fixed inset-0 bg-fundo backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-superficie border border-borda rounded-2xl max-w-2xl w-full p-6 space-y-4 shadow-2xl animate-in fade-in zoom-in-95 duration-150 max-h-[90vh] overflow-y-auto">
+          <div className="bg-superficie border border-borda rounded-2xl max-w-2xl w-full p-6 space-y-4 shadow-sm animate-in fade-in zoom-in-95 duration-150 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-borda pb-3">
               <h3 className="text-base font-bold text-tinta flex items-center gap-2">
                 <Users className="w-5 h-5 text-teal-700" />
@@ -790,7 +790,7 @@ export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) 
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold rounded-lg shadow-md"
+                  className="bg-marca-escura text-white px-4 py-2 font-bold rounded-lg shadow-sm hover:opacity-90"
                 >
                   Salvar Colaborador
                 </button>
@@ -803,7 +803,7 @@ export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) 
       {/* EPI Delivery Modal */}
       {isEpiModalOpen && selectedEmpForEpi && (
         <div className="fixed inset-0 bg-fundo backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-superficie border border-borda rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl animate-in fade-in zoom-in-95 duration-150">
+          <div className="bg-superficie border border-borda rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-sm animate-in fade-in zoom-in-95 duration-150">
             <div className="flex items-center justify-between border-b border-borda pb-3">
               <h3 className="text-base font-bold text-tinta flex items-center gap-2">
                 <HardHat className="w-5 h-5 text-teal-700" />
@@ -876,7 +876,7 @@ export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) 
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold rounded-lg shadow-md"
+                  className="bg-marca-escura text-white px-4 py-2 font-bold rounded-lg shadow-sm hover:opacity-90"
                 >
                   Registrar Entrega
                 </button>
@@ -889,7 +889,7 @@ export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) 
       {/* Viewing Dossier Modal */}
       {viewingEmpDossier && (
         <div className="fixed inset-0 bg-fundo backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-superficie border border-borda rounded-2xl max-w-2xl w-full p-6 space-y-4 shadow-2xl animate-in fade-in zoom-in-95 duration-150 max-h-[90vh] overflow-y-auto">
+          <div className="bg-superficie border border-borda rounded-2xl max-w-2xl w-full p-6 space-y-4 shadow-sm animate-in fade-in zoom-in-95 duration-150 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-borda pb-3">
               <h3 className="text-base font-bold text-tinta flex items-center gap-2">
                 <FileText className="w-5 h-5 text-teal-700" />
@@ -1011,7 +1011,7 @@ export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) 
               <button
                 type="button"
                 onClick={() => setViewingEmpDossier(null)}
-                className="px-4 py-2 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold rounded-lg"
+                className="bg-marca-escura text-white px-4 py-2 font-bold rounded-lg hover:opacity-90"
               >
                 Fechar Ficha
               </button>
@@ -1023,7 +1023,7 @@ export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) 
       {/* Post-Registration Success Modal (OS & EPI Prompt) */}
       {justCreatedEmp && (
         <div className="fixed inset-0 bg-fundo backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-superficie border-2 border-teal-500/50 rounded-2xl max-w-lg w-full p-6 space-y-5 shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-superficie border-2 border-teal-200 rounded-2xl max-w-lg w-full p-6 space-y-5 shadow-sm animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 rounded-xl bg-teal-500/20 border border-teal-500/40 flex items-center justify-center shrink-0">
                 <CheckCircle2 className="w-7 h-7 text-teal-700" />
@@ -1052,20 +1052,20 @@ export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) 
                 type="button"
                 id="modal-print-os-btn"
                 onClick={() => handleIndividualPrintOS(justCreatedEmp)}
-                className="w-full py-2.5 px-4 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl flex items-center justify-between text-xs transition-colors shadow-lg shadow-indigo-600/20"
+                className="w-full py-2.5 px-4 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl flex items-center justify-between text-xs transition-colors shadow-sm"
               >
                 <div className="flex items-center gap-2">
                   <Printer className="w-4 h-4" />
                   <span>Imprimir Ordem de Serviço (NR-01 & CLT Art. 157)</span>
                 </div>
-                <span className="text-[10px] bg-indigo-700 px-2 py-0.5 rounded">PDF</span>
+                <span className="text-[10px] bg-teal-700 px-2 py-0.5 rounded">PDF</span>
               </button>
 
               <button
                 type="button"
                 id="modal-print-epi-btn"
                 onClick={() => handleIndividualPrintEPI(justCreatedEmp)}
-                className="w-full py-2.5 px-4 bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold rounded-xl flex items-center justify-between text-xs transition-colors shadow-lg shadow-amber-600/20"
+                className="w-full py-2.5 px-4 bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold rounded-xl flex items-center justify-between text-xs transition-colors shadow-sm border border-amber-200"
               >
                 <div className="flex items-center gap-2">
                   <HardHat className="w-4 h-4" />
@@ -1078,13 +1078,13 @@ export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) 
                 type="button"
                 id="modal-print-kit-btn"
                 onClick={() => handleIndividualPrintKitAdmissional(justCreatedEmp)}
-                className="w-full py-2.5 px-4 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold rounded-xl flex items-center justify-between text-xs transition-colors shadow-lg shadow-teal-500/20"
+                className="bg-marca-escura text-white w-full py-2.5 px-4 font-bold rounded-xl flex items-center justify-between text-xs transition-colors shadow-sm hover:opacity-90"
               >
                 <div className="flex items-center gap-2">
                   <CheckCheck className="w-4 h-4" />
                   <span>Imprimir Kit Completo de Admissão (OS + Ficha EPI + Treinamento NR-01)</span>
                 </div>
-                <span className="text-[10px] bg-teal-600 text-slate-950 px-2 py-0.5 rounded font-bold">PDF Completo</span>
+                <span className="bg-marca-escura text-white text-[10px] px-2 py-0.5 rounded font-bold">PDF Completo</span>
               </button>
             </div>
 

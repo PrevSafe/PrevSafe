@@ -233,14 +233,14 @@ export const AepPsychosocialModal: React.FC<AepPsychosocialModalProps> = ({ aep,
         ? cor === 'rose'
           ? 'bg-rose-700 text-white border-rose-400'
           : cor === 'teal'
-            ? 'bg-teal-500 text-slate-950 border-teal-400'
+            ? 'bg-marca-escura text-white border-teal-400'
             : 'bg-slate-600 text-white border-slate-500'
         : 'bg-superficie text-tinta border-borda hover:bg-superficie-2'
     }`;
 
   return (
     <div className="fixed inset-0 bg-fundo backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-superficie border border-borda rounded-2xl max-w-[64rem] w-full p-6 space-y-4 shadow-2xl max-h-[92vh] overflow-y-auto text-xs">
+      <div className="bg-superficie border border-borda rounded-2xl max-w-[64rem] w-full p-6 space-y-4 shadow-sm max-h-[92vh] overflow-y-auto text-xs">
         <div className="flex items-start justify-between gap-4 border-b border-borda pb-3">
           <div>
             <h3 className="text-base font-bold text-tinta flex items-center gap-2">
@@ -424,7 +424,7 @@ export const AepPsychosocialModal: React.FC<AepPsychosocialModalProps> = ({ aep,
                           })}
                           {livres.length > 0 && levando !== f.chave && (
                             <button type="button" onClick={() => abrirInventario(f.chave)}
-                              className="mt-1 px-2.5 py-1 rounded-lg bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-[11px] flex items-center gap-1">
+                              className="bg-marca-escura text-white mt-1 px-2.5 py-1 rounded-lg font-bold text-[11px] flex items-center gap-1 hover:opacity-90">
                               <ArrowRightToLine className="w-3.5 h-3.5" />
                               Levar ao inventário
                             </button>
@@ -509,7 +509,7 @@ export const AepPsychosocialModal: React.FC<AepPsychosocialModalProps> = ({ aep,
                             Cancelar
                           </button>
                           <button type="button" onClick={levar}
-                            className="px-3 py-1.5 rounded-lg bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold">
+                            className="bg-marca-escura text-white px-3 py-1.5 rounded-lg font-bold hover:opacity-90">
                             Levar ao inventário
                           </button>
                         </div>
@@ -588,7 +588,7 @@ export const AepPsychosocialModal: React.FC<AepPsychosocialModalProps> = ({ aep,
             Salvar
           </button>
           <button type="button" onClick={() => salvar(true)}
-            className="px-4 py-2 rounded-lg bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold">
+            className="bg-marca-escura text-white px-4 py-2 rounded-lg font-bold hover:opacity-90">
             Salvar e fechar
           </button>
         </div>

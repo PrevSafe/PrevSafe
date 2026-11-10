@@ -122,9 +122,9 @@ export const DocumentsView: React.FC<{ onNavigate: (view: string) => void }> = (
   return (
     <div id="documents-view-container" className="space-y-6 pb-12">
       {/* Header Bento Card */}
-      <div id="documents-header" className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-superficie border border-borda rounded-3xl p-6 shadow-xl">
+      <div id="documents-header" className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-superficie border border-borda rounded-3xl p-6 shadow-sm">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-indigo-500/10 border border-indigo-500/20 rounded-2xl flex items-center justify-center text-indigo-700">
+          <div className="w-10 h-10 bg-teal-500/10 border border-teal-500/20 rounded-2xl flex items-center justify-center text-teal-800">
             <FileText className="w-5 h-5" />
           </div>
           <div>
@@ -145,7 +145,7 @@ export const DocumentsView: React.FC<{ onNavigate: (view: string) => void }> = (
           <button 
             id="btn-new-document"
             onClick={handleOpenNewDoc}
-            className="px-4 py-2.5 bg-gradient-to-r from-marca-escura to-teal-600 hover:from-marca-escura hover:to-teal-700 text-white rounded-2xl text-xs font-bold shadow-lg shadow-emerald-950/40 transition flex items-center space-x-1.5"
+            className="bg-marca-escura px-4 py-2.5 text-white rounded-2xl text-xs font-bold shadow-sm transition flex items-center space-x-1.5"
           >
             <Plus className="w-4 h-4" />
             <span>Publicar Laudo / Documento</span>
@@ -154,7 +154,7 @@ export const DocumentsView: React.FC<{ onNavigate: (view: string) => void }> = (
       </div>
 
       {/* Filter and Search Bento Bar */}
-      <div id="documents-filter-bar" className="flex flex-col sm:flex-row gap-3 items-center justify-between bg-superficie p-4 rounded-3xl border border-borda shadow-xl">
+      <div id="documents-filter-bar" className="flex flex-col sm:flex-row gap-3 items-center justify-between bg-superficie p-4 rounded-3xl border border-borda shadow-sm">
         <div className="relative w-full sm:w-80">
           <Search className="w-4 h-4 text-tinta-2 absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
@@ -163,7 +163,7 @@ export const DocumentsView: React.FC<{ onNavigate: (view: string) => void }> = (
             placeholder="Buscar por título ou número de documento..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-3 py-2 bg-fundo border border-borda rounded-2xl text-xs text-tinta placeholder-tinta-3 focus:outline-none focus:border-indigo-500"
+            className="w-full pl-10 pr-3 py-2 bg-fundo border border-borda rounded-2xl text-xs text-tinta placeholder-tinta-3 focus:outline-none focus:border-teal-500"
           />
         </div>
 
@@ -173,7 +173,7 @@ export const DocumentsView: React.FC<{ onNavigate: (view: string) => void }> = (
             id="select-doc-type-filter"
             value={selectedType}
             onChange={(e) => setSelectedType(e.target.value)}
-            className="px-3 py-2 bg-fundo border border-borda rounded-2xl text-xs font-medium text-tinta focus:outline-none focus:border-indigo-500"
+            className="px-3 py-2 bg-fundo border border-borda rounded-2xl text-xs font-medium text-tinta focus:outline-none focus:border-teal-500"
           >
             <option value="ALL">Todos os Tipos</option>
             <option value="PGR">PGR (NR-01)</option>
@@ -192,7 +192,7 @@ export const DocumentsView: React.FC<{ onNavigate: (view: string) => void }> = (
           const os = serviceOrders.find(o => o.id === doc.service_order_id);
 
           return (
-            <div key={doc.id} id={`doc-card-${doc.id}`} className="bg-superficie p-6 rounded-3xl border border-borda shadow-xl flex flex-col justify-between space-y-4 hover:border-borda transition group">
+            <div key={doc.id} id={`doc-card-${doc.id}`} className="bg-superficie p-6 rounded-3xl border border-borda shadow-sm flex flex-col justify-between space-y-4 hover:border-borda transition group">
               <div>
                 <div className="flex items-start justify-between">
                   <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-marca-suave text-marca-escura border border-marca-escura font-mono">
@@ -211,7 +211,7 @@ export const DocumentsView: React.FC<{ onNavigate: (view: string) => void }> = (
                     </button>
                     <button
                       onClick={() => setDeletingDoc(doc)}
-                      className="p-1 hover:bg-rose-500/20 text-tinta-2 hover:text-rose-800 rounded transition"
+                      className="p-1 hover:bg-rose-50 text-tinta-2 hover:text-rose-800 rounded transition"
                       title="Excluir Documento"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
@@ -224,7 +224,7 @@ export const DocumentsView: React.FC<{ onNavigate: (view: string) => void }> = (
 
                 <div className="mt-4 pt-3.5 border-t border-borda space-y-1 text-xs text-tinta-2">
                   <div>Cliente: <strong className="text-tinta">{client?.trade_name}</strong></div>
-                  {os && <div>OS: <span className="font-mono text-indigo-700">{os.os_number}</span></div>}
+                  {os && <div>OS: <span className="font-mono text-teal-700">{os.os_number}</span></div>}
                   <div className="text-[10px] text-tinta-2 font-mono mt-1">
                     Status: {doc.status} • {doc.is_client_released ? 'Liberado para o Cliente' : 'Interno'}
                   </div>
@@ -244,7 +244,7 @@ export const DocumentsView: React.FC<{ onNavigate: (view: string) => void }> = (
                 </button>
                 <button
                   onClick={() => alert(`O download em PDF de "${doc.name}" ainda não está disponível nesta versão do sistema.`)}
-                  className="px-3.5 py-1.5 bg-gradient-to-r from-marca-escura to-teal-600 hover:from-marca-escura hover:to-teal-700 text-white rounded-xl text-xs font-semibold shadow-md transition flex items-center space-x-1"
+                  className="bg-marca-escura px-3.5 py-1.5 text-white rounded-xl text-xs font-semibold shadow-md transition flex items-center space-x-1"
                 >
                   <Download className="w-3.5 h-3.5" />
                   <span>Download PDF</span>
@@ -258,7 +258,7 @@ export const DocumentsView: React.FC<{ onNavigate: (view: string) => void }> = (
       {/* Upload / Edit Modal */}
       {showUploadModal && (
         <div id="modal-document-form" className="fixed inset-0 bg-fundo backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-superficie rounded-3xl max-w-md w-full p-6 shadow-2xl border border-borda text-tinta">
+          <div className="bg-superficie rounded-3xl max-w-md w-full p-6 shadow-sm border border-borda text-tinta">
             <div className="flex items-center justify-between border-b border-borda pb-3 mb-4">
               <h3 className="text-sm font-bold text-tinta">
                 {editingDoc ? 'Editar Documento Técnico' : 'Publicar Novo Laudo / Documento Técnico'}
@@ -282,7 +282,7 @@ export const DocumentsView: React.FC<{ onNavigate: (view: string) => void }> = (
                   required
                   value={docForm.name}
                   onChange={(e) => setDocForm({ ...docForm, name: e.target.value })}
-                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                 />
               </div>
 
@@ -291,7 +291,7 @@ export const DocumentsView: React.FC<{ onNavigate: (view: string) => void }> = (
                 <select
                   value={docForm.document_type}
                   onChange={(e) => setDocForm({ ...docForm, document_type: e.target.value as any })}
-                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                 >
                   <option value="PGR">PGR (NR-01) - Gerenciamento de Riscos</option>
                   <option value="PCMSO">PCMSO (NR-07) - Controle Médico</option>
@@ -306,7 +306,7 @@ export const DocumentsView: React.FC<{ onNavigate: (view: string) => void }> = (
                 <select
                   value={docForm.client_id}
                   onChange={(e) => setDocForm({ ...docForm, client_id: e.target.value })}
-                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                 >
                   {clients.map(c => (
                     <option key={c.id} value={c.id}>{c.trade_name}</option>
@@ -319,7 +319,7 @@ export const DocumentsView: React.FC<{ onNavigate: (view: string) => void }> = (
                 <select
                   value={docForm.service_order_id}
                   onChange={(e) => setDocForm({ ...docForm, service_order_id: e.target.value })}
-                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                 >
                   <option value="">Sem vínculo com OS específica</option>
                   {serviceOrders.map(o => (
@@ -334,7 +334,7 @@ export const DocumentsView: React.FC<{ onNavigate: (view: string) => void }> = (
                   rows={2}
                   value={docForm.notes}
                   onChange={(e) => setDocForm({ ...docForm, notes: e.target.value })}
-                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                 />
               </div>
 
@@ -377,7 +377,7 @@ export const DocumentsView: React.FC<{ onNavigate: (view: string) => void }> = (
       {/* Delete Document Modal */}
       {deletingDoc && (
         <div id="modal-delete-document" className="fixed inset-0 bg-fundo backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-superficie rounded-3xl max-w-md w-full p-6 shadow-2xl border border-rose-500/20 text-tinta space-y-4">
+          <div className="bg-superficie rounded-3xl max-w-md w-full p-6 shadow-sm border border-rose-200 text-tinta space-y-4">
             <div className="flex items-center space-x-3 text-rose-700">
               <div className="p-3 bg-rose-500/10 rounded-2xl border border-rose-500/20">
                 <AlertTriangle className="w-6 h-6" />
