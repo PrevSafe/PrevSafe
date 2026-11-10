@@ -146,29 +146,29 @@ export const ExecutiveDashboard: React.FC<{ onNavigate: (view: string) => void }
       <SSTDeadlineAlertBanner onNavigate={onNavigate} />
 
       {/* Header Bento Banner */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-superficie border border-borda rounded-3xl p-6 shadow-xl">
         <div>
           <div className="flex items-center space-x-2.5">
-            <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="text-xs font-semibold text-emerald-400 uppercase tracking-wider">Painel Executivo</span>
+            <div className="w-2.5 h-2.5 rounded-full bg-marca animate-pulse" />
+            <span className="text-xs font-semibold text-marca-escura uppercase tracking-wider">Painel Executivo</span>
           </div>
-          <h1 className="text-2xl font-bold tracking-tight text-white mt-1">Visão Integrada SST</h1>
-          <p className="text-xs text-slate-400 mt-0.5">Gestão de ponta a ponta dos serviços contratados, SLA e entregas técnicas.</p>
+          <h1 className="text-2xl font-bold tracking-tight text-tinta mt-1">Visão Integrada SST</h1>
+          <p className="text-xs text-tinta-2 mt-0.5">Gestão de ponta a ponta dos serviços contratados, SLA e entregas técnicas.</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <button 
             id="btn-exec-export-os-summary-pdf"
             onClick={() => setShowPdfModal(true)}
-            className="px-3.5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-2xl text-xs font-bold transition flex items-center space-x-1.5 shadow-sm"
+            className="px-3.5 py-2.5 bg-superficie-2 hover:bg-superficie-3 text-tinta border border-borda rounded-2xl text-xs font-bold transition flex items-center space-x-1.5 shadow-sm"
             title="Exportar Resumo Consolidado de Serviços em PDF"
           >
-            <Download className="w-4 h-4 text-emerald-400" />
+            <Download className="w-4 h-4 text-marca-escura" />
             <span>Exportar Resumo de Serviços (PDF)</span>
           </button>
 
           <button 
             onClick={() => onNavigate('service-orders')}
-            className="px-4 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-2xl text-xs font-bold shadow-lg shadow-emerald-950/40 transition flex items-center space-x-2"
+            className="px-4 py-2.5 bg-gradient-to-r from-marca to-teal-600 hover:from-marca hover:to-teal-500 text-white rounded-2xl text-xs font-bold shadow-lg shadow-emerald-950/40 transition flex items-center space-x-2"
           >
             <span>Gerenciar Ordens de Serviço</span>
             <ArrowRight className="w-4 h-4" />
@@ -181,17 +181,17 @@ export const ExecutiveDashboard: React.FC<{ onNavigate: (view: string) => void }
         {/* Active Clients */}
         <div 
           onClick={() => onNavigate('crm-clients')}
-          className="bg-slate-900 p-5 rounded-3xl border border-slate-800 hover:border-emerald-500/50 hover:bg-slate-900/80 cursor-pointer transition shadow-lg flex flex-col justify-between"
+          className="bg-superficie p-5 rounded-3xl border border-borda hover:border-marca-escura hover:bg-superficie cursor-pointer transition shadow-lg flex flex-col justify-between"
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Clientes Ativos</span>
-            <div className="p-2.5 rounded-2xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+            <span className="text-xs font-semibold text-tinta-2 uppercase tracking-wider">Clientes Ativos</span>
+            <div className="p-2.5 rounded-2xl bg-marca-suave text-marca-escura border border-marca-escura">
               <Building2 className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-4">
-            <div className="text-3xl font-bold text-white tracking-tight">{activeClientsCount}</div>
-            <div className="text-[11px] text-emerald-400 flex items-center mt-1.5 font-medium">
+            <div className="text-3xl font-bold text-tinta tracking-tight">{activeClientsCount}</div>
+            <div className="text-[11px] text-marca-escura flex items-center mt-1.5 font-medium">
               <ArrowUpRight className="w-3.5 h-3.5 mr-0.5" /> 100% Retenção Anual
             </div>
           </div>
@@ -200,17 +200,17 @@ export const ExecutiveDashboard: React.FC<{ onNavigate: (view: string) => void }
         {/* Proposals */}
         <div 
           onClick={() => onNavigate('proposals')}
-          className="bg-slate-900 p-5 rounded-3xl border border-slate-800 hover:border-indigo-500/50 hover:bg-slate-900/80 cursor-pointer transition shadow-lg flex flex-col justify-between"
+          className="bg-superficie p-5 rounded-3xl border border-borda hover:border-indigo-500/50 hover:bg-superficie cursor-pointer transition shadow-lg flex flex-col justify-between"
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Propostas Abertas</span>
-            <div className="p-2.5 rounded-2xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+            <span className="text-xs font-semibold text-tinta-2 uppercase tracking-wider">Propostas Abertas</span>
+            <div className="p-2.5 rounded-2xl bg-indigo-500/10 text-indigo-700 border border-indigo-500/20">
               <FileSpreadsheet className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-4">
-            <div className="text-3xl font-bold text-white tracking-tight">{openProposalsCount}</div>
-            <div className="text-[11px] text-indigo-300 mt-1.5 font-medium">
+            <div className="text-3xl font-bold text-tinta tracking-tight">{openProposalsCount}</div>
+            <div className="text-[11px] text-indigo-700 mt-1.5 font-medium">
               {approvedProposalsCount} aprovadas no ciclo
             </div>
           </div>
@@ -219,17 +219,17 @@ export const ExecutiveDashboard: React.FC<{ onNavigate: (view: string) => void }
         {/* Active Contracts */}
         <div 
           onClick={() => onNavigate('contracts')}
-          className="bg-slate-900 p-5 rounded-3xl border border-slate-800 hover:border-violet-500/50 hover:bg-slate-900/80 cursor-pointer transition shadow-lg flex flex-col justify-between"
+          className="bg-superficie p-5 rounded-3xl border border-borda hover:border-violet-500/50 hover:bg-superficie cursor-pointer transition shadow-lg flex flex-col justify-between"
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Contratos Vigentes</span>
-            <div className="p-2.5 rounded-2xl bg-violet-500/10 text-violet-400 border border-violet-500/20">
+            <span className="text-xs font-semibold text-tinta-2 uppercase tracking-wider">Contratos Vigentes</span>
+            <div className="p-2.5 rounded-2xl bg-violet-500/10 text-violet-700 border border-violet-500/20">
               <FileSignature className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-4">
-            <div className="text-3xl font-bold text-white tracking-tight">{activeContractsCount}</div>
-            <div className="text-[11px] text-violet-300 mt-1.5 font-medium font-mono">
+            <div className="text-3xl font-bold text-tinta tracking-tight">{activeContractsCount}</div>
+            <div className="text-[11px] text-violet-700 mt-1.5 font-medium font-mono">
               R$ {totalContractedValue.toLocaleString('pt-BR')}
             </div>
           </div>
@@ -238,21 +238,21 @@ export const ExecutiveDashboard: React.FC<{ onNavigate: (view: string) => void }
         {/* Active OS */}
         <div 
           onClick={() => onNavigate('service-orders')}
-          className="bg-slate-900 p-5 rounded-3xl border border-slate-800 hover:border-teal-500/50 hover:bg-slate-900/80 cursor-pointer transition shadow-lg flex flex-col justify-between"
+          className="bg-superficie p-5 rounded-3xl border border-borda hover:border-teal-500/50 hover:bg-superficie cursor-pointer transition shadow-lg flex flex-col justify-between"
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">OS em Execução</span>
-            <div className="p-2.5 rounded-2xl bg-teal-500/10 text-teal-400 border border-teal-500/20">
+            <span className="text-xs font-semibold text-tinta-2 uppercase tracking-wider">OS em Execução</span>
+            <div className="p-2.5 rounded-2xl bg-teal-500/10 text-teal-700 border border-teal-500/20">
               <Briefcase className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-4">
-            <div className="text-3xl font-bold text-white tracking-tight">{inProgressOSCount}</div>
+            <div className="text-3xl font-bold text-tinta tracking-tight">{inProgressOSCount}</div>
             <div className="text-[11px] mt-1.5 font-medium">
               {delayedOSCount > 0 ? (
-                <span className="text-rose-400 font-semibold">{delayedOSCount} com alerta de prazo</span>
+                <span className="text-rose-700 font-semibold">{delayedOSCount} com alerta de prazo</span>
               ) : (
-                <span className="text-emerald-400">100% no prazo SLA</span>
+                <span className="text-marca-escura">100% no prazo SLA</span>
               )}
             </div>
           </div>
@@ -261,17 +261,17 @@ export const ExecutiveDashboard: React.FC<{ onNavigate: (view: string) => void }
         {/* Customer NPS */}
         <div 
           onClick={() => onNavigate('evaluations')}
-          className="bg-slate-900 p-5 rounded-3xl border border-slate-800 hover:border-amber-500/50 hover:bg-slate-900/80 cursor-pointer transition shadow-lg flex flex-col justify-between"
+          className="bg-superficie p-5 rounded-3xl border border-borda hover:border-amber-500/50 hover:bg-superficie cursor-pointer transition shadow-lg flex flex-col justify-between"
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">NPS / Satisfação</span>
-            <div className="p-2.5 rounded-2xl bg-amber-500/10 text-amber-400 border border-amber-500/20">
+            <span className="text-xs font-semibold text-tinta-2 uppercase tracking-wider">NPS / Satisfação</span>
+            <div className="p-2.5 rounded-2xl bg-amber-500/10 text-amber-700 border border-amber-500/20">
               <Star className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-4">
-            <div className="text-3xl font-bold text-white tracking-tight">{averageNps} <span className="text-sm font-normal text-slate-400">/ 10</span></div>
-            <div className="text-[11px] text-amber-400 mt-1.5 font-medium">
+            <div className="text-3xl font-bold text-tinta tracking-tight">{averageNps} <span className="text-sm font-normal text-tinta-2">/ 10</span></div>
+            <div className="text-[11px] text-amber-700 mt-1.5 font-medium">
               Nota Média {averageSatisfaction} ★
             </div>
           </div>
@@ -282,12 +282,12 @@ export const ExecutiveDashboard: React.FC<{ onNavigate: (view: string) => void }
       {(delayedOSCount > 0 || openRequestsCount > 0) && (
         <div className="p-5 bg-amber-950/30 border border-amber-500/30 rounded-3xl flex items-center justify-between gap-4">
           <div className="flex items-center space-x-3.5">
-            <div className="p-3 bg-amber-500/10 rounded-2xl text-amber-400 border border-amber-500/20 flex-shrink-0">
+            <div className="p-3 bg-amber-500/10 rounded-2xl text-amber-700 border border-amber-500/20 flex-shrink-0">
               <AlertTriangle className="w-5 h-5" />
             </div>
             <div>
-              <div className="text-xs font-bold text-amber-400 uppercase tracking-wider">Atenção Gerencial Necessária</div>
-              <p className="text-xs text-slate-300 mt-0.5">
+              <div className="text-xs font-bold text-amber-700 uppercase tracking-wider">Atenção Gerencial Necessária</div>
+              <p className="text-xs text-tinta mt-0.5">
                 Existem <strong>{openRequestsCount} pendências em aberto com clientes</strong> e <strong>{delayedOSCount} serviço(s) próximo(s) do limite de SLA</strong>.
               </p>
             </div>
@@ -304,27 +304,27 @@ export const ExecutiveDashboard: React.FC<{ onNavigate: (view: string) => void }
       )}
 
       {/* Card de Visualização Rápida: Status de Transmissão do eSocial */}
-      <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl relative overflow-hidden">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-5 border-b border-slate-800/80">
+      <div className="bg-superficie border border-borda rounded-3xl p-6 shadow-xl relative overflow-hidden">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-5 border-b border-borda">
           <div className="flex items-center space-x-3.5">
-            <div className="p-3 rounded-2xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 flex-shrink-0">
+            <div className="p-3 rounded-2xl bg-indigo-500/10 text-indigo-700 border border-indigo-500/20 flex-shrink-0">
               <ShieldCheck className="w-6 h-6" />
             </div>
             <div>
               <div className="flex items-center space-x-2">
-                <h2 className="text-base font-bold text-white tracking-tight">Status de Envio eSocial (SST Oficial)</h2>
+                <h2 className="text-base font-bold text-tinta tracking-tight">Status de Envio eSocial (SST Oficial)</h2>
                 <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border uppercase tracking-wider ${
                   esocialConfig.environment === 'PRODUCAO' 
-                    ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' 
-                    : 'bg-amber-500/10 text-amber-400 border-amber-500/30'
+                    ? 'bg-marca-suave text-marca-escura border-marca-escura' 
+                    : 'bg-amber-500/10 text-amber-700 border-amber-500/30'
                 }`}>
                   Ambiente {esocialConfig.environment === 'PRODUCAO' ? 'Produção' : 'Homologação'}
                 </span>
-                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono text-slate-300 bg-slate-800 border border-slate-700">
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono text-tinta bg-superficie-2 border border-borda">
                   Certificado A1 {esocialConfig.certificate.status === 'VALID' ? '✅ Válido' : '⚠️ Pendente'}
                 </span>
               </div>
-              <p className="text-xs text-slate-400 mt-1">
+              <p className="text-xs text-tinta-2 mt-1">
                 Monitoramento dos eventos de SST: S-2210 (CAT), S-2220 (ASO), S-2230 (Afastamento) e S-2240 (Riscos Ambientais).
               </p>
             </div>
@@ -340,16 +340,16 @@ export const ExecutiveDashboard: React.FC<{ onNavigate: (view: string) => void }
                   events: esocialEvents
                 });
               }}
-              className="px-3.5 py-2 bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 rounded-2xl text-xs font-bold transition flex items-center space-x-1.5 shadow-sm"
+              className="px-3.5 py-2 bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-700 border border-indigo-500/30 rounded-2xl text-xs font-bold transition flex items-center space-x-1.5 shadow-sm"
               title="Exportar Relatório e Log Completo de Transmissões eSocial em PDF"
             >
-              <Download className="w-4 h-4 text-indigo-400" />
+              <Download className="w-4 h-4 text-indigo-700" />
               <span>Exportar Logs eSocial (PDF)</span>
             </button>
 
             <button
               onClick={() => onNavigate('esocial_config')}
-              className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-2xl text-xs font-semibold border border-slate-700 transition flex items-center space-x-1.5"
+              className="px-3.5 py-2 bg-superficie-2 hover:bg-superficie-3 text-tinta rounded-2xl text-xs font-semibold border border-borda transition flex items-center space-x-1.5"
             >
               <span>Configurações & Certificado</span>
             </button>
@@ -368,15 +368,15 @@ export const ExecutiveDashboard: React.FC<{ onNavigate: (view: string) => void }
           {/* Pendentes */}
           <div 
             onClick={() => onNavigate('esocial_events')}
-            className="bg-slate-950/60 p-4 rounded-2xl border border-slate-800/80 hover:border-amber-500/40 hover:bg-slate-950 cursor-pointer transition flex flex-col justify-between group"
+            className="bg-fundo p-4 rounded-2xl border border-borda hover:border-amber-500/40 hover:bg-fundo cursor-pointer transition flex flex-col justify-between group"
           >
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Pendentes de Envio</span>
+              <span className="text-xs font-semibold text-tinta-2 uppercase tracking-wider">Pendentes de Envio</span>
               <span className="w-2.5 h-2.5 rounded-full bg-amber-400 group-hover:animate-ping" />
             </div>
             <div className="mt-3 flex items-baseline justify-between">
-              <span className="text-2xl font-bold text-amber-400 font-mono">{esocialPendingCount}</span>
-              <span className="text-[11px] text-amber-300/80 group-hover:text-amber-300 font-medium flex items-center">
+              <span className="text-2xl font-bold text-amber-700 font-mono">{esocialPendingCount}</span>
+              <span className="text-[11px] text-amber-700/80 group-hover:text-amber-700 font-medium flex items-center">
                 Transmitir lote <ArrowRight className="w-3 h-3 ml-1" />
               </span>
             </div>
@@ -385,15 +385,15 @@ export const ExecutiveDashboard: React.FC<{ onNavigate: (view: string) => void }
           {/* Em Processamento */}
           <div 
             onClick={() => onNavigate('esocial_events')}
-            className="bg-slate-950/60 p-4 rounded-2xl border border-slate-800/80 hover:border-blue-500/40 hover:bg-slate-950 cursor-pointer transition flex flex-col justify-between group"
+            className="bg-fundo p-4 rounded-2xl border border-borda hover:border-blue-500/40 hover:bg-fundo cursor-pointer transition flex flex-col justify-between group"
           >
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Em Processamento</span>
+              <span className="text-xs font-semibold text-tinta-2 uppercase tracking-wider">Em Processamento</span>
               <span className="w-2.5 h-2.5 rounded-full bg-blue-400 animate-pulse" />
             </div>
             <div className="mt-3 flex items-baseline justify-between">
-              <span className="text-2xl font-bold text-blue-400 font-mono">{esocialProcessingCount}</span>
-              <span className="text-[11px] text-blue-300/80 group-hover:text-blue-300 font-medium flex items-center">
+              <span className="text-2xl font-bold text-blue-700 font-mono">{esocialProcessingCount}</span>
+              <span className="text-[11px] text-blue-700/80 group-hover:text-blue-700 font-medium flex items-center">
                 Consultar Serpro <ArrowRight className="w-3 h-3 ml-1" />
               </span>
             </div>
@@ -402,15 +402,15 @@ export const ExecutiveDashboard: React.FC<{ onNavigate: (view: string) => void }
           {/* Aceitos */}
           <div 
             onClick={() => onNavigate('esocial_events')}
-            className="bg-slate-950/60 p-4 rounded-2xl border border-slate-800/80 hover:border-emerald-500/40 hover:bg-slate-950 cursor-pointer transition flex flex-col justify-between group"
+            className="bg-fundo p-4 rounded-2xl border border-borda hover:border-marca-escura hover:bg-fundo cursor-pointer transition flex flex-col justify-between group"
           >
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Aceitos pelo Governo</span>
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
+              <span className="text-xs font-semibold text-tinta-2 uppercase tracking-wider">Aceitos pelo Governo</span>
+              <span className="w-2.5 h-2.5 rounded-full bg-marca" />
             </div>
             <div className="mt-3 flex items-baseline justify-between">
-              <span className="text-2xl font-bold text-emerald-400 font-mono">{esocialAcceptedCount}</span>
-              <span className="text-[11px] text-emerald-300/80 group-hover:text-emerald-300 font-medium flex items-center">
+              <span className="text-2xl font-bold text-marca-escura font-mono">{esocialAcceptedCount}</span>
+              <span className="text-[11px] text-marca-escura group-hover:text-marca-escura font-medium flex items-center">
                 Ver recibos <ArrowRight className="w-3 h-3 ml-1" />
               </span>
             </div>
@@ -422,47 +422,47 @@ export const ExecutiveDashboard: React.FC<{ onNavigate: (view: string) => void }
             className={`p-4 rounded-2xl border cursor-pointer transition flex flex-col justify-between group ${
               esocialErrorCount > 0 
                 ? 'bg-rose-950/30 border-rose-500/50 hover:bg-rose-950/50 shadow-lg shadow-rose-950/40' 
-                : 'bg-slate-950/60 border-slate-800/80 hover:border-slate-700'
+                : 'bg-fundo border-borda hover:border-borda'
             }`}
           >
             <div className="flex items-center justify-between">
-              <span className={`text-xs font-semibold uppercase tracking-wider ${esocialErrorCount > 0 ? 'text-rose-300' : 'text-slate-400'}`}>
+              <span className={`text-xs font-semibold uppercase tracking-wider ${esocialErrorCount > 0 ? 'text-rose-700' : 'text-tinta-2'}`}>
                 Com Erro / Rejeitados
               </span>
               <span className={`w-2.5 h-2.5 rounded-full ${esocialErrorCount > 0 ? 'bg-rose-500 animate-pulse' : 'bg-slate-600'}`} />
             </div>
             <div className="mt-3 flex items-baseline justify-between">
-              <span className={`text-2xl font-bold font-mono ${esocialErrorCount > 0 ? 'text-rose-400 font-extrabold' : 'text-slate-500'}`}>
+              <span className={`text-2xl font-bold font-mono ${esocialErrorCount > 0 ? 'text-rose-700 font-extrabold' : 'text-tinta-2'}`}>
                 {esocialErrorCount}
               </span>
               {esocialErrorCount > 0 ? (
-                <span className="text-[11px] text-rose-300 font-bold flex items-center bg-rose-500/20 px-2 py-0.5 rounded-lg border border-rose-500/30">
+                <span className="text-[11px] text-rose-700 font-bold flex items-center bg-rose-500/20 px-2 py-0.5 rounded-lg border border-rose-500/30">
                   Corrigir Imediatamente <ArrowRight className="w-3 h-3 ml-1" />
                 </span>
               ) : (
-                <span className="text-[11px] text-slate-500">Sem erros ativos</span>
+                <span className="text-[11px] text-tinta-2">Sem erros ativos</span>
               )}
             </div>
           </div>
         </div>
 
         {/* Mini Breakdown por Tipo de Evento de SST */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4 pt-4 border-t border-slate-800/60 text-xs">
-          <div className="flex items-center justify-between bg-slate-950/40 px-3 py-2 rounded-xl border border-slate-800/40">
-            <span className="text-slate-400 font-medium">S-2210 (CAT):</span>
-            <span className="font-mono font-bold text-white">{s2210Count} eventos</span>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4 pt-4 border-t border-borda text-xs">
+          <div className="flex items-center justify-between bg-fundo px-3 py-2 rounded-xl border border-borda">
+            <span className="text-tinta-2 font-medium">S-2210 (CAT):</span>
+            <span className="font-mono font-bold text-tinta">{s2210Count} eventos</span>
           </div>
-          <div className="flex items-center justify-between bg-slate-950/40 px-3 py-2 rounded-xl border border-slate-800/40">
-            <span className="text-slate-400 font-medium">S-2220 (ASO):</span>
-            <span className="font-mono font-bold text-white">{s2220Count} eventos</span>
+          <div className="flex items-center justify-between bg-fundo px-3 py-2 rounded-xl border border-borda">
+            <span className="text-tinta-2 font-medium">S-2220 (ASO):</span>
+            <span className="font-mono font-bold text-tinta">{s2220Count} eventos</span>
           </div>
-          <div className="flex items-center justify-between bg-slate-950/40 px-3 py-2 rounded-xl border border-slate-800/40">
-            <span className="text-slate-400 font-medium">S-2230 (Afastam.):</span>
-            <span className="font-mono font-bold text-white">{s2230Count} eventos</span>
+          <div className="flex items-center justify-between bg-fundo px-3 py-2 rounded-xl border border-borda">
+            <span className="text-tinta-2 font-medium">S-2230 (Afastam.):</span>
+            <span className="font-mono font-bold text-tinta">{s2230Count} eventos</span>
           </div>
-          <div className="flex items-center justify-between bg-slate-950/40 px-3 py-2 rounded-xl border border-slate-800/40">
-            <span className="text-slate-400 font-medium">S-2240 (Riscos):</span>
-            <span className="font-mono font-bold text-white">{s2240Count} eventos</span>
+          <div className="flex items-center justify-between bg-fundo px-3 py-2 rounded-xl border border-borda">
+            <span className="text-tinta-2 font-medium">S-2240 (Riscos):</span>
+            <span className="font-mono font-bold text-tinta">{s2240Count} eventos</span>
           </div>
         </div>
       </div>
@@ -470,15 +470,15 @@ export const ExecutiveDashboard: React.FC<{ onNavigate: (view: string) => void }
       {/* Bento Grid - Main Section (Revenue + OS Distribution) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
         {/* Revenue Progress Chart - Span 7 */}
-        <div className="lg:col-span-7 bg-slate-900 p-6 rounded-3xl border border-slate-800 shadow-xl flex flex-col justify-between">
+        <div className="lg:col-span-7 bg-superficie p-6 rounded-3xl border border-borda shadow-xl flex flex-col justify-between">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h2 className="text-sm font-bold text-white">Evolução de Receita Contratada x Faturada (R$)</h2>
-              <p className="text-xs text-slate-400">Acompanhamento financeiro dos contratos de SST</p>
+              <h2 className="text-sm font-bold text-tinta">Evolução de Receita Contratada x Faturada (R$)</h2>
+              <p className="text-xs text-tinta-2">Acompanhamento financeiro dos contratos de SST</p>
             </div>
             <button
               onClick={() => onNavigate('financial')}
-              className="text-xs font-semibold text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 px-3 py-1 rounded-full flex items-center space-x-1 transition"
+              className="text-xs font-semibold text-marca-escura bg-marca-suave hover:bg-marca-suave border border-marca-escura px-3 py-1 rounded-full flex items-center space-x-1 transition"
             >
               <span>Ver Fluxo de Caixa</span>
               <ArrowRight className="w-3 h-3" />
@@ -502,15 +502,15 @@ export const ExecutiveDashboard: React.FC<{ onNavigate: (view: string) => void }
         </div>
 
         {/* Services Status & Funnel - Span 5 */}
-        <div className="lg:col-span-5 bg-slate-900 p-6 rounded-3xl border border-slate-800 shadow-xl flex flex-col justify-between">
+        <div className="lg:col-span-5 bg-superficie p-6 rounded-3xl border border-borda shadow-xl flex flex-col justify-between">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h2 className="text-sm font-bold text-white">Distribuição das Ordens de Serviço</h2>
-              <p className="text-xs text-slate-400">Status em tempo real das entregas técnicas</p>
+              <h2 className="text-sm font-bold text-tinta">Distribuição das Ordens de Serviço</h2>
+              <p className="text-xs text-tinta-2">Status em tempo real das entregas técnicas</p>
             </div>
             <button 
               onClick={() => onNavigate('service-orders')}
-              className="text-xs text-indigo-400 font-semibold hover:underline"
+              className="text-xs text-indigo-700 font-semibold hover:underline"
             >
               Ver Todas
             </button>
@@ -534,24 +534,24 @@ export const ExecutiveDashboard: React.FC<{ onNavigate: (view: string) => void }
       {/* Bento Grid - Bottom Row (Demanded Services + Monitor Table) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
         {/* Catálogo mais demandado - Span 4 */}
-        <div className="lg:col-span-4 bg-slate-900 p-6 rounded-3xl border border-slate-800 shadow-xl space-y-4">
+        <div className="lg:col-span-4 bg-superficie p-6 rounded-3xl border border-borda shadow-xl space-y-4">
           <div>
-            <h2 className="text-sm font-bold text-white">Serviços Mais Demandados (NRs)</h2>
-            <p className="text-xs text-slate-400 mt-0.5">Distribuição por norma técnica</p>
+            <h2 className="text-sm font-bold text-tinta">Serviços Mais Demandados (NRs)</h2>
+            <p className="text-xs text-tinta-2 mt-0.5">Distribuição por norma técnica</p>
           </div>
           <div className="space-y-3.5 pt-1">
             {serviceTypeData.length === 0 && (
-              <p className="text-xs text-slate-500 py-6 text-center">
+              <p className="text-xs text-tinta-2 py-6 text-center">
                 Nenhuma ordem de serviço aberta ainda. O ranking é montado a partir das OS emitidas.
               </p>
             )}
             {serviceTypeData.map((item, idx) => (
               <div key={idx} className="space-y-1.5">
-                <div className="flex justify-between text-xs font-medium text-slate-300">
+                <div className="flex justify-between text-xs font-medium text-tinta">
                   <span>{item.name}</span>
-                  <span className="font-semibold text-white">{item.count} contratos</span>
+                  <span className="font-semibold text-tinta">{item.count} contratos</span>
                 </div>
-                <div className="w-full h-2 bg-slate-950 rounded-full overflow-hidden border border-slate-800">
+                <div className="w-full h-2 bg-fundo rounded-full overflow-hidden border border-borda">
                   <div 
                     className="h-full rounded-full" 
                     style={{ width: `${(item.count / serviceTypeMax) * 100}%`, backgroundColor: item.color }}
@@ -563,15 +563,15 @@ export const ExecutiveDashboard: React.FC<{ onNavigate: (view: string) => void }
         </div>
 
         {/* Live Service Orders Monitor - Span 8 */}
-        <div className="lg:col-span-8 bg-slate-900 p-6 rounded-3xl border border-slate-800 shadow-xl space-y-4">
+        <div className="lg:col-span-8 bg-superficie p-6 rounded-3xl border border-borda shadow-xl space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-sm font-bold text-white">Monitor de Serviços Ativos (Fluxo Master)</h2>
-              <p className="text-xs text-slate-400 mt-0.5">Acompanhamento das OS em andamento e seus responsáveis</p>
+              <h2 className="text-sm font-bold text-tinta">Monitor de Serviços Ativos (Fluxo Master)</h2>
+              <p className="text-xs text-tinta-2 mt-0.5">Acompanhamento das OS em andamento e seus responsáveis</p>
             </div>
             <button 
               onClick={() => onNavigate('service-orders')}
-              className="text-xs text-emerald-400 font-semibold hover:underline"
+              className="text-xs text-marca-escura font-semibold hover:underline"
             >
               Abrir Painel de OS
             </button>
@@ -579,7 +579,7 @@ export const ExecutiveDashboard: React.FC<{ onNavigate: (view: string) => void }
 
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="text-slate-400 font-semibold border-b border-slate-800 text-[11px] uppercase tracking-wider">
+              <thead className="text-tinta-2 font-semibold border-b border-borda text-[11px] uppercase tracking-wider">
                 <tr>
                   <th className="py-3 px-3">Código</th>
                   <th className="py-3 px-3">Cliente / Serviço</th>
@@ -589,42 +589,42 @@ export const ExecutiveDashboard: React.FC<{ onNavigate: (view: string) => void }
                   <th className="py-3 px-3 text-right">Prazo</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/60">
+              <tbody className="divide-y divide-borda">
                 {serviceOrders.slice(0, 5).map((os) => {
                   const client = clients.find(c => c.id === os.client_id);
                   return (
-                    <tr key={os.id} className="hover:bg-slate-800/40 transition">
-                      <td className="py-3.5 px-3 font-mono font-bold text-indigo-300">{os.os_number}</td>
+                    <tr key={os.id} className="hover:bg-superficie-2 transition">
+                      <td className="py-3.5 px-3 font-mono font-bold text-indigo-700">{os.os_number}</td>
                       <td className="py-3.5 px-3">
-                        <div className="font-semibold text-slate-100">{client?.trade_name || 'Cliente'}</div>
-                        <div className="text-[11px] text-slate-400">{os.service_name}</div>
+                        <div className="font-semibold text-tinta">{client?.trade_name || 'Cliente'}</div>
+                        <div className="text-[11px] text-tinta-2">{os.service_name}</div>
                       </td>
-                      <td className="py-3.5 px-3 text-slate-300">{os.technical_responsible_name}</td>
+                      <td className="py-3.5 px-3 text-tinta">{os.technical_responsible_name}</td>
                       <td className="py-3.5 px-3">
                         <span className={`inline-flex px-2.5 py-0.5 rounded-full text-[10px] font-semibold border ${
-                          os.status === 'IN_PROGRESS' ? 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20' :
-                          os.status === 'WAITING_ACCEPTANCE' ? 'bg-purple-500/10 text-purple-400 border-purple-500/20' :
-                          os.status === 'ACCEPTED' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
-                          os.status === 'WAITING_CLIENT' ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' :
-                          os.status === 'REWORK' ? 'bg-rose-500/10 text-rose-400 border-rose-500/20' : 'bg-slate-800 text-slate-300 border-slate-700'
+                          os.status === 'IN_PROGRESS' ? 'bg-indigo-500/10 text-indigo-700 border-indigo-500/20' :
+                          os.status === 'WAITING_ACCEPTANCE' ? 'bg-purple-500/10 text-purple-700 border-purple-500/20' :
+                          os.status === 'ACCEPTED' ? 'bg-marca-suave text-marca-escura border-marca-escura' :
+                          os.status === 'WAITING_CLIENT' ? 'bg-amber-500/10 text-amber-700 border-amber-500/20' :
+                          os.status === 'REWORK' ? 'bg-rose-500/10 text-rose-700 border-rose-500/20' : 'bg-superficie-2 text-tinta border-borda'
                         }`}>
                           {os.status}
                         </span>
                       </td>
                       <td className="py-3.5 px-3">
                         <div className="flex items-center space-x-2">
-                          <div className="w-16 h-2 bg-slate-950 rounded-full overflow-hidden border border-slate-800">
+                          <div className="w-16 h-2 bg-fundo rounded-full overflow-hidden border border-borda">
                             <div 
                               className={`h-full rounded-full ${
-                                os.progress === 100 ? 'bg-emerald-500' : 'bg-indigo-500'
+                                os.progress === 100 ? 'bg-marca' : 'bg-indigo-500'
                               }`} 
                               style={{ width: `${os.progress}%` }} 
                             />
                           </div>
-                          <span className="font-mono text-[11px] font-medium text-slate-300">{os.progress}%</span>
+                          <span className="font-mono text-[11px] font-medium text-tinta">{os.progress}%</span>
                         </div>
                       </td>
-                      <td className="py-3.5 px-3 text-right font-mono text-slate-400">
+                      <td className="py-3.5 px-3 text-right font-mono text-tinta-2">
                         {formatDate(os.due_date)}
                       </td>
                     </tr>

@@ -253,7 +253,7 @@ export const ROLE_INFO: Record<RoleType, {
 }> = {
   ADMIN: {
     label: 'Administrador Geral SaaS',
-    badgeColor: 'text-rose-400',
+    badgeColor: 'text-rose-700',
     bgBadge: 'bg-rose-500/10',
     borderBadge: 'border-rose-500/20',
     description: 'Acesso irrestrito a todos os módulos, configurações da organização, auditoria e faturamento.',
@@ -261,7 +261,7 @@ export const ROLE_INFO: Record<RoleType, {
   },
   GESTOR: {
     label: 'Gestor Operacional & Técnico',
-    badgeColor: 'text-cyan-400',
+    badgeColor: 'text-cyan-700',
     bgBadge: 'bg-cyan-500/10',
     borderBadge: 'border-cyan-500/20',
     description: 'Coordenação de equipes de campo, controle de SLA RN004, validação de laudos e eSocial. Vê tipo, data, validade e apto/inapto do ASO; o resultado de exame é do papel Saúde.',
@@ -269,7 +269,7 @@ export const ROLE_INFO: Record<RoleType, {
   },
   COMERCIAL: {
     label: 'Executivo Comercial',
-    badgeColor: 'text-amber-400',
+    badgeColor: 'text-amber-700',
     bgBadge: 'bg-amber-500/10',
     borderBadge: 'border-amber-500/20',
     description: 'Gestão de funil de vendas, elaboração de propostas e acompanhamento de assinaturas.',
@@ -277,7 +277,7 @@ export const ROLE_INFO: Record<RoleType, {
   },
   SAUDE: {
     label: 'Saúde Ocupacional (Médico)',
-    badgeColor: 'text-pink-400',
+    badgeColor: 'text-pink-700',
     bgBadge: 'bg-pink-500/10',
     borderBadge: 'border-pink-500/20',
     description: 'PCMSO, ASO e prontuário: único papel, além do Administrador, que lê e lança resultado de exame, observação clínica e restrição.',
@@ -285,23 +285,23 @@ export const ROLE_INFO: Record<RoleType, {
   },
   TÉCNICO: {
     label: 'Engenheiro / Técnico de Campo',
-    badgeColor: 'text-emerald-400',
-    bgBadge: 'bg-emerald-500/10',
-    borderBadge: 'border-emerald-500/20',
+    badgeColor: 'text-marca-escura',
+    bgBadge: 'bg-marca-suave',
+    borderBadge: 'border-marca-escura',
     description: 'Execução de OS, coletas no PWA de Campo, fotos GPS, checklists e eventos eSocial.',
     targetAudience: 'Técnicos em Segurança do Trabalho e Engenheiros de Campo'
   },
   FINANCEIRO: {
     label: 'Controladoria & Financeiro',
-    badgeColor: 'text-emerald-400',
-    bgBadge: 'bg-emerald-500/10',
-    borderBadge: 'border-emerald-500/20',
+    badgeColor: 'text-marca-escura',
+    bgBadge: 'bg-marca-suave',
+    borderBadge: 'border-marca-escura',
     description: 'Faturamento de contratos recorrentes, contas a pagar/receber e conciliação bancária.',
     targetAudience: 'Analistas Financeiros e Contadores'
   },
   CLIENTE_ADMIN: {
     label: 'Cliente - Gestor / RH',
-    badgeColor: 'text-purple-400',
+    badgeColor: 'text-purple-700',
     bgBadge: 'bg-purple-500/10',
     borderBadge: 'border-purple-500/20',
     description: 'Portal do cliente da própria empresa: aceite de OS, laudos liberados, pendências e assinaturas.',
@@ -309,7 +309,7 @@ export const ROLE_INFO: Record<RoleType, {
   },
   CLIENTE_USER: {
     label: 'Cliente - Colaborador',
-    badgeColor: 'text-blue-400',
+    badgeColor: 'text-blue-700',
     bgBadge: 'bg-blue-500/10',
     borderBadge: 'border-blue-500/20',
     description: 'Portal do cliente da própria empresa, com o mesmo alcance do Gestor/RH do cliente.',
@@ -773,35 +773,35 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
       {feedbackMessage && (
         <div className={`fixed top-4 right-4 z-50 flex items-center space-x-3 px-4 py-3 rounded-2xl shadow-2xl border backdrop-blur-xl animate-in fade-in slide-in-from-top-4 duration-300 ${
           feedbackMessage.type === 'success' 
-            ? 'bg-emerald-950/90 border-emerald-500/30 text-emerald-200' 
+            ? 'bg-marca-suave border-marca-escura text-marca-escura' 
             : 'bg-rose-950/90 border-rose-500/30 text-rose-200'
         }`}>
           {feedbackMessage.type === 'success' ? (
-            <CheckCircle2 className="w-5 h-5 text-emerald-400 flex-shrink-0" />
+            <CheckCircle2 className="w-5 h-5 text-marca-escura flex-shrink-0" />
           ) : (
-            <AlertTriangle className="w-5 h-5 text-rose-400 flex-shrink-0" />
+            <AlertTriangle className="w-5 h-5 text-rose-700 flex-shrink-0" />
           )}
           <span className="text-xs font-semibold">{feedbackMessage.text}</span>
         </div>
       )}
 
       {/* Header Bento Card */}
-      <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl relative overflow-hidden">
+      <div className="bg-superficie border border-borda rounded-3xl p-6 shadow-xl relative overflow-hidden">
         <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-teal-500/10 via-emerald-500/5 to-transparent rounded-full blur-3xl pointer-events-none" />
         
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
           <div className="flex items-start sm:items-center space-x-4">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-teal-500 to-emerald-600 flex items-center justify-center text-white shadow-lg shadow-teal-950/50 flex-shrink-0">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-teal-500 to-marca-escura flex items-center justify-center text-tinta shadow-lg shadow-teal-950/50 flex-shrink-0">
               <Users className="w-6 h-6" />
             </div>
             <div>
               <div className="flex items-center space-x-2.5">
-                <h1 className="text-2xl font-bold tracking-tight text-white">Central de Usuários & Gestão de Acessos</h1>
-                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-teal-500/10 text-teal-400 border border-teal-500/20">
+                <h1 className="text-2xl font-bold tracking-tight text-tinta">Central de Usuários & Gestão de Acessos</h1>
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-teal-500/10 text-teal-700 border border-teal-500/20">
                   RBAC V1.0
                 </span>
               </div>
-              <p className="text-xs text-slate-400 mt-1 max-w-2xl">
+              <p className="text-xs text-tinta-2 mt-1 max-w-2xl">
                 Controle unificado de contas de colaboradores internos, técnicos de campo, executivos comerciais e acessos externos do Portal do Cliente com isolamento de dados (RLS).
               </p>
             </div>
@@ -810,16 +810,16 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
           <div className="flex flex-wrap items-center gap-2.5">
             <button
               onClick={exportUsersCSV}
-              className="flex items-center space-x-2 px-3.5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 text-xs font-semibold transition shadow-sm"
+              className="flex items-center space-x-2 px-3.5 py-2.5 rounded-xl bg-superficie-2 hover:bg-superficie-3 text-tinta hover:text-tinta border border-borda text-xs font-semibold transition shadow-sm"
               title="Exportar base de usuários em CSV"
             >
-              <Download className="w-4 h-4 text-slate-400" />
+              <Download className="w-4 h-4 text-tinta-2" />
               <span>Exportar CSV</span>
             </button>
 
             <button
               onClick={handleOpenCreateModal}
-              className="flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-400 hover:to-emerald-500 text-slate-950 font-bold text-xs shadow-lg shadow-emerald-950/40 hover:shadow-emerald-900/60 transition active:scale-95"
+              className="flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-teal-500 to-marca-escura hover:from-teal-400 hover:to-marca-escura text-slate-950 font-bold text-xs shadow-lg shadow-emerald-950/40 hover:shadow-emerald-900/60 transition active:scale-95"
             >
               <UserPlus className="w-4 h-4" />
               <span>Novo Usuário / Convidar</span>
@@ -828,66 +828,66 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
         </div>
 
         {/* Quick KPI Stat Strip */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mt-6 pt-6 border-t border-slate-800/80">
-          <div className="p-3.5 rounded-2xl bg-slate-950/60 border border-slate-800 flex items-center space-x-3">
-            <div className="w-9 h-9 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mt-6 pt-6 border-t border-borda">
+          <div className="p-3.5 rounded-2xl bg-fundo border border-borda flex items-center space-x-3">
+            <div className="w-9 h-9 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-700">
               <Users className="w-4 h-4" />
             </div>
             <div>
-              <div className="text-lg font-black text-white">{totalUsers}</div>
-              <div className="text-[11px] text-slate-400 font-medium">Total de Contas</div>
+              <div className="text-lg font-black text-tinta">{totalUsers}</div>
+              <div className="text-[11px] text-tinta-2 font-medium">Total de Contas</div>
             </div>
           </div>
 
-          <div className="p-3.5 rounded-2xl bg-slate-950/60 border border-slate-800 flex items-center space-x-3">
-            <div className="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+          <div className="p-3.5 rounded-2xl bg-fundo border border-borda flex items-center space-x-3">
+            <div className="w-9 h-9 rounded-xl bg-marca-suave border border-marca-escura flex items-center justify-center text-marca-escura">
               <CheckCircle2 className="w-4 h-4" />
             </div>
             <div>
-              <div className="text-lg font-black text-emerald-400">{activeUsers}</div>
-              <div className="text-[11px] text-slate-400 font-medium">Usuários Ativos</div>
+              <div className="text-lg font-black text-marca-escura">{activeUsers}</div>
+              <div className="text-[11px] text-tinta-2 font-medium">Usuários Ativos</div>
             </div>
           </div>
 
-          <div className="p-3.5 rounded-2xl bg-slate-950/60 border border-slate-800 flex items-center space-x-3">
-            <div className="w-9 h-9 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
+          <div className="p-3.5 rounded-2xl bg-fundo border border-borda flex items-center space-x-3">
+            <div className="w-9 h-9 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-700">
               <Smartphone className="w-4 h-4" />
             </div>
             <div>
-              <div className="text-lg font-black text-cyan-400">{techUsers}</div>
-              <div className="text-[11px] text-slate-400 font-medium">Técnicos (PWA Campo)</div>
+              <div className="text-lg font-black text-cyan-700">{techUsers}</div>
+              <div className="text-[11px] text-tinta-2 font-medium">Técnicos (PWA Campo)</div>
             </div>
           </div>
 
-          <div className="p-3.5 rounded-2xl bg-slate-950/60 border border-slate-800 flex items-center space-x-3">
-            <div className="w-9 h-9 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400">
+          <div className="p-3.5 rounded-2xl bg-fundo border border-borda flex items-center space-x-3">
+            <div className="w-9 h-9 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-700">
               <Building2 className="w-4 h-4" />
             </div>
             <div>
-              <div className="text-lg font-black text-purple-400">{clientUsers}</div>
-              <div className="text-[11px] text-slate-400 font-medium">Clientes no Portal</div>
+              <div className="text-lg font-black text-purple-700">{clientUsers}</div>
+              <div className="text-[11px] text-tinta-2 font-medium">Clientes no Portal</div>
             </div>
           </div>
 
-          <div className="p-3.5 rounded-2xl bg-slate-950/60 border border-slate-800 flex items-center space-x-3 col-span-2 sm:col-span-1">
-            <div className="w-9 h-9 rounded-xl bg-teal-500/10 border border-teal-500/20 flex items-center justify-center text-teal-400">
+          <div className="p-3.5 rounded-2xl bg-fundo border border-borda flex items-center space-x-3 col-span-2 sm:col-span-1">
+            <div className="w-9 h-9 rounded-xl bg-teal-500/10 border border-teal-500/20 flex items-center justify-center text-teal-700">
               <ShieldCheck className="w-4 h-4" />
             </div>
             <div>
-              <div className="text-lg font-black text-teal-400">{twoFactorUsers} <span className="text-xs font-normal text-slate-500">/ {totalUsers}</span></div>
-              <div className="text-[11px] text-slate-400 font-medium">2FA Habilitado</div>
+              <div className="text-lg font-black text-teal-700">{twoFactorUsers} <span className="text-xs font-normal text-tinta-2">/ {totalUsers}</span></div>
+              <div className="text-[11px] text-tinta-2 font-medium">2FA Habilitado</div>
             </div>
           </div>
         </div>
 
         {/* Tab Navigation Pill Selector */}
-        <div className="flex items-center space-x-2 mt-6 pt-4 border-t border-slate-800/80">
+        <div className="flex items-center space-x-2 mt-6 pt-4 border-t border-borda">
           <button
             onClick={() => setActiveTab('users')}
             className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center space-x-2 ${
               activeTab === 'users'
                 ? 'bg-teal-500 text-slate-950 shadow-md shadow-teal-950/40'
-                : 'bg-slate-800/60 hover:bg-slate-800 text-slate-300 hover:text-white'
+                : 'bg-superficie-2 hover:bg-superficie-2 text-tinta hover:text-tinta'
             }`}
           >
             <Users className="w-3.5 h-3.5" />
@@ -899,7 +899,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
             className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center space-x-2 ${
               activeTab === 'rbac'
                 ? 'bg-teal-500 text-slate-950 shadow-md shadow-teal-950/40'
-                : 'bg-slate-800/60 hover:bg-slate-800 text-slate-300 hover:text-white'
+                : 'bg-superficie-2 hover:bg-superficie-2 text-tinta hover:text-tinta'
             }`}
           >
             <Sliders className="w-3.5 h-3.5" />
@@ -911,7 +911,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
             className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center space-x-2 ${
               activeTab === 'security'
                 ? 'bg-teal-500 text-slate-950 shadow-md shadow-teal-950/40'
-                : 'bg-slate-800/60 hover:bg-slate-800 text-slate-300 hover:text-white'
+                : 'bg-superficie-2 hover:bg-superficie-2 text-tinta hover:text-tinta'
             }`}
           >
             <Shield className="w-3.5 h-3.5" />
@@ -924,15 +924,15 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
       {activeTab === 'users' && (
         <div className="space-y-4">
           {/* Filters Bar */}
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-4 shadow-xl flex flex-col lg:flex-row gap-3 items-center justify-between">
+          <div className="bg-superficie border border-borda rounded-3xl p-4 shadow-xl flex flex-col lg:flex-row gap-3 items-center justify-between">
             <div className="relative w-full lg:w-96">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <Search className="w-4 h-4 text-tinta-2 absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
                 placeholder="Buscar por nome, email, cargo, registro MTE/CREA/CRM..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 bg-slate-950 border border-slate-800 rounded-2xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-teal-500 transition"
+                className="w-full pl-10 pr-4 py-2.5 bg-fundo border border-borda rounded-2xl text-xs text-tinta placeholder-tinta-3 focus:outline-none focus:border-teal-500 transition"
               />
             </div>
 
@@ -941,7 +941,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
               <select
                 value={roleFilter}
                 onChange={(e) => setRoleFilter(e.target.value)}
-                className="px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs font-semibold text-slate-300 focus:outline-none focus:border-teal-500"
+                className="px-3 py-2 bg-fundo border border-borda rounded-xl text-xs font-semibold text-tinta focus:outline-none focus:border-teal-500"
               >
                 <option value="ALL">Todos os Perfis</option>
                 <option value="ADMIN">Admin Geral SaaS</option>
@@ -958,7 +958,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs font-semibold text-slate-300 focus:outline-none focus:border-teal-500"
+                className="px-3 py-2 bg-fundo border border-borda rounded-xl text-xs font-semibold text-tinta focus:outline-none focus:border-teal-500"
               >
                 <option value="ALL">Status: Todos</option>
                 <option value="ACTIVE">Apenas Ativos</option>
@@ -969,7 +969,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
               <select
                 value={clientFilter}
                 onChange={(e) => setClientFilter(e.target.value)}
-                className="px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs font-semibold text-slate-300 focus:outline-none focus:border-teal-500 max-w-[200px]"
+                className="px-3 py-2 bg-fundo border border-borda rounded-xl text-xs font-semibold text-tinta focus:outline-none focus:border-teal-500 max-w-[200px]"
               >
                 <option value="ALL">Todas as Organizações</option>
                 <option value="INTERNAL">Equipe Interna PrevSafe</option>
@@ -979,17 +979,17 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
               </select>
 
               {/* View toggle */}
-              <div className="flex items-center bg-slate-950 border border-slate-800 rounded-xl p-1">
+              <div className="flex items-center bg-fundo border border-borda rounded-xl p-1">
                 <button
                   onClick={() => setViewMode('cards')}
-                  className={`p-1.5 rounded-lg transition ${viewMode === 'cards' ? 'bg-slate-800 text-white' : 'text-slate-500 hover:text-slate-300'}`}
+                  className={`p-1.5 rounded-lg transition ${viewMode === 'cards' ? 'bg-superficie-2 text-tinta' : 'text-tinta-2 hover:text-tinta'}`}
                   title="Visualização em Cards"
                 >
                   <Layers className="w-3.5 h-3.5" />
                 </button>
                 <button
                   onClick={() => setViewMode('table')}
-                  className={`p-1.5 rounded-lg transition ${viewMode === 'table' ? 'bg-slate-800 text-white' : 'text-slate-500 hover:text-slate-300'}`}
+                  className={`p-1.5 rounded-lg transition ${viewMode === 'table' ? 'bg-superficie-2 text-tinta' : 'text-tinta-2 hover:text-tinta'}`}
                   title="Visualização em Tabela"
                 >
                   <FileSpreadsheet className="w-3.5 h-3.5" />
@@ -1009,12 +1009,12 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
                 return (
                   <div 
                     key={p.id} 
-                    className={`bg-slate-900 border rounded-3xl p-5 shadow-xl transition-all duration-200 flex flex-col justify-between relative group ${
+                    className={`bg-superficie border rounded-3xl p-5 shadow-xl transition-all duration-200 flex flex-col justify-between relative group ${
                       p.status === 'INACTIVE' 
-                        ? 'border-slate-800/60 opacity-75' 
+                        ? 'border-borda opacity-75' 
                         : isCurrentLoggedUser 
-                          ? 'border-teal-500/50 bg-slate-900/90 shadow-teal-950/30 ring-1 ring-teal-500/20' 
-                          : 'border-slate-800 hover:border-slate-700'
+                          ? 'border-teal-500/50 bg-superficie shadow-teal-950/30 ring-1 ring-teal-500/20' 
+                          : 'border-borda hover:border-borda'
                     }`}
                   >
                     {/* Top Status & Role Badges */}
@@ -1027,7 +1027,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
 
                         <div className="flex items-center space-x-1.5">
                           {p.two_factor_enabled && (
-                            <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-teal-500/10 text-teal-400 border border-teal-500/20 flex items-center space-x-1" title="Autenticação 2FA ativa">
+                            <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-teal-500/10 text-teal-700 border border-teal-500/20 flex items-center space-x-1" title="Autenticação 2FA ativa">
                               <Lock className="w-2.5 h-2.5" />
                               <span>2FA</span>
                             </span>
@@ -1037,8 +1037,8 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
                             onClick={() => toggleProfileStatus(p.id, p.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE')}
                             className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border transition ${
                               p.status === 'ACTIVE'
-                                ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20 hover:bg-emerald-500/20'
-                                : 'bg-slate-800 text-slate-400 border-slate-700 hover:bg-slate-700'
+                                ? 'bg-marca-suave text-marca-escura border-marca-escura hover:bg-marca-suave'
+                                : 'bg-superficie-2 text-tinta-2 border-borda hover:bg-superficie-3'
                             }`}
                             title="Clique para alternar o status da conta"
                           >
@@ -1057,60 +1057,60 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
                               width={48} 
                               height={48}
                               referrerPolicy="no-referrer"
-                              className="w-12 h-12 rounded-2xl object-cover border border-slate-700 shadow-md"
+                              className="w-12 h-12 rounded-2xl object-cover border border-borda shadow-md"
                             />
                           ) : (
-                            <div className="w-12 h-12 rounded-2xl bg-slate-800 border border-slate-700 flex items-center justify-center text-teal-400 font-bold text-base shadow-md">
+                            <div className="w-12 h-12 rounded-2xl bg-superficie-2 border border-borda flex items-center justify-center text-teal-700 font-bold text-base shadow-md">
                               {p.full_name.slice(0, 2).toUpperCase()}
                             </div>
                           )}
                           {isCurrentLoggedUser && (
-                            <div className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-teal-500 border-2 border-slate-900 flex items-center justify-center" title="Sua sessão atual">
+                            <div className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-teal-500 border-2 border-borda flex items-center justify-center" title="Sua sessão atual">
                               <div className="w-1.5 h-1.5 bg-white rounded-full" />
                             </div>
                           )}
                         </div>
 
                         <div className="min-w-0 flex-1">
-                          <h3 className="text-sm font-bold text-white truncate group-hover:text-teal-300 transition flex items-center space-x-1.5">
+                          <h3 className="text-sm font-bold text-tinta truncate group-hover:text-teal-700 transition flex items-center space-x-1.5">
                             <span className="truncate">{p.full_name}</span>
                             {isCurrentLoggedUser && (
-                              <span className="text-[10px] font-mono font-bold text-teal-400 bg-teal-500/10 px-1.5 py-0.2 rounded border border-teal-500/20 flex-shrink-0">
+                              <span className="text-[10px] font-mono font-bold text-teal-700 bg-teal-500/10 px-1.5 py-0.2 rounded border border-teal-500/20 flex-shrink-0">
                                 VOCÊ
                               </span>
                             )}
                           </h3>
-                          <p className="text-xs text-slate-400 truncate">{p.job_title || 'Cargo não informado'}</p>
-                          <p className="text-[11px] text-slate-500 truncate">{p.department || 'Departamento Geral'}</p>
+                          <p className="text-xs text-tinta-2 truncate">{p.job_title || 'Cargo não informado'}</p>
+                          <p className="text-[11px] text-tinta-2 truncate">{p.department || 'Departamento Geral'}</p>
                         </div>
                       </div>
 
                       {/* Professional Register or Client Affiliation */}
-                      <div className="space-y-1.5 py-2.5 border-y border-slate-800/80 my-3 text-xs">
+                      <div className="space-y-1.5 py-2.5 border-y border-borda my-3 text-xs">
                         <div className="flex items-center justify-between text-[11px]">
-                          <span className="text-slate-500">Organização:</span>
-                          <span className="font-semibold text-slate-300 truncate max-w-[180px]">
+                          <span className="text-tinta-2">Organização:</span>
+                          <span className="font-semibold text-tinta truncate max-w-[180px]">
                             {clientObj ? `🏢 ${clientObj.trade_name}` : '🛡️ SaaS PrevSafe (Matriz)'}
                           </span>
                         </div>
 
                         {p.professional_register && (
                           <div className="flex items-center justify-between text-[11px]">
-                            <span className="text-slate-500">Reg. Profissional:</span>
-                            <span className="font-mono font-semibold text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20">
+                            <span className="text-tinta-2">Reg. Profissional:</span>
+                            <span className="font-mono font-semibold text-marca-escura bg-marca-suave px-1.5 py-0.5 rounded border border-marca-escura">
                               {p.professional_register}
                             </span>
                           </div>
                         )}
 
                         <div className="flex items-center justify-between text-[11px]">
-                          <span className="text-slate-500">E-mail:</span>
-                          <span className="font-mono text-slate-400 truncate max-w-[180px]">{p.email}</span>
+                          <span className="text-tinta-2">E-mail:</span>
+                          <span className="font-mono text-tinta-2 truncate max-w-[180px]">{p.email}</span>
                         </div>
 
                         <div className="flex items-center justify-between text-[11px]">
-                          <span className="text-slate-500">WhatsApp / Tel:</span>
-                          <span className="text-slate-400">{p.phone || p.whatsapp || 'Não informado'}</span>
+                          <span className="text-tinta-2">WhatsApp / Tel:</span>
+                          <span className="text-tinta-2">{p.phone || p.whatsapp || 'Não informado'}</span>
                         </div>
                       </div>
                     </div>
@@ -1120,7 +1120,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
                       {currentProfile.role === 'ADMIN' && (
                         <button
                           onClick={() => handleImpersonate(p)}
-                          className="flex-1 flex items-center justify-center space-x-1.5 py-2 px-2.5 rounded-xl bg-slate-800 hover:bg-teal-500 hover:text-slate-950 text-slate-300 text-xs font-semibold border border-slate-700/80 transition"
+                          className="flex-1 flex items-center justify-center space-x-1.5 py-2 px-2.5 rounded-xl bg-superficie-2 hover:bg-teal-500 hover:text-slate-950 text-white/80 text-xs font-semibold border border-borda transition"
                           title="Entrar temporariamente com as permissões deste perfil"
                         >
                           <UserCheck className="w-3.5 h-3.5" />
@@ -1130,7 +1130,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
 
                       <button
                         onClick={() => handleOpenEditModal(p)}
-                        className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition"
+                        className="p-2 rounded-xl bg-superficie-2 hover:bg-superficie-3 text-tinta hover:text-tinta border border-borda transition"
                         title="Editar cadastro do usuário"
                       >
                         <Edit3 className="w-3.5 h-3.5" />
@@ -1139,7 +1139,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
                       <button
                         onClick={() => handleResetPassword(p)}
                         disabled={isResettingPasswordId === p.id}
-                        className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-400 hover:text-amber-300 border border-slate-700 transition disabled:opacity-50"
+                        className="p-2 rounded-xl bg-superficie-2 hover:bg-superficie-3 text-amber-700 hover:text-amber-700 border border-borda transition disabled:opacity-50"
                         title="Gerar nova senha temporária"
                       >
                         <KeyRound className="w-3.5 h-3.5" />
@@ -1150,7 +1150,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
                           const res = sendUserInvite(p.id, 'WHATSAPP');
                           setInviteModalData({ profile: p, url: res.inviteUrl });
                         }}
-                        className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-emerald-400 hover:text-emerald-300 border border-slate-700 transition"
+                        className="p-2 rounded-xl bg-superficie-2 hover:bg-superficie-3 text-marca-escura hover:text-marca-escura border border-borda transition"
                         title="Compartilhar dados de acesso"
                       >
                         <Send className="w-3.5 h-3.5" />
@@ -1159,7 +1159,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
                       {!isCurrentLoggedUser && (
                         <button
                           onClick={() => setDeleteConfirmId(p.id)}
-                          className="p-2 rounded-xl bg-slate-800/80 hover:bg-rose-950/40 text-rose-400 hover:text-rose-300 border border-rose-900/30 transition"
+                          className="p-2 rounded-xl bg-superficie-2 hover:bg-rose-950/40 text-rose-700 hover:text-rose-700 border border-rose-900/30 transition"
                           title="Excluir conta de usuário"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
@@ -1172,10 +1172,10 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
             </div>
           ) : (
             /* Table View */
-            <div className="bg-slate-900 border border-slate-800 rounded-3xl shadow-xl overflow-hidden">
+            <div className="bg-superficie border border-borda rounded-3xl shadow-xl overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs">
-                  <thead className="bg-slate-950/90 text-slate-400 font-semibold border-b border-slate-800">
+                  <thead className="bg-fundo text-tinta-2 font-semibold border-b border-borda">
                     <tr>
                       <th className="py-3.5 px-4">Usuário</th>
                       <th className="py-3.5 px-4">Perfil de Acesso</th>
@@ -1187,14 +1187,14 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
                       <th className="py-3.5 px-4 text-right">Ações</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-800/60 text-slate-300">
+                  <tbody className="divide-y divide-borda text-tinta">
                     {filteredProfiles.map(p => {
                       const roleConfig = ROLE_INFO[p.role] || ROLE_INFO.TÉCNICO;
                       const clientObj = p.client_id ? clients.find(c => c.id === p.client_id) : null;
                       const isCurrent = currentProfile.id === p.id;
 
                       return (
-                        <tr key={p.id} className={`hover:bg-slate-800/40 transition ${isCurrent ? 'bg-teal-950/10' : ''}`}>
+                        <tr key={p.id} className={`hover:bg-superficie-2 transition ${isCurrent ? 'bg-teal-950/10' : ''}`}>
                           <td className="py-3 px-4">
                             <div className="flex items-center space-x-3">
                               {p.avatar_url ? (
@@ -1204,19 +1204,19 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
                                   width={36} 
                                   height={36}
                                   referrerPolicy="no-referrer"
-                                  className="w-9 h-9 rounded-xl object-cover border border-slate-700"
+                                  className="w-9 h-9 rounded-xl object-cover border border-borda"
                                 />
                               ) : (
-                                <div className="w-9 h-9 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-teal-400 font-bold">
+                                <div className="w-9 h-9 rounded-xl bg-superficie-2 border border-borda flex items-center justify-center text-teal-700 font-bold">
                                   {p.full_name.slice(0, 2).toUpperCase()}
                                 </div>
                               )}
                               <div>
-                                <div className="font-bold text-white flex items-center space-x-1.5">
+                                <div className="font-bold text-tinta flex items-center space-x-1.5">
                                   <span>{p.full_name}</span>
-                                  {isCurrent && <span className="text-[9px] font-mono text-teal-400 bg-teal-500/10 px-1 rounded border border-teal-500/20">VOCÊ</span>}
+                                  {isCurrent && <span className="text-[9px] font-mono text-teal-700 bg-teal-500/10 px-1 rounded border border-teal-500/20">VOCÊ</span>}
                                 </div>
-                                <div className="text-[11px] text-slate-400">{p.email}</div>
+                                <div className="text-[11px] text-tinta-2">{p.email}</div>
                               </div>
                             </div>
                           </td>
@@ -1227,17 +1227,17 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
                             </span>
                           </td>
 
-                          <td className="py-3 px-4 text-slate-300">
+                          <td className="py-3 px-4 text-tinta">
                             {clientObj ? `🏢 ${clientObj.trade_name}` : '🛡️ SaaS PrevSafe'}
                           </td>
 
                           <td className="py-3 px-4">
                             {p.professional_register ? (
-                              <span className="font-mono text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                              <span className="font-mono text-[11px] font-semibold text-marca-escura bg-marca-suave px-2 py-0.5 rounded border border-marca-escura">
                                 {p.professional_register}
                               </span>
                             ) : (
-                              <span className="text-slate-600">—</span>
+                              <span className="text-tinta-2">—</span>
                             )}
                           </td>
 
@@ -1246,8 +1246,8 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
                               onClick={() => toggleProfileStatus(p.id, p.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE')}
                               className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${
                                 p.status === 'ACTIVE'
-                                  ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
-                                  : 'bg-slate-800 text-slate-500 border-slate-700'
+                                  ? 'bg-marca-suave text-marca-escura border-marca-escura'
+                                  : 'bg-superficie-2 text-tinta-2 border-borda'
                               }`}
                             >
                               {p.status === 'ACTIVE' ? 'Ativo' : 'Inativo'}
@@ -1256,16 +1256,16 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
 
                           <td className="py-3 px-4">
                             {p.two_factor_enabled ? (
-                              <span className="text-teal-400 font-semibold flex items-center space-x-1">
+                              <span className="text-teal-700 font-semibold flex items-center space-x-1">
                                 <CheckCircle2 className="w-3.5 h-3.5" />
                                 <span>Sim</span>
                               </span>
                             ) : (
-                              <span className="text-slate-500">Não</span>
+                              <span className="text-tinta-2">Não</span>
                             )}
                           </td>
 
-                          <td className="py-3 px-4 text-slate-400 text-[11px]">
+                          <td className="py-3 px-4 text-tinta-2 text-[11px]">
                             {p.last_login_at ? formatDateTime(p.last_login_at) : 'Nunca'}
                           </td>
 
@@ -1274,7 +1274,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
                               {currentProfile.role === 'ADMIN' && (
                                 <button
                                   onClick={() => handleImpersonate(p)}
-                                  className="p-1.5 rounded-lg bg-slate-800 hover:bg-teal-500 hover:text-slate-950 text-slate-300 transition"
+                                  className="p-1.5 rounded-lg bg-superficie-2 hover:bg-teal-500 hover:text-slate-950 text-white/80 transition"
                                   title="Entrar como este usuário"
                                 >
                                   <UserCheck className="w-3.5 h-3.5" />
@@ -1282,7 +1282,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
                               )}
                               <button
                                 onClick={() => handleOpenEditModal(p)}
-                                className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition"
+                                className="p-1.5 rounded-lg bg-superficie-2 hover:bg-superficie-3 text-tinta transition"
                                 title="Editar"
                               >
                                 <Edit3 className="w-3.5 h-3.5" />
@@ -1290,7 +1290,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
                               <button
                                 onClick={() => handleResetPassword(p)}
                                 disabled={isResettingPasswordId === p.id}
-                                className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-amber-400 transition disabled:opacity-50"
+                                className="p-1.5 rounded-lg bg-superficie-2 hover:bg-superficie-3 text-amber-700 transition disabled:opacity-50"
                                 title="Redefinir Senha"
                               >
                                 <KeyRound className="w-3.5 h-3.5" />
@@ -1298,7 +1298,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
                               {!isCurrent && (
                                 <button
                                   onClick={() => setDeleteConfirmId(p.id)}
-                                  className="p-1.5 rounded-lg bg-slate-800 hover:bg-rose-950/40 text-rose-400 transition"
+                                  className="p-1.5 rounded-lg bg-superficie-2 hover:bg-rose-950/40 text-rose-700 transition"
                                   title="Excluir"
                                 >
                                   <Trash2 className="w-3.5 h-3.5" />
@@ -1320,49 +1320,49 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
       {/* TAB 2: RBAC PERMISSIONS MATRIX */}
       {activeTab === 'rbac' && (
         <div className="space-y-6">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl">
+          <div className="bg-superficie border border-borda rounded-3xl p-6 shadow-xl">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
               <div>
-                <h2 className="text-lg font-bold text-white flex items-center space-x-2">
-                  <Sliders className="w-5 h-5 text-teal-400" />
+                <h2 className="text-lg font-bold text-tinta flex items-center space-x-2">
+                  <Sliders className="w-5 h-5 text-teal-700" />
                   <span>Matriz de Controle de Acesso Baseado em Papéis (RBAC)</span>
                 </h2>
-                <p className="text-xs text-slate-400 mt-1">
+                <p className="text-xs text-tinta-2 mt-1">
                   Mapeamento de permissões granulares por módulo do PrevSafe SST e papéis de usuário.
                 </p>
               </div>
 
               <div className="flex items-center space-x-2">
-                <span className="text-xs font-mono text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-xl border border-emerald-500/20">
+                <span className="text-xs font-mono text-marca-escura bg-marca-suave px-2.5 py-1 rounded-xl border border-marca-escura">
                   Total de Permissões: {PERMISSIONS_CATALOG.length}
                 </span>
               </div>
             </div>
 
             {/* Matrix Table */}
-            <div className="border border-slate-800 rounded-2xl overflow-hidden">
+            <div className="border border-borda rounded-2xl overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs">
-                  <thead className="bg-slate-950 text-slate-300 font-semibold border-b border-slate-800">
+                  <thead className="bg-fundo text-tinta font-semibold border-b border-borda">
                     <tr>
                       <th className="py-3.5 px-4 w-72">Módulo & Funcionalidade</th>
-                      <th className="py-3.5 px-2 text-center text-rose-400">ADMIN</th>
-                      <th className="py-3.5 px-2 text-center text-cyan-400">GESTOR</th>
-                      <th className="py-3.5 px-2 text-center text-amber-400">COMERCIAL</th>
-                      <th className="py-3.5 px-2 text-center text-emerald-400">TÉCNICO</th>
-                      <th className="py-3.5 px-2 text-center text-emerald-400">FINANCEIRO</th>
-                      <th className="py-3.5 px-2 text-center text-pink-400">SAÚDE</th>
-                      <th className="py-3.5 px-2 text-center text-purple-400">CLIENTE ADMIN</th>
-                      <th className="py-3.5 px-2 text-center text-blue-400">CLIENTE USER</th>
+                      <th className="py-3.5 px-2 text-center text-rose-700">ADMIN</th>
+                      <th className="py-3.5 px-2 text-center text-cyan-700">GESTOR</th>
+                      <th className="py-3.5 px-2 text-center text-amber-700">COMERCIAL</th>
+                      <th className="py-3.5 px-2 text-center text-marca-escura">TÉCNICO</th>
+                      <th className="py-3.5 px-2 text-center text-marca-escura">FINANCEIRO</th>
+                      <th className="py-3.5 px-2 text-center text-pink-700">SAÚDE</th>
+                      <th className="py-3.5 px-2 text-center text-purple-700">CLIENTE ADMIN</th>
+                      <th className="py-3.5 px-2 text-center text-blue-700">CLIENTE USER</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-800/60">
+                  <tbody className="divide-y divide-borda">
                     {PERMISSIONS_CATALOG.map((perm) => (
-                      <tr key={perm.id} className="hover:bg-slate-800/30 transition">
+                      <tr key={perm.id} className="hover:bg-superficie-2 transition">
                         <td className="py-3 px-4">
-                          <div className="font-bold text-white">{perm.name}</div>
-                          <div className="text-[11px] text-slate-400">{perm.description}</div>
-                          <div className="font-mono text-[9px] text-slate-500 mt-0.5">{perm.code}</div>
+                          <div className="font-bold text-tinta">{perm.name}</div>
+                          <div className="text-[11px] text-tinta-2">{perm.description}</div>
+                          <div className="font-mono text-[9px] text-tinta-2 mt-0.5">{perm.code}</div>
                         </td>
 
                         {(['ADMIN', 'GESTOR', 'COMERCIAL', 'TÉCNICO', 'FINANCEIRO', 'SAUDE', 'CLIENTE_ADMIN', 'CLIENTE_USER'] as RoleType[]).map((role) => {
@@ -1370,11 +1370,11 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
                           return (
                             <td key={role} className="py-3 px-2 text-center">
                               {isAllowed ? (
-                                <div className="inline-flex items-center justify-center w-6 h-6 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 shadow-sm">
+                                <div className="inline-flex items-center justify-center w-6 h-6 rounded-lg bg-marca-suave border border-marca-escura text-marca-escura shadow-sm">
                                   <Check className="w-3.5 h-3.5" />
                                 </div>
                               ) : (
-                                <div className="inline-flex items-center justify-center w-6 h-6 rounded-lg bg-slate-950 text-slate-700">
+                                <div className="inline-flex items-center justify-center w-6 h-6 rounded-lg bg-fundo text-slate-700">
                                   <span className="text-[10px]">•</span>
                                 </div>
                               )}
@@ -1396,48 +1396,48 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
         <div className="space-y-6">
           {/* Security Cards Grid */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-slate-900 border border-slate-800 rounded-3xl p-5 shadow-xl space-y-3">
-              <div className="w-10 h-10 rounded-2xl bg-teal-500/10 border border-teal-500/20 flex items-center justify-center text-teal-400">
+            <div className="bg-superficie border border-borda rounded-3xl p-5 shadow-xl space-y-3">
+              <div className="w-10 h-10 rounded-2xl bg-teal-500/10 border border-teal-500/20 flex items-center justify-center text-teal-700">
                 <ShieldCheck className="w-5 h-5" />
               </div>
-              <h3 className="text-sm font-bold text-white">Autenticação de Dois Fatores (2FA)</h3>
-              <p className="text-xs text-slate-400">
+              <h3 className="text-sm font-bold text-tinta">Autenticação de Dois Fatores (2FA)</h3>
+              <p className="text-xs text-tinta-2">
                 Obrigatoriedade de código OTP via WhatsApp ou app autenticador para perfis com privilégios elevados.
               </p>
               <div className="pt-2">
-                <span className="px-3 py-1 rounded-xl text-xs font-bold bg-teal-500/10 text-teal-400 border border-teal-500/20">
+                <span className="px-3 py-1 rounded-xl text-xs font-bold bg-teal-500/10 text-teal-700 border border-teal-500/20">
                   {twoFactorUsers} de {totalUsers} contas com 2FA
                 </span>
               </div>
             </div>
 
-            <div className="bg-slate-900 border border-slate-800 rounded-3xl p-5 shadow-xl space-y-3">
-              <div className="w-10 h-10 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
+            <div className="bg-superficie border border-borda rounded-3xl p-5 shadow-xl space-y-3">
+              <div className="w-10 h-10 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-700">
                 <Lock className="w-5 h-5" />
               </div>
-              <h3 className="text-sm font-bold text-white">Política de Senhas & LGPD</h3>
-              <p className="text-xs text-slate-400">
+              <h3 className="text-sm font-bold text-tinta">Política de Senhas & LGPD</h3>
+              <p className="text-xs text-tinta-2">
                 Criptografia forte (bcrypt), expiração periódica de 90 dias e bloqueio após 5 tentativas incorretas.
               </p>
               <div className="pt-2">
-                <span className="px-3 py-1 rounded-xl text-xs font-bold bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                <span className="px-3 py-1 rounded-xl text-xs font-bold bg-blue-500/10 text-blue-700 border border-blue-500/20">
                   Padrão Bancário Ativo
                 </span>
               </div>
             </div>
 
-            <div className="bg-slate-900 border border-slate-800 rounded-3xl p-5 shadow-xl space-y-3">
-              <div className="w-10 h-10 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400">
+            <div className="bg-superficie border border-borda rounded-3xl p-5 shadow-xl space-y-3">
+              <div className="w-10 h-10 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-700">
                 <History className="w-5 h-5" />
               </div>
-              <h3 className="text-sm font-bold text-white">Trilha de Auditoria (RN011)</h3>
-              <p className="text-xs text-slate-400">
+              <h3 className="text-sm font-bold text-tinta">Trilha de Auditoria (RN011)</h3>
+              <p className="text-xs text-tinta-2">
                 Logs imutáveis registrando logins, trocas de perfil, redefinições de credenciais e exportações de dados.
               </p>
               <div className="pt-2">
                 <button
                   onClick={() => onNavigate('audit-logs')}
-                  className="text-xs font-bold text-purple-400 hover:text-purple-300 flex items-center space-x-1"
+                  className="text-xs font-bold text-purple-700 hover:text-purple-700 flex items-center space-x-1"
                 >
                   <span>Ver Todos os Logs de Auditoria</span>
                   <ExternalLink className="w-3 h-3" />
@@ -1447,16 +1447,16 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
           </div>
 
           {/* Recent Access & Auth Audit Logs */}
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
-            <h2 className="text-sm font-bold text-white flex items-center space-x-2">
-              <History className="w-4 h-4 text-teal-400" />
+          <div className="bg-superficie border border-borda rounded-3xl p-6 shadow-xl space-y-4">
+            <h2 className="text-sm font-bold text-tinta flex items-center space-x-2">
+              <History className="w-4 h-4 text-teal-700" />
               <span>Eventos Recentes de Acesso & Segurança</span>
             </h2>
 
-            <div className="border border-slate-800 rounded-2xl overflow-hidden">
+            <div className="border border-borda rounded-2xl overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs">
-                  <thead className="bg-slate-950 text-slate-400 font-semibold border-b border-slate-800">
+                  <thead className="bg-fundo text-tinta-2 font-semibold border-b border-borda">
                     <tr>
                       <th className="py-3 px-4">Data / Hora</th>
                       <th className="py-3 px-4">Usuário</th>
@@ -1464,24 +1464,24 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
                       <th className="py-3 px-4">Detalhes Técnicos</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-800/60 text-slate-300">
+                  <tbody className="divide-y divide-borda text-tinta">
                     {auditLogs
                       .filter(l => l.entity_type === 'ORGANIZATION' || l.action.includes('LOGIN') || l.action.includes('USER'))
                       .slice(0, 10)
                       .map((log) => (
-                        <tr key={log.id} className="hover:bg-slate-800/40">
-                          <td className="py-2.5 px-4 font-mono text-[11px] text-slate-400">
+                        <tr key={log.id} className="hover:bg-superficie-2">
+                          <td className="py-2.5 px-4 font-mono text-[11px] text-tinta-2">
                             {formatDateTime(log.created_at)}
                           </td>
-                          <td className="py-2.5 px-4 font-semibold text-white">
+                          <td className="py-2.5 px-4 font-semibold text-tinta">
                             {log.user_name}
                           </td>
                           <td className="py-2.5 px-4">
-                            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-teal-500/10 text-teal-400 border border-teal-500/20">
+                            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-teal-500/10 text-teal-700 border border-teal-500/20">
                               {log.new_data?.event || log.action}
                             </span>
                           </td>
-                          <td className="py-2.5 px-4 text-slate-400 font-mono text-[11px]">
+                          <td className="py-2.5 px-4 text-tinta-2 font-mono text-[11px]">
                             {log.new_data ? JSON.stringify(log.new_data).slice(0, 80) + '...' : '—'}
                           </td>
                         </tr>
@@ -1496,18 +1496,18 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
 
       {/* MODAL: CREATE / EDIT USER */}
       {isNewUserModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-200">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl p-6 space-y-6">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-fundo backdrop-blur-md animate-in fade-in duration-200">
+          <div className="bg-superficie border border-borda rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl p-6 space-y-6">
+            <div className="flex items-center justify-between border-b border-borda pb-4">
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 rounded-2xl bg-teal-500/10 border border-teal-500/20 flex items-center justify-center text-teal-400">
+                <div className="w-10 h-10 rounded-2xl bg-teal-500/10 border border-teal-500/20 flex items-center justify-center text-teal-700">
                   <UserPlus className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-white">
+                  <h3 className="text-lg font-bold text-tinta">
                     {editingProfile ? 'Editar Cadastro de Usuário' : 'Novo Usuário / Convidar Membro'}
                   </h3>
-                  <p className="text-xs text-slate-400">
+                  <p className="text-xs text-tinta-2">
                     Defina credenciais de acesso, perfil de permissão RBAC e vínculos organizacionais.
                   </p>
                 </div>
@@ -1515,7 +1515,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
 
               <button
                 onClick={() => setIsNewUserModalOpen(false)}
-                className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition"
+                className="p-2 rounded-xl bg-superficie-2 hover:bg-superficie-3 text-tinta-2 hover:text-tinta transition"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -1524,47 +1524,47 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
             <form onSubmit={handleSaveUser} className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1 sm:col-span-2">
-                  <label className="text-xs font-semibold text-slate-300">Nome Completo *</label>
+                  <label className="text-xs font-semibold text-tinta">Nome Completo *</label>
                   <input
                     type="text"
                     required
                     placeholder="Ex: Carlos Eduardo de Oliveira"
                     value={formData.full_name}
                     onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
-                    className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-teal-500"
+                    className="w-full px-3.5 py-2.5 bg-fundo border border-borda rounded-xl text-xs text-tinta placeholder-tinta-3 focus:outline-none focus:border-teal-500"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-slate-300">E-mail Corporativo (Login) *</label>
+                  <label className="text-xs font-semibold text-tinta">E-mail Corporativo (Login) *</label>
                   <input
                     type="email"
                     required
                     placeholder="exemplo@prevsafe.com.br"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-teal-500"
+                    className="w-full px-3.5 py-2.5 bg-fundo border border-borda rounded-xl text-xs text-tinta placeholder-tinta-3 focus:outline-none focus:border-teal-500"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-slate-300">WhatsApp / Celular *</label>
+                  <label className="text-xs font-semibold text-tinta">WhatsApp / Celular *</label>
                   <input
                     type="text"
                     required
                     placeholder="(11) 98888-1234"
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value, whatsapp: e.target.value.replace(/\D/g, '') })}
-                    className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-teal-500"
+                    className="w-full px-3.5 py-2.5 bg-fundo border border-borda rounded-xl text-xs text-tinta placeholder-tinta-3 focus:outline-none focus:border-teal-500"
                   />
                 </div>
 
                 <div className="space-y-1 sm:col-span-2">
-                  <label className="text-xs font-semibold text-slate-300">Perfil de Acesso (RBAC) *</label>
+                  <label className="text-xs font-semibold text-tinta">Perfil de Acesso (RBAC) *</label>
                   <select
                     value={formData.role}
                     onChange={(e) => setFormData({ ...formData, role: e.target.value as RoleType })}
-                    className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs font-semibold text-teal-400 focus:outline-none focus:border-teal-500"
+                    className="w-full px-3.5 py-2.5 bg-fundo border border-borda rounded-xl text-xs font-semibold text-teal-700 focus:outline-none focus:border-teal-500"
                   >
                     <option value="ADMIN">Administrador Geral SaaS (Acesso Total)</option>
                     <option value="GESTOR">Gestor Operacional & Técnico (Coordenação SST / SLA)</option>
@@ -1575,79 +1575,79 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
                     <option value="CLIENTE_ADMIN">Cliente - Gestor / RH (Portal do Cliente / Aprovações)</option>
                     <option value="CLIENTE_USER">Cliente - Colaborador (Consulta ASO / EPIs)</option>
                   </select>
-                  <p className="text-[11px] text-slate-400 mt-1">
+                  <p className="text-[11px] text-tinta-2 mt-1">
                     {ROLE_INFO[formData.role]?.description}
                   </p>
                 </div>
 
                 {formData.role.startsWith('CLIENTE_') && (
                   <div className="space-y-1 sm:col-span-2 p-3 bg-purple-950/20 border border-purple-900/30 rounded-2xl">
-                    <label className="text-xs font-semibold text-purple-300">Empresa Cliente Vinculada *</label>
+                    <label className="text-xs font-semibold text-purple-700">Empresa Cliente Vinculada *</label>
                     <select
                       required
                       value={formData.client_id}
                       onChange={(e) => setFormData({ ...formData, client_id: e.target.value })}
-                      className="w-full px-3.5 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-purple-500 mt-1"
+                      className="w-full px-3.5 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-purple-500 mt-1"
                     >
                       <option value="">Selecione a empresa cliente...</option>
                       {clients.map(c => (
                         <option key={c.id} value={c.id}>{c.trade_name} ({c.document_number})</option>
                       ))}
                     </select>
-                    <p className="text-[10px] text-purple-400 mt-1">
+                    <p className="text-[10px] text-purple-700 mt-1">
                       O banco (RLS) limita esta conta à empresa selecionada: OS, contratos, laudos liberados, pendências e assinaturas. Nenhum dado de saúde, de outro cliente ou interno.
                     </p>
                   </div>
                 )}
 
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-slate-300">Cargo / Função</label>
+                  <label className="text-xs font-semibold text-tinta">Cargo / Função</label>
                   <input
                     type="text"
                     placeholder="Ex: Engenheiro de Segurança Sênior"
                     value={formData.job_title}
                     onChange={(e) => setFormData({ ...formData, job_title: e.target.value })}
-                    className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-teal-500"
+                    className="w-full px-3.5 py-2.5 bg-fundo border border-borda rounded-xl text-xs text-tinta placeholder-tinta-3 focus:outline-none focus:border-teal-500"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-slate-300">Departamento</label>
+                  <label className="text-xs font-semibold text-tinta">Departamento</label>
                   <input
                     type="text"
                     placeholder="Ex: Engenharia de Campo"
                     value={formData.department}
                     onChange={(e) => setFormData({ ...formData, department: e.target.value })}
-                    className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-teal-500"
+                    className="w-full px-3.5 py-2.5 bg-fundo border border-borda rounded-xl text-xs text-tinta placeholder-tinta-3 focus:outline-none focus:border-teal-500"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-slate-300">CPF</label>
+                  <label className="text-xs font-semibold text-tinta">CPF</label>
                   <input
                     type="text"
                     placeholder="Somente números"
                     value={formData.cpf}
                     onChange={(e) => setFormData({ ...formData, cpf: e.target.value })}
-                    className={`w-full px-3.5 py-2.5 bg-slate-950 border rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-teal-500 ${
+                    className={`w-full px-3.5 py-2.5 bg-fundo border rounded-xl text-xs text-tinta placeholder-tinta-3 focus:outline-none focus:border-teal-500 ${
                       formData.cpf.trim() && !conferirDocumento(formData.cpf, 'CPF').valido
                         ? 'border-rose-500'
-                        : 'border-slate-800'
+                        : 'border-borda'
                     }`}
                   />
                   {formData.cpf.trim() && !conferirDocumento(formData.cpf, 'CPF').valido ? (
-                    <p className="text-[10px] text-rose-400">
+                    <p className="text-[10px] text-rose-700">
                       {conferirDocumento(formData.cpf, 'CPF').motivo}
                     </p>
                   ) : (
-                    <p className="text-[10px] text-slate-500">
+                    <p className="text-[10px] text-tinta-2">
                       Exigido pelo eSocial no S-2240 (cpfResp) e no S-2220.
                     </p>
                   )}
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-slate-300">UF do Registro</label>
+                  <label className="text-xs font-semibold text-tinta">UF do Registro</label>
                   <input
                     type="text"
                     maxLength={2}
@@ -1656,28 +1656,28 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
                     onChange={(e) =>
                       setFormData({ ...formData, professional_register_uf: e.target.value.toUpperCase() })
                     }
-                    className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-teal-500 uppercase"
+                    className="w-full px-3.5 py-2.5 bg-fundo border border-borda rounded-xl text-xs text-tinta placeholder-tinta-3 focus:outline-none focus:border-teal-500 uppercase"
                   />
-                  <p className="text-[10px] text-slate-500">UF do CREA/CRM, exigida junto do registro.</p>
+                  <p className="text-[10px] text-tinta-2">UF do CREA/CRM, exigida junto do registro.</p>
                 </div>
 
                 <div className="space-y-1 sm:col-span-2">
-                  <label className="text-xs font-semibold text-slate-300">Registro Profissional (Opcional)</label>
+                  <label className="text-xs font-semibold text-tinta">Registro Profissional (Opcional)</label>
                   <input
                     type="text"
                     placeholder="Ex: MTE 0048192/SP, CREA 5061928371-SP ou CRM 149.202-SP"
                     value={formData.professional_register}
                     onChange={(e) => setFormData({ ...formData, professional_register: e.target.value })}
-                    className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-teal-500"
+                    className="w-full px-3.5 py-2.5 bg-fundo border border-borda rounded-xl text-xs text-tinta placeholder-tinta-3 focus:outline-none focus:border-teal-500"
                   />
-                  <p className="text-[10px] text-slate-500">
+                  <p className="text-[10px] text-tinta-2">
                     Obrigatório para emissão de laudos técnicos com ART/RRT e assinatura de ASOs/Eventos eSocial.
                   </p>
                 </div>
 
                 {!editingProfile && (
                   <div className="sm:col-span-2 space-y-1.5">
-                    <label className="text-xs font-semibold text-slate-300">Senha Inicial de Acesso</label>
+                    <label className="text-xs font-semibold text-tinta">Senha Inicial de Acesso</label>
                     <div className="flex items-center gap-2">
                       <input
                         type="text"
@@ -1686,64 +1686,64 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
                         value={formData.password}
                         onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                         placeholder="Mínimo 8 caracteres"
-                        className="flex-1 px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white font-mono placeholder-slate-500 focus:outline-none focus:border-teal-500"
+                        className="flex-1 px-3.5 py-2.5 bg-fundo border border-borda rounded-xl text-xs text-tinta font-mono placeholder-tinta-3 focus:outline-none focus:border-teal-500"
                       />
                       <button
                         type="button"
                         onClick={() => setFormData({ ...formData, password: generateTempPassword() })}
                         title="Gerar outra senha"
-                        className="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-teal-400 border border-slate-700 transition flex-shrink-0"
+                        className="p-2.5 rounded-xl bg-superficie-2 hover:bg-superficie-3 text-teal-700 border border-borda transition flex-shrink-0"
                       >
                         <Sparkles className="w-4 h-4" />
                       </button>
                     </div>
-                    <p className="text-[10px] text-slate-500">
+                    <p className="text-[10px] text-tinta-2">
                       Essa é a senha real de login do usuário — anote-a para compartilhar com segurança.
                     </p>
                   </div>
                 )}
 
-                <div className="sm:col-span-2 flex items-center justify-between p-3 bg-slate-950 border border-slate-800 rounded-2xl">
+                <div className="sm:col-span-2 flex items-center justify-between p-3 bg-fundo border border-borda rounded-2xl">
                   <div>
-                    <div className="text-xs font-bold text-white">Autenticação de Dois Fatores (2FA)</div>
-                    <div className="text-[11px] text-slate-400">Exigir código OTP via WhatsApp no login</div>
+                    <div className="text-xs font-bold text-tinta">Autenticação de Dois Fatores (2FA)</div>
+                    <div className="text-[11px] text-tinta-2">Exigir código OTP via WhatsApp no login</div>
                   </div>
                   <input
                     type="checkbox"
                     checked={formData.two_factor_enabled}
                     onChange={(e) => setFormData({ ...formData, two_factor_enabled: e.target.checked })}
-                    className="w-4 h-4 rounded text-teal-500 focus:ring-teal-500 border-slate-700 bg-slate-900"
+                    className="w-4 h-4 rounded text-teal-500 focus:ring-teal-500 border-borda bg-superficie"
                   />
                 </div>
 
                 {!editingProfile && (
                   <div className="sm:col-span-2 flex items-center justify-between p-3 bg-teal-950/20 border border-teal-900/30 rounded-2xl">
                     <div>
-                      <div className="text-xs font-bold text-teal-300">Enviar Convite de Acesso Imediato</div>
-                      <div className="text-[11px] text-teal-400/80">Gerar link mágico e enviar por e-mail e WhatsApp</div>
+                      <div className="text-xs font-bold text-teal-700">Enviar Convite de Acesso Imediato</div>
+                      <div className="text-[11px] text-teal-700/80">Gerar link mágico e enviar por e-mail e WhatsApp</div>
                     </div>
                     <input
                       type="checkbox"
                       checked={formData.send_invite_now}
                       onChange={(e) => setFormData({ ...formData, send_invite_now: e.target.checked })}
-                      className="w-4 h-4 rounded text-teal-500 focus:ring-teal-500 border-slate-700 bg-slate-900"
+                      className="w-4 h-4 rounded text-teal-500 focus:ring-teal-500 border-borda bg-superficie"
                     />
                   </div>
                 )}
               </div>
 
-              <div className="pt-4 border-t border-slate-800 flex items-center justify-end space-x-3">
+              <div className="pt-4 border-t border-borda flex items-center justify-end space-x-3">
                 <button
                   type="button"
                   onClick={() => setIsNewUserModalOpen(false)}
-                  className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition"
+                  className="px-4 py-2.5 rounded-xl bg-superficie-2 hover:bg-superficie-3 text-tinta text-xs font-semibold transition"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
                   disabled={isSavingUser}
-                  className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-400 hover:to-emerald-500 text-slate-950 font-bold text-xs shadow-lg shadow-emerald-950/40 transition disabled:opacity-50"
+                  className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-teal-500 to-marca-escura hover:from-teal-400 hover:to-marca-escura text-slate-950 font-bold text-xs shadow-lg shadow-emerald-950/40 transition disabled:opacity-50"
                 >
                   {isSavingUser ? 'Criando conta real...' : editingProfile ? 'Salvar Alterações' : 'Concluir Cadastro & Convidar'}
                 </button>
@@ -1755,26 +1755,26 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
 
       {/* MODAL: INVITE LINK GENERATED */}
       {inviteModalData && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-200">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-lg shadow-2xl p-6 space-y-5">
-            <div className="flex items-center space-x-3 text-emerald-400">
-              <div className="w-10 h-10 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-fundo backdrop-blur-md animate-in fade-in duration-200">
+          <div className="bg-superficie border border-borda rounded-3xl w-full max-w-lg shadow-2xl p-6 space-y-5">
+            <div className="flex items-center space-x-3 text-marca-escura">
+              <div className="w-10 h-10 rounded-2xl bg-marca-suave border border-marca-escura flex items-center justify-center">
                 <Send className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="text-base font-bold text-white">Convite de Acesso Gerado!</h3>
-                <p className="text-xs text-slate-400">Para: {inviteModalData.profile.full_name}</p>
+                <h3 className="text-base font-bold text-tinta">Convite de Acesso Gerado!</h3>
+                <p className="text-xs text-tinta-2">Para: {inviteModalData.profile.full_name}</p>
               </div>
             </div>
 
-            <div className="p-4 bg-slate-950 border border-slate-800 rounded-2xl space-y-3">
-              <div className="text-xs font-semibold text-slate-400">Link Direto de Ativação:</div>
+            <div className="p-4 bg-fundo border border-borda rounded-2xl space-y-3">
+              <div className="text-xs font-semibold text-tinta-2">Link Direto de Ativação:</div>
               <div className="flex items-center space-x-2">
                 <input
                   type="text"
                   readOnly
                   value={inviteModalData.url}
-                  className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs font-mono text-emerald-400 focus:outline-none"
+                  className="w-full px-3 py-2 bg-superficie border border-borda rounded-xl text-xs font-mono text-marca-escura focus:outline-none"
                 />
                 <button
                   onClick={() => copyToClipboard(inviteModalData.url)}
@@ -1785,9 +1785,9 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
               </div>
 
               {inviteModalData.tempPass && (
-                <div className="pt-2 border-t border-slate-800 flex items-center justify-between text-xs">
-                  <span className="text-slate-400">Senha Provisória:</span>
-                  <span className="font-mono font-bold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">
+                <div className="pt-2 border-t border-borda flex items-center justify-between text-xs">
+                  <span className="text-tinta-2">Senha Provisória:</span>
+                  <span className="font-mono font-bold text-amber-700 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">
                     {inviteModalData.tempPass}
                   </span>
                 </div>
@@ -1797,7 +1797,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
             <div className="grid grid-cols-2 gap-2">
               <button
                 onClick={() => handleShareInvite('WHATSAPP')}
-                className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition flex items-center justify-center space-x-1.5"
+                className="px-4 py-2.5 rounded-xl bg-marca hover:bg-marca-escura text-white text-xs font-bold transition flex items-center justify-center space-x-1.5"
               >
                 <Send className="w-3.5 h-3.5" />
                 <span>Abrir no WhatsApp</span>
@@ -1811,7 +1811,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
               </button>
             </div>
 
-            <p className="text-[10px] text-slate-500 leading-relaxed">
+            <p className="text-[10px] text-tinta-2 leading-relaxed">
               A mensagem leva o link de acesso e o e-mail de login. Por segurança, a senha não vai na
               mensagem — combine-a com a pessoa por outro meio.
             </p>
@@ -1819,7 +1819,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
             <div className="flex items-center justify-end space-x-2">
               <button
                 onClick={() => setInviteModalData(null)}
-                className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold transition"
+                className="px-4 py-2 rounded-xl bg-superficie-2 hover:bg-superficie-3 text-tinta text-xs font-semibold transition"
               >
                 Fechar
               </button>
@@ -1830,24 +1830,24 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
 
       {/* MODAL: PASSWORD RESET SUCCESS */}
       {passwordResetSuccess && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-200">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-md shadow-2xl p-6 space-y-4">
-            <div className="flex items-center space-x-3 text-amber-400">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-fundo backdrop-blur-md animate-in fade-in duration-200">
+          <div className="bg-superficie border border-borda rounded-3xl w-full max-w-md shadow-2xl p-6 space-y-4">
+            <div className="flex items-center space-x-3 text-amber-700">
               <div className="w-10 h-10 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center">
                 <KeyRound className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="text-base font-bold text-white">Senha Redefinida com Sucesso</h3>
-                <p className="text-xs text-slate-400">{passwordResetSuccess.name}</p>
+                <h3 className="text-base font-bold text-tinta">Senha Redefinida com Sucesso</h3>
+                <p className="text-xs text-tinta-2">{passwordResetSuccess.name}</p>
               </div>
             </div>
 
-            <div className="p-4 bg-slate-950 border border-slate-800 rounded-2xl space-y-2 text-center">
-              <div className="text-xs text-slate-400">Nova Senha Temporária:</div>
-              <div className="text-lg font-mono font-bold text-amber-400 py-1 select-all">
+            <div className="p-4 bg-fundo border border-borda rounded-2xl space-y-2 text-center">
+              <div className="text-xs text-tinta-2">Nova Senha Temporária:</div>
+              <div className="text-lg font-mono font-bold text-amber-700 py-1 select-all">
                 {passwordResetSuccess.pass}
               </div>
-              <div className="text-[11px] text-slate-500">
+              <div className="text-[11px] text-tinta-2">
                 O usuário deverá alterar a senha no primeiro login.
               </div>
             </div>
@@ -1866,26 +1866,26 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
 
       {/* MODAL: DELETE CONFIRMATION */}
       {deleteConfirmId && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-200">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-md shadow-2xl p-6 space-y-4">
-            <div className="flex items-center space-x-3 text-rose-400">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-fundo backdrop-blur-md animate-in fade-in duration-200">
+          <div className="bg-superficie border border-borda rounded-3xl w-full max-w-md shadow-2xl p-6 space-y-4">
+            <div className="flex items-center space-x-3 text-rose-700">
               <div className="w-10 h-10 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center">
                 <ShieldAlert className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="text-base font-bold text-white">Confirmar Exclusão de Usuário</h3>
-                <p className="text-xs text-slate-400">Esta ação revogará todo e qualquer acesso imediatamente.</p>
+                <h3 className="text-base font-bold text-tinta">Confirmar Exclusão de Usuário</h3>
+                <p className="text-xs text-tinta-2">Esta ação revogará todo e qualquer acesso imediatamente.</p>
               </div>
             </div>
 
-            <p className="text-xs text-slate-300">
+            <p className="text-xs text-tinta">
               Tem certeza que deseja remover esta conta de usuário do PrevSafe SST? O histórico de ordens de serviço e laudos assinados permanecerá preservado no Audit Log.
             </p>
 
             <div className="flex items-center justify-end space-x-3 pt-2">
               <button
                 onClick={() => setDeleteConfirmId(null)}
-                className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition"
+                className="px-4 py-2 rounded-xl bg-superficie-2 hover:bg-superficie-3 text-tinta text-xs font-semibold transition"
               >
                 Cancelar
               </button>

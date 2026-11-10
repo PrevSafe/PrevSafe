@@ -72,20 +72,20 @@ export const AICopilotModal: React.FC<{ isOpen: boolean; onClose: () => void }> 
   };
 
   return (
-    <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
-      <div className="bg-slate-900 rounded-3xl max-w-2xl w-full p-6 shadow-2xl border border-slate-800 max-h-[90vh] overflow-y-auto flex flex-col text-slate-100">
+    <div className="fixed inset-0 bg-fundo backdrop-blur-md z-50 flex items-center justify-center p-4">
+      <div className="bg-superficie rounded-3xl max-w-2xl w-full p-6 shadow-2xl border border-borda max-h-[90vh] overflow-y-auto flex flex-col text-tinta">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-slate-800 pb-4 mb-4">
+        <div className="flex items-center justify-between border-b border-borda pb-4 mb-4">
           <div className="flex items-center space-x-3">
-            <div className="p-2.5 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl text-white shadow-md">
+            <div className="p-2.5 bg-gradient-to-br from-marca to-teal-600 rounded-2xl text-white shadow-md">
               <Sparkles className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-white">PrevSafe SST AI Copilot</h3>
-              <p className="text-xs text-slate-400">Assistente especializado em Normas Regulamentadoras, eSocial e Análise de Riscos</p>
+              <h3 className="text-base font-bold text-tinta">PrevSafe SST AI Copilot</h3>
+              <p className="text-xs text-tinta-2">Assistente especializado em Normas Regulamentadoras, eSocial e Análise de Riscos</p>
             </div>
           </div>
-          <button onClick={onClose} className="text-slate-400 hover:text-slate-200 text-lg font-bold">✕</button>
+          <button onClick={onClose} className="text-tinta-2 hover:text-tinta text-lg font-bold">✕</button>
         </div>
 
         {/* Action Selector */}
@@ -94,36 +94,36 @@ export const AICopilotModal: React.FC<{ isOpen: boolean; onClose: () => void }> 
             onClick={() => { setActiveAction('ANALYZE_CNAE'); setAiResponse(null); }}
             className={`p-3 rounded-2xl text-xs font-bold border transition text-left ${
               activeAction === 'ANALYZE_CNAE' 
-                ? 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30 ring-1 ring-emerald-500/30' 
-                : 'bg-slate-950 text-slate-400 border-slate-800 hover:text-white'
+                ? 'bg-marca-suave text-marca-escura border-marca-escura ring-1 ring-marca-escura' 
+                : 'bg-fundo text-tinta-2 border-borda hover:text-tinta'
             }`}
           >
-            <div className="text-white font-semibold">📊 Diagnóstico por CNAE</div>
-            <div className="text-[10px] text-slate-400 font-normal mt-0.5">NR-04, NRs aplicáveis e riscos</div>
+            <div className="text-tinta font-semibold">📊 Diagnóstico por CNAE</div>
+            <div className="text-[10px] text-tinta-2 font-normal mt-0.5">NR-04, NRs aplicáveis e riscos</div>
           </button>
 
           <button
             onClick={() => { setActiveAction('DRAFT_PROPOSAL'); setAiResponse(null); }}
             className={`p-3 rounded-2xl text-xs font-bold border transition text-left ${
               activeAction === 'DRAFT_PROPOSAL' 
-                ? 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30 ring-1 ring-emerald-500/30' 
-                : 'bg-slate-950 text-slate-400 border-slate-800 hover:text-white'
+                ? 'bg-marca-suave text-marca-escura border-marca-escura ring-1 ring-marca-escura' 
+                : 'bg-fundo text-tinta-2 border-borda hover:text-tinta'
             }`}
           >
-            <div className="text-white font-semibold">📝 Minuta de Proposta</div>
-            <div className="text-[10px] text-slate-400 font-normal mt-0.5">Justificativa técnica persuasiva</div>
+            <div className="text-tinta font-semibold">📝 Minuta de Proposta</div>
+            <div className="text-[10px] text-tinta-2 font-normal mt-0.5">Justificativa técnica persuasiva</div>
           </button>
 
           <button
             onClick={() => { setActiveAction('REVIEW_FIELD'); setAiResponse(null); }}
             className={`p-3 rounded-2xl text-xs font-bold border transition text-left ${
               activeAction === 'REVIEW_FIELD' 
-                ? 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30 ring-1 ring-emerald-500/30' 
-                : 'bg-slate-950 text-slate-400 border-slate-800 hover:text-white'
+                ? 'bg-marca-suave text-marca-escura border-marca-escura ring-1 ring-marca-escura' 
+                : 'bg-fundo text-tinta-2 border-borda hover:text-tinta'
             }`}
           >
-            <div className="text-white font-semibold">🔍 Síntese de Campo (PGR)</div>
-            <div className="text-[10px] text-slate-400 font-normal mt-0.5">Plano de ação 5W2H e perigos</div>
+            <div className="text-tinta font-semibold">🔍 Síntese de Campo (PGR)</div>
+            <div className="text-[10px] text-tinta-2 font-normal mt-0.5">Plano de ação 5W2H e perigos</div>
           </button>
         </div>
 
@@ -131,7 +131,7 @@ export const AICopilotModal: React.FC<{ isOpen: boolean; onClose: () => void }> 
         <div className="space-y-3 text-xs mb-4">
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block font-semibold text-slate-300 mb-1">Cliente Base</label>
+              <label className="block font-semibold text-tinta mb-1">Cliente Base</label>
               <select
                 value={selectedClient?.id}
                 onChange={(e) => {
@@ -142,7 +142,7 @@ export const AICopilotModal: React.FC<{ isOpen: boolean; onClose: () => void }> 
                     setEmployeeCount(cl.employee_count);
                   }
                 }}
-                className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500"
+                className="w-full p-2.5 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
               >
                 {clients.map(c => (
                   <option key={c.id} value={c.id}>{c.trade_name} ({c.main_cnae})</option>
@@ -150,24 +150,24 @@ export const AICopilotModal: React.FC<{ isOpen: boolean; onClose: () => void }> 
               </select>
             </div>
             <div>
-              <label className="block font-semibold text-slate-300 mb-1">CNAE da Atividade</label>
+              <label className="block font-semibold text-tinta mb-1">CNAE da Atividade</label>
               <input
                 type="text"
                 value={cnaeInput}
                 onChange={(e) => setCnaeInput(e.target.value)}
-                className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs font-mono text-white focus:outline-none focus:border-indigo-500"
+                className="w-full p-2.5 bg-fundo border border-borda rounded-xl text-xs font-mono text-tinta focus:outline-none focus:border-indigo-500"
               />
             </div>
           </div>
 
           {activeAction === 'REVIEW_FIELD' && (
             <div>
-              <label className="block font-semibold text-slate-300 mb-1">Anotações Coletadas na Vistoria de Campo</label>
+              <label className="block font-semibold text-tinta mb-1">Anotações Coletadas na Vistoria de Campo</label>
               <textarea
                 rows={3}
                 value={fieldNotes}
                 onChange={(e) => setFieldNotes(e.target.value)}
-                className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500"
+                className="w-full p-2.5 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
               />
             </div>
           )}
@@ -177,7 +177,7 @@ export const AICopilotModal: React.FC<{ isOpen: boolean; onClose: () => void }> 
         <button
           onClick={handleGenerate}
           disabled={isLoading}
-          className="w-full py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-2xl text-xs font-bold shadow-lg shadow-emerald-950/30 transition flex items-center justify-center space-x-2"
+          className="w-full py-3 bg-gradient-to-r from-marca to-teal-600 hover:from-marca hover:to-teal-500 text-white rounded-2xl text-xs font-bold shadow-lg shadow-emerald-950/30 transition flex items-center justify-center space-x-2"
         >
           {isLoading ? (
             <>
@@ -194,20 +194,20 @@ export const AICopilotModal: React.FC<{ isOpen: boolean; onClose: () => void }> 
 
         {/* Result Area */}
         {aiResponse && (
-          <div className="mt-4 p-4 bg-slate-950 rounded-2xl border border-slate-800 text-xs space-y-3 font-sans relative">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-              <span className="font-mono text-[10px] text-emerald-400 font-bold uppercase tracking-wider">
+          <div className="mt-4 p-4 bg-fundo rounded-2xl border border-borda text-xs space-y-3 font-sans relative">
+            <div className="flex items-center justify-between border-b border-borda pb-2">
+              <span className="font-mono text-[10px] text-marca-escura font-bold uppercase tracking-wider">
                 Parecer Técnico Gerado
               </span>
               <button
                 onClick={handleCopy}
-                className="flex items-center space-x-1 text-[11px] text-slate-400 hover:text-white transition"
+                className="flex items-center space-x-1 text-[11px] text-tinta-2 hover:text-tinta transition"
               >
-                {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                {copied ? <Check className="w-3.5 h-3.5 text-marca-escura" /> : <Copy className="w-3.5 h-3.5" />}
                 <span>{copied ? 'Copiado!' : 'Copiar Texto'}</span>
               </button>
             </div>
-            <div className="whitespace-pre-wrap leading-relaxed max-h-60 overflow-y-auto pr-1 text-slate-200">
+            <div className="whitespace-pre-wrap leading-relaxed max-h-60 overflow-y-auto pr-1 text-tinta">
               {aiResponse}
             </div>
           </div>
@@ -279,25 +279,25 @@ export const FastTrackFlowModal: React.FC<{ isOpen: boolean; onClose: () => void
   ];
 
   return (
-    <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
-      <div className="bg-slate-900 rounded-3xl max-w-3xl w-full p-6 shadow-2xl border border-slate-800 max-h-[90vh] overflow-y-auto text-slate-100">
-        <div className="flex items-center justify-between border-b border-slate-800 pb-4 mb-4">
+    <div className="fixed inset-0 bg-fundo backdrop-blur-md z-50 flex items-center justify-center p-4">
+      <div className="bg-superficie rounded-3xl max-w-3xl w-full p-6 shadow-2xl border border-borda max-h-[90vh] overflow-y-auto text-tinta">
+        <div className="flex items-center justify-between border-b border-borda pb-4 mb-4">
           <div>
-            <h3 className="text-lg font-bold text-white">Fluxo Master PrevSafe SST (Ponta a Ponta)</h3>
-            <p className="text-xs text-slate-400">Guia de navegação por todas as etapas do ciclo de prestação de serviços</p>
+            <h3 className="text-lg font-bold text-tinta">Fluxo Master PrevSafe SST (Ponta a Ponta)</h3>
+            <p className="text-xs text-tinta-2">Guia de navegação por todas as etapas do ciclo de prestação de serviços</p>
           </div>
-          <button onClick={onClose} className="text-slate-400 hover:text-slate-200 text-lg font-bold">✕</button>
+          <button onClick={onClose} className="text-tinta-2 hover:text-tinta text-lg font-bold">✕</button>
         </div>
 
         <div className="space-y-3">
           {flowSteps.map((s) => (
             <div 
               key={s.step} 
-              className="p-4 bg-slate-950/60 rounded-2xl border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:border-slate-700 transition"
+              className="p-4 bg-fundo rounded-2xl border border-borda flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:border-borda transition"
             >
               <div className="space-y-0.5">
-                <div className="font-bold text-xs text-white">{s.title}</div>
-                <p className="text-xs text-slate-400">{s.desc}</p>
+                <div className="font-bold text-xs text-tinta">{s.title}</div>
+                <p className="text-xs text-tinta-2">{s.desc}</p>
               </div>
 
               <button

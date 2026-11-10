@@ -111,10 +111,10 @@ export const SeletorTabela24: React.FC<SeletorTabela24Props> = ({
         <button
           type="button"
           onClick={() => setAberto(true)}
-          className={`w-full flex items-center gap-2 bg-slate-950 border border-slate-700 hover:border-emerald-500 rounded-lg px-2.5 ${altura} text-left transition-colors`}
+          className={`w-full flex items-center gap-2 bg-fundo border border-borda hover:border-marca-escura rounded-lg px-2.5 ${altura} text-left transition-colors`}
         >
-          <span className="font-mono text-emerald-400 font-semibold shrink-0">{selecionado.codigo}</span>
-          <span className="text-slate-100 truncate flex-1">{selecionado.nome}</span>
+          <span className="font-mono text-marca-escura font-semibold shrink-0">{selecionado.codigo}</span>
+          <span className="text-tinta truncate flex-1">{selecionado.nome}</span>
           {onLimpar && (
             <span
               role="button"
@@ -129,7 +129,7 @@ export const SeletorTabela24: React.FC<SeletorTabela24Props> = ({
                   onLimpar();
                 }
               }}
-              className="text-slate-400 hover:text-rose-500 shrink-0"
+              className="text-tinta-2 hover:text-rose-500 shrink-0"
               title="Remover o código — risco do PGR sem enquadramento no Anexo IV"
             >
               <X className="w-3.5 h-3.5" />
@@ -138,7 +138,7 @@ export const SeletorTabela24: React.FC<SeletorTabela24Props> = ({
         </button>
       ) : (
         <div className="relative">
-          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-tinta-2 pointer-events-none" />
           <input
             type="text"
             value={termo}
@@ -149,15 +149,15 @@ export const SeletorTabela24: React.FC<SeletorTabela24Props> = ({
             onFocus={() => setAberto(true)}
             onKeyDown={aoTeclar}
             placeholder="Busque o agente por nome ou código — deixe vazio se não houver"
-            className={`w-full bg-slate-950 border rounded-lg pl-8 pr-2.5 ${altura} text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 ${
-              codigoInvalido ? 'border-rose-500/50' : 'border-slate-700'
+            className={`w-full bg-fundo border rounded-lg pl-8 pr-2.5 ${altura} text-tinta placeholder-tinta-3 focus:outline-none focus:ring-2 focus:ring-marca-escura ${
+              codigoInvalido ? 'border-rose-500/50' : 'border-borda'
             }`}
           />
         </div>
       )}
 
       {codigoInvalido && !aberto && (
-        <p className="mt-1 text-[11px] text-rose-400 flex items-start gap-1">
+        <p className="mt-1 text-[11px] text-rose-700 flex items-start gap-1">
           <AlertTriangle className="w-3 h-3 shrink-0 mt-px" />
           <span>
             O código <span className="font-mono">{formatoDoCodigoTabela24(codigo).codigo || codigo}</span>{' '}
@@ -168,7 +168,7 @@ export const SeletorTabela24: React.FC<SeletorTabela24Props> = ({
       )}
 
       {!codigo && !aberto && (
-        <p className="mt-1 text-[11px] text-slate-500 flex items-start gap-1">
+        <p className="mt-1 text-[11px] text-tinta-2 flex items-start gap-1">
           <Info className="w-3 h-3 shrink-0 mt-px" />
           <span>
             Sem código: o risco entra no PGR, mas não é declarado como agente nocivo no S-2240.
@@ -178,8 +178,8 @@ export const SeletorTabela24: React.FC<SeletorTabela24Props> = ({
       )}
 
       {aberto && (
-        <div className="absolute z-50 mt-1 w-full bg-slate-950 border border-slate-700 rounded-lg shadow-2xl overflow-hidden">
-          <div className="px-2.5 py-1.5 border-b border-slate-800 text-[10px] text-slate-500 flex items-center justify-between">
+        <div className="absolute z-50 mt-1 w-full bg-fundo border border-borda rounded-lg shadow-2xl overflow-hidden">
+          <div className="px-2.5 py-1.5 border-b border-borda text-[10px] text-tinta-2 flex items-center justify-between">
             <span>
               {termo.trim() ? `${resultados.length} resultado(s)` : 'Agentes mais comuns — digite para buscar'}
             </span>
@@ -187,9 +187,9 @@ export const SeletorTabela24: React.FC<SeletorTabela24Props> = ({
           </div>
 
           {resultados.length === 0 ? (
-            <div className="px-2.5 py-3 text-[11px] text-slate-300 space-y-1.5">
+            <div className="px-2.5 py-3 text-[11px] text-tinta space-y-1.5">
               <p>Nenhum agente encontrado para “{termo}”.</p>
-              <p className="text-slate-500">
+              <p className="text-tinta-2">
                 A Tabela 24 só lista os agentes do Anexo IV do Decreto 3.048/1999. Riscos
                 ergonômicos, de acidente, frio e radiação não-ionizante não constam dela — nesses
                 casos o campo fica vazio.
@@ -204,17 +204,17 @@ export const SeletorTabela24: React.FC<SeletorTabela24Props> = ({
                     onMouseEnter={() => setIndiceAtivo(i)}
                     onClick={() => escolher(a)}
                     className={`w-full flex items-start gap-2 px-2.5 py-1.5 text-left text-[11px] transition-colors ${
-                      i === indiceAtivo ? 'bg-emerald-500/20' : 'hover:bg-slate-800'
+                      i === indiceAtivo ? 'bg-marca-suave' : 'hover:bg-superficie-2'
                     }`}
                   >
-                    <span className="font-mono text-emerald-400 font-semibold shrink-0 w-16">
+                    <span className="font-mono text-marca-escura font-semibold shrink-0 w-16">
                       {a.codigo}
                     </span>
                     <span className="flex-1">
-                      <span className="text-slate-100 block">{a.nome}</span>
-                      <span className="text-slate-400 text-[10px]">{a.subgrupo}</span>
+                      <span className="text-tinta block">{a.nome}</span>
+                      <span className="text-tinta-2 text-[10px]">{a.subgrupo}</span>
                     </span>
-                    {a.codigo === codigo && <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />}
+                    {a.codigo === codigo && <Check className="w-3.5 h-3.5 text-marca-escura shrink-0" />}
                   </button>
                 </li>
               ))}

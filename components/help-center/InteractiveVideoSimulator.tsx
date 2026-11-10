@@ -100,86 +100,86 @@ export const InteractiveVideoSimulator: React.FC<InteractiveVideoSimulatorProps>
   return (
     <div 
       ref={containerRef}
-      className={`rounded-2xl border border-slate-700 bg-slate-950 overflow-hidden shadow-2xl flex flex-col ${
+      className={`rounded-2xl border border-borda bg-fundo overflow-hidden shadow-2xl flex flex-col ${
         isFullScreen ? 'fixed inset-0 z-50 rounded-none' : 'w-full'
       }`}
     >
       {/* Video Header Bar */}
-      <div className="bg-slate-900 px-4 py-2.5 border-b border-slate-800 flex items-center justify-between">
+      <div className="bg-superficie px-4 py-2.5 border-b border-borda flex items-center justify-between">
         <div className="flex items-center space-x-2">
           <div className="w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse" />
-          <span className="text-xs font-bold text-white tracking-wide flex items-center space-x-1.5">
+          <span className="text-xs font-bold text-tinta tracking-wide flex items-center space-x-1.5">
             <span>{videoTitle}</span>
-            <span className="text-[10px] px-2 py-0.2 rounded bg-emerald-500/20 text-emerald-300 font-mono border border-emerald-500/30">
+            <span className="text-[10px] px-2 py-0.2 rounded bg-marca-suave text-marca-escura font-mono border border-marca-escura">
               Simulador Interativo
             </span>
           </span>
         </div>
 
-        <div className="text-[11px] font-mono text-slate-400">
+        <div className="text-[11px] font-mono text-tinta-2">
           {formatTime(currentTime)} / {formatTime(totalDurationSeconds)}
         </div>
       </div>
 
       {/* Video Screen / Canvas Viewport */}
-      <div className="relative bg-slate-950 p-4 sm:p-8 min-h-[360px] sm:min-h-[420px] flex flex-col justify-between overflow-hidden select-none border-b border-slate-800">
+      <div className="relative bg-fundo p-4 sm:p-8 min-h-[360px] sm:min-h-[420px] flex flex-col justify-between overflow-hidden select-none border-b border-borda">
         {/* Background Grid Pattern */}
         <div className="absolute inset-0 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:16px_16px] opacity-40 pointer-events-none" />
 
         {/* Top Simulated System App Bar */}
-        <div className="relative z-10 p-3 bg-slate-900/90 backdrop-blur rounded-xl border border-slate-800 flex items-center justify-between shadow-lg">
+        <div className="relative z-10 p-3 bg-superficie backdrop-blur rounded-xl border border-borda flex items-center justify-between shadow-lg">
           <div className="flex items-center space-x-2.5">
-            <div className="w-6 h-6 rounded-lg bg-emerald-600 flex items-center justify-center">
-              <ShieldCheck className="w-4 h-4 text-white" />
+            <div className="w-6 h-6 rounded-lg bg-marca flex items-center justify-center">
+              <ShieldCheck className="w-4 h-4 text-tinta" />
             </div>
-            <span className="text-xs font-bold text-white">PrevSafe SST Engine</span>
+            <span className="text-xs font-bold text-tinta">PrevSafe SST Engine</span>
           </div>
 
           <div className="flex items-center space-x-2">
             {activeKeyframe.screenState.badgeStatus && (
-              <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-semibold animate-bounce">
+              <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-marca-suave text-marca-escura border border-marca-escura font-semibold animate-bounce">
                 {activeKeyframe.screenState.badgeStatus}
               </span>
             )}
-            <span className="text-[10px] text-slate-400 font-mono">Auto-Demo v1.0</span>
+            <span className="text-[10px] text-tinta-2 font-mono">Auto-Demo v1.0</span>
           </div>
         </div>
 
         {/* Dynamic Interactive Stage */}
         <div className="relative z-10 my-auto py-6 flex flex-col items-center justify-center text-center">
           {activeKeyframe.screenState.modalOpen ? (
-            <div className="w-full max-w-md p-5 bg-slate-900 border border-emerald-500/40 rounded-2xl shadow-2xl text-left space-y-3 animate-in fade-in zoom-in-95 duration-200">
-              <div className="flex items-center justify-between pb-2 border-b border-slate-800">
-                <span className="text-xs font-bold text-white flex items-center space-x-1.5">
-                  <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+            <div className="w-full max-w-md p-5 bg-superficie border border-marca-escura rounded-2xl shadow-2xl text-left space-y-3 animate-in fade-in zoom-in-95 duration-200">
+              <div className="flex items-center justify-between pb-2 border-b border-borda">
+                <span className="text-xs font-bold text-tinta flex items-center space-x-1.5">
+                  <Sparkles className="w-3.5 h-3.5 text-marca-escura" />
                   <span>Ação do Sistema em Execução</span>
                 </span>
-                <span className="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-300 font-mono">
+                <span className="text-[10px] px-2 py-0.5 rounded bg-superficie-2 text-tinta font-mono">
                   {activeKeyframe.actionTitle}
                 </span>
               </div>
-              <p className="text-xs text-slate-300">
+              <p className="text-xs text-tinta">
                 {activeKeyframe.screenState.bannerText || 'Processando validação dos dados de SST...'}
               </p>
-              <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 text-xs font-mono text-emerald-300 flex items-center justify-between">
+              <div className="p-3 bg-fundo rounded-xl border border-borda text-xs font-mono text-marca-escura flex items-center justify-between">
                 <span>{activeKeyframe.cursorTarget.label}</span>
-                <CheckCircle className="w-4 h-4 text-emerald-400" />
+                <CheckCircle className="w-4 h-4 text-marca-escura" />
               </div>
             </div>
           ) : (
-            <div className="w-full max-w-lg p-6 bg-slate-900/80 backdrop-blur rounded-2xl border border-slate-800 shadow-xl space-y-4">
-              <div className="flex items-center justify-center space-x-2 text-emerald-400 text-xs font-bold uppercase tracking-wider">
+            <div className="w-full max-w-lg p-6 bg-superficie backdrop-blur rounded-2xl border border-borda shadow-xl space-y-4">
+              <div className="flex items-center justify-center space-x-2 text-marca-escura text-xs font-bold uppercase tracking-wider">
                 <Sparkles className="w-4 h-4" />
                 <span>{activeKeyframe.actionTitle}</span>
               </div>
 
-              <div className="p-4 bg-slate-950 rounded-xl border border-slate-800/80 text-sm text-white font-medium">
+              <div className="p-4 bg-fundo rounded-xl border border-borda text-sm text-tinta font-medium">
                 {activeKeyframe.screenState.bannerText || videoDescription}
               </div>
 
               {activeKeyframe.screenState.successMessage && (
-                <div className="p-3 bg-emerald-950/40 border border-emerald-500/40 rounded-xl text-xs font-bold text-emerald-200 flex items-center justify-center space-x-2 animate-pulse">
-                  <CheckCircle className="w-4 h-4 text-emerald-400" />
+                <div className="p-3 bg-marca-suave border border-marca-escura rounded-xl text-xs font-bold text-marca-escura flex items-center justify-center space-x-2 animate-pulse">
+                  <CheckCircle className="w-4 h-4 text-marca-escura" />
                   <span>{activeKeyframe.screenState.successMessage}</span>
                 </div>
               )}
@@ -197,29 +197,29 @@ export const InteractiveVideoSimulator: React.FC<InteractiveVideoSimulatorProps>
           >
             <div className="relative">
               {/* Cursor Icon */}
-              <div className="p-1 rounded-full bg-emerald-400 text-slate-950 shadow-xl shadow-emerald-400/50 ring-2 ring-white animate-pulse">
+              <div className="p-1 rounded-full bg-marca text-slate-950 shadow-xl shadow-emerald-400/50 ring-2 ring-white animate-pulse">
                 <MousePointer className="w-4 h-4 fill-slate-950" />
               </div>
 
               {/* Cursor Action Label */}
-              <div className="absolute left-6 top-0 px-2 py-0.5 rounded bg-slate-900 text-emerald-300 text-[10px] font-bold border border-emerald-500/40 whitespace-nowrap shadow-lg">
+              <div className="absolute left-6 top-0 px-2 py-0.5 rounded bg-superficie text-marca-escura text-[10px] font-bold border border-marca-escura whitespace-nowrap shadow-lg">
                 {activeKeyframe.cursorTarget.label}
               </div>
 
               {/* Click Ripple Effect */}
-              <div key={activeKeyframe.timestamp} className="absolute -inset-4 rounded-full border-2 border-emerald-400 animate-ping pointer-events-none" />
+              <div key={activeKeyframe.timestamp} className="absolute -inset-4 rounded-full border-2 border-marca-escura animate-ping pointer-events-none" />
             </div>
           </div>
         </div>
 
         {/* Subtitles & Narrator Transcript Bar */}
-        <div className="relative z-10 p-3.5 bg-slate-900/90 backdrop-blur rounded-xl border border-slate-800 flex items-start space-x-3 shadow-md">
-          <div className="p-1.5 rounded-lg bg-emerald-500/20 text-emerald-400 shrink-0 mt-0.5">
+        <div className="relative z-10 p-3.5 bg-superficie backdrop-blur rounded-xl border border-borda flex items-start space-x-3 shadow-md">
+          <div className="p-1.5 rounded-lg bg-marca-suave text-marca-escura shrink-0 mt-0.5">
             <Volume2 className="w-4 h-4" />
           </div>
           <div>
-            <span className="text-[10px] uppercase font-bold text-slate-400 block">Locução do Tutorial (Legenda em Português):</span>
-            <p className="text-xs sm:text-sm text-white font-medium mt-0.5 italic">
+            <span className="text-[10px] uppercase font-bold text-tinta-2 block">Locução do Tutorial (Legenda em Português):</span>
+            <p className="text-xs sm:text-sm text-tinta font-medium mt-0.5 italic">
               &ldquo;{activeKeyframe.narratorText}&rdquo;
             </p>
           </div>
@@ -227,7 +227,7 @@ export const InteractiveVideoSimulator: React.FC<InteractiveVideoSimulatorProps>
       </div>
 
       {/* Interactive Controls Bar */}
-      <div className="bg-slate-900 p-3 sm:p-4 space-y-3">
+      <div className="bg-superficie p-3 sm:p-4 space-y-3">
         {/* Timeline Scrubber Slider */}
         <div className="space-y-1">
           <div className="relative flex items-center">
@@ -238,18 +238,18 @@ export const InteractiveVideoSimulator: React.FC<InteractiveVideoSimulatorProps>
               step="0.1"
               value={currentTime}
               onChange={handleSeek}
-              className="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+              className="w-full h-2 bg-superficie-2 rounded-lg appearance-none cursor-pointer accent-emerald-500"
             />
           </div>
 
           {/* Keyframe Milestone Marks */}
-          <div className="flex justify-between text-[10px] font-mono text-slate-400 pt-0.5">
+          <div className="flex justify-between text-[10px] font-mono text-tinta-2 pt-0.5">
             {keyframes.map((kf, idx) => (
               <button 
                 key={idx}
                 onClick={() => setCurrentTime(kf.timestamp)}
-                className={`hover:text-emerald-400 transition ${
-                  activeKeyframeIndex === idx ? 'text-emerald-400 font-bold' : ''
+                className={`hover:text-marca-escura transition ${
+                  activeKeyframeIndex === idx ? 'text-marca-escura font-bold' : ''
                 }`}
               >
                 {formatTime(kf.timestamp)} - Passo {idx + 1}
@@ -263,7 +263,7 @@ export const InteractiveVideoSimulator: React.FC<InteractiveVideoSimulatorProps>
           <div className="flex items-center space-x-2">
             <button 
               onClick={handlePlayPause}
-              className="p-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold transition active:scale-95 shadow-md shadow-emerald-950/40"
+              className="p-2.5 rounded-xl bg-marca hover:bg-marca-escura text-white font-semibold transition active:scale-95 shadow-md shadow-emerald-950/40"
               title={isPlaying ? "Pausar Vídeo" : "Reproduzir Vídeo"}
             >
               {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 fill-white" />}
@@ -271,22 +271,22 @@ export const InteractiveVideoSimulator: React.FC<InteractiveVideoSimulatorProps>
 
             <button 
               onClick={handleRestart}
-              className="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 transition"
+              className="p-2.5 rounded-xl bg-superficie-2 hover:bg-superficie-3 text-tinta transition"
               title="Reiniciar Vídeo"
             >
               <RotateCcw className="w-4 h-4" />
             </button>
 
             {/* Speed Selector */}
-            <div className="flex items-center bg-slate-800 rounded-xl p-0.5 text-xs text-slate-300">
+            <div className="flex items-center bg-superficie-2 rounded-xl p-0.5 text-xs text-tinta">
               {[1, 1.5, 2].map((spd) => (
                 <button
                   key={spd}
                   onClick={() => setPlaybackSpeed(spd)}
                   className={`px-2 py-1 rounded-lg text-xs font-semibold transition ${
                     playbackSpeed === spd 
-                      ? 'bg-emerald-500 text-slate-950 shadow-sm' 
-                      : 'hover:text-white'
+                      ? 'bg-marca text-slate-950 shadow-sm' 
+                      : 'hover:text-tinta'
                   }`}
                 >
                   {spd}x
@@ -298,7 +298,7 @@ export const InteractiveVideoSimulator: React.FC<InteractiveVideoSimulatorProps>
           <div className="flex items-center space-x-2">
             <button
               onClick={() => setIsMuted(!isMuted)}
-              className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition"
+              className="p-2 rounded-lg bg-superficie-2 hover:bg-superficie-3 text-tinta transition"
               title={isMuted ? "Ativar Áudio" : "Silenciar Áudio"}
             >
               {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
@@ -306,7 +306,7 @@ export const InteractiveVideoSimulator: React.FC<InteractiveVideoSimulatorProps>
 
             <button
               onClick={() => setIsFullScreen(!isFullScreen)}
-              className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition"
+              className="p-2 rounded-lg bg-superficie-2 hover:bg-superficie-3 text-tinta transition"
               title="Alternar Tela Cheia"
             >
               <Maximize2 className="w-4 h-4" />

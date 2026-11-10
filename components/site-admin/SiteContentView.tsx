@@ -283,19 +283,19 @@ export const SiteContentView: React.FC<{ onNavigate: (view: string) => void }> =
   }, [posts, filtroTipo, filtroStatus, busca]);
 
   const publicados = posts.filter(p => p.status === 'PUBLICADO').length;
-  const campo = 'w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500';
+  const campo = 'w-full bg-fundo border border-borda rounded-xl px-3 py-2.5 text-sm text-tinta focus:outline-none focus:border-marca-escura';
   const caminhoPublico = form.tipo === 'ARTIGO' ? '/atualizacoes/' : '/servicos/';
 
   return (
     <div className="space-y-6 pb-12">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-superficie border border-borda rounded-3xl p-6 shadow-xl">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl flex items-center justify-center text-emerald-400">
+          <div className="w-10 h-10 bg-marca-suave border border-marca-escura rounded-2xl flex items-center justify-center text-marca-escura">
             <Newspaper className="w-5 h-5" aria-hidden="true" />
           </div>
           <div>
-            <h1 className="text-xl font-bold tracking-tight text-white">Site &amp; Conteúdo</h1>
-            <p className="text-xs text-slate-400 mt-0.5">
+            <h1 className="text-xl font-bold tracking-tight text-tinta">Site &amp; Conteúdo</h1>
+            <p className="text-xs text-tinta-2 mt-0.5">
               {posts.length} {posts.length === 1 ? 'item' : 'itens'} · {publicados} no ar em prevsafe.com
             </p>
           </div>
@@ -305,21 +305,21 @@ export const SiteContentView: React.FC<{ onNavigate: (view: string) => void }> =
             href="/"
             target="_blank"
             rel="noopener noreferrer"
-            className="px-3.5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-2xl text-xs font-bold transition flex items-center gap-1.5"
+            className="px-3.5 py-2.5 bg-superficie-2 hover:bg-superficie-3 text-tinta border border-borda rounded-2xl text-xs font-bold transition flex items-center gap-1.5"
           >
-            <ExternalLink className="w-4 h-4 text-emerald-400" aria-hidden="true" />
+            <ExternalLink className="w-4 h-4 text-marca-escura" aria-hidden="true" />
             Ver o site
           </a>
           <button
             onClick={() => abrirNovo('SERVICO')}
-            className="px-3.5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-2xl text-xs font-bold transition flex items-center gap-1.5"
+            className="px-3.5 py-2.5 bg-superficie-2 hover:bg-superficie-3 text-tinta border border-borda rounded-2xl text-xs font-bold transition flex items-center gap-1.5"
           >
-            <Wrench className="w-4 h-4 text-teal-400" aria-hidden="true" />
+            <Wrench className="w-4 h-4 text-teal-700" aria-hidden="true" />
             Nova página de serviço
           </button>
           <button
             onClick={() => abrirNovo('ARTIGO')}
-            className="px-4 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-2xl text-xs font-bold shadow-lg shadow-emerald-950/40 transition flex items-center gap-1.5"
+            className="px-4 py-2.5 bg-gradient-to-r from-marca to-teal-600 hover:from-marca hover:to-teal-500 text-white rounded-2xl text-xs font-bold shadow-lg shadow-emerald-950/40 transition flex items-center gap-1.5"
           >
             <Plus className="w-4 h-4" aria-hidden="true" />
             Nova publicação
@@ -328,54 +328,54 @@ export const SiteContentView: React.FC<{ onNavigate: (view: string) => void }> =
       </div>
 
       {aviso && (
-        <div className="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-sm flex items-center gap-2">
+        <div className="p-3.5 rounded-2xl bg-marca-suave border border-marca-escura text-marca-escura text-sm flex items-center gap-2">
           <CheckCircle2 className="w-4 h-4 shrink-0" aria-hidden="true" />
           {aviso}
         </div>
       )}
       {erro && (
-        <div className="p-3.5 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-sm flex items-start gap-2">
+        <div className="p-3.5 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-700 text-sm flex items-start gap-2">
           <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0" aria-hidden="true" />
           <span>{erro}</span>
         </div>
       )}
 
-      <div className="bg-slate-900 border border-slate-800 rounded-3xl p-4 flex flex-wrap items-center gap-3">
+      <div className="bg-superficie border border-borda rounded-3xl p-4 flex flex-wrap items-center gap-3">
         <div className="relative flex-1 min-w-[14rem]">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" aria-hidden="true" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-tinta-2" aria-hidden="true" />
           <input
             type="search"
             value={busca}
             onChange={e => setBusca(e.target.value)}
             placeholder="Buscar por título ou endereço..."
-            className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500"
+            className="w-full bg-fundo border border-borda rounded-xl pl-9 pr-3 py-2 text-sm text-tinta focus:outline-none focus:border-marca-escura"
           />
         </div>
-        <select value={filtroTipo} onChange={e => setFiltroTipo(e.target.value as any)} className="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white">
+        <select value={filtroTipo} onChange={e => setFiltroTipo(e.target.value as any)} className="bg-fundo border border-borda rounded-xl px-3 py-2 text-sm text-tinta">
           <option value="TODOS">Todos os tipos</option>
           <option value="ARTIGO">Publicações</option>
           <option value="SERVICO">Páginas de serviço</option>
         </select>
-        <select value={filtroStatus} onChange={e => setFiltroStatus(e.target.value as any)} className="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white">
+        <select value={filtroStatus} onChange={e => setFiltroStatus(e.target.value as any)} className="bg-fundo border border-borda rounded-xl px-3 py-2 text-sm text-tinta">
           <option value="TODOS">Todos os status</option>
           <option value="PUBLICADO">No ar</option>
           <option value="RASCUNHO">Rascunho</option>
         </select>
       </div>
 
-      <div className="bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-xl">
+      <div className="bg-superficie border border-borda rounded-3xl overflow-hidden shadow-xl">
         {carregando ? (
-          <div className="p-12 text-center text-slate-400 flex items-center justify-center gap-2">
+          <div className="p-12 text-center text-tinta-2 flex items-center justify-center gap-2">
             <Loader2 className="w-5 h-5 animate-spin" aria-hidden="true" />
             Carregando...
           </div>
         ) : filtrados.length === 0 ? (
           <div className="p-12 text-center">
-            <FileText className="w-10 h-10 text-slate-600 mx-auto" aria-hidden="true" />
-            <p className="mt-3 font-semibold text-slate-300">
+            <FileText className="w-10 h-10 text-tinta-2 mx-auto" aria-hidden="true" />
+            <p className="mt-3 font-semibold text-tinta">
               {posts.length === 0 ? 'Nenhum conteúdo ainda' : 'Nada encontrado com esses filtros'}
             </p>
-            <p className="mt-1.5 text-sm text-slate-500 max-w-[28rem] mx-auto">
+            <p className="mt-1.5 text-sm text-tinta-2 max-w-[28rem] mx-auto">
               {posts.length === 0
                 ? 'Publique a primeira atualização de SST. Ela aparece no site assim que o status for "No ar".'
                 : 'Ajuste a busca ou os filtros acima.'}
@@ -384,7 +384,7 @@ export const SiteContentView: React.FC<{ onNavigate: (view: string) => void }> =
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
-              <thead className="bg-slate-950/60 text-slate-400 text-[11px] uppercase tracking-wider border-b border-slate-800">
+              <thead className="bg-fundo text-tinta-2 text-[11px] uppercase tracking-wider border-b border-borda">
                 <tr>
                   <th className="py-3 px-4">Título</th>
                   <th className="py-3 px-4 hidden md:table-cell">Tipo</th>
@@ -393,24 +393,24 @@ export const SiteContentView: React.FC<{ onNavigate: (view: string) => void }> =
                   <th className="py-3 px-4 text-right">Ações</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/70">
+              <tbody className="divide-y divide-borda">
                 {filtrados.map(p => (
-                  <tr key={p.id} className="hover:bg-slate-800/30">
+                  <tr key={p.id} className="hover:bg-superficie-2">
                     <td className="py-3 px-4">
-                      <p className="font-semibold text-slate-100">{p.titulo}</p>
-                      <p className="text-[11px] text-slate-500 font-mono mt-0.5">
+                      <p className="font-semibold text-tinta">{p.titulo}</p>
+                      <p className="text-[11px] text-tinta-2 font-mono mt-0.5">
                         {p.tipo === 'ARTIGO' ? '/atualizacoes/' : '/servicos/'}{p.slug}
                       </p>
                     </td>
-                    <td className="py-3 px-4 hidden md:table-cell text-slate-400">
+                    <td className="py-3 px-4 hidden md:table-cell text-tinta-2">
                       {p.tipo === 'ARTIGO' ? 'Publicação' : 'Serviço'}
                     </td>
-                    <td className="py-3 px-4 hidden lg:table-cell text-slate-400">{p.categoria || '—'}</td>
+                    <td className="py-3 px-4 hidden lg:table-cell text-tinta-2">{p.categoria || '—'}</td>
                     <td className="py-3 px-4">
                       <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${
                         p.status === 'PUBLICADO'
-                          ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-600/40'
-                          : 'bg-slate-700/40 text-slate-300 border border-slate-600/40'
+                          ? 'bg-marca-suave text-marca-escura border border-marca-escura'
+                          : 'bg-superficie-3 text-tinta border border-borda'
                       }`}>
                         {p.status === 'PUBLICADO' ? 'No ar' : 'Rascunho'}
                       </span>
@@ -423,7 +423,7 @@ export const SiteContentView: React.FC<{ onNavigate: (view: string) => void }> =
                             target="_blank"
                             rel="noopener noreferrer"
                             title="Abrir no site"
-                            className="p-2 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-emerald-400 transition"
+                            className="p-2 rounded-lg hover:bg-superficie-2 text-tinta-2 hover:text-marca-escura transition"
                           >
                             <ExternalLink className="w-4 h-4" />
                           </a>
@@ -431,21 +431,21 @@ export const SiteContentView: React.FC<{ onNavigate: (view: string) => void }> =
                         <button
                           onClick={() => alternarPublicacao(p)}
                           title={p.status === 'PUBLICADO' ? 'Tirar do ar' : 'Publicar'}
-                          className="p-2 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-amber-400 transition"
+                          className="p-2 rounded-lg hover:bg-superficie-2 text-tinta-2 hover:text-amber-700 transition"
                         >
                           {p.status === 'PUBLICADO' ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                         </button>
                         <button
                           onClick={() => abrirEdicao(p)}
                           title="Editar"
-                          className="p-2 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-indigo-400 transition"
+                          className="p-2 rounded-lg hover:bg-superficie-2 text-tinta-2 hover:text-indigo-700 transition"
                         >
                           <Edit3 className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => excluir(p)}
                           title="Excluir"
-                          className="p-2 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-rose-400 transition"
+                          className="p-2 rounded-lg hover:bg-superficie-2 text-tinta-2 hover:text-rose-700 transition"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -460,18 +460,18 @@ export const SiteContentView: React.FC<{ onNavigate: (view: string) => void }> =
       </div>
 
       {modalAberto && (
-        <div className="fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-50 flex items-start justify-center p-4 overflow-y-auto">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-[56rem] my-8 shadow-2xl">
-            <div className="flex items-center justify-between p-5 border-b border-slate-800 sticky top-0 bg-slate-900 rounded-t-3xl z-10">
+        <div className="fixed inset-0 bg-fundo backdrop-blur-sm z-50 flex items-start justify-center p-4 overflow-y-auto">
+          <div className="bg-superficie border border-borda rounded-3xl w-full max-w-[56rem] my-8 shadow-2xl">
+            <div className="flex items-center justify-between p-5 border-b border-borda sticky top-0 bg-superficie rounded-t-3xl z-10">
               <div>
-                <h2 className="font-bold text-white">
+                <h2 className="font-bold text-tinta">
                   {editando ? 'Editar conteúdo' : form.tipo === 'ARTIGO' ? 'Nova publicação' : 'Nova página de serviço'}
                 </h2>
-                <p className="text-[11px] text-slate-400 mt-0.5">
-                  Endereço no site: <span className="font-mono text-emerald-400">{caminhoPublico}{form.slug || gerarSlug(form.titulo) || '...'}</span>
+                <p className="text-[11px] text-tinta-2 mt-0.5">
+                  Endereço no site: <span className="font-mono text-marca-escura">{caminhoPublico}{form.slug || gerarSlug(form.titulo) || '...'}</span>
                 </p>
               </div>
-              <button onClick={() => setModalAberto(false)} className="p-2 text-slate-400 hover:text-white" aria-label="Fechar">
+              <button onClick={() => setModalAberto(false)} className="p-2 text-tinta-2 hover:text-tinta" aria-label="Fechar">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -479,7 +479,7 @@ export const SiteContentView: React.FC<{ onNavigate: (view: string) => void }> =
             <form onSubmit={salvar} className="p-5 space-y-4">
               <div className="grid sm:grid-cols-3 gap-4">
                 <div className="sm:col-span-2">
-                  <label className="block text-xs font-semibold text-slate-400 mb-1.5">Título *</label>
+                  <label className="block text-xs font-semibold text-tinta-2 mb-1.5">Título *</label>
                   <input
                     type="text"
                     required
@@ -493,7 +493,7 @@ export const SiteContentView: React.FC<{ onNavigate: (view: string) => void }> =
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-400 mb-1.5">Tipo</label>
+                  <label className="block text-xs font-semibold text-tinta-2 mb-1.5">Tipo</label>
                   <select value={form.tipo} onChange={e => setForm(f => ({ ...f, tipo: e.target.value as Tipo }))} className={campo}>
                     <option value="ARTIGO">Publicação</option>
                     <option value="SERVICO">Página de serviço</option>
@@ -503,7 +503,7 @@ export const SiteContentView: React.FC<{ onNavigate: (view: string) => void }> =
 
               <div className="grid sm:grid-cols-3 gap-4">
                 <div className="sm:col-span-2">
-                  <label className="block text-xs font-semibold text-slate-400 mb-1.5">Endereço da página</label>
+                  <label className="block text-xs font-semibold text-tinta-2 mb-1.5">Endereço da página</label>
                   <input
                     type="text"
                     value={form.slug}
@@ -512,7 +512,7 @@ export const SiteContentView: React.FC<{ onNavigate: (view: string) => void }> =
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-400 mb-1.5">Categoria</label>
+                  <label className="block text-xs font-semibold text-tinta-2 mb-1.5">Categoria</label>
                   <input
                     type="text"
                     value={form.categoria}
@@ -524,8 +524,8 @@ export const SiteContentView: React.FC<{ onNavigate: (view: string) => void }> =
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-400 mb-1.5">
-                  Resumo <span className="text-slate-600">— aparece na listagem e no Google</span>
+                <label className="block text-xs font-semibold text-tinta-2 mb-1.5">
+                  Resumo <span className="text-tinta-2">— aparece na listagem e no Google</span>
                 </label>
                 <textarea
                   rows={2}
@@ -537,13 +537,13 @@ export const SiteContentView: React.FC<{ onNavigate: (view: string) => void }> =
 
               <div>
                 <div className="flex items-center justify-between mb-1.5">
-                  <label className="block text-xs font-semibold text-slate-400">
-                    Conteúdo <span className="text-slate-600">— aceita Markdown</span>
+                  <label className="block text-xs font-semibold text-tinta-2">
+                    Conteúdo <span className="text-tinta-2">— aceita Markdown</span>
                   </label>
                   <button
                     type="button"
                     onClick={() => setPrevia(v => !v)}
-                    className="text-[11px] font-semibold text-emerald-400 hover:text-emerald-300"
+                    className="text-[11px] font-semibold text-marca-escura hover:text-marca-escura"
                   >
                     {previa ? 'Voltar a editar' : 'Ver prévia'}
                   </button>
@@ -561,14 +561,14 @@ export const SiteContentView: React.FC<{ onNavigate: (view: string) => void }> =
                     className={`${campo} font-mono text-[13px] leading-relaxed`}
                   />
                 )}
-                <p className="text-[11px] text-slate-500 mt-1.5">
+                <p className="text-[11px] text-tinta-2 mt-1.5">
                   ## título · **negrito** · *itálico* · - lista · &gt; destaque · [link](url) · ![imagem](url)
                 </p>
               </div>
 
               <div className="grid sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-400 mb-1.5">Imagem de capa</label>
+                  <label className="block text-xs font-semibold text-tinta-2 mb-1.5">Imagem de capa</label>
 
                   <input
                     ref={imagemInputRef}
@@ -584,21 +584,21 @@ export const SiteContentView: React.FC<{ onNavigate: (view: string) => void }> =
                       <img
                         src={form.imagem_url}
                         alt="Capa escolhida"
-                        className="w-full h-32 object-cover rounded-xl border border-slate-800"
+                        className="w-full h-32 object-cover rounded-xl border border-borda"
                       />
                       <div className="flex gap-2">
                         <button
                           type="button"
                           onClick={() => imagemInputRef.current?.click()}
                           disabled={enviandoImagem}
-                          className="flex-1 py-2 bg-slate-800 hover:bg-slate-700 disabled:opacity-60 text-slate-200 rounded-xl text-xs font-semibold transition"
+                          className="flex-1 py-2 bg-superficie-2 hover:bg-superficie-3 disabled:opacity-60 text-tinta rounded-xl text-xs font-semibold transition"
                         >
                           Trocar
                         </button>
                         <button
                           type="button"
                           onClick={removerImagem}
-                          className="px-3 py-2 bg-slate-800 hover:bg-rose-900/60 text-slate-300 hover:text-rose-300 rounded-xl text-xs font-semibold transition flex items-center gap-1.5"
+                          className="px-3 py-2 bg-superficie-2 hover:bg-rose-900/60 text-tinta hover:text-rose-700 rounded-xl text-xs font-semibold transition flex items-center gap-1.5"
                         >
                           <ImageOff className="w-3.5 h-3.5" aria-hidden="true" />
                           Remover
@@ -610,28 +610,28 @@ export const SiteContentView: React.FC<{ onNavigate: (view: string) => void }> =
                       type="button"
                       onClick={() => imagemInputRef.current?.click()}
                       disabled={enviandoImagem}
-                      className="w-full py-6 border-2 border-dashed border-slate-800 hover:border-emerald-600 disabled:opacity-60 rounded-xl text-center transition"
+                      className="w-full py-6 border-2 border-dashed border-borda hover:border-marca-escura disabled:opacity-60 rounded-xl text-center transition"
                     >
                       {enviandoImagem ? (
-                        <Loader2 className="w-6 h-6 mx-auto text-emerald-400 animate-spin" aria-hidden="true" />
+                        <Loader2 className="w-6 h-6 mx-auto text-marca-escura animate-spin" aria-hidden="true" />
                       ) : (
-                        <ImagePlus className="w-6 h-6 mx-auto text-slate-500" aria-hidden="true" />
+                        <ImagePlus className="w-6 h-6 mx-auto text-tinta-2" aria-hidden="true" />
                       )}
-                      <span className="block mt-2 text-xs font-semibold text-slate-300">
+                      <span className="block mt-2 text-xs font-semibold text-tinta">
                         {enviandoImagem ? 'Enviando...' : 'Escolher imagem'}
                       </span>
-                      <span className="block text-[11px] text-slate-500 mt-0.5">
+                      <span className="block text-[11px] text-tinta-2 mt-0.5">
                         Redimensionada automaticamente antes do envio
                       </span>
                     </button>
                   )}
 
                   {avisoImagem && (
-                    <p className="text-[11px] text-slate-400 mt-1.5">{avisoImagem}</p>
+                    <p className="text-[11px] text-tinta-2 mt-1.5">{avisoImagem}</p>
                   )}
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-400 mb-1.5">Tags (separadas por vírgula)</label>
+                  <label className="block text-xs font-semibold text-tinta-2 mb-1.5">Tags (separadas por vírgula)</label>
                   <input
                     type="text"
                     value={form.tags}
@@ -641,35 +641,35 @@ export const SiteContentView: React.FC<{ onNavigate: (view: string) => void }> =
                 </div>
               </div>
 
-              <details className="bg-slate-950/60 border border-slate-800 rounded-xl">
-                <summary className="px-4 py-3 text-xs font-semibold text-slate-300 cursor-pointer">
+              <details className="bg-fundo border border-borda rounded-xl">
+                <summary className="px-4 py-3 text-xs font-semibold text-tinta cursor-pointer">
                   Ajustes de SEO e chamada para ação
                 </summary>
                 <div className="p-4 pt-0 space-y-4">
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-xs font-semibold text-slate-400 mb-1.5">Título no Google</label>
+                      <label className="block text-xs font-semibold text-tinta-2 mb-1.5">Título no Google</label>
                       <input type="text" value={form.seo_titulo} onChange={e => setForm(f => ({ ...f, seo_titulo: e.target.value }))} placeholder="Deixe vazio para usar o título" className={campo} />
                     </div>
                     <div>
-                      <label className="block text-xs font-semibold text-slate-400 mb-1.5">Descrição no Google</label>
+                      <label className="block text-xs font-semibold text-tinta-2 mb-1.5">Descrição no Google</label>
                       <input type="text" value={form.seo_descricao} onChange={e => setForm(f => ({ ...f, seo_descricao: e.target.value }))} placeholder="Deixe vazio para usar o resumo" className={campo} />
                     </div>
                     <div>
-                      <label className="block text-xs font-semibold text-slate-400 mb-1.5">Texto do botão</label>
+                      <label className="block text-xs font-semibold text-tinta-2 mb-1.5">Texto do botão</label>
                       <input type="text" value={form.cta_texto} onChange={e => setForm(f => ({ ...f, cta_texto: e.target.value }))} placeholder="Ex.: Solicitar diagnóstico" className={campo} />
                     </div>
                     <div>
-                      <label className="block text-xs font-semibold text-slate-400 mb-1.5">Destino do botão</label>
+                      <label className="block text-xs font-semibold text-tinta-2 mb-1.5">Destino do botão</label>
                       <input type="text" value={form.cta_destino} onChange={e => setForm(f => ({ ...f, cta_destino: e.target.value }))} placeholder="/contato" className={campo} />
                     </div>
                     <div>
-                      <label className="block text-xs font-semibold text-slate-400 mb-1.5">Autor</label>
+                      <label className="block text-xs font-semibold text-tinta-2 mb-1.5">Autor</label>
                       <input type="text" value={form.autor} onChange={e => setForm(f => ({ ...f, autor: e.target.value }))} className={campo} />
                     </div>
                     {form.tipo === 'SERVICO' && (
                       <div>
-                        <label className="block text-xs font-semibold text-slate-400 mb-1.5">Ordem na listagem</label>
+                        <label className="block text-xs font-semibold text-tinta-2 mb-1.5">Ordem na listagem</label>
                         <input type="number" value={form.ordem} onChange={e => setForm(f => ({ ...f, ordem: Number(e.target.value) }))} className={campo} />
                       </div>
                     )}
@@ -677,8 +677,8 @@ export const SiteContentView: React.FC<{ onNavigate: (view: string) => void }> =
                 </div>
               </details>
 
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-4 border-t border-slate-800">
-                <label className="flex items-center gap-2.5 text-sm text-slate-300">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-4 border-t border-borda">
+                <label className="flex items-center gap-2.5 text-sm text-tinta">
                   <input
                     type="checkbox"
                     checked={form.status === 'PUBLICADO'}
@@ -687,17 +687,17 @@ export const SiteContentView: React.FC<{ onNavigate: (view: string) => void }> =
                   />
                   <span>
                     Publicar no site
-                    <span className="block text-[11px] text-slate-500">
+                    <span className="block text-[11px] text-tinta-2">
                       Desmarcado, fica salvo como rascunho e não aparece para ninguém.
                     </span>
                   </span>
                 </label>
 
                 <div className="flex items-center gap-2">
-                  <button type="button" onClick={() => setModalAberto(false)} className="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-sm font-semibold transition">
+                  <button type="button" onClick={() => setModalAberto(false)} className="px-4 py-2.5 bg-superficie-2 hover:bg-superficie-3 text-tinta rounded-xl text-sm font-semibold transition">
                     Cancelar
                   </button>
-                  <button type="submit" disabled={salvando} className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-60 text-white rounded-xl text-sm font-bold transition flex items-center gap-2">
+                  <button type="submit" disabled={salvando} className="px-5 py-2.5 bg-marca hover:bg-marca-escura disabled:opacity-60 text-white rounded-xl text-sm font-bold transition flex items-center gap-2">
                     {salvando ? <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" /> : <Save className="w-4 h-4" aria-hidden="true" />}
                     {salvando ? 'Salvando...' : 'Salvar'}
                   </button>

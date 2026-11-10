@@ -51,37 +51,37 @@ export const AuditLogsView: React.FC<{ onNavigate: (view: string) => void }> = (
   return (
     <div className="space-y-6 pb-12">
       {/* Header Bento Card */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-superficie border border-borda rounded-3xl p-6 shadow-xl">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-indigo-500/10 border border-indigo-500/20 rounded-2xl flex items-center justify-center text-indigo-400">
+          <div className="w-10 h-10 bg-indigo-500/10 border border-indigo-500/20 rounded-2xl flex items-center justify-center text-indigo-700">
             <History className="w-5 h-5" />
           </div>
           <div>
-            <h1 className="text-xl font-bold tracking-tight text-white">Trilha de Auditoria Geral (Audit Logs)</h1>
-            <p className="text-xs text-slate-400 mt-0.5">Registro imutável de todas as ações de usuários, alterações de status de OS, assinaturas de contratos e acessos.</p>
+            <h1 className="text-xl font-bold tracking-tight text-tinta">Trilha de Auditoria Geral (Audit Logs)</h1>
+            <p className="text-xs text-tinta-2 mt-0.5">Registro imutável de todas as ações de usuários, alterações de status de OS, assinaturas de contratos e acessos.</p>
           </div>
         </div>
       </div>
 
       {/* Filter Bento Bar */}
-      <div className="flex flex-col sm:flex-row gap-3 items-center justify-between bg-slate-900 p-4 rounded-3xl border border-slate-800 shadow-xl">
+      <div className="flex flex-col sm:flex-row gap-3 items-center justify-between bg-superficie p-4 rounded-3xl border border-borda shadow-xl">
         <div className="relative w-full sm:w-80">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-tinta-2 absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             placeholder="Buscar por ação, usuário ou número..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-3 py-2 bg-slate-950 border border-slate-800 rounded-2xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500"
+            className="w-full pl-10 pr-3 py-2 bg-fundo border border-borda rounded-2xl text-xs text-tinta placeholder-tinta-3 focus:outline-none focus:border-indigo-500"
           />
         </div>
 
         <div className="flex items-center space-x-2">
-          <span className="text-xs text-slate-400 font-medium">Entidade:</span>
+          <span className="text-xs text-tinta-2 font-medium">Entidade:</span>
           <select
             value={selectedEntity}
             onChange={(e) => setSelectedEntity(e.target.value)}
-            className="px-3 py-2 bg-slate-950 border border-slate-800 rounded-2xl text-xs font-medium text-slate-300 focus:outline-none focus:border-indigo-500"
+            className="px-3 py-2 bg-fundo border border-borda rounded-2xl text-xs font-medium text-tinta focus:outline-none focus:border-indigo-500"
           >
             <option value="ALL">Todas as Entidades</option>
             <option value="SERVICE_ORDER">Ordem de Serviço (OS)</option>
@@ -95,10 +95,10 @@ export const AuditLogsView: React.FC<{ onNavigate: (view: string) => void }> = (
       </div>
 
       {/* Logs Table in Bento Card */}
-      <div className="bg-slate-900 rounded-3xl border border-slate-800 shadow-xl overflow-hidden">
+      <div className="bg-superficie rounded-3xl border border-borda shadow-xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-slate-950/80 text-slate-400 font-semibold border-b border-slate-800">
+            <thead className="bg-fundo text-tinta-2 font-semibold border-b border-borda">
               <tr>
                 <th className="py-3.5 px-5">Data / Hora</th>
                 <th className="py-3.5 px-5">Usuário / Perfil</th>
@@ -108,28 +108,28 @@ export const AuditLogsView: React.FC<{ onNavigate: (view: string) => void }> = (
                 <th className="py-3.5 px-5 text-right">IP</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/80 font-mono text-[11px]">
+            <tbody className="divide-y divide-borda font-mono text-[11px]">
               {filteredLogs.map((log) => (
-                <tr key={log.id} className="hover:bg-slate-800/30 transition">
-                  <td className="py-3.5 px-5 text-slate-400 whitespace-nowrap">
+                <tr key={log.id} className="hover:bg-superficie-2 transition">
+                  <td className="py-3.5 px-5 text-tinta-2 whitespace-nowrap">
                     {formatDateTime(log.created_at)}
                   </td>
-                  <td className="py-3.5 px-5 font-sans font-medium text-white">
-                    {log.user_name} <span className="text-[10px] text-slate-500">({log.user_role})</span>
+                  <td className="py-3.5 px-5 font-sans font-medium text-tinta">
+                    {log.user_name} <span className="text-[10px] text-tinta-2">({log.user_role})</span>
                   </td>
-                  <td className="py-3.5 px-5 font-bold text-emerald-400">
+                  <td className="py-3.5 px-5 font-bold text-marca-escura">
                     {log.action}
                   </td>
                   <td className="py-3.5 px-5">
-                    <span className="bg-slate-950 text-indigo-300 border border-slate-800 px-2 py-0.5 rounded-full text-[10px] mr-2">
+                    <span className="bg-fundo text-indigo-700 border border-borda px-2 py-0.5 rounded-full text-[10px] mr-2">
                       {log.entity_type}
                     </span>
-                    <span className="text-slate-200 font-bold">{log.entity_number || log.entity_id}</span>
+                    <span className="text-tinta font-bold">{log.entity_number || log.entity_id}</span>
                   </td>
-                  <td className="py-3.5 px-5 font-sans text-slate-400 max-w-xs truncate">
+                  <td className="py-3.5 px-5 font-sans text-tinta-2 max-w-xs truncate">
                     {log.new_data ? JSON.stringify(log.new_data) : 'Nenhum dado adicional'}
                   </td>
-                  <td className="py-3.5 px-5 text-right text-slate-500 font-mono">
+                  <td className="py-3.5 px-5 text-right text-tinta-2 font-mono">
                     {log.ip_address}
                   </td>
                 </tr>
@@ -262,34 +262,34 @@ export const SettingsView: React.FC<{ onNavigate: (view: string) => void }> = ({
   return (
     <div className="space-y-6 pb-12">
       {/* Header Bento Card */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-superficie border border-borda rounded-3xl p-6 shadow-xl">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-indigo-500/10 border border-indigo-500/20 rounded-2xl flex items-center justify-center text-indigo-400">
+          <div className="w-10 h-10 bg-indigo-500/10 border border-indigo-500/20 rounded-2xl flex items-center justify-center text-indigo-700">
             <Sliders className="w-5 h-5" />
           </div>
           <div>
-            <h1 className="text-xl font-bold tracking-tight text-white">Configurações Gerais & Banco de Dados</h1>
-            <p className="text-xs text-slate-400 mt-0.5">Parâmetros da consultoria de SST, migrations do Supabase e eSocial.</p>
+            <h1 className="text-xl font-bold tracking-tight text-tinta">Configurações Gerais & Banco de Dados</h1>
+            <p className="text-xs text-tinta-2 mt-0.5">Parâmetros da consultoria de SST, migrations do Supabase e eSocial.</p>
           </div>
         </div>
       </div>
 
       {/* Supabase Prev Workflow Card */}
-      <div className="bg-gradient-to-br from-slate-900 via-slate-900 to-emerald-950/30 p-6 rounded-3xl border border-emerald-500/30 shadow-2xl space-y-5">
+      <div className="bg-gradient-to-br from-slate-900 via-slate-900 to-emerald-950/30 p-6 rounded-3xl border border-marca-escura shadow-2xl space-y-5">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl flex items-center justify-center text-emerald-400">
+            <div className="w-10 h-10 bg-marca-suave border border-marca-escura rounded-2xl flex items-center justify-center text-marca-escura">
               <Database className="w-5 h-5" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-base font-bold text-white">Banco de Dados Supabase (PostgreSQL)</h2>
-                <span className="text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded-full">
+                <h2 className="text-base font-bold text-tinta">Banco de Dados Supabase (PostgreSQL)</h2>
+                <span className="text-[10px] font-bold bg-marca-suave text-marca-escura border border-marca-escura px-2 py-0.5 rounded-full">
                   Prev Workflow
                 </span>
               </div>
-              <p className="text-xs text-slate-400 mt-0.5">
-                Conectado ao projeto <strong>{SUPABASE_PROJECT_NAME}</strong> (Ref: <code className="font-mono text-emerald-300">{SUPABASE_PROJECT_REF}</code>)
+              <p className="text-xs text-tinta-2 mt-0.5">
+                Conectado ao projeto <strong>{SUPABASE_PROJECT_NAME}</strong> (Ref: <code className="font-mono text-marca-escura">{SUPABASE_PROJECT_REF}</code>)
               </p>
             </div>
           </div>
@@ -298,16 +298,16 @@ export const SettingsView: React.FC<{ onNavigate: (view: string) => void }> = ({
             <button
               onClick={handleTestConnection}
               disabled={isTestingConn}
-              className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white rounded-xl text-xs font-semibold shadow-sm transition flex items-center gap-2"
+              className="px-3.5 py-2 bg-marca hover:bg-marca-escura disabled:opacity-50 text-white rounded-xl text-xs font-semibold shadow-sm transition flex items-center gap-2"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${isTestingConn ? 'animate-spin' : ''}`} />
               <span>{isTestingConn ? 'Testando Conexão...' : 'Testar Conexão Supabase'}</span>
             </button>
             <button
               onClick={() => setShowSqlModal(true)}
-              className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-xl text-xs font-semibold transition flex items-center gap-2"
+              className="px-3.5 py-2 bg-superficie-2 hover:bg-superficie-3 text-tinta border border-borda rounded-xl text-xs font-semibold transition flex items-center gap-2"
             >
-              <Layers className="w-3.5 h-3.5 text-indigo-400" />
+              <Layers className="w-3.5 h-3.5 text-indigo-700" />
               <span>Ver Migrations SQL</span>
             </button>
           </div>
@@ -317,13 +317,13 @@ export const SettingsView: React.FC<{ onNavigate: (view: string) => void }> = ({
         {connectionResult.tested && (
           <div className={`p-4 rounded-2xl border text-xs flex items-start gap-3 ${
             connectionResult.success 
-              ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-200' 
+              ? 'bg-marca-suave border-marca-escura text-marca-escura' 
               : 'bg-amber-500/10 border-amber-500/30 text-amber-200'
           }`}>
             {connectionResult.success ? (
-              <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
+              <CheckCircle2 className="w-4 h-4 text-marca-escura flex-shrink-0 mt-0.5" />
             ) : (
-              <AlertCircle className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
+              <AlertCircle className="w-4 h-4 text-amber-700 flex-shrink-0 mt-0.5" />
             )}
             <div className="space-y-1">
               <div className="font-bold">
@@ -336,32 +336,32 @@ export const SettingsView: React.FC<{ onNavigate: (view: string) => void }> = ({
 
         {/* Project Technical Details Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 text-xs">
-          <div className="p-3.5 bg-slate-950/80 border border-slate-800 rounded-2xl space-y-1">
-            <span className="text-[10px] text-slate-500 font-semibold uppercase block">Project Name</span>
-            <span className="font-bold text-white">{SUPABASE_PROJECT_NAME}</span>
+          <div className="p-3.5 bg-fundo border border-borda rounded-2xl space-y-1">
+            <span className="text-[10px] text-tinta-2 font-semibold uppercase block">Project Name</span>
+            <span className="font-bold text-tinta">{SUPABASE_PROJECT_NAME}</span>
           </div>
 
-          <div className="p-3.5 bg-slate-950/80 border border-slate-800 rounded-2xl space-y-1">
-            <span className="text-[10px] text-slate-500 font-semibold uppercase block">Project Reference</span>
-            <span className="font-mono text-emerald-400 font-bold">{SUPABASE_PROJECT_REF}</span>
+          <div className="p-3.5 bg-fundo border border-borda rounded-2xl space-y-1">
+            <span className="text-[10px] text-tinta-2 font-semibold uppercase block">Project Reference</span>
+            <span className="font-mono text-marca-escura font-bold">{SUPABASE_PROJECT_REF}</span>
           </div>
 
-          <div className="p-3.5 bg-slate-950/80 border border-slate-800 rounded-2xl space-y-1">
-            <span className="text-[10px] text-slate-500 font-semibold uppercase block">Supabase Endpoint URL</span>
-            <span className="font-mono text-slate-300 truncate block text-[11px]">{DEFAULT_SUPABASE_URL}</span>
+          <div className="p-3.5 bg-fundo border border-borda rounded-2xl space-y-1">
+            <span className="text-[10px] text-tinta-2 font-semibold uppercase block">Supabase Endpoint URL</span>
+            <span className="font-mono text-tinta truncate block text-[11px]">{DEFAULT_SUPABASE_URL}</span>
           </div>
         </div>
 
         {/* Migrations Summary Card */}
-        <div className="p-4 bg-slate-950 border border-slate-800 rounded-2xl space-y-3">
+        <div className="p-4 bg-fundo border border-borda rounded-2xl space-y-3">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 text-xs font-semibold text-white">
-              <FileCode2 className="w-4 h-4 text-emerald-400" />
+            <div className="flex items-center gap-2 text-xs font-semibold text-tinta">
+              <FileCode2 className="w-4 h-4 text-marca-escura" />
               <span>Arquivos de Migration no Repositório ({SUPABASE_MIGRATIONS.length})</span>
             </div>
             <button
               onClick={() => setShowSqlModal(true)}
-              className="text-[11px] font-semibold text-emerald-400 hover:text-emerald-300 flex items-center gap-1 transition"
+              className="text-[11px] font-semibold text-marca-escura hover:text-marca-escura flex items-center gap-1 transition"
             >
               <span>Abrir Gerenciador de Migrations</span>
               <ExternalLink className="w-3 h-3" />
@@ -370,45 +370,45 @@ export const SettingsView: React.FC<{ onNavigate: (view: string) => void }> = ({
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {SUPABASE_MIGRATIONS.map((m, idx) => (
-              <div key={m.version} className="p-3 bg-slate-900/90 border border-slate-800/80 rounded-xl space-y-2">
+              <div key={m.version} className="p-3 bg-superficie border border-borda rounded-xl space-y-2">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <span className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px] font-bold flex items-center justify-center">
+                    <span className="w-5 h-5 rounded-full bg-marca-suave text-marca-escura text-[10px] font-bold flex items-center justify-center">
                       0{idx + 1}
                     </span>
-                    <span className="font-mono text-xs font-bold text-slate-200 truncate max-w-[200px]">
+                    <span className="font-mono text-xs font-bold text-tinta truncate max-w-[200px]">
                       {m.filename}
                     </span>
                   </div>
                   <button
                     onClick={() => copyToClipboard(m.sql, idx)}
-                    className="p-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-[10px] flex items-center gap-1 transition"
+                    className="p-1.5 bg-superficie-2 hover:bg-superficie-3 text-tinta rounded-lg text-[10px] flex items-center gap-1 transition"
                     title="Copiar SQL da migration"
                   >
                     {copiedMigrationIdx === idx ? (
-                      <Check className="w-3 h-3 text-emerald-400" />
+                      <Check className="w-3 h-3 text-marca-escura" />
                     ) : (
                       <Copy className="w-3 h-3" />
                     )}
                     <span>{copiedMigrationIdx === idx ? 'Copiado' : 'Copiar SQL'}</span>
                   </button>
                 </div>
-                <p className="text-[11px] text-slate-400 line-clamp-2">{m.description}</p>
+                <p className="text-[11px] text-tinta-2 line-clamp-2">{m.description}</p>
               </div>
             ))}
           </div>
         </div>
 
         {/* CLI Link & Push Commands */}
-        <div className="p-4 bg-slate-950 border border-slate-800 rounded-2xl space-y-3">
+        <div className="p-4 bg-fundo border border-borda rounded-2xl space-y-3">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 text-xs font-semibold text-slate-300">
-              <Terminal className="w-3.5 h-3.5 text-emerald-400" />
+            <div className="flex items-center gap-2 text-xs font-semibold text-tinta">
+              <Terminal className="w-3.5 h-3.5 text-marca-escura" />
               <span>Comandos Supabase CLI (Link & Push):</span>
             </div>
             <button
               onClick={() => copyToClipboard(`${cliCommand}\n${pushCommand}`, 'cli')}
-              className="text-[11px] font-semibold text-emerald-400 hover:text-emerald-300 flex items-center gap-1.5 transition"
+              className="text-[11px] font-semibold text-marca-escura hover:text-marca-escura flex items-center gap-1.5 transition"
             >
               {copiedCli ? (
                 <>
@@ -423,7 +423,7 @@ export const SettingsView: React.FC<{ onNavigate: (view: string) => void }> = ({
               )}
             </button>
           </div>
-          <div className="p-3 bg-slate-900 border border-slate-800 rounded-xl font-mono text-xs text-emerald-300 overflow-x-auto select-all space-y-1">
+          <div className="p-3 bg-superficie border border-borda rounded-xl font-mono text-xs text-marca-escura overflow-x-auto select-all space-y-1">
             <div>{cliCommand}</div>
             <div>{pushCommand}</div>
           </div>
@@ -431,16 +431,16 @@ export const SettingsView: React.FC<{ onNavigate: (view: string) => void }> = ({
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-        <div className="bg-slate-900 p-6 rounded-3xl border border-slate-800 shadow-xl space-y-5 lg:col-span-2">
+        <div className="bg-superficie p-6 rounded-3xl border border-borda shadow-xl space-y-5 lg:col-span-2">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <h2 className="text-base font-bold text-white">Dados da Empresa</h2>
-              <p className="text-[11px] text-slate-400 mt-0.5">
+              <h2 className="text-base font-bold text-tinta">Dados da Empresa</h2>
+              <p className="text-[11px] text-tinta-2 mt-0.5">
                 Sai no cabeçalho de todos os PDFs, na tela de login e no portal do cliente.
               </p>
             </div>
             {orgSaved && (
-              <span className="text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold px-2.5 py-1 rounded-full whitespace-nowrap">
+              <span className="text-[10px] bg-marca-suave text-marca-escura border border-marca-escura font-bold px-2.5 py-1 rounded-full whitespace-nowrap">
                 SALVO
               </span>
             )}
@@ -448,132 +448,132 @@ export const SettingsView: React.FC<{ onNavigate: (view: string) => void }> = ({
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
             <div>
-              <label className="block font-semibold text-slate-400 mb-1">Razão Social</label>
+              <label className="block font-semibold text-tinta-2 mb-1">Razão Social</label>
               <input
                 type="text"
                 value={orgForm.legal_name}
                 onChange={(e) => setOrgForm({ ...orgForm, legal_name: e.target.value })}
-                className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-2xl text-white focus:outline-none focus:border-indigo-500"
+                className="w-full p-2.5 bg-fundo border border-borda rounded-2xl text-tinta focus:outline-none focus:border-indigo-500"
               />
             </div>
             <div>
-              <label className="block font-semibold text-slate-400 mb-1">Nome Fantasia</label>
+              <label className="block font-semibold text-tinta-2 mb-1">Nome Fantasia</label>
               <input
                 type="text"
                 value={orgForm.name}
                 onChange={(e) => setOrgForm({ ...orgForm, name: e.target.value })}
-                className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-2xl text-white focus:outline-none focus:border-indigo-500"
+                className="w-full p-2.5 bg-fundo border border-borda rounded-2xl text-tinta focus:outline-none focus:border-indigo-500"
               />
             </div>
             <div>
-              <label className="block font-semibold text-slate-400 mb-1">CNPJ</label>
+              <label className="block font-semibold text-tinta-2 mb-1">CNPJ</label>
               <input
                 type="text"
                 value={orgForm.document_number}
                 onChange={(e) => setOrgForm({ ...orgForm, document_number: e.target.value })}
-                className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-2xl font-mono text-white focus:outline-none focus:border-indigo-500"
+                className="w-full p-2.5 bg-fundo border border-borda rounded-2xl font-mono text-tinta focus:outline-none focus:border-indigo-500"
               />
             </div>
             <div>
-              <label className="block font-semibold text-slate-400 mb-1">E-mail Corporativo</label>
+              <label className="block font-semibold text-tinta-2 mb-1">E-mail Corporativo</label>
               <input
                 type="email"
                 value={orgForm.email}
                 onChange={(e) => setOrgForm({ ...orgForm, email: e.target.value })}
-                className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-2xl text-white focus:outline-none focus:border-indigo-500"
+                className="w-full p-2.5 bg-fundo border border-borda rounded-2xl text-tinta focus:outline-none focus:border-indigo-500"
               />
             </div>
             <div>
-              <label className="block font-semibold text-slate-400 mb-1">Telefone / WhatsApp</label>
+              <label className="block font-semibold text-tinta-2 mb-1">Telefone / WhatsApp</label>
               <input
                 type="text"
                 value={orgForm.phone}
                 onChange={(e) => setOrgForm({ ...orgForm, phone: e.target.value })}
-                className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-2xl text-white focus:outline-none focus:border-indigo-500"
+                className="w-full p-2.5 bg-fundo border border-borda rounded-2xl text-tinta focus:outline-none focus:border-indigo-500"
               />
             </div>
 
-            <div className="sm:col-span-2 pt-2 border-t border-slate-800">
-              <p className="font-bold text-slate-300 text-[11px] uppercase tracking-wider">Responsabilidade Técnica</p>
-              <p className="text-[10px] text-slate-500 mt-0.5">
+            <div className="sm:col-span-2 pt-2 border-t border-borda">
+              <p className="font-bold text-tinta text-[11px] uppercase tracking-wider">Responsabilidade Técnica</p>
+              <p className="text-[10px] text-tinta-2 mt-0.5">
                 Assina o PGR, o PCMSO e o LTCAT emitidos pelo sistema. Sem isto, os documentos saem marcados como &quot;não informado&quot;.
               </p>
             </div>
 
             <div>
-              <label className="block font-semibold text-slate-400 mb-1">Responsável Técnico (Engenharia)</label>
+              <label className="block font-semibold text-tinta-2 mb-1">Responsável Técnico (Engenharia)</label>
               <input
                 type="text"
                 placeholder="Nome completo do engenheiro(a)"
                 value={orgForm.technical_responsible_name}
                 onChange={(e) => setOrgForm({ ...orgForm, technical_responsible_name: e.target.value })}
-                className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-2xl text-white focus:outline-none focus:border-indigo-500"
+                className="w-full p-2.5 bg-fundo border border-borda rounded-2xl text-tinta focus:outline-none focus:border-indigo-500"
               />
             </div>
             <div>
-              <label className="block font-semibold text-slate-400 mb-1">Qualificação do Responsável</label>
+              <label className="block font-semibold text-tinta-2 mb-1">Qualificação do Responsável</label>
               <input
                 type="text"
                 placeholder="Ex.: Engenheiro de Segurança do Trabalho"
                 value={orgForm.technical_responsible_title}
                 onChange={(e) => setOrgForm({ ...orgForm, technical_responsible_title: e.target.value })}
-                className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-2xl text-white focus:outline-none focus:border-indigo-500"
+                className="w-full p-2.5 bg-fundo border border-borda rounded-2xl text-tinta focus:outline-none focus:border-indigo-500"
               />
             </div>
             <div>
-              <label className="block font-semibold text-slate-400 mb-1">Registro no Conselho (CREA/CRM)</label>
+              <label className="block font-semibold text-tinta-2 mb-1">Registro no Conselho (CREA/CRM)</label>
               <input
                 type="text"
                 placeholder="Ex.: CREA-BA 201812345-D"
                 value={orgForm.technical_responsible_council}
                 onChange={(e) => setOrgForm({ ...orgForm, technical_responsible_council: e.target.value })}
-                className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-2xl font-mono text-white focus:outline-none focus:border-indigo-500"
+                className="w-full p-2.5 bg-fundo border border-borda rounded-2xl font-mono text-tinta focus:outline-none focus:border-indigo-500"
               />
             </div>
             <div>
-              <label className="block font-semibold text-slate-400 mb-1">ART de Cargo / Função</label>
+              <label className="block font-semibold text-tinta-2 mb-1">ART de Cargo / Função</label>
               <input
                 type="text"
                 placeholder="Número da ART"
                 value={orgForm.technical_responsible_art}
                 onChange={(e) => setOrgForm({ ...orgForm, technical_responsible_art: e.target.value })}
-                className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-2xl font-mono text-white focus:outline-none focus:border-indigo-500"
+                className="w-full p-2.5 bg-fundo border border-borda rounded-2xl font-mono text-tinta focus:outline-none focus:border-indigo-500"
               />
             </div>
             <div>
-              <label className="block font-semibold text-slate-400 mb-1">Médico(a) Coordenador(a) do PCMSO</label>
+              <label className="block font-semibold text-tinta-2 mb-1">Médico(a) Coordenador(a) do PCMSO</label>
               <input
                 type="text"
                 placeholder="Nome completo do médico(a)"
                 value={orgForm.pcmso_physician_name}
                 onChange={(e) => setOrgForm({ ...orgForm, pcmso_physician_name: e.target.value })}
-                className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-2xl text-white focus:outline-none focus:border-indigo-500"
+                className="w-full p-2.5 bg-fundo border border-borda rounded-2xl text-tinta focus:outline-none focus:border-indigo-500"
               />
             </div>
             <div>
-              <label className="block font-semibold text-slate-400 mb-1">CRM do Coordenador PCMSO</label>
+              <label className="block font-semibold text-tinta-2 mb-1">CRM do Coordenador PCMSO</label>
               <input
                 type="text"
                 placeholder="Ex.: CRM 189204/BA"
                 value={orgForm.pcmso_physician_crm}
                 onChange={(e) => setOrgForm({ ...orgForm, pcmso_physician_crm: e.target.value })}
-                className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-2xl font-mono text-white focus:outline-none focus:border-indigo-500"
+                className="w-full p-2.5 bg-fundo border border-borda rounded-2xl font-mono text-tinta focus:outline-none focus:border-indigo-500"
               />
             </div>
             <div className="sm:col-span-2">
-              <label className="block font-semibold text-slate-400 mb-1">RQE em Medicina do Trabalho</label>
+              <label className="block font-semibold text-tinta-2 mb-1">RQE em Medicina do Trabalho</label>
               <input
                 type="text"
                 placeholder="Registro de Qualificação de Especialista"
                 value={orgForm.pcmso_physician_rqe}
                 onChange={(e) => setOrgForm({ ...orgForm, pcmso_physician_rqe: e.target.value })}
-                className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-2xl font-mono text-white focus:outline-none focus:border-indigo-500"
+                className="w-full p-2.5 bg-fundo border border-borda rounded-2xl font-mono text-tinta focus:outline-none focus:border-indigo-500"
               />
             </div>
           </div>
 
           {orgError && (
-            <div className="p-3 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-[11px]">
+            <div className="p-3 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-700 text-[11px]">
               {orgError}
             </div>
           )}
@@ -583,7 +583,7 @@ export const SettingsView: React.FC<{ onNavigate: (view: string) => void }> = ({
               type="button"
               onClick={handleResetOrgForm}
               disabled={!orgDirty}
-              className="px-4 py-2 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition disabled:opacity-40"
+              className="px-4 py-2 rounded-2xl bg-superficie-2 hover:bg-superficie-3 text-tinta text-xs font-semibold transition disabled:opacity-40"
             >
               Descartar
             </button>
@@ -597,24 +597,24 @@ export const SettingsView: React.FC<{ onNavigate: (view: string) => void }> = ({
             </button>
           </div>
 
-          <h2 className="text-base font-bold text-white pt-4 border-t border-slate-800">Integração com eSocial & Mensageria</h2>
+          <h2 className="text-base font-bold text-tinta pt-4 border-t border-borda">Integração com eSocial & Mensageria</h2>
           <div className="space-y-3 text-xs">
-            <div className="p-4 bg-slate-950/60 rounded-2xl border border-slate-800 flex items-center justify-between">
+            <div className="p-4 bg-fundo rounded-2xl border border-borda flex items-center justify-between">
               <div>
-                <div className="font-bold text-white">Eventos de SST (S-2210, S-2220, S-2240)</div>
-                <div className="text-slate-400 text-[11px] mt-0.5">Transmissão direta com Certificado Digital A1</div>
+                <div className="font-bold text-tinta">Eventos de SST (S-2210, S-2220, S-2240)</div>
+                <div className="text-tinta-2 text-[11px] mt-0.5">Transmissão direta com Certificado Digital A1</div>
               </div>
-              <span className="text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold px-2.5 py-1 rounded-full">
+              <span className="text-[10px] bg-marca-suave text-marca-escura border border-marca-escura font-bold px-2.5 py-1 rounded-full">
                 ATIVO
               </span>
             </div>
 
-            <div className="p-4 bg-slate-950/60 rounded-2xl border border-slate-800 flex items-center justify-between">
+            <div className="p-4 bg-fundo rounded-2xl border border-borda flex items-center justify-between">
               <div>
-                <div className="font-bold text-white">WhatsApp Business API (Meta Cloud)</div>
-                <div className="text-slate-400 text-[11px] mt-0.5">Disparo automatizado de avisos de SLA e cobranças D-3/D-1/D0</div>
+                <div className="font-bold text-tinta">WhatsApp Business API (Meta Cloud)</div>
+                <div className="text-tinta-2 text-[11px] mt-0.5">Disparo automatizado de avisos de SLA e cobranças D-3/D-1/D0</div>
               </div>
-              <span className="text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold px-2.5 py-1 rounded-full">
+              <span className="text-[10px] bg-marca-suave text-marca-escura border border-marca-escura font-bold px-2.5 py-1 rounded-full">
                 CONECTADO
               </span>
             </div>
@@ -622,10 +622,10 @@ export const SettingsView: React.FC<{ onNavigate: (view: string) => void }> = ({
         </div>
 
         {/* Database & Demo Reset */}
-        <div className="bg-slate-900 p-6 rounded-3xl border border-slate-800 shadow-xl space-y-4 flex flex-col justify-between">
+        <div className="bg-superficie p-6 rounded-3xl border border-borda shadow-xl space-y-4 flex flex-col justify-between">
           <div>
-            <h2 className="text-base font-bold text-white">Demonstração & Reset Local</h2>
-            <p className="text-xs text-slate-400 mt-2 leading-relaxed">
+            <h2 className="text-base font-bold text-tinta">Demonstração & Reset Local</h2>
+            <p className="text-xs text-tinta-2 mt-2 leading-relaxed">
               Restaure a base completa de dados de simulação (clientes, propostas, contratos assinados, OS com SLA e auditoria) para testar os fluxos operacionais.
             </p>
           </div>
@@ -633,15 +633,15 @@ export const SettingsView: React.FC<{ onNavigate: (view: string) => void }> = ({
           <div className="pt-4 space-y-2.5">
             <button
               onClick={() => onNavigate('tenant-theme-settings')}
-              className="w-full px-4 py-3 bg-gradient-to-r from-emerald-600/30 to-teal-600/30 hover:from-emerald-600/40 hover:to-teal-600/40 text-emerald-200 border border-emerald-500/40 rounded-2xl text-xs font-bold transition flex items-center justify-center space-x-2 shadow-lg"
+              className="w-full px-4 py-3 bg-gradient-to-r from-marca to-teal-600/30 hover:from-marca hover:to-teal-600/40 text-marca-escura border border-marca-escura rounded-2xl text-xs font-bold transition flex items-center justify-center space-x-2 shadow-lg"
             >
-              <Palette className="w-4 h-4 text-emerald-400" />
+              <Palette className="w-4 h-4 text-marca-escura" />
               <span>Personalizar Tema & Cores do Tenant (PWA/Portal)</span>
             </button>
 
             <button
               onClick={() => onNavigate('saas-management')}
-              className="w-full px-4 py-3 bg-teal-500/10 hover:bg-teal-500/20 text-teal-300 border border-teal-500/30 rounded-2xl text-xs font-bold transition flex items-center justify-center space-x-2"
+              className="w-full px-4 py-3 bg-teal-500/10 hover:bg-teal-500/20 text-teal-700 border border-teal-500/30 rounded-2xl text-xs font-bold transition flex items-center justify-center space-x-2"
             >
               <Building className="w-4 h-4" />
               <span>Gestão de Assinantes SaaS (Super Admin)</span>
@@ -649,7 +649,7 @@ export const SettingsView: React.FC<{ onNavigate: (view: string) => void }> = ({
 
             <button
               onClick={() => setShowSqlModal(true)}
-              className="w-full px-4 py-3 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 rounded-2xl text-xs font-bold transition flex items-center justify-center space-x-2"
+              className="w-full px-4 py-3 bg-marca-suave hover:bg-marca-suave text-marca-escura border border-marca-escura rounded-2xl text-xs font-bold transition flex items-center justify-center space-x-2"
             >
               <Code2 className="w-4 h-4" />
               <span>Gerenciar Migrations SQL</span>
@@ -678,7 +678,7 @@ export const SettingsView: React.FC<{ onNavigate: (view: string) => void }> = ({
                 resetDatabaseToSeed();
                 alert('Todos os dados da organização foram apagados, aqui e no servidor.');
               }}
-              className="w-full px-4 py-3 bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/30 rounded-2xl text-xs font-bold transition flex items-center justify-center space-x-2"
+              className="w-full px-4 py-3 bg-rose-500/10 hover:bg-rose-500/20 text-rose-700 border border-rose-500/30 rounded-2xl text-xs font-bold transition flex items-center justify-center space-x-2"
             >
               <Database className="w-4 h-4" />
               <span>Limpar Base de Dados</span>
@@ -689,34 +689,34 @@ export const SettingsView: React.FC<{ onNavigate: (view: string) => void }> = ({
 
       {/* Migrations Modal with Tabs */}
       {showSqlModal && (
-        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-4xl w-full max-h-[85vh] flex flex-col shadow-2xl overflow-hidden">
-            <div className="p-5 border-b border-slate-800 flex items-center justify-between">
+        <div className="fixed inset-0 z-50 bg-fundo backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-superficie border border-borda rounded-3xl max-w-4xl w-full max-h-[85vh] flex flex-col shadow-2xl overflow-hidden">
+            <div className="p-5 border-b border-borda flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+                <div className="w-8 h-8 rounded-xl bg-marca-suave border border-marca-escura flex items-center justify-center text-marca-escura">
                   <Layers className="w-4 h-4" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-white">Gerenciador de Migrations Supabase</h3>
-                  <p className="text-xs text-slate-400">Projeto: {SUPABASE_PROJECT_NAME} ({SUPABASE_PROJECT_REF})</p>
+                  <h3 className="text-base font-bold text-tinta">Gerenciador de Migrations Supabase</h3>
+                  <p className="text-xs text-tinta-2">Projeto: {SUPABASE_PROJECT_NAME} ({SUPABASE_PROJECT_REF})</p>
                 </div>
               </div>
               <button
                 onClick={() => setShowSqlModal(false)}
-                className="text-slate-400 hover:text-white text-sm font-bold p-2 hover:bg-slate-800 rounded-xl transition"
+                className="text-tinta-2 hover:text-tinta text-sm font-bold p-2 hover:bg-superficie-2 rounded-xl transition"
               >
                 ✕
               </button>
             </div>
 
             {/* Migration Tabs */}
-            <div className="flex border-b border-slate-800 bg-slate-950/60 px-5 gap-2 overflow-x-auto">
+            <div className="flex border-b border-borda bg-fundo px-5 gap-2 overflow-x-auto">
               <button
                 onClick={() => setActiveMigrationTab(0)}
                 className={`py-3 px-3.5 text-xs font-bold border-b-2 transition flex items-center gap-2 whitespace-nowrap ${
                   activeMigrationTab === 0 
-                    ? 'border-emerald-400 text-emerald-300' 
-                    : 'border-transparent text-slate-400 hover:text-slate-200'
+                    ? 'border-marca-escura text-marca-escura' 
+                    : 'border-transparent text-tinta-2 hover:text-tinta'
                 }`}
               >
                 <FileCode2 className="w-3.5 h-3.5" />
@@ -726,8 +726,8 @@ export const SettingsView: React.FC<{ onNavigate: (view: string) => void }> = ({
                 onClick={() => setActiveMigrationTab(1)}
                 className={`py-3 px-3.5 text-xs font-bold border-b-2 transition flex items-center gap-2 whitespace-nowrap ${
                   activeMigrationTab === 1 
-                    ? 'border-emerald-400 text-emerald-300' 
-                    : 'border-transparent text-slate-400 hover:text-slate-200'
+                    ? 'border-marca-escura text-marca-escura' 
+                    : 'border-transparent text-tinta-2 hover:text-tinta'
                 }`}
               >
                 <Database className="w-3.5 h-3.5" />
@@ -737,8 +737,8 @@ export const SettingsView: React.FC<{ onNavigate: (view: string) => void }> = ({
                 onClick={() => setActiveMigrationTab(2)}
                 className={`py-3 px-3.5 text-xs font-bold border-b-2 transition flex items-center gap-2 whitespace-nowrap ${
                   activeMigrationTab === 2 
-                    ? 'border-emerald-400 text-emerald-300' 
-                    : 'border-transparent text-slate-400 hover:text-slate-200'
+                    ? 'border-marca-escura text-marca-escura' 
+                    : 'border-transparent text-tinta-2 hover:text-tinta'
                 }`}
               >
                 <Terminal className="w-3.5 h-3.5" />
@@ -747,42 +747,42 @@ export const SettingsView: React.FC<{ onNavigate: (view: string) => void }> = ({
             </div>
 
             {/* Content Area */}
-            <div className="p-5 overflow-y-auto flex-1 font-mono text-[11px] bg-slate-950 text-emerald-300 leading-relaxed select-all">
+            <div className="p-5 overflow-y-auto flex-1 font-mono text-[11px] bg-fundo text-marca-escura leading-relaxed select-all">
               {activeMigrationTab === 0 && (
                 <div>
-                  <div className="text-slate-500 mb-3 font-sans text-xs">
-                    Arquivo: <code className="text-emerald-400 font-mono">supabase/migrations/{SUPABASE_MIGRATIONS[0].filename}</code>
+                  <div className="text-tinta-2 mb-3 font-sans text-xs">
+                    Arquivo: <code className="text-marca-escura font-mono">supabase/migrations/{SUPABASE_MIGRATIONS[0].filename}</code>
                   </div>
                   <pre>{SUPABASE_MIGRATIONS[0].sql}</pre>
                 </div>
               )}
               {activeMigrationTab === 1 && (
                 <div>
-                  <div className="text-slate-500 mb-3 font-sans text-xs">
-                    Arquivo: <code className="text-emerald-400 font-mono">supabase/migrations/{SUPABASE_MIGRATIONS[1].filename}</code>
+                  <div className="text-tinta-2 mb-3 font-sans text-xs">
+                    Arquivo: <code className="text-marca-escura font-mono">supabase/migrations/{SUPABASE_MIGRATIONS[1].filename}</code>
                   </div>
                   <pre>{SUPABASE_MIGRATIONS[1].sql}</pre>
                 </div>
               )}
               {activeMigrationTab === 2 && (
-                <div className="space-y-4 font-sans text-xs text-slate-300">
-                  <div className="p-4 bg-slate-900 border border-slate-800 rounded-2xl space-y-2">
-                    <h4 className="font-bold text-white text-sm">Como executar no Supabase CLI:</h4>
-                    <ol className="list-decimal pl-5 space-y-1.5 text-slate-400">
-                      <li>Certifique-se de ter a CLI do Supabase instalada: <code className="text-emerald-400 font-mono">npm i -g supabase</code></li>
-                      <li>Vincule o projeto com: <code className="text-emerald-400 font-mono">{cliCommand}</code></li>
-                      <li>Envie e execute todas as migrations com: <code className="text-emerald-400 font-mono">supabase db push</code></li>
+                <div className="space-y-4 font-sans text-xs text-tinta">
+                  <div className="p-4 bg-superficie border border-borda rounded-2xl space-y-2">
+                    <h4 className="font-bold text-tinta text-sm">Como executar no Supabase CLI:</h4>
+                    <ol className="list-decimal pl-5 space-y-1.5 text-tinta-2">
+                      <li>Certifique-se de ter a CLI do Supabase instalada: <code className="text-marca-escura font-mono">npm i -g supabase</code></li>
+                      <li>Vincule o projeto com: <code className="text-marca-escura font-mono">{cliCommand}</code></li>
+                      <li>Envie e execute todas as migrations com: <code className="text-marca-escura font-mono">supabase db push</code></li>
                     </ol>
                   </div>
 
-                  <div className="p-4 bg-slate-900 border border-slate-800 rounded-2xl space-y-2">
-                    <h4 className="font-bold text-white text-sm">Como executar no painel Web do Supabase:</h4>
-                    <p className="text-slate-400">
+                  <div className="p-4 bg-superficie border border-borda rounded-2xl space-y-2">
+                    <h4 className="font-bold text-tinta text-sm">Como executar no painel Web do Supabase:</h4>
+                    <p className="text-tinta-2">
                       Acesse <strong>supabase.com/dashboard/project/{SUPABASE_PROJECT_REF}</strong> &gt; <strong>SQL Editor</strong> &gt; <strong>New Query</strong>, cole o SQL unificado abaixo e clique em <strong>Run</strong>.
                     </p>
                   </div>
 
-                  <div className="font-mono text-[11px] text-emerald-300 bg-slate-950 p-4 rounded-xl border border-slate-800 overflow-x-auto">
+                  <div className="font-mono text-[11px] text-marca-escura bg-fundo p-4 rounded-xl border border-borda overflow-x-auto">
                     <pre>{SUPABASE_SQL_SCHEMA + '\n\n' + SUPABASE_MIGRATIONS[1].sql}</pre>
                   </div>
                 </div>
@@ -790,8 +790,8 @@ export const SettingsView: React.FC<{ onNavigate: (view: string) => void }> = ({
             </div>
 
             {/* Footer actions */}
-            <div className="p-4 border-t border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-900">
-              <span className="text-xs text-slate-400">
+            <div className="p-4 border-t border-borda flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-superficie">
+              <span className="text-xs text-tinta-2">
                 {activeMigrationTab === 0 && 'Cria as 15 tabelas, RLS, triggers e índices'}
                 {activeMigrationTab === 1 && 'Insere organização, perfis e catálogo de NRs SST'}
                 {activeMigrationTab === 2 && 'Script pronto para ser colado no SQL Editor do Supabase'}
@@ -806,7 +806,7 @@ export const SettingsView: React.FC<{ onNavigate: (view: string) => void }> = ({
                       : SUPABASE_SQL_SCHEMA + '\n\n' + SUPABASE_MIGRATIONS[1].sql;
                     copyToClipboard(content, 'sql');
                   }}
-                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-semibold transition flex items-center gap-2"
+                  className="px-4 py-2 bg-marca hover:bg-marca-escura text-white rounded-xl text-xs font-semibold transition flex items-center gap-2"
                 >
                   <Copy className="w-3.5 h-3.5" />
                   <span>{copiedSql ? 'SQL Copiado com Sucesso!' : 'Copiar SQL desta Aba'}</span>

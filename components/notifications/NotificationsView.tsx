@@ -78,20 +78,20 @@ export const NotificationsView: React.FC<{ onNavigate: (view: string) => void }>
   return (
     <div className="space-y-6 pb-12">
       {/* Header Bento Card */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-superficie border border-borda rounded-3xl p-6 shadow-xl">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-indigo-500/10 border border-indigo-500/20 rounded-2xl flex items-center justify-center text-indigo-400">
+          <div className="w-10 h-10 bg-indigo-500/10 border border-indigo-500/20 rounded-2xl flex items-center justify-center text-indigo-700">
             <BellRing className="w-5 h-5" />
           </div>
           <div>
-            <h1 className="text-xl font-bold tracking-tight text-white">Central Multicanal de Notificações</h1>
-            <p className="text-xs text-slate-400 mt-0.5">Disparos transacionais de WhatsApp, E-mail e SMS, automações de SLA e lembretes aos clientes.</p>
+            <h1 className="text-xl font-bold tracking-tight text-tinta">Central Multicanal de Notificações</h1>
+            <p className="text-xs text-tinta-2 mt-0.5">Disparos transacionais de WhatsApp, E-mail e SMS, automações de SLA e lembretes aos clientes.</p>
           </div>
         </div>
         <div className="flex items-center space-x-2">
           <button
             onClick={() => setShowSimulateSend(true)}
-            className="px-4 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-2xl text-xs font-bold shadow-lg shadow-emerald-950/40 transition flex items-center space-x-1.5"
+            className="px-4 py-2.5 bg-gradient-to-r from-marca to-teal-600 hover:from-marca hover:to-teal-500 text-white rounded-2xl text-xs font-bold shadow-lg shadow-emerald-950/40 transition flex items-center space-x-1.5"
           >
             <Send className="w-4 h-4" />
             <span>Novo Disparo Manual</span>
@@ -100,15 +100,15 @@ export const NotificationsView: React.FC<{ onNavigate: (view: string) => void }>
       </div>
 
       {/* Filter and Job Runner Bento Bar */}
-      <div className="flex flex-col sm:flex-row gap-3 items-center justify-between bg-slate-900 p-4 rounded-3xl border border-slate-800 shadow-xl">
+      <div className="flex flex-col sm:flex-row gap-3 items-center justify-between bg-superficie p-4 rounded-3xl border border-borda shadow-xl">
         <div className="relative w-full sm:w-80">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-tinta-2 absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             placeholder="Buscar histórico de mensagens..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-3 py-2 bg-slate-950 border border-slate-800 rounded-2xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500"
+            className="w-full pl-10 pr-3 py-2 bg-fundo border border-borda rounded-2xl text-xs text-tinta placeholder-tinta-3 focus:outline-none focus:border-indigo-500"
           />
         </div>
 
@@ -116,7 +116,7 @@ export const NotificationsView: React.FC<{ onNavigate: (view: string) => void }>
           <button
             onClick={() => setChannelFilter('ALL')}
             className={`px-3.5 py-2 rounded-2xl text-xs font-bold transition ${
-              channelFilter === 'ALL' ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-950 text-slate-400 hover:text-white border border-slate-800'
+              channelFilter === 'ALL' ? 'bg-indigo-600 text-white shadow-md' : 'bg-fundo text-white/85 hover:text-white border border-borda'
             }`}
           >
             Todos ({notifications.length})
@@ -124,7 +124,7 @@ export const NotificationsView: React.FC<{ onNavigate: (view: string) => void }>
           <button
             onClick={() => setChannelFilter('WHATSAPP')}
             className={`px-3.5 py-2 rounded-2xl text-xs font-bold transition ${
-              channelFilter === 'WHATSAPP' ? 'bg-emerald-600 text-white shadow-md' : 'bg-slate-950 text-slate-400 hover:text-white border border-slate-800'
+              channelFilter === 'WHATSAPP' ? 'bg-marca text-white shadow-md' : 'bg-fundo text-white/80 hover:text-white border border-borda'
             }`}
           >
             WhatsApp
@@ -132,7 +132,7 @@ export const NotificationsView: React.FC<{ onNavigate: (view: string) => void }>
           <button
             onClick={() => setChannelFilter('EMAIL')}
             className={`px-3.5 py-2 rounded-2xl text-xs font-bold transition ${
-              channelFilter === 'EMAIL' ? 'bg-blue-600 text-white shadow-md' : 'bg-slate-950 text-slate-400 hover:text-white border border-slate-800'
+              channelFilter === 'EMAIL' ? 'bg-blue-600 text-white shadow-md' : 'bg-fundo text-white/85 hover:text-white border border-borda'
             }`}
           >
             E-mail
@@ -141,33 +141,33 @@ export const NotificationsView: React.FC<{ onNavigate: (view: string) => void }>
       </div>
 
       {/* Notifications Bento List */}
-      <div className="bg-slate-900 rounded-3xl border border-slate-800 shadow-xl overflow-hidden divide-y divide-slate-800/80">
+      <div className="bg-superficie rounded-3xl border border-borda shadow-xl overflow-hidden divide-y divide-borda">
         {filteredNotifications.map((n) => (
           <div 
             key={n.id} 
             className={`p-5 flex items-start justify-between gap-4 transition ${
-              n.status === 'UNREAD' ? 'bg-indigo-500/5' : 'hover:bg-slate-800/30'
+              n.status === 'UNREAD' ? 'bg-indigo-500/5' : 'hover:bg-superficie-2'
             }`}
           >
             <div className="flex items-start space-x-3.5">
               <div className={`p-3 rounded-2xl flex-shrink-0 ${
-                n.channel === 'WHATSAPP' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' :
-                n.channel === 'EMAIL' ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' : 'bg-purple-500/10 text-purple-400 border border-purple-500/20'
+                n.channel === 'WHATSAPP' ? 'bg-marca-suave text-marca-escura border border-marca-escura' :
+                n.channel === 'EMAIL' ? 'bg-blue-500/10 text-blue-700 border border-blue-500/20' : 'bg-purple-500/10 text-purple-700 border border-purple-500/20'
               }`}>
                 {n.channel === 'WHATSAPP' ? <MessageSquare className="w-5 h-5" /> : <Mail className="w-5 h-5" />}
               </div>
               <div className="space-y-1">
                 <div className="flex items-center space-x-2">
-                  <span className="font-bold text-xs text-white">{n.title}</span>
-                  <span className="text-[10px] font-mono font-bold bg-slate-950 text-slate-300 px-2 py-0.5 rounded-full border border-slate-800">
+                  <span className="font-bold text-xs text-tinta">{n.title}</span>
+                  <span className="text-[10px] font-mono font-bold bg-fundo text-tinta px-2 py-0.5 rounded-full border border-borda">
                     {n.channel}
                   </span>
                   {n.status === 'UNREAD' && (
-                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                    <span className="w-2 h-2 rounded-full bg-marca animate-pulse" />
                   )}
                 </div>
-                <p className="text-xs text-slate-300 max-w-2xl">{n.message}</p>
-                <div className="text-[11px] text-slate-500 font-mono">
+                <p className="text-xs text-tinta max-w-2xl">{n.message}</p>
+                <div className="text-[11px] text-tinta-2 font-mono">
                   Enviado em: {formatDateTime(n.sent_at)}
                 </div>
               </div>
@@ -177,7 +177,7 @@ export const NotificationsView: React.FC<{ onNavigate: (view: string) => void }>
               {n.status === 'UNREAD' && (
                 <button
                   onClick={() => markNotificationAsRead(n.id)}
-                  className="text-xs text-indigo-400 hover:text-indigo-300 font-medium transition"
+                  className="text-xs text-indigo-700 hover:text-indigo-700 font-medium transition"
                 >
                   Marcar como lida
                 </button>
@@ -189,20 +189,20 @@ export const NotificationsView: React.FC<{ onNavigate: (view: string) => void }>
 
       {/* Manual Send Modal */}
       {showSimulateSend && (
-        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-900 rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-800 text-slate-100">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
-              <h3 className="text-sm font-bold text-white">Disparo de Notificação Multicanal</h3>
-              <button onClick={() => setShowSimulateSend(false)} className="text-slate-400 hover:text-slate-200">✕</button>
+        <div className="fixed inset-0 bg-fundo backdrop-blur-md z-50 flex items-center justify-center p-4">
+          <div className="bg-superficie rounded-3xl max-w-md w-full p-6 shadow-2xl border border-borda text-tinta">
+            <div className="flex items-center justify-between border-b border-borda pb-3 mb-4">
+              <h3 className="text-sm font-bold text-tinta">Disparo de Notificação Multicanal</h3>
+              <button onClick={() => setShowSimulateSend(false)} className="text-tinta-2 hover:text-tinta">✕</button>
             </div>
 
             <form onSubmit={handleSendManual} className="space-y-3.5 text-xs">
               <div>
-                <label className="block font-semibold text-slate-300 mb-1">Cliente Destinatário</label>
+                <label className="block font-semibold text-tinta mb-1">Cliente Destinatário</label>
                 <select
                   value={targetClientId}
                   onChange={(e) => setTargetClientId(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
                 >
                   {clients.map(c => (
                     <option key={c.id} value={c.id}>{c.trade_name}</option>
@@ -211,11 +211,11 @@ export const NotificationsView: React.FC<{ onNavigate: (view: string) => void }>
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-300 mb-1">Canal de Envio</label>
+                <label className="block font-semibold text-tinta mb-1">Canal de Envio</label>
                 <select
                   value={msgChannel}
                   onChange={(e) => setMsgChannel(e.target.value as any)}
-                  className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
                 >
                   <option value="WHATSAPP">WhatsApp</option>
                   <option value="EMAIL">E-mail</option>
@@ -223,38 +223,38 @@ export const NotificationsView: React.FC<{ onNavigate: (view: string) => void }>
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-300 mb-1">Assunto / Título *</label>
+                <label className="block font-semibold text-tinta mb-1">Assunto / Título *</label>
                 <input
                   type="text"
                   required
                   value={msgTitle}
                   onChange={(e) => setMsgTitle(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-300 mb-1">Corpo da Mensagem *</label>
+                <label className="block font-semibold text-tinta mb-1">Corpo da Mensagem *</label>
                 <textarea
                   rows={3}
                   required
                   value={msgBody}
                   onChange={(e) => setMsgBody(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
                 />
               </div>
 
-              <div className="flex justify-end space-x-2 pt-4 border-t border-slate-800">
+              <div className="flex justify-end space-x-2 pt-4 border-t border-borda">
                 <button
                   type="button"
                   onClick={() => setShowSimulateSend(false)}
-                  className="px-4 py-2 bg-slate-800 text-slate-300 rounded-xl font-semibold hover:bg-slate-700"
+                  className="px-4 py-2 bg-superficie-2 text-tinta rounded-xl font-semibold hover:bg-superficie-3"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold shadow-md"
+                  className="px-4 py-2 bg-marca hover:bg-marca-escura text-white rounded-xl font-bold shadow-md"
                 >
                   Disparar Agora
                 </button>
@@ -277,14 +277,14 @@ export const EvaluationsView: React.FC<{ onNavigate: (view: string) => void }> =
   return (
     <div className="space-y-6 pb-12">
       {/* Header Bento Card */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-superficie border border-borda rounded-3xl p-6 shadow-xl">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex items-center justify-center text-amber-400">
+          <div className="w-10 h-10 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex items-center justify-center text-amber-700">
             <Star className="w-5 h-5" />
           </div>
           <div>
-            <h1 className="text-xl font-bold tracking-tight text-white">Avaliações de Clientes & NPS</h1>
-            <p className="text-xs text-slate-400 mt-0.5">Pesquisas de satisfação pós-entrega de laudos, critérios de 1 a 5 e oportunidades de renovação contratual.</p>
+            <h1 className="text-xl font-bold tracking-tight text-tinta">Avaliações de Clientes & NPS</h1>
+            <p className="text-xs text-tinta-2 mt-0.5">Pesquisas de satisfação pós-entrega de laudos, critérios de 1 a 5 e oportunidades de renovação contratual.</p>
           </div>
         </div>
       </div>
@@ -296,39 +296,39 @@ export const EvaluationsView: React.FC<{ onNavigate: (view: string) => void }> =
           const os = serviceOrders.find(o => o.id === ev.service_order_id);
 
           return (
-            <div key={ev.id} className="bg-slate-900 p-6 rounded-3xl border border-slate-800 shadow-xl space-y-4 flex flex-col justify-between hover:border-slate-700 transition">
+            <div key={ev.id} className="bg-superficie p-6 rounded-3xl border border-borda shadow-xl space-y-4 flex flex-col justify-between hover:border-borda transition">
               <div>
                 <div className="flex items-start justify-between">
                   <div>
-                    <span className="text-sm font-bold text-white">{ev.service_title}</span>
-                    <div className="text-xs text-slate-400 mt-0.5">{client?.trade_name}</div>
+                    <span className="text-sm font-bold text-tinta">{ev.service_title}</span>
+                    <div className="text-xs text-tinta-2 mt-0.5">{client?.trade_name}</div>
                   </div>
                   <div className="text-right">
-                    <span className="text-lg font-extrabold text-emerald-400 font-mono">
+                    <span className="text-lg font-extrabold text-marca-escura font-mono">
                       NPS {ev.nps_score}/10
                     </span>
-                    <div className="text-xs text-amber-400">
+                    <div className="text-xs text-amber-700">
                       {'★'.repeat(ev.overall_score)}
                     </div>
                   </div>
                 </div>
 
                 {/* Criteria detail */}
-                <div className="grid grid-cols-2 gap-2 text-[11px] bg-slate-950/60 p-3.5 rounded-2xl border border-slate-800 mt-3 text-slate-300">
-                  <div>Qualidade Técnica: <strong className="text-white">{ev.quality_score}/5</strong></div>
-                  <div>Pontualidade: <strong className="text-white">{ev.deadline_score}/5</strong></div>
-                  <div>Atendimento: <strong className="text-white">{ev.service_score}/5</strong></div>
-                  <div>Comunicação: <strong className="text-white">{ev.communication_score}/5</strong></div>
+                <div className="grid grid-cols-2 gap-2 text-[11px] bg-fundo p-3.5 rounded-2xl border border-borda mt-3 text-tinta">
+                  <div>Qualidade Técnica: <strong className="text-tinta">{ev.quality_score}/5</strong></div>
+                  <div>Pontualidade: <strong className="text-tinta">{ev.deadline_score}/5</strong></div>
+                  <div>Atendimento: <strong className="text-tinta">{ev.service_score}/5</strong></div>
+                  <div>Comunicação: <strong className="text-tinta">{ev.communication_score}/5</strong></div>
                 </div>
 
-                <p className="text-xs text-slate-300 italic mt-3">
+                <p className="text-xs text-tinta italic mt-3">
                   &ldquo;{ev.comment}&rdquo;
                 </p>
               </div>
 
-              <div className="pt-3.5 border-t border-slate-800/80 flex items-center justify-between text-[11px] text-slate-400">
-                <span className="font-mono text-slate-500">{formatDate(ev.created_at)}</span>
-                <span className="text-emerald-400 font-semibold bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 rounded-full">
+              <div className="pt-3.5 border-t border-borda flex items-center justify-between text-[11px] text-tinta-2">
+                <span className="font-mono text-tinta-2">{formatDate(ev.created_at)}</span>
+                <span className="text-marca-escura font-semibold bg-marca-suave border border-marca-escura px-2.5 py-0.5 rounded-full">
                   Cliente Promotor
                 </span>
               </div>

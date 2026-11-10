@@ -122,30 +122,30 @@ export const DocumentsView: React.FC<{ onNavigate: (view: string) => void }> = (
   return (
     <div id="documents-view-container" className="space-y-6 pb-12">
       {/* Header Bento Card */}
-      <div id="documents-header" className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl">
+      <div id="documents-header" className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-superficie border border-borda rounded-3xl p-6 shadow-xl">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-indigo-500/10 border border-indigo-500/20 rounded-2xl flex items-center justify-center text-indigo-400">
+          <div className="w-10 h-10 bg-indigo-500/10 border border-indigo-500/20 rounded-2xl flex items-center justify-center text-indigo-700">
             <FileText className="w-5 h-5" />
           </div>
           <div>
-            <h1 className="text-xl font-bold tracking-tight text-white">Repositório de Documentos & Laudos SST</h1>
-            <p className="text-xs text-slate-400 mt-0.5">Laudos finais (PGR, PCMSO, LTCAT, AET), controle de versão, releases e integridade.</p>
+            <h1 className="text-xl font-bold tracking-tight text-tinta">Repositório de Documentos & Laudos SST</h1>
+            <p className="text-xs text-tinta-2 mt-0.5">Laudos finais (PGR, PCMSO, LTCAT, AET), controle de versão, releases e integridade.</p>
           </div>
         </div>
         <div className="flex items-center space-x-2">
           <button 
             type="button"
             onClick={() => onNavigate('reports')}
-            className="px-3.5 py-2.5 bg-slate-800 hover:bg-slate-700 text-teal-400 hover:text-teal-300 border border-teal-500/30 rounded-2xl text-xs font-bold transition flex items-center space-x-1.5 shadow-sm"
+            className="px-3.5 py-2.5 bg-superficie-2 hover:bg-superficie-3 text-teal-700 hover:text-teal-700 border border-teal-500/30 rounded-2xl text-xs font-bold transition flex items-center space-x-1.5 shadow-sm"
             title="Ir para o módulo de relatórios com filtros multidimensionais e exportações"
           >
-            <FolderKanban className="w-4 h-4 text-teal-400" />
+            <FolderKanban className="w-4 h-4 text-teal-700" />
             <span>Central de Relatórios BI (Excel / PDF)</span>
           </button>
           <button 
             id="btn-new-document"
             onClick={handleOpenNewDoc}
-            className="px-4 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-2xl text-xs font-bold shadow-lg shadow-emerald-950/40 transition flex items-center space-x-1.5"
+            className="px-4 py-2.5 bg-gradient-to-r from-marca to-teal-600 hover:from-marca hover:to-teal-500 text-white rounded-2xl text-xs font-bold shadow-lg shadow-emerald-950/40 transition flex items-center space-x-1.5"
           >
             <Plus className="w-4 h-4" />
             <span>Publicar Laudo / Documento</span>
@@ -154,26 +154,26 @@ export const DocumentsView: React.FC<{ onNavigate: (view: string) => void }> = (
       </div>
 
       {/* Filter and Search Bento Bar */}
-      <div id="documents-filter-bar" className="flex flex-col sm:flex-row gap-3 items-center justify-between bg-slate-900 p-4 rounded-3xl border border-slate-800 shadow-xl">
+      <div id="documents-filter-bar" className="flex flex-col sm:flex-row gap-3 items-center justify-between bg-superficie p-4 rounded-3xl border border-borda shadow-xl">
         <div className="relative w-full sm:w-80">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-tinta-2 absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
             id="input-search-documents"
             type="text"
             placeholder="Buscar por título ou número de documento..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-3 py-2 bg-slate-950 border border-slate-800 rounded-2xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500"
+            className="w-full pl-10 pr-3 py-2 bg-fundo border border-borda rounded-2xl text-xs text-tinta placeholder-tinta-3 focus:outline-none focus:border-indigo-500"
           />
         </div>
 
         <div className="flex items-center space-x-2">
-          <span className="text-xs text-slate-400 font-medium">Tipo:</span>
+          <span className="text-xs text-tinta-2 font-medium">Tipo:</span>
           <select
             id="select-doc-type-filter"
             value={selectedType}
             onChange={(e) => setSelectedType(e.target.value)}
-            className="px-3 py-2 bg-slate-950 border border-slate-800 rounded-2xl text-xs font-medium text-slate-300 focus:outline-none focus:border-indigo-500"
+            className="px-3 py-2 bg-fundo border border-borda rounded-2xl text-xs font-medium text-tinta focus:outline-none focus:border-indigo-500"
           >
             <option value="ALL">Todos os Tipos</option>
             <option value="PGR">PGR (NR-01)</option>
@@ -192,26 +192,26 @@ export const DocumentsView: React.FC<{ onNavigate: (view: string) => void }> = (
           const os = serviceOrders.find(o => o.id === doc.service_order_id);
 
           return (
-            <div key={doc.id} id={`doc-card-${doc.id}`} className="bg-slate-900 p-6 rounded-3xl border border-slate-800 shadow-xl flex flex-col justify-between space-y-4 hover:border-slate-700 transition group">
+            <div key={doc.id} id={`doc-card-${doc.id}`} className="bg-superficie p-6 rounded-3xl border border-borda shadow-xl flex flex-col justify-between space-y-4 hover:border-borda transition group">
               <div>
                 <div className="flex items-start justify-between">
-                  <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono">
+                  <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-marca-suave text-marca-escura border border-marca-escura font-mono">
                     {doc.document_type}
                   </span>
                   <div className="flex items-center space-x-1">
-                    <span className="text-xs font-mono font-bold text-slate-500 mr-1">
+                    <span className="text-xs font-mono font-bold text-tinta-2 mr-1">
                       v{doc.current_version}.0
                     </span>
                     <button
                       onClick={() => handleOpenEditDoc(doc)}
-                      className="p-1 hover:bg-slate-800 text-slate-400 hover:text-white rounded transition"
+                      className="p-1 hover:bg-superficie-2 text-tinta-2 hover:text-tinta rounded transition"
                       title="Editar Documento"
                     >
                       <Edit2 className="w-3.5 h-3.5" />
                     </button>
                     <button
                       onClick={() => setDeletingDoc(doc)}
-                      className="p-1 hover:bg-rose-500/20 text-slate-400 hover:text-rose-400 rounded transition"
+                      className="p-1 hover:bg-rose-500/20 text-tinta-2 hover:text-rose-700 rounded transition"
                       title="Excluir Documento"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
@@ -219,32 +219,32 @@ export const DocumentsView: React.FC<{ onNavigate: (view: string) => void }> = (
                   </div>
                 </div>
 
-                <h3 className="text-sm font-bold text-white mt-3">{doc.name}</h3>
-                <p className="text-xs text-slate-400 mt-0.5 font-mono">{doc.doc_number}</p>
+                <h3 className="text-sm font-bold text-tinta mt-3">{doc.name}</h3>
+                <p className="text-xs text-tinta-2 mt-0.5 font-mono">{doc.doc_number}</p>
 
-                <div className="mt-4 pt-3.5 border-t border-slate-800/80 space-y-1 text-xs text-slate-400">
-                  <div>Cliente: <strong className="text-slate-200">{client?.trade_name}</strong></div>
-                  {os && <div>OS: <span className="font-mono text-indigo-300">{os.os_number}</span></div>}
-                  <div className="text-[10px] text-slate-500 font-mono mt-1">
+                <div className="mt-4 pt-3.5 border-t border-borda space-y-1 text-xs text-tinta-2">
+                  <div>Cliente: <strong className="text-tinta">{client?.trade_name}</strong></div>
+                  {os && <div>OS: <span className="font-mono text-indigo-700">{os.os_number}</span></div>}
+                  <div className="text-[10px] text-tinta-2 font-mono mt-1">
                     Status: {doc.status} • {doc.is_client_released ? 'Liberado para o Cliente' : 'Interno'}
                   </div>
                 </div>
               </div>
 
-              <div className="pt-3.5 border-t border-slate-800/80 flex items-center justify-between">
+              <div className="pt-3.5 border-t border-borda flex items-center justify-between">
                 <button
                   onClick={() => toggleDocumentRelease(doc.id)}
                   className={`text-[10px] font-bold px-2.5 py-1 rounded-xl transition ${
                     doc.is_client_released 
-                      ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' 
-                      : 'bg-slate-800 text-slate-400 border border-slate-700'
+                      ? 'bg-marca-suave text-marca-escura border border-marca-escura' 
+                      : 'bg-superficie-2 text-tinta-2 border border-borda'
                   }`}
                 >
                   {doc.is_client_released ? '✓ Visível no Portal' : 'Oculto no Portal'}
                 </button>
                 <button
                   onClick={() => alert(`O download em PDF de "${doc.name}" ainda não está disponível nesta versão do sistema.`)}
-                  className="px-3.5 py-1.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-xl text-xs font-semibold shadow-md transition flex items-center space-x-1"
+                  className="px-3.5 py-1.5 bg-gradient-to-r from-marca to-teal-600 hover:from-marca hover:to-teal-500 text-white rounded-xl text-xs font-semibold shadow-md transition flex items-center space-x-1"
                 >
                   <Download className="w-3.5 h-3.5" />
                   <span>Download PDF</span>
@@ -257,10 +257,10 @@ export const DocumentsView: React.FC<{ onNavigate: (view: string) => void }> = (
 
       {/* Upload / Edit Modal */}
       {showUploadModal && (
-        <div id="modal-document-form" className="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-900 rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-800 text-slate-100">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
-              <h3 className="text-sm font-bold text-white">
+        <div id="modal-document-form" className="fixed inset-0 bg-fundo backdrop-blur-md z-50 flex items-center justify-center p-4">
+          <div className="bg-superficie rounded-3xl max-w-md w-full p-6 shadow-2xl border border-borda text-tinta">
+            <div className="flex items-center justify-between border-b border-borda pb-3 mb-4">
+              <h3 className="text-sm font-bold text-tinta">
                 {editingDoc ? 'Editar Documento Técnico' : 'Publicar Novo Laudo / Documento Técnico'}
               </h3>
               <button 
@@ -268,7 +268,7 @@ export const DocumentsView: React.FC<{ onNavigate: (view: string) => void }> = (
                   setShowUploadModal(false);
                   setEditingDoc(null);
                 }} 
-                className="text-slate-400 hover:text-slate-200"
+                className="text-tinta-2 hover:text-tinta"
               >
                 ✕
               </button>
@@ -276,22 +276,22 @@ export const DocumentsView: React.FC<{ onNavigate: (view: string) => void }> = (
 
             <form onSubmit={handleSaveDocument} className="space-y-3.5 text-xs">
               <div>
-                <label className="block font-semibold text-slate-300 mb-1">Título do Documento *</label>
+                <label className="block font-semibold text-tinta mb-1">Título do Documento *</label>
                 <input
                   type="text"
                   required
                   value={docForm.name}
                   onChange={(e) => setDocForm({ ...docForm, name: e.target.value })}
-                  className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-300 mb-1">Tipo de Documento</label>
+                <label className="block font-semibold text-tinta mb-1">Tipo de Documento</label>
                 <select
                   value={docForm.document_type}
                   onChange={(e) => setDocForm({ ...docForm, document_type: e.target.value as any })}
-                  className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
                 >
                   <option value="PGR">PGR (NR-01) - Gerenciamento de Riscos</option>
                   <option value="PCMSO">PCMSO (NR-07) - Controle Médico</option>
@@ -302,11 +302,11 @@ export const DocumentsView: React.FC<{ onNavigate: (view: string) => void }> = (
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-300 mb-1">Cliente Vinculado</label>
+                <label className="block font-semibold text-tinta mb-1">Cliente Vinculado</label>
                 <select
                   value={docForm.client_id}
                   onChange={(e) => setDocForm({ ...docForm, client_id: e.target.value })}
-                  className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
                 >
                   {clients.map(c => (
                     <option key={c.id} value={c.id}>{c.trade_name}</option>
@@ -315,11 +315,11 @@ export const DocumentsView: React.FC<{ onNavigate: (view: string) => void }> = (
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-300 mb-1">Ordem de Serviço (Opcional)</label>
+                <label className="block font-semibold text-tinta mb-1">Ordem de Serviço (Opcional)</label>
                 <select
                   value={docForm.service_order_id}
                   onChange={(e) => setDocForm({ ...docForm, service_order_id: e.target.value })}
-                  className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
                 >
                   <option value="">Sem vínculo com OS específica</option>
                   {serviceOrders.map(o => (
@@ -329,12 +329,12 @@ export const DocumentsView: React.FC<{ onNavigate: (view: string) => void }> = (
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-300 mb-1">Observações Técnicas</label>
+                <label className="block font-semibold text-tinta mb-1">Observações Técnicas</label>
                 <textarea
                   rows={2}
                   value={docForm.notes}
                   onChange={(e) => setDocForm({ ...docForm, notes: e.target.value })}
-                  className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
                 />
               </div>
 
@@ -344,27 +344,27 @@ export const DocumentsView: React.FC<{ onNavigate: (view: string) => void }> = (
                   id="chk-doc-released"
                   checked={docForm.is_client_released}
                   onChange={(e) => setDocForm({ ...docForm, is_client_released: e.target.checked })}
-                  className="rounded border-slate-800 bg-slate-950 text-emerald-600 focus:ring-0"
+                  className="rounded border-borda bg-fundo text-marca-escura focus:ring-0"
                 />
-                <label htmlFor="chk-doc-released" className="text-slate-300 cursor-pointer">
+                <label htmlFor="chk-doc-released" className="text-tinta cursor-pointer">
                   Liberar visualização no Portal do Cliente
                 </label>
               </div>
 
-              <div className="flex justify-end space-x-2 pt-4 border-t border-slate-800">
+              <div className="flex justify-end space-x-2 pt-4 border-t border-borda">
                 <button
                   type="button"
                   onClick={() => {
                     setShowUploadModal(false);
                     setEditingDoc(null);
                   }}
-                  className="px-4 py-2 bg-slate-800 text-slate-300 rounded-xl font-semibold hover:bg-slate-700"
+                  className="px-4 py-2 bg-superficie-2 text-tinta rounded-xl font-semibold hover:bg-superficie-3"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold shadow-md"
+                  className="px-4 py-2 bg-marca hover:bg-marca-escura text-white rounded-xl font-bold shadow-md"
                 >
                   {editingDoc ? 'Atualizar Documento' : 'Publicar Documento'}
                 </button>
@@ -376,27 +376,27 @@ export const DocumentsView: React.FC<{ onNavigate: (view: string) => void }> = (
 
       {/* Delete Document Modal */}
       {deletingDoc && (
-        <div id="modal-delete-document" className="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-900 rounded-3xl max-w-md w-full p-6 shadow-2xl border border-rose-500/20 text-slate-100 space-y-4">
-            <div className="flex items-center space-x-3 text-rose-400">
+        <div id="modal-delete-document" className="fixed inset-0 bg-fundo backdrop-blur-md z-50 flex items-center justify-center p-4">
+          <div className="bg-superficie rounded-3xl max-w-md w-full p-6 shadow-2xl border border-rose-500/20 text-tinta space-y-4">
+            <div className="flex items-center space-x-3 text-rose-700">
               <div className="p-3 bg-rose-500/10 rounded-2xl border border-rose-500/20">
                 <AlertTriangle className="w-6 h-6" />
               </div>
               <div>
-                <h3 className="text-base font-bold text-white">Excluir Documento Técnico</h3>
-                <p className="text-xs text-slate-400">Esta ação removerá o laudo do repositório.</p>
+                <h3 className="text-base font-bold text-tinta">Excluir Documento Técnico</h3>
+                <p className="text-xs text-tinta-2">Esta ação removerá o laudo do repositório.</p>
               </div>
             </div>
 
-            <p className="text-xs text-slate-300">
-              Tem certeza de que deseja remover o documento <strong className="text-white">{deletingDoc.name}</strong> ({deletingDoc.doc_number})?
+            <p className="text-xs text-tinta">
+              Tem certeza de que deseja remover o documento <strong className="text-tinta">{deletingDoc.name}</strong> ({deletingDoc.doc_number})?
             </p>
 
             <div className="flex justify-end space-x-3 pt-2">
               <button
                 type="button"
                 onClick={() => setDeletingDoc(null)}
-                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold"
+                className="px-4 py-2 bg-superficie-2 hover:bg-superficie-3 text-tinta rounded-xl text-xs font-semibold"
               >
                 Cancelar
               </button>

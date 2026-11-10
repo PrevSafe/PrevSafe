@@ -130,7 +130,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           icon: DollarSign, 
           code: '450',
           badge: Array.isArray(transactions) ? `${transactions.length}` : undefined,
-          badgeColor: 'bg-emerald-500'
+          badgeColor: 'bg-marca'
         },
       ]
     },
@@ -223,7 +223,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           icon: ShieldCheck, 
           code: '320',
           badge: (esocialEvents || []).length.toString(), 
-          badgeColor: 'bg-emerald-500' 
+          badgeColor: 'bg-marca' 
         },
       ]
     },
@@ -237,7 +237,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           icon: FileSpreadsheet, 
           code: '500',
           badge: 'XLSX/PDF',
-          badgeColor: 'bg-emerald-500',
+          badgeColor: 'bg-marca',
           highlight: true
         },
         { id: 'requests', label: 'Central de Pendências & SLAs', icon: CheckSquare, code: '510', badge: (requests || []).filter(r => r?.status === 'OPEN').length.toString(), badgeColor: 'bg-amber-500' },
@@ -280,10 +280,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
           icon: Palette, 
           code: '630',
           badge: 'CSS Vars', 
-          badgeColor: 'bg-emerald-500', 
+          badgeColor: 'bg-marca', 
           highlight: true 
         },
-        { id: 'site-content', label: 'Site & Conteúdo', icon: Newspaper, code: '650', badge: 'Público', badgeColor: 'bg-emerald-500' },
+        { id: 'site-content', label: 'Site & Conteúdo', icon: Newspaper, code: '650', badge: 'Público', badgeColor: 'bg-marca' },
         { id: 'settings', label: 'Configurações da Empresa', icon: Settings, code: '640' },
       ]
     },
@@ -297,7 +297,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           icon: BookOpen, 
           code: '720',
           badge: 'Prints & Vídeos',
-          badgeColor: 'bg-emerald-500',
+          badgeColor: 'bg-marca',
           highlight: true 
         },
       ]
@@ -318,21 +318,21 @@ export const Sidebar: React.FC<SidebarProps> = ({
   };
 
   const renderContent = () => (
-    <div className="flex flex-col h-full bg-slate-950 text-slate-200">
+    <div className="flex flex-col h-full bg-superficie text-tinta">
       {/* Sidebar Header with Close Button */}
-      <div className="p-4 border-b border-slate-800 bg-slate-900/80 flex items-center justify-between">
+      <div className="p-4 border-b border-borda bg-superficie flex items-center justify-between">
         <div className="min-w-0">
           <div>
-            <div className="text-sm font-bold text-white flex items-center space-x-1.5">
+            <div className="text-sm font-bold text-tinta flex items-center space-x-1.5">
               <span>PrevSafe</span>
-              <span className="text-[9px] uppercase font-mono px-1 py-0.2 bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 rounded">Módulos</span>
+              <span className="text-[9px] uppercase font-mono px-1 py-0.2 bg-marca-suave text-marca-escura border border-marca rounded">Módulos</span>
             </div>
-            <p className="text-[10px] text-slate-400">Navegação Integrada SST</p>
+            <p className="text-[10px] text-tinta-2">Navegação Integrada SST</p>
           </div>
         </div>
         <button
           onClick={handleClose}
-          className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition active:scale-95 touch-manipulation"
+          className="p-1.5 rounded-lg bg-superficie-2 hover:bg-superficie-3 text-tinta hover:text-tinta transition active:scale-95 touch-manipulation"
           aria-label="Fechar menu lateral"
           title="Fechar Menu (Esc)"
         >
@@ -341,29 +341,29 @@ export const Sidebar: React.FC<SidebarProps> = ({
       </div>
 
       {/* Role Context Header */}
-      <div className="p-3.5 sm:p-4 border-b border-slate-800/80 bg-slate-900/40">
+      <div className="p-3.5 sm:p-4 border-b border-borda bg-superficie">
         <div className="flex items-center space-x-2">
-          <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
-          <span className="text-[11px] font-semibold text-slate-300 uppercase tracking-wider">
+          <div className="w-2.5 h-2.5 rounded-full bg-marca animate-pulse" />
+          <span className="text-[11px] font-semibold text-tinta uppercase tracking-wider">
             Nível de Acesso
           </span>
         </div>
         <div className="mt-1.5 flex items-center justify-between">
-          <span className="text-xs sm:text-sm font-bold text-white tracking-tight">{currentRole}</span>
-          <span className="text-[9px] sm:text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700 font-mono">
+          <span className="text-xs sm:text-sm font-bold text-tinta tracking-tight">{currentRole}</span>
+          <span className="text-[9px] sm:text-[10px] px-2 py-0.5 rounded-full bg-superficie-2 text-tinta border border-borda font-mono">
             Multi-Tenant
           </span>
         </div>
 
         {/* Quick Filter Search in Sidebar */}
         <div className="mt-3 relative">
-          <Search className="w-3.5 h-3.5 text-slate-500 absolute left-2.5 top-1/2 -translate-y-1/2" />
+          <Search className="w-3.5 h-3.5 text-tinta-2 absolute left-2.5 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             placeholder="Filtrar ferramentas..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-8 pr-3 py-1.5 bg-slate-950 border border-slate-800 rounded-lg text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500"
+            className="w-full pl-8 pr-3 py-1.5 bg-fundo border border-borda rounded-lg text-xs text-tinta placeholder-tinta-3 focus:outline-none focus:border-marca-escura"
           />
         </div>
       </div>
@@ -385,7 +385,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
           return (
             <div key={secIdx} className="space-y-1">
-              <div className="px-2.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+              <div className="px-2.5 text-[10px] font-bold text-tinta-2 uppercase tracking-wider">
                 {sec.title}
               </div>
               {filteredItems.map((item) => {
@@ -398,21 +398,21 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     onClick={() => handleSelectView(item.id)}
                     className={`w-full flex items-center justify-between px-3 py-2.5 sm:py-2 rounded-xl text-xs font-medium transition touch-manipulation min-h-[42px] sm:min-h-0 ${
                       isActive
-                        ? 'bg-emerald-600/20 text-emerald-300 border border-emerald-500/40 shadow-sm'
+                        ? 'bg-marca text-white border border-marca-escura shadow-sm'
                         : item.highlight
-                        ? 'text-slate-200 hover:bg-slate-900 hover:text-white bg-slate-900/50 border border-slate-800/80'
-                        : 'text-slate-400 hover:bg-slate-900 hover:text-slate-200'
+                        ? 'text-tinta hover:bg-superficie hover:text-tinta bg-superficie border border-borda'
+                        : 'text-tinta-2 hover:bg-superficie hover:text-tinta'
                     }`}
                   >
                     <div className="flex items-center space-x-2.5 truncate">
-                      <Icon className={`w-4 h-4 flex-shrink-0 ${isActive ? 'text-emerald-400' : 'text-slate-400'}`} />
+                      <Icon className={`w-4 h-4 flex-shrink-0 ${isActive ? 'text-marca-escura' : 'text-tinta-2'}`} />
                       <span className="truncate">{item.label}</span>
                     </div>
 
                     <div className="flex items-center space-x-1.5 flex-shrink-0">
                       {item.code && (
                         <span 
-                          className="text-[9px] font-mono font-semibold px-1.5 py-0.5 rounded bg-slate-950/80 text-emerald-400/90 border border-slate-800 hover:border-emerald-500/40"
+                          className="text-[9px] font-mono font-semibold px-1.5 py-0.5 rounded bg-fundo text-marca-escura border border-borda hover:border-marca-escura"
                           title={`Digite ${item.code} para ir direto`}
                         >
                           {item.code}
@@ -420,12 +420,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       )}
                       {item.badge && (
                         <span className={`text-[10px] px-1.5 py-0.5 rounded font-mono font-semibold ${
-                          item.badgeColor || (isActive ? 'bg-emerald-500 text-white' : 'bg-slate-800 text-slate-300')
+                          item.badgeColor || (isActive ? 'bg-marca text-white' : 'bg-superficie-2 text-white/80')
                         }`}>
                           {item.badge}
                         </span>
                       )}
-                      {isActive && <ChevronRight className="w-3.5 h-3.5 text-emerald-400" />}
+                      {isActive && <ChevronRight className="w-3.5 h-3.5 text-marca-escura" />}
                     </div>
                   </button>
                 );
@@ -436,26 +436,26 @@ export const Sidebar: React.FC<SidebarProps> = ({
       </div>
 
       {/* Footer info */}
-      <div className="p-3 border-t border-slate-800/80 bg-slate-900/40 text-left space-y-1.5">
+      <div className="p-3 border-t border-borda bg-superficie text-left space-y-1.5">
         <button
           onClick={() => handleSelectView('settings')}
-          className="w-full flex items-center justify-between p-2 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 transition text-left"
+          className="w-full flex items-center justify-between p-2 rounded-xl bg-marca hover:bg-marca border border-marca-escura transition text-left"
           title="Configurações da Empresa e status do banco Supabase"
         >
           <div className="flex items-center space-x-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse flex-shrink-0" />
-            <span className="text-[11px] font-semibold text-emerald-300">Prev Workflow</span>
+            <span className="w-2 h-2 rounded-full bg-marca animate-pulse flex-shrink-0" />
+            <span className="text-[11px] font-semibold text-marca-escura">Prev Workflow</span>
           </div>
-          <span className="text-[10px] font-mono text-emerald-400/80">Supabase</span>
+          <span className="text-[10px] font-mono text-marca-escura">Supabase</span>
         </button>
 
         <div className="grid grid-cols-2 gap-1.5 pt-1">
           <button
             onClick={() => handleSelectView('login')}
-            className="flex items-center justify-center space-x-1.5 p-2 rounded-xl bg-slate-800/80 hover:bg-slate-800 border border-slate-700/80 text-slate-300 hover:text-white transition text-xs font-semibold"
+            className="flex items-center justify-center space-x-1.5 p-2 rounded-xl bg-superficie-2 hover:bg-superficie-2 border border-borda text-tinta hover:text-tinta transition text-xs font-semibold"
             title="Acessar Tela de Login"
           >
-            <KeyRound className="w-3.5 h-3.5 text-emerald-400" />
+            <KeyRound className="w-3.5 h-3.5 text-marca-escura" />
             <span>Tela Login</span>
           </button>
 
@@ -464,33 +464,43 @@ export const Sidebar: React.FC<SidebarProps> = ({
               logout();
               handleSelectView('login');
             }}
-            className="flex items-center justify-center space-x-1.5 p-2 rounded-xl bg-rose-950/20 hover:bg-rose-950/40 border border-rose-900/30 text-rose-300 hover:text-rose-200 transition text-xs font-semibold"
+            className="flex items-center justify-center space-x-1.5 p-2 rounded-xl bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-700 hover:text-rose-800 transition text-xs font-semibold"
             title="Encerrar Sessão"
           >
-            <LogOut className="w-3.5 h-3.5 text-rose-400" />
+            <LogOut className="w-3.5 h-3.5 text-rose-600" />
             <span>Sair</span>
           </button>
         </div>
 
-        <div className="text-[10px] text-slate-500 text-center pt-1">PrevSafe SST • V1.0</div>
+        <div className="text-[10px] text-tinta-2 text-center pt-1">PrevSafe SST • V1.0</div>
       </div>
     </div>
   );
 
   return (
     <>
-      {/* Slide-Over Drawer with Backdrop Overlay (Desktop & Mobile) */}
+      {/*
+       * No desktop o menu e uma coluna fixa, sempre visivel: a navegacao do
+       * sistema e usada o tempo todo, e uma gaveta que cobre a tela obrigava
+       * um clique a mais a cada troca de tela. No celular ele continua gaveta,
+       * porque ali nao ha largura para as duas coisas.
+       */}
+      <nav
+        className="hidden lg:flex lg:flex-col lg:w-[258px] lg:flex-shrink-0 lg:h-full border-r border-borda bg-superficie"
+        aria-label="Menu principal"
+      >
+        {renderContent()}
+      </nav>
+
+      {/* Gaveta (somente telas pequenas) */}
       {sidebarVisible && (
-        <div className="fixed inset-0 z-50 flex">
-          {/* Backdrop blur overlay */}
-          <div 
-            className="fixed inset-0 bg-black/70 backdrop-blur-sm transition-opacity duration-300"
+        <div className="fixed inset-0 z-50 flex lg:hidden">
+          <div
+            className="fixed inset-0 bg-tinta/40 backdrop-blur-sm transition-opacity duration-300"
             onClick={handleClose}
             aria-hidden="true"
           />
-
-          {/* Drawer Panel (slides smoothly from the left) */}
-          <div className="relative w-80 max-w-[90vw] bg-slate-950 border-r border-slate-800 shadow-2xl z-10 flex flex-col h-full animate-in slide-in-from-left duration-200">
+          <div className="relative w-80 max-w-[90vw] bg-superficie border-r border-borda shadow-2xl z-10 flex flex-col h-full animate-in slide-in-from-left duration-200">
             {renderContent()}
           </div>
         </div>

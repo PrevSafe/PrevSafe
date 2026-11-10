@@ -218,24 +218,24 @@ export const ContractedOrganizationsTab: React.FC<ContractedOrganizationsTabProp
 
   if (!selectedClientId) {
     return (
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-8 text-center">
-        <Handshake className="w-8 h-8 text-slate-600 mx-auto mb-3" />
-        <p className="text-sm text-slate-400">Selecione um cliente para gerenciar as organizações contratadas.</p>
+      <div className="bg-superficie border border-borda rounded-2xl p-8 text-center">
+        <Handshake className="w-8 h-8 text-tinta-2 mx-auto mb-3" />
+        <p className="text-sm text-tinta-2">Selecione um cliente para gerenciar as organizações contratadas.</p>
       </div>
     );
   }
 
   return (
     <div className="space-y-4">
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+      <div className="bg-superficie border border-borda rounded-2xl p-5">
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div>
-            <h3 className="text-base font-bold text-slate-100 flex items-center gap-2">
-              <Handshake className="w-5 h-5 text-teal-400" />
+            <h3 className="text-base font-bold text-tinta flex items-center gap-2">
+              <Handshake className="w-5 h-5 text-teal-700" />
               Organizações Contratadas
-              <span className="text-[11px] font-semibold text-slate-500">NR-01, item 1.5.8</span>
+              <span className="text-[11px] font-semibold text-tinta-2">NR-01, item 1.5.8</span>
             </h3>
-            <p className="text-xs text-slate-400 mt-1 max-w-[46rem]">
+            <p className="text-xs text-tinta-2 mt-1 max-w-[46rem]">
               Alimenta a seção 9.5 do PGR. O subitem 1.5.8.1 não deixa escolha em aberto: para a
               contratada que atua nas dependências ou em local convencionado em contrato, ou as
               medidas de prevenção entram neste PGR, ou se utilizam os programas dela — e aí ela
@@ -255,15 +255,15 @@ export const ContractedOrganizationsTab: React.FC<ContractedOrganizationsTabProp
 
       {/* Declaracao de que nao ha contratada. Lista vazia nao e declaracao. */}
       {contratadas.length === 0 && (
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-3">
+        <div className="bg-superficie border border-borda rounded-2xl p-5 space-y-3">
           {declarada ? (
             <div className="flex items-start gap-2.5">
-              <CheckCircle2 className="w-4 h-4 text-emerald-400 mt-0.5 shrink-0" />
+              <CheckCircle2 className="w-4 h-4 text-marca-escura mt-0.5 shrink-0" />
               <div className="space-y-2">
-                <p className="text-sm text-slate-200 font-semibold">
+                <p className="text-sm text-tinta font-semibold">
                   Declarado em {formatDate(declarada)}: nenhuma contratada atua neste estabelecimento.
                 </p>
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-tinta-2">
                   A seção 9.5 do PGR sai com essa declaração e a data, e não como pendência. Ao
                   contratar terceiros, cadastre a contratada aqui — a declaração cai sozinha.
                 </p>
@@ -273,7 +273,7 @@ export const ContractedOrganizationsTab: React.FC<ContractedOrganizationsTabProp
                     estabelecimento
                     && updateUnit(estabelecimento.id, { no_contracted_organizations_declared_at: undefined })
                   }
-                  className="text-xs text-amber-400 hover:text-amber-300 underline underline-offset-2"
+                  className="text-xs text-amber-700 hover:text-amber-700 underline underline-offset-2"
                 >
                   Retirar a declaração
                 </button>
@@ -281,12 +281,12 @@ export const ContractedOrganizationsTab: React.FC<ContractedOrganizationsTabProp
             </div>
           ) : (
             <div className="flex items-start gap-2.5">
-              <AlertTriangle className="w-4 h-4 text-amber-400 mt-0.5 shrink-0" />
+              <AlertTriangle className="w-4 h-4 text-amber-700 mt-0.5 shrink-0" />
               <div className="space-y-2">
-                <p className="text-sm text-slate-200 font-semibold">
+                <p className="text-sm text-tinta font-semibold">
                   Nenhuma contratada cadastrada — e nenhuma declaração de que não há.
                 </p>
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-tinta-2">
                   Lista vazia não é declaração de inexistência: para o auditor, é cadastro não
                   feito. Enquanto não houver uma das duas coisas, a seção 9.5 do PGR sai como
                   pendência.
@@ -299,12 +299,12 @@ export const ContractedOrganizationsTab: React.FC<ContractedOrganizationsTabProp
                         no_contracted_organizations_declared_at: dataDeHoje()
                       })
                     }
-                    className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold rounded-lg text-xs border border-slate-700"
+                    className="px-3 py-1.5 bg-superficie-2 hover:bg-superficie-3 text-tinta font-semibold rounded-lg text-xs border border-borda"
                   >
                     Declarar que nenhuma contratada atua neste estabelecimento
                   </button>
                 ) : (
-                  <p className="text-xs text-amber-400">
+                  <p className="text-xs text-amber-700">
                     Cadastre o estabelecimento em Hierarquia &gt; Unidades para poder registrar a
                     declaração: ela fica no estabelecimento, porque o PGR é emitido por
                     estabelecimento (subitem 1.5.3.1.1.1).
@@ -317,9 +317,9 @@ export const ContractedOrganizationsTab: React.FC<ContractedOrganizationsTabProp
       )}
 
       {contratadas.length > 0 && (
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
+        <div className="bg-superficie border border-borda rounded-2xl overflow-hidden">
           <table className="w-full text-xs">
-            <thead className="bg-slate-950 text-slate-400 uppercase text-[10px] tracking-wider">
+            <thead className="bg-fundo text-tinta-2 uppercase text-[10px] tracking-wider">
               <tr>
                 <th className="py-3 px-4 text-left">Contratada</th>
                 <th className="py-3 px-4 text-left">Serviço contratado</th>
@@ -328,34 +328,34 @@ export const ContractedOrganizationsTab: React.FC<ContractedOrganizationsTabProp
                 <th className="py-3 px-4 text-center">Ações</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800">
+            <tbody className="divide-y divide-borda">
               {contratadas.map((o) => {
                 const falta = pendenciasDe(o);
                 const local = LOCAIS.find((l) => l.valor === o.work_location);
                 const regime = REGIMES.find((r) => r.valor === o.gro_regime);
                 return (
-                  <tr key={o.id} className="hover:bg-slate-950/50 align-top">
+                  <tr key={o.id} className="hover:bg-fundo align-top">
                     <td className="py-3 px-4">
-                      <p className="font-bold text-slate-100">{o.legal_name}</p>
+                      <p className="font-bold text-tinta">{o.legal_name}</p>
                       {o.document_number && (
-                        <p className="text-[10px] text-slate-500 font-mono">{o.document_number}</p>
+                        <p className="text-[10px] text-tinta-2 font-mono">{o.document_number}</p>
                       )}
-                      <p className="text-[10px] text-slate-500 mt-0.5">
+                      <p className="text-[10px] text-tinta-2 mt-0.5">
                         {local ? local.rotulo : 'Local de atuação não informado'}
                       </p>
                     </td>
-                    <td className="py-3 px-4 text-slate-300">{o.contracted_service}</td>
-                    <td className="py-3 px-4 text-slate-300">
-                      {regime ? regime.rotulo : <span className="text-amber-400">Não definido</span>}
+                    <td className="py-3 px-4 text-tinta">{o.contracted_service}</td>
+                    <td className="py-3 px-4 text-tinta">
+                      {regime ? regime.rotulo : <span className="text-amber-700">Não definido</span>}
                     </td>
                     <td className="py-3 px-4">
                       {falta.length === 0 ? (
-                        <span className="text-emerald-400 font-semibold flex items-center gap-1">
+                        <span className="text-marca-escura font-semibold flex items-center gap-1">
                           <CheckCircle2 className="w-3.5 h-3.5" />
                           Completo
                         </span>
                       ) : (
-                        <span className="text-amber-400">{falta.join('; ')}</span>
+                        <span className="text-amber-700">{falta.join('; ')}</span>
                       )}
                     </td>
                     <td className="py-3 px-4">
@@ -363,7 +363,7 @@ export const ContractedOrganizationsTab: React.FC<ContractedOrganizationsTabProp
                         <button
                           type="button"
                           onClick={() => abrirModal(o)}
-                          className="p-1.5 text-slate-400 hover:text-teal-400 hover:bg-slate-800 rounded-lg transition-colors"
+                          className="p-1.5 text-tinta-2 hover:text-teal-700 hover:bg-superficie-2 rounded-lg transition-colors"
                           title="Editar contratada"
                         >
                           <Edit3 className="w-3.5 h-3.5" />
@@ -375,7 +375,7 @@ export const ContractedOrganizationsTab: React.FC<ContractedOrganizationsTabProp
                               deleteContractedOrganization(o.id);
                             }
                           }}
-                          className="p-1.5 text-slate-400 hover:text-rose-400 hover:bg-slate-800 rounded-lg transition-colors"
+                          className="p-1.5 text-tinta-2 hover:text-rose-700 hover:bg-superficie-2 rounded-lg transition-colors"
                           title="Remover contratada"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
@@ -391,17 +391,17 @@ export const ContractedOrganizationsTab: React.FC<ContractedOrganizationsTabProp
       )}
 
       {isModalOpen && (
-        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-[52rem] w-full p-6 space-y-4 shadow-2xl animate-in fade-in zoom-in-95 duration-150 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <h3 className="text-base font-bold text-slate-100 flex items-center gap-2">
-                <Handshake className="w-5 h-5 text-teal-400" />
+        <div className="fixed inset-0 bg-fundo backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-superficie border border-borda rounded-2xl max-w-[52rem] w-full p-6 space-y-4 shadow-2xl animate-in fade-in zoom-in-95 duration-150 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-borda pb-3">
+              <h3 className="text-base font-bold text-tinta flex items-center gap-2">
+                <Handshake className="w-5 h-5 text-teal-700" />
                 {editando ? 'Editar Contratada' : 'Cadastrar Contratada'}
               </h3>
               <button
                 type="button"
                 onClick={() => setIsModalOpen(false)}
-                className="text-slate-400 hover:text-slate-200 text-sm font-bold"
+                className="text-tinta-2 hover:text-tinta text-sm font-bold"
               >
                 Fechar
               </button>
@@ -410,33 +410,33 @@ export const ContractedOrganizationsTab: React.FC<ContractedOrganizationsTabProp
             <form onSubmit={salvar} className="space-y-4 text-xs">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-400 font-semibold mb-1">Razão social</label>
+                  <label className="block text-tinta-2 font-semibold mb-1">Razão social</label>
                   <input
                     type="text"
                     required
                     placeholder="Ex.: Alfa Conservação e Limpeza Ltda"
                     value={form.legal_name}
                     onChange={(e) => setForm({ ...form, legal_name: e.target.value })}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                    className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta"
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-400 font-semibold mb-1">CNPJ ou CPF</label>
+                  <label className="block text-tinta-2 font-semibold mb-1">CNPJ ou CPF</label>
                   <input
                     type="text"
                     placeholder="12.345.678/0001-99"
                     value={form.document_number}
                     onChange={(e) => setForm({ ...form, document_number: e.target.value })}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 font-mono"
+                    className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta font-mono"
                   />
-                  <p className="text-[10px] text-slate-500 mt-1">
+                  <p className="text-[10px] text-tinta-2 mt-1">
                     CPF quando os serviços são prestados pelo titular.
                   </p>
                 </div>
               </div>
 
               <div>
-                <label className="block text-slate-400 font-semibold mb-1">
+                <label className="block text-tinta-2 font-semibold mb-1">
                   Atividade objeto da contratação
                 </label>
                 <input
@@ -445,9 +445,9 @@ export const ContractedOrganizationsTab: React.FC<ContractedOrganizationsTabProp
                   placeholder="Ex.: limpeza e conservação das áreas comuns; manutenção elétrica preventiva"
                   value={form.contracted_service}
                   onChange={(e) => setForm({ ...form, contracted_service: e.target.value })}
-                  className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                  className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta"
                 />
-                <p className="text-[10px] text-slate-500 mt-1">
+                <p className="text-[10px] text-tinta-2 mt-1">
                   É esta atividade, e não a empresa toda, que delimita o que a NR-01 cobra: o
                   subitem 1.5.8.1.1 fala do inventário e do plano &quot;referente às atividades
                   objeto de sua contratação&quot;.
@@ -456,14 +456,14 @@ export const ContractedOrganizationsTab: React.FC<ContractedOrganizationsTabProp
 
               {unidadesDoCliente.length > 1 && (
                 <div>
-                  <label className="block text-slate-400 font-semibold mb-1 flex items-center gap-1.5">
-                    <Building2 className="w-3.5 h-3.5 text-teal-400" />
+                  <label className="block text-tinta-2 font-semibold mb-1 flex items-center gap-1.5">
+                    <Building2 className="w-3.5 h-3.5 text-teal-700" />
                     Estabelecimento em que atua
                   </label>
                   <select
                     value={form.client_unit_id}
                     onChange={(e) => setForm({ ...form, client_unit_id: e.target.value })}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                    className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta"
                   >
                     <option value="">Não vinculada a um estabelecimento específico</option>
                     {unidadesDoCliente.map((u) => (
@@ -474,9 +474,9 @@ export const ContractedOrganizationsTab: React.FC<ContractedOrganizationsTabProp
               )}
 
               {/* Onde atua — o que aciona o subitem 1.5.8.1 */}
-              <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 space-y-2">
-                <label className="block text-slate-300 font-bold">
-                  Onde atua <span className="text-slate-500 font-normal">(subitem 1.5.8.1)</span>
+              <div className="p-3 bg-fundo rounded-xl border border-borda space-y-2">
+                <label className="block text-tinta font-bold">
+                  Onde atua <span className="text-tinta-2 font-normal">(subitem 1.5.8.1)</span>
                 </label>
                 {LOCAIS.map((l) => (
                   <label key={l.valor} className="flex items-start gap-2 cursor-pointer">
@@ -488,8 +488,8 @@ export const ContractedOrganizationsTab: React.FC<ContractedOrganizationsTabProp
                       className="mt-0.5 accent-teal-500"
                     />
                     <span>
-                      <span className="text-slate-200 font-semibold">{l.rotulo}</span>
-                      <span className="block text-[10px] text-slate-500">{l.detalhe}</span>
+                      <span className="text-tinta font-semibold">{l.rotulo}</span>
+                      <span className="block text-[10px] text-tinta-2">{l.detalhe}</span>
                     </span>
                   </label>
                 ))}
@@ -499,15 +499,15 @@ export const ContractedOrganizationsTab: React.FC<ContractedOrganizationsTabProp
                     placeholder="Qual local foi convencionado em contrato"
                     value={form.work_location_note}
                     onChange={(e) => setForm({ ...form, work_location_note: e.target.value })}
-                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                    className="w-full bg-superficie border border-borda rounded-lg px-3 py-2 text-tinta"
                   />
                 )}
               </div>
 
               {/* Regime de GRO */}
-              <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 space-y-2">
-                <label className="block text-slate-300 font-bold">
-                  Regime de GRO <span className="text-slate-500 font-normal">(subitem 1.5.8.1)</span>
+              <div className="p-3 bg-fundo rounded-xl border border-borda space-y-2">
+                <label className="block text-tinta font-bold">
+                  Regime de GRO <span className="text-tinta-2 font-normal">(subitem 1.5.8.1)</span>
                 </label>
                 {REGIMES.map((r) => (
                   <label key={r.valor} className="flex items-start gap-2 cursor-pointer">
@@ -519,8 +519,8 @@ export const ContractedOrganizationsTab: React.FC<ContractedOrganizationsTabProp
                       className="mt-0.5 accent-teal-500"
                     />
                     <span>
-                      <span className="text-slate-200 font-semibold">{r.rotulo}</span>
-                      <span className="block text-[10px] text-slate-500">{r.detalhe}</span>
+                      <span className="text-tinta font-semibold">{r.rotulo}</span>
+                      <span className="block text-[10px] text-tinta-2">{r.detalhe}</span>
                     </span>
                   </label>
                 ))}
@@ -528,28 +528,28 @@ export const ContractedOrganizationsTab: React.FC<ContractedOrganizationsTabProp
                 {form.gro_regime === 'PROGRAMA_DA_CONTRATADA' && (
                   <div className="grid grid-cols-2 gap-3 pt-1">
                     <div>
-                      <label className="block text-slate-400 font-semibold mb-1">
+                      <label className="block text-tinta-2 font-semibold mb-1">
                         Inventário de riscos recebido em
                       </label>
                       <input
                         type="date"
                         value={form.received_inventory_date}
                         onChange={(e) => setForm({ ...form, received_inventory_date: e.target.value })}
-                        className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                        className="w-full bg-superficie border border-borda rounded-lg px-3 py-2 text-tinta"
                       />
                     </div>
                     <div>
-                      <label className="block text-slate-400 font-semibold mb-1">
+                      <label className="block text-tinta-2 font-semibold mb-1">
                         Plano de ação recebido em
                       </label>
                       <input
                         type="date"
                         value={form.received_action_plan_date}
                         onChange={(e) => setForm({ ...form, received_action_plan_date: e.target.value })}
-                        className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                        className="w-full bg-superficie border border-borda rounded-lg px-3 py-2 text-tinta"
                       />
                     </div>
-                    <p className="col-span-2 text-[10px] text-slate-500">
+                    <p className="col-span-2 text-[10px] text-tinta-2">
                       Os dois documentos, não um: o subitem 1.5.8.1.1 exige inventário de riscos
                       <em> e</em> plano de ação das atividades contratadas.
                     </p>
@@ -558,7 +558,7 @@ export const ContractedOrganizationsTab: React.FC<ContractedOrganizationsTabProp
 
                 {form.gro_regime === 'SOMENTE_TITULAR_OU_SOCIOS' && (
                   <div className="pt-1">
-                    <label className="block text-slate-400 font-semibold mb-1">
+                    <label className="block text-tinta-2 font-semibold mb-1">
                       Como as medidas deste PGR se estendem à atividade contratada
                     </label>
                     <textarea
@@ -566,9 +566,9 @@ export const ContractedOrganizationsTab: React.FC<ContractedOrganizationsTabProp
                       placeholder="Ex.: o eletricista autônomo recebe os EPIs do contratante, é incluído na OS de risco elétrico e segue o procedimento de bloqueio da NR-10"
                       value={form.extended_measures}
                       onChange={(e) => setForm({ ...form, extended_measures: e.target.value })}
-                      className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                      className="w-full bg-superficie border border-borda rounded-lg px-3 py-2 text-tinta"
                     />
-                    <p className="text-[10px] text-slate-500 mt-1">
+                    <p className="text-[10px] text-tinta-2 mt-1">
                       Subitem 1.5.8.1.2: quem presta o serviço sozinho não tem PGR próprio a
                       apresentar, e o contratante estende as suas medidas.
                     </p>
@@ -577,12 +577,12 @@ export const ContractedOrganizationsTab: React.FC<ContractedOrganizationsTabProp
               </div>
 
               {/* Troca de informacoes nos dois sentidos */}
-              <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 space-y-3">
+              <div className="p-3 bg-fundo rounded-xl border border-borda space-y-3">
                 <div>
-                  <label className="block text-slate-300 font-bold">
+                  <label className="block text-tinta font-bold">
                     Troca de informações sobre riscos
                   </label>
-                  <p className="text-[10px] text-slate-500 mt-0.5">
+                  <p className="text-[10px] text-tinta-2 mt-0.5">
                     Vai nos dois sentidos, em subitens separados: o 1.5.8.2 obriga o contratante a
                     informar, o 1.5.8.3 obriga a contratada. Um só não cumpre os dois.
                   </p>
@@ -590,61 +590,61 @@ export const ContractedOrganizationsTab: React.FC<ContractedOrganizationsTabProp
 
                 <div className="grid grid-cols-[auto_1fr] gap-3 items-start">
                   <div>
-                    <label className="block text-slate-400 font-semibold mb-1">
+                    <label className="block text-tinta-2 font-semibold mb-1">
                       Informou (1.5.8.2)
                     </label>
                     <input
                       type="date"
                       value={form.informed_risks_date}
                       onChange={(e) => setForm({ ...form, informed_risks_date: e.target.value })}
-                      className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                      className="bg-superficie border border-borda rounded-lg px-3 py-2 text-tinta"
                     />
                   </div>
                   <div>
-                    <label className="block text-slate-400 font-semibold mb-1">Evidência</label>
+                    <label className="block text-tinta-2 font-semibold mb-1">Evidência</label>
                     <input
                       type="text"
                       placeholder="Ex.: ofício 12/2026 com protocolo de recebimento assinado pelo preposto"
                       value={form.informed_risks_evidence}
                       onChange={(e) => setForm({ ...form, informed_risks_evidence: e.target.value })}
-                      className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                      className="w-full bg-superficie border border-borda rounded-lg px-3 py-2 text-tinta"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-[auto_1fr] gap-3 items-start">
                   <div>
-                    <label className="block text-slate-400 font-semibold mb-1">
+                    <label className="block text-tinta-2 font-semibold mb-1">
                       Recebeu (1.5.8.3)
                     </label>
                     <input
                       type="date"
                       value={form.received_risks_date}
                       onChange={(e) => setForm({ ...form, received_risks_date: e.target.value })}
-                      className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                      className="bg-superficie border border-borda rounded-lg px-3 py-2 text-tinta"
                     />
                   </div>
                   <div>
-                    <label className="block text-slate-400 font-semibold mb-1">Evidência</label>
+                    <label className="block text-tinta-2 font-semibold mb-1">Evidência</label>
                     <input
                       type="text"
                       placeholder="Ex.: comunicação da contratada sobre uso de produto químico na limpeza"
                       value={form.received_risks_evidence}
                       onChange={(e) => setForm({ ...form, received_risks_evidence: e.target.value })}
-                      className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                      className="w-full bg-superficie border border-borda rounded-lg px-3 py-2 text-tinta"
                     />
                   </div>
                 </div>
               </div>
 
               {/* Riscos de interacao */}
-              <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 space-y-2">
+              <div className="p-3 bg-fundo rounded-xl border border-borda space-y-2">
                 <div>
-                  <label className="block text-slate-300 font-bold">
+                  <label className="block text-tinta font-bold">
                     Riscos resultantes da interação das atividades
-                    <span className="text-slate-500 font-normal"> (subitem 1.5.8.4)</span>
+                    <span className="text-tinta-2 font-normal"> (subitem 1.5.8.4)</span>
                   </label>
-                  <p className="text-[10px] text-slate-500 mt-0.5">
+                  <p className="text-[10px] text-tinta-2 mt-0.5">
                     Risco que nenhuma das duas tem sozinha e que aparece porque as atividades
                     convivem: solda na área da limpeza, empilhadeira na rota de quem monta, químico
                     volátil onde há trabalho a quente.
@@ -662,7 +662,7 @@ export const ContractedOrganizationsTab: React.FC<ContractedOrganizationsTabProp
                       className={`px-3 py-1.5 rounded-lg font-semibold border transition-colors ${
                         form.interaction_risks === valor
                           ? 'bg-teal-500 text-slate-950 border-teal-400'
-                          : 'bg-slate-900 text-slate-300 border-slate-700 hover:bg-slate-800'
+                          : 'bg-superficie text-tinta border-borda hover:bg-superficie-2'
                       }`}
                     >
                       {rotulo}
@@ -672,14 +672,14 @@ export const ContractedOrganizationsTab: React.FC<ContractedOrganizationsTabProp
                     <button
                       type="button"
                       onClick={() => setForm({ ...form, interaction_risks: '' })}
-                      className="px-3 py-1.5 text-slate-500 hover:text-slate-300"
+                      className="px-3 py-1.5 text-tinta-2 hover:text-tinta"
                     >
                       Limpar
                     </button>
                   )}
                 </div>
                 {!form.interaction_risks && (
-                  <p className="text-[10px] text-amber-400 flex items-start gap-1.5">
+                  <p className="text-[10px] text-amber-700 flex items-start gap-1.5">
                     <Info className="w-3 h-3 mt-0.5 shrink-0" />
                     Em branco não é &quot;não há&quot;: é avaliação que ninguém fez, e sai como
                     pendência no PGR.
@@ -687,7 +687,7 @@ export const ContractedOrganizationsTab: React.FC<ContractedOrganizationsTabProp
                 )}
                 {form.interaction_risks === 'SIM' && (
                   <div>
-                    <label className="block text-slate-400 font-semibold mb-1">
+                    <label className="block text-tinta-2 font-semibold mb-1">
                       Medidas definidas em conjunto, sob coordenação do contratante
                     </label>
                     <textarea
@@ -695,9 +695,9 @@ export const ContractedOrganizationsTab: React.FC<ContractedOrganizationsTabProp
                       placeholder="Ex.: permissão de trabalho conjunta, isolamento da área, reunião diária de compatibilização, responsável do contratante pela coordenação"
                       value={form.joint_measures}
                       onChange={(e) => setForm({ ...form, joint_measures: e.target.value })}
-                      className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                      className="w-full bg-superficie border border-borda rounded-lg px-3 py-2 text-tinta"
                     />
-                    <p className="text-[10px] text-slate-500 mt-1">
+                    <p className="text-[10px] text-tinta-2 mt-1">
                       A coordenação é do contratante — o subitem 1.5.8.4 não a divide.
                     </p>
                   </div>
@@ -705,21 +705,21 @@ export const ContractedOrganizationsTab: React.FC<ContractedOrganizationsTabProp
               </div>
 
               <div>
-                <label className="block text-slate-400 font-semibold mb-1">Observações</label>
+                <label className="block text-tinta-2 font-semibold mb-1">Observações</label>
                 <input
                   type="text"
                   placeholder="Número do contrato, vigência, preposto responsável"
                   value={form.notes}
                   onChange={(e) => setForm({ ...form, notes: e.target.value })}
-                  className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                  className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta"
                 />
               </div>
 
-              <div className="flex justify-end gap-2 pt-3 border-t border-slate-800">
+              <div className="flex justify-end gap-2 pt-3 border-t border-borda">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold rounded-lg"
+                  className="px-4 py-2 bg-superficie-2 hover:bg-superficie-3 text-tinta font-semibold rounded-lg"
                 >
                   Cancelar
                 </button>

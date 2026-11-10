@@ -116,12 +116,12 @@ export const CipaVotingModal: React.FC<CipaVotingModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/70 p-4 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-superficie p-4 backdrop-blur-sm">
       <div className="relative w-full max-w-2xl rounded-2xl bg-white shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[92vh]">
         {/* Header */}
-        <div className="bg-gradient-to-r from-teal-700 via-teal-800 to-emerald-900 p-5 text-white flex items-center justify-between">
+        <div className="bg-gradient-to-r from-teal-700 via-teal-800 to-marca-escura p-5 text-tinta flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/15 border border-white/20 text-white shadow-inner">
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/15 border border-white/20 text-tinta shadow-inner">
               <Vote className="h-6 w-6" />
             </div>
             <div>
@@ -147,7 +147,7 @@ export const CipaVotingModal: React.FC<CipaVotingModalProps> = ({
           {voteReceipt ? (
             /* Success Receipt Screen */
             <div className="text-center py-6 space-y-5">
-              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 text-emerald-600">
+              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 text-marca-escura">
                 <CheckCircle2 className="h-10 w-10" />
               </div>
               <div>
@@ -163,7 +163,7 @@ export const CipaVotingModal: React.FC<CipaVotingModalProps> = ({
                   <span className="font-sans font-bold text-slate-700">COMPROVANTE DE VOTAÇÃO ELETRÔNICA</span>
                   <FileCheck2 className="h-4 w-4 text-teal-600" />
                 </div>
-                <div className="space-y-1.5 text-[11px] text-slate-600">
+                <div className="space-y-1.5 text-[11px] text-tinta-2">
                   <div><strong>Empresa:</strong> {process.client_name}</div>
                   <div><strong>Norma / Gestão:</strong> {process.norm} - Mandato {process.mandate_year}</div>
                   <div><strong>Código de Autenticidade:</strong> <span className="text-teal-700 font-bold">{voteReceipt}</span></div>
@@ -171,9 +171,9 @@ export const CipaVotingModal: React.FC<CipaVotingModalProps> = ({
                   <div><strong>Timestamp UTC:</strong> {new Date().toISOString()}</div>
                   <div><strong>Garantia Legal:</strong> Item 5.5.4 da NR-05 &amp; Lei 13.709/2018 (LGPD)</div>
                 </div>
-                <div className="pt-2 border-t border-slate-200 flex items-center justify-between text-[10px] text-slate-400">
+                <div className="pt-2 border-t border-slate-200 flex items-center justify-between text-[10px] text-tinta-2">
                   <span>Auditoria Criptográfica PrevSafe</span>
-                  <QrCode className="h-6 w-6 text-slate-500" />
+                  <QrCode className="h-6 w-6 text-tinta-2" />
                 </div>
               </div>
 
@@ -204,10 +204,10 @@ export const CipaVotingModal: React.FC<CipaVotingModalProps> = ({
               {/* Step 1: Identification & Biometrics */}
               <div className="rounded-xl border border-slate-200 bg-white p-4 space-y-4">
                 <div className="flex items-center justify-between">
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-tinta-2">
                     Etapa 1: Identificação do Eleitor
                   </h4>
-                  <span className="text-[11px] text-slate-400">Quórum da empresa: {process.total_eligible_voters} aptos</span>
+                  <span className="text-[11px] text-tinta-2">Quórum da empresa: {process.total_eligible_voters} aptos</span>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -249,7 +249,7 @@ export const CipaVotingModal: React.FC<CipaVotingModalProps> = ({
                       className={`flex flex-col items-center justify-center p-2.5 rounded-lg border text-xs font-medium transition ${
                         verificationMethod === 'FACIAL_BIOMETRICS'
                           ? 'border-teal-600 bg-teal-50 text-teal-800'
-                          : 'border-slate-200 text-slate-600 hover:bg-slate-50'
+                          : 'border-slate-200 text-tinta-2 hover:bg-slate-50'
                       }`}
                     >
                       <Camera className="h-4 w-4 mb-1 text-teal-600" />
@@ -261,7 +261,7 @@ export const CipaVotingModal: React.FC<CipaVotingModalProps> = ({
                       className={`flex flex-col items-center justify-center p-2.5 rounded-lg border text-xs font-medium transition ${
                         verificationMethod === 'DIGITAL_SIGNATURE'
                           ? 'border-teal-600 bg-teal-50 text-teal-800'
-                          : 'border-slate-200 text-slate-600 hover:bg-slate-50'
+                          : 'border-slate-200 text-tinta-2 hover:bg-slate-50'
                       }`}
                     >
                       <Fingerprint className="h-4 w-4 mb-1 text-teal-600" />
@@ -273,7 +273,7 @@ export const CipaVotingModal: React.FC<CipaVotingModalProps> = ({
                       className={`flex flex-col items-center justify-center p-2.5 rounded-lg border text-xs font-medium transition ${
                         verificationMethod === 'CORPORATE_SSO'
                           ? 'border-teal-600 bg-teal-50 text-teal-800'
-                          : 'border-slate-200 text-slate-600 hover:bg-slate-50'
+                          : 'border-slate-200 text-tinta-2 hover:bg-slate-50'
                       }`}
                     >
                       <KeyRound className="h-4 w-4 mb-1 text-teal-600" />
@@ -286,18 +286,18 @@ export const CipaVotingModal: React.FC<CipaVotingModalProps> = ({
                 <div className="flex items-center justify-between pt-2 border-t border-slate-100">
                   <div className="flex items-center gap-2 text-xs">
                     {biometricValidated ? (
-                      <span className="flex items-center gap-1 text-emerald-600 font-semibold">
+                      <span className="flex items-center gap-1 text-marca-escura font-semibold">
                         <CheckCircle2 className="h-4 w-4" /> Identidade Validada (98.6% Match)
                       </span>
                     ) : (
-                      <span className="text-slate-500">Validação biométrica pendente</span>
+                      <span className="text-tinta-2">Validação biométrica pendente</span>
                     )}
                   </div>
                   <button
                     type="button"
                     disabled={isVerifyingBiometrics || biometricValidated}
                     onClick={handleSimulateBiometricCapture}
-                    className="flex items-center gap-1.5 rounded-lg bg-slate-800 hover:bg-slate-900 text-white text-xs font-semibold px-3 py-1.5 transition disabled:opacity-50"
+                    className="flex items-center gap-1.5 rounded-lg bg-superficie-2 hover:bg-superficie text-tinta text-xs font-semibold px-3 py-1.5 transition disabled:opacity-50"
                   >
                     {isVerifyingBiometrics ? (
                       <>
@@ -319,7 +319,7 @@ export const CipaVotingModal: React.FC<CipaVotingModalProps> = ({
               {/* Step 2: Secret Ballot Selection */}
               <div className="rounded-xl border border-slate-200 bg-white p-4 space-y-3">
                 <div className="flex items-center justify-between">
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-tinta-2">
                     Etapa 2: Cédula Eleitoral Oficial (Escolha o Candidato)
                   </h4>
                   <span className="text-xs text-teal-600 font-medium">Voto Nominal Secreto</span>
@@ -345,14 +345,14 @@ export const CipaVotingModal: React.FC<CipaVotingModalProps> = ({
                       />
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
-                          <span className="flex h-6 w-6 items-center justify-center rounded-md bg-slate-800 text-[11px] font-bold text-white">
+                          <span className="flex h-6 w-6 items-center justify-center rounded-md bg-superficie-2 text-[11px] font-bold text-tinta">
                             {c.candidacy_number}
                           </span>
                           <span className="font-bold text-slate-800 text-xs truncate">
                             {c.name}
                           </span>
                         </div>
-                        <div className="text-[11px] text-slate-500 mt-0.5 truncate">
+                        <div className="text-[11px] text-tinta-2 mt-0.5 truncate">
                           {c.job_title} • {c.department}
                         </div>
                       </div>
@@ -377,7 +377,7 @@ export const CipaVotingModal: React.FC<CipaVotingModalProps> = ({
                     />
                     <div>
                       <div className="font-bold text-slate-700 text-xs">Voto em Branco</div>
-                      <div className="text-[11px] text-slate-400">Opção de abstenção nominal</div>
+                      <div className="text-[11px] text-tinta-2">Opção de abstenção nominal</div>
                     </div>
                   </label>
 
@@ -398,7 +398,7 @@ export const CipaVotingModal: React.FC<CipaVotingModalProps> = ({
                     />
                     <div>
                       <div className="font-bold text-slate-700 text-xs">Voto Nulo</div>
-                      <div className="text-[11px] text-slate-400">Anulação intencional do voto</div>
+                      <div className="text-[11px] text-tinta-2">Anulação intencional do voto</div>
                     </div>
                   </label>
                 </div>

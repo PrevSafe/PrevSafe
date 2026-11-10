@@ -134,10 +134,10 @@ export const SeletorTabela27: React.FC<SeletorTabela27Props> = ({
         <button
           type="button"
           onClick={() => setAberto(true)}
-          className={`w-full flex items-center gap-2 bg-slate-950 border border-slate-700 hover:border-teal-500 rounded-lg px-2.5 ${alturaCampo} text-left transition-colors`}
+          className={`w-full flex items-center gap-2 bg-fundo border border-borda hover:border-teal-500 rounded-lg px-2.5 ${alturaCampo} text-left transition-colors`}
         >
-          <span className="font-mono text-teal-400 shrink-0">{selecionado.codigo}</span>
-          <span className="text-slate-200 truncate flex-1">{selecionado.nome}</span>
+          <span className="font-mono text-teal-700 shrink-0">{selecionado.codigo}</span>
+          <span className="text-tinta truncate flex-1">{selecionado.nome}</span>
           {onLimpar && (
             <span
               role="button"
@@ -152,7 +152,7 @@ export const SeletorTabela27: React.FC<SeletorTabela27Props> = ({
                   onLimpar();
                 }
               }}
-              className="text-slate-500 hover:text-rose-400 shrink-0"
+              className="text-tinta-2 hover:text-rose-700 shrink-0"
               title="Limpar seleção"
             >
               <X className="w-3.5 h-3.5" />
@@ -161,7 +161,7 @@ export const SeletorTabela27: React.FC<SeletorTabela27Props> = ({
         </button>
       ) : (
         <div className="relative">
-          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-500 pointer-events-none" />
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-tinta-2 pointer-events-none" />
           <input
             type="text"
             autoFocus={autoFocus}
@@ -173,15 +173,15 @@ export const SeletorTabela27: React.FC<SeletorTabela27Props> = ({
             onFocus={() => setAberto(true)}
             onKeyDown={aoTeclar}
             placeholder={placeholder}
-            className={`w-full bg-slate-950 border rounded-lg pl-8 pr-2.5 ${alturaCampo} text-slate-100 placeholder-slate-500 focus:outline-none focus:border-teal-500 ${
-              codigoInvalido ? 'border-rose-500' : 'border-slate-700'
+            className={`w-full bg-fundo border rounded-lg pl-8 pr-2.5 ${alturaCampo} text-tinta placeholder-tinta-3 focus:outline-none focus:border-teal-500 ${
+              codigoInvalido ? 'border-rose-500' : 'border-borda'
             }`}
           />
         </div>
       )}
 
       {codigoInvalido && !aberto && (
-        <p className="mt-1 text-[10px] text-rose-400 flex items-start gap-1">
+        <p className="mt-1 text-[10px] text-rose-700 flex items-start gap-1">
           <AlertTriangle className="w-3 h-3 shrink-0 mt-px" />
           <span>
             O código <span className="font-mono">{normalizarCodigoTabela27(codigo) || codigo}</span> não
@@ -192,8 +192,8 @@ export const SeletorTabela27: React.FC<SeletorTabela27Props> = ({
       )}
 
       {aberto && (
-        <div className="absolute z-50 mt-1 w-full bg-slate-900 border border-slate-700 rounded-lg shadow-2xl overflow-hidden">
-          <div className="px-2.5 py-1.5 border-b border-slate-800 text-[10px] text-slate-500 flex items-center justify-between">
+        <div className="absolute z-50 mt-1 w-full bg-superficie border border-borda rounded-lg shadow-2xl overflow-hidden">
+          <div className="px-2.5 py-1.5 border-b border-borda text-[10px] text-tinta-2 flex items-center justify-between">
             <span>
               {termo.trim()
                 ? `${resultados.length} resultado(s)`
@@ -203,7 +203,7 @@ export const SeletorTabela27: React.FC<SeletorTabela27Props> = ({
           </div>
 
           {resultados.length === 0 ? (
-            <p className="px-2.5 py-3 text-[11px] text-slate-400">
+            <p className="px-2.5 py-3 text-[11px] text-tinta-2">
               Nenhum procedimento encontrado para “{termo}”. A Tabela 27 é fechada: só é possível
               declarar procedimentos que constam nela.
             </p>
@@ -216,13 +216,13 @@ export const SeletorTabela27: React.FC<SeletorTabela27Props> = ({
                     onMouseEnter={() => setIndiceAtivo(i)}
                     onClick={() => escolher(p)}
                     className={`w-full flex items-start gap-2 px-2.5 py-1.5 text-left text-[11px] transition-colors ${
-                      i === indiceAtivo ? 'bg-slate-800' : 'hover:bg-slate-800/60'
+                      i === indiceAtivo ? 'bg-superficie-2' : 'hover:bg-superficie-2'
                     }`}
                   >
-                    <span className="font-mono text-teal-400 shrink-0 w-9">{p.codigo}</span>
-                    <span className="text-slate-200 flex-1">{p.nome}</span>
+                    <span className="font-mono text-teal-700 shrink-0 w-9">{p.codigo}</span>
+                    <span className="text-tinta flex-1">{p.nome}</span>
                     {p.codigo === codigo && (
-                      <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                      <Check className="w-3.5 h-3.5 text-marca-escura shrink-0" />
                     )}
                   </button>
                 </li>

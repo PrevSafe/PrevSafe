@@ -540,11 +540,11 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
         const onTimeRate = total > 0 ? Math.round(((total - delayed) / total) * 100) : 100;
 
         return [
-          { label: 'Total de O.S. Filtradas', value: total, icon: Briefcase, color: 'text-blue-400', bg: 'bg-blue-500/10' },
-          { label: 'Em Execução / Agendadas', value: inProgress, icon: Clock, color: 'text-amber-400', bg: 'bg-amber-500/10' },
-          { label: 'Concluídas / Homologadas', value: completed, icon: CheckCircle2, color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
-          { label: 'Atrasadas (Fora SLA)', value: delayed, icon: AlertTriangle, color: 'text-rose-400', bg: 'bg-rose-500/10' },
-          { label: 'Taxa de Cumprimento SLA', value: `${onTimeRate}%`, icon: TrendingUp, color: 'text-teal-400', bg: 'bg-teal-500/10' }
+          { label: 'Total de O.S. Filtradas', value: total, icon: Briefcase, color: 'text-blue-700', bg: 'bg-blue-500/10' },
+          { label: 'Em Execução / Agendadas', value: inProgress, icon: Clock, color: 'text-amber-700', bg: 'bg-amber-500/10' },
+          { label: 'Concluídas / Homologadas', value: completed, icon: CheckCircle2, color: 'text-marca-escura', bg: 'bg-marca-suave' },
+          { label: 'Atrasadas (Fora SLA)', value: delayed, icon: AlertTriangle, color: 'text-rose-700', bg: 'bg-rose-500/10' },
+          { label: 'Taxa de Cumprimento SLA', value: `${onTimeRate}%`, icon: TrendingUp, color: 'text-teal-700', bg: 'bg-teal-500/10' }
         ];
       }
 
@@ -556,11 +556,11 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
         const periculoso = list.filter(r => r.periculosidade_applies).length;
 
         return [
-          { label: 'Total de Riscos PGR', value: total, icon: HardHat, color: 'text-teal-400', bg: 'bg-teal-500/10' },
-          { label: 'Riscos Físicos (Ruído/Calor)', value: physical, icon: Activity, color: 'text-sky-400', bg: 'bg-sky-500/10' },
-          { label: 'Riscos Químicos', value: chemical, icon: SlidersHorizontal, color: 'text-indigo-400', bg: 'bg-indigo-500/10' },
-          { label: 'Insalubridade (NR-15)', value: insalubre, icon: AlertTriangle, color: 'text-amber-400', bg: 'bg-amber-500/10' },
-          { label: 'Periculosidade (NR-16)', value: periculoso, icon: ShieldCheck, color: 'text-rose-400', bg: 'bg-rose-500/10' }
+          { label: 'Total de Riscos PGR', value: total, icon: HardHat, color: 'text-teal-700', bg: 'bg-teal-500/10' },
+          { label: 'Riscos Físicos (Ruído/Calor)', value: physical, icon: Activity, color: 'text-sky-700', bg: 'bg-sky-500/10' },
+          { label: 'Riscos Químicos', value: chemical, icon: SlidersHorizontal, color: 'text-indigo-700', bg: 'bg-indigo-500/10' },
+          { label: 'Insalubridade (NR-15)', value: insalubre, icon: AlertTriangle, color: 'text-amber-700', bg: 'bg-amber-500/10' },
+          { label: 'Periculosidade (NR-16)', value: periculoso, icon: ShieldCheck, color: 'text-rose-700', bg: 'bg-rose-500/10' }
         ];
       }
 
@@ -572,11 +572,11 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
         const complianceRate = total > 0 ? Math.round((valid / total) * 100) : 100;
 
         return [
-          { label: 'Colaboradores / ASOs', value: total, icon: Users, color: 'text-teal-400', bg: 'bg-teal-500/10' },
-          { label: 'ASOs Vencidos (Crítico)', value: overdue, icon: AlertTriangle, color: 'text-rose-400', bg: 'bg-rose-500/10' },
-          { label: 'A Vencer em até 30d', value: soon, icon: Clock, color: 'text-amber-400', bg: 'bg-amber-500/10' },
-          { label: 'ASOs Vigentes e Regulares', value: valid, icon: CheckCircle2, color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
-          { label: 'Índice de Regularidade NR-07', value: `${complianceRate}%`, icon: TrendingUp, color: 'text-cyan-400', bg: 'bg-cyan-500/10' }
+          { label: 'Colaboradores / ASOs', value: total, icon: Users, color: 'text-teal-700', bg: 'bg-teal-500/10' },
+          { label: 'ASOs Vencidos (Crítico)', value: overdue, icon: AlertTriangle, color: 'text-rose-700', bg: 'bg-rose-500/10' },
+          { label: 'A Vencer em até 30d', value: soon, icon: Clock, color: 'text-amber-700', bg: 'bg-amber-500/10' },
+          { label: 'ASOs Vigentes e Regulares', value: valid, icon: CheckCircle2, color: 'text-marca-escura', bg: 'bg-marca-suave' },
+          { label: 'Índice de Regularidade NR-07', value: `${complianceRate}%`, icon: TrendingUp, color: 'text-cyan-700', bg: 'bg-cyan-500/10' }
         ];
       }
 
@@ -588,11 +588,11 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
         const successRate = total > 0 ? Math.round((transmitted / total) * 100) : 100;
 
         return [
-          { label: 'Total de Eventos SST', value: total, icon: ShieldCheck, color: 'text-indigo-400', bg: 'bg-indigo-500/10' },
-          { label: 'Transmitidos com Recibo Gov', value: transmitted, icon: CheckCircle2, color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
-          { label: 'Pendentes de Transmissão', value: pending, icon: Clock, color: 'text-amber-400', bg: 'bg-amber-500/10' },
-          { label: 'Erros / Rejeitados', value: rejected, icon: AlertTriangle, color: 'text-rose-400', bg: 'bg-rose-500/10' },
-          { label: 'Conformidade eSocial', value: `${successRate}%`, icon: TrendingUp, color: 'text-teal-400', bg: 'bg-teal-500/10' }
+          { label: 'Total de Eventos SST', value: total, icon: ShieldCheck, color: 'text-indigo-700', bg: 'bg-indigo-500/10' },
+          { label: 'Transmitidos com Recibo Gov', value: transmitted, icon: CheckCircle2, color: 'text-marca-escura', bg: 'bg-marca-suave' },
+          { label: 'Pendentes de Transmissão', value: pending, icon: Clock, color: 'text-amber-700', bg: 'bg-amber-500/10' },
+          { label: 'Erros / Rejeitados', value: rejected, icon: AlertTriangle, color: 'text-rose-700', bg: 'bg-rose-500/10' },
+          { label: 'Conformidade eSocial', value: `${successRate}%`, icon: TrendingUp, color: 'text-teal-700', bg: 'bg-teal-500/10' }
         ];
       }
 
@@ -604,20 +604,20 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
         const balance = receivable - payable;
 
         return [
-          { label: 'Lançamentos Filtrados', value: total, icon: DollarSign, color: 'text-blue-400', bg: 'bg-blue-500/10' },
-          { label: 'Receitas Totais', value: new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(receivable), icon: TrendingUp, color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
-          { label: 'Receitas Liquidadas', value: new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(received), icon: CheckCircle2, color: 'text-teal-400', bg: 'bg-teal-500/10' },
-          { label: 'Despesas Totais', value: new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(payable), icon: AlertTriangle, color: 'text-rose-400', bg: 'bg-rose-500/10' },
-          { label: 'Saldo Projetado', value: new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(balance), icon: DollarSign, color: balance >= 0 ? 'text-emerald-400' : 'text-rose-400', bg: 'bg-emerald-500/10' }
+          { label: 'Lançamentos Filtrados', value: total, icon: DollarSign, color: 'text-blue-700', bg: 'bg-blue-500/10' },
+          { label: 'Receitas Totais', value: new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(receivable), icon: TrendingUp, color: 'text-marca-escura', bg: 'bg-marca-suave' },
+          { label: 'Receitas Liquidadas', value: new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(received), icon: CheckCircle2, color: 'text-teal-700', bg: 'bg-teal-500/10' },
+          { label: 'Despesas Totais', value: new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(payable), icon: AlertTriangle, color: 'text-rose-700', bg: 'bg-rose-500/10' },
+          { label: 'Saldo Projetado', value: new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(balance), icon: DollarSign, color: balance >= 0 ? 'text-marca-escura' : 'text-rose-700', bg: 'bg-marca-suave' }
         ];
       }
 
       default: {
         return [
-          { label: 'Total de Registros', value: total, icon: FileText, color: 'text-teal-400', bg: 'bg-teal-500/10' },
-          { label: 'Clientes Envolvidos', value: selectedClientId === 'ALL' ? clients.length : 1, icon: Building2, color: 'text-blue-400', bg: 'bg-blue-500/10' },
-          { label: 'Filtro de Período', value: selectedPeriod === 'ALL_TIME' ? 'Todo o Histórico' : selectedPeriod, icon: Calendar, color: 'text-amber-400', bg: 'bg-amber-500/10' },
-          { label: 'Status da Exportação', value: 'Pronto para Download', icon: Download, color: 'text-emerald-400', bg: 'bg-emerald-500/10' }
+          { label: 'Total de Registros', value: total, icon: FileText, color: 'text-teal-700', bg: 'bg-teal-500/10' },
+          { label: 'Clientes Envolvidos', value: selectedClientId === 'ALL' ? clients.length : 1, icon: Building2, color: 'text-blue-700', bg: 'bg-blue-500/10' },
+          { label: 'Filtro de Período', value: selectedPeriod === 'ALL_TIME' ? 'Todo o Histórico' : selectedPeriod, icon: Calendar, color: 'text-amber-700', bg: 'bg-amber-500/10' },
+          { label: 'Status da Exportação', value: 'Pronto para Download', icon: Download, color: 'text-marca-escura', bg: 'bg-marca-suave' }
         ];
       }
     }
@@ -1088,44 +1088,44 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
 
   // Category Tabs Configuration
   const categoriesList: Array<{ id: ReportCategory; label: string; icon: any; count: number; badgeColor: string }> = [
-    { id: 'SERVICE_ORDERS', label: 'Ordens de Serviço (OS)', icon: Briefcase, count: serviceOrders.length, badgeColor: 'bg-blue-500/20 text-blue-300' },
-    { id: 'RISKS_PGR', label: 'Riscos & PGR (NR-01)', icon: HardHat, count: environmentalRisks.length, badgeColor: 'bg-teal-500/20 text-teal-300' },
-    { id: 'ASOS_HEALTH', label: 'Saúde & ASOs (NR-07)', icon: Users, count: employees.length, badgeColor: 'bg-emerald-500/20 text-emerald-300' },
-    { id: 'ESOCIAL_EVENTS', label: 'Eventos eSocial SST', icon: ShieldCheck, count: esocialEvents.length, badgeColor: 'bg-indigo-500/20 text-indigo-300' },
-    { id: 'EPI_MANAGEMENT', label: 'Gestão de EPIs (NR-06)', icon: SlidersHorizontal, count: epiDeliveries.length, badgeColor: 'bg-cyan-500/20 text-cyan-300' },
-    { id: 'FINANCIAL', label: 'Financeiro & Fluxo', icon: DollarSign, count: transactions.length, badgeColor: 'bg-emerald-500/20 text-emerald-300' },
-    { id: 'CAT_ACCIDENTS', label: 'Acidentes & CAT (S-2210)', icon: AlertTriangle, count: catRecords.length, badgeColor: 'bg-rose-500/20 text-rose-300' },
-    { id: 'TRAININGS_NR01', label: 'Treinamentos (NR-01)', icon: Activity, count: integrationTrainings.length, badgeColor: 'bg-amber-500/20 text-amber-300' },
-    { id: 'COMMERCIAL_CONTRACTS', label: 'Comercial & Contratos', icon: FileSpreadsheet, count: contracts.length, badgeColor: 'bg-purple-500/20 text-purple-300' },
-    { id: 'AUDIT_QUALITY', label: 'Auditoria & Logs', icon: Layers, count: auditLogs.length, badgeColor: 'bg-slate-500/20 text-slate-300' }
+    { id: 'SERVICE_ORDERS', label: 'Ordens de Serviço (OS)', icon: Briefcase, count: serviceOrders.length, badgeColor: 'bg-blue-500/20 text-blue-700' },
+    { id: 'RISKS_PGR', label: 'Riscos & PGR (NR-01)', icon: HardHat, count: environmentalRisks.length, badgeColor: 'bg-teal-500/20 text-teal-700' },
+    { id: 'ASOS_HEALTH', label: 'Saúde & ASOs (NR-07)', icon: Users, count: employees.length, badgeColor: 'bg-marca-suave text-marca-escura' },
+    { id: 'ESOCIAL_EVENTS', label: 'Eventos eSocial SST', icon: ShieldCheck, count: esocialEvents.length, badgeColor: 'bg-indigo-500/20 text-indigo-700' },
+    { id: 'EPI_MANAGEMENT', label: 'Gestão de EPIs (NR-06)', icon: SlidersHorizontal, count: epiDeliveries.length, badgeColor: 'bg-cyan-500/20 text-cyan-700' },
+    { id: 'FINANCIAL', label: 'Financeiro & Fluxo', icon: DollarSign, count: transactions.length, badgeColor: 'bg-marca-suave text-marca-escura' },
+    { id: 'CAT_ACCIDENTS', label: 'Acidentes & CAT (S-2210)', icon: AlertTriangle, count: catRecords.length, badgeColor: 'bg-rose-500/20 text-rose-700' },
+    { id: 'TRAININGS_NR01', label: 'Treinamentos (NR-01)', icon: Activity, count: integrationTrainings.length, badgeColor: 'bg-amber-500/20 text-amber-700' },
+    { id: 'COMMERCIAL_CONTRACTS', label: 'Comercial & Contratos', icon: FileSpreadsheet, count: contracts.length, badgeColor: 'bg-purple-500/20 text-purple-700' },
+    { id: 'AUDIT_QUALITY', label: 'Auditoria & Logs', icon: Layers, count: auditLogs.length, badgeColor: 'bg-slate-500/20 text-tinta' }
   ];
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 p-4 sm:p-6 lg:p-8 space-y-6">
+    <div className="min-h-screen bg-fundo text-tinta p-4 sm:p-6 lg:p-8 space-y-6">
       
       {/* Toast Notification */}
       {successToast && (
-        <div className="fixed top-5 right-5 z-50 bg-emerald-500 text-slate-950 font-bold px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2 border border-emerald-400 animate-bounce">
+        <div className="fixed top-5 right-5 z-50 bg-marca text-slate-950 font-bold px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2 border border-marca-escura animate-bounce">
           <CheckCircle2 className="w-5 h-5 text-slate-950 shrink-0" />
           <span>{successToast}</span>
         </div>
       )}
 
       {/* Header Banner */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-slate-900/80 border border-slate-800 rounded-2xl p-5 sm:p-6 backdrop-blur-sm">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-superficie border border-borda rounded-2xl p-5 sm:p-6 backdrop-blur-sm">
         <div className="space-y-1.5">
           <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-500 to-emerald-600 flex items-center justify-center shadow-lg shadow-teal-900/40">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-500 to-marca-escura flex items-center justify-center shadow-lg shadow-teal-900/40">
               <FileSpreadsheet className="w-5 h-5 text-slate-950 font-bold" />
             </div>
             <div>
-              <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight flex items-center gap-2">
+              <h1 className="text-xl sm:text-2xl font-black text-tinta tracking-tight flex items-center gap-2">
                 Central de Relatórios & BI SST
-                <span className="text-xs uppercase font-mono px-2 py-0.5 bg-teal-500/20 text-teal-300 border border-teal-500/30 rounded-md">
+                <span className="text-xs uppercase font-mono px-2 py-0.5 bg-teal-500/20 text-teal-700 border border-teal-500/30 rounded-md">
                   Exportador Multi-Formato
                 </span>
               </h1>
-              <p className="text-xs sm:text-sm text-slate-400">
+              <p className="text-xs sm:text-sm text-tinta-2">
                 Geração analítica de dados com filtros multidimensionais, exportação em Excel (.xlsx), PDF formatado e agendamento automático.
               </p>
             </div>
@@ -1137,20 +1137,20 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
           <button
             type="button"
             onClick={() => setIsScheduleModalOpen(true)}
-            className="px-3.5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white border border-slate-700 text-xs font-semibold rounded-xl transition flex items-center gap-1.5 shadow-sm"
+            className="px-3.5 py-2.5 bg-superficie-2 hover:bg-superficie-3 text-tinta hover:text-tinta border border-borda text-xs font-semibold rounded-xl transition flex items-center gap-1.5 shadow-sm"
             title="Programar envio recorrente deste relatório por E-mail ou WhatsApp"
           >
-            <Send className="w-4 h-4 text-teal-400" />
+            <Send className="w-4 h-4 text-teal-700" />
             Agendar Relatório
           </button>
 
           <button
             type="button"
             onClick={handlePrint}
-            className="px-3.5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white border border-slate-700 text-xs font-semibold rounded-xl transition flex items-center gap-1.5 shadow-sm"
+            className="px-3.5 py-2.5 bg-superficie-2 hover:bg-superficie-3 text-tinta hover:text-tinta border border-borda text-xs font-semibold rounded-xl transition flex items-center gap-1.5 shadow-sm"
             title="Imprimir visualização atual do relatório"
           >
-            <Printer className="w-4 h-4 text-slate-400" />
+            <Printer className="w-4 h-4 text-tinta-2" />
             Imprimir
           </button>
 
@@ -1158,10 +1158,10 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
             type="button"
             onClick={handleExportCsv}
             disabled={isExporting || categoryData.length === 0}
-            className="px-3.5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white border border-slate-700 text-xs font-semibold rounded-xl transition flex items-center gap-1.5 disabled:opacity-50"
+            className="px-3.5 py-2.5 bg-superficie-2 hover:bg-superficie-3 text-tinta hover:text-tinta border border-borda text-xs font-semibold rounded-xl transition flex items-center gap-1.5 disabled:opacity-50"
             title="Exportar dados tabulados em CSV para PowerBI / Looker Studio"
           >
-            <Download className="w-4 h-4 text-cyan-400" />
+            <Download className="w-4 h-4 text-cyan-700" />
             CSV (BI)
           </button>
 
@@ -1169,10 +1169,10 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
             type="button"
             onClick={handleExportExcel}
             disabled={isExporting || categoryData.length === 0}
-            className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl transition flex items-center gap-2 shadow-lg shadow-emerald-950/40 active:scale-95 disabled:opacity-50"
+            className="px-4 py-2.5 bg-marca hover:bg-marca-escura text-white text-xs font-bold rounded-xl transition flex items-center gap-2 shadow-lg shadow-emerald-950/40 active:scale-95 disabled:opacity-50"
             title="Exportar planilha Excel completa (.xlsx) com tabelas formatadas e KPIs"
           >
-            <FileSpreadsheet className="w-4 h-4 text-white" />
+            <FileSpreadsheet className="w-4 h-4 text-tinta" />
             Exportar Excel (.xlsx)
           </button>
 
@@ -1191,8 +1191,8 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
 
       {/* Preset Quick Filters Bar */}
       <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-thin">
-        <span className="text-xs font-bold text-slate-400 shrink-0 uppercase tracking-wider flex items-center gap-1">
-          <Sparkles className="w-3.5 h-3.5 text-teal-400" />
+        <span className="text-xs font-bold text-tinta-2 shrink-0 uppercase tracking-wider flex items-center gap-1">
+          <Sparkles className="w-3.5 h-3.5 text-teal-700" />
           Filtros Rápidos:
         </span>
         {[
@@ -1210,8 +1210,8 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
             onClick={() => handleApplyPreset(preset.key)}
             className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all border ${
               activePreset === preset.key
-                ? 'bg-teal-500/20 text-teal-300 border-teal-500/50 shadow-sm'
-                : 'bg-slate-900/60 hover:bg-slate-800 text-slate-300 border-slate-800'
+                ? 'bg-teal-500/20 text-teal-700 border-teal-500/50 shadow-sm'
+                : 'bg-superficie hover:bg-superficie-2 text-tinta border-borda'
             }`}
           >
             {preset.label}
@@ -1234,19 +1234,19 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
               }}
               className={`p-3 rounded-xl border text-left transition-all flex flex-col justify-between gap-2 ${
                 isActive 
-                  ? 'bg-slate-900 border-teal-500/80 shadow-md shadow-teal-950/20 ring-1 ring-teal-500/30' 
-                  : 'bg-slate-900/40 hover:bg-slate-900 border-slate-800/80 text-slate-400 hover:text-slate-200'
+                  ? 'bg-superficie border-teal-500/80 shadow-md shadow-teal-950/20 ring-1 ring-teal-500/30' 
+                  : 'bg-superficie hover:bg-superficie border-borda text-tinta-2 hover:text-tinta'
               }`}
             >
               <div className="flex items-center justify-between w-full">
-                <div className={`p-2 rounded-lg ${isActive ? 'bg-teal-500/20 text-teal-300' : 'bg-slate-800 text-slate-400'}`}>
+                <div className={`p-2 rounded-lg ${isActive ? 'bg-teal-500/20 text-teal-700' : 'bg-superficie-2 text-white/80'}`}>
                   <Icon className="w-4 h-4" />
                 </div>
                 <span className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-md ${cat.badgeColor}`}>
                   {cat.count}
                 </span>
               </div>
-              <span className={`text-xs font-bold leading-tight ${isActive ? 'text-white' : 'text-slate-300'}`}>
+              <span className={`text-xs font-bold leading-tight ${isActive ? 'text-tinta' : 'text-tinta'}`}>
                 {cat.label}
               </span>
             </button>
@@ -1255,14 +1255,14 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
       </div>
 
       {/* Advanced Multi-Dimensional Filter Bar */}
-      <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 sm:p-5 space-y-4 shadow-sm">
+      <div className="bg-superficie border border-borda rounded-2xl p-4 sm:p-5 space-y-4 shadow-sm">
         <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <Filter className="w-4 h-4 text-teal-400" />
-            <h3 className="text-sm font-bold text-white uppercase tracking-wider">
+            <Filter className="w-4 h-4 text-teal-700" />
+            <h3 className="text-sm font-bold text-tinta uppercase tracking-wider">
               Painel de Filtros Avançados
             </h3>
-            <span className="text-xs text-slate-400">
+            <span className="text-xs text-tinta-2">
               ({categoryData.length} registros encontrados)
             </span>
           </div>
@@ -1272,7 +1272,7 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
               type="button"
               onClick={() => setShowCharts(!showCharts)}
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold border flex items-center gap-1.5 transition ${
-                showCharts ? 'bg-teal-500/20 text-teal-300 border-teal-500/40' : 'bg-slate-800 text-slate-300 border-slate-700'
+                showCharts ? 'bg-teal-500/20 text-teal-700 border-teal-500/40' : 'bg-superficie-2 text-white/80 border-borda'
               }`}
             >
               <PieChartIcon className="w-3.5 h-3.5" />
@@ -1282,7 +1282,7 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
             <button
               type="button"
               onClick={handleResetFilters}
-              className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-lg text-xs font-semibold border border-slate-700 transition flex items-center gap-1.5"
+              className="px-3 py-1.5 bg-superficie-2 hover:bg-superficie-3 text-tinta hover:text-tinta rounded-lg text-xs font-semibold border border-borda transition flex items-center gap-1.5"
             >
               <RefreshCw className="w-3.5 h-3.5" />
               Limpar Filtros
@@ -1294,8 +1294,8 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
           {/* Client / Empresa Filter */}
           <div className="space-y-1">
-            <label className="text-[11px] font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1">
-              <Building2 className="w-3.5 h-3.5 text-teal-400" />
+            <label className="text-[11px] font-bold text-tinta uppercase tracking-wider flex items-center gap-1">
+              <Building2 className="w-3.5 h-3.5 text-teal-700" />
               Empresa / Cliente
             </label>
             <select
@@ -1305,7 +1305,7 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
                 setSelectedUnitId('ALL');
                 setCurrentPage(1);
               }}
-              className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-teal-500 transition"
+              className="w-full bg-fundo border border-borda rounded-xl px-3 py-2 text-xs text-tinta focus:outline-none focus:border-teal-500 transition"
             >
               <option value="ALL">Todas as Empresas ({clients.length})</option>
               {clients.map((c) => (
@@ -1318,8 +1318,8 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
 
           {/* Period Filter */}
           <div className="space-y-1">
-            <label className="text-[11px] font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1">
-              <Calendar className="w-3.5 h-3.5 text-teal-400" />
+            <label className="text-[11px] font-bold text-tinta uppercase tracking-wider flex items-center gap-1">
+              <Calendar className="w-3.5 h-3.5 text-teal-700" />
               Período de Análise
             </label>
             <select
@@ -1328,7 +1328,7 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
                 setSelectedPeriod(e.target.value);
                 setCurrentPage(1);
               }}
-              className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-teal-500 transition"
+              className="w-full bg-fundo border border-borda rounded-xl px-3 py-2 text-xs text-tinta focus:outline-none focus:border-teal-500 transition"
             >
               <option value="ALL_TIME">Todo o Histórico</option>
               <option value="TODAY">Hoje</option>
@@ -1342,8 +1342,8 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
 
           {/* Dynamic Status Filter */}
           <div className="space-y-1">
-            <label className="text-[11px] font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1">
-              <CheckCircle2 className="w-3.5 h-3.5 text-teal-400" />
+            <label className="text-[11px] font-bold text-tinta uppercase tracking-wider flex items-center gap-1">
+              <CheckCircle2 className="w-3.5 h-3.5 text-teal-700" />
               Status / Situação
             </label>
             <select
@@ -1352,7 +1352,7 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
                 setSelectedStatus(e.target.value);
                 setCurrentPage(1);
               }}
-              className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-teal-500 transition"
+              className="w-full bg-fundo border border-borda rounded-xl px-3 py-2 text-xs text-tinta focus:outline-none focus:border-teal-500 transition"
             >
               <option value="ALL">Todos os Status</option>
               {activeCategory === 'SERVICE_ORDERS' && (
@@ -1407,8 +1407,8 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
 
           {/* Keyword Search */}
           <div className="space-y-1">
-            <label className="text-[11px] font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1">
-              <Search className="w-3.5 h-3.5 text-teal-400" />
+            <label className="text-[11px] font-bold text-tinta uppercase tracking-wider flex items-center gap-1">
+              <Search className="w-3.5 h-3.5 text-teal-700" />
               Busca por Texto
             </label>
             <div className="relative">
@@ -1420,14 +1420,14 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
                   setSearchTerm(e.target.value);
                   setCurrentPage(1);
                 }}
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-8 pr-3 py-2 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-teal-500 transition"
+                className="w-full bg-fundo border border-borda rounded-xl pl-8 pr-3 py-2 text-xs text-tinta placeholder-tinta-3 focus:outline-none focus:border-teal-500 transition"
               />
-              <Search className="w-3.5 h-3.5 text-slate-500 absolute left-2.5 top-2.5" />
+              <Search className="w-3.5 h-3.5 text-tinta-2 absolute left-2.5 top-2.5" />
               {searchTerm && (
                 <button
                   type="button"
                   onClick={() => setSearchTerm('')}
-                  className="absolute right-2.5 top-2.5 text-slate-500 hover:text-slate-300"
+                  className="absolute right-2.5 top-2.5 text-tinta-2 hover:text-tinta"
                 >
                   <X className="w-3 h-3" />
                 </button>
@@ -1438,10 +1438,10 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
 
         {/* Custom Date Range Picker (Only if selectedPeriod === 'CUSTOM') */}
         {selectedPeriod === 'CUSTOM' && (
-          <div className="p-3 bg-slate-950/80 border border-slate-800 rounded-xl flex flex-wrap items-center gap-4 animate-fadeIn">
-            <span className="text-xs font-bold text-teal-400">Defina o Intervalo:</span>
+          <div className="p-3 bg-fundo border border-borda rounded-xl flex flex-wrap items-center gap-4 animate-fadeIn">
+            <span className="text-xs font-bold text-teal-700">Defina o Intervalo:</span>
             <div className="flex items-center gap-2">
-              <span className="text-xs text-slate-400">De:</span>
+              <span className="text-xs text-tinta-2">De:</span>
               <input
                 type="date"
                 value={startDate}
@@ -1449,11 +1449,11 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
                   setStartDate(e.target.value);
                   setCurrentPage(1);
                 }}
-                className="bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-teal-500"
+                className="bg-superficie border border-borda rounded-lg px-2.5 py-1.5 text-xs text-tinta focus:outline-none focus:border-teal-500"
               />
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-xs text-slate-400">Até:</span>
+              <span className="text-xs text-tinta-2">Até:</span>
               <input
                 type="date"
                 value={endDate}
@@ -1461,7 +1461,7 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
                   setEndDate(e.target.value);
                   setCurrentPage(1);
                 }}
-                className="bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-teal-500"
+                className="bg-superficie border border-borda rounded-lg px-2.5 py-1.5 text-xs text-tinta focus:outline-none focus:border-teal-500"
               />
             </div>
           </div>
@@ -1475,16 +1475,16 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
           return (
             <div
               key={idx}
-              className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-4 flex items-center gap-3.5 shadow-sm hover:border-slate-700 transition"
+              className="bg-superficie border border-borda rounded-2xl p-4 flex items-center gap-3.5 shadow-sm hover:border-borda transition"
             >
               <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ${kpi.bg}`}>
                 <Icon className={`w-5 h-5 ${kpi.color}`} />
               </div>
               <div className="overflow-hidden">
-                <p className="text-[11px] font-semibold text-slate-400 truncate uppercase tracking-wider">
+                <p className="text-[11px] font-semibold text-tinta-2 truncate uppercase tracking-wider">
                   {kpi.label}
                 </p>
-                <p className="text-lg sm:text-xl font-black text-white tracking-tight truncate">
+                <p className="text-lg sm:text-xl font-black text-tinta tracking-tight truncate">
                   {kpi.value}
                 </p>
               </div>
@@ -1495,13 +1495,13 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
 
       {/* Chart Analytics Panel (Collapsible) */}
       {showCharts && (
-        <div className="bg-slate-900/70 border border-slate-800 rounded-2xl p-5 space-y-4 shadow-sm">
+        <div className="bg-superficie border border-borda rounded-2xl p-5 space-y-4 shadow-sm">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-bold text-white flex items-center gap-2">
-              <BarChart2 className="w-4 h-4 text-teal-400" />
+            <h3 className="text-sm font-bold text-tinta flex items-center gap-2">
+              <BarChart2 className="w-4 h-4 text-teal-700" />
               Visão Gráfica & Distribuição Estatística
             </h3>
-            <span className="text-xs text-slate-400">
+            <span className="text-xs text-tinta-2">
               Dados atualizados em tempo real conforme os filtros aplicados
             </span>
           </div>
@@ -1560,21 +1560,21 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
       )}
 
       {/* Main Interactive Data Table */}
-      <div className="bg-slate-900/90 border border-slate-800 rounded-2xl overflow-hidden shadow-lg">
-        <div className="p-4 sm:p-5 border-b border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="bg-superficie border border-borda rounded-2xl overflow-hidden shadow-lg">
+        <div className="p-4 sm:p-5 border-b border-borda flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <TableIcon className="w-4 h-4 text-teal-400" />
-            <h3 className="text-sm font-bold text-white uppercase tracking-wider">
+            <TableIcon className="w-4 h-4 text-teal-700" />
+            <h3 className="text-sm font-bold text-tinta uppercase tracking-wider">
               Tabela de Dados Filtrados
             </h3>
-            <span className="text-xs font-mono bg-slate-800 text-slate-300 px-2 py-0.5 rounded-full">
+            <span className="text-xs font-mono bg-superficie-2 text-tinta px-2 py-0.5 rounded-full">
               Página {currentPage} de {totalPages} ({categoryData.length} registros totais)
             </span>
           </div>
 
           {/* Pagination Controls in Header */}
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1 text-xs text-slate-400">
+            <div className="flex items-center gap-1 text-xs text-tinta-2">
               <span>Exibir:</span>
               <select
                 value={itemsPerPage}
@@ -1582,7 +1582,7 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
                   setItemsPerPage(Number(e.target.value));
                   setCurrentPage(1);
                 }}
-                className="bg-slate-950 border border-slate-800 rounded-lg px-2 py-1 text-xs text-slate-200 focus:outline-none"
+                className="bg-fundo border border-borda rounded-lg px-2 py-1 text-xs text-tinta focus:outline-none"
               >
                 <option value={10}>10 por pág.</option>
                 <option value={15}>15 por pág.</option>
@@ -1596,7 +1596,7 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
                 type="button"
                 onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
-                className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 disabled:opacity-30"
+                className="p-1.5 rounded-lg bg-superficie-2 hover:bg-superficie-3 text-tinta disabled:opacity-30"
               >
                 Anterior
               </button>
@@ -1604,7 +1604,7 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
                 type="button"
                 onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                 disabled={currentPage === totalPages}
-                className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 disabled:opacity-30"
+                className="p-1.5 rounded-lg bg-superficie-2 hover:bg-superficie-3 text-tinta disabled:opacity-30"
               >
                 Próxima
               </button>
@@ -1616,25 +1616,25 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
         <div className="overflow-x-auto">
           {categoryData.length === 0 ? (
             <div className="p-12 text-center space-y-3">
-              <div className="w-12 h-12 rounded-2xl bg-slate-800 flex items-center justify-center mx-auto text-slate-400">
+              <div className="w-12 h-12 rounded-2xl bg-superficie-2 flex items-center justify-center mx-auto text-tinta-2">
                 <Search className="w-6 h-6" />
               </div>
-              <h4 className="text-base font-bold text-white">Nenhum registro encontrado</h4>
-              <p className="text-xs text-slate-400 max-w-sm mx-auto">
+              <h4 className="text-base font-bold text-tinta">Nenhum registro encontrado</h4>
+              <p className="text-xs text-tinta-2 max-w-sm mx-auto">
                 Não há dados correspondentes aos filtros selecionados. Tente limpar os filtros ou selecionar outra categoria.
               </p>
               <button
                 type="button"
                 onClick={handleResetFilters}
-                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-teal-400 text-xs font-bold rounded-xl border border-teal-500/30"
+                className="px-4 py-2 bg-superficie-2 hover:bg-superficie-3 text-teal-700 text-xs font-bold rounded-xl border border-teal-500/30"
               >
                 Resetar Todos os Filtros
               </button>
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs text-slate-300">
-                <thead className="bg-slate-950/80 text-slate-400 uppercase text-[10px] tracking-wider border-b border-slate-800 font-bold">
+              <table className="w-full text-left text-xs text-tinta">
+                <thead className="bg-fundo text-tinta-2 uppercase text-[10px] tracking-wider border-b border-borda font-bold">
                   {activeCategory === 'SERVICE_ORDERS' && (
                     <tr>
                       <th className="p-3.5">Código O.S.</th>
@@ -1757,43 +1757,43 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
                   )}
                 </thead>
   
-                <tbody className="divide-y divide-slate-800/60 font-medium">
+                <tbody className="divide-y divide-borda font-medium">
                   {activeCategory === 'SERVICE_ORDERS' && (paginatedData as typeof serviceOrders).map((os) => {
                     const client = clients.find(c => c.id === os.client_id);
                     const isDelayed = (os.status !== 'COMPLETED' && os.status !== 'CANCELLED') && new Date(os.due_date) < new Date();
                     return (
-                      <tr key={os.id} className="hover:bg-slate-800/40 transition">
-                        <td className="p-3.5 font-mono font-bold text-white">{os.os_number || os.id.substring(0, 8)}</td>
+                      <tr key={os.id} className="hover:bg-superficie-2 transition">
+                        <td className="p-3.5 font-mono font-bold text-tinta">{os.os_number || os.id.substring(0, 8)}</td>
                         <td className="p-3.5">{client ? (client.trade_name || client.legal_name) : 'N/A'}</td>
-                        <td className="p-3.5 font-semibold text-slate-200">{os.title}</td>
+                        <td className="p-3.5 font-semibold text-tinta">{os.title}</td>
                         <td className="p-3.5">
                           <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                            os.priority === 'URGENT' ? 'bg-rose-500/20 text-rose-300 border border-rose-500/30' :
-                            os.priority === 'HIGH' ? 'bg-amber-500/20 text-amber-300' : 'bg-slate-800 text-slate-300'
+                            os.priority === 'URGENT' ? 'bg-rose-500/20 text-rose-700 border border-rose-500/30' :
+                            os.priority === 'HIGH' ? 'bg-amber-500/20 text-amber-700' : 'bg-superficie-2 text-tinta'
                           }`}>
                             {os.priority}
                           </span>
                         </td>
                         <td className="p-3.5">
                           <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                            os.status === 'COMPLETED' ? 'bg-emerald-500/20 text-emerald-300' :
-                            os.status === 'IN_PROGRESS' ? 'bg-blue-500/20 text-blue-300' : 'bg-slate-800 text-slate-300'
+                            os.status === 'COMPLETED' ? 'bg-marca-suave text-marca-escura' :
+                            os.status === 'IN_PROGRESS' ? 'bg-blue-500/20 text-blue-700' : 'bg-superficie-2 text-tinta'
                           }`}>
                             {os.status}
                           </span>
                         </td>
                         <td className="p-3.5">
-                          <span className={isDelayed ? 'text-rose-400 font-bold' : ''}>
+                          <span className={isDelayed ? 'text-rose-700 font-bold' : ''}>
                             {os.due_date ? formatDate(os.due_date) : '-'}
                             {isDelayed && ' (Atrasada)'}
                           </span>
                         </td>
-                        <td className="p-3.5 text-slate-400">{os.technical_responsible_name || 'Não atribuído'}</td>
+                        <td className="p-3.5 text-tinta-2">{os.technical_responsible_name || 'Não atribuído'}</td>
                         <td className="p-3.5 text-right">
                           <button
                             type="button"
                             onClick={() => setSelectedRowDetail(os)}
-                            className="p-1.5 hover:bg-slate-800 text-teal-400 hover:text-teal-300 rounded-lg transition"
+                            className="p-1.5 hover:bg-superficie-2 text-teal-700 hover:text-teal-700 rounded-lg transition"
                             title="Ver detalhes da O.S."
                           >
                             <Eye className="w-4 h-4" />
@@ -1805,33 +1805,33 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
   
                   {activeCategory === 'RISKS_PGR' && (paginatedData as typeof environmentalRisks).map((r) => {
                     return (
-                      <tr key={r.id} className="hover:bg-slate-800/40 transition">
-                        <td className="p-3.5 font-bold text-white">{r.agent_name || (r as any).description}</td>
+                      <tr key={r.id} className="hover:bg-superficie-2 transition">
+                        <td className="p-3.5 font-bold text-tinta">{r.agent_name || (r as any).description}</td>
                         <td className="p-3.5">
-                          <span className="px-2 py-0.5 bg-slate-800 text-slate-300 rounded text-[10px] font-mono">
+                          <span className="px-2 py-0.5 bg-superficie-2 text-tinta rounded text-[10px] font-mono">
                             {r.risk_category || (r as any).category}
                           </span>
                         </td>
-                        <td className="p-3.5 text-slate-400">{r.generating_source || 'Processo produtivo'}</td>
+                        <td className="p-3.5 text-tinta-2">{r.generating_source || 'Processo produtivo'}</td>
                         <td className="p-3.5 font-mono">{r.measured_value ? `${r.measured_value} ${r.measurement_unit || ''}` : 'Qualitativo'}</td>
                         <td className="p-3.5">
                           <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                            (r.risk_level || '').includes('ALTO') || (r.risk_level || '').includes('CRITICO') ? 'bg-rose-500/20 text-rose-300' :
-                            (r.risk_level || '').includes('MEDIO') ? 'bg-amber-500/20 text-amber-300' : 'bg-emerald-500/20 text-emerald-300'
+                            (r.risk_level || '').includes('ALTO') || (r.risk_level || '').includes('CRITICO') ? 'bg-rose-500/20 text-rose-700' :
+                            (r.risk_level || '').includes('MEDIO') ? 'bg-amber-500/20 text-amber-700' : 'bg-marca-suave text-marca-escura'
                           }`}>
                             {r.risk_level || 'MEDIO'}
                           </span>
                         </td>
                         <td className="p-3.5">
-                          {r.insalubridade_applies && <span className="px-1.5 py-0.5 bg-amber-500/20 text-amber-300 rounded text-[10px] mr-1">Insalubridade</span>}
-                          {r.periculosidade_applies && <span className="px-1.5 py-0.5 bg-rose-500/20 text-rose-300 rounded text-[10px]">Periculosidade</span>}
-                          {!r.insalubridade_applies && !r.periculosidade_applies && <span className="text-slate-500">Não enquadrado</span>}
+                          {r.insalubridade_applies && <span className="px-1.5 py-0.5 bg-amber-500/20 text-amber-700 rounded text-[10px] mr-1">Insalubridade</span>}
+                          {r.periculosidade_applies && <span className="px-1.5 py-0.5 bg-rose-500/20 text-rose-700 rounded text-[10px]">Periculosidade</span>}
+                          {!r.insalubridade_applies && !r.periculosidade_applies && <span className="text-tinta-2">Não enquadrado</span>}
                         </td>
                         <td className="p-3.5 text-right">
                           <button
                             type="button"
                             onClick={() => setSelectedRowDetail(r)}
-                            className="p-1.5 hover:bg-slate-800 text-teal-400 hover:text-teal-300 rounded-lg transition"
+                            className="p-1.5 hover:bg-superficie-2 text-teal-700 hover:text-teal-700 rounded-lg transition"
                             title="Ver detalhes do risco"
                           >
                             <Eye className="w-4 h-4" />
@@ -1845,36 +1845,36 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
                     const emp = item.employee;
                     const aso = item.aso;
                     return (
-                      <tr key={idx} className="hover:bg-slate-800/40 transition">
-                        <td className="p-3.5 font-bold text-white">{emp.name}</td>
-                        <td className="p-3.5 text-slate-400">{emp.cpf} | {emp.job_title}</td>
-                        <td className="p-3.5 font-semibold text-teal-300">{aso ? (aso.aso_type || (aso as any).exam_type) : 'Sem ASO'}</td>
+                      <tr key={idx} className="hover:bg-superficie-2 transition">
+                        <td className="p-3.5 font-bold text-tinta">{emp.name}</td>
+                        <td className="p-3.5 text-tinta-2">{emp.cpf} | {emp.job_title}</td>
+                        <td className="p-3.5 font-semibold text-teal-700">{aso ? (aso.aso_type || (aso as any).exam_type) : 'Sem ASO'}</td>
                         <td className="p-3.5">{aso?.exam_date ? formatDate(aso.exam_date) : '-'}</td>
                         <td className="p-3.5 font-mono">{aso?.valid_until ? formatDate(aso.valid_until) : '-'}</td>
                         <td className="p-3.5">
                           {item.isOverdue ? (
-                            <span className="px-2 py-0.5 bg-rose-500/20 text-rose-300 border border-rose-500/30 rounded text-[10px] font-bold">
+                            <span className="px-2 py-0.5 bg-rose-500/20 text-rose-700 border border-rose-500/30 rounded text-[10px] font-bold">
                               VENCIDO
                             </span>
                           ) : item.isSoon ? (
-                            <span className="px-2 py-0.5 bg-amber-500/20 text-amber-300 border border-amber-500/30 rounded text-[10px] font-bold">
+                            <span className="px-2 py-0.5 bg-amber-500/20 text-amber-700 border border-amber-500/30 rounded text-[10px] font-bold">
                               A VENCER (30d)
                             </span>
                           ) : (
-                            <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-300 rounded text-[10px] font-bold">
+                            <span className="px-2 py-0.5 bg-marca-suave text-marca-escura rounded text-[10px] font-bold">
                               VIGENTE
                             </span>
                           )}
                         </td>
                         <td className="p-3.5">
                           {/* So apto ou inapto: o cadastro antigo ainda pode trazer APTO_COM_RESTRICAO. */}
-                          <span className="text-emerald-400 font-bold">{aso ? (conclusaoDoAso(aso) || 'SEM CONCLUSÃO') : 'PENDENTE'}</span>
+                          <span className="text-marca-escura font-bold">{aso ? (conclusaoDoAso(aso) || 'SEM CONCLUSÃO') : 'PENDENTE'}</span>
                         </td>
                         <td className="p-3.5 text-right">
                           <button
                             type="button"
                             onClick={() => setSelectedRowDetail({ ...emp, selectedAso: aso })}
-                            className="p-1.5 hover:bg-slate-800 text-teal-400 hover:text-teal-300 rounded-lg transition"
+                            className="p-1.5 hover:bg-superficie-2 text-teal-700 hover:text-teal-700 rounded-lg transition"
                             title="Ver ficha de saúde do colaborador"
                           >
                             <Eye className="w-4 h-4" />
@@ -1886,29 +1886,29 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
   
                   {activeCategory === 'ESOCIAL_EVENTS' && (paginatedData as typeof esocialEvents).map((ev) => {
                     return (
-                      <tr key={ev.id} className="hover:bg-slate-800/40 transition">
-                        <td className="p-3.5 font-mono font-bold text-teal-400">{ev.event_type}</td>
-                        <td className="p-3.5 text-slate-200">
+                      <tr key={ev.id} className="hover:bg-superficie-2 transition">
+                        <td className="p-3.5 font-mono font-bold text-teal-700">{ev.event_type}</td>
+                        <td className="p-3.5 text-tinta">
                           {ev.event_type === 'S-2210' ? 'CAT - Acidente de Trabalho' :
                            ev.event_type === 'S-2220' ? 'ASO - Monitoramento da Saúde' :
                            ev.event_type === 'S-2240' ? 'Condições Ambientais do Trabalho' : 'Evento SST'}
                         </td>
                         <td className="p-3.5">
                           <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                            ev.status === 'SUCCESS' || (ev.status as string) === 'TRANSMITTED' || (ev.status as string) === 'ACCEPTED' ? 'bg-emerald-500/20 text-emerald-300' :
-                            ev.status === 'REJECTED' ? 'bg-rose-500/20 text-rose-300' : 'bg-amber-500/20 text-amber-300'
+                            ev.status === 'SUCCESS' || (ev.status as string) === 'TRANSMITTED' || (ev.status as string) === 'ACCEPTED' ? 'bg-marca-suave text-marca-escura' :
+                            ev.status === 'REJECTED' ? 'bg-rose-500/20 text-rose-700' : 'bg-amber-500/20 text-amber-700'
                           }`}>
                             {ev.status}
                           </span>
                         </td>
-                        <td className="p-3.5 font-mono text-slate-300">{ev.receipt_number || 'Aguardando envio'}</td>
+                        <td className="p-3.5 font-mono text-tinta">{ev.receipt_number || 'Aguardando envio'}</td>
                         <td className="p-3.5">{ev.transmitted_at ? formatDate(ev.transmitted_at) : '-'}</td>
-                        <td className="p-3.5 text-slate-400">{ev.environment === 'PRODUCAO' ? 'Produção' : 'Homologação'}</td>
+                        <td className="p-3.5 text-tinta-2">{ev.environment === 'PRODUCAO' ? 'Produção' : 'Homologação'}</td>
                         <td className="p-3.5 text-right">
                           <button
                             type="button"
                             onClick={() => setSelectedRowDetail(ev)}
-                            className="p-1.5 hover:bg-slate-800 text-teal-400 hover:text-teal-300 rounded-lg transition"
+                            className="p-1.5 hover:bg-superficie-2 text-teal-700 hover:text-teal-700 rounded-lg transition"
                             title="Ver detalhes do evento eSocial"
                           >
                             <Eye className="w-4 h-4" />
@@ -1920,23 +1920,23 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
   
                   {activeCategory === 'FINANCIAL' && (paginatedData as typeof transactions).map((t) => {
                     return (
-                      <tr key={t.id} className="hover:bg-slate-800/40 transition">
-                        <td className="p-3.5 font-mono text-slate-400">{t.id.substring(0, 8)}</td>
+                      <tr key={t.id} className="hover:bg-superficie-2 transition">
+                        <td className="p-3.5 font-mono text-tinta-2">{t.id.substring(0, 8)}</td>
                         <td className="p-3.5">
                           <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                            t.type === 'RECEIVABLE' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-rose-500/20 text-rose-300'
+                            t.type === 'RECEIVABLE' ? 'bg-marca-suave text-marca-escura' : 'bg-rose-500/20 text-rose-700'
                           }`}>
                             {t.type === 'RECEIVABLE' ? 'RECEITA' : 'DESPESA'}
                           </span>
                         </td>
-                        <td className="p-3.5 font-semibold text-white">{t.title}</td>
-                        <td className="p-3.5 font-mono font-bold text-teal-300">
+                        <td className="p-3.5 font-semibold text-tinta">{t.title}</td>
+                        <td className="p-3.5 font-mono font-bold text-teal-700">
                           {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(t.amount)}
                         </td>
                         <td className="p-3.5">{t.due_date ? formatDate(t.due_date) : '-'}</td>
                         <td className="p-3.5">
                           <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                            t.status === 'PAID' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-amber-500/20 text-amber-300'
+                            t.status === 'PAID' ? 'bg-marca-suave text-marca-escura' : 'bg-amber-500/20 text-amber-700'
                           }`}>
                             {t.status}
                           </span>
@@ -1945,7 +1945,7 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
                           <button
                             type="button"
                             onClick={() => setSelectedRowDetail(t)}
-                            className="p-1.5 hover:bg-slate-800 text-teal-400 hover:text-teal-300 rounded-lg transition"
+                            className="p-1.5 hover:bg-superficie-2 text-teal-700 hover:text-teal-700 rounded-lg transition"
                             title="Ver detalhes do lançamento financeiro"
                           >
                             <Eye className="w-4 h-4" />
@@ -1960,7 +1960,7 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
                     paginatedData.map((item: any, idx: number) => {
                       const keys = Object.keys(item).slice(0, 6);
                       return (
-                        <tr key={item.id || idx} className="hover:bg-slate-800/40 transition">
+                        <tr key={item.id || idx} className="hover:bg-superficie-2 transition">
                           {keys.map((k) => (
                             <td key={k} className="p-3.5 max-w-[200px] truncate">
                               {String(item[k] !== undefined && item[k] !== null ? item[k] : '-')}
@@ -1970,7 +1970,7 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
                             <button
                               type="button"
                               onClick={() => setSelectedRowDetail(item)}
-                              className="p-1.5 hover:bg-slate-800 text-teal-400 hover:text-teal-300 rounded-lg transition"
+                              className="p-1.5 hover:bg-superficie-2 text-teal-700 hover:text-teal-700 rounded-lg transition"
                             >
                               <Eye className="w-4 h-4" />
                             </button>
@@ -1987,17 +1987,17 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
 
       {/* Detail Inspection Modal */}
       {selectedRowDetail && (
-        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-2xl w-full p-6 space-y-4 shadow-2xl animate-scaleIn max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <h3 className="text-base font-bold text-white flex items-center gap-2">
-                <FileText className="w-5 h-5 text-teal-400" />
+        <div className="fixed inset-0 z-50 bg-fundo backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-superficie border border-borda rounded-2xl max-w-2xl w-full p-6 space-y-4 shadow-2xl animate-scaleIn max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-borda pb-3">
+              <h3 className="text-base font-bold text-tinta flex items-center gap-2">
+                <FileText className="w-5 h-5 text-teal-700" />
                 Detalhamento Completo do Registro
               </h3>
               <button
                 type="button"
                 onClick={() => setSelectedRowDetail(null)}
-                className="p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white"
+                className="p-1.5 rounded-lg hover:bg-superficie-2 text-tinta-2 hover:text-tinta"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -2007,22 +2007,22 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
               {/* O detalhe mostra o registro inteiro: sem o dado clinico que
                   o cadastro e o evento S-2220 antigos ainda carregam. */}
               {Object.entries(registroParaExibir(selectedRowDetail)).map(([key, val]) => (
-                <div key={key} className="bg-slate-950 p-3 rounded-xl border border-slate-800/60">
-                  <span className="text-[10px] font-bold uppercase text-slate-400 block tracking-wider mb-0.5">
+                <div key={key} className="bg-fundo p-3 rounded-xl border border-borda">
+                  <span className="text-[10px] font-bold uppercase text-tinta-2 block tracking-wider mb-0.5">
                     {key.replace(/_/g, ' ')}
                   </span>
-                  <span className="text-slate-200 font-medium break-words">
+                  <span className="text-tinta font-medium break-words">
                     {typeof val === 'object' ? JSON.stringify(val, null, 2) : String(val ?? '-')}
                   </span>
                 </div>
               ))}
             </div>
 
-            <div className="flex justify-end pt-3 border-t border-slate-800">
+            <div className="flex justify-end pt-3 border-t border-borda">
               <button
                 type="button"
                 onClick={() => setSelectedRowDetail(null)}
-                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-bold"
+                className="px-4 py-2 bg-superficie-2 hover:bg-superficie-3 text-tinta rounded-xl text-xs font-bold"
               >
                 Fechar Detalhes
               </button>
@@ -2033,22 +2033,22 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
 
       {/* Schedule Automation Modal */}
       {isScheduleModalOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl animate-scaleIn">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div className="fixed inset-0 z-50 bg-fundo backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-superficie border border-borda rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl animate-scaleIn">
+            <div className="flex items-center justify-between border-b border-borda pb-3">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg bg-teal-500/20 text-teal-300 flex items-center justify-center">
+                <div className="w-8 h-8 rounded-lg bg-teal-500/20 text-teal-700 flex items-center justify-center">
                   <Send className="w-4 h-4" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-white">Agendar Envio Automático</h3>
-                  <p className="text-[11px] text-slate-400">Programar disparo periódico de relatórios</p>
+                  <h3 className="text-sm font-bold text-tinta">Agendar Envio Automático</h3>
+                  <p className="text-[11px] text-tinta-2">Programar disparo periódico de relatórios</p>
                 </div>
               </div>
               <button
                 type="button"
                 onClick={() => setIsScheduleModalOpen(false)}
-                className="p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white"
+                className="p-1.5 rounded-lg hover:bg-superficie-2 text-tinta-2 hover:text-tinta"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -2056,11 +2056,11 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
 
             <div className="space-y-3.5 text-xs">
               <div>
-                <label className="text-[11px] font-bold text-slate-300 block mb-1">Periodicidade de Disparo:</label>
+                <label className="text-[11px] font-bold text-tinta block mb-1">Periodicidade de Disparo:</label>
                 <select
                   value={scheduleConfig.frequency}
                   onChange={(e) => setScheduleConfig({ ...scheduleConfig, frequency: e.target.value })}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-200"
+                  className="w-full bg-fundo border border-borda rounded-xl px-3 py-2 text-tinta"
                 >
                   <option value="DAILY">Diário (Todo dia útil às 08:00)</option>
                   <option value="WEEKLY">Semanal (Toda segunda-feira)</option>
@@ -2070,12 +2070,12 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
               </div>
 
               <div>
-                <label className="text-[11px] font-bold text-slate-300 block mb-1">Destinatários de E-mail (separados por vírgula):</label>
+                <label className="text-[11px] font-bold text-tinta block mb-1">Destinatários de E-mail (separados por vírgula):</label>
                 <input
                   type="text"
                   value={scheduleConfig.emailRecipients}
                   onChange={(e) => setScheduleConfig({ ...scheduleConfig, emailRecipients: e.target.value })}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-200"
+                  className="w-full bg-fundo border border-borda rounded-xl px-3 py-2 text-tinta"
                 />
               </div>
 
@@ -2085,9 +2085,9 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
                   id="sendWa"
                   checked={scheduleConfig.sendWhatsApp}
                   onChange={(e) => setScheduleConfig({ ...scheduleConfig, sendWhatsApp: e.target.checked })}
-                  className="rounded border-slate-700 bg-slate-950 text-teal-500"
+                  className="rounded border-borda bg-fundo text-teal-500"
                 />
-                <label htmlFor="sendWa" className="text-slate-300">
+                <label htmlFor="sendWa" className="text-tinta">
                   Notificar Diretoria / Gestor via WhatsApp com link seguro
                 </label>
               </div>
@@ -2098,19 +2098,19 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
                   id="incSummary"
                   checked={scheduleConfig.includeExecutiveSummary}
                   onChange={(e) => setScheduleConfig({ ...scheduleConfig, includeExecutiveSummary: e.target.checked })}
-                  className="rounded border-slate-700 bg-slate-950 text-teal-500"
+                  className="rounded border-borda bg-fundo text-teal-500"
                 />
-                <label htmlFor="incSummary" className="text-slate-300">
+                <label htmlFor="incSummary" className="text-tinta">
                   Incluir Resumo Executivo em PDF e Planilha Excel anexada
                 </label>
               </div>
             </div>
 
-            <div className="flex justify-end gap-2 pt-4 border-t border-slate-800">
+            <div className="flex justify-end gap-2 pt-4 border-t border-borda">
               <button
                 type="button"
                 onClick={() => setIsScheduleModalOpen(false)}
-                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-bold"
+                className="px-4 py-2 bg-superficie-2 hover:bg-superficie-3 text-tinta rounded-xl text-xs font-bold"
               >
                 Cancelar
               </button>

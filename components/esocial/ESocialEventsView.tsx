@@ -403,21 +403,21 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
   };
 
   return (
-    <div id="esocial-module-root" className="min-h-screen bg-slate-950 text-slate-100 p-4 md:p-6 lg:p-8 space-y-6">
+    <div id="esocial-module-root" className="min-h-screen bg-fundo text-tinta p-4 md:p-6 lg:p-8 space-y-6">
       
       {/* Feedback Toast
           CANTO-FLUTUANTE: aviso do envio ao eSocial, sai sozinho em 4 s */}
       {toastMessage && (
         <div id="esocial-toast-alert" className={`fixed bottom-6 right-6 z-50 px-4 py-3 rounded-2xl shadow-2xl flex items-center space-x-3 border transition-all duration-300 ${
           toastMessage.type === 'success' 
-            ? 'bg-emerald-950/90 text-emerald-200 border-emerald-700/60' 
+            ? 'bg-marca-suave text-marca-escura border-marca-escura' 
             : toastMessage.type === 'error'
             ? 'bg-rose-950/90 text-rose-200 border-rose-700/60'
             : 'bg-indigo-950/90 text-indigo-200 border-indigo-700/60'
         }`}>
-          {toastMessage.type === 'success' && <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />}
-          {toastMessage.type === 'error' && <AlertTriangle className="w-5 h-5 text-rose-400 shrink-0" />}
-          {toastMessage.type === 'info' && <ShieldCheck className="w-5 h-5 text-indigo-400 shrink-0" />}
+          {toastMessage.type === 'success' && <CheckCircle2 className="w-5 h-5 text-marca-escura shrink-0" />}
+          {toastMessage.type === 'error' && <AlertTriangle className="w-5 h-5 text-rose-700 shrink-0" />}
+          {toastMessage.type === 'info' && <ShieldCheck className="w-5 h-5 text-indigo-700 shrink-0" />}
           <span className="text-xs md:text-sm font-medium">{toastMessage.message}</span>
         </div>
       )}
@@ -426,23 +426,23 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
       <SSTDeadlineAlertBanner onNavigate={onNavigate} />
 
       {/* Header & Quick Action Banner */}
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 pb-2 border-b border-slate-800/80">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 pb-2 border-b border-borda">
         <div>
           <div className="flex items-center space-x-2.5">
-            <div className="p-2.5 rounded-2xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+            <div className="p-2.5 rounded-2xl bg-marca-suave text-marca-escura border border-marca-escura">
               <ShieldCheck className="w-6 h-6" />
             </div>
             <div>
               <div className="flex items-center space-x-2">
-                <h1 className="text-2xl font-bold text-white tracking-tight">Gestão de Eventos eSocial SST</h1>
-                <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                <h1 className="text-2xl font-bold text-tinta tracking-tight">Gestão de Eventos eSocial SST</h1>
+                <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-marca-suave text-marca-escura border border-marca-escura">
                   Leiaute S-1.3 · pré-visualização
                 </span>
-                <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-blue-500/20 text-blue-300 border border-blue-500/30 font-mono">
+                <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-blue-500/20 text-blue-700 border border-blue-500/30 font-mono">
                   Ambiente Simulado
                 </span>
               </div>
-              <p className="text-xs text-slate-400 mt-0.5">
+              <p className="text-xs text-tinta-2 mt-0.5">
                 Preparação dos eventos S-2210 (CAT), S-2220 (ASO/Saúde), S-2230 (Afastamentos) e S-2240 (Condições Ambientais). O eSocial exige assinatura com certificado ICP-Brasil A1/A3 e envio ao WebService — etapas ainda não implementadas: as transmissões, recibos e protocolos exibidos aqui são simulados.
               </p>
             </div>
@@ -457,10 +457,10 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
               setSelectedPdfEvent(null);
               setIsPdfModalOpen(true);
             }}
-            className="flex items-center space-x-2 px-3.5 py-2 rounded-xl bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 hover:text-indigo-200 border border-indigo-500/30 text-xs font-bold transition shadow-sm"
+            className="flex items-center space-x-2 px-3.5 py-2 rounded-xl bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-700 hover:text-indigo-800 border border-indigo-500/30 text-xs font-bold transition shadow-sm"
             title="Gera relatórios oficiais em PDF para conferência individual ou em massa dos eventos S-2210, S-2220, S-2230 e S-2240"
           >
-            <Printer className="w-4 h-4 text-indigo-400" />
+            <Printer className="w-4 h-4 text-indigo-700" />
             <span>Relatórios em PDF (S-2210/20/30/40)</span>
           </button>
 
@@ -468,10 +468,10 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
             id="btn-run-esocial-automation-job"
             onClick={handleExecuteAutomation}
             disabled={isAutomating}
-            className="flex items-center space-x-2 px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-bold transition shadow-lg shadow-emerald-950/50 border border-emerald-400/30 active:scale-95 touch-manipulation"
+            className="flex items-center space-x-2 px-4 py-2 rounded-xl bg-gradient-to-r from-marca to-teal-600 hover:from-marca hover:to-teal-500 text-white text-xs font-bold transition shadow-lg shadow-emerald-950/50 border border-marca-escura active:scale-95 touch-manipulation"
             title="Executa a varredura de OSs e gera os eventos eSocial. A assinatura e o envio ao Serpro são simulados."
           >
-            <Zap className={`w-4 h-4 text-amber-300 ${isAutomating ? 'animate-bounce' : 'fill-amber-300'}`} />
+            <Zap className={`w-4 h-4 text-amber-700 ${isAutomating ? 'animate-bounce' : 'fill-amber-300'}`} />
             <span>{isAutomating ? 'Automação em Execução...' : '⚡ Executar Automação eSocial'}</span>
           </button>
 
@@ -479,7 +479,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
             id="btn-run-esocial-tests"
             onClick={handleRunTests}
             disabled={isRunningTests}
-            className="flex items-center space-x-2 px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-indigo-300 hover:text-indigo-200 border border-indigo-900/50 text-xs font-semibold transition shadow-sm"
+            className="flex items-center space-x-2 px-3.5 py-2 rounded-xl bg-superficie hover:bg-superficie-2 text-indigo-700 hover:text-indigo-800 border border-indigo-900/50 text-xs font-semibold transition shadow-sm"
           >
             <Play className={`w-3.5 h-3.5 ${isRunningTests ? 'animate-spin' : ''}`} />
             <span>{isRunningTests ? 'Executando Testes...' : '🧪 Testes Automatizados'}</span>
@@ -489,9 +489,9 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
             <button
               id="btn-nav-to-sst-engineering"
               onClick={() => onNavigate('sst-engineering')}
-              className="flex items-center space-x-2 px-3.5 py-2 rounded-xl bg-teal-500/10 hover:bg-teal-500/20 text-teal-300 hover:text-teal-200 border border-teal-500/30 text-xs font-bold transition shadow-sm"
+              className="flex items-center space-x-2 px-3.5 py-2 rounded-xl bg-teal-500/10 hover:bg-teal-500/20 text-teal-700 hover:text-teal-800 border border-teal-500/30 text-xs font-bold transition shadow-sm"
             >
-              <HardHat className="w-3.5 h-3.5 text-teal-400" />
+              <HardHat className="w-3.5 h-3.5 text-teal-700" />
               <span>Engenharia SST Unificada (PGR/PCMSO)</span>
             </button>
           )}
@@ -499,7 +499,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
           <button
             id="btn-extract-from-so"
             onClick={() => setIsExtractModalOpen(true)}
-            className="flex items-center space-x-2 px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-amber-300 hover:text-amber-200 border border-amber-900/50 text-xs font-semibold transition shadow-sm"
+            className="flex items-center space-x-2 px-3.5 py-2 rounded-xl bg-superficie hover:bg-superficie-2 text-amber-700 hover:text-amber-800 border border-amber-900/50 text-xs font-semibold transition shadow-sm"
           >
             <Sparkles className="w-3.5 h-3.5" />
             <span>Extrair de OS (PGR/PCMSO)</span>
@@ -511,9 +511,9 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
               setEditingEvent(null);
               setIsCreateModalOpen(true);
             }}
-            className="flex items-center space-x-2 px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold transition border border-slate-700 shadow-sm"
+            className="flex items-center space-x-2 px-3.5 py-2 rounded-xl bg-superficie-2 hover:bg-superficie-3 text-tinta text-xs font-semibold transition border border-borda shadow-sm"
           >
-            <Plus className="w-4 h-4 text-emerald-400" />
+            <Plus className="w-4 h-4 text-marca-escura" />
             <span>Novo Manual</span>
           </button>
         </div>
@@ -521,93 +521,93 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
 
       {/* Bento Grid: Metric KPIs */}
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3.5">
-        <div className="p-4 rounded-2xl bg-slate-900/80 border border-slate-800/80 shadow-sm flex flex-col justify-between">
+        <div className="p-4 rounded-2xl bg-superficie border border-borda shadow-sm flex flex-col justify-between">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Total Eventos</span>
-            <FileCode2 className="w-4 h-4 text-slate-500" />
+            <span className="text-[11px] font-semibold text-tinta-2 uppercase tracking-wider">Total Eventos</span>
+            <FileCode2 className="w-4 h-4 text-tinta-2" />
           </div>
           <div className="mt-2 flex items-baseline justify-between">
-            <span className="text-2xl font-bold text-white tracking-tight">{stats.total}</span>
-            <span className="text-[10px] text-slate-400 font-mono">100% registros</span>
+            <span className="text-2xl font-bold text-tinta tracking-tight">{stats.total}</span>
+            <span className="text-[10px] text-tinta-2 font-mono">100% registros</span>
           </div>
         </div>
 
-        <div className="p-4 rounded-2xl bg-slate-900/80 border border-emerald-900/40 shadow-sm flex flex-col justify-between">
+        <div className="p-4 rounded-2xl bg-superficie border border-marca-escura shadow-sm flex flex-col justify-between">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-semibold text-emerald-400 uppercase tracking-wider">Transmitidos / Recibo</span>
-            <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+            <span className="text-[11px] font-semibold text-marca-escura uppercase tracking-wider">Transmitidos / Recibo</span>
+            <CheckCircle2 className="w-4 h-4 text-marca-escura" />
           </div>
           <div className="mt-2 flex items-baseline justify-between">
-            <span className="text-2xl font-bold text-emerald-400 tracking-tight">{stats.success}</span>
-            <span className="text-[10px] text-emerald-500 font-medium">Aceite simulado</span>
+            <span className="text-2xl font-bold text-marca-escura tracking-tight">{stats.success}</span>
+            <span className="text-[10px] text-marca-escura font-medium">Aceite simulado</span>
           </div>
         </div>
 
-        <div className="p-4 rounded-2xl bg-slate-900/80 border border-blue-900/40 shadow-sm flex flex-col justify-between">
+        <div className="p-4 rounded-2xl bg-superficie border border-blue-900/40 shadow-sm flex flex-col justify-between">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-semibold text-blue-400 uppercase tracking-wider">Prontos p/ Envio</span>
-            <Send className="w-4 h-4 text-blue-400" />
+            <span className="text-[11px] font-semibold text-blue-700 uppercase tracking-wider">Prontos p/ Envio</span>
+            <Send className="w-4 h-4 text-blue-700" />
           </div>
           <div className="mt-2 flex items-baseline justify-between">
-            <span className="text-2xl font-bold text-blue-400 tracking-tight">{stats.ready}</span>
-            <span className="text-[10px] text-blue-400 font-medium">Campos conferidos · não assinados</span>
+            <span className="text-2xl font-bold text-blue-700 tracking-tight">{stats.ready}</span>
+            <span className="text-[10px] text-blue-700 font-medium">Campos conferidos · não assinados</span>
           </div>
         </div>
 
-        <div className="p-4 rounded-2xl bg-slate-900/80 border border-rose-900/40 shadow-sm flex flex-col justify-between">
+        <div className="p-4 rounded-2xl bg-superficie border border-rose-900/40 shadow-sm flex flex-col justify-between">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-semibold text-rose-400 uppercase tracking-wider">Inconsistências / Erro</span>
-            <AlertTriangle className="w-4 h-4 text-rose-400" />
+            <span className="text-[11px] font-semibold text-rose-700 uppercase tracking-wider">Inconsistências / Erro</span>
+            <AlertTriangle className="w-4 h-4 text-rose-700" />
           </div>
           <div className="mt-2 flex items-baseline justify-between">
-            <span className="text-2xl font-bold text-rose-400 tracking-tight">{stats.rejected}</span>
-            <span className="text-[10px] text-rose-400 font-medium">Requer Correção</span>
+            <span className="text-2xl font-bold text-rose-700 tracking-tight">{stats.rejected}</span>
+            <span className="text-[10px] text-rose-700 font-medium">Requer Correção</span>
           </div>
         </div>
 
-        <div className="col-span-2 md:col-span-4 lg:col-span-1 p-4 rounded-2xl bg-slate-900/80 border border-slate-800/80 shadow-sm flex flex-col justify-between">
+        <div className="col-span-2 md:col-span-4 lg:col-span-1 p-4 rounded-2xl bg-superficie border border-borda shadow-sm flex flex-col justify-between">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Distribuição SST</span>
-            <Layers className="w-4 h-4 text-slate-500" />
+            <span className="text-[11px] font-semibold text-tinta-2 uppercase tracking-wider">Distribuição SST</span>
+            <Layers className="w-4 h-4 text-tinta-2" />
           </div>
           <div className="mt-2 grid grid-cols-4 gap-1 text-center">
-            <div className="bg-slate-950 p-1 rounded-lg">
-              <span className="block text-[9px] text-amber-400 font-bold">2240</span>
-              <span className="text-xs font-bold text-slate-200">{stats.s2240Count}</span>
+            <div className="bg-fundo p-1 rounded-lg">
+              <span className="block text-[9px] text-amber-700 font-bold">2240</span>
+              <span className="text-xs font-bold text-tinta">{stats.s2240Count}</span>
             </div>
-            <div className="bg-slate-950 p-1 rounded-lg">
-              <span className="block text-[9px] text-teal-400 font-bold">2220</span>
-              <span className="text-xs font-bold text-slate-200">{stats.s2220Count}</span>
+            <div className="bg-fundo p-1 rounded-lg">
+              <span className="block text-[9px] text-teal-700 font-bold">2220</span>
+              <span className="text-xs font-bold text-tinta">{stats.s2220Count}</span>
             </div>
-            <div className="bg-slate-950 p-1 rounded-lg">
-              <span className="block text-[9px] text-rose-400 font-bold">2210</span>
-              <span className="text-xs font-bold text-slate-200">{stats.s2210Count}</span>
+            <div className="bg-fundo p-1 rounded-lg">
+              <span className="block text-[9px] text-rose-700 font-bold">2210</span>
+              <span className="text-xs font-bold text-tinta">{stats.s2210Count}</span>
             </div>
-            <div className="bg-slate-950 p-1 rounded-lg">
-              <span className="block text-[9px] text-purple-400 font-bold">3000</span>
-              <span className="text-xs font-bold text-slate-200">{stats.s3000Count}</span>
+            <div className="bg-fundo p-1 rounded-lg">
+              <span className="block text-[9px] text-purple-700 font-bold">3000</span>
+              <span className="text-xs font-bold text-tinta">{stats.s3000Count}</span>
             </div>
           </div>
         </div>
       </div>
 
       {/* Navigation Tabs Header */}
-      <div className="flex items-center justify-between border-b border-slate-800 overflow-x-auto">
+      <div className="flex items-center justify-between border-b border-borda overflow-x-auto">
         <div className="flex space-x-1 sm:space-x-2 min-w-max">
           <button
             id="tab-btn-automation"
             onClick={() => setActiveTab('automation')}
             className={`flex items-center space-x-2 px-3.5 py-2.5 text-xs font-bold border-b-2 transition ${
               activeTab === 'automation'
-                ? 'border-emerald-500 text-emerald-300 bg-emerald-500/10'
-                : 'border-transparent text-slate-400 hover:text-slate-200 hover:border-slate-700'
+                ? 'border-marca-escura text-marca-escura bg-marca-suave'
+                : 'border-transparent text-tinta-2 hover:text-tinta hover:border-borda'
             }`}
           >
-            <Bot className="w-4 h-4 text-emerald-400" />
+            <Bot className="w-4 h-4 text-marca-escura" />
             <span>Robô de Automação</span>
             <span className="flex h-2 w-2 relative">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-marca opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-marca"></span>
             </span>
           </button>
 
@@ -616,13 +616,13 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
             onClick={() => setActiveTab('events')}
             className={`flex items-center space-x-2 px-3.5 py-2.5 text-xs font-semibold border-b-2 transition ${
               activeTab === 'events'
-                ? 'border-emerald-500 text-emerald-400 bg-emerald-500/5'
-                : 'border-transparent text-slate-400 hover:text-slate-200 hover:border-slate-700'
+                ? 'border-marca-escura text-marca-escura bg-marca-suave'
+                : 'border-transparent text-tinta-2 hover:text-tinta hover:border-borda'
             }`}
           >
             <FileText className="w-4 h-4" />
             <span>Eventos eSocial</span>
-            <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-slate-800 text-slate-300 font-mono">
+            <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-superficie-2 text-tinta font-mono">
               {esocialEvents.length}
             </span>
           </button>
@@ -632,13 +632,13 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
             onClick={() => setActiveTab('batches')}
             className={`flex items-center space-x-2 px-3.5 py-2.5 text-xs font-semibold border-b-2 transition ${
               activeTab === 'batches'
-                ? 'border-emerald-500 text-emerald-400 bg-emerald-500/5'
-                : 'border-transparent text-slate-400 hover:text-slate-200 hover:border-slate-700'
+                ? 'border-marca-escura text-marca-escura bg-marca-suave'
+                : 'border-transparent text-tinta-2 hover:text-tinta hover:border-borda'
             }`}
           >
             <Layers className="w-4 h-4" />
             <span>Lotes & Protocolos</span>
-            <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-slate-800 text-slate-300 font-mono">
+            <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-superficie-2 text-tinta font-mono">
               {esocialBatches.length}
             </span>
           </button>
@@ -648,11 +648,11 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
             onClick={() => setActiveTab('extractor')}
             className={`flex items-center space-x-2 px-3.5 py-2.5 text-xs font-semibold border-b-2 transition ${
               activeTab === 'extractor'
-                ? 'border-emerald-500 text-emerald-400 bg-emerald-500/5'
-                : 'border-transparent text-slate-400 hover:text-slate-200 hover:border-slate-700'
+                ? 'border-marca-escura text-marca-escura bg-marca-suave'
+                : 'border-transparent text-tinta-2 hover:text-tinta hover:border-borda'
             }`}
           >
-            <Sparkles className="w-4 h-4 text-amber-400" />
+            <Sparkles className="w-4 h-4 text-amber-700" />
             <span>Assistente PGR/PCMSO</span>
           </button>
 
@@ -661,15 +661,15 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
             onClick={() => setActiveTab('tests')}
             className={`flex items-center space-x-2 px-3.5 py-2.5 text-xs font-semibold border-b-2 transition ${
               activeTab === 'tests'
-                ? 'border-emerald-500 text-emerald-400 bg-emerald-500/5'
-                : 'border-transparent text-slate-400 hover:text-slate-200 hover:border-slate-700'
+                ? 'border-marca-escura text-marca-escura bg-marca-suave'
+                : 'border-transparent text-tinta-2 hover:text-tinta hover:border-borda'
             }`}
           >
             <CheckCircle2 className="w-4 h-4" />
             <span>Testes</span>
             {testResults && (
               <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-mono ${
-                testResults.failed === 0 ? 'bg-emerald-950 text-emerald-400' : 'bg-rose-950 text-rose-400'
+                testResults.failed === 0 ? 'bg-marca-suave text-marca-escura' : 'bg-rose-950 text-rose-700'
               }`}>
                 {testResults.passed}/{testResults.results.length}
               </span>
@@ -681,18 +681,18 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
             onClick={() => setActiveTab('config')}
             className={`flex items-center space-x-2 px-3.5 py-2.5 text-xs font-semibold border-b-2 transition ${
               activeTab === 'config'
-                ? 'border-indigo-500 text-indigo-400 bg-indigo-500/10 font-bold'
-                : 'border-transparent text-slate-400 hover:text-slate-200 hover:border-slate-700'
+                ? 'border-indigo-500 text-indigo-700 bg-indigo-500/10 font-bold'
+                : 'border-transparent text-tinta-2 hover:text-tinta hover:border-borda'
             }`}
           >
-            <Settings2 className="w-4 h-4 text-indigo-400" />
+            <Settings2 className="w-4 h-4 text-indigo-700" />
             <span>Configurações & Certificado A1</span>
           </button>
         </div>
 
         {selectedEventIds.length > 0 && activeTab === 'events' && (
           <div className="flex items-center space-x-2.5 pb-2">
-            <span className="text-xs text-emerald-400 font-medium">
+            <span className="text-xs text-marca-escura font-medium">
               {selectedEventIds.length} selecionado(s)
             </span>
             <button
@@ -711,40 +711,40 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
       {activeTab === 'automation' && (
         <div className="space-y-6">
           {/* Automation Robot Header Banner */}
-          <div className="p-6 rounded-3xl bg-gradient-to-br from-slate-900 via-slate-900/90 to-emerald-950/40 border border-emerald-500/30 shadow-2xl relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+          <div className="p-6 rounded-3xl bg-gradient-to-br from-slate-900 via-slate-900/90 to-emerald-950/40 border border-marca-escura shadow-2xl relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-96 h-96 bg-marca-suave rounded-full blur-3xl pointer-events-none" />
             
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 relative z-10">
               <div className="space-y-2">
                 <div className="flex items-center space-x-3">
-                  <div className="p-3 rounded-2xl bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-inner">
+                  <div className="p-3 rounded-2xl bg-marca-suave text-marca-escura border border-marca-escura shadow-inner">
                     <Bot className="w-8 h-8" />
                   </div>
                   <div>
                     <div className="flex items-center space-x-2">
-                      <h2 className="text-xl font-bold text-white tracking-tight">Robô Autônomo eSocial SST</h2>
-                      <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center space-x-1">
-                        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                      <h2 className="text-xl font-bold text-tinta tracking-tight">Robô Autônomo eSocial SST</h2>
+                      <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-marca-suave text-marca-escura border border-marca-escura flex items-center space-x-1">
+                        <span className="w-2 h-2 rounded-full bg-marca animate-pulse"></span>
                         <span>ENVIO SIMULADO</span>
                       </span>
                     </div>
-                    <p className="text-xs text-slate-300">
+                    <p className="text-xs text-tinta">
                       Geração dos eventos e conferência dos campos do leiaute S-1.3. Sem validação contra o XSD, sem assinatura e sem transmissão.
                     </p>
                   </div>
                 </div>
 
-                <div className="flex flex-wrap items-center gap-4 text-xs text-slate-400 pt-1 font-mono">
-                  <div className="flex items-center space-x-1.5 text-slate-300">
-                    <CheckCheck className="w-4 h-4 text-emerald-400" />
+                <div className="flex flex-wrap items-center gap-4 text-xs text-tinta-2 pt-1 font-mono">
+                  <div className="flex items-center space-x-1.5 text-tinta">
+                    <CheckCheck className="w-4 h-4 text-marca-escura" />
                     <span>Validação contra o XSD: <strong>não feita</strong></span>
                   </div>
-                  <div className="flex items-center space-x-1.5 text-slate-300">
-                    <Lock className="w-4 h-4 text-emerald-400" />
+                  <div className="flex items-center space-x-1.5 text-tinta">
+                    <Lock className="w-4 h-4 text-marca-escura" />
                     <span>Certificado: <strong>não configurado</strong></span>
                   </div>
-                  <div className="flex items-center space-x-1.5 text-slate-300">
-                    <Smartphone className="w-4 h-4 text-emerald-400" />
+                  <div className="flex items-center space-x-1.5 text-tinta">
+                    <Smartphone className="w-4 h-4 text-marca-escura" />
                     <span>Notificações: <strong>WhatsApp / E-mail Ativo</strong></span>
                   </div>
                 </div>
@@ -756,13 +756,13 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                   id="btn-run-full-automation"
                   onClick={handleExecuteAutomation}
                   disabled={isAutomating}
-                  className={`flex items-center justify-center space-x-3 px-6 py-3.5 rounded-2xl font-bold text-sm text-white transition-all duration-300 shadow-xl touch-manipulation ${
+                  className={`flex items-center justify-center space-x-3 px-6 py-3.5 rounded-2xl font-bold text-sm text-tinta transition-all duration-300 shadow-xl touch-manipulation ${
                     isAutomating
-                      ? 'bg-slate-800 text-slate-400 border border-slate-700 cursor-not-allowed'
-                      : 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 border border-emerald-400/40 shadow-emerald-950/60 hover:scale-[1.02] active:scale-95'
+                      ? 'bg-superficie-2 text-tinta-2 border border-borda cursor-not-allowed'
+                      : 'bg-gradient-to-r from-marca to-teal-600 hover:from-marca hover:to-teal-500 border border-marca-escura shadow-emerald-950/60 hover:scale-[1.02] active:scale-95'
                   }`}
                 >
-                  <Zap className={`w-5 h-5 text-amber-300 ${isAutomating ? 'animate-bounce' : 'fill-amber-300'}`} />
+                  <Zap className={`w-5 h-5 text-amber-700 ${isAutomating ? 'animate-bounce' : 'fill-amber-300'}`} />
                   <span>{isAutomating ? 'Processando Automação...' : 'Executar Automação Agora'}</span>
                 </button>
               </div>
@@ -770,13 +770,13 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
           </div>
 
           {/* Interactive Automation Pipeline Progress */}
-          <div className="p-6 rounded-2xl bg-slate-900/70 border border-slate-800 space-y-4 shadow-sm">
+          <div className="p-6 rounded-2xl bg-superficie border border-borda space-y-4 shadow-sm">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <Workflow className="w-4 h-4 text-emerald-400" />
-                <h3 className="text-sm font-bold text-white uppercase tracking-wider">Pipeline de Automação Contínua</h3>
+                <Workflow className="w-4 h-4 text-marca-escura" />
+                <h3 className="text-sm font-bold text-tinta uppercase tracking-wider">Pipeline de Automação Contínua</h3>
               </div>
-              <span className="text-xs text-slate-400 font-mono">
+              <span className="text-xs text-tinta-2 font-mono">
                 {isAutomating ? `Etapa ${automationStep} de 5` : 'Aguardando próximo ciclo ou disparo manual'}
               </span>
             </div>
@@ -798,23 +798,23 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                     key={item.step}
                     className={`p-4 rounded-xl border transition-all duration-300 flex flex-col justify-between ${
                       isCurrent
-                        ? 'bg-emerald-500/20 border-emerald-400 shadow-lg shadow-emerald-950/50 scale-[1.03]'
+                        ? 'bg-marca-suave border-marca-escura shadow-lg shadow-emerald-950/50 scale-[1.03]'
                         : isPassed
-                        ? 'bg-emerald-950/30 border-emerald-800/60 text-emerald-300'
-                        : 'bg-slate-950/60 border-slate-800/80 text-slate-400'
+                        ? 'bg-marca-suave border-marca-escura text-marca-escura'
+                        : 'bg-fundo border-borda text-tinta-2'
                     }`}
                   >
                     <div className="flex items-center justify-between mb-2">
-                      <span className={`text-[10px] font-bold uppercase tracking-wider ${isCurrent ? 'text-emerald-300 font-mono animate-pulse' : 'text-slate-400'}`}>
+                      <span className={`text-[10px] font-bold uppercase tracking-wider ${isCurrent ? 'text-marca-escura font-mono animate-pulse' : 'text-tinta-2'}`}>
                         {item.title}
                       </span>
-                      <Icon className={`w-4 h-4 ${isCurrent ? 'text-emerald-400 animate-spin' : isPassed ? 'text-emerald-400' : 'text-slate-500'}`} />
+                      <Icon className={`w-4 h-4 ${isCurrent ? 'text-marca-escura animate-spin' : isPassed ? 'text-marca-escura' : 'text-tinta-2'}`} />
                     </div>
-                    <p className="text-[11px] text-slate-300">{item.desc}</p>
-                    <div className="mt-3 h-1.5 w-full bg-slate-900 rounded-full overflow-hidden">
+                    <p className="text-[11px] text-tinta">{item.desc}</p>
+                    <div className="mt-3 h-1.5 w-full bg-superficie rounded-full overflow-hidden">
                       <div 
                         className={`h-full transition-all duration-500 ${
-                          isPassed || isCurrent ? 'bg-emerald-500 w-full' : 'w-0'
+                          isPassed || isCurrent ? 'bg-marca w-full' : 'w-0'
                         }`} 
                       />
                     </div>
@@ -828,13 +828,13 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
             
             {/* Automation Triggers & Rules Settings */}
-            <div className="lg:col-span-6 p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-4">
-              <div className="flex items-center justify-between pb-2 border-b border-slate-800">
+            <div className="lg:col-span-6 p-6 rounded-2xl bg-superficie border border-borda space-y-4">
+              <div className="flex items-center justify-between pb-2 border-b border-borda">
                 <div className="flex items-center space-x-2">
-                  <Settings2 className="w-4 h-4 text-emerald-400" />
-                  <h3 className="text-sm font-bold text-white uppercase tracking-wider">Regras & Gatilhos Inteligentes</h3>
+                  <Settings2 className="w-4 h-4 text-marca-escura" />
+                  <h3 className="text-sm font-bold text-tinta uppercase tracking-wider">Regras & Gatilhos Inteligentes</h3>
                 </div>
-                <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 font-mono">
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-marca-suave text-marca-escura border border-marca-escura font-mono">
                   Tempo Real
                 </span>
               </div>
@@ -855,19 +855,19 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                     <div 
                       key={item.key}
                       onClick={() => setAutomationSettings(prev => ({ ...prev, [item.key]: !prev[item.key as keyof typeof automationSettings] }))}
-                      className="p-3 rounded-xl bg-slate-950/70 border border-slate-800/80 hover:border-slate-700 transition flex items-center justify-between cursor-pointer group"
+                      className="p-3 rounded-xl bg-fundo border border-borda hover:border-borda transition flex items-center justify-between cursor-pointer group"
                     >
                       <div className="pr-4">
-                        <div className="text-xs font-semibold text-white group-hover:text-emerald-300 transition">
+                        <div className="text-xs font-semibold text-tinta group-hover:text-marca-escura transition">
                           {item.label}
                         </div>
-                        <div className="text-[10px] text-slate-400 mt-0.5">
+                        <div className="text-[10px] text-tinta-2 mt-0.5">
                           {item.desc}
                         </div>
                       </div>
 
                       <div className={`w-10 h-5 rounded-full p-0.5 transition-colors duration-200 ease-in-out shrink-0 ${
-                        isChecked ? 'bg-emerald-600' : 'bg-slate-800'
+                        isChecked ? 'bg-marca' : 'bg-superficie-2'
                       }`}>
                         <div className={`w-4 h-4 rounded-full bg-white transition-transform duration-200 ease-in-out ${
                           isChecked ? 'translate-x-5' : 'translate-x-0'
@@ -880,32 +880,32 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
             </div>
 
             {/* Live Robot Execution Console & Audit Feed */}
-            <div className="lg:col-span-6 p-6 rounded-2xl bg-slate-900/60 border border-slate-800 flex flex-col justify-between space-y-4">
+            <div className="lg:col-span-6 p-6 rounded-2xl bg-superficie border border-borda flex flex-col justify-between space-y-4">
               <div>
-                <div className="flex items-center justify-between pb-2 border-b border-slate-800">
+                <div className="flex items-center justify-between pb-2 border-b border-borda">
                   <div className="flex items-center space-x-2">
-                    <Activity className="w-4 h-4 text-emerald-400" />
-                    <h3 className="text-sm font-bold text-white uppercase tracking-wider">Console de Telemetria e Logs ao Vivo</h3>
+                    <Activity className="w-4 h-4 text-marca-escura" />
+                    <h3 className="text-sm font-bold text-tinta uppercase tracking-wider">Console de Telemetria e Logs ao Vivo</h3>
                   </div>
                   <button
                     onClick={() => setAutomationLogs([{ timestamp: new Date().toLocaleTimeString('pt-BR'), message: 'Console de telemetria limpo.', level: 'info' }])}
-                    className="text-[10px] text-slate-400 hover:text-slate-200 transition font-mono"
+                    className="text-[10px] text-tinta-2 hover:text-tinta transition font-mono"
                   >
                     Limpar Logs
                   </button>
                 </div>
 
                 {/* Console Window */}
-                <div className="mt-3 p-4 rounded-xl bg-slate-950 border border-slate-800 font-mono text-xs text-slate-300 space-y-2 h-72 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-800">
+                <div className="mt-3 p-4 rounded-xl bg-fundo border border-borda font-mono text-xs text-tinta space-y-2 h-72 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-800">
                   {automationLogs.map((log, index) => (
                     <div key={index} className="flex items-start space-x-2 text-[11px] leading-relaxed">
-                      <span className="text-slate-400 shrink-0 select-none">[{log.timestamp}]</span>
+                      <span className="text-tinta-2 shrink-0 select-none">[{log.timestamp}]</span>
                       <span className={
                         log.level === 'success' 
-                          ? 'text-emerald-400 font-semibold' 
+                          ? 'text-marca-escura font-semibold' 
                           : log.level === 'warning'
-                          ? 'text-amber-400'
-                          : 'text-slate-300'
+                          ? 'text-amber-700'
+                          : 'text-tinta'
                       }>
                         {log.message}
                       </span>
@@ -916,16 +916,16 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
 
               {/* Last Automation Stats Card */}
               {lastAutomationResult && (
-                <div className="p-4 rounded-xl bg-emerald-950/30 border border-emerald-500/30 flex items-center justify-between">
+                <div className="p-4 rounded-xl bg-marca-suave border border-marca-escura flex items-center justify-between">
                   <div>
-                    <div className="text-xs font-bold text-emerald-300">Última Execução com Sucesso</div>
-                    <div className="text-[11px] text-slate-300 mt-0.5">
+                    <div className="text-xs font-bold text-marca-escura">Última Execução com Sucesso</div>
+                    <div className="text-[11px] text-tinta mt-0.5">
                       Lote <strong>{lastAutomationResult.batchNumber || 'SERPRO-AUTO'}</strong> preparado com {lastAutomationResult.transmittedCount} eventos (envio simulado).
                     </div>
                   </div>
                   <button
                     onClick={() => setActiveTab('batches')}
-                    className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition"
+                    className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-marca hover:bg-marca-escura text-white text-xs font-semibold transition"
                   >
                     <span>Ver Lotes</span>
                     <ArrowRight className="w-3.5 h-3.5" />
@@ -942,16 +942,16 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
         <div className="space-y-4">
           
           {/* Filters Bar */}
-          <div className="p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800 flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
+          <div className="p-3.5 rounded-2xl bg-superficie border border-borda flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
             <div className="relative flex-1">
-              <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+              <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-tinta-2" />
               <input
                 id="input-esocial-search"
                 type="text"
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
                 placeholder="Buscar por colaborador, CPF, matrícula ou recibo de entrega..."
-                className="w-full pl-10 pr-4 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500"
+                className="w-full pl-10 pr-4 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta placeholder-tinta-3 focus:outline-none focus:border-marca-escura"
               />
             </div>
 
@@ -960,7 +960,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                 id="filter-esocial-type"
                 value={filterType}
                 onChange={e => setFilterType(e.target.value)}
-                className="px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-300 focus:outline-none focus:border-emerald-500"
+                className="px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-marca-escura"
               >
                 <option value="ALL">Todos os Tipos</option>
                 <option value="S-2240">S-2240 (Condições Ambientais)</option>
@@ -973,7 +973,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                 id="filter-esocial-status"
                 value={filterStatus}
                 onChange={e => setFilterStatus(e.target.value)}
-                className="px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-300 focus:outline-none focus:border-emerald-500"
+                className="px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-marca-escura"
               >
                 <option value="ALL">Todos os Status</option>
                 <option value="SUCCESS">Transmitido com Sucesso (Recibo)</option>
@@ -986,7 +986,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                 id="filter-esocial-client"
                 value={filterClient}
                 onChange={e => setFilterClient(e.target.value)}
-                className="px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-300 focus:outline-none focus:border-emerald-500 max-w-[200px] truncate"
+                className="px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-marca-escura max-w-[200px] truncate"
               >
                 <option value="ALL">Todas as Empresas</option>
                 {clients.map(c => (
@@ -1010,28 +1010,28 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                   });
                   showToast(`Relatório PDF com ${filteredEvents.length} eventos baixado com sucesso.`, 'success');
                 }}
-                className="flex items-center space-x-1.5 px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-semibold transition shadow-sm"
+                className="flex items-center space-x-1.5 px-3 py-2 rounded-xl bg-superficie-2 hover:bg-superficie-3 text-tinta border border-borda text-xs font-semibold transition shadow-sm"
                 title="Exportar tabela de eventos filtrados diretamente em arquivo PDF vetorial"
               >
-                <Download className="w-3.5 h-3.5 text-emerald-400" />
+                <Download className="w-3.5 h-3.5 text-marca-escura" />
                 <span>Exportar PDF ({filteredEvents.length})</span>
               </button>
             </div>
           </div>
 
           {/* Events Table Container */}
-          <div className="rounded-2xl bg-slate-900/60 border border-slate-800 overflow-hidden shadow-sm">
+          <div className="rounded-2xl bg-superficie border border-borda overflow-hidden shadow-sm">
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse text-xs">
                 <thead>
-                  <tr className="border-b border-slate-800 bg-slate-950/70 text-slate-400 uppercase tracking-wider font-semibold text-[10px]">
+                  <tr className="border-b border-borda bg-fundo text-tinta-2 uppercase tracking-wider font-semibold text-[10px]">
                     <th className="p-3.5 w-10 text-center">
                       <input
                         id="checkbox-select-all-events"
                         type="checkbox"
                         checked={filteredEvents.length > 0 && selectedEventIds.length === filteredEvents.length}
                         onChange={handleSelectAll}
-                        className="rounded border-slate-700 bg-slate-900 text-emerald-500 focus:ring-emerald-500/20"
+                        className="rounded border-borda bg-superficie text-marca-escura focus:ring-marca-escura"
                       />
                     </th>
                     <th className="p-3.5">Evento & Tipo</th>
@@ -1042,13 +1042,13 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                     <th className="p-3.5 text-right">Ações</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800/60 text-slate-300">
+                <tbody className="divide-y divide-borda text-tinta">
                   {filteredEvents.length === 0 ? (
                     <tr>
-                      <td colSpan={7} className="p-8 text-center text-slate-500">
+                      <td colSpan={7} className="p-8 text-center text-tinta-2">
                         <FileCode2 className="w-8 h-8 mx-auto mb-2 opacity-40" />
                         <p className="text-sm font-medium">Nenhum evento eSocial encontrado para os filtros selecionados.</p>
-                        <p className="text-xs text-slate-600 mt-1">Crie um novo evento manual ou extraia automaticamente de uma OS do PGR/PCMSO.</p>
+                        <p className="text-xs text-tinta-2 mt-1">Crie um novo evento manual ou extraia automaticamente de uma OS do PGR/PCMSO.</p>
                       </td>
                     </tr>
                   ) : (
@@ -1059,8 +1059,8 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                       return (
                         <tr 
                           key={evt.id}
-                          className={`hover:bg-slate-800/40 transition-colors ${
-                            isSelected ? 'bg-emerald-950/20' : ''
+                          className={`hover:bg-superficie-2 transition-colors ${
+                            isSelected ? 'bg-marca-suave' : ''
                           }`}
                         >
                           <td className="p-3.5 text-center">
@@ -1068,7 +1068,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                               type="checkbox"
                               checked={isSelected}
                               onChange={() => handleToggleSelect(evt.id)}
-                              className="rounded border-slate-700 bg-slate-900 text-emerald-500 focus:ring-emerald-500/20"
+                              className="rounded border-borda bg-superficie text-marca-escura focus:ring-marca-escura"
                             />
                           </td>
 
@@ -1077,18 +1077,18 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                             <div className="flex items-center space-x-2">
                               <span className={`px-2 py-0.5 rounded-md font-bold text-[10px] ${
                                 evt.event_type === 'S-2240'
-                                  ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                                  ? 'bg-amber-500/20 text-amber-700 border border-amber-500/30'
                                   : evt.event_type === 'S-2220'
-                                  ? 'bg-teal-500/20 text-teal-300 border border-teal-500/30'
+                                  ? 'bg-teal-500/20 text-teal-700 border border-teal-500/30'
                                   : evt.event_type === 'S-2210'
-                                  ? 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
-                                  : 'bg-purple-500/20 text-purple-300 border border-purple-500/30'
+                                  ? 'bg-rose-500/20 text-rose-700 border border-rose-500/30'
+                                  : 'bg-purple-500/20 text-purple-700 border border-purple-500/30'
                               }`}>
                                 {evt.event_type}
                               </span>
-                              <span className="font-semibold text-slate-200 text-[11px]">{evt.event_number}</span>
+                              <span className="font-semibold text-tinta text-[11px]">{evt.event_number}</span>
                             </div>
-                            <span className="text-[10px] text-slate-500 block mt-0.5">
+                            <span className="text-[10px] text-tinta-2 block mt-0.5">
                               {evt.event_type === 'S-2240' && 'Condições Ambientais'}
                               {evt.event_type === 'S-2220' && 'Monitoramento Saúde (ASO)'}
                               {evt.event_type === 'S-2210' && 'Comunicação Acidente (CAT)'}
@@ -1098,21 +1098,21 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
 
                           {/* Worker Details */}
                           <td className="p-3.5">
-                            <div className="font-medium text-white">{evt.worker_name}</div>
-                            <div className="text-[11px] text-slate-400 font-mono">
+                            <div className="font-medium text-tinta">{evt.worker_name}</div>
+                            <div className="text-[11px] text-tinta-2 font-mono">
                               CPF: {evt.worker_cpf} • Mat: {evt.worker_registration}
                             </div>
-                            <div className="text-[10px] text-slate-500">
+                            <div className="text-[10px] text-tinta-2">
                               CBO {evt.worker_cbo}: {evt.worker_role}
                             </div>
                           </td>
 
                           {/* Client */}
                           <td className="p-3.5">
-                            <div className="text-slate-200 font-medium truncate max-w-[160px]">
+                            <div className="text-tinta font-medium truncate max-w-[160px]">
                               {client?.trade_name || client?.legal_name || 'Cliente PrevSafe'}
                             </div>
-                            <div className="text-[10px] text-slate-500 font-mono">
+                            <div className="text-[10px] text-tinta-2 font-mono">
                               {client?.document_number || 'CNPJ não informado'}
                             </div>
                           </td>
@@ -1120,24 +1120,24 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                           {/* Dynamic Payload Summary */}
                           <td className="p-3.5">
                             {evt.event_type === 'S-2240' && (
-                              <div className="text-[11px] text-slate-300 space-y-0.5">
-                                <div><span className="text-slate-500">Riscos:</span> {evt.ambient_data?.ambient_risks.length || 0} cadastrado(s)</div>
-                                <div className="text-slate-400 text-[10px] truncate max-w-[200px]">
+                              <div className="text-[11px] text-tinta space-y-0.5">
+                                <div><span className="text-tinta-2">Riscos:</span> {evt.ambient_data?.ambient_risks.length || 0} cadastrado(s)</div>
+                                <div className="text-tinta-2 text-[10px] truncate max-w-[200px]">
                                   {evt.ambient_data?.ambient_risks.map(r => r.description).join(', ')}
                                 </div>
                               </div>
                             )}
 
                             {evt.event_type === 'S-2220' && (
-                              <div className="text-[11px] text-slate-300 space-y-0.5">
+                              <div className="text-[11px] text-tinta space-y-0.5">
                                 <div>
-                                  <span className="text-slate-500">Tipo:</span> {evt.aso_data?.aso_type} • <span className={`font-semibold ${evt.aso_data?.result === 'APTO' ? 'text-emerald-400' : 'text-rose-400'}`}>{evt.aso_data?.result}</span>
+                                  <span className="text-tinta-2">Tipo:</span> {evt.aso_data?.aso_type} • <span className={`font-semibold ${evt.aso_data?.result === 'APTO' ? 'text-marca-escura' : 'text-rose-700'}`}>{evt.aso_data?.result}</span>
                                 </div>
-                                <div className="text-[10px] text-slate-400">
+                                <div className="text-[10px] text-tinta-2">
                                   {evt.aso_data?.physician_name} ({evt.aso_data?.physician_crm})
                                 </div>
                                 {(evt.aso_data?.exams_list || []).length === 0 && (
-                                  <div className="text-[10px] font-semibold text-amber-400">
+                                  <div className="text-[10px] font-semibold text-amber-700">
                                     Pendente: sem exames do ASO (MOS S-2220, item 1.5)
                                   </div>
                                 )}
@@ -1145,18 +1145,18 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                             )}
 
                             {evt.event_type === 'S-2210' && (
-                              <div className="text-[11px] text-slate-300 space-y-0.5">
-                                <div><span className="text-slate-500">Tipo CAT:</span> {evt.cat_data?.cat_type} • CID: {evt.cat_data?.cid_code?.split(' ')[0]}</div>
-                                <div className="text-[10px] text-slate-400 truncate max-w-[200px]">
+                              <div className="text-[11px] text-tinta space-y-0.5">
+                                <div><span className="text-tinta-2">Tipo CAT:</span> {evt.cat_data?.cat_type} • CID: {evt.cat_data?.cid_code?.split(' ')[0]}</div>
+                                <div className="text-[10px] text-tinta-2 truncate max-w-[200px]">
                                   Parte: {evt.cat_data?.body_part} ({evt.cat_data?.days_away} dias afast.)
                                 </div>
                               </div>
                             )}
 
                             {evt.event_type === 'S-3000' && (
-                              <div className="text-[11px] text-slate-300 space-y-0.5">
-                                <div><span className="text-slate-500">Alvo:</span> {evt.exclusion_data?.target_event_type}</div>
-                                <div className="text-[10px] text-purple-300 font-mono truncate max-w-[200px]">
+                              <div className="text-[11px] text-tinta space-y-0.5">
+                                <div><span className="text-tinta-2">Alvo:</span> {evt.exclusion_data?.target_event_type}</div>
+                                <div className="text-[10px] text-purple-700 font-mono truncate max-w-[200px]">
                                   Recibo: {evt.exclusion_data?.target_receipt_number}
                                 </div>
                               </div>
@@ -1167,11 +1167,11 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                           <td className="p-3.5">
                             {evt.status === 'SUCCESS' && (
                               <div>
-                                <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                                <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-marca-suave text-marca-escura border border-marca-escura">
                                   <CheckCircle2 className="w-3 h-3" />
                                   <span>Transmitido (201)</span>
                                 </span>
-                                <span className="block text-[10px] text-slate-400 font-mono mt-1 truncate max-w-[150px]" title={evt.receipt_number}>
+                                <span className="block text-[10px] text-tinta-2 font-mono mt-1 truncate max-w-[150px]" title={evt.receipt_number}>
                                   Recibo: {evt.receipt_number?.substring(0, 18)}...
                                 </span>
                               </div>
@@ -1179,17 +1179,17 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
 
                             {evt.status === 'READY_TO_SEND' && (
                               <div>
-                                <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-blue-500/20 text-blue-300 border border-blue-500/30">
+                                <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-blue-500/20 text-blue-700 border border-blue-500/30">
                                   <Send className="w-3 h-3" />
                                   <span>Pronto p/ Envio</span>
                                 </span>
-                                <span className="block text-[10px] text-slate-500 mt-0.5">Campos conferidos · não assinado</span>
+                                <span className="block text-[10px] text-tinta-2 mt-0.5">Campos conferidos · não assinado</span>
                               </div>
                             )}
 
                             {evt.status === 'DRAFT' && (
                               <div>
-                                <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-slate-800 text-slate-400 border border-slate-700">
+                                <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-superficie-2 text-tinta-2 border border-borda">
                                   <Clock className="w-3 h-3" />
                                   <span>Rascunho</span>
                                 </span>
@@ -1198,11 +1198,11 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
 
                             {evt.status === 'REJECTED' && (
                               <div>
-                                <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-rose-500/20 text-rose-400 border border-rose-500/30">
+                                <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-rose-500/20 text-rose-700 border border-rose-500/30">
                                   <AlertTriangle className="w-3 h-3" />
                                   <span>Rejeitado / Erro</span>
                                 </span>
-                                <span className="block text-[10px] text-rose-300/80 mt-0.5 truncate max-w-[160px]" title={evt.validation_errors?.[0] || evt.return_message}>
+                                <span className="block text-[10px] text-rose-700/80 mt-0.5 truncate max-w-[160px]" title={evt.validation_errors?.[0] || evt.return_message}>
                                   {evt.validation_errors?.[0] || evt.return_message}
                                 </span>
                               </div>
@@ -1221,7 +1221,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                                   setXmlActiveTab('xml');
                                 }}
                                 title="Visualizar XML e Recibo"
-                                className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition"
+                                className="p-1.5 rounded-lg bg-superficie-2 hover:bg-superficie-3 text-tinta hover:text-tinta transition"
                               >
                                 <Eye className="w-3.5 h-3.5" />
                               </button>
@@ -1234,7 +1234,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                                   setIsPdfModalOpen(true);
                                 }}
                                 title="Gerar Espelho / Relatório PDF deste Evento SST"
-                                className="p-1.5 rounded-lg bg-indigo-950/80 hover:bg-indigo-900 text-indigo-300 hover:text-indigo-200 transition border border-indigo-800/40"
+                                className="p-1.5 rounded-lg bg-indigo-950/80 hover:bg-indigo-900 text-indigo-700 hover:text-indigo-800 transition border border-indigo-800/40"
                               >
                                 <Printer className="w-3.5 h-3.5" />
                               </button>
@@ -1245,7 +1245,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                                   id={`btn-validate-${evt.id}`}
                                   onClick={() => handleValidateSingle(evt.id)}
                                   title="Conferir os campos do leiaute (não valida contra o XSD)"
-                                  className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-blue-300 hover:text-blue-200 transition"
+                                  className="p-1.5 rounded-lg bg-superficie-2 hover:bg-superficie-3 text-blue-700 hover:text-blue-800 transition"
                                 >
                                   <Check className="w-3.5 h-3.5" />
                                 </button>
@@ -1257,7 +1257,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                                   id={`btn-transmit-${evt.id}`}
                                   onClick={() => handleTransmitSingle(evt.id)}
                                   title="Processar evento (envio ao WebService simulado)"
-                                  className="p-1.5 rounded-lg bg-emerald-600/80 hover:bg-emerald-600 text-white transition shadow-sm"
+                                  className="p-1.5 rounded-lg bg-marca-suave hover:bg-marca-escura text-white transition shadow-sm"
                                 >
                                   <Send className="w-3.5 h-3.5" />
                                 </button>
@@ -1272,7 +1272,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                                     setIsCreateModalOpen(true);
                                   }}
                                   title="Editar Dados do Evento"
-                                  className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition"
+                                  className="p-1.5 rounded-lg bg-superficie-2 hover:bg-superficie-3 text-tinta hover:text-tinta transition"
                                 >
                                   <Edit className="w-3.5 h-3.5" />
                                 </button>
@@ -1290,7 +1290,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                                     }
                                   }}
                                   title="Gerar Evento de Exclusão S-3000"
-                                  className="p-1.5 rounded-lg bg-purple-950/80 hover:bg-purple-900 text-purple-300 transition border border-purple-800/40"
+                                  className="p-1.5 rounded-lg bg-purple-950/80 hover:bg-purple-900 text-purple-700 transition border border-purple-800/40"
                                 >
                                   <Ban className="w-3.5 h-3.5" />
                                 </button>
@@ -1307,7 +1307,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                                     }
                                   }}
                                   title="Excluir Registro"
-                                  className="p-1.5 rounded-lg bg-slate-800 hover:bg-rose-900/60 text-slate-400 hover:text-rose-300 transition"
+                                  className="p-1.5 rounded-lg bg-superficie-2 hover:bg-rose-900/60 text-tinta-2 hover:text-rose-700 transition"
                                 >
                                   <Trash2 className="w-3.5 h-3.5" />
                                 </button>
@@ -1329,10 +1329,10 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
       {/* TAB 2: BATCHES & PROTOCOLS */}
       {activeTab === 'batches' && (
         <div className="space-y-4">
-          <div className="p-4 rounded-2xl bg-slate-900/60 border border-slate-800 flex items-center justify-between">
+          <div className="p-4 rounded-2xl bg-superficie border border-borda flex items-center justify-between">
             <div>
-              <h2 className="text-base font-bold text-white">Lotes de Transmissão WebService eSocial</h2>
-              <p className="text-xs text-slate-400">
+              <h2 className="text-base font-bold text-tinta">Lotes de Transmissão WebService eSocial</h2>
+              <p className="text-xs text-tinta-2">
                 Histórico dos lotes montados no sistema. Os protocolos e recibos são simulados: ainda não há envio ao Serpro.
               </p>
             </div>
@@ -1340,17 +1340,17 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
               onClick={() => {
                 showToast('Consulta de status no Serpro ainda não disponível. Exibindo os lotes registrados localmente.', 'info');
               }}
-              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition"
+              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-superficie-2 hover:bg-superficie-3 text-tinta text-xs font-semibold transition"
             >
               <RefreshCw className="w-3.5 h-3.5" />
               <span>Sincronizar Protocolos</span>
             </button>
           </div>
 
-          <div className="rounded-2xl bg-slate-900/60 border border-slate-800 overflow-x-auto shadow-sm">
+          <div className="rounded-2xl bg-superficie border border-borda overflow-x-auto shadow-sm">
             <table className="w-full text-left border-collapse text-xs">
               <thead>
-                <tr className="border-b border-slate-800 bg-slate-950/70 text-slate-400 uppercase tracking-wider font-semibold text-[10px]">
+                <tr className="border-b border-borda bg-fundo text-tinta-2 uppercase tracking-wider font-semibold text-[10px]">
                   <th className="p-3.5">Número do Lote</th>
                   <th className="p-3.5">Protocolo WebService</th>
                   <th className="p-3.5">Certificado Utilizado</th>
@@ -1359,34 +1359,34 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                   <th className="p-3.5">Status Retorno</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/60 text-slate-300">
+              <tbody className="divide-y divide-borda text-tinta">
                 {esocialBatches.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="p-8 text-center text-slate-500">
+                    <td colSpan={6} className="p-8 text-center text-tinta-2">
                       Nenhum lote de transmissão registrado até o momento.
                     </td>
                   </tr>
                 ) : (
                   esocialBatches.map(b => (
-                    <tr key={b.id} className="hover:bg-slate-800/40">
-                      <td className="p-3.5 font-mono font-bold text-emerald-400">{b.batch_number}</td>
-                      <td className="p-3.5 font-mono text-slate-300">{b.protocol_number}</td>
+                    <tr key={b.id} className="hover:bg-superficie-2">
+                      <td className="p-3.5 font-mono font-bold text-marca-escura">{b.batch_number}</td>
+                      <td className="p-3.5 font-mono text-tinta">{b.protocol_number}</td>
                       <td className="p-3.5">
-                        <span className="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-slate-800 text-slate-300 border border-slate-700">
+                        <span className="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-superficie-2 text-tinta border border-borda">
                           {b.certificate_type === 'A1_DIGITAL' ? 'A1 (Nuvem)' : 'A3 (Token)'}
                         </span>
                       </td>
                       <td className="p-3.5 font-medium">
                         {b.events_count} evento(s) ({b.success_count} sucesso, {b.error_count} erro)
                       </td>
-                      <td className="p-3.5 text-slate-400">
+                      <td className="p-3.5 text-tinta-2">
                         {new Date(b.created_at).toLocaleString('pt-BR')}
                       </td>
                       <td className="p-3.5">
                         <span className={`inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold ${
                           b.status === 'SUCESSO_TOTAL'
-                            ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                            : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                            ? 'bg-marca-suave text-marca-escura border border-marca-escura'
+                            : 'bg-amber-500/20 text-amber-700 border border-amber-500/30'
                         }`}>
                           <CheckCircle2 className="w-3 h-3" />
                           <span>{b.status === 'SUCESSO_TOTAL' ? 'Processado com Sucesso' : 'Sucesso Parcial'}</span>
@@ -1404,27 +1404,27 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
       {/* TAB 3: EXTRACTOR PGR/PCMSO */}
       {activeTab === 'extractor' && (
         <div className="space-y-4">
-          <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-4">
+          <div className="p-6 rounded-2xl bg-superficie border border-borda space-y-4">
             <div className="max-w-2xl">
-              <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-amber-500/10 text-amber-300 text-xs font-semibold border border-amber-500/20 mb-2">
+              <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-amber-500/10 text-amber-700 text-xs font-semibold border border-amber-500/20 mb-2">
                 <Sparkles className="w-3.5 h-3.5" />
                 <span>Automação de Engenharia SST</span>
               </div>
-              <h2 className="text-xl font-bold text-white">Assistente Automático de Extração eSocial</h2>
-              <p className="text-xs text-slate-400 mt-1">
+              <h2 className="text-xl font-bold text-tinta">Assistente Automático de Extração eSocial</h2>
+              <p className="text-xs text-tinta-2 mt-1">
                 Converta relatórios técnicos do PGR (NR-01), LTCAT (NR-15/16) ou PCMSO (NR-07) em eventos oficiais estruturados do eSocial com 1 clique, sem retrabalho de digitação.
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-slate-800">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-borda">
               <div className="space-y-3">
-                <label className="block text-xs font-semibold text-slate-300 uppercase">
+                <label className="block text-xs font-semibold text-tinta uppercase">
                   1. Selecione a Ordem de Serviço (OS) de Origem
                 </label>
                 <select
                   value={selectedExtractionOS}
                   onChange={e => setSelectedExtractionOS(e.target.value)}
-                  className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-500"
+                  className="w-full p-3 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-marca-escura"
                 >
                   {serviceOrders.map(so => {
                     const client = clients.find(c => c.id === so.client_id);
@@ -1438,7 +1438,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
               </div>
 
               <div className="space-y-3">
-                <label className="block text-xs font-semibold text-slate-300 uppercase">
+                <label className="block text-xs font-semibold text-tinta uppercase">
                   2. Tipo de Evento a Gerar
                 </label>
                 <div className="grid grid-cols-2 gap-3">
@@ -1448,7 +1448,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                     className={`p-3 rounded-xl border text-left transition ${
                       extractionType === 'S-2240'
                         ? 'bg-amber-950/30 border-amber-500/50 text-amber-200'
-                        : 'bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-700'
+                        : 'bg-fundo border-borda text-tinta-2 hover:border-borda'
                     }`}
                   >
                     <div className="font-bold text-xs">S-2240</div>
@@ -1461,7 +1461,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                     className={`p-3 rounded-xl border text-left transition ${
                       extractionType === 'S-2220'
                         ? 'bg-teal-950/30 border-teal-500/50 text-teal-200'
-                        : 'bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-700'
+                        : 'bg-fundo border-borda text-tinta-2 hover:border-borda'
                     }`}
                   >
                     <div className="font-bold text-xs">S-2220</div>
@@ -1474,7 +1474,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
             <div className="pt-4 flex justify-end">
               <button
                 onClick={handleExecuteExtraction}
-                className="flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition shadow-lg"
+                className="flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-marca hover:bg-marca-escura text-white text-xs font-semibold transition shadow-lg"
               >
                 <Sparkles className="w-4 h-4" />
                 <span>Processar Extração e Gerar Evento</span>
@@ -1487,15 +1487,15 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
       {/* TAB 4: AUTOMATED TEST SUITE & XSD VALIDATOR */}
       {activeTab === 'tests' && (
         <div className="space-y-4">
-          <div className="p-4 rounded-2xl bg-slate-900/60 border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="p-4 rounded-2xl bg-superficie border border-borda flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
               <div className="flex items-center space-x-2">
-                <h2 className="text-base font-bold text-white">Suíte de Testes Automatizados eSocial & Regras de Negócio</h2>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                <h2 className="text-base font-bold text-tinta">Suíte de Testes Automatizados eSocial & Regras de Negócio</h2>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-indigo-500/20 text-indigo-700 border border-indigo-500/30">
                   eSocial End-to-End Runner
                 </span>
               </div>
-              <p className="text-xs text-slate-400 mt-1">
+              <p className="text-xs text-tinta-2 mt-1">
                 Confere a montagem dos XML no leiaute S-1.3, a Tabela 24 e os registros de CRM/CREA. Não valida contra o XSD, não assina e não transmite.
               </p>
             </div>
@@ -1515,14 +1515,14 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
               {/* Summary Card */}
               <div className={`p-4 rounded-2xl border flex items-center justify-between ${
                 testResults.failed === 0 
-                  ? 'bg-emerald-950/30 border-emerald-700/50 text-emerald-200' 
+                  ? 'bg-marca-suave border-marca-escura text-marca-escura' 
                   : 'bg-rose-950/30 border-rose-700/50 text-rose-200'
               }`}>
                 <div className="flex items-center space-x-3">
                   {testResults.failed === 0 ? (
-                    <CheckCircle2 className="w-6 h-6 text-emerald-400" />
+                    <CheckCircle2 className="w-6 h-6 text-marca-escura" />
                   ) : (
-                    <AlertTriangle className="w-6 h-6 text-rose-400" />
+                    <AlertTriangle className="w-6 h-6 text-rose-700" />
                   )}
                   <div>
                     <h3 className="font-bold text-sm">
@@ -1533,7 +1533,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                     </p>
                   </div>
                 </div>
-                <span className="text-xs font-mono px-3 py-1 rounded-full bg-slate-900/80 border border-slate-700">
+                <span className="text-xs font-mono px-3 py-1 rounded-full bg-superficie border border-borda">
                   Taxa de Sucesso: {Math.round((testResults.passed / testResults.results.length) * 100)}%
                 </span>
               </div>
@@ -1545,31 +1545,31 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                     key={i}
                     className={`p-3.5 rounded-xl border flex items-start justify-between space-x-3 ${
                       res.passed 
-                        ? 'bg-slate-900/60 border-slate-800' 
+                        ? 'bg-superficie border-borda' 
                         : 'bg-rose-950/20 border-rose-800/40'
                     }`}
                   >
                     <div className="flex items-start space-x-3">
                       <div className="mt-0.5">
                         {res.passed ? (
-                          <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                          <CheckCircle2 className="w-4 h-4 text-marca-escura" />
                         ) : (
-                          <AlertTriangle className="w-4 h-4 text-rose-400" />
+                          <AlertTriangle className="w-4 h-4 text-rose-700" />
                         )}
                       </div>
                       <div>
-                        <div className="text-xs font-bold text-white">{res.testName}</div>
-                        <div className="text-xs text-slate-400 mt-0.5">{res.message}</div>
+                        <div className="text-xs font-bold text-tinta">{res.testName}</div>
+                        <div className="text-xs text-tinta-2 mt-0.5">{res.message}</div>
                         {res.details && (
-                          <div className="text-[10px] text-indigo-300 font-mono mt-1">{res.details}</div>
+                          <div className="text-[10px] text-indigo-700 font-mono mt-1">{res.details}</div>
                         )}
                       </div>
                     </div>
 
                     <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold ${
                       res.passed 
-                        ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' 
-                        : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'
+                        ? 'bg-marca-suave text-marca-escura border border-marca-escura' 
+                        : 'bg-rose-500/10 text-rose-700 border border-rose-500/20'
                     }`}>
                       {res.passed ? 'PASSED' : 'FAILED'}
                     </span>
@@ -1578,10 +1578,10 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
               </div>
             </div>
           ) : (
-            <div className="p-8 text-center rounded-2xl bg-slate-900/40 border border-slate-800 text-slate-500">
+            <div className="p-8 text-center rounded-2xl bg-superficie border border-borda text-tinta-2">
               <Play className="w-8 h-8 mx-auto mb-2 opacity-40" />
               <p className="text-sm font-medium">Nenhum teste executado ainda nesta sessão.</p>
-              <p className="text-xs text-slate-600 mt-1">Clique no botão acima para rodar a suíte completa de testes eSocial.</p>
+              <p className="text-xs text-tinta-2 mt-1">Clique no botão acima para rodar a suíte completa de testes eSocial.</p>
             </div>
           )}
         </div>
@@ -1596,19 +1596,19 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
       {/* ========================================================================= */}
       {xmlModalEvent && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-4xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+          <div className="bg-superficie border border-borda rounded-3xl w-full max-w-4xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
             
             {/* Modal Header */}
-            <div className="p-5 border-b border-slate-800 flex items-center justify-between bg-slate-950/80">
+            <div className="p-5 border-b border-borda flex items-center justify-between bg-fundo">
               <div className="flex items-center space-x-3">
-                <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                <div className="p-2 rounded-xl bg-marca-suave text-marca-escura border border-marca-escura">
                   <FileCode2 className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-white text-base">
+                  <h3 className="font-bold text-tinta text-base">
                     {xmlModalEvent.event_type} - {xmlModalEvent.event_number}
                   </h3>
-                  <p className="text-xs text-slate-400">
+                  <p className="text-xs text-tinta-2">
                     {xmlModalEvent.worker_name} • CPF: {xmlModalEvent.worker_cpf}
                   </p>
                 </div>
@@ -1616,20 +1616,20 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
 
               <button
                 onClick={() => setXmlModalEvent(null)}
-                className="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition"
+                className="p-2 text-tinta-2 hover:text-tinta rounded-lg hover:bg-superficie-2 transition"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {/* Modal Tab Switcher */}
-            <div className="flex border-b border-slate-800 bg-slate-950/40 px-5">
+            <div className="flex border-b border-borda bg-fundo px-5">
               <button
                 onClick={() => setXmlActiveTab('xml')}
                 className={`px-4 py-2.5 text-xs font-semibold border-b-2 transition ${
                   xmlActiveTab === 'xml'
-                    ? 'border-emerald-500 text-emerald-400'
-                    : 'border-transparent text-slate-400 hover:text-slate-200'
+                    ? 'border-marca-escura text-marca-escura'
+                    : 'border-transparent text-tinta-2 hover:text-tinta'
                 }`}
               >
                 XML do evento (leiaute {VERSAO_DO_LEIAUTE_ESOCIAL})
@@ -1639,8 +1639,8 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                 onClick={() => setXmlActiveTab('receipt')}
                 className={`px-4 py-2.5 text-xs font-semibold border-b-2 transition ${
                   xmlActiveTab === 'receipt'
-                    ? 'border-emerald-500 text-emerald-400'
-                    : 'border-transparent text-slate-400 hover:text-slate-200'
+                    ? 'border-marca-escura text-marca-escura'
+                    : 'border-transparent text-tinta-2 hover:text-tinta'
                 }`}
               >
                 Recibo Oficial de Entrega
@@ -1650,8 +1650,8 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                 onClick={() => setXmlActiveTab('history')}
                 className={`px-4 py-2.5 text-xs font-semibold border-b-2 transition ${
                   xmlActiveTab === 'history'
-                    ? 'border-emerald-500 text-emerald-400'
-                    : 'border-transparent text-slate-400 hover:text-slate-200'
+                    ? 'border-marca-escura text-marca-escura'
+                    : 'border-transparent text-tinta-2 hover:text-tinta'
                 }`}
               >
                 Histórico & Auditoria
@@ -1662,20 +1662,20 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
             <div className="p-5 flex-1 overflow-y-auto font-mono text-xs">
               {xmlActiveTab === 'xml' && (
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between text-slate-400 pb-2 border-b border-slate-800">
+                  <div className="flex items-center justify-between text-tinta-2 pb-2 border-b border-borda">
                     <span className="text-[11px]">Pré-visualização não assinada · namespace {namespaceDoEvento(xmlModalEvent.event_type)}</span>
                     <div className="flex items-center space-x-2">
                       <button
                         onClick={() => handleCopyText(xmlModalEvent.xml_content || generateESocialXmlPreview(xmlModalEvent), 'xml')}
-                        className="flex items-center space-x-1 px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 transition text-[11px]"
+                        className="flex items-center space-x-1 px-2.5 py-1 rounded bg-superficie-2 hover:bg-superficie-3 text-tinta transition text-[11px]"
                       >
-                        {copiedId === 'xml' ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                        {copiedId === 'xml' ? <Check className="w-3.5 h-3.5 text-marca-escura" /> : <Copy className="w-3.5 h-3.5" />}
                         <span>{copiedId === 'xml' ? 'Copiado!' : 'Copiar XML'}</span>
                       </button>
 
                       <button
                         onClick={() => handleDownloadXml(xmlModalEvent)}
-                        className="flex items-center space-x-1 px-2.5 py-1 rounded bg-emerald-600/80 hover:bg-emerald-600 text-white transition text-[11px]"
+                        className="flex items-center space-x-1 px-2.5 py-1 rounded bg-marca-suave hover:bg-marca-escura text-white transition text-[11px]"
                       >
                         <Download className="w-3.5 h-3.5" />
                         <span>Baixar .xml</span>
@@ -1685,12 +1685,12 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
 
                   {avisoDoEmpregadorNoXml && (
                     <div className="flex items-start gap-2 p-3 rounded-lg bg-amber-950/40 border border-amber-700/50 text-amber-200 font-sans text-[11px] leading-relaxed">
-                      <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5 text-amber-400" />
+                      <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5 text-amber-700" />
                       <span><strong>Identificação do empregador:</strong> {avisoDoEmpregadorNoXml}</span>
                     </div>
                   )}
 
-                  <pre className="p-4 rounded-xl bg-slate-950 border border-slate-800 text-emerald-300/90 overflow-x-auto text-[11px] leading-relaxed max-h-[50vh]">
+                  <pre className="p-4 rounded-xl bg-fundo border border-borda text-marca-escura overflow-x-auto text-[11px] leading-relaxed max-h-[50vh]">
                     {xmlModalEvent.xml_content || generateESocialXmlPreview(xmlModalEvent)}
                   </pre>
                 </div>
@@ -1699,8 +1699,8 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
               {xmlActiveTab === 'receipt' && (
                 <div className="space-y-4">
                   {xmlModalEvent.receipt_number ? (
-                    <div className="p-6 rounded-2xl bg-emerald-950/30 border border-emerald-700/50 space-y-4">
-                      <div className="flex items-center space-x-3 text-emerald-400">
+                    <div className="p-6 rounded-2xl bg-marca-suave border border-marca-escura space-y-4">
+                      <div className="flex items-center space-x-3 text-marca-escura">
                         <CheckCircle2 className="w-6 h-6" />
                         <div>
                           <h4 className="font-bold text-sm uppercase tracking-wide">Recibo registrado no PrevSafe</h4>
@@ -1708,35 +1708,35 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs pt-3 border-t border-emerald-900/40">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs pt-3 border-t border-marca-escura">
                         <div>
-                          <span className="text-slate-400 block text-[10px]">Número do Recibo:</span>
-                          <span className="font-bold text-white font-mono text-xs">{xmlModalEvent.receipt_number}</span>
+                          <span className="text-tinta-2 block text-[10px]">Número do Recibo:</span>
+                          <span className="font-bold text-tinta font-mono text-xs">{xmlModalEvent.receipt_number}</span>
                         </div>
                         <div>
-                          <span className="text-slate-400 block text-[10px]">Protocolo de Transmissão:</span>
-                          <span className="font-bold text-white font-mono text-xs">{xmlModalEvent.protocol_number}</span>
+                          <span className="text-tinta-2 block text-[10px]">Protocolo de Transmissão:</span>
+                          <span className="font-bold text-tinta font-mono text-xs">{xmlModalEvent.protocol_number}</span>
                         </div>
                         <div>
-                          <span className="text-slate-400 block text-[10px]">Data/Hora de Processamento:</span>
-                          <span className="text-slate-200">{xmlModalEvent.transmitted_at ? new Date(xmlModalEvent.transmitted_at).toLocaleString('pt-BR') : 'não registrada'}</span>
+                          <span className="text-tinta-2 block text-[10px]">Data/Hora de Processamento:</span>
+                          <span className="text-tinta">{xmlModalEvent.transmitted_at ? new Date(xmlModalEvent.transmitted_at).toLocaleString('pt-BR') : 'não registrada'}</span>
                         </div>
                         <div>
-                          <span className="text-slate-400 block text-[10px]">Código de Resposta do WebService:</span>
-                          <span className="text-emerald-400 font-bold">{xmlModalEvent.return_code || 'não registrado'}</span>
+                          <span className="text-tinta-2 block text-[10px]">Código de Resposta do WebService:</span>
+                          <span className="text-marca-escura font-bold">{xmlModalEvent.return_code || 'não registrado'}</span>
                         </div>
                       </div>
 
-                      <div className="p-3 rounded-xl bg-slate-950 border border-emerald-900/60 text-[11px] text-slate-300">
-                        <span className="text-emerald-400 font-bold block mb-1">Mensagem de retorno registrada:</span>
+                      <div className="p-3 rounded-xl bg-fundo border border-marca-escura text-[11px] text-tinta">
+                        <span className="text-marca-escura font-bold block mb-1">Mensagem de retorno registrada:</span>
                         {xmlModalEvent.return_message || 'Nenhuma mensagem de retorno registrada.'}
                       </div>
                     </div>
                   ) : (
-                    <div className="p-8 text-center text-slate-500 rounded-2xl bg-slate-950 border border-slate-800">
+                    <div className="p-8 text-center text-tinta-2 rounded-2xl bg-fundo border border-borda">
                       <Clock className="w-8 h-8 mx-auto mb-2 opacity-40" />
                       <p className="text-sm font-medium">Este evento ainda não foi transmitido para o eSocial.</p>
-                      <p className="text-xs text-slate-600 mt-1">O PrevSafe não transmite: o recibo existe depois do envio pelo canal oficial.</p>
+                      <p className="text-xs text-tinta-2 mt-1">O PrevSafe não transmite: o recibo existe depois do envio pelo canal oficial.</p>
                     </div>
                   )}
                 </div>
@@ -1746,12 +1746,12 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                 <div className="space-y-3">
                   <div className="space-y-2">
                     {(xmlModalEvent.history || []).map((h, idx) => (
-                      <div key={idx} className="p-3 rounded-xl bg-slate-950 border border-slate-800 text-xs">
-                        <div className="flex items-center justify-between text-slate-400 text-[10px] pb-1 border-b border-slate-900">
-                          <span className="font-bold text-indigo-400">{h.action}</span>
+                      <div key={idx} className="p-3 rounded-xl bg-fundo border border-borda text-xs">
+                        <div className="flex items-center justify-between text-tinta-2 text-[10px] pb-1 border-b border-borda">
+                          <span className="font-bold text-indigo-700">{h.action}</span>
                           <span>{new Date(h.date).toLocaleString('pt-BR')} • {h.user_name}</span>
                         </div>
-                        <p className="text-slate-300 mt-1 text-[11px]">{h.details}</p>
+                        <p className="text-tinta mt-1 text-[11px]">{h.details}</p>
                       </div>
                     ))}
                   </div>
@@ -1760,10 +1760,10 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
             </div>
 
             {/* Modal Footer */}
-            <div className="p-4 border-t border-slate-800 flex justify-end bg-slate-950">
+            <div className="p-4 border-t border-borda flex justify-end bg-fundo">
               <button
                 onClick={() => setXmlModalEvent(null)}
-                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold rounded-xl transition"
+                className="px-4 py-2 bg-superficie-2 hover:bg-superficie-3 text-tinta text-xs font-semibold rounded-xl transition"
               >
                 Fechar
               </button>
@@ -1798,23 +1798,23 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
       {/* ========================================================================= */}
       {isBatchModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-lg p-6 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+          <div className="bg-superficie border border-borda rounded-3xl w-full max-w-lg p-6 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-borda">
               <div className="flex items-center space-x-2.5">
-                <Send className="w-5 h-5 text-blue-400" />
-                <h3 className="font-bold text-white text-base">Transmissão em Lote WebService</h3>
+                <Send className="w-5 h-5 text-blue-700" />
+                <h3 className="font-bold text-tinta text-base">Transmissão em Lote WebService</h3>
               </div>
-              <button onClick={() => setIsBatchModalOpen(false)} className="text-slate-400 hover:text-white">
+              <button onClick={() => setIsBatchModalOpen(false)} className="text-tinta-2 hover:text-tinta">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <p className="text-xs text-slate-300">
-              Você selecionou <span className="font-bold text-emerald-400">{selectedEventIds.length} evento(s)</span> para montar um lote. A assinatura com certificado e o envio ao WebService do eSocial ainda não estão implementados: o resultado é simulado.
+            <p className="text-xs text-tinta">
+              Você selecionou <span className="font-bold text-marca-escura">{selectedEventIds.length} evento(s)</span> para montar um lote. A assinatura com certificado e o envio ao WebService do eSocial ainda não estão implementados: o resultado é simulado.
             </p>
 
             <div className="space-y-3">
-              <label className="block text-xs font-semibold text-slate-300 uppercase">
+              <label className="block text-xs font-semibold text-tinta uppercase">
                 Certificado que o eSocial exigirá para este lote
               </label>
               <div className="grid grid-cols-2 gap-3">
@@ -1824,7 +1824,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                   className={`p-3 rounded-xl border text-left transition ${
                     batchCertificate === 'A1_DIGITAL'
                       ? 'bg-blue-950/30 border-blue-500 text-blue-200'
-                      : 'bg-slate-950 border-slate-800 text-slate-400'
+                      : 'bg-fundo border-borda text-tinta-2'
                   }`}
                 >
                   <div className="font-bold text-xs">Certificado A1</div>
@@ -1837,7 +1837,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                   className={`p-3 rounded-xl border text-left transition ${
                     batchCertificate === 'A3_TOKEN_SMARTCARD'
                       ? 'bg-blue-950/30 border-blue-500 text-blue-200'
-                      : 'bg-slate-950 border-slate-800 text-slate-400'
+                      : 'bg-fundo border-borda text-tinta-2'
                   }`}
                 >
                   <div className="font-bold text-xs">Certificado A3</div>
@@ -1848,13 +1848,13 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
 
             {isTransmittingBatch && (
               <div className="space-y-2 pt-2">
-                <div className="flex justify-between text-xs text-slate-300 font-medium">
+                <div className="flex justify-between text-xs text-tinta font-medium">
                   <span>Simulando a transmissão do lote...</span>
                   <span>{batchProgress}%</span>
                 </div>
-                <div className="w-full h-2 rounded-full bg-slate-950 overflow-hidden">
+                <div className="w-full h-2 rounded-full bg-fundo overflow-hidden">
                   <div 
-                    className="h-full bg-emerald-500 transition-all duration-300"
+                    className="h-full bg-marca transition-all duration-300"
                     style={{ width: `${batchProgress}%` }}
                   />
                 </div>
@@ -1866,7 +1866,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                 type="button"
                 onClick={() => setIsBatchModalOpen(false)}
                 disabled={isTransmittingBatch}
-                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-xl transition"
+                className="px-4 py-2 bg-superficie-2 hover:bg-superficie-3 text-tinta text-xs font-semibold rounded-xl transition"
               >
                 Cancelar
               </button>
@@ -1875,7 +1875,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                 type="button"
                 onClick={handleExecuteBatchTransmission}
                 disabled={isTransmittingBatch}
-                className="flex items-center space-x-2 px-5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold rounded-xl transition shadow-md"
+                className="flex items-center space-x-2 px-5 py-2 bg-marca hover:bg-marca-escura text-white text-xs font-semibold rounded-xl transition shadow-md"
               >
                 <Send className="w-3.5 h-3.5" />
                 <span>{isTransmittingBatch ? 'Transmitindo...' : 'Confirmar Envio de Lote'}</span>
@@ -1890,25 +1890,25 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
       {/* ========================================================================= */}
       {isExtractModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-md p-6 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+          <div className="bg-superficie border border-borda rounded-3xl w-full max-w-md p-6 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-borda">
               <div className="flex items-center space-x-2.5">
-                <Sparkles className="w-5 h-5 text-amber-400" />
-                <h3 className="font-bold text-white text-base">Extração Rápida de OS</h3>
+                <Sparkles className="w-5 h-5 text-amber-700" />
+                <h3 className="font-bold text-tinta text-base">Extração Rápida de OS</h3>
               </div>
-              <button onClick={() => setIsExtractModalOpen(false)} className="text-slate-400 hover:text-white">
+              <button onClick={() => setIsExtractModalOpen(false)} className="text-tinta-2 hover:text-tinta">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <div className="space-y-3">
-              <label className="block text-xs font-semibold text-slate-300 uppercase">
+              <label className="block text-xs font-semibold text-tinta uppercase">
                 Selecione a Ordem de Serviço
               </label>
               <select
                 value={selectedExtractionOS}
                 onChange={e => setSelectedExtractionOS(e.target.value)}
-                className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white"
+                className="w-full p-2.5 bg-fundo border border-borda rounded-xl text-xs text-tinta"
               >
                 {serviceOrders.map(so => (
                   <option key={so.id} value={so.id}>
@@ -1919,7 +1919,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
             </div>
 
             <div className="space-y-2">
-              <label className="block text-xs font-semibold text-slate-300 uppercase">
+              <label className="block text-xs font-semibold text-tinta uppercase">
                 Tipo de Evento
               </label>
               <div className="grid grid-cols-2 gap-2">
@@ -1927,7 +1927,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                   type="button"
                   onClick={() => setExtractionType('S-2240')}
                   className={`p-2.5 rounded-xl border text-xs font-bold ${
-                    extractionType === 'S-2240' ? 'bg-amber-950/40 border-amber-500 text-amber-300' : 'bg-slate-950 border-slate-800 text-slate-400'
+                    extractionType === 'S-2240' ? 'bg-amber-950/40 border-amber-500 text-amber-700' : 'bg-fundo border-borda text-tinta-2'
                   }`}
                 >
                   S-2240 (Riscos)
@@ -1936,7 +1936,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                   type="button"
                   onClick={() => setExtractionType('S-2220')}
                   className={`p-2.5 rounded-xl border text-xs font-bold ${
-                    extractionType === 'S-2220' ? 'bg-teal-950/40 border-teal-500 text-teal-300' : 'bg-slate-950 border-slate-800 text-slate-400'
+                    extractionType === 'S-2220' ? 'bg-teal-950/40 border-teal-500 text-teal-700' : 'bg-fundo border-borda text-white/80'
                   }`}
                 >
                   S-2220 (ASO)
@@ -1946,7 +1946,7 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
 
             {extractionPendencias.length > 0 && (
               <div className="rounded-xl border border-amber-800/60 bg-amber-950/30 p-3 space-y-1.5 max-h-56 overflow-y-auto">
-                <p className="text-xs font-bold text-amber-300">
+                <p className="text-xs font-bold text-amber-700">
                   {extractionPendencias.length} pendência(s) no cadastro
                 </p>
                 <p className="text-[10px] text-amber-200/70">
@@ -1971,14 +1971,14 @@ export const ESocialEventsView: React.FC<ESocialEventsViewProps> = ({ onNavigate
                   setIsExtractModalOpen(false);
                   setExtractionPendencias([]);
                 }}
-                className="px-3 py-1.5 bg-slate-800 text-slate-300 text-xs rounded-xl"
+                className="px-3 py-1.5 bg-superficie-2 text-tinta text-xs rounded-xl"
               >
                 Fechar
               </button>
               <button
                 type="button"
                 onClick={handleExecuteExtraction}
-                className="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold rounded-xl"
+                className="px-4 py-1.5 bg-marca hover:bg-marca-escura text-white text-xs font-semibold rounded-xl"
               >
                 Gerar Eventos
               </button>
@@ -2221,17 +2221,17 @@ const CreateEditEventModal: React.FC<CreateEditEventModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-      <div className="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+      <div className="bg-superficie border border-borda rounded-3xl w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
         
         {/* Modal Header */}
-        <div className="p-5 border-b border-slate-800 flex items-center justify-between bg-slate-950">
+        <div className="p-5 border-b border-borda flex items-center justify-between bg-fundo">
           <div className="flex items-center space-x-2.5">
-            <ShieldCheck className="w-5 h-5 text-emerald-400" />
-            <h3 className="font-bold text-white text-base">
+            <ShieldCheck className="w-5 h-5 text-marca-escura" />
+            <h3 className="font-bold text-tinta text-base">
               {initialEvent ? `Editar Evento ${initialEvent.event_number}` : 'Cadastrar Novo Evento eSocial'}
             </h3>
           </div>
-          <button onClick={onClose} className="text-slate-400 hover:text-white">
+          <button onClick={onClose} className="text-tinta-2 hover:text-tinta">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -2242,12 +2242,12 @@ const CreateEditEventModal: React.FC<CreateEditEventModalProps> = ({
           {/* Event Type & Client Selection */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
-              <label className="block text-[11px] font-semibold text-slate-300 uppercase mb-1">Tipo de Evento eSocial</label>
+              <label className="block text-[11px] font-semibold text-tinta uppercase mb-1">Tipo de Evento eSocial</label>
               <select
                 value={eventType}
                 onChange={e => setEventType(e.target.value as ESocialEventType)}
                 disabled={Boolean(initialEvent)}
-                className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white font-semibold"
+                className="w-full p-2.5 bg-fundo border border-borda rounded-xl text-tinta font-semibold"
               >
                 <option value="S-2240">S-2240 (Condições Ambientais)</option>
                 <option value="S-2220">S-2220 (Monitoramento Saúde / ASO)</option>
@@ -2257,11 +2257,11 @@ const CreateEditEventModal: React.FC<CreateEditEventModalProps> = ({
             </div>
 
             <div>
-              <label className="block text-[11px] font-semibold text-slate-300 uppercase mb-1">Empresa Cliente</label>
+              <label className="block text-[11px] font-semibold text-tinta uppercase mb-1">Empresa Cliente</label>
               <select
                 value={clientId}
                 onChange={e => setClientId(e.target.value)}
-                className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white"
+                className="w-full p-2.5 bg-fundo border border-borda rounded-xl text-tinta"
               >
                 {clients.map(c => (
                   <option key={c.id} value={c.id}>{c.trade_name || c.legal_name}</option>
@@ -2271,72 +2271,72 @@ const CreateEditEventModal: React.FC<CreateEditEventModalProps> = ({
           </div>
 
           {/* Worker Common Information */}
-          <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-3">
-            <h4 className="font-bold text-slate-300 text-xs uppercase tracking-wide flex items-center space-x-1.5">
-              <User className="w-3.5 h-3.5 text-emerald-400" />
+          <div className="p-4 rounded-2xl bg-fundo border border-borda space-y-3">
+            <h4 className="font-bold text-tinta text-xs uppercase tracking-wide flex items-center space-x-1.5">
+              <User className="w-3.5 h-3.5 text-marca-escura" />
               <span>Identificação do Trabalhador</span>
             </h4>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               <div>
-                <label className="block text-[10px] text-slate-400 mb-1">Nome Completo</label>
+                <label className="block text-[10px] text-tinta-2 mb-1">Nome Completo</label>
                 <input
                   type="text"
                   required
                   value={workerName}
                   onChange={e => setWorkerName(e.target.value)}
                   placeholder="Ex: Carlos Eduardo de Souza"
-                  className="w-full p-2 bg-slate-900 border border-slate-800 rounded-lg text-white"
+                  className="w-full p-2 bg-superficie border border-borda rounded-lg text-tinta"
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] text-slate-400 mb-1">CPF (11 dígitos)</label>
+                <label className="block text-[10px] text-tinta-2 mb-1">CPF (11 dígitos)</label>
                 <input
                   type="text"
                   required
                   value={workerCpf}
                   onChange={e => setWorkerCpf(e.target.value)}
                   placeholder="000.000.000-00"
-                  className="w-full p-2 bg-slate-900 border border-slate-800 rounded-lg text-white font-mono"
+                  className="w-full p-2 bg-superficie border border-borda rounded-lg text-tinta font-mono"
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] text-slate-400 mb-1">Matrícula eSocial</label>
+                <label className="block text-[10px] text-tinta-2 mb-1">Matrícula eSocial</label>
                 <input
                   type="text"
                   required
                   value={workerRegistration}
                   onChange={e => setWorkerRegistration(e.target.value)}
                   placeholder="MAT-1001"
-                  className="w-full p-2 bg-slate-900 border border-slate-800 rounded-lg text-white font-mono"
+                  className="w-full p-2 bg-superficie border border-borda rounded-lg text-tinta font-mono"
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div>
-                <label className="block text-[10px] text-slate-400 mb-1">CBO (Classificação Brasileira de Ocupações)</label>
+                <label className="block text-[10px] text-tinta-2 mb-1">CBO (Classificação Brasileira de Ocupações)</label>
                 <input
                   type="text"
                   required
                   value={workerCbo}
                   onChange={e => setWorkerCbo(e.target.value)}
                   placeholder="7212-15"
-                  className="w-full p-2 bg-slate-900 border border-slate-800 rounded-lg text-white font-mono"
+                  className="w-full p-2 bg-superficie border border-borda rounded-lg text-tinta font-mono"
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] text-slate-400 mb-1">Cargo / Função</label>
+                <label className="block text-[10px] text-tinta-2 mb-1">Cargo / Função</label>
                 <input
                   type="text"
                   required
                   value={workerRole}
                   onChange={e => setWorkerRole(e.target.value)}
                   placeholder="Operador de Usinagem CNC"
-                  className="w-full p-2 bg-slate-900 border border-slate-800 rounded-lg text-white"
+                  className="w-full p-2 bg-superficie border border-borda rounded-lg text-tinta"
                 />
               </div>
             </div>
@@ -2344,48 +2344,48 @@ const CreateEditEventModal: React.FC<CreateEditEventModalProps> = ({
 
           {/* DYNAMIC FORM SECTION: S-2240 */}
           {eventType === 'S-2240' && (
-            <div className="p-4 rounded-2xl bg-slate-950 border border-amber-900/40 space-y-3">
-              <h4 className="font-bold text-amber-300 text-xs uppercase tracking-wide flex items-center space-x-1.5">
-                <HardHat className="w-3.5 h-3.5 text-amber-400" />
+            <div className="p-4 rounded-2xl bg-fundo border border-amber-900/40 space-y-3">
+              <h4 className="font-bold text-amber-700 text-xs uppercase tracking-wide flex items-center space-x-1.5">
+                <HardHat className="w-3.5 h-3.5 text-amber-700" />
                 <span>Dados Ambientais S-2240 (PGR / LTCAT)</span>
               </h4>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-[10px] text-slate-400 mb-1">Data Início Condição</label>
+                  <label className="block text-[10px] text-tinta-2 mb-1">Data Início Condição</label>
                   <input
                     type="date"
                     value={s2240StartDate}
                     onChange={e => setS2240StartDate(e.target.value)}
-                    className="w-full p-2 bg-slate-900 border border-slate-800 rounded-lg text-white"
+                    className="w-full p-2 bg-superficie border border-borda rounded-lg text-tinta"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-[10px] text-slate-400 mb-1">Ambiente de Trabalho / Setor</label>
+                  <label className="block text-[10px] text-tinta-2 mb-1">Ambiente de Trabalho / Setor</label>
                   <input
                     type="text"
                     value={s2240Environment}
                     onChange={e => setS2240Environment(e.target.value)}
                     placeholder="Galpão Industrial - Setor A"
-                    className="w-full p-2 bg-slate-900 border border-slate-800 rounded-lg text-white"
+                    className="w-full p-2 bg-superficie border border-borda rounded-lg text-tinta"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-[10px] text-slate-400 mb-1">Descrição Detalhada das Atividades</label>
+                <label className="block text-[10px] text-tinta-2 mb-1">Descrição Detalhada das Atividades</label>
                 <textarea
                   rows={2}
                   value={s2240Description}
                   onChange={e => setS2240Description(e.target.value)}
                   placeholder="Descrição das tarefas operacionais..."
-                  className="w-full p-2 bg-slate-900 border border-slate-800 rounded-lg text-white"
+                  className="w-full p-2 bg-superficie border border-borda rounded-lg text-tinta"
                 />
               </div>
 
-              <div className="pt-2 border-t border-slate-800">
-                <label className="block text-[10px] text-slate-400 mb-1">
+              <div className="pt-2 border-t border-borda">
+                <label className="block text-[10px] text-tinta-2 mb-1">
                   Responsável pelos registros ambientais atribuído a este cliente
                 </label>
                 <select
@@ -2398,7 +2398,7 @@ const CreateEditEventModal: React.FC<CreateEditEventModalProps> = ({
                     setS2240TechCrea(registroDoProfissional(p));
                     setS2240TechUf((p.council_uf || '').toUpperCase());
                   }}
-                  className="w-full p-2 bg-slate-900 border border-slate-800 rounded-lg text-white"
+                  className="w-full p-2 bg-superficie border border-borda rounded-lg text-tinta"
                 >
                   <option value="">
                     {responsaveisAmbientais.length > 0
@@ -2411,7 +2411,7 @@ const CreateEditEventModal: React.FC<CreateEditEventModalProps> = ({
                     </option>
                   ))}
                 </select>
-                <p className="text-[10px] text-slate-500 mt-1">
+                <p className="text-[10px] text-tinta-2 mt-1">
                   MOS S-1.3, S-2240, item 11.1: o responsável pelos registros ambientais é quem
                   elaborou o LTCAT.
                 </p>
@@ -2419,41 +2419,41 @@ const CreateEditEventModal: React.FC<CreateEditEventModalProps> = ({
 
               <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
                 <div>
-                  <label className="block text-[10px] text-slate-400 mb-1">Resp. Técnico (Nome)</label>
+                  <label className="block text-[10px] text-tinta-2 mb-1">Resp. Técnico (Nome)</label>
                   <input
                     type="text"
                     value={s2240TechName}
                     onChange={e => setS2240TechName(e.target.value)}
-                    className="w-full p-2 bg-slate-900 border border-slate-800 rounded-lg text-white"
+                    className="w-full p-2 bg-superficie border border-borda rounded-lg text-tinta"
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] text-slate-400 mb-1">CPF Resp. Técnico</label>
+                  <label className="block text-[10px] text-tinta-2 mb-1">CPF Resp. Técnico</label>
                   <input
                     type="text"
                     value={s2240TechCpf}
                     onChange={e => setS2240TechCpf(e.target.value)}
-                    className="w-full p-2 bg-slate-900 border border-slate-800 rounded-lg text-white font-mono"
+                    className="w-full p-2 bg-superficie border border-borda rounded-lg text-tinta font-mono"
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] text-slate-400 mb-1">CREA/CRM Resp.</label>
+                  <label className="block text-[10px] text-tinta-2 mb-1">CREA/CRM Resp.</label>
                   <input
                     type="text"
                     value={s2240TechCrea}
                     onChange={e => setS2240TechCrea(e.target.value)}
-                    className="w-full p-2 bg-slate-900 border border-slate-800 rounded-lg text-white font-mono"
+                    className="w-full p-2 bg-superficie border border-borda rounded-lg text-tinta font-mono"
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] text-slate-400 mb-1">UF do registro</label>
+                  <label className="block text-[10px] text-tinta-2 mb-1">UF do registro</label>
                   <input
                     type="text"
                     maxLength={2}
                     placeholder="BA"
                     value={s2240TechUf}
                     onChange={e => setS2240TechUf(e.target.value.toUpperCase())}
-                    className="w-full p-2 bg-slate-900 border border-slate-800 rounded-lg text-white font-mono uppercase"
+                    className="w-full p-2 bg-superficie border border-borda rounded-lg text-tinta font-mono uppercase"
                   />
                 </div>
               </div>
@@ -2462,19 +2462,19 @@ const CreateEditEventModal: React.FC<CreateEditEventModalProps> = ({
 
           {/* DYNAMIC FORM SECTION: S-2220 */}
           {eventType === 'S-2220' && (
-            <div className="p-4 rounded-2xl bg-slate-950 border border-teal-900/40 space-y-3">
-              <h4 className="font-bold text-teal-300 text-xs uppercase tracking-wide flex items-center space-x-1.5">
-                <Stethoscope className="w-3.5 h-3.5 text-teal-400" />
+            <div className="p-4 rounded-2xl bg-fundo border border-teal-900/40 space-y-3">
+              <h4 className="font-bold text-teal-700 text-xs uppercase tracking-wide flex items-center space-x-1.5">
+                <Stethoscope className="w-3.5 h-3.5 text-teal-700" />
                 <span>Dados de Monitoramento da Saúde S-2220 (ASO)</span>
               </h4>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 <div>
-                  <label className="block text-[10px] text-slate-400 mb-1">Tipo de ASO</label>
+                  <label className="block text-[10px] text-tinta-2 mb-1">Tipo de ASO</label>
                   <select
                     value={s2220AsoType}
                     onChange={e => setS2220AsoType(e.target.value)}
-                    className="w-full p-2 bg-slate-900 border border-slate-800 rounded-lg text-white"
+                    className="w-full p-2 bg-superficie border border-borda rounded-lg text-tinta"
                   >
                     <option value="ADMISSIONAL">Admissional</option>
                     <option value="PERIODICO">Periódico</option>
@@ -2485,21 +2485,21 @@ const CreateEditEventModal: React.FC<CreateEditEventModalProps> = ({
                 </div>
 
                 <div>
-                  <label className="block text-[10px] text-slate-400 mb-1">Data do ASO</label>
+                  <label className="block text-[10px] text-tinta-2 mb-1">Data do ASO</label>
                   <input
                     type="date"
                     value={s2220ExamDate}
                     onChange={e => setS2220ExamDate(e.target.value)}
-                    className="w-full p-2 bg-slate-900 border border-slate-800 rounded-lg text-white"
+                    className="w-full p-2 bg-superficie border border-borda rounded-lg text-tinta"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-[10px] text-slate-400 mb-1">Resultado ASO</label>
+                  <label className="block text-[10px] text-tinta-2 mb-1">Resultado ASO</label>
                   <select
                     value={s2220Result}
                     onChange={e => setS2220Result(e.target.value as any)}
-                    className="w-full p-2 bg-slate-900 border border-slate-800 rounded-lg text-white font-bold"
+                    className="w-full p-2 bg-superficie border border-borda rounded-lg text-tinta font-bold"
                   >
                     <option value="">Selecione a conclusão do ASO</option>
                     <option value="APTO">APTO</option>
@@ -2508,8 +2508,8 @@ const CreateEditEventModal: React.FC<CreateEditEventModalProps> = ({
                 </div>
               </div>
 
-              <div className="pt-2 border-t border-slate-800">
-                <label className="block text-[10px] text-slate-400 mb-1">
+              <div className="pt-2 border-t border-borda">
+                <label className="block text-[10px] text-tinta-2 mb-1">
                   Médico examinador atribuído a este cliente
                 </label>
                 <select
@@ -2521,7 +2521,7 @@ const CreateEditEventModal: React.FC<CreateEditEventModalProps> = ({
                     setS2220DocCrm(p.council_number || '');
                     setS2220DocUf((p.council_uf || '').toUpperCase());
                   }}
-                  className="w-full p-2 bg-slate-900 border border-slate-800 rounded-lg text-white"
+                  className="w-full p-2 bg-superficie border border-borda rounded-lg text-tinta"
                 >
                   <option value="">
                     {medicosExaminadores.length > 0
@@ -2540,7 +2540,7 @@ const CreateEditEventModal: React.FC<CreateEditEventModalProps> = ({
                   examinador: NR-07, item 7.5.19.1, alineas "f" e "g". Sao dois
                   campos diferentes do ASO, e podem ser duas pessoas.
                 */}
-                <p className={`text-[10px] mt-1.5 ${coordenadorPcmso ? 'text-slate-500' : 'text-amber-400'}`}>
+                <p className={`text-[10px] mt-1.5 ${coordenadorPcmso ? 'text-tinta-2' : 'text-amber-700'}`}>
                   {coordenadorPcmso
                     ? `[respMonit] deste evento: ${coordenadorPcmso.nome}`
                       + `${coordenadorPcmso.crm ? ` — CRM ${coordenadorPcmso.crm}/${coordenadorPcmso.uf}` : ''}`
@@ -2552,51 +2552,51 @@ const CreateEditEventModal: React.FC<CreateEditEventModalProps> = ({
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 <div>
-                  <label className="block text-[10px] text-slate-400 mb-1">Médico Examinador</label>
+                  <label className="block text-[10px] text-tinta-2 mb-1">Médico Examinador</label>
                   <input
                     type="text"
                     value={s2220DocName}
                     onChange={e => setS2220DocName(e.target.value)}
-                    className="w-full p-2 bg-slate-900 border border-slate-800 rounded-lg text-white"
+                    className="w-full p-2 bg-superficie border border-borda rounded-lg text-tinta"
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] text-slate-400 mb-1">CRM do Médico</label>
+                  <label className="block text-[10px] text-tinta-2 mb-1">CRM do Médico</label>
                   <input
                     type="text"
                     value={s2220DocCrm}
                     onChange={e => setS2220DocCrm(e.target.value)}
-                    className="w-full p-2 bg-slate-900 border border-slate-800 rounded-lg text-white font-mono"
+                    className="w-full p-2 bg-superficie border border-borda rounded-lg text-tinta font-mono"
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] text-slate-400 mb-1">UF do CRM</label>
+                  <label className="block text-[10px] text-tinta-2 mb-1">UF do CRM</label>
                   <input
                     type="text"
                     maxLength={2}
                     placeholder="BA"
                     value={s2220DocUf}
                     onChange={e => setS2220DocUf(e.target.value.toUpperCase())}
-                    className="w-full p-2 bg-slate-900 border border-slate-800 rounded-lg text-white font-mono uppercase"
+                    className="w-full p-2 bg-superficie border border-borda rounded-lg text-tinta font-mono uppercase"
                   />
                 </div>
               </div>
 
               {/* Exames do ASO: so leitura. Sem eles, pendencia visivel - nunca um exame de exemplo. */}
-              <div className="pt-2 border-t border-slate-800">
-                <label className="block text-[10px] text-slate-400 mb-1">
+              <div className="pt-2 border-t border-borda">
+                <label className="block text-[10px] text-tinta-2 mb-1">
                   Exames do ASO neste evento ({examesDoAso.length})
                 </label>
                 {examesDoAso.length > 0 ? (
                   <ul className="space-y-0.5">
                     {examesDoAso.map((x, i) => (
-                      <li key={`${x.code}-${i}`} className="text-[11px] text-slate-300 font-mono">
+                      <li key={`${x.code}-${i}`} className="text-[11px] text-tinta font-mono">
                         {x.code || 'sem código'} — {x.name || 'sem nome'} — {x.date || 'sem data'}
                       </li>
                     ))}
                   </ul>
                 ) : (
-                  <p className="text-[10px] text-amber-400">
+                  <p className="text-[10px] text-amber-700">
                     Pendente: nenhum exame do ASO neste evento. O S-2220 exige ao menos um exame da
                     Tabela 27, e o MOS manda informar todos os que constam no ASO (item 1.5). Lance os
                     exames em SST › PCMSO › Emitir ASO, que gera o S-2220 com eles; até lá a validação
@@ -2609,19 +2609,19 @@ const CreateEditEventModal: React.FC<CreateEditEventModalProps> = ({
 
           {/* DYNAMIC FORM SECTION: S-2210 */}
           {eventType === 'S-2210' && (
-            <div className="p-4 rounded-2xl bg-slate-950 border border-rose-900/40 space-y-3">
-              <h4 className="font-bold text-rose-300 text-xs uppercase tracking-wide flex items-center space-x-1.5">
-                <HeartPulse className="w-3.5 h-3.5 text-rose-400" />
+            <div className="p-4 rounded-2xl bg-fundo border border-rose-900/40 space-y-3">
+              <h4 className="font-bold text-rose-700 text-xs uppercase tracking-wide flex items-center space-x-1.5">
+                <HeartPulse className="w-3.5 h-3.5 text-rose-700" />
                 <span>Comunicação de Acidente de Trabalho S-2210 (CAT)</span>
               </h4>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 <div>
-                  <label className="block text-[10px] text-slate-400 mb-1">Tipo de CAT</label>
+                  <label className="block text-[10px] text-tinta-2 mb-1">Tipo de CAT</label>
                   <select
                     value={s2210CatType}
                     onChange={e => setS2210CatType(e.target.value)}
-                    className="w-full p-2 bg-slate-900 border border-slate-800 rounded-lg text-white"
+                    className="w-full p-2 bg-superficie border border-borda rounded-lg text-tinta"
                   >
                     <option value="INICIAL">Inicial</option>
                     <option value="REABERTURA">Reabertura</option>
@@ -2630,67 +2630,67 @@ const CreateEditEventModal: React.FC<CreateEditEventModalProps> = ({
                 </div>
 
                 <div>
-                  <label className="block text-[10px] text-slate-400 mb-1">Data do Acidente</label>
+                  <label className="block text-[10px] text-tinta-2 mb-1">Data do Acidente</label>
                   <input
                     type="date"
                     value={s2210AccidentDate}
                     onChange={e => setS2210AccidentDate(e.target.value)}
-                    className="w-full p-2 bg-slate-900 border border-slate-800 rounded-lg text-white"
+                    className="w-full p-2 bg-superficie border border-borda rounded-lg text-tinta"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-[10px] text-slate-400 mb-1">Hora do Acidente</label>
+                  <label className="block text-[10px] text-tinta-2 mb-1">Hora do Acidente</label>
                   <input
                     type="time"
                     value={s2210AccidentTime}
                     onChange={e => setS2210AccidentTime(e.target.value)}
-                    className="w-full p-2 bg-slate-900 border border-slate-800 rounded-lg text-white"
+                    className="w-full p-2 bg-superficie border border-borda rounded-lg text-tinta"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-[10px] text-slate-400 mb-1">Parte do Corpo Atingida (código da Tabela 13)</label>
+                  <label className="block text-[10px] text-tinta-2 mb-1">Parte do Corpo Atingida (código da Tabela 13)</label>
                   <input
                     type="text"
                     value={s2210BodyPart}
                     onChange={e => setS2210BodyPart(e.target.value)}
                     placeholder="9 dígitos"
-                    className="w-full p-2 bg-slate-900 border border-slate-800 rounded-lg text-white font-mono"
+                    className="w-full p-2 bg-superficie border border-borda rounded-lg text-tinta font-mono"
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] text-slate-400 mb-1">Agente Causador (código da Tabela 14)</label>
+                  <label className="block text-[10px] text-tinta-2 mb-1">Agente Causador (código da Tabela 14)</label>
                   <input
                     type="text"
                     value={s2210Agent}
                     onChange={e => setS2210Agent(e.target.value)}
                     placeholder="9 dígitos"
-                    className="w-full p-2 bg-slate-900 border border-slate-800 rounded-lg text-white font-mono"
+                    className="w-full p-2 bg-superficie border border-borda rounded-lg text-tinta font-mono"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-[10px] text-slate-400 mb-1">Código CID-10</label>
+                  <label className="block text-[10px] text-tinta-2 mb-1">Código CID-10</label>
                   <input
                     type="text"
                     value={s2210Cid}
                     onChange={e => setS2210Cid(e.target.value)}
                     placeholder="Ex.: S61.0"
-                    className="w-full p-2 bg-slate-900 border border-slate-800 rounded-lg text-white font-mono"
+                    className="w-full p-2 bg-superficie border border-borda rounded-lg text-tinta font-mono"
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] text-slate-400 mb-1">Dias de Afastamento</label>
+                  <label className="block text-[10px] text-tinta-2 mb-1">Dias de Afastamento</label>
                   <input
                     type="number"
                     value={s2210DaysAway}
                     onChange={e => setS2210DaysAway(Number(e.target.value))}
-                    className="w-full p-2 bg-slate-900 border border-slate-800 rounded-lg text-white"
+                    className="w-full p-2 bg-superficie border border-borda rounded-lg text-tinta"
                   />
                 </div>
               </div>
@@ -2699,19 +2699,19 @@ const CreateEditEventModal: React.FC<CreateEditEventModalProps> = ({
 
           {/* DYNAMIC FORM SECTION: S-3000 */}
           {eventType === 'S-3000' && (
-            <div className="p-4 rounded-2xl bg-slate-950 border border-purple-900/40 space-y-3">
-              <h4 className="font-bold text-purple-300 text-xs uppercase tracking-wide flex items-center space-x-1.5">
-                <Ban className="w-3.5 h-3.5 text-purple-400" />
+            <div className="p-4 rounded-2xl bg-fundo border border-purple-900/40 space-y-3">
+              <h4 className="font-bold text-purple-700 text-xs uppercase tracking-wide flex items-center space-x-1.5">
+                <Ban className="w-3.5 h-3.5 text-purple-700" />
                 <span>Evento de Exclusão S-3000</span>
               </h4>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-[10px] text-slate-400 mb-1">Tipo do Evento Alvo a Excluir</label>
+                  <label className="block text-[10px] text-tinta-2 mb-1">Tipo do Evento Alvo a Excluir</label>
                   <select
                     value={s3000TargetType}
                     onChange={e => setS3000TargetType(e.target.value as any)}
-                    className="w-full p-2 bg-slate-900 border border-slate-800 rounded-lg text-white"
+                    className="w-full p-2 bg-superficie border border-borda rounded-lg text-tinta"
                   >
                     <option value="">Selecione o tipo do evento</option>
                     <option value="S-2240">S-2240 (Condições Ambientais)</option>
@@ -2722,44 +2722,44 @@ const CreateEditEventModal: React.FC<CreateEditEventModalProps> = ({
                 </div>
 
                 <div>
-                  <label className="block text-[10px] text-slate-400 mb-1">Recibo do Evento a Excluir</label>
+                  <label className="block text-[10px] text-tinta-2 mb-1">Recibo do Evento a Excluir</label>
                   <input
                     type="text"
                     required
                     value={s3000Receipt}
                     onChange={e => setS3000Receipt(e.target.value)}
                     placeholder="1.2.0000000000000000000 (23 caracteres)"
-                    className="w-full p-2 bg-slate-900 border border-slate-800 rounded-lg text-white font-mono"
+                    className="w-full p-2 bg-superficie border border-borda rounded-lg text-tinta font-mono"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-[10px] text-slate-400 mb-1">Justificativa Legal da Exclusão</label>
+                <label className="block text-[10px] text-tinta-2 mb-1">Justificativa Legal da Exclusão</label>
                 <textarea
                   rows={2}
                   required
                   value={s3000Reason}
                   onChange={e => setS3000Reason(e.target.value)}
                   placeholder="Justificativa da anulação/exclusão..."
-                  className="w-full p-2 bg-slate-900 border border-slate-800 rounded-lg text-white"
+                  className="w-full p-2 bg-superficie border border-borda rounded-lg text-tinta"
                 />
               </div>
             </div>
           )}
 
           {/* Modal Buttons */}
-          <div className="pt-4 flex justify-end space-x-2.5 border-t border-slate-800">
+          <div className="pt-4 flex justify-end space-x-2.5 border-t border-borda">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-xl transition"
+              className="px-4 py-2 bg-superficie-2 hover:bg-superficie-3 text-tinta text-xs font-semibold rounded-xl transition"
             >
               Cancelar
             </button>
             <button
               type="submit"
-              className="px-5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold rounded-xl transition shadow-lg"
+              className="px-5 py-2 bg-marca hover:bg-marca-escura text-white text-xs font-semibold rounded-xl transition shadow-lg"
             >
               {initialEvent ? 'Salvar Alterações' : 'Salvar Evento (Rascunho)'}
             </button>

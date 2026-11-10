@@ -243,7 +243,7 @@ export const TenantThemeSettingsView: React.FC<TenantThemeSettingsViewProps> = (
   return (
     <div className="space-y-8 animate-in fade-in duration-300 pb-12" id="tenant-theme-settings-view">
       {/* Top Banner & Header */}
-      <div className="relative overflow-hidden bg-slate-900 border border-slate-800 rounded-3xl p-6 md:p-8 shadow-2xl">
+      <div className="relative overflow-hidden bg-superficie border border-borda rounded-3xl p-6 md:p-8 shadow-2xl">
         <div 
           className="absolute -right-20 -top-20 w-80 h-80 rounded-full blur-3xl opacity-20 pointer-events-none transition-all duration-700"
           style={{ backgroundColor: primaryColor }}
@@ -251,28 +251,28 @@ export const TenantThemeSettingsView: React.FC<TenantThemeSettingsViewProps> = (
         <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div>
             <div className="flex flex-wrap items-center gap-3 mb-2">
-              <span className="p-2.5 rounded-2xl bg-slate-800/80 border border-slate-700 text-slate-200">
+              <span className="p-2.5 rounded-2xl bg-superficie-2 border border-borda text-tinta">
                 <Palette className="w-6 h-6" style={{ color: primaryColor }} />
               </span>
-              <span className="px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-full bg-slate-800 text-slate-300 border border-slate-700">
+              <span className="px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-full bg-superficie-2 text-tinta border border-borda">
                 Customização White-Label & CSS Variables
               </span>
               {enableOutdoorHighContrast ? (
-                <span className="px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 flex items-center gap-1.5 animate-pulse">
-                  <Sun className="w-3.5 h-3.5 text-amber-400" />
+                <span className="px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-full bg-amber-500/20 text-amber-700 border border-amber-500/40 flex items-center gap-1.5 animate-pulse">
+                  <Sun className="w-3.5 h-3.5 text-amber-700" />
                   Modo Alto Contraste Solar Ativo
                 </span>
               ) : (
-                <span className="px-3 py-1 text-xs font-medium uppercase tracking-wider rounded-full bg-slate-800/90 text-slate-400 border border-slate-700 flex items-center gap-1.5">
-                  <Moon className="w-3.5 h-3.5 text-slate-400" />
+                <span className="px-3 py-1 text-xs font-medium uppercase tracking-wider rounded-full bg-superficie-2 text-tinta-2 border border-borda flex items-center gap-1.5">
+                  <Moon className="w-3.5 h-3.5 text-tinta-2" />
                   Modo Padrão / Escritório
                 </span>
               )}
             </div>
-            <h1 className="text-2xl md:text-3xl font-bold text-white tracking-tight">
+            <h1 className="text-2xl md:text-3xl font-bold text-tinta tracking-tight">
               Personalização do Tema & Cores do Tenant
             </h1>
-            <p className="text-slate-400 text-sm md:text-base mt-1 max-w-2xl">
+            <p className="text-tinta-2 text-sm md:text-base mt-1 max-w-2xl">
               Configure a identidade visual de cada consultoria/inquilino e alterne facilmente entre o <strong>Modo Padrão</strong> e o <strong>Modo de Alto Contraste para Ambientes Externos</strong> sob luz solar intensa.
             </p>
           </div>
@@ -280,15 +280,15 @@ export const TenantThemeSettingsView: React.FC<TenantThemeSettingsViewProps> = (
           <div className="flex flex-wrap items-center gap-3">
             <button
               onClick={handleResetToDefault}
-              className="px-4 py-2.5 rounded-xl border border-slate-700 bg-slate-800/80 hover:bg-slate-700 text-slate-300 text-sm font-medium flex items-center gap-2 transition-all"
+              className="px-4 py-2.5 rounded-xl border border-borda bg-superficie-2 hover:bg-superficie-3 text-tinta text-sm font-medium flex items-center gap-2 transition-all"
               title="Restaurar padrão PrevSafe Esmeralda"
             >
-              <RotateCcw className="w-4 h-4 text-slate-400" />
+              <RotateCcw className="w-4 h-4 text-tinta-2" />
               Restaurar Padrão
             </button>
             <button
               onClick={handleApplyTheme}
-              className="px-5 py-2.5 rounded-xl text-white text-sm font-semibold shadow-lg flex items-center gap-2 transition-all hover:scale-[1.02] active:scale-[0.98]"
+              className="px-5 py-2.5 rounded-xl text-tinta text-sm font-semibold shadow-lg flex items-center gap-2 transition-all hover:scale-[1.02] active:scale-[0.98]"
               style={{ 
                 backgroundColor: primaryColor,
                 boxShadow: enableGlow && !enableOutdoorHighContrast ? `0 0 20px rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.4)` : 'none'
@@ -301,20 +301,20 @@ export const TenantThemeSettingsView: React.FC<TenantThemeSettingsViewProps> = (
         </div>
 
         {/* Quick Mode Toggle Pill in Header */}
-        <div className="mt-6 pt-5 border-t border-slate-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="mt-6 pt-5 border-t border-borda flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold text-slate-300">Modo de Exibição do Ambiente:</span>
-            <div className="inline-flex p-1 rounded-2xl bg-slate-950 border border-slate-800">
+            <span className="text-xs font-semibold text-tinta">Modo de Exibição do Ambiente:</span>
+            <div className="inline-flex p-1 rounded-2xl bg-fundo border border-borda">
               <button
                 type="button"
                 onClick={() => handleToggleOutdoorHighContrast(false)}
                 className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all ${
                   !enableOutdoorHighContrast 
-                    ? 'bg-slate-800 text-white shadow' 
-                    : 'text-slate-400 hover:text-slate-200'
+                    ? 'bg-superficie-2 text-tinta shadow' 
+                    : 'text-tinta-2 hover:text-tinta'
                 }`}
               >
-                <Moon className="w-3.5 h-3.5 text-indigo-400" />
+                <Moon className="w-3.5 h-3.5 text-indigo-700" />
                 <span>Modo Padrão / Escritório</span>
               </button>
 
@@ -324,7 +324,7 @@ export const TenantThemeSettingsView: React.FC<TenantThemeSettingsViewProps> = (
                 className={`px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-2 transition-all ${
                   enableOutdoorHighContrast 
                     ? 'bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/20' 
-                    : 'text-amber-400 hover:text-amber-300'
+                    : 'text-amber-700 hover:text-amber-700'
                 }`}
               >
                 <Sun className="w-3.5 h-3.5" />
@@ -333,17 +333,17 @@ export const TenantThemeSettingsView: React.FC<TenantThemeSettingsViewProps> = (
             </div>
           </div>
 
-          <div className="text-xs text-slate-400 flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span>Injeção dinâmica em tempo real via <code className="text-emerald-400 font-mono">--tenant-primary</code></span>
+          <div className="text-xs text-tinta-2 flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-marca animate-pulse" />
+            <span>Injeção dinâmica em tempo real via <code className="text-marca-escura font-mono">--tenant-primary</code></span>
           </div>
         </div>
 
         {/* Real-Time Live Status Bar */}
         {saveSuccessNotice && (
-          <div className="mt-5 p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-between gap-3 text-emerald-300 text-sm animate-in slide-in-from-top duration-300">
+          <div className="mt-5 p-3.5 rounded-2xl bg-marca-suave border border-marca-escura flex items-center justify-between gap-3 text-marca-escura text-sm animate-in slide-in-from-top duration-300">
             <div className="flex items-center gap-2.5">
-              <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
+              <CheckCircle2 className="w-5 h-5 text-marca-escura shrink-0" />
               <span>
                 <strong>Tema aplicado com sucesso!</strong> {enableOutdoorHighContrast ? 'Modo de Alto Contraste para Luz Solar ativado no DOM.' : 'Tema padrão configurado e injetado em toda a aplicação.'}
               </span>
@@ -352,7 +352,7 @@ export const TenantThemeSettingsView: React.FC<TenantThemeSettingsViewProps> = (
               {onNavigate && (
                 <button 
                   onClick={() => onNavigate('client-portal')}
-                  className="text-xs underline hover:text-emerald-200 font-semibold flex items-center gap-1"
+                  className="text-xs underline hover:text-marca-escura font-semibold flex items-center gap-1"
                 >
                   Ver no Portal <ArrowRight className="w-3 h-3" />
                 </button>
@@ -363,22 +363,22 @@ export const TenantThemeSettingsView: React.FC<TenantThemeSettingsViewProps> = (
       </div>
 
       {/* Tenant Selector Bar */}
-      <div className="bg-slate-900/90 border border-slate-800/90 rounded-2xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-lg">
+      <div className="bg-superficie border border-borda rounded-2xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-lg">
         <div className="flex items-center gap-3">
-          <Building2 className="w-5 h-5 text-slate-400 shrink-0" />
+          <Building2 className="w-5 h-5 text-tinta-2 shrink-0" />
           <div>
-            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider block">Inquilino / Consultoria Ativa</span>
-            <span className="text-sm font-bold text-white">{currentSelectedTenant?.trade_name || organization.name}</span>
+            <span className="text-xs font-semibold text-tinta-2 uppercase tracking-wider block">Inquilino / Consultoria Ativa</span>
+            <span className="text-sm font-bold text-tinta">{currentSelectedTenant?.trade_name || organization.name}</span>
           </div>
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
-          <label htmlFor="tenant-select" className="text-xs text-slate-400">Selecionar Consultoria:</label>
+          <label htmlFor="tenant-select" className="text-xs text-tinta-2">Selecionar Consultoria:</label>
           <select
             id="tenant-select"
             value={selectedTenantId}
             onChange={(e) => handleTenantSelectChange(e.target.value)}
-            className="bg-slate-800 border border-slate-700 text-white text-sm rounded-xl px-3.5 py-2 focus:ring-2 focus:ring-emerald-500 outline-none"
+            className="bg-superficie-2 border border-borda text-tinta text-sm rounded-xl px-3.5 py-2 focus:ring-2 focus:ring-marca-escura outline-none"
           >
             {tenants.map(t => (
               <option key={t.id} value={t.id}>
@@ -387,7 +387,7 @@ export const TenantThemeSettingsView: React.FC<TenantThemeSettingsViewProps> = (
             ))}
           </select>
           <span 
-            className="w-5 h-5 rounded-full border border-slate-600 shadow-sm shrink-0" 
+            className="w-5 h-5 rounded-full border border-borda shadow-sm shrink-0" 
             style={{ backgroundColor: primaryColor }}
             title={`Cor ativa: ${primaryColor}`}
           />
@@ -404,25 +404,25 @@ export const TenantThemeSettingsView: React.FC<TenantThemeSettingsViewProps> = (
           <div className={`border rounded-3xl p-6 shadow-xl transition-all ${
             enableOutdoorHighContrast 
               ? 'bg-amber-950/20 border-amber-500/50 ring-1 ring-amber-500/30' 
-              : 'bg-slate-900 border-slate-800'
+              : 'bg-superficie border-borda'
           }`}>
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4 pb-4 border-b border-slate-800">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4 pb-4 border-b border-borda">
               <div className="flex items-start gap-3">
                 <span className={`p-3 rounded-2xl shrink-0 ${
-                  enableOutdoorHighContrast ? 'bg-amber-500 text-slate-950' : 'bg-slate-800 text-amber-400'
+                  enableOutdoorHighContrast ? 'bg-amber-500 text-slate-950' : 'bg-superficie-2 text-amber-700'
                 }`}>
                   <Sun className="w-6 h-6" />
                 </span>
                 <div>
                   <div className="flex items-center gap-2">
-                    <h2 className="text-base md:text-lg font-bold text-white">
+                    <h2 className="text-base md:text-lg font-bold text-tinta">
                       Modo de Alto Contraste para Ambientes Externos
                     </h2>
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40">
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-700 border border-amber-500/40">
                       Luz Solar Intensa
                     </span>
                   </div>
-                  <p className="text-xs text-slate-400 mt-1 max-w-xl">
+                  <p className="text-xs text-tinta-2 mt-1 max-w-xl">
                     Otimizado para técnicos e peritos em vistorias a céu aberto (canteiros de obras NR-18, telhados NR-35, mineração NR-22 e pátios industriais). Elimina reflexos, reforça bordas em 2px sólido e amplia a legibilidade sob luz solar direta.
                   </p>
                 </div>
@@ -432,7 +432,7 @@ export const TenantThemeSettingsView: React.FC<TenantThemeSettingsViewProps> = (
               <div className="flex items-center gap-3 self-end sm:self-center shrink-0">
                 <label 
                   htmlFor="outdoor-high-contrast-toggle"
-                  className="text-xs font-bold text-slate-300 cursor-pointer select-none"
+                  className="text-xs font-bold text-tinta cursor-pointer select-none"
                 >
                   {enableOutdoorHighContrast ? 'Ativado ☀️' : 'Desativado 🌙'}
                 </label>
@@ -443,7 +443,7 @@ export const TenantThemeSettingsView: React.FC<TenantThemeSettingsViewProps> = (
                   aria-checked={enableOutdoorHighContrast}
                   onClick={() => handleToggleOutdoorHighContrast(!enableOutdoorHighContrast)}
                   className={`w-14 h-8 rounded-full p-1 transition-colors relative cursor-pointer focus:outline-none focus:ring-2 focus:ring-amber-400 ${
-                    enableOutdoorHighContrast ? 'bg-amber-500' : 'bg-slate-700'
+                    enableOutdoorHighContrast ? 'bg-amber-500' : 'bg-superficie-3'
                   }`}
                 >
                   <div 
@@ -454,7 +454,7 @@ export const TenantThemeSettingsView: React.FC<TenantThemeSettingsViewProps> = (
                     {enableOutdoorHighContrast ? (
                       <Sun className="w-3.5 h-3.5 text-amber-600" />
                     ) : (
-                      <Moon className="w-3.5 h-3.5 text-slate-600" />
+                      <Moon className="w-3.5 h-3.5 text-tinta-2" />
                     )}
                   </div>
                 </button>
@@ -474,7 +474,7 @@ export const TenantThemeSettingsView: React.FC<TenantThemeSettingsViewProps> = (
                         className={`text-left p-3.5 rounded-2xl border transition-all relative overflow-hidden flex flex-col justify-between ${
                           isSelected 
                             ? 'border-amber-400 bg-amber-950/40 shadow-lg ring-2 ring-amber-400' 
-                            : 'border-slate-800 bg-slate-950/80 hover:bg-slate-800/80 hover:border-slate-700'
+                            : 'border-borda bg-fundo hover:bg-superficie-2 hover:border-borda'
                         }`}
                       >
                         <div className="flex items-center justify-between w-full mb-2">
@@ -483,7 +483,7 @@ export const TenantThemeSettingsView: React.FC<TenantThemeSettingsViewProps> = (
                               className="w-4 h-4 rounded-full border-2 border-white shadow-sm"
                               style={{ backgroundColor: preset.primary_color }}
                             />
-                            <span className="text-xs font-bold text-white">{preset.name}</span>
+                            <span className="text-xs font-bold text-tinta">{preset.name}</span>
                           </div>
                           {isSelected && (
                             <span className="p-1 rounded-full bg-amber-400 text-slate-950">
@@ -491,12 +491,12 @@ export const TenantThemeSettingsView: React.FC<TenantThemeSettingsViewProps> = (
                             </span>
                           )}
                         </div>
-                        <p className="text-[11px] text-slate-300 line-clamp-1">{preset.description}</p>
+                        <p className="text-[11px] text-tinta line-clamp-1">{preset.description}</p>
                         <div className="flex items-center gap-1.5 mt-2">
-                          <span className="text-[10px] font-mono text-amber-300 px-1.5 py-0.5 bg-slate-900 rounded border border-slate-800">
+                          <span className="text-[10px] font-mono text-amber-700 px-1.5 py-0.5 bg-superficie rounded border border-borda">
                             {preset.primary_color}
                           </span>
-                          <span className="text-[10px] text-amber-400/90 font-medium">{preset.category}</span>
+                          <span className="text-[10px] text-amber-700/90 font-medium">{preset.category}</span>
                         </div>
                       </button>
                     );
@@ -504,32 +504,32 @@ export const TenantThemeSettingsView: React.FC<TenantThemeSettingsViewProps> = (
                 </div>
 
                 {/* Technical Visibility Directives */}
-                <div className="p-3.5 bg-slate-950/90 border border-slate-800 rounded-2xl grid grid-cols-1 sm:grid-cols-3 gap-3 text-[11px]">
-                  <div className="flex items-center gap-2 text-slate-300">
-                    <CheckCircle2 className="w-4 h-4 text-amber-400 shrink-0" />
+                <div className="p-3.5 bg-fundo border border-borda rounded-2xl grid grid-cols-1 sm:grid-cols-3 gap-3 text-[11px]">
+                  <div className="flex items-center gap-2 text-tinta">
+                    <CheckCircle2 className="w-4 h-4 text-amber-700 shrink-0" />
                     <span>Bordas Sólidas 2px Anti-Ofuscamento</span>
                   </div>
-                  <div className="flex items-center gap-2 text-slate-300">
-                    <CheckCircle2 className="w-4 h-4 text-amber-400 shrink-0" />
+                  <div className="flex items-center gap-2 text-tinta">
+                    <CheckCircle2 className="w-4 h-4 text-amber-700 shrink-0" />
                     <span>Contraste WCAG AAA (Legibilidade Máxima)</span>
                   </div>
-                  <div className="flex items-center gap-2 text-slate-300">
-                    <CheckCircle2 className="w-4 h-4 text-amber-400 shrink-0" />
+                  <div className="flex items-center gap-2 text-tinta">
+                    <CheckCircle2 className="w-4 h-4 text-amber-700 shrink-0" />
                     <span>Fundo Sólido Preto Puro (Zero Glare)</span>
                   </div>
                 </div>
               </div>
             ) : (
-              <div className="p-4 bg-slate-950/50 rounded-2xl border border-slate-800/80 flex items-center justify-between gap-4">
-                <div className="flex items-center gap-3 text-slate-400 text-xs">
-                  <Glasses className="w-5 h-5 text-slate-500 shrink-0" />
+              <div className="p-4 bg-fundo rounded-2xl border border-borda flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3 text-tinta-2 text-xs">
+                  <Glasses className="w-5 h-5 text-tinta-2 shrink-0" />
                   <span>
                     Atualmente utilizando o <strong>Modo Padrão</strong> (gradientes suaves, efeito neon glow e transparências adequadas para ambientes internos e escritórios).
                   </span>
                 </div>
                 <button
                   onClick={() => handleToggleOutdoorHighContrast(true)}
-                  className="px-3 py-1.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 text-xs font-bold flex items-center gap-1.5 shrink-0 transition-all"
+                  className="px-3 py-1.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 border border-amber-500/30 text-xs font-bold flex items-center gap-1.5 shrink-0 transition-all"
                 >
                   <Sun className="w-3.5 h-3.5" />
                   Ativar Modo Solar
@@ -539,14 +539,14 @@ export const TenantThemeSettingsView: React.FC<TenantThemeSettingsViewProps> = (
           </div>
 
           {/* 1. Curated Palette Presets */}
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl">
+          <div className="bg-superficie border border-borda rounded-3xl p-6 shadow-xl">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h2 className="text-base md:text-lg font-bold text-white flex items-center gap-2">
+                <h2 className="text-base md:text-lg font-bold text-tinta flex items-center gap-2">
                   <Sliders className="w-5 h-5" style={{ color: primaryColor }} />
                   Paletas Padrão de Consultoria SST
                 </h2>
-                <p className="text-xs text-slate-400 mt-0.5">Escolha uma paleta profissional otimizada para o segmento da consultoria.</p>
+                <p className="text-xs text-tinta-2 mt-0.5">Escolha uma paleta profissional otimizada para o segmento da consultoria.</p>
               </div>
             </div>
 
@@ -562,8 +562,8 @@ export const TenantThemeSettingsView: React.FC<TenantThemeSettingsViewProps> = (
                     }}
                     className={`text-left p-3.5 rounded-2xl border transition-all relative overflow-hidden flex flex-col justify-between ${
                       isSelected 
-                        ? 'border-white bg-slate-800/90 shadow-md ring-2 ring-offset-2 ring-offset-slate-900 ring-slate-400' 
-                        : 'border-slate-800 bg-slate-950/60 hover:bg-slate-800/60 hover:border-slate-700'
+                        ? 'border-white bg-superficie-2 shadow-md ring-2 ring-offset-2 ring-offset-slate-900 ring-slate-400' 
+                        : 'border-borda bg-fundo hover:bg-superficie-2 hover:border-borda'
                     }`}
                   >
                     <div className="flex items-center justify-between w-full mb-2">
@@ -572,7 +572,7 @@ export const TenantThemeSettingsView: React.FC<TenantThemeSettingsViewProps> = (
                           className="w-4 h-4 rounded-full border border-white/20 shadow-sm"
                           style={{ backgroundColor: preset.primary_color }}
                         />
-                        <span className="text-xs font-bold text-white">{preset.name}</span>
+                        <span className="text-xs font-bold text-tinta">{preset.name}</span>
                       </div>
                       {isSelected && (
                         <span className="p-1 rounded-full bg-white text-slate-950">
@@ -580,12 +580,12 @@ export const TenantThemeSettingsView: React.FC<TenantThemeSettingsViewProps> = (
                         </span>
                       )}
                     </div>
-                    <p className="text-[11px] text-slate-400 line-clamp-1">{preset.description}</p>
+                    <p className="text-[11px] text-tinta-2 line-clamp-1">{preset.description}</p>
                     <div className="flex items-center gap-1.5 mt-2">
-                      <span className="text-[10px] font-mono text-slate-400 px-1.5 py-0.5 bg-slate-900 rounded border border-slate-800">
+                      <span className="text-[10px] font-mono text-tinta-2 px-1.5 py-0.5 bg-superficie rounded border border-borda">
                         {preset.primary_color}
                       </span>
-                      <span className="text-[10px] text-slate-500 font-medium">{preset.category}</span>
+                      <span className="text-[10px] text-tinta-2 font-medium">{preset.category}</span>
                     </div>
                   </button>
                 );
@@ -594,23 +594,23 @@ export const TenantThemeSettingsView: React.FC<TenantThemeSettingsViewProps> = (
           </div>
 
           {/* 2. Color Studio & Fine Tuning */}
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-6">
-            <h2 className="text-base md:text-lg font-bold text-white flex items-center gap-2">
+          <div className="bg-superficie border border-borda rounded-3xl p-6 shadow-xl space-y-6">
+            <h2 className="text-base md:text-lg font-bold text-tinta flex items-center gap-2">
               <Palette className="w-5 h-5" style={{ color: primaryColor }} />
               Estúdio de Cores & Variáveis CSS
             </h2>
 
             {/* Primary Color Picker */}
-            <div className="p-4 rounded-2xl bg-slate-950/70 border border-slate-800/80 space-y-3">
+            <div className="p-4 rounded-2xl bg-fundo border border-borda space-y-3">
               <div className="flex items-center justify-between">
                 <div>
-                  <label htmlFor="primary-color-input" className="text-sm font-semibold text-white block">
+                  <label htmlFor="primary-color-input" className="text-sm font-semibold text-tinta block">
                     Cor Principal (Primary Theme Color)
                   </label>
-                  <span className="text-xs text-slate-400">Alimenta botões de ação, badges ativas, bordas e destaque dos laudos.</span>
+                  <span className="text-xs text-tinta-2">Alimenta botões de ação, badges ativas, bordas e destaque dos laudos.</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-mono font-bold text-slate-300 px-2 py-1 bg-slate-900 rounded-lg border border-slate-700">
+                  <span className="text-xs font-mono font-bold text-tinta px-2 py-1 bg-superficie rounded-lg border border-borda">
                     {primaryColor.toUpperCase()}
                   </span>
                   <div className="relative">
@@ -626,8 +626,8 @@ export const TenantThemeSettingsView: React.FC<TenantThemeSettingsViewProps> = (
               </div>
 
               {/* Quick Swatches */}
-              <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-800/80">
-                <span className="text-[11px] text-slate-500 font-medium">Amostras Rápidas:</span>
+              <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-borda">
+                <span className="text-[11px] text-tinta-2 font-medium">Amostras Rápidas:</span>
                 {['#10b981', '#2563eb', '#0891b2', '#ea580c', '#6366f1', '#e11d48', '#059669', '#64748b', '#eab308', '#22c55e', '#ffffff'].map(hex => (
                   <button
                     key={hex}
@@ -640,15 +640,15 @@ export const TenantThemeSettingsView: React.FC<TenantThemeSettingsViewProps> = (
               </div>
 
               {/* Contrast and Accessibility Indicator */}
-              <div className="flex items-center justify-between text-xs bg-slate-900/90 rounded-xl p-2.5 border border-slate-800">
-                <div className="flex items-center gap-2 text-slate-300">
-                  <ShieldCheck className="w-4 h-4 text-emerald-400" />
+              <div className="flex items-center justify-between text-xs bg-superficie rounded-xl p-2.5 border border-borda">
+                <div className="flex items-center gap-2 text-tinta">
+                  <ShieldCheck className="w-4 h-4 text-marca-escura" />
                   <span>Contraste WCAG: <strong>{contrastInfo.isLight ? 'Fundo Claro' : 'Fundo Escuro'}</strong></span>
                 </div>
                 <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${
                   enableOutdoorHighContrast 
-                    ? 'bg-amber-500/20 text-amber-300 border-amber-500/40' 
-                    : 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
+                    ? 'bg-amber-500/20 text-amber-700 border-amber-500/40' 
+                    : 'bg-marca-suave text-marca-escura border-marca-escura'
                 }`}>
                   {enableOutdoorHighContrast ? 'AAA Conforme (Alto Contraste Solar)' : `AA Conforme (Texto ${contrastInfo.textColor === '#ffffff' ? 'Branco' : 'Preto'})`}
                 </span>
@@ -657,8 +657,8 @@ export const TenantThemeSettingsView: React.FC<TenantThemeSettingsViewProps> = (
 
             {/* Secondary, Accent & PWA Status Bar */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="p-3.5 rounded-2xl bg-slate-950/70 border border-slate-800">
-                <label htmlFor="secondary-color-input" className="text-xs font-semibold text-white block mb-1">
+              <div className="p-3.5 rounded-2xl bg-fundo border border-borda">
+                <label htmlFor="secondary-color-input" className="text-xs font-semibold text-tinta block mb-1">
                   Cor Secundária
                 </label>
                 <div className="flex items-center gap-2">
@@ -673,13 +673,13 @@ export const TenantThemeSettingsView: React.FC<TenantThemeSettingsViewProps> = (
                     type="text"
                     value={secondaryColor}
                     onChange={(e) => setSecondaryColor(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-700 text-xs text-white rounded-lg px-2 py-1.5 font-mono"
+                    className="w-full bg-superficie border border-borda text-xs text-tinta rounded-lg px-2 py-1.5 font-mono"
                   />
                 </div>
               </div>
 
-              <div className="p-3.5 rounded-2xl bg-slate-950/70 border border-slate-800">
-                <label htmlFor="accent-color-input" className="text-xs font-semibold text-white block mb-1">
+              <div className="p-3.5 rounded-2xl bg-fundo border border-borda">
+                <label htmlFor="accent-color-input" className="text-xs font-semibold text-tinta block mb-1">
                   Destaque (Accent)
                 </label>
                 <div className="flex items-center gap-2">
@@ -694,13 +694,13 @@ export const TenantThemeSettingsView: React.FC<TenantThemeSettingsViewProps> = (
                     type="text"
                     value={accentColor}
                     onChange={(e) => setAccentColor(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-700 text-xs text-white rounded-lg px-2 py-1.5 font-mono"
+                    className="w-full bg-superficie border border-borda text-xs text-tinta rounded-lg px-2 py-1.5 font-mono"
                   />
                 </div>
               </div>
 
-              <div className="p-3.5 rounded-2xl bg-slate-950/70 border border-slate-800">
-                <label htmlFor="pwa-header-color-input" className="text-xs font-semibold text-white block mb-1">
+              <div className="p-3.5 rounded-2xl bg-fundo border border-borda">
+                <label htmlFor="pwa-header-color-input" className="text-xs font-semibold text-tinta block mb-1">
                   PWA Header (Mobile)
                 </label>
                 <div className="flex items-center gap-2">
@@ -715,7 +715,7 @@ export const TenantThemeSettingsView: React.FC<TenantThemeSettingsViewProps> = (
                     type="text"
                     value={pwaThemeColor}
                     onChange={(e) => setPwaThemeColor(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-700 text-xs text-white rounded-lg px-2 py-1.5 font-mono"
+                    className="w-full bg-superficie border border-borda text-xs text-tinta rounded-lg px-2 py-1.5 font-mono"
                   />
                 </div>
               </div>
@@ -723,15 +723,15 @@ export const TenantThemeSettingsView: React.FC<TenantThemeSettingsViewProps> = (
 
             {/* Geometry & FX */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="p-3.5 rounded-2xl bg-slate-950/70 border border-slate-800">
-                <label htmlFor="border-radius-select" className="text-xs font-semibold text-white block mb-1.5">
+              <div className="p-3.5 rounded-2xl bg-fundo border border-borda">
+                <label htmlFor="border-radius-select" className="text-xs font-semibold text-tinta block mb-1.5">
                   Estilo dos Cantos (Border Radius)
                 </label>
                 <select
                   id="border-radius-select"
                   value={borderRadius}
                   onChange={(e: any) => setBorderRadius(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-700 text-xs text-white rounded-xl px-3 py-2 outline-none"
+                  className="w-full bg-superficie border border-borda text-xs text-tinta rounded-xl px-3 py-2 outline-none"
                 >
                   <option value="rounded-lg">Compacto (8px / Rounded-LG)</option>
                   <option value="rounded-xl">Clássico (12px / Rounded-XL)</option>
@@ -740,10 +740,10 @@ export const TenantThemeSettingsView: React.FC<TenantThemeSettingsViewProps> = (
                 </select>
               </div>
 
-              <div className="p-3.5 rounded-2xl bg-slate-950/70 border border-slate-800 flex items-center justify-between">
+              <div className="p-3.5 rounded-2xl bg-fundo border border-borda flex items-center justify-between">
                 <div>
-                  <label htmlFor="enable-glow-toggle" className="text-xs font-semibold text-white block">Efeito Glow Neon</label>
-                  <span className="text-[11px] text-slate-400">
+                  <label htmlFor="enable-glow-toggle" className="text-xs font-semibold text-tinta block">Efeito Glow Neon</label>
+                  <span className="text-[11px] text-tinta-2">
                     {enableOutdoorHighContrast ? 'Desativado no Modo Solar (Anti-reflexo)' : 'Brilho suave ao redor de botões e cartões'}
                   </span>
                 </div>
@@ -753,22 +753,22 @@ export const TenantThemeSettingsView: React.FC<TenantThemeSettingsViewProps> = (
                   checked={enableGlow && !enableOutdoorHighContrast}
                   disabled={enableOutdoorHighContrast}
                   onChange={(e) => setEnableGlow(e.target.checked)}
-                  className="w-5 h-5 rounded text-emerald-500 focus:ring-0 cursor-pointer accent-emerald-500 disabled:opacity-40"
+                  className="w-5 h-5 rounded text-marca-escura focus:ring-0 cursor-pointer accent-emerald-500 disabled:opacity-40"
                 />
               </div>
             </div>
           </div>
 
           {/* 3. Branding & Portal/PWA Naming */}
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
-            <h2 className="text-base md:text-lg font-bold text-white flex items-center gap-2">
+          <div className="bg-superficie border border-borda rounded-3xl p-6 shadow-xl space-y-4">
+            <h2 className="text-base md:text-lg font-bold text-tinta flex items-center gap-2">
               <Globe className="w-5 h-5" style={{ color: primaryColor }} />
               Identidade do Portal & App PWA
             </h2>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label htmlFor="portal-brand-input" className="text-xs font-semibold text-slate-300 block mb-1">
+                <label htmlFor="portal-brand-input" className="text-xs font-semibold text-tinta block mb-1">
                   Nome do Portal do Cliente
                 </label>
                 <input
@@ -777,12 +777,12 @@ export const TenantThemeSettingsView: React.FC<TenantThemeSettingsViewProps> = (
                   value={portalBrandName}
                   onChange={(e) => setPortalBrandName(e.target.value)}
                   placeholder="Ex: SegurWork Portal SST"
-                  className="w-full bg-slate-950 border border-slate-800 text-sm text-white rounded-xl px-3.5 py-2.5 focus:border-emerald-500 outline-none"
+                  className="w-full bg-fundo border border-borda text-sm text-tinta rounded-xl px-3.5 py-2.5 focus:border-marca-escura outline-none"
                 />
               </div>
 
               <div>
-                <label htmlFor="pwa-app-title-input" className="text-xs font-semibold text-slate-300 block mb-1">
+                <label htmlFor="pwa-app-title-input" className="text-xs font-semibold text-tinta block mb-1">
                   Título do App no PWA (Mobile)
                 </label>
                 <div className="flex items-center gap-2">
@@ -790,7 +790,7 @@ export const TenantThemeSettingsView: React.FC<TenantThemeSettingsViewProps> = (
                     type="text"
                     value={pwaIconEmoji}
                     onChange={(e) => setPwaIconEmoji(e.target.value)}
-                    className="w-12 text-center bg-slate-950 border border-slate-800 text-sm text-white rounded-xl py-2.5 font-emoji"
+                    className="w-12 text-center bg-fundo border border-borda text-sm text-tinta rounded-xl py-2.5 font-emoji"
                     title="Ícone Emoji"
                   />
                   <input
@@ -799,13 +799,13 @@ export const TenantThemeSettingsView: React.FC<TenantThemeSettingsViewProps> = (
                     value={pwaAppTitle}
                     onChange={(e) => setPwaAppTitle(e.target.value)}
                     placeholder="Ex: SegurWork Field"
-                    className="w-full bg-slate-950 border border-slate-800 text-sm text-white rounded-xl px-3.5 py-2.5 focus:border-emerald-500 outline-none"
+                    className="w-full bg-fundo border border-borda text-sm text-tinta rounded-xl px-3.5 py-2.5 focus:border-marca-escura outline-none"
                   />
                 </div>
               </div>
 
               <div className="sm:col-span-2">
-                <label htmlFor="portal-tagline-input" className="text-xs font-semibold text-slate-300 block mb-1">
+                <label htmlFor="portal-tagline-input" className="text-xs font-semibold text-tinta block mb-1">
                   Slogan / Subtítulo Institucional
                 </label>
                 <input
@@ -814,7 +814,7 @@ export const TenantThemeSettingsView: React.FC<TenantThemeSettingsViewProps> = (
                   value={portalTagline}
                   onChange={(e) => setPortalTagline(e.target.value)}
                   placeholder="Ex: Portal de Gestão de Segurança & Saúde no Trabalho"
-                  className="w-full bg-slate-950 border border-slate-800 text-sm text-white rounded-xl px-3.5 py-2.5 focus:border-emerald-500 outline-none"
+                  className="w-full bg-fundo border border-borda text-sm text-tinta rounded-xl px-3.5 py-2.5 focus:border-marca-escura outline-none"
                 />
               </div>
             </div>
@@ -824,21 +824,21 @@ export const TenantThemeSettingsView: React.FC<TenantThemeSettingsViewProps> = (
 
         {/* Right Column: Interactive Real-Time Live Previews (5 cols) */}
         <div className="xl:col-span-5 space-y-6">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl sticky top-6">
+          <div className="bg-superficie border border-borda rounded-3xl p-6 shadow-xl sticky top-6">
             
             {/* Preview Tabs & Sunlight Simulator Toggle */}
-            <div className="flex flex-col gap-3 mb-5 border-b border-slate-800 pb-3">
+            <div className="flex flex-col gap-3 mb-5 border-b border-borda pb-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Eye className="w-5 h-5" style={{ color: primaryColor }} />
-                  <h3 className="text-sm font-bold text-white uppercase tracking-wider">Preview em Tempo Real</h3>
+                  <h3 className="text-sm font-bold text-tinta uppercase tracking-wider">Preview em Tempo Real</h3>
                 </div>
 
-                <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800">
+                <div className="flex items-center gap-1 bg-fundo p-1 rounded-xl border border-borda">
                   <button
                     onClick={() => setActivePreviewTab('portal')}
                     className={`px-2.5 py-1 rounded-lg text-xs font-semibold flex items-center gap-1 transition-all ${
-                      activePreviewTab === 'portal' ? 'bg-slate-800 text-white shadow' : 'text-slate-400 hover:text-slate-200'
+                      activePreviewTab === 'portal' ? 'bg-superficie-2 text-tinta shadow' : 'text-tinta-2 hover:text-tinta'
                     }`}
                   >
                     <Globe className="w-3 h-3" /> Portal
@@ -846,7 +846,7 @@ export const TenantThemeSettingsView: React.FC<TenantThemeSettingsViewProps> = (
                   <button
                     onClick={() => setActivePreviewTab('pwa')}
                     className={`px-2.5 py-1 rounded-lg text-xs font-semibold flex items-center gap-1 transition-all ${
-                      activePreviewTab === 'pwa' ? 'bg-slate-800 text-white shadow' : 'text-slate-400 hover:text-slate-200'
+                      activePreviewTab === 'pwa' ? 'bg-superficie-2 text-tinta shadow' : 'text-tinta-2 hover:text-tinta'
                     }`}
                   >
                     <Smartphone className="w-3 h-3" /> PWA
@@ -854,7 +854,7 @@ export const TenantThemeSettingsView: React.FC<TenantThemeSettingsViewProps> = (
                   <button
                     onClick={() => setActivePreviewTab('css')}
                     className={`px-2.5 py-1 rounded-lg text-xs font-semibold flex items-center gap-1 transition-all ${
-                      activePreviewTab === 'css' ? 'bg-slate-800 text-white shadow' : 'text-slate-400 hover:text-slate-200'
+                      activePreviewTab === 'css' ? 'bg-superficie-2 text-tinta shadow' : 'text-tinta-2 hover:text-tinta'
                     }`}
                   >
                     <Code className="w-3 h-3" /> CSS
@@ -863,10 +863,10 @@ export const TenantThemeSettingsView: React.FC<TenantThemeSettingsViewProps> = (
               </div>
 
               {/* Sunlight Simulator Toggle Bar */}
-              <div className="flex items-center justify-between bg-slate-950/80 rounded-xl p-2 border border-slate-800/80">
+              <div className="flex items-center justify-between bg-fundo rounded-xl p-2 border border-borda">
                 <div className="flex items-center gap-2 text-xs">
-                  <SunMedium className={`w-4 h-4 ${simulateSunlight ? 'text-amber-400 animate-spin' : 'text-slate-400'}`} />
-                  <span className="text-slate-300 font-medium">Simular Sol a Pino (Luz Solar):</span>
+                  <SunMedium className={`w-4 h-4 ${simulateSunlight ? 'text-amber-700 animate-spin' : 'text-tinta-2'}`} />
+                  <span className="text-tinta font-medium">Simular Sol a Pino (Luz Solar):</span>
                 </div>
                 <button
                   type="button"
@@ -874,7 +874,7 @@ export const TenantThemeSettingsView: React.FC<TenantThemeSettingsViewProps> = (
                   className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
                     simulateSunlight 
                       ? 'bg-amber-500 text-slate-950 shadow' 
-                      : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                      : 'bg-superficie-2 text-tinta hover:bg-superficie-3'
                   }`}
                 >
                   <Sun className="w-3 h-3" />
@@ -886,7 +886,7 @@ export const TenantThemeSettingsView: React.FC<TenantThemeSettingsViewProps> = (
             {/* Tab 1: Portal do Cliente Live Preview */}
             {activePreviewTab === 'portal' && (
               <div className="space-y-4 animate-in fade-in duration-200">
-                <div className="text-xs text-slate-400 flex items-center justify-between">
+                <div className="text-xs text-tinta-2 flex items-center justify-between">
                   <span>Simulação do <strong>Portal do Cliente</strong> {enableOutdoorHighContrast ? '(Alto Contraste Solar)' : ''}:</span>
                   <span className="font-mono font-bold" style={{ color: primaryColor }}>{primaryColor}</span>
                 </div>
@@ -904,22 +904,22 @@ export const TenantThemeSettingsView: React.FC<TenantThemeSettingsViewProps> = (
                   <div className={`p-4 ${borderRadius} shadow-2xl space-y-4 transition-all ${
                     enableOutdoorHighContrast 
                       ? 'bg-black border-2 border-white' 
-                      : 'bg-slate-950 border border-slate-800'
+                      : 'bg-fundo border border-borda'
                   }`}>
                     {/* Mock Portal Header */}
                     <div className={`flex items-center justify-between pb-3 ${
-                      enableOutdoorHighContrast ? 'border-b-2 border-white' : 'border-b border-slate-800'
+                      enableOutdoorHighContrast ? 'border-b-2 border-white' : 'border-b border-borda'
                     }`}>
                       <div className="flex items-center gap-2.5">
                         <div 
-                          className="w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold text-sm shadow-md"
+                          className="w-8 h-8 rounded-lg flex items-center justify-center text-tinta font-bold text-sm shadow-md"
                           style={{ backgroundColor: primaryColor }}
                         >
                           {pwaIconEmoji}
                         </div>
                         <div>
-                          <h4 className="text-xs font-bold text-white leading-tight">{portalBrandName}</h4>
-                          <p className={`text-[10px] truncate max-w-[180px] ${enableOutdoorHighContrast ? 'text-slate-200 font-medium' : 'text-slate-400'}`}>
+                          <h4 className="text-xs font-bold text-tinta leading-tight">{portalBrandName}</h4>
+                          <p className={`text-[10px] truncate max-w-[180px] ${enableOutdoorHighContrast ? 'text-tinta font-medium' : 'text-tinta-2'}`}>
                             {portalTagline}
                           </p>
                         </div>
@@ -946,7 +946,7 @@ export const TenantThemeSettingsView: React.FC<TenantThemeSettingsViewProps> = (
                         className={`p-3 transition-all ${
                           enableOutdoorHighContrast 
                             ? `bg-black border-2 border-white ${borderRadius}` 
-                            : `bg-slate-900/90 border ${borderRadius}`
+                            : `bg-superficie border ${borderRadius}`
                         }`}
                         style={!enableOutdoorHighContrast ? { 
                           borderColor: `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.3)`,
@@ -954,13 +954,13 @@ export const TenantThemeSettingsView: React.FC<TenantThemeSettingsViewProps> = (
                         } : {}}
                       >
                         <div className="flex items-center justify-between">
-                          <span className={`text-[10px] font-semibold ${enableOutdoorHighContrast ? 'text-white' : 'text-slate-400'}`}>
+                          <span className={`text-[10px] font-semibold ${enableOutdoorHighContrast ? 'text-tinta' : 'text-tinta-2'}`}>
                             Laudos Entregues
                           </span>
                           <FileCheck className="w-3.5 h-3.5" style={{ color: primaryColor }} />
                         </div>
-                        <p className="text-lg font-black text-white mt-1">100%</p>
-                        <span className={`text-[9px] font-bold ${enableOutdoorHighContrast ? 'text-amber-300' : 'text-emerald-400'}`}>
+                        <p className="text-lg font-black text-tinta mt-1">100%</p>
+                        <span className={`text-[9px] font-bold ${enableOutdoorHighContrast ? 'text-amber-700' : 'text-marca-escura'}`}>
                           PGR & PCMSO Vigentes
                         </span>
                       </div>
@@ -969,7 +969,7 @@ export const TenantThemeSettingsView: React.FC<TenantThemeSettingsViewProps> = (
                         className={`p-3 transition-all ${
                           enableOutdoorHighContrast 
                             ? `bg-black border-2 border-white ${borderRadius}` 
-                            : `bg-slate-900/90 border ${borderRadius}`
+                            : `bg-superficie border ${borderRadius}`
                         }`}
                         style={!enableOutdoorHighContrast ? { 
                           borderColor: `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.3)`,
@@ -977,13 +977,13 @@ export const TenantThemeSettingsView: React.FC<TenantThemeSettingsViewProps> = (
                         } : {}}
                       >
                         <div className="flex items-center justify-between">
-                          <span className={`text-[10px] font-semibold ${enableOutdoorHighContrast ? 'text-white' : 'text-slate-400'}`}>
+                          <span className={`text-[10px] font-semibold ${enableOutdoorHighContrast ? 'text-tinta' : 'text-tinta-2'}`}>
                             ASOs Realizados
                           </span>
                           <Activity className="w-3.5 h-3.5" style={{ color: accentColor }} />
                         </div>
-                        <p className="text-lg font-black text-white mt-1">142</p>
-                        <span className={`text-[9px] ${enableOutdoorHighContrast ? 'text-slate-200 font-semibold' : 'text-slate-400'}`}>
+                        <p className="text-lg font-black text-tinta mt-1">142</p>
+                        <span className={`text-[9px] ${enableOutdoorHighContrast ? 'text-tinta font-semibold' : 'text-tinta-2'}`}>
                           Exames em dia
                         </span>
                       </div>
@@ -993,13 +993,13 @@ export const TenantThemeSettingsView: React.FC<TenantThemeSettingsViewProps> = (
                     <div className={`p-3 rounded-xl flex items-center justify-between gap-3 ${
                       enableOutdoorHighContrast 
                         ? 'bg-black border-2 border-white' 
-                        : 'bg-slate-900/70 border border-slate-800'
+                        : 'bg-superficie border border-borda'
                     }`}>
                       <div className="flex items-center gap-2">
-                        <HardHat className="w-4 h-4 text-amber-400 shrink-0" />
+                        <HardHat className="w-4 h-4 text-amber-700 shrink-0" />
                         <div>
-                          <p className="text-xs font-bold text-white">Renovação Anual LTCAT</p>
-                          <p className={`text-[10px] ${enableOutdoorHighContrast ? 'text-slate-300' : 'text-slate-400'}`}>
+                          <p className="text-xs font-bold text-tinta">Renovação Anual LTCAT</p>
+                          <p className={`text-[10px] ${enableOutdoorHighContrast ? 'text-tinta' : 'text-tinta-2'}`}>
                             Vence em 15 dias • Unidade Matriz
                           </p>
                         </div>
@@ -1008,7 +1008,7 @@ export const TenantThemeSettingsView: React.FC<TenantThemeSettingsViewProps> = (
                         className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow ${
                           enableOutdoorHighContrast 
                             ? 'bg-white text-black border border-black font-black' 
-                            : 'text-white'
+                            : 'text-tinta'
                         }`}
                         style={!enableOutdoorHighContrast ? { 
                           backgroundColor: primaryColor,
@@ -1024,10 +1024,10 @@ export const TenantThemeSettingsView: React.FC<TenantThemeSettingsViewProps> = (
                 {onNavigate && (
                   <button
                     onClick={() => onNavigate('client-portal')}
-                    className="w-full py-2.5 px-4 rounded-xl border border-slate-800 bg-slate-950/80 hover:bg-slate-800 text-xs font-semibold text-slate-300 flex items-center justify-center gap-2 transition-all"
+                    className="w-full py-2.5 px-4 rounded-xl border border-borda bg-fundo hover:bg-superficie-2 text-xs font-semibold text-tinta flex items-center justify-center gap-2 transition-all"
                   >
                     <span>Abrir Portal do Cliente Completo</span>
-                    <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
+                    <ExternalLink className="w-3.5 h-3.5 text-tinta-2" />
                   </button>
                 )}
               </div>
@@ -1036,7 +1036,7 @@ export const TenantThemeSettingsView: React.FC<TenantThemeSettingsViewProps> = (
             {/* Tab 2: PWA do Técnico Mobile Live Preview */}
             {activePreviewTab === 'pwa' && (
               <div className="space-y-4 animate-in fade-in duration-200">
-                <div className="text-xs text-slate-400 flex items-center justify-between">
+                <div className="text-xs text-tinta-2 flex items-center justify-between">
                   <span>Simulação do <strong>PWA Móvel de Campo</strong>:</span>
                   <span className="font-mono font-bold" style={{ color: primaryColor }}>{pwaAppTitle}</span>
                 </div>
@@ -1054,18 +1054,18 @@ export const TenantThemeSettingsView: React.FC<TenantThemeSettingsViewProps> = (
                   <div className={`p-3 rounded-[36px] shadow-2xl relative overflow-hidden transition-all ${
                     enableOutdoorHighContrast 
                       ? 'bg-black border-4 border-white' 
-                      : 'bg-slate-950 border-4 border-slate-800'
+                      : 'bg-fundo border-4 border-borda'
                   }`}>
                     
                     {/* Phone Speaker Notch */}
-                    <div className="w-20 h-3.5 bg-slate-800 rounded-full mx-auto mb-2 flex items-center justify-center">
-                      <div className="w-2 h-2 rounded-full bg-slate-950 mr-1" />
-                      <div className="w-6 h-1 rounded-full bg-slate-900" />
+                    <div className="w-20 h-3.5 bg-superficie-2 rounded-full mx-auto mb-2 flex items-center justify-center">
+                      <div className="w-2 h-2 rounded-full bg-fundo mr-1" />
+                      <div className="w-6 h-1 rounded-full bg-superficie" />
                     </div>
 
                     {/* Status Bar */}
                     <div 
-                      className={`rounded-2xl p-3 text-white space-y-3 transition-colors ${
+                      className={`rounded-2xl p-3 text-tinta space-y-3 transition-colors ${
                         enableOutdoorHighContrast ? 'bg-black border-2 border-white' : ''
                       }`}
                       style={!enableOutdoorHighContrast ? { backgroundColor: pwaThemeColor } : {}}
@@ -1083,7 +1083,7 @@ export const TenantThemeSettingsView: React.FC<TenantThemeSettingsViewProps> = (
                           <span className="text-base">{pwaIconEmoji}</span>
                           <div>
                             <p className="text-xs font-bold leading-tight">{pwaAppTitle}</p>
-                            <p className={`text-[9px] ${enableOutdoorHighContrast ? 'text-amber-300 font-bold' : 'opacity-75'}`}>
+                            <p className={`text-[9px] ${enableOutdoorHighContrast ? 'text-amber-700 font-bold' : 'opacity-75'}`}>
                               {enableOutdoorHighContrast ? 'Modo Campo Solar Ativo' : 'Técnico em Campo • Offline Ready'}
                             </p>
                           </div>
@@ -1101,7 +1101,7 @@ export const TenantThemeSettingsView: React.FC<TenantThemeSettingsViewProps> = (
                         className={`p-2.5 rounded-xl text-xs font-bold flex items-center justify-between shadow ${
                           enableOutdoorHighContrast 
                             ? 'bg-amber-400 text-slate-950 border-2 border-white font-black' 
-                            : 'text-white'
+                            : 'text-tinta'
                         }`}
                         style={!enableOutdoorHighContrast ? { 
                           backgroundColor: primaryColor,
@@ -1115,13 +1115,13 @@ export const TenantThemeSettingsView: React.FC<TenantThemeSettingsViewProps> = (
                       <div className={`p-2 rounded-xl text-[11px] space-y-1 ${
                         enableOutdoorHighContrast 
                           ? 'bg-black border-2 border-white' 
-                          : 'bg-slate-900 border border-slate-800'
+                          : 'bg-superficie border border-borda'
                       }`}>
-                        <p className="font-bold text-white">Vistoria NR-35 Trabalho em Altura</p>
-                        <p className={`text-[10px] ${enableOutdoorHighContrast ? 'text-slate-300 font-medium' : 'text-slate-400'}`}>
+                        <p className="font-bold text-tinta">Vistoria NR-35 Trabalho em Altura</p>
+                        <p className={`text-[10px] ${enableOutdoorHighContrast ? 'text-tinta font-medium' : 'text-tinta-2'}`}>
                           Canteiro CNO 091.221 • 3 pendências
                         </p>
-                        <div className="w-full bg-slate-800 rounded-full h-2 mt-1 overflow-hidden border border-slate-700">
+                        <div className="w-full bg-superficie-2 rounded-full h-2 mt-1 overflow-hidden border border-borda">
                           <div 
                             className="h-full rounded-full" 
                             style={{ 
@@ -1134,11 +1134,11 @@ export const TenantThemeSettingsView: React.FC<TenantThemeSettingsViewProps> = (
 
                       <div className={`p-2 rounded-xl text-[10px] flex items-center justify-between ${
                         enableOutdoorHighContrast 
-                          ? 'bg-black border-2 border-white text-white font-semibold' 
-                          : 'bg-slate-900/60 border border-slate-800/80 text-slate-400'
+                          ? 'bg-black border-2 border-white text-tinta font-semibold' 
+                          : 'bg-superficie border border-borda text-tinta-2'
                       }`}>
                         <span>Sincronização Nuvem:</span>
-                        <span className={enableOutdoorHighContrast ? 'text-amber-300 font-bold' : 'text-emerald-400 font-semibold'}>
+                        <span className={enableOutdoorHighContrast ? 'text-amber-700 font-bold' : 'text-marca-escura font-semibold'}>
                           12 fotos prontas
                         </span>
                       </div>
@@ -1149,10 +1149,10 @@ export const TenantThemeSettingsView: React.FC<TenantThemeSettingsViewProps> = (
                 {onNavigate && (
                   <button
                     onClick={() => onNavigate('field-pwa')}
-                    className="w-full py-2.5 px-4 rounded-xl border border-slate-800 bg-slate-950/80 hover:bg-slate-800 text-xs font-semibold text-slate-300 flex items-center justify-center gap-2 transition-all"
+                    className="w-full py-2.5 px-4 rounded-xl border border-borda bg-fundo hover:bg-superficie-2 text-xs font-semibold text-tinta flex items-center justify-center gap-2 transition-all"
                   >
                     <span>Abrir PWA do Técnico Completo</span>
-                    <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
+                    <ExternalLink className="w-3.5 h-3.5 text-tinta-2" />
                   </button>
                 )}
               </div>
@@ -1161,33 +1161,33 @@ export const TenantThemeSettingsView: React.FC<TenantThemeSettingsViewProps> = (
             {/* Tab 3: Generated CSS Variables Code Snippet */}
             {activePreviewTab === 'css' && (
               <div className="space-y-4 animate-in fade-in duration-200">
-                <div className="flex items-center justify-between text-xs text-slate-400">
+                <div className="flex items-center justify-between text-xs text-tinta-2">
                   <span>Variáveis CSS injetadas no <code>:root</code>:</span>
                   <button
                     onClick={handleCopyCss}
-                    className="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-mono text-[11px] flex items-center gap-1.5 transition-all"
+                    className="px-2.5 py-1 rounded-lg bg-superficie-2 hover:bg-superficie-3 text-tinta font-mono text-[11px] flex items-center gap-1.5 transition-all"
                   >
                     {copiedCss ? (
                       <>
-                        <Check className="w-3 h-3 text-emerald-400" />
+                        <Check className="w-3 h-3 text-marca-escura" />
                         <span>Copiado!</span>
                       </>
                     ) : (
                       <>
-                        <Copy className="w-3 h-3 text-slate-400" />
+                        <Copy className="w-3 h-3 text-tinta-2" />
                         <span>Copiar CSS</span>
                       </>
                     )}
                   </button>
                 </div>
 
-                <pre className="p-3.5 bg-slate-950 border border-slate-800 rounded-2xl text-[11px] font-mono text-emerald-400 overflow-x-auto leading-relaxed shadow-inner">
+                <pre className="p-3.5 bg-fundo border border-borda rounded-2xl text-[11px] font-mono text-marca-escura overflow-x-auto leading-relaxed shadow-inner">
                   {generateCssSnippet(draftTheme)}
                 </pre>
 
-                <div className="p-3 rounded-xl bg-slate-950/80 border border-slate-800 text-[11px] text-slate-400 space-y-1">
-                  <p className="font-semibold text-slate-300">Como usar no Tailwind ou componentes:</p>
-                  <code className="text-[10px] text-cyan-300 block bg-slate-900 p-1.5 rounded">
+                <div className="p-3 rounded-xl bg-fundo border border-borda text-[11px] text-tinta-2 space-y-1">
+                  <p className="font-semibold text-tinta">Como usar no Tailwind ou componentes:</p>
+                  <code className="text-[10px] text-cyan-700 block bg-superficie p-1.5 rounded">
                     {'<button className="bg-tenant-primary hover:bg-tenant-primary-hover shadow-tenant-glow">'}
                   </code>
                 </div>

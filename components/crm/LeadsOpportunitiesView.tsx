@@ -188,14 +188,14 @@ export const LeadsOpportunitiesView: React.FC<{ onNavigate: (view: string) => vo
   return (
     <div id="leads-view-container" className="space-y-6 pb-12">
       {/* Header Bento Card */}
-      <div id="leads-header" className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl">
+      <div id="leads-header" className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-superficie border border-borda rounded-3xl p-6 shadow-xl">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex items-center justify-center text-amber-400">
+          <div className="w-10 h-10 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex items-center justify-center text-amber-700">
             <Target className="w-5 h-5" />
           </div>
           <div>
-            <h1 className="text-xl font-bold tracking-tight text-white">Leads & Funil de Oportunidades</h1>
-            <p className="text-xs text-slate-400 mt-0.5">Captação comercial, qualificação de demanda e conversão em clientes cadastrados.</p>
+            <h1 className="text-xl font-bold tracking-tight text-tinta">Leads & Funil de Oportunidades</h1>
+            <p className="text-xs text-tinta-2 mt-0.5">Captação comercial, qualificação de demanda e conversão em clientes cadastrados.</p>
           </div>
         </div>
         <div className="flex items-center space-x-2">
@@ -203,7 +203,7 @@ export const LeadsOpportunitiesView: React.FC<{ onNavigate: (view: string) => vo
             <button 
               id="btn-new-lead"
               onClick={handleOpenNewLead}
-              className="px-4 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-2xl text-xs font-bold shadow-lg shadow-emerald-950/40 transition flex items-center space-x-1.5"
+              className="px-4 py-2.5 bg-gradient-to-r from-marca to-teal-600 hover:from-marca hover:to-teal-500 text-white rounded-2xl text-xs font-bold shadow-lg shadow-emerald-950/40 transition flex items-center space-x-1.5"
             >
               <Plus className="w-4 h-4" />
               <span>Novo Lead</span>
@@ -212,7 +212,7 @@ export const LeadsOpportunitiesView: React.FC<{ onNavigate: (view: string) => vo
             <button 
               id="btn-new-opportunity"
               onClick={handleOpenNewOpp}
-              className="px-4 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-2xl text-xs font-bold shadow-lg shadow-indigo-950/40 transition flex items-center space-x-1.5"
+              className="px-4 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-tinta rounded-2xl text-xs font-bold shadow-lg shadow-indigo-950/40 transition flex items-center space-x-1.5"
             >
               <Plus className="w-4 h-4" />
               <span>Nova Oportunidade</span>
@@ -222,14 +222,14 @@ export const LeadsOpportunitiesView: React.FC<{ onNavigate: (view: string) => vo
       </div>
 
       {/* Tabs */}
-      <div className="flex space-x-2 border-b border-slate-800">
+      <div className="flex space-x-2 border-b border-borda">
         <button
           id="tab-leads"
           onClick={() => setActiveTab('LEADS')}
           className={`pb-3 px-4 text-xs font-bold transition border-b-2 flex items-center space-x-2 ${
             activeTab === 'LEADS'
-              ? 'border-emerald-400 text-emerald-400'
-              : 'border-transparent text-slate-400 hover:text-slate-200'
+              ? 'border-marca-escura text-marca-escura'
+              : 'border-transparent text-tinta-2 hover:text-tinta'
           }`}
         >
           <Target className="w-4 h-4" />
@@ -240,8 +240,8 @@ export const LeadsOpportunitiesView: React.FC<{ onNavigate: (view: string) => vo
           onClick={() => setActiveTab('OPPORTUNITIES')}
           className={`pb-3 px-4 text-xs font-bold transition border-b-2 flex items-center space-x-2 ${
             activeTab === 'OPPORTUNITIES'
-              ? 'border-emerald-400 text-emerald-400'
-              : 'border-transparent text-slate-400 hover:text-slate-200'
+              ? 'border-marca-escura text-marca-escura'
+              : 'border-transparent text-tinta-2 hover:text-tinta'
           }`}
         >
           <Flame className="w-4 h-4" />
@@ -253,27 +253,27 @@ export const LeadsOpportunitiesView: React.FC<{ onNavigate: (view: string) => vo
       {activeTab === 'LEADS' ? (
         <div id="leads-grid" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {leads.map((lead) => (
-            <div key={lead.id} id={`lead-card-${lead.id}`} className="bg-slate-900 p-6 rounded-3xl border border-slate-800 shadow-xl flex flex-col justify-between space-y-4 hover:border-slate-700 transition">
+            <div key={lead.id} id={`lead-card-${lead.id}`} className="bg-superficie p-6 rounded-3xl border border-borda shadow-xl flex flex-col justify-between space-y-4 hover:border-borda transition">
               <div>
                 <div className="flex items-start justify-between">
                   <div>
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 rounded-full">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-marca-escura bg-marca-suave border border-marca-escura px-2.5 py-0.5 rounded-full">
                       {lead.status}
                     </span>
-                    <h3 className="text-base font-bold text-white mt-2.5">{lead.company}</h3>
-                    <p className="text-xs text-slate-400">{lead.name}</p>
+                    <h3 className="text-base font-bold text-tinta mt-2.5">{lead.company}</h3>
+                    <p className="text-xs text-tinta-2">{lead.name}</p>
                   </div>
                   <div className="flex items-center space-x-1">
                     <button
                       onClick={() => handleOpenEditLead(lead)}
-                      className="p-1.5 hover:bg-slate-800 text-slate-400 hover:text-white rounded-lg transition"
+                      className="p-1.5 hover:bg-superficie-2 text-tinta-2 hover:text-tinta rounded-lg transition"
                       title="Editar Lead"
                     >
                       <Edit2 className="w-3.5 h-3.5" />
                     </button>
                     <button
                       onClick={() => setDeletingLead(lead)}
-                      className="p-1.5 hover:bg-rose-500/20 text-slate-400 hover:text-rose-400 rounded-lg transition"
+                      className="p-1.5 hover:bg-rose-500/20 text-tinta-2 hover:text-rose-700 rounded-lg transition"
                       title="Excluir Lead"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
@@ -281,35 +281,35 @@ export const LeadsOpportunitiesView: React.FC<{ onNavigate: (view: string) => vo
                   </div>
                 </div>
 
-                <div className="mt-4 pt-3.5 border-t border-slate-800/80 space-y-2 text-xs text-slate-300">
+                <div className="mt-4 pt-3.5 border-t border-borda space-y-2 text-xs text-tinta">
                   <div className="flex items-center space-x-2">
-                    <Mail className="w-3.5 h-3.5 text-slate-500" />
+                    <Mail className="w-3.5 h-3.5 text-tinta-2" />
                     <span className="truncate">{lead.email}</span>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Phone className="w-3.5 h-3.5 text-slate-500" />
+                    <Phone className="w-3.5 h-3.5 text-tinta-2" />
                     <span>{lead.phone}</span>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Building2 className="w-3.5 h-3.5 text-slate-500" />
-                    <span>Origem: <strong className="text-slate-100">{lead.source}</strong> • CNAE {lead.cnae || 'N/A'}</span>
+                    <Building2 className="w-3.5 h-3.5 text-tinta-2" />
+                    <span>Origem: <strong className="text-tinta">{lead.source}</strong> • CNAE {lead.cnae || 'N/A'}</span>
                   </div>
                 </div>
 
                 {lead.notes && (
-                  <p className="mt-3 text-[11px] text-slate-400 bg-slate-950/60 p-3 rounded-2xl border border-slate-800 italic">
+                  <p className="mt-3 text-[11px] text-tinta-2 bg-fundo p-3 rounded-2xl border border-borda italic">
                     &ldquo;{lead.notes}&rdquo;
                   </p>
                 )}
               </div>
 
-              <div className="pt-3.5 border-t border-slate-800/80 flex items-center justify-between">
-                <span className="text-[10px] text-slate-500 font-mono">
+              <div className="pt-3.5 border-t border-borda flex items-center justify-between">
+                <span className="text-[10px] text-tinta-2 font-mono">
                   {formatDate(lead.created_at)}
                 </span>
                 <button
                   onClick={() => handleConvertLead(lead)}
-                  className="px-3.5 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-xl text-xs font-bold shadow-md transition flex items-center space-x-1"
+                  className="px-3.5 py-2 bg-gradient-to-r from-marca to-teal-600 hover:from-marca hover:to-teal-500 text-white rounded-xl text-xs font-bold shadow-md transition flex items-center space-x-1"
                 >
                   <UserPlus className="w-3.5 h-3.5" />
                   <span>Converter em Cliente</span>
@@ -331,33 +331,33 @@ export const LeadsOpportunitiesView: React.FC<{ onNavigate: (view: string) => vo
               const stageOpps = opportunities.filter(o => o.stage === stgKey);
 
               return (
-                <div key={stgKey} className="bg-slate-900 p-5 rounded-3xl border border-slate-800 space-y-3 shadow-xl">
-                  <div className="flex items-center justify-between pb-1 border-b border-slate-800/80">
-                    <span className="text-xs font-bold text-slate-300 uppercase tracking-wider">{stageLabel}</span>
-                    <span className="text-xs font-mono font-bold bg-slate-950 px-2 py-0.5 rounded-full border border-slate-800 text-emerald-400">
+                <div key={stgKey} className="bg-superficie p-5 rounded-3xl border border-borda space-y-3 shadow-xl">
+                  <div className="flex items-center justify-between pb-1 border-b border-borda">
+                    <span className="text-xs font-bold text-tinta uppercase tracking-wider">{stageLabel}</span>
+                    <span className="text-xs font-mono font-bold bg-fundo px-2 py-0.5 rounded-full border border-borda text-marca-escura">
                       {stageOpps.length}
                     </span>
                   </div>
 
                   <div className="space-y-3">
                     {stageOpps.length === 0 ? (
-                      <div className="text-xs text-slate-600 text-center py-6">Nenhuma oportunidade nesta etapa</div>
+                      <div className="text-xs text-tinta-2 text-center py-6">Nenhuma oportunidade nesta etapa</div>
                     ) : (
                       stageOpps.map((opp) => (
-                        <div key={opp.id} id={`opp-card-${opp.id}`} className="bg-slate-950/60 p-4 rounded-2xl border border-slate-800 hover:border-slate-700 shadow-sm space-y-2 transition group">
+                        <div key={opp.id} id={`opp-card-${opp.id}`} className="bg-fundo p-4 rounded-2xl border border-borda hover:border-borda shadow-sm space-y-2 transition group">
                           <div className="flex items-start justify-between">
-                            <span className="text-xs font-bold text-white leading-tight">{opp.title}</span>
+                            <span className="text-xs font-bold text-tinta leading-tight">{opp.title}</span>
                             <div className="flex items-center space-x-1">
                               <button
                                 onClick={() => handleOpenEditOpp(opp)}
-                                className="opacity-0 group-hover:opacity-100 p-1 hover:bg-slate-800 text-slate-400 hover:text-white rounded"
+                                className="opacity-0 group-hover:opacity-100 p-1 hover:bg-superficie-2 text-tinta-2 hover:text-tinta rounded"
                                 title="Editar Oportunidade"
                               >
                                 <Edit2 className="w-3 h-3" />
                               </button>
                               <button
                                 onClick={() => setDeletingOpp(opp)}
-                                className="opacity-0 group-hover:opacity-100 p-1 hover:bg-rose-500/20 text-slate-400 hover:text-rose-400 rounded"
+                                className="opacity-0 group-hover:opacity-100 p-1 hover:bg-rose-500/20 text-tinta-2 hover:text-rose-700 rounded"
                                 title="Excluir Oportunidade"
                               >
                                 <Trash2 className="w-3 h-3" />
@@ -366,15 +366,15 @@ export const LeadsOpportunitiesView: React.FC<{ onNavigate: (view: string) => vo
                           </div>
 
                           <div className="flex items-center justify-between">
-                            <span className="text-xs font-semibold text-emerald-400">
+                            <span className="text-xs font-semibold text-marca-escura">
                               R$ {opp.estimated_value.toLocaleString('pt-BR')}
                             </span>
-                            <span className="text-[10px] font-bold text-indigo-400 font-mono bg-indigo-500/10 px-1.5 py-0.5 rounded border border-indigo-500/20">
+                            <span className="text-[10px] font-bold text-indigo-700 font-mono bg-indigo-500/10 px-1.5 py-0.5 rounded border border-indigo-500/20">
                               {opp.probability}% prob.
                             </span>
                           </div>
 
-                          <div className="flex items-center justify-between text-[10px] text-slate-500 pt-1.5 border-t border-slate-800/80">
+                          <div className="flex items-center justify-between text-[10px] text-tinta-2 pt-1.5 border-t border-borda">
                             <span>Previsão: {formatDate(opp.expected_close_date)}</span>
                             
                             {/* Quick Advance Stage Button */}
@@ -384,7 +384,7 @@ export const LeadsOpportunitiesView: React.FC<{ onNavigate: (view: string) => vo
                                   const next = stgKey === 'QUALIFICATION' ? 'PROPOSAL' : stgKey === 'PROPOSAL' ? 'NEGOTIATION' : 'CLOSED_WON';
                                   updateOpportunityStage(opp.id, next as any);
                                 }}
-                                className="text-indigo-400 hover:text-indigo-300 font-bold flex items-center space-x-0.5"
+                                className="text-indigo-700 hover:text-indigo-700 font-bold flex items-center space-x-0.5"
                                 title="Avançar Etapa"
                               >
                                 <span>Avançar</span>
@@ -405,16 +405,16 @@ export const LeadsOpportunitiesView: React.FC<{ onNavigate: (view: string) => vo
 
       {/* New / Edit Lead Modal */}
       {(showNewLeadModal || editingLead) && (
-        <div id="modal-lead-form" className="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-900 rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-800 text-slate-100">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-4 mb-4">
-              <h3 className="text-base font-bold text-white">{editingLead ? 'Editar Lead Comercial' : 'Cadastrar Novo Lead Comercial'}</h3>
+        <div id="modal-lead-form" className="fixed inset-0 bg-fundo backdrop-blur-md z-50 flex items-center justify-center p-4">
+          <div className="bg-superficie rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-borda text-tinta">
+            <div className="flex items-center justify-between border-b border-borda pb-4 mb-4">
+              <h3 className="text-base font-bold text-tinta">{editingLead ? 'Editar Lead Comercial' : 'Cadastrar Novo Lead Comercial'}</h3>
               <button 
                 onClick={() => {
                   setShowNewLeadModal(false);
                   setEditingLead(null);
                 }} 
-                className="text-slate-400 hover:text-slate-200"
+                className="text-tinta-2 hover:text-tinta"
               >
                 ✕
               </button>
@@ -422,58 +422,58 @@ export const LeadsOpportunitiesView: React.FC<{ onNavigate: (view: string) => vo
 
             <form onSubmit={handleSaveLead} className="space-y-3.5 text-xs">
               <div>
-                <label className="block font-semibold text-slate-300 mb-1">Empresa / Razão Social *</label>
+                <label className="block font-semibold text-tinta mb-1">Empresa / Razão Social *</label>
                 <input
                   type="text"
                   required
                   placeholder="Ex: Transportadora Rápido Sul Ltda"
                   value={leadForm.company}
                   onChange={(e) => setLeadForm({ ...leadForm, company: e.target.value })}
-                  className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-semibold text-slate-300 mb-1">Nome do Contato *</label>
+                  <label className="block font-semibold text-tinta mb-1">Nome do Contato *</label>
                   <input
                     type="text"
                     required
                     placeholder="Ex: Roberto Gomes (RH)"
                     value={leadForm.name}
                     onChange={(e) => setLeadForm({ ...leadForm, name: e.target.value })}
-                    className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
                   />
                 </div>
                 <div>
-                  <label className="block font-semibold text-slate-300 mb-1">E-mail</label>
+                  <label className="block font-semibold text-tinta mb-1">E-mail</label>
                   <input
                     type="email"
                     placeholder="contato@empresa.com.br"
                     value={leadForm.email}
                     onChange={(e) => setLeadForm({ ...leadForm, email: e.target.value })}
-                    className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-semibold text-slate-300 mb-1">Telefone / WhatsApp</label>
+                  <label className="block font-semibold text-tinta mb-1">Telefone / WhatsApp</label>
                   <input
                     type="text"
                     placeholder="(11) 98765-4321"
                     value={leadForm.phone}
                     onChange={(e) => setLeadForm({ ...leadForm, phone: e.target.value })}
-                    className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
                   />
                 </div>
                 <div>
-                  <label className="block font-semibold text-slate-300 mb-1">Origem do Lead</label>
+                  <label className="block font-semibold text-tinta mb-1">Origem do Lead</label>
                   <select
                     value={leadForm.source}
                     onChange={(e) => setLeadForm({ ...leadForm, source: e.target.value as any })}
-                    className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
                   >
                     <option value="INDICAÇÃO">Indicação de Parceiro</option>
                     <option value="WEBSITE">Site / Formulário</option>
@@ -485,51 +485,51 @@ export const LeadsOpportunitiesView: React.FC<{ onNavigate: (view: string) => vo
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-semibold text-slate-300 mb-1">CNAE Principal</label>
+                  <label className="block font-semibold text-tinta mb-1">CNAE Principal</label>
                   <input
                     type="text"
                     placeholder="Ex: 49.30-2-02"
                     value={leadForm.cnae}
                     onChange={(e) => setLeadForm({ ...leadForm, cnae: e.target.value })}
-                    className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
                   />
                 </div>
                 <div>
-                  <label className="block font-semibold text-slate-300 mb-1">Nº Estimado de Vidas</label>
+                  <label className="block font-semibold text-tinta mb-1">Nº Estimado de Vidas</label>
                   <input
                     type="number"
                     value={leadForm.estimated_employees}
                     onChange={(e) => setLeadForm({ ...leadForm, estimated_employees: Number(e.target.value) })}
-                    className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-300 mb-1">Observações de Demanda SST</label>
+                <label className="block font-semibold text-tinta mb-1">Observações de Demanda SST</label>
                 <textarea
                   rows={2}
                   placeholder="Necessidade de PGR, renovação de PCMSO, laudo ergonômico..."
                   value={leadForm.notes}
                   onChange={(e) => setLeadForm({ ...leadForm, notes: e.target.value })}
-                  className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
                 />
               </div>
 
-              <div className="flex justify-end space-x-3 pt-3 border-t border-slate-800">
+              <div className="flex justify-end space-x-3 pt-3 border-t border-borda">
                 <button
                   type="button"
                   onClick={() => {
                     setShowNewLeadModal(false);
                     setEditingLead(null);
                   }}
-                  className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold"
+                  className="px-4 py-2 bg-superficie-2 hover:bg-superficie-3 text-tinta rounded-xl text-xs font-semibold"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-semibold shadow-md"
+                  className="px-4 py-2 bg-marca hover:bg-marca-escura text-white rounded-xl text-xs font-semibold shadow-md"
                 >
                   {editingLead ? 'Atualizar Lead' : 'Salvar Lead'}
                 </button>
@@ -541,27 +541,27 @@ export const LeadsOpportunitiesView: React.FC<{ onNavigate: (view: string) => vo
 
       {/* Delete Lead Modal */}
       {deletingLead && (
-        <div id="modal-delete-lead" className="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-900 rounded-3xl max-w-md w-full p-6 shadow-2xl border border-rose-500/20 text-slate-100 space-y-4">
-            <div className="flex items-center space-x-3 text-rose-400">
+        <div id="modal-delete-lead" className="fixed inset-0 bg-fundo backdrop-blur-md z-50 flex items-center justify-center p-4">
+          <div className="bg-superficie rounded-3xl max-w-md w-full p-6 shadow-2xl border border-rose-500/20 text-tinta space-y-4">
+            <div className="flex items-center space-x-3 text-rose-700">
               <div className="p-3 bg-rose-500/10 rounded-2xl border border-rose-500/20">
                 <AlertTriangle className="w-6 h-6" />
               </div>
               <div>
-                <h3 className="text-base font-bold text-white">Excluir Lead</h3>
-                <p className="text-xs text-slate-400">Esta ação removerá o lead do sistema.</p>
+                <h3 className="text-base font-bold text-tinta">Excluir Lead</h3>
+                <p className="text-xs text-tinta-2">Esta ação removerá o lead do sistema.</p>
               </div>
             </div>
 
-            <p className="text-xs text-slate-300">
-              Tem certeza de que deseja remover o lead <strong className="text-white">{deletingLead.company}</strong> ({deletingLead.name})?
+            <p className="text-xs text-tinta">
+              Tem certeza de que deseja remover o lead <strong className="text-tinta">{deletingLead.company}</strong> ({deletingLead.name})?
             </p>
 
             <div className="flex justify-end space-x-3 pt-2">
               <button
                 type="button"
                 onClick={() => setDeletingLead(null)}
-                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold"
+                className="px-4 py-2 bg-superficie-2 hover:bg-superficie-3 text-tinta rounded-xl text-xs font-semibold"
               >
                 Cancelar
               </button>
@@ -579,16 +579,16 @@ export const LeadsOpportunitiesView: React.FC<{ onNavigate: (view: string) => vo
 
       {/* New / Edit Opportunity Modal */}
       {(showNewOppModal || editingOpp) && (
-        <div id="modal-opp-form" className="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-900 rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-800 text-slate-100 space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <h3 className="text-base font-bold text-white">{editingOpp ? 'Editar Oportunidade' : 'Nova Oportunidade Comercial'}</h3>
+        <div id="modal-opp-form" className="fixed inset-0 bg-fundo backdrop-blur-md z-50 flex items-center justify-center p-4">
+          <div className="bg-superficie rounded-3xl max-w-md w-full p-6 shadow-2xl border border-borda text-tinta space-y-4">
+            <div className="flex items-center justify-between border-b border-borda pb-3">
+              <h3 className="text-base font-bold text-tinta">{editingOpp ? 'Editar Oportunidade' : 'Nova Oportunidade Comercial'}</h3>
               <button 
                 onClick={() => {
                   setShowNewOppModal(false);
                   setEditingOpp(null);
                 }} 
-                className="text-slate-400 hover:text-slate-200"
+                className="text-tinta-2 hover:text-tinta"
               >
                 ✕
               </button>
@@ -596,23 +596,23 @@ export const LeadsOpportunitiesView: React.FC<{ onNavigate: (view: string) => vo
 
             <form onSubmit={handleSaveOpp} className="space-y-3.5 text-xs">
               <div>
-                <label className="block font-semibold text-slate-300 mb-1">Título da Oportunidade *</label>
+                <label className="block font-semibold text-tinta mb-1">Título da Oportunidade *</label>
                 <input
                   type="text"
                   required
                   placeholder="Ex: Gestão SST Anual + PGR/PCMSO 2026"
                   value={oppForm.title}
                   onChange={(e) => setOppForm({ ...oppForm, title: e.target.value })}
-                  className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-300 mb-1">Cliente Vinculado</label>
+                <label className="block font-semibold text-tinta mb-1">Cliente Vinculado</label>
                 <select
                   value={oppForm.client_id}
                   onChange={(e) => setOppForm({ ...oppForm, client_id: e.target.value })}
-                  className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
                 >
                   {clients.map(c => (
                     <option key={c.id} value={c.id}>{c.trade_name} ({c.document_number})</option>
@@ -622,34 +622,34 @@ export const LeadsOpportunitiesView: React.FC<{ onNavigate: (view: string) => vo
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-semibold text-slate-300 mb-1">Valor Estimado (R$)</label>
+                  <label className="block font-semibold text-tinta mb-1">Valor Estimado (R$)</label>
                   <input
                     type="number"
                     value={oppForm.estimated_value}
                     onChange={(e) => setOppForm({ ...oppForm, estimated_value: Number(e.target.value) })}
-                    className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
                   />
                 </div>
                 <div>
-                  <label className="block font-semibold text-slate-300 mb-1">Probabilidade (%)</label>
+                  <label className="block font-semibold text-tinta mb-1">Probabilidade (%)</label>
                   <input
                     type="number"
                     min={0}
                     max={100}
                     value={oppForm.probability}
                     onChange={(e) => setOppForm({ ...oppForm, probability: Number(e.target.value) })}
-                    className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-semibold text-slate-300 mb-1">Etapa do Funil</label>
+                  <label className="block font-semibold text-tinta mb-1">Etapa do Funil</label>
                   <select
                     value={oppForm.stage}
                     onChange={(e) => setOppForm({ ...oppForm, stage: e.target.value as any })}
-                    className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
                   >
                     {stageList.map(s => (
                       <option key={s.key} value={s.key}>{s.label}</option>
@@ -657,24 +657,24 @@ export const LeadsOpportunitiesView: React.FC<{ onNavigate: (view: string) => vo
                   </select>
                 </div>
                 <div>
-                  <label className="block font-semibold text-slate-300 mb-1">Previsão de Fechamento</label>
+                  <label className="block font-semibold text-tinta mb-1">Previsão de Fechamento</label>
                   <input
                     type="date"
                     value={oppForm.expected_close_date}
                     onChange={(e) => setOppForm({ ...oppForm, expected_close_date: e.target.value })}
-                    className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
                   />
                 </div>
               </div>
 
-              <div className="flex justify-end space-x-3 pt-3 border-t border-slate-800">
+              <div className="flex justify-end space-x-3 pt-3 border-t border-borda">
                 <button
                   type="button"
                   onClick={() => {
                     setShowNewOppModal(false);
                     setEditingOpp(null);
                   }}
-                  className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold"
+                  className="px-4 py-2 bg-superficie-2 hover:bg-superficie-3 text-tinta rounded-xl text-xs font-semibold"
                 >
                   Cancelar
                 </button>
@@ -692,27 +692,27 @@ export const LeadsOpportunitiesView: React.FC<{ onNavigate: (view: string) => vo
 
       {/* Delete Opp Modal */}
       {deletingOpp && (
-        <div id="modal-delete-opp" className="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-900 rounded-3xl max-w-md w-full p-6 shadow-2xl border border-rose-500/20 text-slate-100 space-y-4">
-            <div className="flex items-center space-x-3 text-rose-400">
+        <div id="modal-delete-opp" className="fixed inset-0 bg-fundo backdrop-blur-md z-50 flex items-center justify-center p-4">
+          <div className="bg-superficie rounded-3xl max-w-md w-full p-6 shadow-2xl border border-rose-500/20 text-tinta space-y-4">
+            <div className="flex items-center space-x-3 text-rose-700">
               <div className="p-3 bg-rose-500/10 rounded-2xl border border-rose-500/20">
                 <AlertTriangle className="w-6 h-6" />
               </div>
               <div>
-                <h3 className="text-base font-bold text-white">Excluir Oportunidade</h3>
-                <p className="text-xs text-slate-400">Esta ação removerá a oportunidade do funil.</p>
+                <h3 className="text-base font-bold text-tinta">Excluir Oportunidade</h3>
+                <p className="text-xs text-tinta-2">Esta ação removerá a oportunidade do funil.</p>
               </div>
             </div>
 
-            <p className="text-xs text-slate-300">
-              Tem certeza de que deseja remover a oportunidade <strong className="text-white">{deletingOpp.title}</strong>?
+            <p className="text-xs text-tinta">
+              Tem certeza de que deseja remover a oportunidade <strong className="text-tinta">{deletingOpp.title}</strong>?
             </p>
 
             <div className="flex justify-end space-x-3 pt-2">
               <button
                 type="button"
                 onClick={() => setDeletingOpp(null)}
-                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold"
+                className="px-4 py-2 bg-superficie-2 hover:bg-superficie-3 text-tinta rounded-xl text-xs font-semibold"
               >
                 Cancelar
               </button>

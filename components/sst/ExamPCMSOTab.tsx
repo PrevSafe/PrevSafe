@@ -503,9 +503,9 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
 
       {/* Top Banner Alert */}
       {generatedS2220Success && (
-        <div className="p-4 bg-teal-500/10 border border-teal-500/30 rounded-xl flex items-center justify-between text-xs text-teal-300 animate-in fade-in">
+        <div className="p-4 bg-teal-500/10 border border-teal-500/30 rounded-xl flex items-center justify-between text-xs text-teal-700 animate-in fade-in">
           <div className="flex items-center gap-2">
-            <CheckCircle2 className="w-5 h-5 text-teal-400" />
+            <CheckCircle2 className="w-5 h-5 text-teal-700" />
             <span className="font-semibold">{generatedS2220Success}</span>
           </div>
           <span className="text-[11px] bg-teal-500 text-slate-950 font-bold px-2 py-1 rounded">S-2220 Criado</span>
@@ -513,7 +513,7 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
       )}
 
       {/* Sub Tabs and Actions */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900/80 p-4 rounded-xl border border-slate-800">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-superficie p-4 rounded-xl border border-borda">
         <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"
@@ -522,7 +522,7 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
             className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-2 ${
               subAba === 'PROTOCOLS'
                 ? 'bg-teal-500 text-slate-950 shadow-md shadow-teal-500/20'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+                : 'text-tinta-2 hover:text-tinta hover:bg-superficie-2'
             }`}
           >
             <Stethoscope className="w-4 h-4" />
@@ -535,7 +535,7 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
             className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-2 ${
               subAba === 'APPLICATIONS'
                 ? 'bg-teal-500 text-slate-950 shadow-md shadow-teal-500/20'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+                : 'text-tinta-2 hover:text-tinta hover:bg-superficie-2'
             }`}
           >
             <HeartPulse className="w-4 h-4" />
@@ -551,7 +551,7 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
               className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-2 ${
                 subAba === 'SETORIAIS'
                   ? 'bg-teal-500 text-slate-950 shadow-md shadow-teal-500/20'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+                  : 'text-tinta-2 hover:text-tinta hover:bg-superficie-2'
               }`}
             >
               <FileCheck2 className="w-4 h-4" />
@@ -563,14 +563,14 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
         {subAba !== 'SETORIAIS' && (
         <div className="flex items-center gap-3">
           <div className="relative">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+            <Search className="w-4 h-4 text-tinta-2 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               id="exam-search-input"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Buscar exame ou código Tabela 27..."
-              className="bg-slate-950 border border-slate-700 rounded-lg pl-9 pr-3 py-1.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-teal-500"
+              className="bg-fundo border border-borda rounded-lg pl-9 pr-3 py-1.5 text-xs text-tinta placeholder-tinta-3 focus:outline-none focus:border-teal-500"
             />
           </div>
 
@@ -608,13 +608,13 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
 
       {/* Info Card explaining PCMSO & S-2220 Flow */}
       {subAba !== 'SETORIAIS' && (
-      <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-4 flex items-start gap-3">
-        <Info className="w-5 h-5 text-teal-400 shrink-0 mt-0.5" />
-        <div className="text-xs text-slate-300 space-y-1">
-          <p className="font-semibold text-slate-100">
+      <div className="bg-superficie border border-borda rounded-xl p-4 flex items-start gap-3">
+        <Info className="w-5 h-5 text-teal-700 shrink-0 mt-0.5" />
+        <div className="text-xs text-tinta space-y-1">
+          <p className="font-semibold text-tinta">
             Regra Técnica NR-07 & Evento eSocial S-2220 (Monitoramento da Saúde do Trabalhador):
           </p>
-          <p className="text-slate-400">
+          <p className="text-tinta-2">
             Os exames definidos para cada GHE determinam os protocolos ocupacionais do PCMSO. Cada ASO emitido (Admissional, Periódico, Demissional, Retorno ao Trabalho ou Mudança de Riscos Ocupacionais) gera automaticamente o evento XML S-2220 com o médico coordenador/examinador, CRM, data e parecer de aptidão.
           </p>
         </div>
@@ -632,11 +632,11 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
               <div 
                 key={protocol.id} 
                 id={`protocol-card-${protocol.id}`}
-                className="bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-3 shadow-lg flex flex-col justify-between"
+                className="bg-superficie border border-borda rounded-xl p-4 space-y-3 shadow-lg flex flex-col justify-between"
               >
                 <div>
                   <div className="flex items-center justify-between">
-                    <span className="px-2 py-0.5 bg-teal-500/10 border border-teal-500/30 text-teal-300 text-[10px] font-mono font-bold rounded">
+                    <span className="px-2 py-0.5 bg-teal-500/10 border border-teal-500/30 text-teal-700 text-[10px] font-mono font-bold rounded">
                       Cód. Tab 27: {protocol.exam_code_table_27}
                     </span>
                     {/* Codigo fora da Tabela 27 fica VISIVEL na lista: foi assim
@@ -644,76 +644,76 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
                         agentes quimicos no lugar de exames sem ninguem notar. */}
                     {!codigoExisteNaTabela27(protocol.exam_code_table_27) && (
                       <span
-                        className="px-2 py-0.5 bg-rose-500/15 text-rose-400 text-[10px] rounded font-bold border border-rose-500/30"
+                        className="px-2 py-0.5 bg-rose-500/15 text-rose-700 text-[10px] rounded font-bold border border-rose-500/30"
                         title="Este código não consta na Tabela 27 do eSocial. Edite o protocolo e escolha o procedimento correto."
                       >
                         código inválido
                       </span>
                     )}
-                    <span className="px-2 py-0.5 bg-slate-800 text-slate-300 text-[10px] rounded font-semibold">
+                    <span className="px-2 py-0.5 bg-superficie-2 text-tinta text-[10px] rounded font-semibold">
                       {protocol.mandatory_by_standard}
                     </span>
                   </div>
 
-                  <h4 className="font-bold text-slate-100 text-sm mt-2">{protocol.exam_name}</h4>
+                  <h4 className="font-bold text-tinta text-sm mt-2">{protocol.exam_name}</h4>
                   {(() => {
                     // Quando o nome cadastrado diverge da denominacao oficial,
                     // mostra a oficial: e ela que vale perante o governo.
                     const oficial = consultarProcedimento(protocol.exam_code_table_27);
                     if (!oficial || oficial.nome === protocol.exam_name) return null;
                     return (
-                      <p className="text-[10px] text-amber-400/90 mt-0.5">
+                      <p className="text-[10px] text-amber-700/90 mt-0.5">
                         Denominação oficial: {oficial.nome}
                       </p>
                     );
                   })()}
                   
-                  <div className="flex items-center gap-1.5 text-xs text-slate-400 mt-1">
-                    <Building2 className="w-3.5 h-3.5 text-slate-500" />
-                    <span>GHE: <strong className="text-slate-300">{ghe?.name || (ehModelo ? 'nenhum — é modelo' : 'GHE Geral')}</strong></span>
+                  <div className="flex items-center gap-1.5 text-xs text-tinta-2 mt-1">
+                    <Building2 className="w-3.5 h-3.5 text-tinta-2" />
+                    <span>GHE: <strong className="text-tinta">{ghe?.name || (ehModelo ? 'nenhum — é modelo' : 'GHE Geral')}</strong></span>
                   </div>
 
                   {/* Um modelo aparece em TODO cliente. Sem dizer isso, quem
                       olha a lista acha que o PCMSO deste cliente ja esta
                       cadastrado quando nao ha nada cadastrado. */}
                   {ehModelo && (
-                    <p className="text-[10px] text-amber-300 bg-amber-500/10 border border-amber-500/30 rounded p-2 mt-2">
+                    <p className="text-[10px] text-amber-700 bg-amber-500/10 border border-amber-500/30 rounded p-2 mt-2">
                       <strong>Modelo do sistema.</strong> Aparece em todos os clientes e não é o PCMSO
                       deste. Copie para este cliente e escolha o GHE.
                     </p>
                   )}
                 </div>
 
-                <div className="space-y-2 pt-2 border-t border-slate-800 text-xs">
-                  <div className="flex justify-between items-center text-slate-400">
+                <div className="space-y-2 pt-2 border-t border-borda text-xs">
+                  <div className="flex justify-between items-center text-tinta-2">
                     <span className="flex items-center gap-1">
-                      <Clock className="w-3.5 h-3.5 text-slate-500" />
+                      <Clock className="w-3.5 h-3.5 text-tinta-2" />
                       Periodicidade:
                     </span>
-                    <strong className="text-slate-200">A cada {protocol.periodicity_months} meses</strong>
+                    <strong className="text-tinta">A cada {protocol.periodicity_months} meses</strong>
                   </div>
 
                   <div className="flex flex-wrap gap-1 mt-1">
                     {protocol.triggers?.map((t, idx) => (
-                      <span key={idx} className="px-1.5 py-0.5 bg-slate-950 text-slate-400 text-[9px] rounded font-mono">
+                      <span key={idx} className="px-1.5 py-0.5 bg-fundo text-tinta-2 text-[9px] rounded font-mono">
                         {t}
                       </span>
                     ))}
                   </div>
 
                   {protocol.preparation_instructions && (
-                    <p className="text-[11px] text-slate-400 bg-slate-950 p-2 rounded border border-slate-800/80">
+                    <p className="text-[11px] text-tinta-2 bg-fundo p-2 rounded border border-borda">
                       <strong>Instruções:</strong> {protocol.preparation_instructions}
                     </p>
                   )}
                 </div>
 
-                <div className="flex items-center justify-end gap-1 pt-2 border-t border-slate-800">
+                <div className="flex items-center justify-end gap-1 pt-2 border-t border-borda">
                   {ehModelo && selectedClientId && (
                     <button
                       type="button"
                       onClick={() => copiarModeloParaCliente(protocol)}
-                      className="px-2 py-1 text-[11px] font-bold text-amber-300 hover:text-amber-200 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 rounded transition-colors flex items-center gap-1"
+                      className="px-2 py-1 text-[11px] font-bold text-amber-700 hover:text-amber-800 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 rounded transition-colors flex items-center gap-1"
                       title="Cria um protocolo deste cliente a partir do modelo. Escolha o GHE no formulário."
                     >
                       <Copy className="w-3 h-3" />
@@ -723,14 +723,14 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
                   <button
                     type="button"
                     onClick={() => handleOpenProtocolModal(protocol)}
-                    className="p-1.5 text-slate-400 hover:text-teal-400 hover:bg-slate-800 rounded transition-colors"
+                    className="p-1.5 text-tinta-2 hover:text-teal-700 hover:bg-superficie-2 rounded transition-colors"
                   >
                     <Edit3 className="w-3.5 h-3.5" />
                   </button>
                   <button
                     type="button"
                     onClick={() => deleteExamProtocol(protocol.id)}
-                    className="p-1.5 text-slate-400 hover:text-rose-400 hover:bg-slate-800 rounded transition-colors"
+                    className="p-1.5 text-tinta-2 hover:text-rose-700 hover:bg-superficie-2 rounded transition-colors"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
@@ -743,10 +743,10 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
 
       {/* Applications (ASO / S-2220) View */}
       {subAba === 'APPLICATIONS' && (
-        <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-lg" id="aso-applications-table">
+        <div className="bg-superficie border border-borda rounded-xl overflow-hidden shadow-lg" id="aso-applications-table">
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs text-slate-300">
-              <thead className="bg-slate-950 text-slate-400 uppercase text-[10px] tracking-wider border-b border-slate-800">
+            <table className="w-full text-left text-xs text-tinta">
+              <thead className="bg-fundo text-tinta-2 uppercase text-[10px] tracking-wider border-b border-borda">
                 <tr>
                   <th className="py-3 px-4">Trabalhador</th>
                   <th className="py-3 px-4">Cargo / Função</th>
@@ -757,30 +757,30 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
                   <th className="py-3 px-4 text-right">Ação</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/60">
+              <tbody className="divide-y divide-borda">
                 {clientEmployees.map((emp) => {
                   const lastAso = emp.aso_history?.[0];
                   return (
-                    <tr key={emp.id} id={`emp-aso-row-${emp.id}`} className="hover:bg-slate-800/40 transition-colors">
+                    <tr key={emp.id} id={`emp-aso-row-${emp.id}`} className="hover:bg-superficie-2 transition-colors">
                       <td className="py-3 px-4">
-                        <div className="font-bold text-slate-100">{emp.name}</div>
-                        <div className="text-[10px] text-slate-400 font-mono">CPF: {emp.cpf} • Mat: {emp.registration_number}</div>
+                        <div className="font-bold text-tinta">{emp.name}</div>
+                        <div className="text-[10px] text-tinta-2 font-mono">CPF: {emp.cpf} • Mat: {emp.registration_number}</div>
                       </td>
-                      <td className="py-3 px-4 text-slate-300">
+                      <td className="py-3 px-4 text-tinta">
                         {emp.job_title}
                       </td>
-                      <td className="py-3 px-4 font-mono text-slate-300">
+                      <td className="py-3 px-4 font-mono text-tinta">
                         {lastAso?.exam_date || emp.last_aso_date || emp.admission_date}
                       </td>
-                      <td className="py-3 px-4 font-mono text-slate-300">
+                      <td className="py-3 px-4 font-mono text-tinta">
                         {lastAso?.valid_until || emp.next_aso_date || '—'}
                       </td>
                       <td className="py-3 px-4 text-center">
-                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-marca-suave text-marca-escura border border-marca-escura">
                           {emp.current_aso_status || 'VALID'}
                         </span>
                       </td>
-                      <td className="py-3 px-4 text-slate-400">
+                      <td className="py-3 px-4 text-tinta-2">
                         {lastAso?.physician_name || 'Médico não informado'}{lastAso?.physician_crm ? ` (CRM ${lastAso.physician_crm})` : ''}
                       </td>
                       <td className="py-3 px-4 text-right">
@@ -807,17 +807,17 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
 
       {/* Protocol Modal */}
       {isProtocolModalOpen && (
-        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl animate-in fade-in zoom-in-95 duration-150">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <h3 className="text-base font-bold text-slate-100 flex items-center gap-2">
-                <Stethoscope className="w-5 h-5 text-teal-400" />
+        <div className="fixed inset-0 bg-fundo backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-superficie border border-borda rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between border-b border-borda pb-3">
+              <h3 className="text-base font-bold text-tinta flex items-center gap-2">
+                <Stethoscope className="w-5 h-5 text-teal-700" />
                 {editingProtocol ? 'Editar Protocolo de Exame PCMSO' : 'Novo Protocolo de Exame Ocupacional'}
               </h3>
               <button 
                 type="button" 
                 onClick={() => setIsProtocolModalOpen(false)}
-                className="text-slate-400 hover:text-slate-200 text-sm font-bold"
+                className="text-tinta-2 hover:text-tinta text-sm font-bold"
               >
                 ✕
               </button>
@@ -825,13 +825,13 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
 
             <form onSubmit={handleSaveProtocol} className="space-y-4 text-xs">
               <div>
-                <label className="block text-slate-400 font-semibold mb-1">GHE / Grupo de Exposição Aplicável</label>
+                <label className="block text-tinta-2 font-semibold mb-1">GHE / Grupo de Exposição Aplicável</label>
                 {clientGhes.length === 0 ? (
                   /* Sem GHE nao ha onde aplicar o exame. Antes o select ficava
                      vazio e o botao de salvar nao respondia - sem dizer por
                      que, nem onde resolver. */
                   <div className="rounded-lg border border-amber-700/60 bg-amber-950/30 p-3 text-[11px] text-amber-200 space-y-1">
-                    <p className="font-bold text-amber-300">Este cliente ainda não tem GHE.</p>
+                    <p className="font-bold text-amber-700">Este cliente ainda não tem GHE.</p>
                     <p>
                       O protocolo de exame é vinculado a um Grupo Homogêneo de Exposição. Crie o GHE
                       na aba <strong>2. GHE &amp; Inventário de Riscos</strong>, no botão
@@ -842,7 +842,7 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
                   <select
                     value={protocolForm.ghe_id}
                     onChange={(e) => setProtocolForm({ ...protocolForm, ghe_id: e.target.value })}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 focus:outline-none focus:border-teal-500"
+                    className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta focus:outline-none focus:border-teal-500"
                   >
                     {clientGhes.map(g => (
                       <option key={g.id} value={g.id}>{g.name} ({g.code})</option>
@@ -855,7 +855,7 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
                   sao um so: o exame e ESCOLHIDO da Tabela 27 e o codigo vem
                   junto com a denominacao oficial. */}
               <div>
-                <label className="block text-slate-400 font-semibold mb-1">
+                <label className="block text-tinta-2 font-semibold mb-1">
                   Exame (Tabela 27 do eSocial)
                 </label>
                 <SeletorTabela27
@@ -875,21 +875,21 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-400 font-semibold mb-1">Periodicidade (Meses)</label>
+                  <label className="block text-tinta-2 font-semibold mb-1">Periodicidade (Meses)</label>
                   <input
                     type="number"
                     required
                     value={protocolForm.periodicity_months}
                     onChange={(e) => setProtocolForm({ ...protocolForm, periodicity_months: Number(e.target.value) })}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 focus:outline-none focus:border-teal-500"
+                    className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta focus:outline-none focus:border-teal-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-400 font-semibold mb-1">Norma Regulamentadora</label>
+                  <label className="block text-tinta-2 font-semibold mb-1">Norma Regulamentadora</label>
                   <select
                     value={protocolForm.mandatory_by_standard}
                     onChange={(e) => setProtocolForm({ ...protocolForm, mandatory_by_standard: e.target.value as any })}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 focus:outline-none focus:border-teal-500"
+                    className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta focus:outline-none focus:border-teal-500"
                   >
                     <option value="NR-07">NR-07 (exame clínico e Anexos I a V)</option>
                     <option value="NR-35">NR-35 (aptidão para trabalho em altura, 35.4.4)</option>
@@ -903,20 +903,20 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
               </div>
 
               <div>
-                <label className="block text-slate-400 font-semibold mb-1">Instruções de Preparo / Orientações</label>
+                <label className="block text-tinta-2 font-semibold mb-1">Instruções de Preparo / Orientações</label>
                 <textarea
                   rows={2}
                   value={protocolForm.preparation_instructions}
                   onChange={(e) => setProtocolForm({ ...protocolForm, preparation_instructions: e.target.value })}
                   placeholder="Ex.: Repouso auditivo prévio de 14h, jejum de 8h..."
-                  className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 focus:outline-none focus:border-teal-500"
+                  className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta focus:outline-none focus:border-teal-500"
                 />
               </div>
 
               <div>
-                <label className="block text-slate-400 font-semibold mb-1">
+                <label className="block text-tinta-2 font-semibold mb-1">
                   Justificativa técnica{' '}
-                  <span className="text-slate-500 font-normal">
+                  <span className="text-tinta-2 font-normal">
                     {protocolForm.mandatory_by_standard === 'CRITERIO_MEDICO'
                       ? '(obrigatória: subitem 7.5.18 da NR-07)'
                       : '(o risco do PGR ou o item da norma que exige o exame)'}
@@ -927,29 +927,29 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
                   value={protocolForm.technical_justification}
                   onChange={(e) => setProtocolForm({ ...protocolForm, technical_justification: e.target.value })}
                   placeholder="Ex.: Ruído contínuo acima do nível de ação no GHE (Anexo II da NR-07, item 2)"
-                  className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 focus:outline-none focus:border-teal-500"
+                  className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta focus:outline-none focus:border-teal-500"
                 />
               </div>
 
               <div>
-                <label className="block text-slate-400 font-semibold mb-1">
+                <label className="block text-tinta-2 font-semibold mb-1">
                   Critério de interpretação e conduta{' '}
-                  <span className="text-slate-500 font-normal">(alínea &quot;c&quot; do subitem 7.5.4)</span>
+                  <span className="text-tinta-2 font-normal">(alínea &quot;c&quot; do subitem 7.5.4)</span>
                 </label>
                 <textarea
                   rows={2}
                   value={protocolForm.interpretation_criteria}
                   onChange={(e) => setProtocolForm({ ...protocolForm, interpretation_criteria: e.target.value })}
                   placeholder="Para exames dos Anexos da NR-07, o critério é o do Anexo. Para os demais: o que é alteração e o que se faz diante dela"
-                  className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 focus:outline-none focus:border-teal-500"
+                  className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta focus:outline-none focus:border-teal-500"
                 />
               </div>
 
-              <div className="flex justify-end gap-2 pt-3 border-t border-slate-800">
+              <div className="flex justify-end gap-2 pt-3 border-t border-borda">
                 <button
                   type="button"
                   onClick={() => setIsProtocolModalOpen(false)}
-                  className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold rounded-lg"
+                  className="px-4 py-2 bg-superficie-2 hover:bg-superficie-3 text-tinta font-semibold rounded-lg"
                 >
                   Cancelar
                 </button>
@@ -967,17 +967,17 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
 
       {/* ASO Application Modal */}
       {isAsoModalOpen && (
-        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl animate-in fade-in zoom-in-95 duration-150">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <h3 className="text-base font-bold text-slate-100 flex items-center gap-2">
-                <FileCheck2 className="w-5 h-5 text-teal-400" />
+        <div className="fixed inset-0 bg-fundo backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-superficie border border-borda rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between border-b border-borda pb-3">
+              <h3 className="text-base font-bold text-tinta flex items-center gap-2">
+                <FileCheck2 className="w-5 h-5 text-teal-700" />
                 Emissão de ASO & Geração de Evento S-2220
               </h3>
               <button 
                 type="button" 
                 onClick={() => setIsAsoModalOpen(false)}
-                className="text-slate-400 hover:text-slate-200 text-sm font-bold"
+                className="text-tinta-2 hover:text-tinta text-sm font-bold"
               >
                 ✕
               </button>
@@ -985,7 +985,7 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
 
             <form onSubmit={handleApplyAso} className="space-y-4 text-xs">
               <div>
-                <label className="block text-slate-400 font-semibold mb-1">Colaborador / Trabalhador</label>
+                <label className="block text-tinta-2 font-semibold mb-1">Colaborador / Trabalhador</label>
                 <select
                   value={selectedEmployeeId}
                   onChange={(e) => {
@@ -994,7 +994,7 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
                     // pode mudar quais exames sao devidos.
                     carregarExamesSugeridos(e.target.value, asoForm.aso_type);
                   }}
-                  className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 focus:outline-none focus:border-teal-500 font-semibold"
+                  className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta focus:outline-none focus:border-teal-500 font-semibold"
                 >
                   {clientEmployees.map(emp => (
                     <option key={emp.id} value={emp.id}>{emp.name} (CPF: {emp.cpf})</option>
@@ -1004,7 +1004,7 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-400 font-semibold mb-1">Tipo de ASO (eSocial)</label>
+                  <label className="block text-tinta-2 font-semibold mb-1">Tipo de ASO (eSocial)</label>
                   <select
                     value={asoForm.aso_type}
                     onChange={(e) => {
@@ -1014,7 +1014,7 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
                       // diferente (o `triggers` do protocolo).
                       carregarExamesSugeridos(selectedEmployeeId, tipo);
                     }}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 focus:outline-none focus:border-teal-500"
+                    className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta focus:outline-none focus:border-teal-500"
                   >
                     <option value="ADMISSIONAL">1 - Admissional</option>
                     <option value="PERIODICO">2 - Periódico</option>
@@ -1024,11 +1024,11 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
                   </select>
                 </div>
                 <div>
-                  <label className="block text-slate-400 font-semibold mb-1">Resultado da Aptidão</label>
+                  <label className="block text-tinta-2 font-semibold mb-1">Resultado da Aptidão</label>
                   <select
                     value={asoForm.result}
                     onChange={(e) => setAsoForm({ ...asoForm, result: e.target.value as any })}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 focus:outline-none focus:border-teal-500 font-bold text-teal-400"
+                    className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta focus:outline-none focus:border-teal-500 font-bold text-teal-700"
                   >
                     <option value="APTO">1 - APTO</option>
                     <option value="INAPTO">2 - INAPTO</option>
@@ -1042,21 +1042,21 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
 
               {acessoAResultadosDeExame && asoForm.result === 'APTO_COM_RESTRICAO' && (
                 <div>
-                  <label className="block text-slate-400 font-semibold mb-1">
-                    Restrição <span className="text-slate-500 font-normal">(prontuário: o ASO e o cadastro dizem só &quot;Apto&quot;)</span>
+                  <label className="block text-tinta-2 font-semibold mb-1">
+                    Restrição <span className="text-tinta-2 font-normal">(prontuário: o ASO e o cadastro dizem só &quot;Apto&quot;)</span>
                   </label>
                   <textarea
                     rows={2}
                     value={asoForm.restrictions_description}
                     onChange={(e) => setAsoForm({ ...asoForm, restrictions_description: e.target.value })}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 focus:outline-none focus:border-teal-500"
+                    className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta focus:outline-none focus:border-teal-500"
                   />
                 </div>
               )}
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-400 font-semibold mb-1">Data de Realização do ASO</label>
+                  <label className="block text-tinta-2 font-semibold mb-1">Data de Realização do ASO</label>
                   <input
                     type="date"
                     required
@@ -1074,20 +1074,20 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
                         validity_date: sugestao?.data || asoForm.validity_date
                       });
                     }}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                    className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta"
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-400 font-semibold mb-1">Data de Validade</label>
+                  <label className="block text-tinta-2 font-semibold mb-1">Data de Validade</label>
                   <input
                     type="date"
                     required
                     value={asoForm.validity_date}
                     onChange={(e) => setAsoForm({ ...asoForm, validity_date: e.target.value })}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                    className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta"
                   />
                   {validadeSugerida ? (
-                    <p className="text-[10px] text-teal-400/90 mt-1 flex items-start gap-1">
+                    <p className="text-[10px] text-teal-700/90 mt-1 flex items-start gap-1">
                       <CalendarClock className="w-3 h-3 mt-0.5 shrink-0" />
                       <span>
                         {validadeSugerida.meses} meses pela matriz ({validadeSugerida.origem}).
@@ -1095,7 +1095,7 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
                       </span>
                     </p>
                   ) : (
-                    <p className="text-[10px] text-amber-400/90 mt-1 flex items-start gap-1">
+                    <p className="text-[10px] text-amber-700/90 mt-1 flex items-start gap-1">
                       <Info className="w-3 h-3 mt-0.5 shrink-0" />
                       <span>
                         A matriz não define periodicidade de exame periódico para este
@@ -1106,19 +1106,19 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-3 bg-slate-950 p-3 rounded-lg border border-slate-800">
+              <div className="grid grid-cols-3 gap-3 bg-fundo p-3 rounded-lg border border-borda">
                 <div className="col-span-2">
-                  <label className="block text-slate-400 font-semibold mb-1">Médico Examinador / Emitente</label>
+                  <label className="block text-tinta-2 font-semibold mb-1">Médico Examinador / Emitente</label>
                   <input
                     type="text"
                     required
                     value={asoForm.doctor_name}
                     onChange={(e) => setAsoForm({ ...asoForm, doctor_name: e.target.value })}
-                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                    className="w-full bg-superficie border border-borda rounded-lg px-3 py-2 text-tinta"
                   />
                 </div>
                 <div className="col-span-1">
-                  <label className="block text-slate-400 font-semibold mb-1">CRM / UF</label>
+                  <label className="block text-tinta-2 font-semibold mb-1">CRM / UF</label>
                   <div className="flex gap-1">
                     <input
                       type="text"
@@ -1126,7 +1126,7 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
                       placeholder="189204"
                       value={asoForm.doctor_crm}
                       onChange={(e) => setAsoForm({ ...asoForm, doctor_crm: e.target.value })}
-                      className="w-2/3 bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-slate-100 font-mono"
+                      className="w-2/3 bg-superficie border border-borda rounded-lg px-2 py-2 text-tinta font-mono"
                     />
                     <input
                       type="text"
@@ -1135,21 +1135,21 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
                       placeholder="SP"
                       value={asoForm.doctor_crm_state}
                       onChange={(e) => setAsoForm({ ...asoForm, doctor_crm_state: e.target.value.toUpperCase() })}
-                      className="w-1/3 bg-slate-900 border border-slate-700 rounded-lg px-1 py-2 text-slate-100 font-mono text-center"
+                      className="w-1/3 bg-superficie border border-borda rounded-lg px-1 py-2 text-tinta font-mono text-center"
                     />
                   </div>
                 </div>
               </div>
 
               {/* Exames realizados — a lista que o S-2220 exige (Tabela 27) */}
-              <div className="bg-slate-950 rounded-lg border border-slate-800 p-3 space-y-2.5">
+              <div className="bg-fundo rounded-lg border border-borda p-3 space-y-2.5">
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <h4 className="font-bold text-slate-200 flex items-center gap-1.5">
-                      <FileCheck2 className="w-3.5 h-3.5 text-teal-400" />
+                    <h4 className="font-bold text-tinta flex items-center gap-1.5">
+                      <FileCheck2 className="w-3.5 h-3.5 text-teal-700" />
                       Exames realizados ({examesDoAso.length})
                     </h4>
-                    <p className="text-[10px] text-slate-500 mt-0.5">
+                    <p className="text-[10px] text-tinta-2 mt-0.5">
                       As linhas vêm do protocolo do PCMSO do GHE — o que <em>deveria</em> ser feito.
                       Data e resultado são de quem realizou. Remova o que não foi feito.
                       {!acessoAResultadosDeExame && ' O resultado de cada exame é lançado pelo papel Saúde.'}
@@ -1158,14 +1158,14 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
                   <button
                     type="button"
                     onClick={adicionarExameAvulso}
-                    className="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-[11px] font-semibold rounded-lg flex items-center gap-1 shrink-0"
+                    className="px-2.5 py-1.5 bg-superficie-2 hover:bg-superficie-3 text-tinta text-[11px] font-semibold rounded-lg flex items-center gap-1 shrink-0"
                   >
                     <Plus className="w-3 h-3" /> Exame avulso
                   </button>
                 </div>
 
                 {examesDoAso.length === 0 ? (
-                  <p className="text-[11px] text-amber-400 py-2">
+                  <p className="text-[11px] text-amber-700 py-2">
                     Nenhum exame lançado. O S-2220 exige ao menos um procedimento realizado —
                     cadastre o protocolo do PCMSO deste GHE ou adicione um exame avulso.
                   </p>
@@ -1174,7 +1174,7 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
                     {examesDoAso.map(ex => (
                       <div
                         key={ex.id}
-                        className="grid grid-cols-12 gap-1.5 items-center bg-slate-900 rounded-lg p-2 border border-slate-800"
+                        className="grid grid-cols-12 gap-1.5 items-center bg-superficie rounded-lg p-2 border border-borda"
                       >
                         {/* Um seletor no lugar de dois campos livres: o codigo
                             vem da Tabela 27 com o nome oficial junto. */}
@@ -1190,14 +1190,14 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
                           type="date"
                           value={ex.exam_date}
                           onChange={e => alterarExame(ex.id, 'exam_date', e.target.value)}
-                          className={`col-span-2 bg-slate-950 border rounded px-1.5 py-1.5 text-slate-100 text-[11px] ${
-                            ex.exam_date ? 'border-slate-700' : 'border-amber-600/70'
+                          className={`col-span-2 bg-fundo border rounded px-1.5 py-1.5 text-tinta text-[11px] ${
+                            ex.exam_date ? 'border-borda' : 'border-amber-600/70'
                           }`}
                         />
                         <select
                           value={ex.procedure_type}
                           onChange={e => alterarExame(ex.id, 'procedure_type', e.target.value)}
-                          className="col-span-2 bg-slate-950 border border-slate-700 rounded px-1.5 py-1.5 text-slate-100 text-[11px]"
+                          className="col-span-2 bg-fundo border border-borda rounded px-1.5 py-1.5 text-tinta text-[11px]"
                         >
                           <option value="CLINICO">Clínico</option>
                           <option value="AUDIOMETRIA">Audiometria</option>
@@ -1212,8 +1212,8 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
                           <select
                             value={ex.result || ''}
                             onChange={e => alterarExame(ex.id, 'result', e.target.value)}
-                            className={`col-span-2 bg-slate-950 border rounded px-1.5 py-1.5 text-[11px] ${
-                              ex.result ? 'border-slate-700 text-slate-100' : 'border-amber-600/70 text-amber-400'
+                            className={`col-span-2 bg-fundo border rounded px-1.5 py-1.5 text-[11px] ${
+                              ex.result ? 'border-borda text-tinta' : 'border-amber-600/70 text-amber-700'
                             }`}
                           >
                             <option value="">Resultado…</option>
@@ -1223,7 +1223,7 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
                           </select>
                         ) : (
                           // Restrito, e nao vazio: um campo em branco pareceria "sem resultado".
-                          <span className="col-span-2 text-[10px] leading-tight text-slate-500 italic" title={RESULTADO_RESTRITO}>
+                          <span className="col-span-2 text-[10px] leading-tight text-tinta-2 italic" title={RESULTADO_RESTRITO}>
                             {RESULTADO_RESTRITO}
                           </span>
                         )}
@@ -1231,7 +1231,7 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
                           type="button"
                           onClick={() => removerExame(ex.id)}
                           title="Remover — exame não realizado"
-                          className="col-span-1 flex justify-center text-slate-500 hover:text-rose-400"
+                          className="col-span-1 flex justify-center text-tinta-2 hover:text-rose-700"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
@@ -1242,7 +1242,7 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
                             placeholder="Observação do achado (prontuário; não vai ao eSocial)"
                             value={ex.observation || ''}
                             onChange={e => alterarExame(ex.id, 'observation', e.target.value)}
-                            className="col-span-12 bg-slate-950 border border-slate-700 rounded px-2 py-1.5 text-slate-100 text-[11px] mt-0.5"
+                            className="col-span-12 bg-fundo border border-borda rounded px-2 py-1.5 text-tinta text-[11px] mt-0.5"
                           />
                         )}
                       </div>
@@ -1251,11 +1251,11 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
                 )}
               </div>
 
-              <div className="flex justify-end gap-2 pt-3 border-t border-slate-800">
+              <div className="flex justify-end gap-2 pt-3 border-t border-borda">
                 <button
                   type="button"
                   onClick={() => setIsAsoModalOpen(false)}
-                  className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold rounded-lg"
+                  className="px-4 py-2 bg-superficie-2 hover:bg-superficie-3 text-tinta font-semibold rounded-lg"
                 >
                   Cancelar
                 </button>

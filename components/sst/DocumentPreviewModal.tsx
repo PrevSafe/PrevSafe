@@ -234,14 +234,14 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
 
   const getDocBadgeColor = () => {
     switch (docType) {
-      case 'PGR': return 'bg-teal-500/20 text-teal-300 border-teal-500/30';
-      case 'PGRTR': return 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30';
-      case 'PCMSO': return 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30';
-      case 'LTCAT': return 'bg-purple-500/20 text-purple-300 border-purple-500/30';
-      case 'AEP': return 'bg-teal-500/20 text-teal-300 border-teal-500/30';
-      case 'INSALUBRIDADE': return 'bg-amber-500/20 text-amber-300 border-amber-500/30';
-      case 'PERICULOSIDADE': return 'bg-rose-500/20 text-rose-300 border-rose-500/30';
-      default: return 'bg-blue-500/20 text-blue-300 border-blue-500/30';
+      case 'PGR': return 'bg-teal-500/20 text-teal-700 border-teal-500/30';
+      case 'PGRTR': return 'bg-marca-suave text-marca-escura border-marca-escura';
+      case 'PCMSO': return 'bg-cyan-500/20 text-cyan-700 border-cyan-500/30';
+      case 'LTCAT': return 'bg-purple-500/20 text-purple-700 border-purple-500/30';
+      case 'AEP': return 'bg-teal-500/20 text-teal-700 border-teal-500/30';
+      case 'INSALUBRIDADE': return 'bg-amber-500/20 text-amber-700 border-amber-500/30';
+      case 'PERICULOSIDADE': return 'bg-rose-500/20 text-rose-700 border-rose-500/30';
+      default: return 'bg-blue-500/20 text-blue-700 border-blue-500/30';
     }
   };
 
@@ -312,17 +312,17 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
 
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-md p-2 sm:p-4 overflow-y-auto animate-fade-in"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-fundo backdrop-blur-md p-2 sm:p-4 overflow-y-auto animate-fade-in"
       id="document-preview-modal-backdrop"
     >
       <div 
-        className="bg-slate-900 border border-slate-700/80 rounded-2xl w-full max-w-6xl max-h-[94vh] flex flex-col shadow-2xl overflow-hidden"
+        className="bg-superficie border border-borda rounded-2xl w-full max-w-6xl max-h-[94vh] flex flex-col shadow-2xl overflow-hidden"
         id="document-preview-modal-container"
       >
         {/* Top Control Bar */}
-        <div className="bg-slate-950 border-b border-slate-800 px-5 py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shrink-0">
+        <div className="bg-fundo border-b border-borda px-5 py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shrink-0">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-teal-500/10 border border-teal-500/30 rounded-xl text-teal-400">
+            <div className="p-2 bg-teal-500/10 border border-teal-500/30 rounded-xl text-teal-700">
               <FileText className="w-5 h-5" />
             </div>
             <div>
@@ -330,9 +330,9 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
                 <span className={`text-[11px] font-bold px-2 py-0.5 rounded border uppercase tracking-wider ${getDocBadgeColor()}`}>
                   {docType}
                 </span>
-                <span className="text-xs text-slate-400">Pré-visualização Dinâmica de Relatório Técnico</span>
+                <span className="text-xs text-tinta-2">Pré-visualização Dinâmica de Relatório Técnico</span>
               </div>
-              <h2 className="text-sm sm:text-base font-bold text-slate-100 truncate max-w-md">
+              <h2 className="text-sm sm:text-base font-bold text-tinta truncate max-w-md">
                 {getDocTitle()}
               </h2>
             </div>
@@ -340,15 +340,15 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
 
           <div className="flex items-center flex-wrap gap-2">
             {/* View Mode Switcher */}
-            <div className="flex items-center bg-slate-900 border border-slate-800 rounded-lg p-0.5">
+            <div className="flex items-center bg-superficie border border-borda rounded-lg p-0.5">
               <button
                 type="button"
                 id="btn-viewmode-sheet"
                 onClick={() => setViewMode('A4_SHEET')}
                 className={`px-2.5 py-1 text-xs font-semibold rounded-md transition-all ${
                   viewMode === 'A4_SHEET'
-                    ? 'bg-slate-800 text-teal-300 shadow-sm'
-                    : 'text-slate-400 hover:text-slate-200'
+                    ? 'bg-superficie-2 text-teal-700 shadow-sm'
+                    : 'text-tinta-2 hover:text-tinta'
                 }`}
               >
                 Folha A4
@@ -359,8 +359,8 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
                 onClick={() => setViewMode('STRUCTURED_VIEW')}
                 className={`px-2.5 py-1 text-xs font-semibold rounded-md transition-all ${
                   viewMode === 'STRUCTURED_VIEW'
-                    ? 'bg-slate-800 text-teal-300 shadow-sm'
-                    : 'text-slate-400 hover:text-slate-200'
+                    ? 'bg-superficie-2 text-teal-700 shadow-sm'
+                    : 'text-tinta-2 hover:text-tinta'
                 }`}
               >
                 Visão Estruturada
@@ -368,22 +368,22 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
             </div>
 
             {/* Zoom Controls */}
-            <div className="hidden md:flex items-center bg-slate-900 border border-slate-800 rounded-lg px-2 py-1 gap-1">
+            <div className="hidden md:flex items-center bg-superficie border border-borda rounded-lg px-2 py-1 gap-1">
               <button
                 type="button"
                 onClick={handleZoomOut}
-                className="p-1 text-slate-400 hover:text-slate-200"
+                className="p-1 text-tinta-2 hover:text-tinta"
                 title="Reduzir Zoom"
               >
                 <ZoomOut className="w-3.5 h-3.5" />
               </button>
-              <span className="text-[11px] font-mono font-bold text-slate-300 w-10 text-center">
+              <span className="text-[11px] font-mono font-bold text-tinta w-10 text-center">
                 {zoomLevel}%
               </span>
               <button
                 type="button"
                 onClick={handleZoomIn}
-                className="p-1 text-slate-400 hover:text-slate-200"
+                className="p-1 text-tinta-2 hover:text-tinta"
                 title="Aumentar Zoom"
               >
                 <ZoomIn className="w-3.5 h-3.5" />
@@ -395,9 +395,9 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
               type="button"
               id="modal-btn-signature"
               onClick={handleOpenSignature}
-              className="px-3 py-1.5 bg-teal-500/10 hover:bg-teal-500/20 text-teal-300 border border-teal-500/30 font-bold text-xs rounded-lg transition-all flex items-center gap-1.5"
+              className="px-3 py-1.5 bg-teal-500/10 hover:bg-teal-500/20 text-teal-700 border border-teal-500/30 font-bold text-xs rounded-lg transition-all flex items-center gap-1.5"
             >
-              <PenTool className="w-3.5 h-3.5 text-teal-400" />
+              <PenTool className="w-3.5 h-3.5 text-teal-700" />
               <span>Assinatura Digital (Lei 14.063)</span>
             </button>
 
@@ -415,7 +415,7 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
               type="button"
               id="modal-btn-print"
               onClick={handlePrint}
-              className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-lg transition-all flex items-center gap-1.5"
+              className="px-3 py-1.5 bg-superficie-2 hover:bg-superficie-3 text-tinta font-semibold text-xs rounded-lg transition-all flex items-center gap-1.5"
             >
               <Printer className="w-3.5 h-3.5" />
               Imprimir
@@ -425,7 +425,7 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
               type="button"
               id="modal-btn-close"
               onClick={onClose}
-              className="p-1.5 bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-slate-100 rounded-lg transition-all ml-1"
+              className="p-1.5 bg-superficie-2 hover:bg-superficie-3 text-tinta-2 hover:text-tinta rounded-lg transition-all ml-1"
               title="Fechar Pré-visualização"
             >
               <X className="w-5 h-5" />
@@ -435,16 +435,16 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
 
         {/* Success Alert Banner */}
         {downloadSuccess && (
-          <div className="bg-emerald-500/10 border-b border-emerald-500/30 px-5 py-2 flex items-center justify-between text-xs text-emerald-300 animate-fade-in">
+          <div className="bg-marca-suave border-b border-marca-escura px-5 py-2 flex items-center justify-between text-xs text-marca-escura animate-fade-in">
             <span className="flex items-center gap-2 font-medium">
-              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+              <CheckCircle2 className="w-4 h-4 text-marca-escura" />
               {downloadSuccess}
             </span>
           </div>
         )}
 
         {/* Modal Body / Document Canvas */}
-        <div className="flex-1 overflow-y-auto bg-slate-950 p-4 sm:p-8 flex justify-center items-start">
+        <div className="flex-1 overflow-y-auto bg-fundo p-4 sm:p-8 flex justify-center items-start">
           <div 
             className="w-full transition-transform origin-top flex flex-col items-center"
             style={{ transform: `scale(${zoomLevel / 100})`, width: zoomLevel > 100 ? `${zoomLevel}%` : '100%' }}
@@ -453,7 +453,7 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
             <div className="w-full max-w-4xl bg-white text-slate-900 rounded-xl shadow-2xl border border-slate-300 p-8 sm:p-12 space-y-6 select-text">
               
               {/* Document Official Header */}
-              <div className="border-b-2 border-slate-900 pb-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="border-b-2 border-borda pb-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="space-y-1">
                   <div className="flex items-center gap-2 text-teal-700 font-bold text-xs uppercase tracking-wider">
                     <ShieldCheck className="w-4 h-4 text-teal-600" />
@@ -464,14 +464,14 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
                   </h1>
                   {/* Afirmava "CONFORMIDADE LEGAL MTE / INSS / ESOCIAL" de qualquer
                       conteudo, inclusive com pendencias. */}
-                  <p className="text-xs text-slate-600 font-medium">
+                  <p className="text-xs text-tinta-2 font-medium">
                     PRÉ-VISUALIZAÇÃO • O DOCUMENTO OFICIAL É O PDF, GERADO DOS MESMOS REGISTROS
                   </p>
                 </div>
                 
                 {/* "Versao: 2.4.0 (MOS)" era fixa e nao correspondia a nada. */}
                 <div className="bg-slate-100 p-3 rounded-lg border border-slate-300 text-right text-xs space-y-1 shrink-0">
-                  <div className="text-slate-600">Emissão: <strong>{issueDate}</strong></div>
+                  <div className="text-tinta-2">Emissão: <strong>{issueDate}</strong></div>
                 </div>
               </div>
 
@@ -519,12 +519,12 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
               {docType === 'PGR' && (
                 <div className="space-y-5">
                   <div className="border border-slate-300 rounded-lg overflow-hidden">
-                    <div className="bg-slate-900 text-white px-4 py-2.5 flex items-center justify-between">
+                    <div className="bg-superficie text-tinta px-4 py-2.5 flex items-center justify-between">
                       <span className="font-bold text-xs uppercase tracking-wide flex items-center gap-2">
-                        <FileSpreadsheet className="w-4 h-4 text-teal-400" />
+                        <FileSpreadsheet className="w-4 h-4 text-teal-700" />
                         1. Inventário Geral de Riscos por GHE (NR-01 Item 1.5.7)
                       </span>
-                      <span className="text-[10px] text-slate-300 font-mono">Tabela 24 eSocial</span>
+                      <span className="text-[10px] text-tinta font-mono">Tabela 24 eSocial</span>
                     </div>
 
                     <div className="overflow-x-auto">
@@ -561,7 +561,7 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
                                 <td className="p-2.5 font-bold border-r border-slate-200">{ghe.name}</td>
                                 <td className="p-2.5 border-r border-slate-200">
                                   <div className="font-bold text-slate-900">{r.agent_name}</div>
-                                  <div className="text-[10px] text-slate-500 font-mono">
+                                  <div className="text-[10px] text-tinta-2 font-mono">
                                     {r.risk_code_table_24 ? `Cód: ${r.risk_code_table_24} • ` : ''}Fonte: {r.generating_source || 'não informada'}
                                   </div>
                                 </td>
@@ -603,7 +603,7 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
                                   )}
                                   {/* Sem conclusao, dizia "Plano PrevSafe em vigor". */}
                                   {r.ltcat_technical_conclusion && (
-                                    <div className="text-[10px] text-slate-500">{r.ltcat_technical_conclusion}</div>
+                                    <div className="text-[10px] text-tinta-2">{r.ltcat_technical_conclusion}</div>
                                   )}
                                 </td>
                               </tr>
@@ -617,11 +617,11 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
 
                   {/* Plan of Action */}
                   <div className="border border-slate-300 rounded-lg overflow-hidden">
-                    <div className="bg-slate-900 text-white px-4 py-2 flex items-center justify-between">
+                    <div className="bg-superficie text-tinta px-4 py-2 flex items-center justify-between">
                       <span className="font-bold text-xs uppercase tracking-wide">
                         2. Plano de Ação (NR-01, subitem 1.5.5.2.2)
                       </span>
-                      <span className="text-[10px] text-teal-400 font-bold">Seção 8 do PGR</span>
+                      <span className="text-[10px] text-teal-700 font-bold">Seção 8 do PGR</span>
                     </div>
                     <div className="overflow-x-auto bg-slate-50">
                       <table className="w-full min-w-[640px] text-left text-xs border-collapse">
@@ -646,7 +646,7 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
                               <td className="p-2.5 border-r border-slate-200 font-mono text-[10px] whitespace-nowrap">{a.numero}</td>
                               <td className="p-2.5 border-r border-slate-200">
                                 <div className="font-semibold text-slate-900">{a.medida}</div>
-                                <div className="text-[10px] text-slate-500">{a.hierarquia} · {a.tipo} · {a.gheNome}</div>
+                                <div className="text-[10px] text-tinta-2">{a.hierarquia} · {a.tipo} · {a.gheNome}</div>
                                 {a.faltas.length > 0 && (
                                   <div className="text-[10px] text-amber-800 mt-0.5">Pendente: {a.faltas.join('; ')}</div>
                                 )}
@@ -666,12 +666,12 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
               {/* 2. PGRTR Content */}
               {docType === 'PGRTR' && (
                 <div className="space-y-4">
-                  <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-lg space-y-2 text-xs">
+                  <div className="p-4 bg-emerald-50 border border-marca-escura rounded-lg space-y-2 text-xs">
                     <h3 className="font-bold text-emerald-950 uppercase text-xs flex items-center gap-1.5">
-                      <Tractor className="w-4 h-4 text-emerald-700" />
+                      <Tractor className="w-4 h-4 text-marca-escura" />
                       Especificações de Segurança no Trabalho Rural (NR-31 / Portaria 22.677)
                     </h3>
-                    <p className="text-emerald-900">
+                    <p className="text-marca-escura">
                       O presente PGRTR estabelece os preceitos de segurança e higiene nas atividades agrícolas, pecuárias, silvicultura e exploração florestal da propriedade rural.
                     </p>
                   </div>
@@ -711,7 +711,7 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
                               </td>
                               <td className="p-2.5 border-r border-slate-200">
                                 <div className="font-bold text-slate-900">{r.agent_name || 'Agente não identificado'}</div>
-                                <div className="text-[10px] text-slate-500">Fonte: {r.generating_source?.trim() || 'não informada'}</div>
+                                <div className="text-[10px] text-tinta-2">Fonte: {r.generating_source?.trim() || 'não informada'}</div>
                               </td>
                               <td className="p-2.5 border-r border-slate-200">
                                 {controles.length > 0 ? controles.join(' · ') : 'Nenhuma medida de controle registrada'}
@@ -756,12 +756,12 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
               {docType === 'LTCAT' && (
                 <div className="space-y-4">
                   <div className="border border-slate-300 rounded-lg overflow-hidden">
-                    <div className="bg-slate-900 text-white px-4 py-2.5 flex items-center justify-between">
+                    <div className="bg-superficie text-tinta px-4 py-2.5 flex items-center justify-between">
                       <span className="font-bold text-xs uppercase tracking-wide flex items-center gap-2">
-                        <Award className="w-4 h-4 text-purple-400" />
+                        <Award className="w-4 h-4 text-purple-700" />
                         Conclusão Técnica Previdenciária & Aposentadoria Especial (INSS / S-2240)
                       </span>
-                      <span className="text-[10px] text-purple-300 font-bold">Decreto 3.048/99</span>
+                      <span className="text-[10px] text-purple-700 font-bold">Decreto 3.048/99</span>
                     </div>
 
                     <div className="overflow-x-auto">
@@ -797,7 +797,7 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
                                   {r.special_retirement_applies ? (
                                     <span className="text-rose-700">SIM (GFIP {r.gfip_code || 'não informado'})</span>
                                   ) : r.gfip_code ? (
-                                    <span className="text-emerald-700">NÃO ENSEJA (GFIP {r.gfip_code})</span>
+                                    <span className="text-marca-escura">NÃO ENSEJA (GFIP {r.gfip_code})</span>
                                   ) : (
                                     <span className="text-amber-800">Enquadramento não informado</span>
                                   )}
@@ -826,12 +826,12 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
               {docType === 'AEP' && (
                 <div className="space-y-4">
                   <div className="border border-slate-300 rounded-lg overflow-hidden">
-                    <div className="bg-slate-900 text-white px-4 py-2.5 flex items-center justify-between">
+                    <div className="bg-superficie text-tinta px-4 py-2.5 flex items-center justify-between">
                       <span className="font-bold text-xs uppercase tracking-wide flex items-center gap-2">
-                        <Activity className="w-4 h-4 text-teal-400" />
+                        <Activity className="w-4 h-4 text-teal-700" />
                         Situações de trabalho avaliadas (item 17.3.1)
                       </span>
-                      <span className="text-[10px] text-teal-300 font-bold">Registro obrigatório: 17.3.1.2.1</span>
+                      <span className="text-[10px] text-teal-700 font-bold">Registro obrigatório: 17.3.1.2.1</span>
                     </div>
 
                     {ergonomicAssessments.length === 0 ? (
@@ -865,7 +865,7 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
                                     {inadequados > 0 ? (
                                       <span className="text-amber-700">{inadequados} exige(m) medida</span>
                                     ) : (
-                                      <span className="text-emerald-700">Nenhum</span>
+                                      <span className="text-marca-escura">Nenhum</span>
                                     )}
                                   </td>
                                   <td className="p-2.5 text-slate-700">
@@ -880,7 +880,7 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
                     )}
                   </div>
 
-                  <p className="text-[11px] text-slate-600">
+                  <p className="text-[11px] text-tinta-2">
                     O PDF traz uma página por situação, com a conclusão de cada um dos seis aspectos da
                     NR-17, o que se observou, as medidas de prevenção do subitem 17.4.3.1, a oitiva dos
                     trabalhadores (item 17.3.8), o registro fotográfico e o quadro de assinaturas.
@@ -904,12 +904,12 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
               {docType === 'INSALUBRIDADE' && (
                 <div className="space-y-4">
                   <div className="border border-slate-300 rounded-lg overflow-hidden">
-                    <div className="bg-slate-900 text-white px-4 py-2 flex items-center justify-between">
+                    <div className="bg-superficie text-tinta px-4 py-2 flex items-center justify-between">
                       <span className="font-bold text-xs uppercase tracking-wide flex items-center gap-2">
-                        <AlertTriangle className="w-4 h-4 text-amber-400" />
+                        <AlertTriangle className="w-4 h-4 text-amber-700" />
                         Enquadramento Pericial de Insalubridade (NR-15 / Art. 189 a 192 CLT)
                       </span>
-                      <span className="text-[10px] text-amber-300 font-bold">Adicionais: 10%, 20%, 40%</span>
+                      <span className="text-[10px] text-amber-700 font-bold">Adicionais: 10%, 20%, 40%</span>
                     </div>
                     <div className="overflow-x-auto">
                       <table className="w-full text-left text-xs border-collapse">
@@ -935,7 +935,7 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
                             ))
                           ) : (
                             <tr>
-                              <td colSpan={5} className="p-4 text-center text-slate-500">
+                              <td colSpan={5} className="p-4 text-center text-tinta-2">
                                 Inventário de riscos vazio — nenhum agente foi periciado.
                               </td>
                             </tr>
@@ -951,12 +951,12 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
               {docType === 'PERICULOSIDADE' && (
                 <div className="space-y-4">
                   <div className="border border-slate-300 rounded-lg overflow-hidden">
-                    <div className="bg-slate-900 text-white px-4 py-2 flex items-center justify-between">
+                    <div className="bg-superficie text-tinta px-4 py-2 flex items-center justify-between">
                       <span className="font-bold text-xs uppercase tracking-wide flex items-center gap-2">
-                        <Flame className="w-4 h-4 text-rose-400" />
+                        <Flame className="w-4 h-4 text-rose-700" />
                         Caracterização de Periculosidade (NR-16 / Art. 193 CLT)
                       </span>
-                      <span className="text-[10px] text-rose-300 font-bold">Adicional: 30% Salário Base</span>
+                      <span className="text-[10px] text-rose-700 font-bold">Adicional: 30% Salário Base</span>
                     </div>
                     <div className="overflow-x-auto">
                       <table className="w-full text-left text-xs border-collapse">
@@ -982,7 +982,7 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
                             ))
                           ) : (
                             <tr>
-                              <td colSpan={5} className="p-4 text-center text-slate-500">
+                              <td colSpan={5} className="p-4 text-center text-tinta-2">
                                 Inventário de riscos vazio — nenhuma atividade foi periciada.
                               </td>
                             </tr>
@@ -995,7 +995,7 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
               )}
 
               {/* Legal Signatures & Digital Stamp */}
-              <div className="pt-8 border-t-2 border-slate-900 space-y-6">
+              <div className="pt-8 border-t-2 border-borda space-y-6">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 text-center text-xs text-slate-800">
                   <div className="space-y-1">
                     {/* Dizia "ASSINADO DIGITALMENTE (ICP-BRASIL)" antes de qualquer
@@ -1008,23 +1008,23 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
                           ? 'ASSINATURA EM ANDAMENTO'
                           : 'AGUARDANDO ASSINATURA'}
                     </div>
-                    <div className="w-48 h-0.5 bg-slate-900 mx-auto mt-6"></div>
+                    <div className="w-48 h-0.5 bg-superficie mx-auto mt-6"></div>
                     <div className="font-bold text-slate-950">{rtName}</div>
-                    <div className="text-slate-600">{rtTitle}{rtCouncil ? ` • ${rtCouncil}` : ''}</div>
-                    <div className="text-[10px] text-slate-500">{rtArt ? `ART nº ${rtArt}` : 'ART não informada'}</div>
+                    <div className="text-tinta-2">{rtTitle}{rtCouncil ? ` • ${rtCouncil}` : ''}</div>
+                    <div className="text-[10px] text-tinta-2">{rtArt ? `ART nº ${rtArt}` : 'ART não informada'}</div>
                   </div>
 
                   <div className="space-y-1">
                     <div className="font-mono text-[10px] text-teal-800 font-bold">CIÊNCIA DA ADMINISTRAÇÃO</div>
-                    <div className="w-48 h-0.5 bg-slate-900 mx-auto mt-6"></div>
+                    <div className="w-48 h-0.5 bg-superficie mx-auto mt-6"></div>
                     <div className="font-bold text-slate-950">{client?.trade_name || clientName}</div>
-                    <div className="text-slate-600">Representante Legal da Empresa</div>
-                    <div className="text-[10px] text-slate-500">CNPJ: {clientDoc}</div>
+                    <div className="text-tinta-2">Representante Legal da Empresa</div>
+                    <div className="text-[10px] text-tinta-2">CNPJ: {clientDoc}</div>
                   </div>
                 </div>
 
                 {/* Digital Audit Barcode / Hash Footer */}
-                <div className="bg-slate-100 p-3 rounded-lg border border-slate-300 flex flex-col sm:flex-row items-center justify-between gap-3 text-[10px] text-slate-600">
+                <div className="bg-slate-100 p-3 rounded-lg border border-slate-300 flex flex-col sm:flex-row items-center justify-between gap-3 text-[10px] text-tinta-2">
                   {digitalHash ? (
                     <>
                       <div className="flex items-center gap-2">
@@ -1045,7 +1045,7 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
                     </>
                   ) : (
                     <div className="flex items-center gap-2">
-                      <Lock className="w-3.5 h-3.5 text-slate-400" />
+                      <Lock className="w-3.5 h-3.5 text-tinta-2" />
                       <span>
                         Pré-visualização não assinada: ainda não há código de verificação.
                         O hash é gerado no momento da assinatura.
@@ -1060,7 +1060,7 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
         </div>
 
         {/* Modal Bottom Status Bar */}
-        <div className="bg-slate-950 border-t border-slate-800 px-5 py-3 flex flex-col sm:flex-row items-center justify-between gap-3 shrink-0 text-xs text-slate-400">
+        <div className="bg-fundo border-t border-borda px-5 py-3 flex flex-col sm:flex-row items-center justify-between gap-3 shrink-0 text-xs text-tinta-2">
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-teal-400"></span>
             {/* Dizia "validado em conformidade com as Normas Regulamentadoras".
@@ -1073,9 +1073,9 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
               type="button"
               id="modal-btn-signature-footer"
               onClick={handleOpenSignature}
-              className="px-3.5 py-1.5 bg-teal-500/10 hover:bg-teal-500/20 text-teal-300 border border-teal-500/30 font-bold rounded-lg transition-all flex items-center gap-1.5"
+              className="px-3.5 py-1.5 bg-teal-500/10 hover:bg-teal-500/20 text-teal-700 border border-teal-500/30 font-bold rounded-lg transition-all flex items-center gap-1.5"
             >
-              <PenTool className="w-3.5 h-3.5 text-teal-400" />
+              <PenTool className="w-3.5 h-3.5 text-teal-700" />
               <span>Assinatura Digital SST</span>
             </button>
 

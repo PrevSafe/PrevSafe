@@ -323,9 +323,9 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
     <div className="space-y-6" id="technical-docs-tab-container">
       {/* Top Banner Alert */}
       {successToast && (
-        <div className="p-4 bg-teal-500/10 border border-teal-500/30 rounded-xl flex items-center justify-between text-xs text-teal-300 animate-in fade-in">
+        <div className="p-4 bg-teal-500/10 border border-teal-500/30 rounded-xl flex items-center justify-between text-xs text-teal-700 animate-in fade-in">
           <div className="flex items-center gap-2">
-            <CheckCircle2 className="w-5 h-5 text-teal-400" />
+            <CheckCircle2 className="w-5 h-5 text-teal-700" />
             <span className="font-semibold">{successToast}</span>
           </div>
           <span className="text-[11px] bg-teal-500 text-slate-950 font-bold px-2 py-1 rounded">Processado</span>
@@ -333,7 +333,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
       )}
 
       {/* Document Selector Header */}
-      <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4 bg-slate-900/80 p-4 rounded-xl border border-slate-800">
+      <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4 bg-superficie p-4 rounded-xl border border-borda">
         <div className="flex items-center flex-wrap gap-2">
           <button
             type="button"
@@ -342,7 +342,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
             className={`px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 ${
               activeDocType === 'PGR'
                 ? 'bg-teal-500 text-slate-950 shadow-md shadow-teal-500/20 font-bold'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+                : 'text-tinta-2 hover:text-tinta hover:bg-superficie-2'
             }`}
           >
             <ShieldAlert className="w-4 h-4" />
@@ -355,8 +355,8 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
             onClick={() => setActiveDocType('PGRTR')}
             className={`px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 ${
               activeDocType === 'PGRTR'
-                ? 'bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/20 font-bold'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+                ? 'bg-marca text-slate-950 shadow-md shadow-emerald-500/20 font-bold'
+                : 'text-tinta-2 hover:text-tinta hover:bg-superficie-2'
             }`}
           >
             <Tractor className="w-4 h-4" />
@@ -370,7 +370,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
             className={`px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 ${
               activeDocType === 'PCMSO'
                 ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/20 font-bold'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+                : 'text-tinta-2 hover:text-tinta hover:bg-superficie-2'
             }`}
           >
             <Stethoscope className="w-4 h-4" />
@@ -384,7 +384,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
             className={`px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 ${
               activeDocType === 'LTCAT'
                 ? 'bg-purple-500 text-slate-950 shadow-md shadow-purple-500/20 font-bold'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+                : 'text-tinta-2 hover:text-tinta hover:bg-superficie-2'
             }`}
           >
             <FileText className="w-4 h-4" />
@@ -398,7 +398,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
             className={`px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 ${
               activeDocType === 'AEP'
                 ? 'bg-teal-500 text-slate-950 shadow-md shadow-teal-500/20 font-bold'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+                : 'text-tinta-2 hover:text-tinta hover:bg-superficie-2'
             }`}
           >
             <Activity className="w-4 h-4" />
@@ -412,7 +412,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
             className={`px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 ${
               activeDocType === 'PSICOSSOCIAL'
                 ? 'bg-teal-500 text-slate-950 shadow-md shadow-teal-500/20 font-bold'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+                : 'text-tinta-2 hover:text-tinta hover:bg-superficie-2'
             }`}
           >
             <Brain className="w-4 h-4" />
@@ -426,7 +426,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
             className={`px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 ${
               activeDocType === 'INSALUBRIDADE'
                 ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20 font-bold'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+                : 'text-tinta-2 hover:text-tinta hover:bg-superficie-2'
             }`}
           >
             <AlertTriangle className="w-4 h-4" />
@@ -440,7 +440,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
             className={`px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 ${
               activeDocType === 'PERICULOSIDADE'
                 ? 'bg-rose-500 text-slate-950 shadow-md shadow-rose-500/20 font-bold'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+                : 'text-tinta-2 hover:text-tinta hover:bg-superficie-2'
             }`}
           >
             <Flame className="w-4 h-4" />
@@ -454,7 +454,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
             className={`px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 ${
               activeDocType === 'XML_ESOCIAL'
                 ? 'bg-blue-500 text-slate-950 shadow-md shadow-blue-500/20 font-bold'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+                : 'text-tinta-2 hover:text-tinta hover:bg-superficie-2'
             }`}
           >
             <FileCode2 className="w-4 h-4" />
@@ -473,7 +473,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
                   setPreviewDocType(activeDocType as PreviewDocType);
                   setIsPreviewModalOpen(true);
                 }}
-                className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-teal-400 border border-teal-500/30 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 shadow-sm"
+                className="px-3.5 py-2 bg-superficie-2 hover:bg-superficie-3 text-teal-700 border border-teal-500/30 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 shadow-sm"
                 title="Abrir Pré-visualização Dinâmica do Laudo em formato Folha A4 com zoom e validação técnica"
               >
                 <Eye className="w-4 h-4" />
@@ -497,26 +497,26 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
           <button
             type="button"
             onClick={handlePrintDoc}
-            className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-lg transition-all flex items-center gap-1.5"
+            className="px-3.5 py-2 bg-superficie-2 hover:bg-superficie-3 text-tinta text-xs font-semibold rounded-lg transition-all flex items-center gap-1.5"
             title="Imprimir visualização formatada"
           >
-            <Printer className="w-4 h-4 text-slate-400" />
+            <Printer className="w-4 h-4 text-tinta-2" />
             Imprimir
           </button>
         </div>
       </div>
 
       {/* Info Banner for eSocial technical compliance */}
-      <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-4 flex items-start gap-3">
-        <Info className="w-5 h-5 text-teal-400 shrink-0 mt-0.5" />
-        <div className="text-xs text-slate-300 space-y-1">
-          <p className="font-semibold text-slate-100">
+      <div className="bg-superficie border border-borda rounded-xl p-4 flex items-start gap-3">
+        <Info className="w-5 h-5 text-teal-700 shrink-0 mt-0.5" />
+        <div className="text-xs text-tinta space-y-1">
+          <p className="font-semibold text-tinta">
             Geração Automatizada com Alimentação Cruzada e Laudos Técnicos Completos:
           </p>
           {/* Prometia "100% de consistencia tecnica, juridica e fiscal". O
               documento e tao bom quanto o cadastro: o que falta sai como
               pendencia, e nao preenchido. */}
-          <p className="text-slate-400">
+          <p className="text-tinta-2">
             Todos os documentos (<strong>PGR, PGRTR, PCMSO, LTCAT, Laudo de Insalubridade NR-15, Laudo de Periculosidade NR-16, Kit Admissional e XMLs do eSocial</strong>) são gerados a partir da hierarquia, dos inventários de riscos por GHE, dos exames e dos dados cadastrais. O que não estiver cadastrado sai como pendência no documento — nada é preenchido por padrão.
           </p>
         </div>
@@ -524,56 +524,56 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
 
       {/* VIEW 1: PGR (NR-01) */}
       {activeDocType === 'PGR' && (
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-6 shadow-xl" id="pgr-doc-view">
+        <div className="bg-superficie border border-borda rounded-2xl p-6 space-y-6 shadow-xl" id="pgr-doc-view">
           {/* Header */}
-          <div className="border-b border-slate-800 pb-4 flex justify-between items-start">
+          <div className="border-b border-borda pb-4 flex justify-between items-start">
             <div>
-              <span className="px-2.5 py-1 bg-teal-500/20 text-teal-300 text-xs font-bold rounded">
+              <span className="px-2.5 py-1 bg-teal-500/20 text-teal-700 text-xs font-bold rounded">
                 PROGRAMA DE GERENCIAMENTO DE RISCOS (PGR - NR-01)
               </span>
-              <h2 className="text-lg font-bold text-slate-100 mt-2">
+              <h2 className="text-lg font-bold text-tinta mt-2">
                 Inventário Geral de Riscos Ocupacionais & Plano de Ação (GRO / PGR)
               </h2>
-              <p className="text-xs text-slate-400">
-                Empresa: <strong className="text-slate-200">{clientObj?.trade_name || clientObj?.legal_name || 'Cliente não selecionado'}</strong> • CNPJ: <span className="font-mono">{clientObj?.document_number || 'Não informado'}</span>
+              <p className="text-xs text-tinta-2">
+                Empresa: <strong className="text-tinta">{clientObj?.trade_name || clientObj?.legal_name || 'Cliente não selecionado'}</strong> • CNPJ: <span className="font-mono">{clientObj?.document_number || 'Não informado'}</span>
               </p>
             </div>
-            <div className="text-right text-xs text-slate-400 space-y-1">
+            <div className="text-right text-xs text-tinta-2 space-y-1">
               {/* Era "Vigencia: 2026 / 2027", escrito no codigo. A data e a da emissao. */}
-              <div>Emissão: <span className="text-teal-400 font-semibold">{emissao}</span></div>
-              <div>Grau de Risco: <span className="text-slate-200 font-bold">
+              <div>Emissão: <span className="text-teal-700 font-semibold">{emissao}</span></div>
+              <div>Grau de Risco: <span className="text-tinta font-bold">
                 {clientObj?.risk_degree ? `${clientObj.risk_degree} (NR-04)` : 'não classificado'}
               </span></div>
-              <div>CNAE: <span className="text-slate-200 font-mono">{clientObj?.main_cnae || 'não informado'}</span></div>
+              <div>CNAE: <span className="text-tinta font-mono">{clientObj?.main_cnae || 'não informado'}</span></div>
             </div>
           </div>
 
           {/* Section 1: Units and Hierarchy */}
           <div className="space-y-3">
-            <h3 className="text-sm font-bold text-slate-200 flex items-center gap-2">
-              <Building2 className="w-4 h-4 text-teal-400" />
+            <h3 className="text-sm font-bold text-tinta flex items-center gap-2">
+              <Building2 className="w-4 h-4 text-teal-700" />
               1. Estrutura Organizacional & Estabelecimentos Avaliados
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
-              <div className="bg-slate-950 p-3 rounded-lg border border-slate-800">
-                <span className="text-slate-500 font-semibold block text-[10px]">Unidades Operacionais:</span>
-                <span className="font-bold text-slate-100">{clientUnits.length} estabelecimentos</span>
+              <div className="bg-fundo p-3 rounded-lg border border-borda">
+                <span className="text-tinta-2 font-semibold block text-[10px]">Unidades Operacionais:</span>
+                <span className="font-bold text-tinta">{clientUnits.length} estabelecimentos</span>
               </div>
-              <div className="bg-slate-950 p-3 rounded-lg border border-slate-800">
-                <span className="text-slate-500 font-semibold block text-[10px]">Setores & Postos de Trabalho:</span>
-                <span className="font-bold text-slate-100">{clientSectors.length} setores ({clientJobs.length} cargos CBO)</span>
+              <div className="bg-fundo p-3 rounded-lg border border-borda">
+                <span className="text-tinta-2 font-semibold block text-[10px]">Setores & Postos de Trabalho:</span>
+                <span className="font-bold text-tinta">{clientSectors.length} setores ({clientJobs.length} cargos CBO)</span>
               </div>
-              <div className="bg-slate-950 p-3 rounded-lg border border-slate-800">
-                <span className="text-slate-500 font-semibold block text-[10px]">População Exposta:</span>
-                <span className="font-bold text-teal-400">{clientEmployees.length} trabalhador(es) cadastrado(s)</span>
+              <div className="bg-fundo p-3 rounded-lg border border-borda">
+                <span className="text-tinta-2 font-semibold block text-[10px]">População Exposta:</span>
+                <span className="font-bold text-teal-700">{clientEmployees.length} trabalhador(es) cadastrado(s)</span>
               </div>
             </div>
           </div>
 
           {/* Section 2: Risk Inventory by GHE */}
           <div className="space-y-3">
-            <h3 className="text-sm font-bold text-slate-200 flex items-center gap-2">
-              <ShieldAlert className="w-4 h-4 text-teal-400" />
+            <h3 className="text-sm font-bold text-tinta flex items-center gap-2">
+              <ShieldAlert className="w-4 h-4 text-teal-700" />
               2. Inventário de Riscos Ocupacionais por GHE (Grupos Homogêneos)
             </h3>
 
@@ -582,21 +582,21 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
               const gheEmps = clientEmployees.filter(e => e.ghe_id === ghe.id);
 
               return (
-                <div key={ghe.id} className="bg-slate-950 border border-slate-800 rounded-xl p-4 space-y-3">
-                  <div className="flex justify-between items-center border-b border-slate-800 pb-2">
+                <div key={ghe.id} className="bg-fundo border border-borda rounded-xl p-4 space-y-3">
+                  <div className="flex justify-between items-center border-b border-borda pb-2">
                     <div>
-                      <span className="font-mono text-xs font-bold text-teal-400">{ghe.code}</span>
-                      <h4 className="font-bold text-slate-100 text-sm">{ghe.name}</h4>
-                      <p className="text-[11px] text-slate-400">{ghe.description}</p>
+                      <span className="font-mono text-xs font-bold text-teal-700">{ghe.code}</span>
+                      <h4 className="font-bold text-tinta text-sm">{ghe.name}</h4>
+                      <p className="text-[11px] text-tinta-2">{ghe.description}</p>
                     </div>
-                    <span className="text-xs bg-slate-900 border border-slate-800 px-2.5 py-1 rounded text-slate-300">
+                    <span className="text-xs bg-superficie border border-borda px-2.5 py-1 rounded text-tinta">
                       {gheEmps.length} expostos • {ghe.work_schedule_description || 'jornada não informada'}
                     </span>
                   </div>
 
                   <div className="overflow-x-auto">
-                    <table className="w-full text-left text-[11px] text-slate-300">
-                      <thead className="text-slate-400 uppercase text-[9px] border-b border-slate-800 bg-slate-900/50">
+                    <table className="w-full text-left text-[11px] text-tinta">
+                      <thead className="text-tinta-2 uppercase text-[9px] border-b border-borda bg-superficie">
                         <tr>
                           <th className="py-2 px-3">Agente / Fator de Risco</th>
                           <th className="py-2 px-3">Fonte Geradora</th>
@@ -606,24 +606,24 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
                           <th className="py-2 px-3">Plano de Ação</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-slate-800/60">
+                      <tbody className="divide-y divide-borda">
                         {risks.map(r => (
-                          <tr key={r.id} className="hover:bg-slate-900/40">
+                          <tr key={r.id} className="hover:bg-superficie">
                             <td className="py-2 px-3">
-                              <span className="font-semibold text-slate-100">{r.agent_name}</span>
-                              <div className="font-mono text-[9px] text-teal-400">Tab. 24: {r.risk_code_table_24}</div>
+                              <span className="font-semibold text-tinta">{r.agent_name}</span>
+                              <div className="font-mono text-[9px] text-teal-700">Tab. 24: {r.risk_code_table_24}</div>
                             </td>
-                            <td className="py-2 px-3 text-slate-400">{r.generating_source}</td>
+                            <td className="py-2 px-3 text-tinta-2">{r.generating_source}</td>
                             <td className="py-2 px-3">
                               {r.evaluation_type} {r.measured_value ? `(${r.measured_value} ${r.measurement_unit})` : ''}
                             </td>
                             <td className="py-2 px-3">
                               {/* Dizia "EPC Eficaz" so por estar implantado. A eficacia
                                   e a afericao registrada no plano de acao. */}
-                              {r.epc_implemented && <div className="text-slate-300">EPC implantado</div>}
-                              {r.epc_effective && <div className="text-emerald-300">EPC eficaz (aferido)</div>}
+                              {r.epc_implemented && <div className="text-tinta">EPC implantado</div>}
+                              {r.epc_effective && <div className="text-marca-escura">EPC eficaz (aferido)</div>}
                               {r.epi_required && r.epis?.[0] && (
-                                <div className="text-teal-300 font-mono text-[10px]">EPI CA {r.epis[0].ca_number}</div>
+                                <div className="text-teal-700 font-mono text-[10px]">EPI CA {r.epis[0].ca_number}</div>
                               )}
                             </td>
                             <td className="py-2 px-3">
@@ -631,27 +631,27 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
                               {(() => {
                                 const c = classificarRisco(r.severity, r.probability);
                                 return c ? (
-                                  <span className="px-1.5 py-0.5 bg-slate-800 rounded font-semibold text-slate-200 whitespace-nowrap">
+                                  <span className="px-1.5 py-0.5 bg-superficie-2 rounded font-semibold text-tinta whitespace-nowrap">
                                     {c.severidade} x {c.probabilidade} = {c.score} · {c.rotulo}
                                   </span>
                                 ) : (
-                                  <span className="text-amber-300 font-semibold">não classificado</span>
+                                  <span className="text-amber-700 font-semibold">não classificado</span>
                                 );
                               })()}
                             </td>
-                            <td className="py-2 px-3 text-slate-300 font-medium">
+                            <td className="py-2 px-3 text-tinta font-medium">
                               {/* Sem conclusao do LTCAT, dizia "Manter controles e
                                   monitoramento periodico" de qualquer risco. Agora e a
                                   situacao do risco no plano, a mesma do PDF. */}
                               {(() => {
                                 const linhas = actionPlanRows.filter(l => l.risco?.id === r.id);
                                 if (linhas.length === 0 || linhas.every(l => !l.registro)) {
-                                  return <span className="text-amber-300">sem ação no plano</span>;
+                                  return <span className="text-amber-700">sem ação no plano</span>;
                                 }
                                 return linhas.map(l => (
                                   <div key={l.numero} className="whitespace-nowrap">
-                                    <span className="font-mono text-[10px] text-slate-200">{l.numero}</span>{' '}
-                                    <span className={l.atrasada ? 'text-rose-300' : l.aceita ? 'text-slate-300' : 'text-amber-300'}>
+                                    <span className="font-mono text-[10px] text-tinta">{l.numero}</span>{' '}
+                                    <span className={l.atrasada ? 'text-rose-700' : l.aceita ? 'text-tinta' : 'text-amber-700'}>
                                       {l.aceita ? l.status : 'sugestão não aceita'}
                                     </span>
                                   </div>
@@ -670,17 +670,17 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
 
           {/* Action Plan */}
           <div className="space-y-3">
-            <h3 className="text-sm font-bold text-slate-200 flex items-center gap-2">
-              <FileSpreadsheet className="w-4 h-4 text-teal-400" />
+            <h3 className="text-sm font-bold text-tinta flex items-center gap-2">
+              <FileSpreadsheet className="w-4 h-4 text-teal-700" />
               3. Plano de Ação (seção 8 do PGR)
             </h3>
-            <p className="text-[11px] text-slate-400">
+            <p className="text-[11px] text-tinta-2">
               O mesmo quadro do PDF. Ações se cadastram, aceitam e acompanham na aba 2.1 (Plano de Ação): sugestão
               não aceita sai como pendência.
             </p>
-            <div className="bg-slate-950 border border-slate-800 rounded-xl overflow-x-auto">
-              <table className="w-full min-w-[720px] text-left text-xs text-slate-300">
-                <thead className="bg-slate-900 text-slate-400 uppercase text-[10px] border-b border-slate-800">
+            <div className="bg-fundo border border-borda rounded-xl overflow-x-auto">
+              <table className="w-full min-w-[720px] text-left text-xs text-tinta">
+                <thead className="bg-superficie text-tinta-2 uppercase text-[10px] border-b border-borda">
                   <tr>
                     <th className="py-2.5 px-3">Nº</th>
                     <th className="py-2.5 px-3">Medida</th>
@@ -690,41 +690,41 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
                     <th className="py-2.5 px-3">Status</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800/60">
+                <tbody className="divide-y divide-borda">
                   {actionPlanRows.length === 0 ? (
                     <tr>
-                      <td colSpan={6} className="py-6 px-3 text-center text-slate-500">
+                      <td colSpan={6} className="py-6 px-3 text-center text-tinta-2">
                         Sem riscos no inventário deste cliente, não há plano de ação: o plano nasce do inventário.
                       </td>
                     </tr>
                   ) : actionPlanRows.map(row => {
                     const pendente = !row.aceita || row.faltas.length > 0;
                     return (
-                      <tr key={row.numero} className="hover:bg-slate-900/40 align-top">
-                        <td className="py-2.5 px-3 font-mono text-[10px] text-slate-200 whitespace-nowrap">{row.numero}</td>
+                      <tr key={row.numero} className="hover:bg-superficie align-top">
+                        <td className="py-2.5 px-3 font-mono text-[10px] text-tinta whitespace-nowrap">{row.numero}</td>
                         <td className="py-2.5 px-3">
-                          <span className="font-semibold text-slate-100">{row.medida}</span>
-                          <div className="text-[10px] text-slate-500">{row.hierarquia} · {row.tipo}</div>
+                          <span className="font-semibold text-tinta">{row.medida}</span>
+                          <div className="text-[10px] text-tinta-2">{row.hierarquia} · {row.tipo}</div>
                           {row.faltas.length > 0 && (
-                            <div className="text-[10px] text-amber-300 mt-0.5">{row.faltas.join('; ')}</div>
+                            <div className="text-[10px] text-amber-700 mt-0.5">{row.faltas.join('; ')}</div>
                           )}
                         </td>
-                        <td className="py-2.5 px-3 text-slate-400">{row.gheNome}</td>
+                        <td className="py-2.5 px-3 text-tinta-2">{row.gheNome}</td>
                         <td className="py-2.5 px-3">
-                          {row.responsavel || <span className="text-amber-300">a definir</span>}
+                          {row.responsavel || <span className="text-amber-700">a definir</span>}
                         </td>
                         <td className="py-2.5 px-3 whitespace-nowrap">
                           {row.prazo
-                            ? <span className={row.atrasada ? 'text-rose-300 font-semibold' : 'text-teal-400'}>{dataBR(row.prazo)}</span>
-                            : <span className="text-amber-300">a definir</span>}
+                            ? <span className={row.atrasada ? 'text-rose-700 font-semibold' : 'text-teal-700'}>{dataBR(row.prazo)}</span>
+                            : <span className="text-amber-700">a definir</span>}
                         </td>
                         <td className="py-2.5 px-3">
                           <span className={`px-2 py-0.5 rounded font-bold text-[10px] ${
                             row.atrasada
-                              ? 'bg-rose-500/20 text-rose-300'
+                              ? 'bg-rose-500/20 text-rose-700'
                               : pendente
-                                ? 'bg-amber-500/20 text-amber-300'
-                                : 'bg-emerald-500/20 text-emerald-300'
+                                ? 'bg-amber-500/20 text-amber-700'
+                                : 'bg-marca-suave text-marca-escura'
                           }`}>
                             {row.status}
                           </span>
@@ -741,22 +741,22 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
 
       {/* VIEW 2: PGRTR (NR-31) */}
       {activeDocType === 'PGRTR' && (
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-6 shadow-xl" id="pgrtr-doc-view">
-          <div className="border-b border-slate-800 pb-4 flex justify-between items-start">
+        <div className="bg-superficie border border-borda rounded-2xl p-6 space-y-6 shadow-xl" id="pgrtr-doc-view">
+          <div className="border-b border-borda pb-4 flex justify-between items-start">
             <div>
-              <span className="px-2.5 py-1 bg-emerald-500/20 text-emerald-300 text-xs font-bold rounded">
+              <span className="px-2.5 py-1 bg-marca-suave text-marca-escura text-xs font-bold rounded">
                 PROGRAMA DE GERENCIAMENTO DE RISCOS NO TRABALHO RURAL (PGRTR - NR-31)
               </span>
-              <h2 className="text-lg font-bold text-slate-100 mt-2">
+              <h2 className="text-lg font-bold text-tinta mt-2">
                 Gestão de Segurança, Saúde e Meio Ambiente de Trabalho Rural
               </h2>
-              <p className="text-xs text-slate-400">
-                Propriedade Rural: <strong className="text-slate-200">{clientObj?.trade_name || clientObj?.legal_name || 'Cliente não selecionado'}</strong> • CNPJ/CAEPF: <span className="font-mono">{clientObj?.document_number || 'Não informado'}</span>
+              <p className="text-xs text-tinta-2">
+                Propriedade Rural: <strong className="text-tinta">{clientObj?.trade_name || clientObj?.legal_name || 'Cliente não selecionado'}</strong> • CNPJ/CAEPF: <span className="font-mono">{clientObj?.document_number || 'Não informado'}</span>
               </p>
             </div>
-            <div className="text-right text-xs text-slate-400 space-y-1">
-              <div>Emissão: <span className="text-emerald-400 font-semibold">{emissao}</span></div>
-              <div>Norma: <span className="text-slate-200 font-bold">NR-31 (Portaria 22.677)</span></div>
+            <div className="text-right text-xs text-tinta-2 space-y-1">
+              <div>Emissão: <span className="text-marca-escura font-semibold">{emissao}</span></div>
+              <div>Norma: <span className="text-tinta font-bold">NR-31 (Portaria 22.677)</span></div>
             </div>
           </div>
 
@@ -766,14 +766,14 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
               tinha trocado isso pelo inventario real e por uma ressalva de
               escopo; a tela repete o PDF (exportPGRTRDocumentPdf). */}
           <div className="space-y-3">
-            <h3 className="text-sm font-bold text-slate-200 flex items-center gap-2">
-              <Tractor className="w-4 h-4 text-emerald-400" />
+            <h3 className="text-sm font-bold text-tinta flex items-center gap-2">
+              <Tractor className="w-4 h-4 text-marca-escura" />
               Inventário de Riscos do Estabelecimento Rural
             </h3>
 
-            <div className="bg-slate-950 border border-slate-800 rounded-xl overflow-x-auto">
-              <table className="w-full min-w-[640px] text-left text-xs text-slate-300">
-                <thead className="bg-slate-900 text-slate-400 uppercase text-[10px] border-b border-slate-800">
+            <div className="bg-fundo border border-borda rounded-xl overflow-x-auto">
+              <table className="w-full min-w-[640px] text-left text-xs text-tinta">
+                <thead className="bg-superficie text-tinta-2 uppercase text-[10px] border-b border-borda">
                   <tr>
                     <th className="py-2.5 px-3">GHE / Frente de trabalho</th>
                     <th className="py-2.5 px-3">Perigo / Agente de risco</th>
@@ -781,10 +781,10 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
                     <th className="py-2.5 px-3">Situação</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800/60">
+                <tbody className="divide-y divide-borda">
                   {riscosDoCliente.filter(r => r.status !== 'INACTIVE').length === 0 ? (
                     <tr>
-                      <td colSpan={4} className="py-6 px-3 text-center text-amber-300">
+                      <td colSpan={4} className="py-6 px-3 text-center text-amber-700">
                         Inventário de riscos vazio: não há agente de risco cadastrado para este estabelecimento.
                         Levante os perigos antes de emitir o PGRTR.
                       </td>
@@ -797,22 +797,22 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
                     ].filter(Boolean);
                     return (
                       <tr key={r.id} className="align-top">
-                        <td className="py-2.5 px-3 text-slate-400">
+                        <td className="py-2.5 px-3 text-tinta-2">
                           {[ghe?.code, ghe?.name].filter(Boolean).join(' — ') || 'GHE não vinculado'}
                         </td>
                         <td className="py-2.5 px-3">
-                          <span className="font-semibold text-slate-100">{r.agent_name || 'Agente não identificado'}</span>
-                          <div className="text-[10px] text-slate-500">Fonte: {r.generating_source?.trim() || 'não informada'}</div>
+                          <span className="font-semibold text-tinta">{r.agent_name || 'Agente não identificado'}</span>
+                          <div className="text-[10px] text-tinta-2">Fonte: {r.generating_source?.trim() || 'não informada'}</div>
                         </td>
                         <td className="py-2.5 px-3">
-                          {controles.length > 0 ? controles.join(' · ') : <span className="text-amber-300">Nenhuma medida de controle registrada</span>}
+                          {controles.length > 0 ? controles.join(' · ') : <span className="text-amber-700">Nenhuma medida de controle registrada</span>}
                         </td>
                         <td className="py-2.5 px-3">
                           {r.epc_implemented && r.epc_effective
-                            ? <span className="text-emerald-300">Controle implantado e avaliado como eficaz</span>
+                            ? <span className="text-marca-escura">Controle implantado e avaliado como eficaz</span>
                             : r.epc_implemented
-                              ? <span className="text-slate-300">Controle implantado, eficácia não confirmada</span>
-                              : <span className="text-amber-300">Pendente — sem controle coletivo registrado</span>}
+                              ? <span className="text-tinta">Controle implantado, eficácia não confirmada</span>
+                              : <span className="text-amber-700">Pendente — sem controle coletivo registrado</span>}
                         </td>
                       </tr>
                     );
@@ -833,23 +833,23 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
 
       {/* VIEW 3: PCMSO (NR-07) */}
       {activeDocType === 'PCMSO' && (
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-6 shadow-xl" id="pcmso-doc-view">
-          <div className="border-b border-slate-800 pb-4 flex justify-between items-start gap-4">
+        <div className="bg-superficie border border-borda rounded-2xl p-6 space-y-6 shadow-xl" id="pcmso-doc-view">
+          <div className="border-b border-borda pb-4 flex justify-between items-start gap-4">
             <div>
-              <span className="px-2.5 py-1 bg-cyan-500/20 text-cyan-300 text-xs font-bold rounded">
+              <span className="px-2.5 py-1 bg-cyan-500/20 text-cyan-700 text-xs font-bold rounded">
                 PROGRAMA DE CONTROLE MÉDICO DE SAÚDE OCUPACIONAL (PCMSO — NR-07)
               </span>
-              <h2 className="text-lg font-bold text-slate-100 mt-2">
+              <h2 className="text-lg font-bold text-tinta mt-2">
                 Exames por GHE, a partir do inventário do PGR
               </h2>
-              <p className="text-xs text-slate-400 max-w-[46rem]">
+              <p className="text-xs text-tinta-2 max-w-[46rem]">
                 O PDF traz o programa inteiro: diretrizes, base legal, vedações, riscos e agravos, exames e prazos,
                 Anexos da NR-07, atividades críticas, ASO, prontuário e sigilo, relatório analítico e checklist.
               </p>
             </div>
-            <div className="text-right text-xs text-slate-400 space-y-1 shrink-0">
-              <div>Base: <span className="text-cyan-400 font-semibold">NR-07, subitem 7.5.1</span></div>
-              <div>Validade: <span className="text-slate-200">a NR-07 não fixa</span></div>
+            <div className="text-right text-xs text-tinta-2 space-y-1 shrink-0">
+              <div>Base: <span className="text-cyan-700 font-semibold">NR-07, subitem 7.5.1</span></div>
+              <div>Validade: <span className="text-tinta">a NR-07 não fixa</span></div>
             </div>
           </div>
           <PcmsoResumo
@@ -866,26 +866,26 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
       )}
       {/* VIEW 4: LTCAT */}
       {activeDocType === 'LTCAT' && (
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-6 shadow-xl" id="ltcat-doc-view">
-          <div className="border-b border-slate-800 pb-4 flex justify-between items-start">
+        <div className="bg-superficie border border-borda rounded-2xl p-6 space-y-6 shadow-xl" id="ltcat-doc-view">
+          <div className="border-b border-borda pb-4 flex justify-between items-start">
             <div>
-              <span className="px-2.5 py-1 bg-purple-500/20 text-purple-300 text-xs font-bold rounded">
+              <span className="px-2.5 py-1 bg-purple-500/20 text-purple-700 text-xs font-bold rounded">
                 LAUDO TÉCNICO DE CONDIÇÕES AMBIENTAIS DO TRABALHO (LTCAT - INSS)
               </span>
-              <h2 className="text-lg font-bold text-slate-100 mt-2">
+              <h2 className="text-lg font-bold text-tinta mt-2">
                 Caracterização para Aposentadoria Especial & eSocial S-2240
               </h2>
-              <p className="text-xs text-slate-400">
-                Engenheiro de Segurança do Trabalho: <strong className="text-slate-200">{rtWithCouncil}{rtArt ? ` - ART ${rtArt}` : ''}</strong>
+              <p className="text-xs text-tinta-2">
+                Engenheiro de Segurança do Trabalho: <strong className="text-tinta">{rtWithCouncil}{rtArt ? ` - ART ${rtArt}` : ''}</strong>
               </p>
             </div>
-            <div className="text-right text-xs text-slate-400 space-y-1">
+            <div className="text-right text-xs text-tinta-2 space-y-1">
               <div>Artigo 58 da Lei nº 8.213/91</div>
               {/* Era "Codigo 04 (25 Anos)" para todo cliente. Os codigos sao os
                   informados no inventario deste cliente. */}
               <div>
                 Enquadramento GFIP:{' '}
-                <span className="text-purple-400 font-bold">
+                <span className="text-purple-700 font-bold">
                   {(() => {
                     const codigos = Array.from(new Set(
                       riscosDoCliente.filter(r => r.special_retirement_applies && r.gfip_code).map(r => r.gfip_code)
@@ -897,28 +897,28 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
             </div>
           </div>
 
-          <div className="space-y-4 text-xs text-slate-300">
+          <div className="space-y-4 text-xs text-tinta">
             <p>
               O presente Laudo Técnico tem por objetivo analisar a exposição habitual e permanente a agentes nocivos químicos, físicos, biológicos ou associação de agentes prejudiciais à saúde ou à integridade física do trabalhador, para fins de concessão de aposentadoria especial.
             </p>
 
-            <div className="bg-slate-950 border border-slate-800 rounded-xl p-4 space-y-3">
-              <h4 className="font-bold text-slate-100 text-sm">Resumo dos Agentes Caracterizados para Aposentadoria Especial:</h4>
+            <div className="bg-fundo border border-borda rounded-xl p-4 space-y-3">
+              <h4 className="font-bold text-tinta text-sm">Resumo dos Agentes Caracterizados para Aposentadoria Especial:</h4>
               {/* Listava environmentalRisks inteiro (riscos de TODOS os clientes)
                   e dava "25 Anos" a todo codigo que nao fosse 02 ou 03 - inclusive
                   risco sem codigo informado. */}
               <div className="space-y-2">
                 {riscosDoCliente.filter(r => r.special_retirement_applies).length === 0 && (
-                  <p className="text-slate-500">Nenhum agente do inventário deste cliente está marcado para aposentadoria especial.</p>
+                  <p className="text-tinta-2">Nenhum agente do inventário deste cliente está marcado para aposentadoria especial.</p>
                 )}
                 {riscosDoCliente.filter(r => r.special_retirement_applies).map(r => (
                   <div key={r.id} className="p-3 bg-purple-500/10 border border-purple-500/30 rounded-lg flex flex-col sm:flex-row justify-between sm:items-center gap-2">
                     <div className="min-w-0">
-                      <span className="font-bold text-purple-300">{r.agent_name}</span>
+                      <span className="font-bold text-purple-700">{r.agent_name}</span>
                       {r.risk_code_table_24 && (
-                        <span className="ml-2 font-mono text-[11px] text-teal-400">Tab. 24: {r.risk_code_table_24}</span>
+                        <span className="ml-2 font-mono text-[11px] text-teal-700">Tab. 24: {r.risk_code_table_24}</span>
                       )}
-                      <p className="text-[11px] text-slate-400 mt-0.5">
+                      <p className="text-[11px] text-tinta-2 mt-0.5">
                         {r.generating_source || 'Fonte não informada'} • Medição:{' '}
                         {r.measured_value
                           ? `${r.measured_value} ${r.measurement_unit || ''}`
@@ -944,22 +944,22 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
 
       {/* VIEW 5: AEP (NR-17) */}
       {activeDocType === 'AEP' && (
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-6 shadow-xl" id="aep-doc-view">
-          <div className="border-b border-slate-800 pb-4 flex justify-between items-start">
+        <div className="bg-superficie border border-borda rounded-2xl p-6 space-y-6 shadow-xl" id="aep-doc-view">
+          <div className="border-b border-borda pb-4 flex justify-between items-start">
             <div>
-              <span className="px-2.5 py-1 bg-teal-500/20 text-teal-300 text-xs font-bold rounded">
+              <span className="px-2.5 py-1 bg-teal-500/20 text-teal-700 text-xs font-bold rounded">
                 AVALIAÇÃO ERGONÔMICA PRELIMINAR (AEP - NR-17, ITEM 17.3)
               </span>
-              <h2 className="text-lg font-bold text-slate-100 mt-2">
+              <h2 className="text-lg font-bold text-tinta mt-2">
                 Situações de trabalho avaliadas, aspecto por aspecto
               </h2>
-              <p className="text-xs text-slate-400">
-                Responsável técnico: <strong className="text-slate-200">{rtWithCouncil}</strong>
+              <p className="text-xs text-tinta-2">
+                Responsável técnico: <strong className="text-tinta">{rtWithCouncil}</strong>
               </p>
             </div>
-            <div className="text-right text-xs text-slate-400 space-y-1">
-              <div>Registro obrigatório: <span className="text-teal-400 font-semibold">subitem 17.3.1.2.1</span></div>
-              <div>Integra o inventário: <span className="text-slate-200 font-bold">item 17.3.5</span></div>
+            <div className="text-right text-xs text-tinta-2 space-y-1">
+              <div>Registro obrigatório: <span className="text-teal-700 font-semibold">subitem 17.3.1.2.1</span></div>
+              <div>Integra o inventário: <span className="text-tinta font-bold">item 17.3.5</span></div>
             </div>
           </div>
 
@@ -970,9 +970,9 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
               declarar que não há o que avaliar.
             </div>
           ) : (
-            <div className="bg-slate-950 border border-slate-800 rounded-xl overflow-x-auto">
-              <table className="w-full text-left text-xs text-slate-300">
-                <thead className="bg-slate-900 text-slate-400 uppercase text-[10px] border-b border-slate-800">
+            <div className="bg-fundo border border-borda rounded-xl overflow-x-auto">
+              <table className="w-full text-left text-xs text-tinta">
+                <thead className="bg-superficie text-tinta-2 uppercase text-[10px] border-b border-borda">
                   <tr>
                     <th className="py-3 px-4">Situação de trabalho</th>
                     <th className="py-3 px-4">Abordagem</th>
@@ -981,18 +981,18 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
                     <th className="py-3 px-4">AET (17.3.2)</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800/60">
+                <tbody className="divide-y divide-borda">
                   {clientAeps.map((a: any) => {
                     const inadequados = Object.values(a.aspects || {})
                       .filter((x: any) => x?.conclusao === 'INADEQUADO').length;
                     const gatilhos = (a.aet_triggers || []).length;
                     return (
-                      <tr key={a.id} className="hover:bg-slate-900/40">
-                        <td className="py-3 px-4 font-bold text-slate-100">{a.situation_name || 'Sem nome'}</td>
-                        <td className="py-3 px-4 text-slate-300">{a.approach || 'PENDENTE'}</td>
-                        <td className="py-3 px-4 font-mono text-amber-400">{inadequados}</td>
-                        <td className="py-3 px-4 text-slate-300">{(a.prevention_measures || []).join(', ') || '—'}</td>
-                        <td className="py-3 px-4 text-slate-300">
+                      <tr key={a.id} className="hover:bg-superficie">
+                        <td className="py-3 px-4 font-bold text-tinta">{a.situation_name || 'Sem nome'}</td>
+                        <td className="py-3 px-4 text-tinta">{a.approach || 'PENDENTE'}</td>
+                        <td className="py-3 px-4 font-mono text-amber-700">{inadequados}</td>
+                        <td className="py-3 px-4 text-tinta">{(a.prevention_measures || []).join(', ') || '—'}</td>
+                        <td className="py-3 px-4 text-tinta">
                           {a.aet_report_date ? 'Realizada' : gatilhos > 0 ? 'Gatilho observado' : 'Não exigível'}
                         </td>
                       </tr>
@@ -1003,7 +1003,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
             </div>
           )}
 
-          <p className="text-[11px] text-slate-500">
+          <p className="text-[11px] text-tinta-2">
             O PDF traz uma página por situação, com a conclusão de cada um dos seis aspectos, o que se
             observou, as medidas de prevenção, a oitiva dos trabalhadores e o quadro de assinaturas.
           </p>
@@ -1012,23 +1012,23 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
 
       {/* VIEW 5.1: FATORES PSICOSSOCIAIS (recorte da AEP e do PGR) */}
       {activeDocType === 'PSICOSSOCIAL' && (
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-6 shadow-xl" id="psicossocial-doc-view">
-          <div className="border-b border-slate-800 pb-4 flex justify-between items-start gap-4">
+        <div className="bg-superficie border border-borda rounded-2xl p-6 space-y-6 shadow-xl" id="psicossocial-doc-view">
+          <div className="border-b border-borda pb-4 flex justify-between items-start gap-4">
             <div>
-              <span className="px-2.5 py-1 bg-teal-500/20 text-teal-300 text-xs font-bold rounded">
+              <span className="px-2.5 py-1 bg-teal-500/20 text-teal-700 text-xs font-bold rounded">
                 FATORES DE RISCO PSICOSSOCIAIS RELACIONADOS AO TRABALHO
               </span>
-              <h2 className="text-lg font-bold text-slate-100 mt-2">
+              <h2 className="text-lg font-bold text-tinta mt-2">
                 Recorte da AEP e do inventário e plano de ação do PGR
               </h2>
-              <p className="text-xs text-slate-400 max-w-[46rem]">
+              <p className="text-xs text-tinta-2 max-w-[46rem]">
                 Não traz avaliação própria: cada linha sai dos mesmos registros da AEP e do PGR. A avaliação se
                 faz em Engenharia SST &gt; 13. Avaliação Ergonômica, no botão de fatores psicossociais de cada situação.
               </p>
             </div>
-            <div className="text-right text-xs text-slate-400 space-y-1 shrink-0">
-              <div>Base: <span className="text-teal-400 font-semibold">NR-01, 1.5.3.2.1</span></div>
-              <div>Integra o inventário: <span className="text-slate-200 font-bold">NR-17, 17.3.5</span></div>
+            <div className="text-right text-xs text-tinta-2 space-y-1 shrink-0">
+              <div>Base: <span className="text-teal-700 font-semibold">NR-01, 1.5.3.2.1</span></div>
+              <div>Integra o inventário: <span className="text-tinta font-bold">NR-17, 17.3.5</span></div>
             </div>
           </div>
 
@@ -1038,9 +1038,9 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
               em todas as situações de trabalho (item 17.2.1 da NR-17).
             </div>
           ) : (
-            <div className="bg-slate-950 border border-slate-800 rounded-xl overflow-x-auto">
-              <table className="w-full text-left text-xs text-slate-300">
-                <thead className="bg-slate-900 text-slate-400 uppercase text-[10px] border-b border-slate-800">
+            <div className="bg-fundo border border-borda rounded-xl overflow-x-auto">
+              <table className="w-full text-left text-xs text-tinta">
+                <thead className="bg-superficie text-tinta-2 uppercase text-[10px] border-b border-borda">
                   <tr>
                     <th className="py-3 px-4">Situação de trabalho</th>
                     <th className="py-3 px-4">Fatores avaliados</th>
@@ -1048,19 +1048,19 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
                     <th className="py-3 px-4">O que falta</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800/60">
+                <tbody className="divide-y divide-borda">
                   {clientAeps.filter((a: any) => a?.status !== 'INACTIVE').map((a: any) => {
                     const psico = resumoPsicossocial(a);
                     const faltas = faltasPsicossociais(a);
                     return (
-                      <tr key={a.id} className="hover:bg-slate-900/40 align-top">
-                        <td className="py-3 px-4 font-bold text-slate-100">{a.situation_name || 'Sem nome'}</td>
+                      <tr key={a.id} className="hover:bg-superficie align-top">
+                        <td className="py-3 px-4 font-bold text-tinta">{a.situation_name || 'Sem nome'}</td>
                         <td className="py-3 px-4">
-                          {avaliacaoIniciada(a) ? `${psico.avaliados}/${psico.total}` : <span className="text-amber-400">Não avaliados</span>}
+                          {avaliacaoIniciada(a) ? `${psico.avaliados}/${psico.total}` : <span className="text-amber-700">Não avaliados</span>}
                         </td>
-                        <td className="py-3 px-4 text-rose-300">{psico.presentes.join(', ') || '—'}</td>
-                        <td className="py-3 px-4 text-amber-400">
-                          {faltas.length === 0 ? <span className="text-emerald-400">Completa</span> : faltas.map((f) => f.curto).join('; ')}
+                        <td className="py-3 px-4 text-rose-700">{psico.presentes.join(', ') || '—'}</td>
+                        <td className="py-3 px-4 text-amber-700">
+                          {faltas.length === 0 ? <span className="text-marca-escura">Completa</span> : faltas.map((f) => f.curto).join('; ')}
                         </td>
                       </tr>
                     );
@@ -1070,7 +1070,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
             </div>
           )}
 
-          <p className="text-[11px] text-slate-500">
+          <p className="text-[11px] text-tinta-2">
             O PDF traz a base normativa, o que a avaliação não é, o quadro de fatores de cada situação, os riscos
             psicossociais do inventário com as ações do plano do PGR — mesma numeração — e as pendências.
           </p>
@@ -1079,28 +1079,28 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
 
       {/* VIEW 6: LAUDO DE INSALUBRIDADE (NR-15) */}
       {activeDocType === 'INSALUBRIDADE' && (
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-6 shadow-xl" id="insalubridade-doc-view">
-          <div className="border-b border-slate-800 pb-4 flex justify-between items-start">
+        <div className="bg-superficie border border-borda rounded-2xl p-6 space-y-6 shadow-xl" id="insalubridade-doc-view">
+          <div className="border-b border-borda pb-4 flex justify-between items-start">
             <div>
-              <span className="px-2.5 py-1 bg-amber-500/20 text-amber-300 text-xs font-bold rounded">
+              <span className="px-2.5 py-1 bg-amber-500/20 text-amber-700 text-xs font-bold rounded">
                 LAUDO TÉCNICO PERICIAL DE INSALUBRIDADE (NR-15 / ART. 189 A 192 CLT)
               </span>
-              <h2 className="text-lg font-bold text-slate-100 mt-2">
+              <h2 className="text-lg font-bold text-tinta mt-2">
                 Avaliação de Limites de Tolerância & Adicionais Trabalhistas (10%, 20% e 40%)
               </h2>
-              <p className="text-xs text-slate-400">
-                Perito Técnico Responsável: <strong className="text-slate-200">{rtWithCouncil}</strong>
+              <p className="text-xs text-tinta-2">
+                Perito Técnico Responsável: <strong className="text-tinta">{rtWithCouncil}</strong>
               </p>
             </div>
-            <div className="text-right text-xs text-slate-400 space-y-1">
-              <div>Legislação: <span className="text-amber-400 font-semibold">Art. 189 a 192 CLT</span></div>
-              <div>Base de Cálculo: <span className="text-slate-200 font-bold">Salário Mínimo Vigente</span></div>
+            <div className="text-right text-xs text-tinta-2 space-y-1">
+              <div>Legislação: <span className="text-amber-700 font-semibold">Art. 189 a 192 CLT</span></div>
+              <div>Base de Cálculo: <span className="text-tinta font-bold">Salário Mínimo Vigente</span></div>
             </div>
           </div>
 
-          <div className="bg-slate-950 border border-slate-800 rounded-xl overflow-x-auto">
-            <table className="w-full text-left text-xs text-slate-300">
-              <thead className="bg-slate-900 text-slate-400 uppercase text-[10px] border-b border-slate-800">
+          <div className="bg-fundo border border-borda rounded-xl overflow-x-auto">
+            <table className="w-full text-left text-xs text-tinta">
+              <thead className="bg-superficie text-tinta-2 uppercase text-[10px] border-b border-borda">
                 <tr>
                   <th className="py-3 px-4">GHE / Posto de Trabalho</th>
                   <th className="py-3 px-4">Agente Nocivo Avaliado</th>
@@ -1109,20 +1109,20 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
                   <th className="py-3 px-4">Conclusão Técnica / Adicional</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/60">
+              <tbody className="divide-y divide-borda">
                 {corpoInsalubridade.linhas.length ? (
                   corpoInsalubridade.linhas.map((linha, i) => (
-                    <tr key={i} className="hover:bg-slate-900/40">
-                      <td className="py-3 px-4 font-bold text-slate-100">{linha[0]}</td>
-                      <td className="py-3 px-4 text-slate-300">{linha[1]}</td>
-                      <td className="py-3 px-4 font-mono text-amber-400">{linha[2]}</td>
+                    <tr key={i} className="hover:bg-superficie">
+                      <td className="py-3 px-4 font-bold text-tinta">{linha[0]}</td>
+                      <td className="py-3 px-4 text-tinta">{linha[1]}</td>
+                      <td className="py-3 px-4 font-mono text-amber-700">{linha[2]}</td>
                       <td className="py-3 px-4">{linha[3]}</td>
                       <td className="py-3 px-4 font-semibold">{linha[4]}</td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={5} className="py-6 px-4 text-center text-slate-500">
+                    <td colSpan={5} className="py-6 px-4 text-center text-tinta-2">
                       Inventário de riscos vazio — nenhum agente foi periciado.
                     </td>
                   </tr>
@@ -1135,28 +1135,28 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
 
       {/* VIEW 6: LAUDO DE PERICULOSIDADE (NR-16) */}
       {activeDocType === 'PERICULOSIDADE' && (
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-6 shadow-xl" id="periculosidade-doc-view">
-          <div className="border-b border-slate-800 pb-4 flex justify-between items-start">
+        <div className="bg-superficie border border-borda rounded-2xl p-6 space-y-6 shadow-xl" id="periculosidade-doc-view">
+          <div className="border-b border-borda pb-4 flex justify-between items-start">
             <div>
-              <span className="px-2.5 py-1 bg-rose-500/20 text-rose-300 text-xs font-bold rounded">
+              <span className="px-2.5 py-1 bg-rose-500/20 text-rose-700 text-xs font-bold rounded">
                 LAUDO TÉCNICO PERICIAL DE PERICULOSIDADE (NR-16 / ART. 193 DA CLT)
               </span>
-              <h2 className="text-lg font-bold text-slate-100 mt-2">
+              <h2 className="text-lg font-bold text-tinta mt-2">
                 Atividades e Operações Perigosas com Adicional de 30% sobre o Salário Base
               </h2>
-              <p className="text-xs text-slate-400">
-                Perito Técnico: <strong className="text-slate-200">{rtWithCouncil}{rtArt ? ` / ART ${rtArt}` : ''}</strong>
+              <p className="text-xs text-tinta-2">
+                Perito Técnico: <strong className="text-tinta">{rtWithCouncil}{rtArt ? ` / ART ${rtArt}` : ''}</strong>
               </p>
             </div>
-            <div className="text-right text-xs text-slate-400 space-y-1">
-              <div>Adicional: <span className="text-rose-400 font-bold text-sm">30% sobre salário-base</span></div>
-              <div>Fundamentação: <span className="text-slate-200 font-bold">Art. 193 da CLT</span></div>
+            <div className="text-right text-xs text-tinta-2 space-y-1">
+              <div>Adicional: <span className="text-rose-700 font-bold text-sm">30% sobre salário-base</span></div>
+              <div>Fundamentação: <span className="text-tinta font-bold">Art. 193 da CLT</span></div>
             </div>
           </div>
 
-          <div className="bg-slate-950 border border-slate-800 rounded-xl overflow-x-auto">
-            <table className="w-full text-left text-xs text-slate-300">
-              <thead className="bg-slate-900 text-slate-400 uppercase text-[10px] border-b border-slate-800">
+          <div className="bg-fundo border border-borda rounded-xl overflow-x-auto">
+            <table className="w-full text-left text-xs text-tinta">
+              <thead className="bg-superficie text-tinta-2 uppercase text-[10px] border-b border-borda">
                 <tr>
                   <th className="py-3 px-4">GHE / Função Avaliada</th>
                   <th className="py-3 px-4">Atividade / Operação Executada</th>
@@ -1165,20 +1165,20 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
                   <th className="py-3 px-4">Conclusão Pericial / Adicional</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/60">
+              <tbody className="divide-y divide-borda">
                 {corpoPericulosidade.linhas.length ? (
                   corpoPericulosidade.linhas.map((linha, i) => (
-                    <tr key={i} className="hover:bg-slate-900/40">
-                      <td className="py-3 px-4 font-bold text-slate-100">{linha[0]}</td>
-                      <td className="py-3 px-4 text-slate-300">{linha[1]}</td>
-                      <td className="py-3 px-4 font-mono text-rose-400">{linha[2]}</td>
+                    <tr key={i} className="hover:bg-superficie">
+                      <td className="py-3 px-4 font-bold text-tinta">{linha[0]}</td>
+                      <td className="py-3 px-4 text-tinta">{linha[1]}</td>
+                      <td className="py-3 px-4 font-mono text-rose-700">{linha[2]}</td>
                       <td className="py-3 px-4">{linha[3]}</td>
                       <td className="py-3 px-4 font-semibold">{linha[4]}</td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={5} className="py-6 px-4 text-center text-slate-500">
+                    <td colSpan={5} className="py-6 px-4 text-center text-tinta-2">
                       Inventário de riscos vazio — nenhuma atividade foi periciada.
                     </td>
                   </tr>
@@ -1193,9 +1193,9 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
       {activeDocType === 'XML_ESOCIAL' && (
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6" id="xml-inspector-view">
           {/* Events Sidebar */}
-          <div className="lg:col-span-1 bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-3">
-            <h3 className="font-bold text-slate-100 text-sm flex items-center gap-2">
-              <FileCode2 className="w-4 h-4 text-blue-400" />
+          <div className="lg:col-span-1 bg-superficie border border-borda rounded-xl p-4 space-y-3">
+            <h3 className="font-bold text-tinta text-sm flex items-center gap-2">
+              <FileCode2 className="w-4 h-4 text-blue-700" />
               Eventos Gerados ({esocialEvents.length})
             </h3>
 
@@ -1209,18 +1209,18 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
                     onClick={() => setSelectedXmlEventId(evt.id)}
                     className={`p-3 rounded-lg border text-left cursor-pointer transition-all ${
                       isSelected
-                        ? 'bg-blue-500/10 border-blue-500/40 text-slate-100'
-                        : 'bg-slate-950/60 border-slate-800/80 hover:border-slate-700 text-slate-300'
+                        ? 'bg-blue-500/10 border-blue-500/40 text-tinta'
+                        : 'bg-fundo border-borda hover:border-borda text-tinta'
                     }`}
                   >
                     <div className="flex items-center justify-between">
-                      <span className="font-mono text-xs font-bold text-blue-400">{evt.event_type}</span>
-                      <span className="text-[10px] text-slate-500 font-mono">{evt.event_number}</span>
+                      <span className="font-mono text-xs font-bold text-blue-700">{evt.event_type}</span>
+                      <span className="text-[10px] text-tinta-2 font-mono">{evt.event_number}</span>
                     </div>
-                    <h4 className="font-bold text-xs mt-1 truncate text-slate-100">{evt.worker_name}</h4>
-                    <div className="flex items-center justify-between text-[10px] text-slate-400 mt-2">
+                    <h4 className="font-bold text-xs mt-1 truncate text-tinta">{evt.worker_name}</h4>
+                    <div className="flex items-center justify-between text-[10px] text-tinta-2 mt-2">
                       <span className="font-mono">CPF: {evt.worker_cpf}</span>
-                      <span className={`font-semibold ${evt.status === 'SUCCESS' ? 'text-emerald-400' : 'text-amber-300'}`}>
+                      <span className={`font-semibold ${evt.status === 'SUCCESS' ? 'text-marca-escura' : 'text-amber-700'}`}>
                         {evt.status}
                       </span>
                     </div>
@@ -1231,22 +1231,22 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
           </div>
 
           {/* XML Viewer & Actions */}
-          <div className="lg:col-span-3 bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-4">
+          <div className="lg:col-span-3 bg-superficie border border-borda rounded-xl p-5 space-y-4">
             {selectedEvent ? (
               <>
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-borda pb-3">
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="px-2 py-0.5 bg-blue-500/20 text-blue-300 font-mono text-xs font-bold rounded">
+                      <span className="px-2 py-0.5 bg-blue-500/20 text-blue-700 font-mono text-xs font-bold rounded">
                         {selectedEvent.event_type}
                       </span>
-                      <h3 className="font-bold text-slate-100 text-sm">
+                      <h3 className="font-bold text-tinta text-sm">
                         {selectedEvent.worker_name} (Matrícula: {selectedEvent.worker_registration})
                       </h3>
                     </div>
-                    <p className="text-xs text-slate-400 mt-1">
+                    <p className="text-xs text-tinta-2 mt-1">
                       {/* Dizia "Certificado: ICP-Brasil A1 (SERPRO)": o sistema nao assina nem transmite. */}
-                      Status: <strong className="text-slate-200">{selectedEvent.status}</strong> • Envio: pelo canal oficial do eSocial (o PrevSafe ainda não assina nem transmite)
+                      Status: <strong className="text-tinta">{selectedEvent.status}</strong> • Envio: pelo canal oficial do eSocial (o PrevSafe ainda não assina nem transmite)
                     </p>
                   </div>
 
@@ -1254,15 +1254,15 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
                     <button
                       type="button"
                       onClick={handleCopyXml}
-                      className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-lg transition-all flex items-center gap-1.5"
+                      className="px-3 py-1.5 bg-superficie-2 hover:bg-superficie-3 text-tinta text-xs font-semibold rounded-lg transition-all flex items-center gap-1.5"
                     >
-                      {copiedCode ? <Check className="w-4 h-4 text-teal-400" /> : <Copy className="w-4 h-4" />}
+                      {copiedCode ? <Check className="w-4 h-4 text-teal-700" /> : <Copy className="w-4 h-4" />}
                       {copiedCode ? 'Copiado!' : 'Copiar XML'}
                     </button>
                     <button
                       type="button"
                       onClick={handleDownloadXml}
-                      className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-lg transition-all flex items-center gap-1.5"
+                      className="px-3 py-1.5 bg-superficie-2 hover:bg-superficie-3 text-tinta text-xs font-semibold rounded-lg transition-all flex items-center gap-1.5"
                     >
                       <Download className="w-4 h-4" />
                       Baixar .xml
@@ -1271,7 +1271,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
                       <button
                         type="button"
                         onClick={handleTransmitSelectedEvent}
-                        className="px-3.5 py-1.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 shadow-md"
+                        className="px-3.5 py-1.5 bg-marca hover:bg-marca-escura text-slate-950 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 shadow-md"
                       >
                         <Send className="w-4 h-4" />
                         Validar para envio
@@ -1282,13 +1282,13 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
 
                 {/* XML Code Box */}
                 <div className="relative">
-                  <pre className="bg-slate-950 p-4 rounded-xl border border-slate-800/90 text-slate-200 font-mono text-[11px] overflow-x-auto max-h-[500px] leading-relaxed select-all">
+                  <pre className="bg-fundo p-4 rounded-xl border border-borda text-tinta font-mono text-[11px] overflow-x-auto max-h-[500px] leading-relaxed select-all">
                     <code>{xmlPayload}</code>
                   </pre>
                 </div>
               </>
             ) : (
-              <div className="p-8 text-center text-slate-500 text-xs">
+              <div className="p-8 text-center text-tinta-2 text-xs">
                 Selecione um evento eSocial para inspecionar as TAGs XML.
               </div>
             )}

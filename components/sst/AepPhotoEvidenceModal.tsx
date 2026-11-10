@@ -256,29 +256,29 @@ export const AepPhotoEvidenceModal: React.FC<AepPhotoEvidenceModalProps> = ({ ae
   };
 
   return (
-    <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-[60rem] w-full p-6 space-y-4 shadow-2xl max-h-[92vh] overflow-y-auto">
-        <div className="flex items-start justify-between gap-4 border-b border-slate-800 pb-3">
+    <div className="fixed inset-0 bg-fundo backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div className="bg-superficie border border-borda rounded-2xl max-w-[60rem] w-full p-6 space-y-4 shadow-2xl max-h-[92vh] overflow-y-auto">
+        <div className="flex items-start justify-between gap-4 border-b border-borda pb-3">
           <div>
-            <h3 className="text-base font-bold text-slate-100 flex items-center gap-2">
-              <Camera className="w-5 h-5 text-teal-400" />
+            <h3 className="text-base font-bold text-tinta flex items-center gap-2">
+              <Camera className="w-5 h-5 text-teal-700" />
               Fotografias — {atual.situation_name}
             </h3>
-            <p className="text-[11px] text-slate-500 mt-1 max-w-[46rem]">
+            <p className="text-[11px] text-tinta-2 mt-1 max-w-[46rem]">
               A NR-17 não exige nem proíbe foto na AEP (subitens 17.3.1.1 e 17.3.1.2.1). Ela vira prova
               quando é autenticável, vem em par antes/depois e não identifica ninguém.
             </p>
           </div>
-          <button type="button" onClick={onClose} className="text-slate-400 hover:text-slate-200">
+          <button type="button" onClick={onClose} className="text-tinta-2 hover:text-tinta">
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {aviso && (
-          <div className="bg-slate-950 border border-teal-500/30 rounded-lg p-3 text-xs text-slate-300 flex items-start gap-2">
-            <ShieldCheck className="w-4 h-4 text-teal-400 shrink-0 mt-0.5" />
+          <div className="bg-fundo border border-teal-500/30 rounded-lg p-3 text-xs text-tinta flex items-start gap-2">
+            <ShieldCheck className="w-4 h-4 text-teal-700 shrink-0 mt-0.5" />
             <span className="flex-1">{aviso}</span>
-            <button type="button" onClick={() => setAviso('')} className="text-slate-500 hover:text-slate-300">
+            <button type="button" onClick={() => setAviso('')} className="text-tinta-2 hover:text-tinta">
               <X className="w-3.5 h-3.5" />
             </button>
           </div>
@@ -286,7 +286,7 @@ export const AepPhotoEvidenceModal: React.FC<AepPhotoEvidenceModalProps> = ({ ae
 
         {semCorrecao.length > 0 && (
           <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-3 flex items-start gap-2">
-            <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+            <AlertTriangle className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
             <p className="text-xs text-amber-200">
               <strong>Foto do problema sem foto da correção:</strong>{' '}
               {semCorrecao.map((c) => (c ? rotuloDoAspecto(c) : 'sem aspecto indicado')).join('; ')}.
@@ -298,34 +298,34 @@ export const AepPhotoEvidenceModal: React.FC<AepPhotoEvidenceModalProps> = ({ ae
 
         {/* ---------------------------------------------------------- fotos ativas */}
         {ativas.length === 0 ? (
-          <p className="text-xs text-slate-500 py-2">Nenhuma foto anexada a esta situação.</p>
+          <p className="text-xs text-tinta-2 py-2">Nenhuma foto anexada a esta situação.</p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {ativas.map((e) => (
-              <div key={e.id} className="bg-slate-950 border border-slate-800 rounded-xl overflow-hidden">
-                <div className="aspect-[4/3] bg-slate-900 flex items-center justify-center">
+              <div key={e.id} className="bg-fundo border border-borda rounded-xl overflow-hidden">
+                <div className="aspect-[4/3] bg-superficie flex items-center justify-center">
                   {miniaturas[e.id] ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={miniaturas[e.id]} alt={e.legenda} className="w-full h-full object-cover" />
                   ) : (
-                    <Loader2 className="w-5 h-5 text-slate-600 animate-spin" />
+                    <Loader2 className="w-5 h-5 text-tinta-2 animate-spin" />
                   )}
                 </div>
                 <div className="p-3 space-y-1">
-                  <p className="text-[10px] font-bold uppercase tracking-wide text-teal-300">
+                  <p className="text-[10px] font-bold uppercase tracking-wide text-teal-700">
                     {rotuloDoMomento(e.momento)} · {rotuloDoAspecto(e.aspecto)}
                   </p>
-                  <p className="text-xs text-slate-200">{e.legenda}</p>
-                  <p className="text-[10px] text-slate-500">
+                  <p className="text-xs text-tinta">{e.legenda}</p>
+                  <p className="text-[10px] text-tinta-2">
                     Registrada em {new Date(e.registrada_em).toLocaleString('pt-BR')} por {e.registrada_por_nome || '—'}
                   </p>
                   {e.local_do_registro && (
-                    <p className="text-[10px] text-slate-500 flex items-center gap-1">
+                    <p className="text-[10px] text-tinta-2 flex items-center gap-1">
                       <MapPin className="w-3 h-3" />
                       Aparelho no registro: ± {Math.round(e.local_do_registro.precisao_metros)} m
                     </p>
                   )}
-                  <p className="text-[10px] text-slate-600 font-mono flex items-center gap-1" title={e.sha256}>
+                  <p className="text-[10px] text-tinta-2 font-mono flex items-center gap-1" title={e.sha256}>
                     <Fingerprint className="w-3 h-3" />
                     {e.sha256.slice(0, 24)}…
                   </p>
@@ -333,7 +333,7 @@ export const AepPhotoEvidenceModal: React.FC<AepPhotoEvidenceModalProps> = ({ ae
                     <button
                       type="button"
                       onClick={() => iniciarSubstituicao(e)}
-                      className="text-[11px] font-bold text-slate-400 hover:text-teal-300 flex items-center gap-1"
+                      className="text-[11px] font-bold text-tinta-2 hover:text-teal-700 flex items-center gap-1"
                     >
                       <RefreshCw className="w-3 h-3" />
                       Substituir
@@ -341,7 +341,7 @@ export const AepPhotoEvidenceModal: React.FC<AepPhotoEvidenceModalProps> = ({ ae
                     <button
                       type="button"
                       onClick={() => { setDescartando(e); setAviso(''); }}
-                      className="text-[11px] font-bold text-slate-400 hover:text-rose-300 flex items-center gap-1"
+                      className="text-[11px] font-bold text-tinta-2 hover:text-rose-700 flex items-center gap-1"
                     >
                       <Archive className="w-3 h-3" />
                       Descartar
@@ -362,7 +362,7 @@ export const AepPhotoEvidenceModal: React.FC<AepPhotoEvidenceModalProps> = ({ ae
             <select
               value={motivoDescarte}
               onChange={(e) => setMotivoDescarte(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+              className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta"
             >
               <option value="">Motivo</option>
               {MOTIVOS_DE_DESCARTE.map((m) => <option key={m} value={m}>{m}</option>)}
@@ -372,13 +372,13 @@ export const AepPhotoEvidenceModal: React.FC<AepPhotoEvidenceModalProps> = ({ ae
               placeholder="Detalhe (opcional)"
               value={detalheDescarte}
               onChange={(e) => setDetalheDescarte(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+              className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta"
             />
             <div className="flex justify-end gap-2">
               <button
                 type="button"
                 onClick={() => setDescartando(null)}
-                className="px-3 py-1.5 text-slate-400 hover:text-slate-200 font-bold"
+                className="px-3 py-1.5 text-tinta-2 hover:text-tinta font-bold"
               >
                 Cancelar
               </button>
@@ -394,9 +394,9 @@ export const AepPhotoEvidenceModal: React.FC<AepPhotoEvidenceModalProps> = ({ ae
         )}
 
         {/* ---------------------------------------------------------- envio */}
-        <form onSubmit={enviar} className="bg-slate-950 border border-slate-800 rounded-xl p-4 space-y-3 text-xs">
-          <p className="text-sm font-bold text-slate-200 flex items-center gap-2">
-            <ImagePlus className="w-4 h-4 text-teal-400" />
+        <form onSubmit={enviar} className="bg-fundo border border-borda rounded-xl p-4 space-y-3 text-xs">
+          <p className="text-sm font-bold text-tinta flex items-center gap-2">
+            <ImagePlus className="w-4 h-4 text-teal-700" />
             {substituindo ? 'Substituir foto' : 'Anexar foto'}
           </p>
 
@@ -406,16 +406,16 @@ export const AepPhotoEvidenceModal: React.FC<AepPhotoEvidenceModalProps> = ({ ae
               accept={TIPOS_ACEITOS.join(',')}
               capture="environment"
               onChange={(e) => setArquivo(e.target.files?.[0] || null)}
-              className="block w-full text-slate-300 file:mr-3 file:px-3 file:py-1.5 file:rounded-lg file:border-0 file:bg-slate-800 file:text-slate-200 file:font-bold"
+              className="block w-full text-tinta file:mr-3 file:px-3 file:py-1.5 file:rounded-lg file:border-0 file:bg-superficie-2 file:text-tinta file:font-bold"
             />
-            <p className="text-[10px] text-slate-500 mt-1">
+            <p className="text-[10px] text-tinta-2 mt-1">
               JPEG ou PNG, até 10 MB. O arquivo sobe como está: o hash é calculado sobre ele.
             </p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-slate-400 font-semibold mb-1">O que a foto mostra</label>
+              <label className="block text-tinta-2 font-semibold mb-1">O que a foto mostra</label>
               <div className="space-y-1.5">
                 {MOMENTOS.map((m) => (
                   <label key={m.valor} className="flex items-start gap-2 cursor-pointer">
@@ -427,55 +427,55 @@ export const AepPhotoEvidenceModal: React.FC<AepPhotoEvidenceModalProps> = ({ ae
                       className="mt-0.5 accent-teal-500"
                     />
                     <span>
-                      <span className="text-slate-200 font-semibold">{m.rotulo}</span>
-                      <span className="block text-[10px] text-slate-500">{m.ajuda}</span>
+                      <span className="text-tinta font-semibold">{m.rotulo}</span>
+                      <span className="block text-[10px] text-tinta-2">{m.ajuda}</span>
                     </span>
                   </label>
                 ))}
               </div>
             </div>
             <div>
-              <label className="block text-slate-400 font-semibold mb-1">Aspecto da NR-17</label>
+              <label className="block text-tinta-2 font-semibold mb-1">Aspecto da NR-17</label>
               <select
                 value={aspecto}
                 onChange={(e) => setAspecto(e.target.value)}
-                className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                className="w-full bg-superficie border border-borda rounded-lg px-3 py-2 text-tinta"
               >
                 <option value="">Não indicado</option>
                 {NR17_ASPECTOS.map((a) => (
                   <option key={a.chave} value={a.chave}>{a.rotulo} ({a.fonte})</option>
                 ))}
               </select>
-              <p className="text-[10px] text-slate-500 mt-1">
+              <p className="text-[10px] text-tinta-2 mt-1">
                 É o aspecto que liga a foto do problema à foto da correção.
               </p>
             </div>
           </div>
 
           <div>
-            <label className="block text-slate-400 font-semibold mb-1">Legenda</label>
+            <label className="block text-tinta-2 font-semibold mb-1">Legenda</label>
             <textarea
               rows={2}
               placeholder="Ex.: bancada fixa a 72 cm; operador trabalha com os ombros elevados."
               value={legenda}
               onChange={(e) => setLegenda(e.target.value)}
-              className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+              className="w-full bg-superficie border border-borda rounded-lg px-3 py-2 text-tinta"
             />
-            <p className="text-[10px] text-slate-500 mt-1">
+            <p className="text-[10px] text-tinta-2 mt-1">
               Descreva o posto e a tarefa, não a pessoa. Nome de trabalhador na legenda é recusado.
             </p>
           </div>
 
           {substituindo && (
             <div>
-              <label className="block text-slate-400 font-semibold mb-1">Por que trocar</label>
+              <label className="block text-tinta-2 font-semibold mb-1">Por que trocar</label>
               <input
                 type="text"
                 value={motivoDaTroca}
                 onChange={(e) => setMotivoDaTroca(e.target.value)}
-                className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                className="w-full bg-superficie border border-borda rounded-lg px-3 py-2 text-tinta"
               />
-              <p className="text-[10px] text-slate-500 mt-1">
+              <p className="text-[10px] text-tinta-2 mt-1">
                 A foto anterior continua guardada, marcada como substituída.
               </p>
             </div>
@@ -488,9 +488,9 @@ export const AepPhotoEvidenceModal: React.FC<AepPhotoEvidenceModalProps> = ({ ae
               onChange={(e) => setSemRosto(e.target.checked)}
               className="mt-0.5 accent-teal-500"
             />
-            <span className="text-slate-300">
+            <span className="text-tinta">
               Ninguém é identificável pelo rosto nesta imagem.
-              <span className="block text-[10px] text-slate-500">
+              <span className="block text-[10px] text-tinta-2">
                 Fotografe o posto, não a pessoa. Se a postura exigir o trabalhador na foto, deixe o rosto
                 fora do enquadramento ou desfocado — e avise o trabalhador (item 17.3.8).
               </span>
@@ -504,9 +504,9 @@ export const AepPhotoEvidenceModal: React.FC<AepPhotoEvidenceModalProps> = ({ ae
               onChange={(e) => setNoLocal(e.target.checked)}
               className="mt-0.5 accent-teal-500"
             />
-            <span className="text-slate-300">
+            <span className="text-tinta">
               Estou no posto de trabalho agora — registrar a posição do aparelho
-              <span className="block text-[10px] text-slate-500">
+              <span className="block text-[10px] text-tinta-2">
                 É a posição do aparelho no momento do registro, não a de quando a foto foi tirada. Não
                 marque se estiver enviando do escritório.
               </span>
@@ -517,7 +517,7 @@ export const AepPhotoEvidenceModal: React.FC<AepPhotoEvidenceModalProps> = ({ ae
             <ul className="bg-red-500/10 border border-red-500/30 rounded-lg p-3 space-y-1">
               {problemas.map((p) => (
                 <li key={p} className="text-red-200 flex items-start gap-1.5">
-                  <AlertTriangle className="w-3.5 h-3.5 text-red-400 shrink-0 mt-0.5" />
+                  <AlertTriangle className="w-3.5 h-3.5 text-red-700 shrink-0 mt-0.5" />
                   {p}
                 </li>
               ))}
@@ -529,7 +529,7 @@ export const AepPhotoEvidenceModal: React.FC<AepPhotoEvidenceModalProps> = ({ ae
               <button
                 type="button"
                 onClick={limparFormulario}
-                className="px-3 py-2 text-slate-400 hover:text-slate-200 font-bold"
+                className="px-3 py-2 text-tinta-2 hover:text-tinta font-bold"
               >
                 Cancelar troca
               </button>
@@ -537,7 +537,7 @@ export const AepPhotoEvidenceModal: React.FC<AepPhotoEvidenceModalProps> = ({ ae
             <button
               type="submit"
               disabled={enviando}
-              className="px-4 py-2 bg-teal-500 hover:bg-teal-400 disabled:bg-slate-800 disabled:text-slate-500 text-slate-950 font-bold rounded-lg flex items-center gap-1.5"
+              className="px-4 py-2 bg-teal-500 hover:bg-teal-400 disabled:bg-superficie-2 disabled:text-white/80 text-slate-950 font-bold rounded-lg flex items-center gap-1.5"
             >
               {enviando && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
               {substituindo ? 'Substituir' : 'Anexar'}
@@ -547,26 +547,26 @@ export const AepPhotoEvidenceModal: React.FC<AepPhotoEvidenceModalProps> = ({ ae
 
         {/* ---------------------------------------------------------- historico */}
         {encerradas.length > 0 && (
-          <details className="bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs">
-            <summary className="cursor-pointer text-slate-400 font-semibold flex items-center gap-1.5">
+          <details className="bg-fundo border border-borda rounded-xl p-3 text-xs">
+            <summary className="cursor-pointer text-tinta-2 font-semibold flex items-center gap-1.5">
               <History className="w-3.5 h-3.5" />
               Histórico: {encerradas.length} foto(s) substituída(s) ou descartada(s)
             </summary>
-            <ul className="mt-2 divide-y divide-slate-800">
+            <ul className="mt-2 divide-y divide-borda">
               {encerradas.map((e) => (
                 <li key={e.id} className="py-2 space-y-0.5">
-                  <p className="text-slate-300">
-                    <span className={e.situacao === 'DESCARTADA' ? 'text-rose-300' : 'text-slate-400'}>
+                  <p className="text-tinta">
+                    <span className={e.situacao === 'DESCARTADA' ? 'text-rose-700' : 'text-tinta-2'}>
                       {e.situacao === 'DESCARTADA' ? 'Descartada' : 'Substituída'}
                     </span>
                     {' '}em {e.encerrada_em ? new Date(e.encerrada_em).toLocaleString('pt-BR') : '—'}
                     {' '}por {e.encerrada_por_nome || '—'}: {e.motivo_encerramento || '—'}
                   </p>
-                  <p className="text-[10px] text-slate-500">
+                  <p className="text-[10px] text-tinta-2">
                     {rotuloDoMomento(e.momento)} · {e.legenda} · registrada em{' '}
                     {new Date(e.registrada_em).toLocaleString('pt-BR')} por {e.registrada_por_nome || '—'}
                   </p>
-                  <p className="text-[10px] text-slate-600 font-mono break-all">SHA-256 {e.sha256}</p>
+                  <p className="text-[10px] text-tinta-2 font-mono break-all">SHA-256 {e.sha256}</p>
                 </li>
               ))}
             </ul>

@@ -234,51 +234,51 @@ export const AepPsychosocialModal: React.FC<AepPsychosocialModalProps> = ({ aep,
           ? 'bg-rose-500 text-white border-rose-400'
           : cor === 'teal'
             ? 'bg-teal-500 text-slate-950 border-teal-400'
-            : 'bg-slate-600 text-white border-slate-500'
-        : 'bg-slate-900 text-slate-300 border-slate-700 hover:bg-slate-800'
+            : 'bg-slate-600 text-tinta border-slate-500'
+        : 'bg-superficie text-tinta border-borda hover:bg-superficie-2'
     }`;
 
   return (
-    <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-[64rem] w-full p-6 space-y-4 shadow-2xl max-h-[92vh] overflow-y-auto text-xs">
-        <div className="flex items-start justify-between gap-4 border-b border-slate-800 pb-3">
+    <div className="fixed inset-0 bg-fundo backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div className="bg-superficie border border-borda rounded-2xl max-w-[64rem] w-full p-6 space-y-4 shadow-2xl max-h-[92vh] overflow-y-auto text-xs">
+        <div className="flex items-start justify-between gap-4 border-b border-borda pb-3">
           <div>
-            <h3 className="text-base font-bold text-slate-100 flex items-center gap-2">
-              <Brain className="w-5 h-5 text-teal-400" />
+            <h3 className="text-base font-bold text-tinta flex items-center gap-2">
+              <Brain className="w-5 h-5 text-teal-700" />
               Fatores psicossociais — {atual.situation_name}
             </h3>
-            <p className="text-[11px] text-slate-500 mt-1 max-w-[52rem]">
+            <p className="text-[11px] text-tinta-2 mt-1 max-w-[52rem]">
               Desde {VIGENCIA_DO_CAPITULO_1_5}, o subitem 1.5.3.2.1 da NR-01 manda considerar estes fatores nos
               termos da NR-17 — aqui, na AEP. O fator presente vai ao inventário do PGR (item 17.3.5).
             </p>
           </div>
-          <button type="button" onClick={onClose} className="text-slate-400 hover:text-slate-200">
+          <button type="button" onClick={onClose} className="text-tinta-2 hover:text-tinta">
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        <div className="bg-slate-950 border border-slate-800 rounded-lg p-3 flex items-start gap-2">
-          <Info className="w-4 h-4 text-teal-400 shrink-0 mt-0.5" />
-          <ul className="text-[11px] text-slate-400 space-y-1">
+        <div className="bg-fundo border border-borda rounded-lg p-3 flex items-start gap-2">
+          <Info className="w-4 h-4 text-teal-700 shrink-0 mt-0.5" />
+          <ul className="text-[11px] text-tinta-2 space-y-1">
             {O_QUE_A_AVALIACAO_NAO_E.map((t) => <li key={t}>{t}</li>)}
           </ul>
         </div>
 
         {aviso && (
-          <div className="bg-slate-950 border border-teal-500/30 rounded-lg p-3 text-slate-300 flex items-start gap-2">
-            <Info className="w-4 h-4 text-teal-400 shrink-0 mt-0.5" />
+          <div className="bg-fundo border border-teal-500/30 rounded-lg p-3 text-tinta flex items-start gap-2">
+            <Info className="w-4 h-4 text-teal-700 shrink-0 mt-0.5" />
             <span className="flex-1">{aviso}</span>
-            <button type="button" onClick={() => setAviso('')} className="text-slate-500 hover:text-slate-300">
+            <button type="button" onClick={() => setAviso('')} className="text-tinta-2 hover:text-tinta">
               <X className="w-3.5 h-3.5" />
             </button>
           </div>
         )}
 
         {/* ---------------------------------------------------------- conducao */}
-        <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 space-y-3">
+        <div className="p-3 bg-fundo rounded-xl border border-borda space-y-3">
           <div>
-            <p className="text-slate-200 font-bold">Como a avaliação foi conduzida</p>
-            <p className="text-[10px] text-slate-500">
+            <p className="text-tinta font-bold">Como a avaliação foi conduzida</p>
+            <p className="text-[10px] text-tinta-2">
               O MTE não indica método. Escolha um caminho ou combine (Guia do MTE, cap. 3). A equipe de
               especialistas conduz, mas precisa de um dos outros caminhos para chegar aos resultados.
             </p>
@@ -297,17 +297,17 @@ export const AepPsychosocialModal: React.FC<AepPsychosocialModalProps> = ({ aep,
               <input type="text" placeholder="Nome do questionário ou ferramenta"
                 value={form.instrumento || ''}
                 onChange={(e) => setForm({ ...form, instrumento: e.target.value })}
-                className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-100" />
+                className="bg-superficie border border-borda rounded-lg px-3 py-2 text-tinta" />
               <input type="text" placeholder="Estudo científico ou instituição de SST que o fundamenta"
                 value={form.instrumento_fundamentacao || ''}
                 onChange={(e) => setForm({ ...form, instrumento_fundamentacao: e.target.value })}
-                className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-100" />
-              <label className="md:col-span-2 flex items-start gap-2 text-slate-300">
+                className="bg-superficie border border-borda rounded-lg px-3 py-2 text-tinta" />
+              <label className="md:col-span-2 flex items-start gap-2 text-tinta">
                 <input type="checkbox" checked={form.anonimato_garantido === true}
                   onChange={(e) => setForm({ ...form, anonimato_garantido: e.target.checked })}
                   className="mt-0.5" />
                 <span>
-                  O questionário foi aplicado com anonimato garantido. <span className="text-slate-500">Sem
+                  O questionário foi aplicado com anonimato garantido. <span className="text-tinta-2">Sem
                   confiança e anonimato, o diagnóstico é falho (Manual do GRO, item 17.1.1).</span>
                 </span>
               </label>
@@ -315,29 +315,29 @@ export const AepPsychosocialModal: React.FC<AepPsychosocialModalProps> = ({ aep,
           )}
 
           <div>
-            <label className="block text-slate-300 font-semibold">Informações de saúde consultadas</label>
-            <p className="text-[10px] text-slate-500">
+            <label className="block text-tinta font-semibold">Informações de saúde consultadas</label>
+            <p className="text-[10px] text-tinta-2">
               Afastamentos, CAT, indicadores do PCMSO — sempre somados por setor ou GHE. Nunca nome nem CID de
               pessoa: são dados sensíveis (LGPD, art. 5º, II).
             </p>
             <input type="text" placeholder="Ex.: afastamentos do setor nos últimos 12 meses, por grupo de CID"
               value={form.indicadores_consultados || ''}
               onChange={(e) => setForm({ ...form, indicadores_consultados: e.target.value })}
-              className="w-full mt-1 bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-100" />
+              className="w-full mt-1 bg-superficie border border-borda rounded-lg px-3 py-2 text-tinta" />
           </div>
 
           <div className="flex items-start gap-2 text-[11px]">
-            <Users className="w-3.5 h-3.5 text-teal-400 mt-0.5 shrink-0" />
+            <Users className="w-3.5 h-3.5 text-teal-700 mt-0.5 shrink-0" />
             {atual.workers_heard === 'SIM' ? (
-              <span className="text-slate-300">
+              <span className="text-tinta">
                 Empregados ouvidos
                 {atual.workers_heard_date ? ` em ${formatDate(atual.workers_heard_date)}` : ''}
                 {atual.workers_heard_count ? ` · ${atual.workers_heard_count} ouvido(s)` : ''}
                 {atual.workers_heard_note ? ` · ${atual.workers_heard_note}` : ''}.{' '}
-                <span className="text-slate-500">Data, número e forma se registram em &quot;Editar avaliação&quot;.</span>
+                <span className="text-tinta-2">Data, número e forma se registram em &quot;Editar avaliação&quot;.</span>
               </span>
             ) : (
-              <span className="text-amber-300">
+              <span className="text-amber-700">
                 A oitiva dos empregados não está registrada como feita. &quot;Não há identificação de perigos e
                 avaliação de riscos válida [...] sem a voz do trabalhador&quot; (Manual do GRO, item 17.2).
                 Registre em &quot;Editar avaliação&quot;.
@@ -349,8 +349,8 @@ export const AepPsychosocialModal: React.FC<AepPsychosocialModalProps> = ({ aep,
         {/* ---------------------------------------------------------- fatores */}
         <div className="space-y-2">
           <div>
-            <p className="text-slate-200 font-bold">Fatores</p>
-            <p className="text-[10px] text-slate-500">{FONTE_DA_LISTAGEM} A lista não esgota o tema: acrescente o que encontrar.</p>
+            <p className="text-tinta font-bold">Fatores</p>
+            <p className="text-[10px] text-tinta-2">{FONTE_DA_LISTAGEM} A lista não esgota o tema: acrescente o que encontrar.</p>
           </div>
 
           {fatores.map((f) => {
@@ -358,14 +358,14 @@ export const AepPsychosocialModal: React.FC<AepPsychosocialModalProps> = ({ aep,
             const ligados = riscosDaOrigem(environmentalRisks, atual.id, f.chave);
             const livres = ghesDaSituacao.filter((g) => !ligados.some((r) => r.ghe_id === g));
             return (
-              <div key={f.chave} className={`p-3 rounded-xl border ${c === 'PRESENTE' ? 'border-rose-500/30 bg-rose-500/5' : 'border-slate-800 bg-slate-950'}`}>
+              <div key={f.chave} className={`p-3 rounded-xl border ${c === 'PRESENTE' ? 'border-rose-500/30 bg-rose-500/5' : 'border-borda bg-fundo'}`}>
                 <div className="flex items-start justify-between gap-3 flex-wrap">
                   <div className="min-w-[14rem] flex-1">
-                    <p className="font-semibold text-slate-100">
+                    <p className="font-semibold text-tinta">
                       {f.perigo || 'Fator sem descrição'}
-                      {f.adicional && <span className="ml-1.5 text-[10px] text-slate-500 font-normal">adicional</span>}
+                      {f.adicional && <span className="ml-1.5 text-[10px] text-tinta-2 font-normal">adicional</span>}
                     </p>
-                    {f.consequencias && <p className="text-[10px] text-slate-500">Possível consequência: {f.consequencias}</p>}
+                    {f.consequencias && <p className="text-[10px] text-tinta-2">Possível consequência: {f.consequencias}</p>}
                   </div>
                   <div className="flex items-center gap-1.5">
                     {(['PRESENTE', 'NAO_IDENTIFICADO'] as ConclusaoDoFator[]).map((v) => (
@@ -377,7 +377,7 @@ export const AepPsychosocialModal: React.FC<AepPsychosocialModalProps> = ({ aep,
                     ))}
                     {f.adicional && (
                       <button type="button" onClick={() => removerAdicional(f.chave)}
-                        className="px-2 py-1 text-[11px] text-slate-500 hover:text-rose-300">
+                        className="px-2 py-1 text-[11px] text-tinta-2 hover:text-rose-700">
                         Retirar
                       </button>
                     )}
@@ -390,9 +390,9 @@ export const AepPsychosocialModal: React.FC<AepPsychosocialModalProps> = ({ aep,
                       placeholder="Caracterização: como o trabalho REAL acontece, por quanto tempo, com que frequência e intensidade"
                       value={f.avaliacao?.caracterizacao || ''}
                       onChange={(e) => definirFator(f.chave, f.adicional, { caracterizacao: e.target.value })}
-                      className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-100" />
+                      className="w-full bg-superficie border border-borda rounded-lg px-3 py-2 text-tinta" />
                     <div className="flex flex-wrap gap-1.5 items-center">
-                      <span className="text-[10px] text-slate-500 mr-1">De onde veio:</span>
+                      <span className="text-[10px] text-tinta-2 mr-1">De onde veio:</span>
                       {FONTES_DA_CONSTATACAO.map((fo) => (
                         <button key={fo.valor} type="button"
                           onClick={() => alternarFonte(f.chave, f.adicional, f.avaliacao?.fontes, fo.valor)}
@@ -403,9 +403,9 @@ export const AepPsychosocialModal: React.FC<AepPsychosocialModalProps> = ({ aep,
                     </div>
 
                     {/* inventario */}
-                    <div className="pt-1 border-t border-slate-800/60">
+                    <div className="pt-1 border-t border-borda">
                       {ghesDaSituacao.length === 0 ? (
-                        <p className="text-amber-300 text-[11px]">
+                        <p className="text-amber-700 text-[11px]">
                           A situação não tem GHE: vincule um em &quot;Editar avaliação&quot; para levar o fator ao inventário.
                         </p>
                       ) : (
@@ -415,10 +415,10 @@ export const AepPsychosocialModal: React.FC<AepPsychosocialModalProps> = ({ aep,
                             const cl = r ? classificarRisco(r.severity, r.probability) : null;
                             return (
                               <p key={g} className="text-[11px]">
-                                <span className="font-mono text-slate-400">{nomeDoGhe(g)}</span>{' — '}
+                                <span className="font-mono text-tinta-2">{nomeDoGhe(g)}</span>{' — '}
                                 {r
-                                  ? <span className="text-emerald-300">no inventário: {cl ? `${cl.rotulo} (S${cl.severidade} × P${cl.probabilidade})` : 'sem classificação'}</span>
-                                  : <span className="text-amber-300">fora do inventário (item 17.3.5)</span>}
+                                  ? <span className="text-marca-escura">no inventário: {cl ? `${cl.rotulo} (S${cl.severidade} × P${cl.probabilidade})` : 'sem classificação'}</span>
+                                  : <span className="text-amber-700">fora do inventário (item 17.3.5)</span>}
                               </p>
                             );
                           })}
@@ -434,27 +434,27 @@ export const AepPsychosocialModal: React.FC<AepPsychosocialModalProps> = ({ aep,
                     </div>
 
                     {levando === f.chave && (
-                      <div className="p-3 rounded-lg bg-slate-950 border border-teal-500/30 space-y-2">
-                        <p className="text-[10px] text-slate-500">
+                      <div className="p-3 rounded-lg bg-fundo border border-teal-500/30 space-y-2">
+                        <p className="text-[10px] text-tinta-2">
                           Severidade e probabilidade são escolha de quem avalia, pelos critérios das seções 5.4 e 5.5
                           do PGR. Para fatores psicossociais, a probabilidade considera as exigências da atividade e a
                           eficácia das medidas (subitem 1.5.4.4.5.3 da NR-01). O sistema não sugere número.
                         </p>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
                           <select value={pedido.gheId} onChange={(e) => setPedido({ ...pedido, gheId: e.target.value })}
-                            className="bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-slate-100">
+                            className="bg-superficie border border-borda rounded-lg px-2 py-2 text-tinta">
                             <option value="">GHE…</option>
                             {livres.map((g) => <option key={g} value={g}>{nomeDoGhe(g)}</option>)}
                           </select>
                           <select value={pedido.severidade} onChange={(e) => setPedido({ ...pedido, severidade: e.target.value })}
-                            className="bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-slate-100">
+                            className="bg-superficie border border-borda rounded-lg px-2 py-2 text-tinta">
                             <option value="">Severidade…</option>
                             {PGR_SEVERIDADE.map((l) => (
                               <option key={l[0]} value={l[0]}>S{l[0]} {l[1]} — {l[4]}</option>
                             ))}
                           </select>
                           <select value={pedido.probabilidade} onChange={(e) => setPedido({ ...pedido, probabilidade: e.target.value })}
-                            className="bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-slate-100">
+                            className="bg-superficie border border-borda rounded-lg px-2 py-2 text-tinta">
                             <option value="">Probabilidade…</option>
                             {PGR_PROBABILIDADE_ERGONOMICO.map((l) => (
                               <option key={l[0]} value={l[0]}>P{l[0]} {l[1]} · {l[2]} · {l[3]}</option>
@@ -462,12 +462,12 @@ export const AepPsychosocialModal: React.FC<AepPsychosocialModalProps> = ({ aep,
                           </select>
                         </div>
                         {classificacaoDoPedido && (
-                          <p className="text-[11px] text-slate-300">
+                          <p className="text-[11px] text-tinta">
                             Nível: <strong>{classificacaoDoPedido.rotulo}</strong> ({classificacaoDoPedido.score}) — {classificacaoDoPedido.prazo}
                           </p>
                         )}
                         <div className="flex flex-wrap gap-1.5 items-center">
-                          <span className="text-[10px] text-slate-500 mr-1">Situação operacional:</span>
+                          <span className="text-[10px] text-tinta-2 mr-1">Situação operacional:</span>
                           {SITUACOES_OPERACIONAIS.map((so) => (
                             <button key={so.valor} type="button"
                               onClick={() => setPedido({
@@ -481,7 +481,7 @@ export const AepPsychosocialModal: React.FC<AepPsychosocialModalProps> = ({ aep,
                             </button>
                           ))}
                         </div>
-                        <label className="flex items-center gap-2 text-slate-300">
+                        <label className="flex items-center gap-2 text-tinta">
                           <input type="checkbox" checked={pedido.medidaImplementada}
                             onChange={(e) => setPedido({
                               ...pedido,
@@ -495,8 +495,8 @@ export const AepPsychosocialModal: React.FC<AepPsychosocialModalProps> = ({ aep,
                             <input type="text" placeholder="Qual medida, na organização do trabalho"
                               value={pedido.descricaoDaMedida}
                               onChange={(e) => setPedido({ ...pedido, descricaoDaMedida: e.target.value })}
-                              className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-100" />
-                            <label className="flex items-center gap-2 text-slate-300">
+                              className="w-full bg-superficie border border-borda rounded-lg px-3 py-2 text-tinta" />
+                            <label className="flex items-center gap-2 text-tinta">
                               <input type="checkbox" checked={pedido.eficaciaVerificada}
                                 onChange={(e) => setPedido({ ...pedido, eficaciaVerificada: e.target.checked })} />
                               A eficácia foi verificada, com evidência
@@ -505,7 +505,7 @@ export const AepPsychosocialModal: React.FC<AepPsychosocialModalProps> = ({ aep,
                         )}
                         <div className="flex gap-2 justify-end">
                           <button type="button" onClick={() => setLevando(null)}
-                            className="px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700">
+                            className="px-3 py-1.5 rounded-lg bg-superficie-2 text-tinta hover:bg-superficie-3">
                             Cancelar
                           </button>
                           <button type="button" onClick={levar}
@@ -521,15 +521,15 @@ export const AepPsychosocialModal: React.FC<AepPsychosocialModalProps> = ({ aep,
             );
           })}
 
-          <div className="p-3 rounded-xl border border-dashed border-slate-700 grid grid-cols-1 md:grid-cols-[1fr_1fr_auto] gap-2">
+          <div className="p-3 rounded-xl border border-dashed border-borda grid grid-cols-1 md:grid-cols-[1fr_1fr_auto] gap-2">
             <input type="text" placeholder="Outro fator encontrado (perigo)" value={novoPerigo}
               onChange={(e) => setNovoPerigo(e.target.value)}
-              className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-100" />
+              className="bg-superficie border border-borda rounded-lg px-3 py-2 text-tinta" />
             <input type="text" placeholder="Possível consequência" value={novasConsequencias}
               onChange={(e) => setNovasConsequencias(e.target.value)}
-              className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-100" />
+              className="bg-superficie border border-borda rounded-lg px-3 py-2 text-tinta" />
             <button type="button" onClick={adicionarFator}
-              className="px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold flex items-center gap-1 justify-center">
+              className="px-3 py-2 rounded-lg bg-superficie-2 hover:bg-superficie-3 text-tinta font-semibold flex items-center gap-1 justify-center">
               <Plus className="w-3.5 h-3.5" /> Acrescentar
             </button>
           </div>
@@ -541,9 +541,9 @@ export const AepPsychosocialModal: React.FC<AepPsychosocialModalProps> = ({ aep,
             { req: REQUISITO_17_4_4, valor: desempenho, campo: 'avaliacao_de_desempenho' as const, opcoes: ['ATENDE', 'NAO_ATENDE', 'NAO_HA_SISTEMA'] },
             { req: REQUISITO_17_4_7, valor: chefias, campo: 'orientacao_das_chefias' as const, opcoes: ['ATENDE', 'NAO_ATENDE'] }
           ].map(({ req, valor, campo, opcoes }) => (
-            <div key={campo} className="p-3 bg-slate-950 rounded-xl border border-slate-800 space-y-2">
-              <p className="text-slate-200 font-bold">{req.item}</p>
-              <p className="text-[10px] text-slate-500">{req.texto}</p>
+            <div key={campo} className="p-3 bg-fundo rounded-xl border border-borda space-y-2">
+              <p className="text-tinta font-bold">{req.item}</p>
+              <p className="text-[10px] text-tinta-2">{req.texto}</p>
               <div className="flex flex-wrap gap-1.5">
                 {opcoes.map((o) => (
                   <button key={o} type="button"
@@ -557,7 +557,7 @@ export const AepPsychosocialModal: React.FC<AepPsychosocialModalProps> = ({ aep,
                 <input type="text" placeholder="O que se observou"
                   value={(valor as any)?.observacao || ''}
                   onChange={(e) => setForm({ ...form, [campo]: { ...(valor || {}), observacao: e.target.value } })}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-100" />
+                  className="w-full bg-superficie border border-borda rounded-lg px-3 py-2 text-tinta" />
               )}
             </div>
           ))}
@@ -565,26 +565,26 @@ export const AepPsychosocialModal: React.FC<AepPsychosocialModalProps> = ({ aep,
 
         {/* ---------------------------------------------------------- o que falta */}
         {faltas.length === 0 ? (
-          <div className="p-3 rounded-lg border border-emerald-500/30 bg-emerald-500/5 text-emerald-300 flex items-center gap-2">
+          <div className="p-3 rounded-lg border border-marca-escura bg-marca-suave text-marca-escura flex items-center gap-2">
             <CheckCircle2 className="w-4 h-4" />
             Avaliação psicossocial completa e coerente com o inventário.
           </div>
         ) : (
           <div className="p-3 rounded-lg border border-amber-500/30 bg-amber-500/10 flex items-start gap-2">
-            <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+            <AlertTriangle className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
             <ul className="text-amber-200 space-y-0.5 list-disc list-inside">
               {faltas.map((f, i) => <li key={i}>{f.longo}</li>)}
             </ul>
           </div>
         )}
 
-        <div className="flex justify-end gap-2 border-t border-slate-800 pt-3">
+        <div className="flex justify-end gap-2 border-t border-borda pt-3">
           <button type="button" onClick={onClose}
-            className="px-4 py-2 rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700">
+            className="px-4 py-2 rounded-lg bg-superficie-2 text-tinta hover:bg-superficie-3">
             Fechar sem salvar
           </button>
           <button type="button" onClick={() => salvar(false)}
-            className="px-4 py-2 rounded-lg bg-slate-700 text-slate-100 hover:bg-slate-600 font-semibold">
+            className="px-4 py-2 rounded-lg bg-superficie-3 text-tinta hover:bg-slate-600 font-semibold">
             Salvar
           </button>
           <button type="button" onClick={() => salvar(true)}

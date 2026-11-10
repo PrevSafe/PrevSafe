@@ -1,5 +1,37 @@
 @import "tailwindcss";
 
+/* ---------------------------------------------------------------------------
+ * Tema claro PrevSafe
+ *
+ * Cores da identidade visual da marca: petroleo #0E3A46, teal #006064,
+ * verde #2FB24A, cinza #F2F4F5. Os componentes passam a usar estes tokens
+ * (bg-superficie, text-tinta, border-borda) em vez de escrever slate-900 /
+ * slate-400 a mao, que era o que prendia o sistema ao tema escuro.
+ *
+ * Trocar o tema inteiro depois passa a ser redefinir estes valores, e nao
+ * reescrever 5 mil classes espalhadas por 95 arquivos.
+ * ------------------------------------------------------------------------- */
+@theme {
+  --color-fundo:        #F2F4F5;
+  --color-superficie:   #FFFFFF;
+  --color-superficie-2: #F7F9FA;
+  --color-superficie-3: #EDF1F3;
+
+  --color-borda:        #DFE5E8;
+  --color-borda-forte:  #C9D4D8;
+
+  --color-tinta:        #0E3A46;
+  --color-tinta-2:      #5B7078;
+  --color-tinta-3:      #8699A1;
+
+  --color-marca:        #2FB24A;
+  --color-marca-escura: #228C39;
+  --color-marca-suave:  #EAF7ED;
+
+  --color-petroleo:     #0E3A46;
+  --color-teal:         #006064;
+}
+
 :root {
   --tenant-primary: #10b981;
   --tenant-primary-rgb: 16, 185, 129;

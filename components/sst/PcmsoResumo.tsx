@@ -70,13 +70,13 @@ export const PcmsoResumo: React.FC<PcmsoResumoProps> = (props) => {
 
   const escuro = tema === 'escuro';
   const c = {
-    caixa: escuro ? 'bg-slate-950 border-slate-800' : 'bg-white border-slate-300',
-    cabeca: escuro ? 'bg-slate-900 text-slate-400 border-slate-800' : 'bg-slate-100 text-slate-700 border-slate-300',
-    texto: escuro ? 'text-slate-300' : 'text-slate-800',
-    forte: escuro ? 'text-slate-100' : 'text-slate-900',
-    fraco: escuro ? 'text-slate-500' : 'text-slate-500',
-    linha: escuro ? 'divide-slate-800/60' : 'divide-slate-200',
-    pendente: escuro ? 'text-amber-400' : 'text-amber-700'
+    caixa: escuro ? 'bg-fundo border-borda' : 'bg-white border-slate-300',
+    cabeca: escuro ? 'bg-superficie text-tinta-2 border-borda' : 'bg-slate-100 text-slate-700 border-slate-300',
+    texto: escuro ? 'text-tinta' : 'text-slate-800',
+    forte: escuro ? 'text-tinta' : 'text-slate-900',
+    fraco: escuro ? 'text-tinta-2' : 'text-tinta-2',
+    linha: escuro ? 'divide-borda' : 'divide-slate-200',
+    pendente: escuro ? 'text-amber-700' : 'text-amber-700'
   };
 
   return (
@@ -165,7 +165,7 @@ export const PcmsoResumo: React.FC<PcmsoResumoProps> = (props) => {
           </ul>
         </div>
       ) : (
-        <p className={`text-xs ${escuro ? 'text-emerald-400' : 'text-emerald-700'}`}>Nenhuma pendência no cadastro.</p>
+        <p className={`text-xs ${escuro ? 'text-marca-escura' : 'text-marca-escura'}`}>Nenhuma pendência no cadastro.</p>
       )}
     </div>
   );
@@ -177,14 +177,14 @@ export const PcmsoPendencias: React.FC<Omit<PcmsoResumoProps, 'tema'>> = (props)
   if (!props.client) return null;
   if (montado.faltas.length === 0) {
     return (
-      <div className="p-3 rounded-xl border border-emerald-500/30 bg-emerald-500/5 text-xs text-emerald-300">
+      <div className="p-3 rounded-xl border border-marca-escura bg-marca-suave text-xs text-marca-escura">
         PCMSO sem pendência no cadastro deste cliente.
       </div>
     );
   }
   return (
     <div className="p-4 rounded-xl border border-amber-500/30 bg-amber-500/10 text-xs text-amber-200 space-y-1">
-      <p className="font-bold text-amber-300">
+      <p className="font-bold text-amber-700">
         {montado.faltas.length} pendência(s) no PCMSO deste cliente — saem impressas no documento, com o item da NR-07
       </p>
       <ul className="list-disc list-inside space-y-0.5">

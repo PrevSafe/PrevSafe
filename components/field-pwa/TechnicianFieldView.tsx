@@ -791,7 +791,7 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
   return (
     <div className="max-w-4xl mx-auto space-y-6 pb-20">
       {/* Mobile-Friendly App Header Bento Card with Offline Simulator & Service Worker Status */}
-      <div className="bg-slate-900 text-white p-6 rounded-3xl shadow-xl border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4 relative overflow-hidden">
+      <div className="bg-superficie text-tinta p-6 rounded-3xl shadow-xl border border-borda flex flex-col sm:flex-row sm:items-center justify-between gap-4 relative overflow-hidden">
         <div 
           className="absolute -right-16 -top-16 w-60 h-60 rounded-full blur-3xl opacity-10 pointer-events-none"
           style={{ backgroundColor: 'var(--tenant-primary)' }}
@@ -802,15 +802,15 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
           </div>
           <div>
             <div className="flex flex-wrap items-center gap-2">
-              <span className="font-bold text-base tracking-tight text-white">{tenantTheme.pwa_app_title || 'PrevSafe Campo PWA'}</span>
+              <span className="font-bold text-base tracking-tight text-tinta">{tenantTheme.pwa_app_title || 'PrevSafe Campo PWA'}</span>
               
               {/* Online/Offline Toggle button */}
               <button
                 onClick={() => setIsOffline(!isOffline)}
                 className={`text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full border flex items-center space-x-1 transition ${
                   isOffline 
-                    ? 'bg-amber-500/10 text-amber-400 border-amber-500/20 hover:bg-amber-500/20' 
-                    : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20 hover:bg-emerald-500/20'
+                    ? 'bg-amber-500/10 text-amber-700 border-amber-500/20 hover:bg-amber-500/20' 
+                    : 'bg-marca-suave text-marca-escura border-marca-escura hover:bg-marca-suave'
                 }`}
                 title="Clique para alternar entre modo Online e Offline"
               >
@@ -821,19 +821,19 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
               {/* Service Worker Cache Pill */}
               <button
                 onClick={() => setShowStorageModal(true)}
-                className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 flex items-center space-x-1 transition"
+                className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-superficie-2 hover:bg-superficie-3 text-tinta border border-borda flex items-center space-x-1 transition"
                 title="Ver diagnóstico do Cache Local e Service Worker"
               >
-                <HardDrive className="w-3 h-3 text-emerald-400" />
+                <HardDrive className="w-3 h-3 text-marca-escura" />
                 <span>SW Cache: {storageStats?.serviceWorkerActive ? 'Ativo' : 'Pronto'}</span>
               </button>
             </div>
 
-            <div className="flex items-center space-x-2 text-xs text-slate-400 mt-1">
-              <span>Técnico: <strong className="text-slate-300">{currentProfile.full_name}</strong></span>
+            <div className="flex items-center space-x-2 text-xs text-tinta-2 mt-1">
+              <span>Técnico: <strong className="text-tinta">{currentProfile.full_name}</strong></span>
               <span>•</span>
-              <span className="flex items-center text-[11px] text-emerald-400">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse mr-1" />
+              <span className="flex items-center text-[11px] text-marca-escura">
+                <span className="w-1.5 h-1.5 rounded-full bg-marca animate-pulse mr-1" />
                 Salvo localmente ({lastAutoSavedTime})
               </span>
             </div>
@@ -844,7 +844,7 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
           {syncQueue.length > 0 && (
             <span 
               onClick={() => setSelectedVisitTab('SYNC')}
-              className="px-2.5 py-1 bg-amber-500/20 text-amber-300 border border-amber-500/30 text-[11px] font-bold rounded-xl flex items-center space-x-1 cursor-pointer hover:bg-amber-500/30 transition"
+              className="px-2.5 py-1 bg-amber-500/20 text-amber-700 border border-amber-500/30 text-[11px] font-bold rounded-xl flex items-center space-x-1 cursor-pointer hover:bg-amber-500/30 transition"
               title="Ações pendentes no IndexedDB aguardando sincronização"
             >
               <RefreshCw className="w-3 h-3 animate-spin" />
@@ -855,7 +855,7 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
           <button
             onClick={handlePrecacheOS}
             disabled={isPreloading}
-            className="px-3 py-2 bg-slate-950 hover:bg-slate-800 text-emerald-400 text-xs font-semibold rounded-2xl border border-slate-800 transition flex items-center space-x-1"
+            className="px-3 py-2 bg-fundo hover:bg-superficie-2 text-marca-escura text-xs font-semibold rounded-2xl border border-borda transition flex items-center space-x-1"
             title="Armazenar todos os dados desta OS para inspeção em áreas sem sinal"
           >
             <Download className="w-3.5 h-3.5" />
@@ -864,7 +864,7 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
 
           <button
             onClick={() => onNavigate('service-orders')}
-            className="px-4 py-2 bg-slate-950 hover:bg-slate-800 text-slate-300 text-xs font-semibold rounded-2xl border border-slate-800 transition whitespace-nowrap"
+            className="px-4 py-2 bg-fundo hover:bg-superficie-2 text-tinta text-xs font-semibold rounded-2xl border border-borda transition whitespace-nowrap"
           >
             Voltar ao Painel
           </button>
@@ -872,30 +872,30 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
       </div>
 
       {/* Inspection Target Selector & Details Bento Card */}
-      <div className="bg-slate-900 p-6 rounded-3xl border border-slate-800 shadow-xl space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800/80 pb-4">
+      <div className="bg-superficie p-6 rounded-3xl border border-borda shadow-xl space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-borda pb-4">
           <div>
             <div className="flex items-center space-x-2">
               <span className="text-[10px] font-bold uppercase tracking-wider text-tenant-primary bg-tenant-primary/10 border border-tenant-primary/20 px-2.5 py-0.5 rounded-full">
                 Vistoria Técnica Agendada Hoje
               </span>
-              <span className="text-[10px] text-slate-400 font-mono">
+              <span className="text-[10px] text-tinta-2 font-mono">
                 {activeOS?.os_number}
               </span>
             </div>
-            <h2 className="text-xl font-bold text-white mt-1.5">{client?.trade_name || 'Cliente Selecionado'}</h2>
-            <p className="text-xs text-slate-400 flex items-center mt-1">
-              <MapPin className="w-3.5 h-3.5 text-slate-500 mr-1.5 flex-shrink-0" />
+            <h2 className="text-xl font-bold text-tinta mt-1.5">{client?.trade_name || 'Cliente Selecionado'}</h2>
+            <p className="text-xs text-tinta-2 flex items-center mt-1">
+              <MapPin className="w-3.5 h-3.5 text-tinta-2 mr-1.5 flex-shrink-0" />
               {client?.address} - {client?.city}/{client?.state} (Grau de Risco {client?.risk_degree})
             </p>
           </div>
 
           <div className="flex flex-col items-start sm:items-end gap-1.5">
-            <label className="text-[10px] font-bold uppercase text-slate-500">Trocar OS / Vistoria:</label>
+            <label className="text-[10px] font-bold uppercase text-tinta-2">Trocar OS / Vistoria:</label>
             <select
               value={selectedOSId}
               onChange={(e) => setSelectedOSId(e.target.value)}
-              className="bg-slate-950 text-white text-xs font-bold rounded-xl border border-slate-800 px-3 py-1.5 focus:outline-none focus:border-tenant-primary"
+              className="bg-fundo text-tinta text-xs font-bold rounded-xl border border-borda px-3 py-1.5 focus:outline-none focus:border-tenant-primary"
             >
               {serviceOrders.map(os => {
                 const c = clients.find(cl => cl.id === os.client_id);
@@ -911,26 +911,26 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
 
         {/* Inspection Summary Metric Pills */}
         <div className="grid grid-cols-3 gap-3 text-xs">
-          <div className="p-3 bg-slate-950 rounded-2xl border border-slate-800 text-center">
-            <span className="text-slate-400 block text-[10px] uppercase font-bold">Total Inspecionado</span>
-            <strong className="text-lg font-mono text-white mt-0.5 block">{checklist.length} itens</strong>
+          <div className="p-3 bg-fundo rounded-2xl border border-borda text-center">
+            <span className="text-tinta-2 block text-[10px] uppercase font-bold">Total Inspecionado</span>
+            <strong className="text-lg font-mono text-tinta mt-0.5 block">{checklist.length} itens</strong>
           </div>
           <div className="p-3 bg-rose-500/10 rounded-2xl border border-rose-500/20 text-center">
-            <span className="text-rose-400 block text-[10px] uppercase font-bold">Não Conformidades</span>
-            <strong className="text-lg font-mono text-rose-300 mt-0.5 block">{nonConformCount} perigos</strong>
+            <span className="text-rose-700 block text-[10px] uppercase font-bold">Não Conformidades</span>
+            <strong className="text-lg font-mono text-rose-700 mt-0.5 block">{nonConformCount} perigos</strong>
           </div>
-          <div className="p-3 bg-emerald-500/10 rounded-2xl border border-emerald-500/20 text-center">
-            <span className="text-emerald-400 block text-[10px] uppercase font-bold">Conformes / Regulares</span>
-            <strong className="text-lg font-mono text-emerald-300 mt-0.5 block">{conformCount} itens</strong>
+          <div className="p-3 bg-marca-suave rounded-2xl border border-marca-escura text-center">
+            <span className="text-marca-escura block text-[10px] uppercase font-bold">Conformes / Regulares</span>
+            <strong className="text-lg font-mono text-marca-escura mt-0.5 block">{conformCount} itens</strong>
           </div>
         </div>
 
         {/* Tab Navigation for Field Work */}
-        <div className="flex bg-slate-950 p-1.5 rounded-2xl border border-slate-800 gap-1 overflow-x-auto">
+        <div className="flex bg-fundo p-1.5 rounded-2xl border border-borda gap-1 overflow-x-auto">
           <button
             onClick={() => setSelectedVisitTab('CHECKLIST')}
             className={`flex-1 py-2.5 text-xs font-bold text-center rounded-xl transition flex items-center justify-center space-x-1.5 whitespace-nowrap min-w-[120px] ${
-              selectedVisitTab === 'CHECKLIST' ? 'bg-tenant-primary text-white shadow-tenant-glow' : 'text-slate-400 hover:text-white'
+              selectedVisitTab === 'CHECKLIST' ? 'bg-tenant-primary text-tinta shadow-tenant-glow' : 'text-tinta-2 hover:text-tinta'
             }`}
           >
             <CheckCircle2 className="w-4 h-4" />
@@ -939,7 +939,7 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
           <button
             onClick={() => setSelectedVisitTab('PHOTOS')}
             className={`flex-1 py-2.5 text-xs font-bold text-center rounded-xl transition flex items-center justify-center space-x-1.5 whitespace-nowrap min-w-[100px] ${
-              selectedVisitTab === 'PHOTOS' ? 'bg-tenant-primary text-white shadow-tenant-glow' : 'text-slate-400 hover:text-white'
+              selectedVisitTab === 'PHOTOS' ? 'bg-tenant-primary text-tinta shadow-tenant-glow' : 'text-tinta-2 hover:text-tinta'
             }`}
           >
             <Camera className="w-4 h-4" />
@@ -948,7 +948,7 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
           <button
             onClick={() => setSelectedVisitTab('SIGNATURE')}
             className={`flex-1 py-2.5 text-xs font-bold text-center rounded-xl transition flex items-center justify-center space-x-1.5 whitespace-nowrap min-w-[120px] ${
-              selectedVisitTab === 'SIGNATURE' ? 'bg-tenant-primary text-white shadow-tenant-glow' : 'text-slate-400 hover:text-white'
+              selectedVisitTab === 'SIGNATURE' ? 'bg-tenant-primary text-tinta shadow-tenant-glow' : 'text-tinta-2 hover:text-tinta'
             }`}
           >
             <FileSignature className="w-4 h-4" />
@@ -957,7 +957,7 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
           <button
             onClick={() => setSelectedVisitTab('SYNC')}
             className={`flex-1 py-2.5 text-xs font-bold text-center rounded-xl transition flex items-center justify-center space-x-1.5 whitespace-nowrap min-w-[120px] ${
-              selectedVisitTab === 'SYNC' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-400 hover:text-white'
+              selectedVisitTab === 'SYNC' ? 'bg-marca text-white shadow-md' : 'text-white/80 hover:text-white'
             }`}
           >
             <RefreshCw className="w-4 h-4" />
@@ -969,10 +969,10 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
         {selectedVisitTab === 'CHECKLIST' && (
           <div className="space-y-4 pt-2">
             {checklist.length === 0 && (
-              <div className="p-5 bg-slate-950/60 border border-slate-800 rounded-2xl text-center space-y-3">
+              <div className="p-5 bg-fundo border border-borda rounded-2xl text-center space-y-3">
                 <div>
-                  <p className="text-sm font-bold text-white">Vistoria em branco</p>
-                  <p className="text-[11px] text-slate-400 mt-1">
+                  <p className="text-sm font-bold text-tinta">Vistoria em branco</p>
+                  <p className="text-[11px] text-tinta-2 mt-1">
                     Adicione os perigos que você observar no local, ou parta do modelo
                     com os perigos mais comuns e ajuste o que não se aplicar.
                   </p>
@@ -984,7 +984,7 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
                     setChecklist(modelo);
                     await persistSessionNow(modelo, photos, isSigned);
                   }}
-                  className="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-100 rounded-xl text-xs font-bold transition"
+                  className="px-4 py-2.5 bg-superficie-2 hover:bg-superficie-3 text-tinta rounded-xl text-xs font-bold transition"
                 >
                   Carregar modelo de perigos comuns ({HAZARD_TEMPLATE.length} itens)
                 </button>
@@ -992,13 +992,13 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
             )}
 
             {/* Action Bar: Filters + Add Button */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-950/60 p-3 rounded-2xl border border-slate-800">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-fundo p-3 rounded-2xl border border-borda">
               <div className="flex flex-wrap items-center gap-2 text-xs">
-                <Filter className="w-3.5 h-3.5 text-slate-400" />
+                <Filter className="w-3.5 h-3.5 text-tinta-2" />
                 <select
                   value={nrFilter}
                   onChange={(e) => setNrFilter(e.target.value)}
-                  className="bg-slate-900 border border-slate-800 rounded-xl px-2.5 py-1 text-xs text-white"
+                  className="bg-superficie border border-borda rounded-xl px-2.5 py-1 text-xs text-tinta"
                 >
                   <option value="ALL">Todas as NRs</option>
                   <option value="NR-09">NR-09 (Agentes Ambientais)</option>
@@ -1014,7 +1014,7 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
                 <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
-                  className="bg-slate-900 border border-slate-800 rounded-xl px-2.5 py-1 text-xs text-white"
+                  className="bg-superficie border border-borda rounded-xl px-2.5 py-1 text-xs text-tinta"
                 >
                   <option value="ALL">Todos os Status</option>
                   <option value="NÃO_CONFORME">Não Conformes (Críticos)</option>
@@ -1037,29 +1037,29 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
             {/* Checklist items list */}
             <div className="space-y-3.5">
               {filteredChecklist.map((item) => (
-                <div key={item.id} className="p-4 bg-slate-950/60 rounded-2xl border border-slate-800 space-y-3 transition hover:border-slate-700">
+                <div key={item.id} className="p-4 bg-fundo rounded-2xl border border-borda space-y-3 transition hover:border-borda">
                   <div className="flex items-start justify-between gap-2">
                     <div>
                       <div className="flex flex-wrap items-center gap-2">
-                        <span className="text-[10px] font-bold bg-slate-900 px-2 py-0.5 rounded-full border border-slate-800 text-indigo-300 font-mono">
+                        <span className="text-[10px] font-bold bg-superficie px-2 py-0.5 rounded-full border border-borda text-indigo-700 font-mono">
                           {item.nr}
                         </span>
-                        <span className="text-[10px] font-semibold text-slate-400 uppercase">{item.category}</span>
+                        <span className="text-[10px] font-semibold text-tinta-2 uppercase">{item.category}</span>
                         <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full border ${
-                          item.severity === 'CRÍTICO' ? 'bg-rose-500/10 text-rose-400 border-rose-500/20' :
-                          item.severity === 'ALTO' ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' : 
-                          item.severity === 'MÉDIO' ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' :
-                          'bg-slate-800 text-slate-300 border-slate-700'
+                          item.severity === 'CRÍTICO' ? 'bg-rose-500/10 text-rose-700 border-rose-500/20' :
+                          item.severity === 'ALTO' ? 'bg-amber-500/10 text-amber-700 border-amber-500/20' : 
+                          item.severity === 'MÉDIO' ? 'bg-blue-500/10 text-blue-700 border-blue-500/20' :
+                          'bg-superficie-2 text-tinta border-borda'
                         }`}>
                           Severidade {item.severity}
                         </span>
                       </div>
-                      <h4 className="text-xs font-bold text-white mt-1.5">{item.hazard}</h4>
+                      <h4 className="text-xs font-bold text-tinta mt-1.5">{item.hazard}</h4>
                     </div>
 
                     <button
                       onClick={() => handleDeleteHazard(item.id)}
-                      className="p-1.5 text-slate-500 hover:text-rose-400 rounded-lg hover:bg-slate-900 transition"
+                      className="p-1.5 text-tinta-2 hover:text-rose-700 rounded-lg hover:bg-superficie transition"
                       title="Excluir Item"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
@@ -1073,8 +1073,8 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
                       onClick={() => handleUpdateStatus(item.id, 'CONFORME')}
                       className={`py-2 text-xs font-bold rounded-xl transition ${
                         item.status === 'CONFORME' 
-                          ? 'bg-emerald-600 text-white shadow-md' 
-                          : 'bg-slate-900 text-slate-400 border border-slate-800 hover:text-white'
+                          ? 'bg-marca text-white shadow-md' 
+                          : 'bg-superficie text-tinta-2 border border-borda hover:text-tinta'
                       }`}
                     >
                       ✓ Conforme
@@ -1085,7 +1085,7 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
                       className={`py-2 text-xs font-bold rounded-xl transition ${
                         item.status === 'NÃO_CONFORME' 
                           ? 'bg-rose-600 text-white shadow-md' 
-                          : 'bg-slate-900 text-slate-400 border border-slate-800 hover:text-white'
+                          : 'bg-superficie text-tinta-2 border border-borda hover:text-tinta'
                       }`}
                     >
                       ✕ Não Conforme
@@ -1095,8 +1095,8 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
                       onClick={() => handleUpdateStatus(item.id, 'NÃO_APLICÁVEL')}
                       className={`py-2 text-xs font-bold rounded-xl transition ${
                         item.status === 'NÃO_APLICÁVEL' 
-                          ? 'bg-slate-800 text-white shadow-md' 
-                          : 'bg-slate-900 text-slate-400 border border-slate-800 hover:text-white'
+                          ? 'bg-superficie-2 text-tinta shadow-md' 
+                          : 'bg-superficie text-tinta-2 border border-borda hover:text-tinta'
                       }`}
                     >
                       N/A
@@ -1110,10 +1110,10 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
                       placeholder="Observação técnica constatada em campo..."
                       value={item.observation}
                       onChange={(e) => handleUpdateObservation(item.id, e.target.value)}
-                      className="w-full px-3 py-2 bg-slate-900 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500"
+                      className="w-full px-3 py-2 bg-superficie border border-borda rounded-xl text-xs text-tinta placeholder-tinta-3 focus:outline-none focus:border-indigo-500"
                     />
                     {item.corrective_measure && (
-                      <p className="text-[11px] text-amber-300/90 pl-1">
+                      <p className="text-[11px] text-amber-700/90 pl-1">
                         <strong>Recomendação PrevSafe:</strong> {item.corrective_measure}
                       </p>
                     )}
@@ -1128,7 +1128,7 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
         {selectedVisitTab === 'PHOTOS' && (
           <div className="space-y-4 pt-2">
             <div className="flex items-center justify-between">
-              <span className="text-xs text-slate-400 font-semibold">Galeria de Evidências Fotográficas ({photos.length})</span>
+              <span className="text-xs text-tinta-2 font-semibold">Galeria de Evidências Fotográficas ({photos.length})</span>
               <button
                 onClick={() => setShowAddPhotoModal(true)}
                 className="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold shadow-md transition flex items-center space-x-1"
@@ -1140,10 +1140,10 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {photos.map((item) => (
-                <div key={item.id} className="p-3 bg-slate-950/60 rounded-2xl border border-slate-800 space-y-2.5">
+                <div key={item.id} className="p-3 bg-fundo rounded-2xl border border-borda space-y-2.5">
                   <div 
                     onClick={() => setZoomedPhoto(item)}
-                    className="relative rounded-xl overflow-hidden aspect-video bg-slate-950 cursor-pointer group"
+                    className="relative rounded-xl overflow-hidden aspect-video bg-fundo cursor-pointer group"
                   >
                     <Image 
                       src={item.url} 
@@ -1152,15 +1152,15 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
                       className="object-cover group-hover:scale-105 transition duration-300" 
                       referrerPolicy="no-referrer" 
                     />
-                    <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
-                      <Eye className="w-6 h-6 text-white drop-shadow" />
+                    <div className="absolute inset-0 bg-fundo opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+                      <Eye className="w-6 h-6 text-tinta drop-shadow" />
                     </div>
                     {item.nr_ref && (
-                      <span className="absolute top-2 left-2 z-10 bg-slate-950/90 text-indigo-300 text-[10px] font-mono font-bold px-2 py-0.5 rounded-full border border-slate-800">
+                      <span className="absolute top-2 left-2 z-10 bg-fundo text-indigo-700 text-[10px] font-mono font-bold px-2 py-0.5 rounded-full border border-borda">
                         {item.nr_ref}
                       </span>
                     )}
-                    <span className="absolute bottom-2 right-2 z-10 bg-slate-950/90 text-slate-300 text-[10px] font-mono px-2 py-0.5 rounded-full">
+                    <span className="absolute bottom-2 right-2 z-10 bg-fundo text-tinta text-[10px] font-mono px-2 py-0.5 rounded-full">
                       {item.timestamp}
                     </span>
                   </div>
@@ -1168,14 +1168,14 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
                   <div className="flex items-start justify-between gap-2">
                     <div>
                       {item.sector && (
-                        <span className="text-[10px] text-slate-400 font-bold uppercase block">{item.sector}</span>
+                        <span className="text-[10px] text-tinta-2 font-bold uppercase block">{item.sector}</span>
                       )}
-                      <p className="text-xs text-slate-200 mt-0.5">{item.caption}</p>
+                      <p className="text-xs text-tinta mt-0.5">{item.caption}</p>
                     </div>
 
                     <button
                       onClick={() => handleDeletePhoto(item.id)}
-                      className="p-1.5 text-slate-500 hover:text-rose-400 rounded-lg hover:bg-slate-900 transition flex-shrink-0"
+                      className="p-1.5 text-tinta-2 hover:text-rose-700 rounded-lg hover:bg-superficie transition flex-shrink-0"
                       title="Excluir Foto"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
@@ -1191,26 +1191,26 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
         {selectedVisitTab === 'SIGNATURE' && (
           <div className="space-y-5 pt-2 text-xs">
             {/* GPS Geolocation Panel */}
-            <div className="p-4 bg-slate-950/80 rounded-2xl border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="p-4 bg-fundo rounded-2xl border border-borda flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="flex items-center space-x-3">
-                <div className="p-2.5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-xl">
+                <div className="p-2.5 bg-marca-suave border border-marca-escura text-marca-escura rounded-xl">
                   <Crosshair className="w-5 h-5" />
                 </div>
                 <div className="min-w-0">
-                  <div className="text-xs font-bold text-white">
+                  <div className="text-xs font-bold text-tinta">
                     {gpsLocation ? 'Localização do local da vistoria' : 'Localização não coletada'}
                   </div>
                   {gpsLocation ? (
                     <>
-                      <p className="text-[11px] text-slate-300 font-mono mt-0.5 break-all">
+                      <p className="text-[11px] text-tinta font-mono mt-0.5 break-all">
                         {formatarCoordenada(gpsLocation)}
                       </p>
-                      <p className="text-[10px] text-slate-400 mt-0.5">
+                      <p className="text-[10px] text-tinta-2 mt-0.5">
                         {descreverPrecisao(gpsLocation.precisaoMetros)} ·{' '}
                         {new Date(gpsLocation.obtidaEm).toLocaleString('pt-BR')}
                       </p>
                       {gpsLocation.precisaoMetros > 100 && (
-                        <p className="text-[10px] text-amber-400 mt-1">
+                        <p className="text-[10px] text-amber-700 mt-1">
                           Precisão baixa. Verifique se o GPS está ligado e tente ao ar livre.
                         </p>
                       )}
@@ -1218,7 +1218,7 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
                   ) : (
                     <p
                       className={`text-[11px] mt-0.5 ${
-                        gpsStatus === 'PERMISSAO_NEGADA' ? 'text-rose-400' : 'text-slate-400'
+                        gpsStatus === 'PERMISSAO_NEGADA' ? 'text-rose-700' : 'text-tinta-2'
                       }`}
                     >
                       {gpsMensagem}
@@ -1233,10 +1233,10 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
                 disabled={gpsStatus === 'OBTENDO'}
                 className={`px-3 py-1.5 rounded-xl font-semibold border transition flex items-center space-x-1.5 shrink-0 ${
                   gpsStatus === 'OBTENDO'
-                    ? 'bg-slate-900 text-slate-500 border-slate-800 cursor-wait'
+                    ? 'bg-superficie text-tinta-2 border-borda cursor-wait'
                     : gpsLocation
-                      ? 'bg-slate-900 hover:bg-slate-800 text-slate-300 border-slate-800'
-                      : 'bg-emerald-600 hover:bg-emerald-500 text-white border-emerald-500'
+                      ? 'bg-superficie hover:bg-superficie-2 text-tinta border-borda'
+                      : 'bg-marca hover:bg-marca-escura text-white border-marca-escura'
                 }`}
               >
                 <RefreshCw className={`w-3 h-3 ${gpsStatus === 'OBTENDO' ? 'animate-spin' : ''}`} />
@@ -1253,7 +1253,7 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
             {/* Accompanying Person Form */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div>
-                <label className="block font-semibold text-slate-300 mb-1">Acompanhante da Fábrica (Nome) *</label>
+                <label className="block font-semibold text-tinta mb-1">Acompanhante da Fábrica (Nome) *</label>
                 <input
                   type="text"
                   required
@@ -1262,11 +1262,11 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
                     setRepName(e.target.value);
                     persistSessionNow(checklist, photos, isSigned, gpsLocation, { name: e.target.value, cpf: repCpf, role: repRole });
                   }}
-                  className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
                 />
               </div>
               <div>
-                <label className="block font-semibold text-slate-300 mb-1">CPF do Acompanhante *</label>
+                <label className="block font-semibold text-tinta mb-1">CPF do Acompanhante *</label>
                 <input
                   type="text"
                   required
@@ -1275,11 +1275,11 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
                     setRepCpf(e.target.value);
                     persistSessionNow(checklist, photos, isSigned, gpsLocation, { name: repName, cpf: e.target.value, role: repRole });
                   }}
-                  className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
                 />
               </div>
               <div>
-                <label className="block font-semibold text-slate-300 mb-1">Cargo / Função *</label>
+                <label className="block font-semibold text-tinta mb-1">Cargo / Função *</label>
                 <input
                   type="text"
                   required
@@ -1288,7 +1288,7 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
                     setRepRole(e.target.value);
                     persistSessionNow(checklist, photos, isSigned, gpsLocation, { name: repName, cpf: repCpf, role: e.target.value });
                   }}
-                  className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
                 />
               </div>
             </div>
@@ -1296,12 +1296,12 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
             {/* Signature Canvas Simulator */}
             <div>
               <div className="flex justify-between items-center mb-1">
-                <label className="block font-semibold text-slate-300">Assinatura Digital na Tela do Dispositivo</label>
+                <label className="block font-semibold text-tinta">Assinatura Digital na Tela do Dispositivo</label>
                 {isSigned && (
                   <button
                     type="button"
                     onClick={() => handleToggleSignature(false)}
-                    className="text-[11px] text-rose-400 hover:underline"
+                    className="text-[11px] text-rose-700 hover:underline"
                   >
                     Limpar / Refazer
                   </button>
@@ -1310,20 +1310,20 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
 
               <div 
                 onClick={() => handleToggleSignature(true)}
-                className="w-full h-36 bg-slate-950 border-2 border-dashed border-slate-800 rounded-2xl flex flex-col items-center justify-center cursor-pointer transition hover:border-slate-700"
+                className="w-full h-36 bg-fundo border-2 border-dashed border-borda rounded-2xl flex flex-col items-center justify-center cursor-pointer transition hover:border-borda"
               >
                 {isSigned ? (
-                  <div className="text-center text-emerald-400 font-serif italic text-xl font-bold">
+                  <div className="text-center text-marca-escura font-serif italic text-xl font-bold">
                     ✍️ {repName}
-                    <span className="block font-sans text-[10px] text-slate-500 not-italic mt-1 font-mono">
+                    <span className="block font-sans text-[10px] text-tinta-2 not-italic mt-1 font-mono">
                       Rubrica Digital Coletada às {new Date().toLocaleTimeString('pt-BR')} (CPF: {repCpf})
                     </span>
                   </div>
                 ) : (
-                  <div className="text-center text-slate-500">
-                    <FileSignature className="w-7 h-7 mx-auto mb-1.5 text-slate-600" />
-                    <span className="text-xs font-semibold text-slate-300 block">Toque aqui para coletar a assinatura</span>
-                    <span className="text-[10px] text-slate-500">Validação com carimbo de tempo e geolocalização</span>
+                  <div className="text-center text-tinta-2">
+                    <FileSignature className="w-7 h-7 mx-auto mb-1.5 text-tinta-2" />
+                    <span className="text-xs font-semibold text-tinta block">Toque aqui para coletar a assinatura</span>
+                    <span className="text-[10px] text-tinta-2">Validação com carimbo de tempo e geolocalização</span>
                   </div>
                 )}
               </div>
@@ -1337,55 +1337,55 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
             {/* Sync Summary Banner */}
             <div className="p-5 bg-indigo-500/10 border border-indigo-500/20 rounded-2xl space-y-3">
               <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2 text-indigo-300 font-bold text-sm">
-                  <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+                <div className="flex items-center space-x-2 text-indigo-700 font-bold text-sm">
+                  <CheckCircle2 className="w-5 h-5 text-marca-escura" />
                   <span>Revisão Geral & Sincronização de Campo</span>
                 </div>
                 <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${
-                  isOffline ? 'bg-amber-500/20 text-amber-300 border-amber-500/30' : 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
+                  isOffline ? 'bg-amber-500/20 text-amber-700 border-amber-500/30' : 'bg-marca-suave text-marca-escura border-marca-escura'
                 }`}>
                   {isOffline ? 'Modo Offline Ativo' : 'Pronto para Sincronizar'}
                 </span>
               </div>
-              <p className="text-slate-300 leading-relaxed">
+              <p className="text-tinta leading-relaxed">
                 Ao sincronizar, o aplicativo compilará as constatações de campo guardadas no <strong>IndexedDB</strong>, gerará o <strong>Relatório Técnico Oficial de Vistoria</strong> e avançará o workflow da OS <strong>{activeOS?.os_number}</strong> para a etapa de elaboração técnica dos laudos.
               </p>
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-2 text-center text-[11px]">
-                <div className="p-2 bg-slate-950 rounded-xl border border-slate-800">
-                  <span className="text-slate-500 block">Perigos</span>
-                  <strong className="text-white font-mono">{checklist.length} itens</strong>
+                <div className="p-2 bg-fundo rounded-xl border border-borda">
+                  <span className="text-tinta-2 block">Perigos</span>
+                  <strong className="text-tinta font-mono">{checklist.length} itens</strong>
                 </div>
-                <div className="p-2 bg-slate-950 rounded-xl border border-slate-800">
-                  <span className="text-slate-500 block">Fotos</span>
-                  <strong className="text-white font-mono">{photos.length} fotos</strong>
+                <div className="p-2 bg-fundo rounded-xl border border-borda">
+                  <span className="text-tinta-2 block">Fotos</span>
+                  <strong className="text-tinta font-mono">{photos.length} fotos</strong>
                 </div>
-                <div className="p-2 bg-slate-950 rounded-xl border border-slate-800">
-                  <span className="text-slate-500 block">Assinatura</span>
-                  <strong className={isSigned ? "text-emerald-400" : "text-rose-400"}>
+                <div className="p-2 bg-fundo rounded-xl border border-borda">
+                  <span className="text-tinta-2 block">Assinatura</span>
+                  <strong className={isSigned ? "text-marca-escura" : "text-rose-700"}>
                     {isSigned ? "Coletada" : "Pendente"}
                   </strong>
                 </div>
-                <div className="p-2 bg-slate-950 rounded-xl border border-slate-800">
-                  <span className="text-slate-500 block">Cache SW</span>
-                  <strong className="text-emerald-400 font-mono">OK (v1.2.0)</strong>
+                <div className="p-2 bg-fundo rounded-xl border border-borda">
+                  <span className="text-tinta-2 block">Cache SW</span>
+                  <strong className="text-marca-escura font-mono">OK (v1.2.0)</strong>
                 </div>
               </div>
             </div>
 
             {/* Offline Sync Queue Inspector */}
-            <div className="p-4 bg-slate-950 rounded-2xl border border-slate-800 space-y-3">
+            <div className="p-4 bg-fundo rounded-2xl border border-borda space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
-                  <Database className="w-4 h-4 text-emerald-400" />
-                  <span className="font-bold text-white text-xs">Fila de Ações Offline (IndexedDB Sync Queue)</span>
+                  <Database className="w-4 h-4 text-marca-escura" />
+                  <span className="font-bold text-tinta text-xs">Fila de Ações Offline (IndexedDB Sync Queue)</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <span className="text-[11px] text-slate-400">{syncQueue.length} operações enfileiradas</span>
+                  <span className="text-[11px] text-tinta-2">{syncQueue.length} operações enfileiradas</span>
                   {syncQueue.length > 0 && (
                     <button
                       onClick={() => clearOfflineSyncQueue(selectedOSId).then(refreshStorageData)}
-                      className="text-[10px] text-slate-500 hover:text-rose-400"
+                      className="text-[10px] text-tinta-2 hover:text-rose-700"
                     >
                       Limpar Fila
                     </button>
@@ -1394,28 +1394,28 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
               </div>
 
               {syncQueue.length === 0 ? (
-                <div className="p-4 rounded-xl bg-slate-900/50 border border-slate-800/80 text-center text-slate-400 text-xs">
-                  <CheckCircle2 className="w-5 h-5 text-emerald-400 mx-auto mb-1 opacity-80" />
+                <div className="p-4 rounded-xl bg-superficie border border-borda text-center text-tinta-2 text-xs">
+                  <CheckCircle2 className="w-5 h-5 text-marca-escura mx-auto mb-1 opacity-80" />
                   <span>Todos os dados desta vistoria estão sincronizados com o servidor.</span>
                 </div>
               ) : (
                 <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
                   {syncQueue.map((item) => (
-                    <div key={item.id} className="p-2.5 bg-slate-900 rounded-xl border border-slate-800 flex items-center justify-between text-xs">
+                    <div key={item.id} className="p-2.5 bg-superficie rounded-xl border border-borda flex items-center justify-between text-xs">
                       <div className="flex items-center space-x-2.5">
-                        <span className="p-1.5 rounded-lg bg-amber-500/10 text-amber-400 text-[10px] font-mono font-bold">
+                        <span className="p-1.5 rounded-lg bg-amber-500/10 text-amber-700 text-[10px] font-mono font-bold">
                           {item.actionType}
                         </span>
                         <div>
-                          <span className="text-white text-[11px] font-semibold block">
+                          <span className="text-tinta text-[11px] font-semibold block">
                             OS: {item.osId} • {new Date(item.timestamp).toLocaleTimeString('pt-BR')}
                           </span>
-                          <span className="text-[10px] text-slate-400">
+                          <span className="text-[10px] text-tinta-2">
                             {JSON.stringify(item.payload).substring(0, 45)}...
                           </span>
                         </div>
                       </div>
-                      <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-amber-500/20 text-amber-300">
+                      <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-amber-500/20 text-amber-700">
                         {item.status}
                       </span>
                     </div>
@@ -1430,23 +1430,23 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
                 type="button"
                 onClick={handlePrecacheOS}
                 disabled={isPreloading}
-                className="p-3 bg-slate-950 hover:bg-slate-900 text-slate-200 border border-slate-800 rounded-2xl transition flex items-center justify-center space-x-2 font-semibold text-xs"
+                className="p-3 bg-fundo hover:bg-superficie text-tinta border border-borda rounded-2xl transition flex items-center justify-center space-x-2 font-semibold text-xs"
               >
-                <Download className="w-4 h-4 text-emerald-400" />
+                <Download className="w-4 h-4 text-marca-escura" />
                 <span>{isPreloading ? 'Gravando Cache...' : 'Pré-cachear para Campo'}</span>
               </button>
 
               <button
                 type="button"
                 onClick={handleExportBackup}
-                className="p-3 bg-slate-950 hover:bg-slate-900 text-slate-200 border border-slate-800 rounded-2xl transition flex items-center justify-center space-x-2 font-semibold text-xs"
+                className="p-3 bg-fundo hover:bg-superficie text-tinta border border-borda rounded-2xl transition flex items-center justify-center space-x-2 font-semibold text-xs"
               >
-                <UploadCloud className="w-4 h-4 text-indigo-400" />
+                <UploadCloud className="w-4 h-4 text-indigo-700" />
                 <span>Exportar Backup Offline</span>
               </button>
 
-              <label className="p-3 bg-slate-950 hover:bg-slate-900 text-slate-200 border border-slate-800 rounded-2xl transition flex items-center justify-center space-x-2 font-semibold text-xs cursor-pointer">
-                <Upload className="w-4 h-4 text-amber-400" />
+              <label className="p-3 bg-fundo hover:bg-superficie text-tinta border border-borda rounded-2xl transition flex items-center justify-center space-x-2 font-semibold text-xs cursor-pointer">
+                <Upload className="w-4 h-4 text-amber-700" />
                 <span>Importar Backup JSON</span>
                 <input
                   ref={fileInputRef}
@@ -1461,7 +1461,7 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
             {/* Main Finalize Button */}
             <button
               onClick={handleGenerateFieldReport}
-              className="w-full py-4 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold rounded-2xl text-xs shadow-xl shadow-emerald-950/40 transition flex items-center justify-center space-x-2"
+              className="w-full py-4 bg-gradient-to-r from-marca to-teal-600 hover:from-marca hover:to-teal-500 text-white font-bold rounded-2xl text-xs shadow-xl shadow-emerald-950/40 transition flex items-center justify-center space-x-2"
             >
               <CheckCircle2 className="w-5 h-5" />
               <span>Sincronizar Vistoria de Campo & Gerar Relatório Técnico Oficial</span>
@@ -1472,98 +1472,98 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
 
       {/* ==================== MODAL: DIAGNÓSTICO DO CACHE & SERVICE WORKER ==================== */}
       {showStorageModal && (
-        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-900 rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-800 text-slate-100 animate-in fade-in zoom-in-95 duration-200 space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div className="fixed inset-0 bg-fundo backdrop-blur-md z-50 flex items-center justify-center p-4">
+          <div className="bg-superficie rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-borda text-tinta animate-in fade-in zoom-in-95 duration-200 space-y-4">
+            <div className="flex items-center justify-between border-b border-borda pb-3">
               <div className="flex items-center space-x-2">
-                <HardDrive className="w-5 h-5 text-emerald-400" />
-                <h3 className="text-base font-bold text-white">Diagnóstico do Service Worker & Cache Offline</h3>
+                <HardDrive className="w-5 h-5 text-marca-escura" />
+                <h3 className="text-base font-bold text-tinta">Diagnóstico do Service Worker & Cache Offline</h3>
               </div>
-              <button onClick={() => setShowStorageModal(false)} className="text-slate-400 hover:text-slate-200">✕</button>
+              <button onClick={() => setShowStorageModal(false)} className="text-tinta-2 hover:text-tinta">✕</button>
             </div>
 
             <div className="space-y-3 text-xs">
-              <div className="p-3.5 bg-slate-950 rounded-2xl border border-slate-800 space-y-2.5">
+              <div className="p-3.5 bg-fundo rounded-2xl border border-borda space-y-2.5">
                 <div className="flex justify-between items-center">
-                  <span className="text-slate-400">Status do Service Worker:</span>
-                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-teal-500/20 text-teal-300 border border-teal-500/30 flex items-center gap-1">
-                    <Zap className="w-3 h-3 text-teal-400" />
+                  <span className="text-tinta-2">Status do Service Worker:</span>
+                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-teal-500/20 text-teal-700 border border-teal-500/30 flex items-center gap-1">
+                    <Zap className="w-3 h-3 text-teal-700" />
                     {storageStats?.serviceWorkerActive ? 'Ativo & Pré-cache Ativado' : 'Registrado'}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-slate-400">Versão do Cache Engine:</span>
-                  <span className="font-mono text-slate-200">{storageStats?.swCacheVersion || 'prevsafe-static-v2.2.0'}</span>
+                  <span className="text-tinta-2">Versão do Cache Engine:</span>
+                  <span className="font-mono text-tinta">{storageStats?.swCacheVersion || 'prevsafe-static-v2.2.0'}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-slate-400">Total de Recursos em Cache:</span>
-                  <span className="font-mono text-teal-400 font-bold">{storageStats?.swCacheEntries ?? 0} itens pré-cacheados</span>
+                  <span className="text-tinta-2">Total de Recursos em Cache:</span>
+                  <span className="font-mono text-teal-700 font-bold">{storageStats?.swCacheEntries ?? 0} itens pré-cacheados</span>
                 </div>
 
                 {/* Detailed Breakdown */}
                 {storageStats?.cacheBreakdown && (
-                  <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-900 text-[11px]">
-                    <div className="p-2 bg-slate-900/80 rounded-xl border border-slate-800">
-                      <span className="text-slate-500 block text-[10px]">Scripts & Estilos</span>
-                      <strong className="text-white font-mono">{storageStats.cacheBreakdown.staticAssets} arquivos</strong>
+                  <div className="grid grid-cols-2 gap-2 pt-2 border-t border-borda text-[11px]">
+                    <div className="p-2 bg-superficie rounded-xl border border-borda">
+                      <span className="text-tinta-2 block text-[10px]">Scripts & Estilos</span>
+                      <strong className="text-tinta font-mono">{storageStats.cacheBreakdown.staticAssets} arquivos</strong>
                     </div>
-                    <div className="p-2 bg-slate-900/80 rounded-xl border border-slate-800">
-                      <span className="text-slate-500 block text-[10px]">Fotos de Evidência</span>
-                      <strong className="text-white font-mono">{storageStats.cacheBreakdown.cachedImages} imagens</strong>
+                    <div className="p-2 bg-superficie rounded-xl border border-borda">
+                      <span className="text-tinta-2 block text-[10px]">Fotos de Evidência</span>
+                      <strong className="text-tinta font-mono">{storageStats.cacheBreakdown.cachedImages} imagens</strong>
                     </div>
-                    <div className="p-2 bg-slate-900/80 rounded-xl border border-slate-800">
-                      <span className="text-slate-500 block text-[10px]">Payloads de Vistoria</span>
-                      <strong className="text-white font-mono">{storageStats.cacheBreakdown.inspectionPayloads} vistorias</strong>
+                    <div className="p-2 bg-superficie rounded-xl border border-borda">
+                      <span className="text-tinta-2 block text-[10px]">Payloads de Vistoria</span>
+                      <strong className="text-tinta font-mono">{storageStats.cacheBreakdown.inspectionPayloads} vistorias</strong>
                     </div>
-                    <div className="p-2 bg-slate-900/80 rounded-xl border border-slate-800">
-                      <span className="text-slate-500 block text-[10px]">Rotas em Execução</span>
-                      <strong className="text-white font-mono">{storageStats.cacheBreakdown.runtimeRequests} rotas</strong>
+                    <div className="p-2 bg-superficie rounded-xl border border-borda">
+                      <span className="text-tinta-2 block text-[10px]">Rotas em Execução</span>
+                      <strong className="text-tinta font-mono">{storageStats.cacheBreakdown.runtimeRequests} rotas</strong>
                     </div>
                   </div>
                 )}
 
                 {/* Benchmark Latency */}
-                <div className="p-2.5 bg-slate-900 rounded-xl border border-slate-800 flex items-center justify-between">
+                <div className="p-2.5 bg-superficie rounded-xl border border-borda flex items-center justify-between">
                   <div className="flex items-center space-x-2">
-                    <Zap className="w-4 h-4 text-amber-400" />
+                    <Zap className="w-4 h-4 text-amber-700" />
                     <div>
-                      <span className="font-bold text-white block">Velocidade de Resposta do Cache</span>
-                      <span className="text-[10px] text-slate-400">Tempo de acesso aos ativos estáticos</span>
+                      <span className="font-bold text-tinta block">Velocidade de Resposta do Cache</span>
+                      <span className="text-[10px] text-tinta-2">Tempo de acesso aos ativos estáticos</span>
                     </div>
                   </div>
                   <div className="text-right">
-                    <span className="text-sm font-mono font-bold text-emerald-400 block">
+                    <span className="text-sm font-mono font-bold text-marca-escura block">
                       {testedLatency !== null ? `${testedLatency} ms` : '< 5.0 ms'}
                     </span>
-                    <span className="text-[9px] text-emerald-500 font-semibold uppercase">Ultrarrápido</span>
+                    <span className="text-[9px] text-marca-escura font-semibold uppercase">Ultrarrápido</span>
                   </div>
                 </div>
 
                 <div className="flex justify-between items-center pt-1">
-                  <span className="text-slate-400">Banco Local IndexedDB:</span>
-                  <span className="font-mono text-slate-200">{storageStats?.indexedDbSupported ? 'PrevSafeFieldDB (OK)' : 'Fallback LocalStorage'}</span>
+                  <span className="text-tinta-2">Banco Local IndexedDB:</span>
+                  <span className="font-mono text-tinta">{storageStats?.indexedDbSupported ? 'PrevSafeFieldDB (OK)' : 'Fallback LocalStorage'}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-slate-400">Vistorias Salvas no Dispositivo:</span>
-                  <span className="font-mono text-slate-200">{storageStats?.cachedInspectionsCount || 1} vistorias</span>
+                  <span className="text-tinta-2">Vistorias Salvas no Dispositivo:</span>
+                  <span className="font-mono text-tinta">{storageStats?.cachedInspectionsCount || 1} vistorias</span>
                 </div>
               </div>
 
-              <div className="p-3 bg-teal-500/10 border border-teal-500/20 rounded-2xl text-slate-300 text-[11px] leading-relaxed flex items-start space-x-2">
-                <ShieldCheck className="w-4 h-4 text-teal-400 flex-shrink-0 mt-0.5" />
+              <div className="p-3 bg-teal-500/10 border border-teal-500/20 rounded-2xl text-white/80 text-[11px] leading-relaxed flex items-start space-x-2">
+                <ShieldCheck className="w-4 h-4 text-teal-700 flex-shrink-0 mt-0.5" />
                 <span>
                   O <strong>Service Worker v2.2.0</strong> utiliza estratégia <em>Cache-First com Stale-While-Revalidate</em> e proteção contra timeout de rede móvel (1.5s). Isso assegura abertura instantânea e preenchimento fluido das NRs em campo mesmo em áreas industriais ou agrícolas com sinal oscilante.
                 </span>
               </div>
             </div>
 
-            <div className="flex flex-wrap justify-between items-center gap-2 pt-3 border-t border-slate-800">
+            <div className="flex flex-wrap justify-between items-center gap-2 pt-3 border-t border-borda">
               <div className="flex items-center gap-2">
                 <button
                   type="button"
                   onClick={handleForceWarmCache}
                   disabled={isWarmingCache}
-                  className="px-3 py-1.5 bg-teal-500/20 hover:bg-teal-500/30 text-teal-300 rounded-xl text-xs font-semibold border border-teal-500/30 transition flex items-center gap-1.5"
+                  className="px-3 py-1.5 bg-teal-500/20 hover:bg-teal-500/30 text-teal-700 rounded-xl text-xs font-semibold border border-teal-500/30 transition flex items-center gap-1.5"
                 >
                   <RefreshCw className={`w-3.5 h-3.5 ${isWarmingCache ? 'animate-spin' : ''}`} />
                   <span>{isWarmingCache ? 'Pré-cacheando...' : 'Aquecer Pré-cache'}</span>
@@ -1572,7 +1572,7 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
                 <button
                   type="button"
                   onClick={handlePurgeCache}
-                  className="px-3 py-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 rounded-xl text-xs font-semibold border border-rose-500/20 transition"
+                  className="px-3 py-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-700 rounded-xl text-xs font-semibold border border-rose-500/20 transition"
                 >
                   Limpar Cache
                 </button>
@@ -1581,7 +1581,7 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
               <button
                 type="button"
                 onClick={() => setShowStorageModal(false)}
-                className="px-4 py-1.5 bg-slate-800 text-slate-200 rounded-xl text-xs font-semibold hover:bg-slate-700"
+                className="px-4 py-1.5 bg-superficie-2 text-tinta rounded-xl text-xs font-semibold hover:bg-superficie-3"
               >
                 Fechar
               </button>
@@ -1592,21 +1592,21 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
 
       {/* ==================== MODAL: ADICIONAR ITEM DE RISCO (CRUD CREATE) ==================== */}
       {showAddHazardModal && (
-        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-900 rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-800 text-slate-100 animate-in fade-in zoom-in-95 duration-200">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
-              <h3 className="text-base font-bold text-white">Adicionar Ponto de Inspeção / Risco</h3>
-              <button onClick={() => setShowAddHazardModal(false)} className="text-slate-400 hover:text-slate-200">✕</button>
+        <div className="fixed inset-0 bg-fundo backdrop-blur-md z-50 flex items-center justify-center p-4">
+          <div className="bg-superficie rounded-3xl max-w-md w-full p-6 shadow-2xl border border-borda text-tinta animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between border-b border-borda pb-3 mb-4">
+              <h3 className="text-base font-bold text-tinta">Adicionar Ponto de Inspeção / Risco</h3>
+              <button onClick={() => setShowAddHazardModal(false)} className="text-tinta-2 hover:text-tinta">✕</button>
             </div>
 
             <form onSubmit={handleAddHazard} className="space-y-3.5 text-xs">
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="block font-semibold text-slate-300 mb-1">Norma Regulamentadora *</label>
+                  <label className="block font-semibold text-tinta mb-1">Norma Regulamentadora *</label>
                   <select
                     value={newNr}
                     onChange={(e) => setNewNr(e.target.value)}
-                    className="w-full p-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white"
+                    className="w-full p-2 bg-fundo border border-borda rounded-xl text-xs text-tinta"
                   >
                     <option value="NR-01">NR-01 (GRO / PGR)</option>
                     <option value="NR-06">NR-06 (EPIs)</option>
@@ -1622,11 +1622,11 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
                   </select>
                 </div>
                 <div>
-                  <label className="block font-semibold text-slate-300 mb-1">Categoria de Risco *</label>
+                  <label className="block font-semibold text-tinta mb-1">Categoria de Risco *</label>
                   <select
                     value={newCategory}
                     onChange={(e) => setNewCategory(e.target.value)}
-                    className="w-full p-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white"
+                    className="w-full p-2 bg-fundo border border-borda rounded-xl text-xs text-tinta"
                   >
                     <option value="Físico">Físico</option>
                     <option value="Químico">Químico</option>
@@ -1638,24 +1638,24 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-300 mb-1">Descrição do Perigo / Condição Inspecionada *</label>
+                <label className="block font-semibold text-tinta mb-1">Descrição do Perigo / Condição Inspecionada *</label>
                 <input
                   type="text"
                   required
                   placeholder="Ex: Trabalho em escadas sem ancoragem na manutenção"
                   value={newHazard}
                   onChange={(e) => setNewHazard(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="block font-semibold text-slate-300 mb-1">Severidade Estimada</label>
+                  <label className="block font-semibold text-tinta mb-1">Severidade Estimada</label>
                   <select
                     value={newSeverity}
                     onChange={(e) => setNewSeverity(e.target.value as any)}
-                    className="w-full p-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white"
+                    className="w-full p-2 bg-fundo border border-borda rounded-xl text-xs text-tinta"
                   >
                     <option value="BAIXO">Baixo</option>
                     <option value="MÉDIO">Médio</option>
@@ -1664,11 +1664,11 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
                   </select>
                 </div>
                 <div>
-                  <label className="block font-semibold text-slate-300 mb-1">Conformidade Inicial</label>
+                  <label className="block font-semibold text-tinta mb-1">Conformidade Inicial</label>
                   <select
                     value={newStatus}
                     onChange={(e) => setNewStatus(e.target.value as any)}
-                    className="w-full p-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white"
+                    className="w-full p-2 bg-fundo border border-borda rounded-xl text-xs text-tinta"
                   >
                     <option value="NÃO_CONFORME">Não Conforme</option>
                     <option value="CONFORME">Conforme</option>
@@ -1678,32 +1678,32 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-300 mb-1">Observação Técnica Constatada</label>
+                <label className="block font-semibold text-tinta mb-1">Observação Técnica Constatada</label>
                 <textarea
                   rows={2}
                   placeholder="Detalhes específicos da situação encontrada..."
                   value={newObs}
                   onChange={(e) => setNewObs(e.target.value)}
-                  className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full p-2.5 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-300 mb-1">Medida Corretiva Recomendada (Plano de Ação PGR)</label>
+                <label className="block font-semibold text-tinta mb-1">Medida Corretiva Recomendada (Plano de Ação PGR)</label>
                 <input
                   type="text"
                   placeholder="Ex: Treinamento NR-35 e instalação de ponto de ancoragem"
                   value={newCorrective}
                   onChange={(e) => setNewCorrective(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
                 />
               </div>
 
-              <div className="flex justify-end space-x-2 pt-4 border-t border-slate-800">
+              <div className="flex justify-end space-x-2 pt-4 border-t border-borda">
                 <button
                   type="button"
                   onClick={() => setShowAddHazardModal(false)}
-                  className="px-4 py-2 bg-slate-800 text-slate-300 rounded-xl font-semibold hover:bg-slate-700"
+                  className="px-4 py-2 bg-superficie-2 text-tinta rounded-xl font-semibold hover:bg-superficie-3"
                 >
                   Cancelar
                 </button>
@@ -1721,11 +1721,11 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
 
       {/* ==================== MODAL: CAPTURAR NOVA FOTO ==================== */}
       {showAddPhotoModal && (
-        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-900 rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-800 text-slate-100 animate-in fade-in zoom-in-95 duration-200">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
-              <h3 className="text-base font-bold text-white">Capturar Foto / Evidência</h3>
-              <button onClick={() => setShowAddPhotoModal(false)} className="text-slate-400 hover:text-slate-200">✕</button>
+        <div className="fixed inset-0 bg-fundo backdrop-blur-md z-50 flex items-center justify-center p-4">
+          <div className="bg-superficie rounded-3xl max-w-md w-full p-6 shadow-2xl border border-borda text-tinta animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between border-b border-borda pb-3 mb-4">
+              <h3 className="text-base font-bold text-tinta">Capturar Foto / Evidência</h3>
+              <button onClick={() => setShowAddPhotoModal(false)} className="text-tinta-2 hover:text-tinta">✕</button>
             </div>
 
             <form onSubmit={handleAddPhoto} className="space-y-3.5 text-xs">
@@ -1744,12 +1744,12 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
                   <img
                     src={newPhotoPreview}
                     alt="Pré-visualização da evidência"
-                    className="w-full h-44 object-cover rounded-2xl border border-slate-800"
+                    className="w-full h-44 object-cover rounded-2xl border border-borda"
                   />
                   <button
                     type="button"
                     onClick={() => photoInputRef.current?.click()}
-                    className="w-full py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl font-semibold"
+                    className="w-full py-2 bg-superficie-2 hover:bg-superficie-3 text-tinta rounded-xl font-semibold"
                   >
                     Trocar foto
                   </button>
@@ -1758,38 +1758,38 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
                 <button
                   type="button"
                   onClick={() => photoInputRef.current?.click()}
-                  className="w-full p-6 bg-slate-950 border-2 border-dashed border-slate-800 hover:border-indigo-600 rounded-2xl text-center space-y-2 transition"
+                  className="w-full p-6 bg-fundo border-2 border-dashed border-borda hover:border-indigo-600 rounded-2xl text-center space-y-2 transition"
                 >
-                  <Camera className="w-8 h-8 mx-auto text-indigo-400" />
-                  <div className="text-slate-300 font-semibold">Tirar foto ou escolher da galeria</div>
-                  <p className="text-[11px] text-slate-500">A imagem é enviada para o armazenamento privado da organização.</p>
+                  <Camera className="w-8 h-8 mx-auto text-indigo-700" />
+                  <div className="text-tinta font-semibold">Tirar foto ou escolher da galeria</div>
+                  <p className="text-[11px] text-tinta-2">A imagem é enviada para o armazenamento privado da organização.</p>
                 </button>
               )}
 
               {photoError && (
-                <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-[11px]">
+                <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-700 text-[11px]">
                   {photoError}
                 </div>
               )}
 
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="block font-semibold text-slate-300 mb-1">Setor / Linha *</label>
+                  <label className="block font-semibold text-tinta mb-1">Setor / Linha *</label>
                   <input
                     type="text"
                     required
                     placeholder="Ex: Almoxarifado / Prensa 04"
                     value={newPhotoSector}
                     onChange={(e) => setNewPhotoSector(e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
                   />
                 </div>
                 <div>
-                  <label className="block font-semibold text-slate-300 mb-1">NR Vinculada</label>
+                  <label className="block font-semibold text-tinta mb-1">NR Vinculada</label>
                   <select
                     value={newPhotoNr}
                     onChange={(e) => setNewPhotoNr(e.target.value)}
-                    className="w-full p-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white"
+                    className="w-full p-2 bg-fundo border border-borda rounded-xl text-xs text-tinta"
                   >
                     <option value="NR-12">NR-12 (Máquinas)</option>
                     <option value="NR-10">NR-10 (Elétrica)</option>
@@ -1802,22 +1802,22 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-300 mb-1">Legenda Técnica da Evidência *</label>
+                <label className="block font-semibold text-tinta mb-1">Legenda Técnica da Evidência *</label>
                 <textarea
                   rows={2}
                   required
                   placeholder="Descreva o que a imagem comprova (não conformidade ou condição segura)..."
                   value={newPhotoCaption}
                   onChange={(e) => setNewPhotoCaption(e.target.value)}
-                  className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full p-2.5 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-indigo-500"
                 />
               </div>
 
-              <div className="flex justify-end space-x-2 pt-4 border-t border-slate-800">
+              <div className="flex justify-end space-x-2 pt-4 border-t border-borda">
                 <button
                   type="button"
                   onClick={() => setShowAddPhotoModal(false)}
-                  className="px-4 py-2 bg-slate-800 text-slate-300 rounded-xl font-semibold hover:bg-slate-700"
+                  className="px-4 py-2 bg-superficie-2 text-tinta rounded-xl font-semibold hover:bg-superficie-3"
                 >
                   Cancelar
                 </button>
@@ -1836,19 +1836,19 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
 
       {/* ==================== MODAL: ZOOM DE FOTO ==================== */}
       {zoomedPhoto && (
-        <div className="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-900 rounded-3xl max-w-2xl w-full p-5 shadow-2xl border border-slate-800 text-slate-100 animate-in fade-in zoom-in-95 duration-200 space-y-3">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+        <div className="fixed inset-0 bg-fundo backdrop-blur-md z-50 flex items-center justify-center p-4">
+          <div className="bg-superficie rounded-3xl max-w-2xl w-full p-5 shadow-2xl border border-borda text-tinta animate-in fade-in zoom-in-95 duration-200 space-y-3">
+            <div className="flex items-center justify-between border-b border-borda pb-2">
               <div className="flex items-center space-x-2">
-                <span className="font-mono text-xs font-bold text-indigo-400 bg-slate-950 px-2 py-0.5 rounded-full border border-slate-800">
+                <span className="font-mono text-xs font-bold text-indigo-700 bg-fundo px-2 py-0.5 rounded-full border border-borda">
                   {zoomedPhoto.nr_ref || 'NR Geral'}
                 </span>
-                <span className="text-xs font-bold text-white">{zoomedPhoto.sector}</span>
+                <span className="text-xs font-bold text-tinta">{zoomedPhoto.sector}</span>
               </div>
-              <button onClick={() => setZoomedPhoto(null)} className="text-slate-400 hover:text-slate-200">✕</button>
+              <button onClick={() => setZoomedPhoto(null)} className="text-tinta-2 hover:text-tinta">✕</button>
             </div>
 
-            <div className="relative rounded-2xl overflow-hidden aspect-video bg-slate-950 border border-slate-800">
+            <div className="relative rounded-2xl overflow-hidden aspect-video bg-fundo border border-borda">
               <Image 
                 src={zoomedPhoto.url} 
                 alt={zoomedPhoto.caption} 
@@ -1858,9 +1858,9 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
               />
             </div>
 
-            <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 text-xs">
-              <p className="text-slate-200">{zoomedPhoto.caption}</p>
-              <span className="text-[10px] text-slate-500 font-mono mt-1 block">Horário de captura: {zoomedPhoto.timestamp}</span>
+            <div className="p-3 bg-fundo rounded-xl border border-borda text-xs">
+              <p className="text-tinta">{zoomedPhoto.caption}</p>
+              <span className="text-[10px] text-tinta-2 font-mono mt-1 block">Horário de captura: {zoomedPhoto.timestamp}</span>
             </div>
           </div>
         </div>
