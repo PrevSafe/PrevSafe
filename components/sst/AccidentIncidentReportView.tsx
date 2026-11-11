@@ -376,7 +376,7 @@ export const AccidentIncidentReportView: React.FC<AccidentIncidentReportViewProp
   };
 
   // 5W2H Action Plan Helper State
-  const [actionPlanTemp, setActionPlanTemp] = useState<Omit<ActionPlanItem5W2H, 'id'>>({
+  const [actionPlanTemp, setActionPlanTemp] = useState<Omit<ActionPlanItem5W2H, 'id'>>(() => ({
     what: '',
     why: '',
     where: '',
@@ -385,7 +385,7 @@ export const AccidentIncidentReportView: React.FC<AccidentIncidentReportViewProp
     how: '',
     how_much_cost: 0,
     status: 'PENDING'
-  });
+  }));
 
   const handleAddActionPlanToForm = () => {
     if (!actionPlanTemp.what || !actionPlanTemp.who_responsible) return;
@@ -850,7 +850,7 @@ export const AccidentIncidentReportView: React.FC<AccidentIncidentReportViewProp
                 <AlertOctagon className="w-12 h-12 text-tinta-2 mx-auto" />
                 <h3 className="text-base font-bold text-tinta">Nenhuma ocorrência encontrada</h3>
                 <p className="text-xs text-tinta-2 max-w-md mx-auto">
-                  Não existem registros correspondentes aos filtros selecionados. Clique em "Nova Ocorrência / Investigação" para cadastrar.
+                  Não existem registros correspondentes aos filtros selecionados. Clique em &ldquo;Nova Ocorrência / Investigação&rdquo; para cadastrar.
                 </p>
                 <button
                   type="button"
@@ -1320,7 +1320,7 @@ export const AccidentIncidentReportView: React.FC<AccidentIncidentReportViewProp
                         )}
                       </div>
                       <p className="text-xs text-tinta bg-superficie p-2.5 rounded-lg border border-borda">
-                        "{w.statement_text}"
+                        &ldquo;{w.statement_text}&rdquo;
                       </p>
                     </div>
 
@@ -2041,7 +2041,7 @@ export const AccidentIncidentReportView: React.FC<AccidentIncidentReportViewProp
                     {selectedIncidentForPrint.witnesses?.map((w, i) => (
                       <div key={w.id} className="text-xs">
                         <strong>{i + 1}. {w.witness_name}</strong> ({w.witness_job_title || 'Testemunha'}) - Doc: {w.witness_document || 'N/A'}:
-                        <p className="italic text-slate-700 mt-0.5">"{w.statement_text}"</p>
+                        <p className="italic text-slate-700 mt-0.5">&ldquo;{w.statement_text}&rdquo;</p>
                       </div>
                     ))}
                   </div>

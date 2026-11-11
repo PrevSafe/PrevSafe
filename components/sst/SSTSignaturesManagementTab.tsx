@@ -81,7 +81,7 @@ export const SSTSignaturesManagementTab: React.FC<SSTSignaturesManagementTabProp
   // New Envelope Form state
   const [newDocType, setNewDocType] = useState<SSTDocumentSignatureType>('PGR');
   const [newDocTitle, setNewDocTitle] = useState('');
-  const [newDocNumber, setNewDocNumber] = useState(`PGR-${new Date().getFullYear()}-${Math.floor(100 + Math.random() * 900)}`);
+  const [newDocNumber, setNewDocNumber] = useState(() => `PGR-${new Date().getFullYear()}-${Math.floor(100 + Math.random() * 900)}`);
   const [newClientId, setNewClientId] = useState(clients[0]?.id || '');
   const [newExpiresDays, setNewExpiresDays] = useState(30);
 
