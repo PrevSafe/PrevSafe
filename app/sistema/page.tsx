@@ -327,8 +327,12 @@ export default function Home() {
     }
   };
 
+  // A casca ocupa exatamente a altura da janela e nao rola: quem rola e o
+  // <main>. Com min-h-screen a pagina inteira crescia e levava a barra e o
+  // menu junto. h-dvh e nao h-screen porque 100vh inclui a barra de endereco
+  // do navegador no celular, e o rodape ficava cortado.
   return (
-    <div className="min-h-screen bg-fundo flex flex-col font-sans text-tinta">
+    <div className="h-dvh overflow-hidden bg-fundo flex flex-col font-sans text-tinta">
       {/* Top Navbar */}
       <Navbar 
         onOpenCopilot={() => setIsCopilotOpen(true)}

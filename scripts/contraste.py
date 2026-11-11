@@ -126,6 +126,12 @@ for p in sorted(list((RAIZ/'components').rglob('*.tsx')) + list((RAIZ/'app').rgl
         continue
     orig = p.read_text(encoding='utf-8'); linhas = orig.split('\n'); mudou = False
     for i, linha in enumerate(linhas):
+        # A medicao le cada className isolado, entao nao enxerga o fundo que
+        # vem de um elemento pai. Quando o par so e legivel por causa desse
+        # pai, a linha leva o marcador abaixo dizendo contra o que foi
+        # conferida -- e a conferencia fica escrita, nao esquecida.
+        if 'contraste-ok:' in linha:
+            continue
         for trecho in re.findall(r'"[^"]*"|\'[^\']*\'', linha):
             if 'bg-' not in trecho and 'text-' not in trecho:
                 continue

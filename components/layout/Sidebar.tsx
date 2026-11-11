@@ -25,6 +25,7 @@ import {
   Building,
   Building2,
   ChevronRight,
+  ChevronDown,
   ShieldCheck,
   X,
   Search,
@@ -312,6 +313,33 @@ export const Sidebar: React.FC<SidebarProps> = ({
     }
   ];
 
+  // Os grupos comecam fechados e abrem com um clique; o grupo da tela em uso
+  // abre sozinho, para nao se perder de onde esta. Mesmo comportamento do
+  // Semeio Agro.
+  const grupoAtivo = menuSections.find((sec) =>
+    sec.items.some((item) => item.id === activeView)
+  )?.title;
+
+  const [gruposAbertos, setGruposAbertos] = useState<Set<string>>(
+    () => new Set(grupoAtivo ? [grupoAtivo] : [])
+  );
+
+  useEffect(() => {
+    if (!grupoAtivo) return;
+    setGruposAbertos((atual) =>
+      atual.has(grupoAtivo) ? atual : new Set(atual).add(grupoAtivo)
+    );
+  }, [grupoAtivo]);
+
+  const alternarGrupo = (titulo: string) => {
+    setGruposAbertos((atual) => {
+      const novo = new Set(atual);
+      if (novo.has(titulo)) novo.delete(titulo);
+      else novo.add(titulo);
+      return novo;
+    });
+  };
+
   const handleSelectView = (viewId: string) => {
     setActiveView(viewId);
     handleClose();
@@ -383,11 +411,37 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
           if (filteredItems.length === 0) return null;
 
+          // Buscando, o grupo com resultado abre sozinho: senao a busca
+          // encontraria o item e o esconderia dentro do grupo fechado.
+          const grupoAberto = !!searchTerm || gruposAbertos.has(sec.title);
+          const idLista = `menu-grupo-${secIdx}`;
+
           return (
             <div key={secIdx} className="space-y-1">
-              <div className="px-2.5 text-[10px] font-bold text-tinta-2 uppercase tracking-wider">
-                {sec.title}
-              </div>
+              <button
+                type="button"
+                onClick={() => alternarGrupo(sec.title)}
+                aria-expanded={grupoAberto}
+                aria-controls={idLista}
+                className="w-full flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg text-[10px] font-bold text-tinta-2 uppercase tracking-wider hover:bg-superficie-2 hover:text-tinta transition"
+              >
+                <span className="truncate text-left">{sec.title}</span>
+                <ChevronDown
+                  className={`w-3.5 h-3.5 flex-shrink-0 transition-transform duration-200 ${
+                    grupoAberto ? '' : '-rotate-90'
+                  }`}
+                />
+              </button>
+
+              {/* Desliza ao abrir e fechar. Fechado, os itens saem tambem do
+                  Tab e do leitor de tela, nao so da vista. */}
+              <div
+                id={idLista}
+                className={`grid transition-[grid-template-rows] duration-200 ease-out ${
+                  grupoAberto ? 'grid-rows-[1fr]' : 'grid-rows-[0fr] invisible'
+                }`}
+              >
+                <div className="min-h-0 overflow-hidden space-y-1">
               {filteredItems.map((item) => {
                 const Icon = item.icon;
                 const isActive = activeView === item.id;
@@ -405,14 +459,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     }`}
                   >
                     <div className="flex items-center space-x-2.5 truncate">
-                      <Icon className={`w-4 h-4 flex-shrink-0 ${isActive ? 'text-marca-escura' : 'text-tinta-2'}`} />
+                      <Icon className={`w-4 h-4 flex-shrink-0 ${isActive ? 'text-white' : 'text-tinta-2'}`} />  {/* contraste-ok: branco sobre o bg-marca-escura do botao pai, 4,9:1 */}
                       <span className="truncate">{item.label}</span>
                     </div>
 
                     <div className="flex items-center space-x-1.5 flex-shrink-0">
                       {item.code && (
                         <span 
-                          className="text-[9px] font-mono font-semibold px-1.5 py-0.5 rounded bg-fundo text-marca-escura border border-borda hover:border-marca-escura"
+                          className={`text-[9px] font-mono font-semibold px-1.5 py-0.5 rounded border ${
+                            isActive
+                              ? 'bg-white/15 text-white border-white/30'  /* contraste-ok: branco sobre o bg-marca-escura do botao pai, 4,9:1 */
+                              : 'bg-fundo text-marca-escura border-borda hover:border-marca-escura'
+                          }`}
                           title={`Digite ${item.code} para ir direto`}
                         >
                           {item.code}
@@ -425,11 +483,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
                           {item.badge}
                         </span>
                       )}
-                      {isActive && <ChevronRight className="w-3.5 h-3.5 text-marca-escura" />}
+                      {isActive && <ChevronRight className="w-3.5 h-3.5 text-white" />}  {/* contraste-ok: branco sobre o bg-marca-escura do botao pai, 4,9:1 */}
                     </div>
                   </button>
                 );
               })}
+                </div>
+              </div>
             </div>
           );
         })}
@@ -439,11 +499,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
       <div className="p-3 border-t border-borda bg-superficie text-left space-y-1.5">
         <button
           onClick={() => handleSelectView('settings')}
-          className="w-full flex items-center justify-between p-2 rounded-xl bg-marca hover:bg-marca border border-marca-escura transition text-left"
+          className="w-full flex items-center justify-between p-2 rounded-xl bg-marca-suave hover:bg-marca-borda border border-marca-borda transition text-left"
           title="Configurações da Empresa e status do banco Supabase"
         >
           <div className="flex items-center space-x-2">
-            <span className="w-2 h-2 rounded-full bg-marca animate-pulse flex-shrink-0" />
+            <span className="w-2 h-2 rounded-full bg-marca-escura animate-pulse flex-shrink-0" />
             <span className="text-[11px] font-semibold text-marca-escura">Prev Workflow</span>
           </div>
           <span className="text-[10px] font-mono text-marca-escura">Supabase</span>

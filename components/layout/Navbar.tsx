@@ -154,7 +154,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   };
 
   return (
-    <header className="sticky top-0 z-40 bg-superficie border-b border-borda text-tinta select-none">
+    <header className="flex-shrink-0 z-40 bg-superficie border-b border-borda text-tinta select-none">
       {toastMessage && (
         <div className="bg-marca-escura text-white text-xs font-medium px-4 py-2 text-center animate-pulse">
           {toastMessage}
