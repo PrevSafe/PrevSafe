@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { usePrevSafe } from '@/context/PrevSafeContext';
+import { montarCatalogo } from '@/lib/programas';
 import { 
   BarChart3, 
   Activity, 
@@ -25,6 +26,7 @@ import {
   Building,
   Building2,
   ChevronRight,
+  ChevronDown,
   ShieldCheck,
   X,
   Search,
@@ -42,22 +44,6 @@ import {
   AlertTriangle,
   Newspaper
 } from 'lucide-react';
-
-interface MenuItem {
-  id: string;
-  label: string;
-  icon: React.ComponentType<{ className?: string }>;
-  code?: string;
-  badge?: string;
-  badgeColor?: string;
-  highlight?: boolean;
-}
-
-interface MenuSection {
-  title: string;
-  roles: string[];
-  items: MenuItem[];
-}
 
 interface SidebarProps {
   activeView: string;
@@ -109,208 +95,46 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   const isClientRole = currentRole === 'CLIENTE_ADMIN' || currentRole === 'CLIENTE_USER';
 
-  const menuSections: MenuSection[] = [
-    {
-      title: 'VISÃO EXECUTIVA',
-      roles: ['ADMIN', 'GESTOR', 'COMERCIAL', 'FINANCEIRO'],
-      items: [
-        { id: 'dashboard-exec', label: 'Dashboard Executivo', icon: BarChart3, code: '010' },
-        { id: 'dashboard-oper', label: 'Dashboard Operacional', icon: Activity, code: '020', badge: (serviceOrders || []).filter(o => o?.status === 'IN_PROGRESS').length.toString() },
-        { id: 'dashboard-comm', label: 'Dashboard Comercial', icon: TrendingUp, code: '030', badge: (proposals || []).filter(p => p?.status === 'SENT').length.toString() },
-        { id: 'dashboard-qual', label: 'Dashboard de Qualidade', icon: Award, code: '040' },
-      ]
-    },
-    {
-      title: 'FINANCEIRO & FLUXO DE CAIXA',
-      roles: ['ADMIN', 'GESTOR', 'COMERCIAL', 'FINANCEIRO'],
-      items: [
-        { 
-          id: 'financial', 
-          label: 'Gestão Financeira & Fluxo de Caixa', 
-          icon: DollarSign, 
-          code: '450',
-          badge: Array.isArray(transactions) ? `${transactions.length}` : undefined,
-          badgeColor: 'bg-marca'
-        },
-      ]
-    },
-    {
-      title: 'CRM & COMERCIAL',
-      roles: ['ADMIN', 'GESTOR', 'COMERCIAL', 'FINANCEIRO'],
-      items: [
-        { id: 'crm-clients', label: 'Clientes & Unidades', icon: Users, code: '400' },
-        { id: 'crm-leads', label: 'Leads & Funil Oportunidades', icon: Target, code: '410' },
-        { id: 'proposals', label: 'Propostas Comerciais', icon: FileSpreadsheet, code: '420' },
-        { id: 'contracts', label: 'Contratos & Assinaturas', icon: FileSignature, code: '430', badge: (contracts || []).length.toString() },
-      ]
-    },
-    {
-      title: 'ENGENHARIA & HIGIENE OCUPACIONAL',
-      // SAUDE: exames, PCMSO e ficha do colaborador ficam aqui.
-      roles: ['ADMIN', 'GESTOR', 'TÉCNICO', 'SAUDE'],
-      items: [
-        { 
-          id: 'sst-engineering', 
-          label: 'Engenharia SST & Funcionários', 
-          icon: HardHat, 
-          code: '100',
-          badge: 'NR-01/07/09',
-          badgeColor: 'bg-teal-500',
-          highlight: true
-        },
-        { 
-          id: 'occupational-risks-catalog', 
-          label: 'Catálogo de Riscos Ocupacionais', 
-          icon: AlertTriangle, 
-          code: '070',
-          badge: 'Tabela 24 / NRs',
-          badgeColor: 'bg-teal-500',
-          highlight: true
-        },
-        { id: 'service-orders', label: 'Ordens de Serviço (OS NR-01)', icon: Briefcase, code: '050', badge: (serviceOrders || []).length.toString() },
-        { id: 'documents', label: 'Repositório de Documentos & Laudos', icon: FolderKanban, code: '080' },
-        { id: 'service-templates', label: 'Catálogo de Serviços & NRs', icon: Layers, code: '090' },
-      ]
-    },
-    {
-      title: 'PROTEÇÃO, CIPA & PREVENÇÃO',
-      roles: ['ADMIN', 'GESTOR', 'TÉCNICO'],
-      items: [
-        { 
-          id: 'epi-management', 
-          label: 'Gestão de EPI & Biometria (NR-06)', 
-          icon: ShieldCheck,
-          code: '200',
-          badge: 'NR-06',
-          badgeColor: 'bg-amber-500',
-          highlight: true
-        },
-        {
-          id: 'cipa-management',
-          label: 'Gestão da CIPA & Eleições (NR-05)',
-          icon: Vote,
-          code: '210',
-          badge: 'NR-05/31/22',
-          badgeColor: 'bg-teal-500',
-          highlight: true
-        },
-      ]
-    },
-    {
-      title: 'SINISTRALIDADE & EVENTOS eSOCIAL',
-      roles: ['ADMIN', 'GESTOR', 'TÉCNICO', 'SAUDE'],
-      items: [
-        { 
-          id: 'cat-absences', 
-          label: 'CAT (S-2210) & Afastamentos (S-2230)', 
-          icon: AlertOctagon, 
-          code: '300',
-          badge: 'S-2210/2230',
-          badgeColor: 'bg-rose-500',
-          highlight: true
-        },
-        { 
-          id: 'accidents-incidents', 
-          label: 'Acidentes & Incidentes (NBR 14280)', 
-          icon: AlertTriangle, 
-          code: '310',
-          badge: '5W2H / 6M',
-          badgeColor: 'bg-rose-600'
-        },
-        { 
-          id: 'esocial', 
-          label: 'Gestão de Eventos eSocial', 
-          icon: ShieldCheck, 
-          code: '320',
-          badge: (esocialEvents || []).length.toString(), 
-          badgeColor: 'bg-marca' 
-        },
-      ]
-    },
-    {
-      title: 'DEMANDAS & INTELIGÊNCIA OPERACIONAL',
-      roles: ['ADMIN', 'GESTOR', 'TÉCNICO', 'SAUDE'],
-      items: [
-        { 
-          id: 'reports', 
-          label: 'Central de Relatórios & BI (Excel/PDF)', 
-          icon: FileSpreadsheet, 
-          code: '500',
-          badge: 'XLSX/PDF',
-          badgeColor: 'bg-marca',
-          highlight: true
-        },
-        { id: 'requests', label: 'Central de Pendências & SLAs', icon: CheckSquare, code: '510', badge: (requests || []).filter(r => r?.status === 'OPEN').length.toString(), badgeColor: 'bg-amber-500' },
-      ]
-    },
-    {
-      title: 'COMUNICAÇÃO & AUTOMAÇÕES',
-      roles: ['ADMIN', 'GESTOR', 'COMERCIAL'],
-      items: [
-        { id: 'communications', label: 'Central Multicanal (WA/Email)', icon: MessageSquare, code: '520' },
-        { id: 'notifications', label: 'Notificações & Webhooks', icon: BellRing, code: '530' },
-      ]
-    },
-    {
-      title: 'GOVERNANÇA & QUALIDADE',
-      roles: ['ADMIN', 'GESTOR', 'FINANCEIRO'],
-      items: [
-        { 
-          id: 'users-management', 
-          label: 'Central de Usuários & Perfis', 
-          icon: UserCheck, 
-          code: '600',
-          badge: profiles ? `${profiles.length}` : undefined,
-          badgeColor: 'bg-teal-500',
-          highlight: true
-        },
-        { 
-          id: 'saas-management', 
-          label: 'Gestão de Assinantes SaaS', 
-          icon: Building2, 
-          code: '610',
-          badge: tenants ? `${tenants.length}` : undefined,
-          badgeColor: 'bg-teal-500'
-        },
-        { id: 'evaluations', label: 'Avaliações & Pós-Venda', icon: Star },
-        { id: 'audit-logs', label: 'Auditoria Geral (Audit Log)', icon: History, code: '620' },
-        { 
-          id: 'tenant-theme-settings', 
-          label: 'Tema & Cores PWA/Portal', 
-          icon: Palette, 
-          code: '630',
-          badge: 'CSS Vars', 
-          badgeColor: 'bg-marca', 
-          highlight: true 
-        },
-        { id: 'site-content', label: 'Site & Conteúdo', icon: Newspaper, code: '650', badge: 'Público', badgeColor: 'bg-marca' },
-        { id: 'settings', label: 'Configurações da Empresa', icon: Settings, code: '640' },
-      ]
-    },
-    {
-      title: 'SUPORTE & APRENDIZADO',
-      roles: ['ADMIN', 'GESTOR', 'COMERCIAL', 'TÉCNICO', 'FINANCEIRO', 'SAUDE', 'CLIENTE_ADMIN', 'CLIENTE_USER'],
-      items: [
-        { 
-          id: 'help-center', 
-          label: 'Central de Ajuda & Tutoriais', 
-          icon: BookOpen, 
-          code: '720',
-          badge: 'Prints & Vídeos',
-          badgeColor: 'bg-marca',
-          highlight: true 
-        },
-      ]
-    },
-    {
-      title: 'EXPERIÊNCIA DEDICADA',
-      roles: ['ADMIN', 'GESTOR', 'COMERCIAL', 'TÉCNICO', 'FINANCEIRO', 'SAUDE', 'CLIENTE_ADMIN', 'CLIENTE_USER'],
-      items: [
-        { id: 'client-portal', label: 'Portal do Cliente (Visão Externa)', icon: UserCheck, code: '700', highlight: true },
-        { id: 'technician-field', label: 'PWA de Campo (Técnico)', icon: Smartphone, code: '710', highlight: true },
-      ]
-    }
-  ];
+  // O catalogo mora em lib/programas.ts: o campo de atalho da barra
+  // superior usa a mesma lista, e com ela em dois lugares os codigos
+  // divergiriam.
+  const menuSections = montarCatalogo({
+    serviceOrders,
+    proposals,
+    contracts,
+    requests,
+    transactions,
+    esocialEvents,
+    profiles,
+    tenants,
+  });
+
+  // Os grupos comecam fechados e abrem com um clique; o grupo da tela em uso
+  // abre sozinho, para nao se perder de onde esta. Mesmo comportamento do
+  // Semeio Agro.
+  const grupoAtivo = menuSections.find((sec) =>
+    sec.items.some((item) => item.id === activeView)
+  )?.title;
+
+  const [gruposAbertos, setGruposAbertos] = useState<Set<string>>(
+    () => new Set(grupoAtivo ? [grupoAtivo] : [])
+  );
+
+  useEffect(() => {
+    if (!grupoAtivo) return;
+    setGruposAbertos((atual) =>
+      atual.has(grupoAtivo) ? atual : new Set(atual).add(grupoAtivo)
+    );
+  }, [grupoAtivo]);
+
+  const alternarGrupo = (titulo: string) => {
+    setGruposAbertos((atual) => {
+      const novo = new Set(atual);
+      if (novo.has(titulo)) novo.delete(titulo);
+      else novo.add(titulo);
+      return novo;
+    });
+  };
 
   const handleSelectView = (viewId: string) => {
     setActiveView(viewId);
@@ -383,11 +207,37 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
           if (filteredItems.length === 0) return null;
 
+          // Buscando, o grupo com resultado abre sozinho: senao a busca
+          // encontraria o item e o esconderia dentro do grupo fechado.
+          const grupoAberto = !!searchTerm || gruposAbertos.has(sec.title);
+          const idLista = `menu-grupo-${secIdx}`;
+
           return (
             <div key={secIdx} className="space-y-1">
-              <div className="px-2.5 text-[10px] font-bold text-tinta-2 uppercase tracking-wider">
-                {sec.title}
-              </div>
+              <button
+                type="button"
+                onClick={() => alternarGrupo(sec.title)}
+                aria-expanded={grupoAberto}
+                aria-controls={idLista}
+                className="w-full flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg text-[10px] font-bold text-tinta-2 uppercase tracking-wider hover:bg-superficie-2 hover:text-tinta transition"
+              >
+                <span className="truncate text-left">{sec.title}</span>
+                <ChevronDown
+                  className={`w-3.5 h-3.5 flex-shrink-0 transition-transform duration-200 ${
+                    grupoAberto ? '' : '-rotate-90'
+                  }`}
+                />
+              </button>
+
+              {/* Desliza ao abrir e fechar. Fechado, os itens saem tambem do
+                  Tab e do leitor de tela, nao so da vista. */}
+              <div
+                id={idLista}
+                className={`grid transition-[grid-template-rows] duration-200 ease-out ${
+                  grupoAberto ? 'grid-rows-[1fr]' : 'grid-rows-[0fr] invisible'
+                }`}
+              >
+                <div className="min-h-0 overflow-hidden space-y-1">
               {filteredItems.map((item) => {
                 const Icon = item.icon;
                 const isActive = activeView === item.id;
@@ -405,14 +255,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     }`}
                   >
                     <div className="flex items-center space-x-2.5 truncate">
-                      <Icon className={`w-4 h-4 flex-shrink-0 ${isActive ? 'text-marca-escura' : 'text-tinta-2'}`} />
+                      <Icon className={`w-4 h-4 flex-shrink-0 ${isActive ? 'text-white' : 'text-tinta-2'}`} />  {/* contraste-ok: branco sobre o bg-marca-escura do botao pai, 4,9:1 */}
                       <span className="truncate">{item.label}</span>
                     </div>
 
                     <div className="flex items-center space-x-1.5 flex-shrink-0">
                       {item.code && (
                         <span 
-                          className="text-[9px] font-mono font-semibold px-1.5 py-0.5 rounded bg-fundo text-marca-escura border border-borda hover:border-marca-escura"
+                          className={`text-[9px] font-mono font-semibold px-1.5 py-0.5 rounded border ${
+                            isActive
+                              ? 'bg-white/15 text-white border-white/30'  /* contraste-ok: branco sobre o bg-marca-escura do botao pai, 4,9:1 */
+                              : 'bg-fundo text-marca-escura border-borda hover:border-marca-escura'
+                          }`}
                           title={`Digite ${item.code} para ir direto`}
                         >
                           {item.code}
@@ -425,11 +279,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
                           {item.badge}
                         </span>
                       )}
-                      {isActive && <ChevronRight className="w-3.5 h-3.5 text-marca-escura" />}
+                      {isActive && <ChevronRight className="w-3.5 h-3.5 text-white" />}  {/* contraste-ok: branco sobre o bg-marca-escura do botao pai, 4,9:1 */}
                     </div>
                   </button>
                 );
               })}
+                </div>
+              </div>
             </div>
           );
         })}
@@ -439,11 +295,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
       <div className="p-3 border-t border-borda bg-superficie text-left space-y-1.5">
         <button
           onClick={() => handleSelectView('settings')}
-          className="w-full flex items-center justify-between p-2 rounded-xl bg-marca hover:bg-marca border border-marca-escura transition text-left"
+          className="w-full flex items-center justify-between p-2 rounded-xl bg-marca-suave hover:bg-marca-borda border border-marca-borda transition text-left"
           title="Configurações da Empresa e status do banco Supabase"
         >
           <div className="flex items-center space-x-2">
-            <span className="w-2 h-2 rounded-full bg-marca animate-pulse flex-shrink-0" />
+            <span className="w-2 h-2 rounded-full bg-marca-escura animate-pulse flex-shrink-0" />
             <span className="text-[11px] font-semibold text-marca-escura">Prev Workflow</span>
           </div>
           <span className="text-[10px] font-mono text-marca-escura">Supabase</span>

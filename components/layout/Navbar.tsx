@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { usePrevSafe } from '@/context/PrevSafeContext';
+import { CodigoTela } from './CodigoTela';
 import { RoleType } from '@/types';
 import { formatTime } from '@/lib/utils';
 import { 
@@ -154,7 +155,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   };
 
   return (
-    <header className="sticky top-0 z-40 bg-superficie border-b border-borda text-tinta select-none">
+    <header className="flex-shrink-0 z-40 bg-superficie border-b border-borda text-tinta select-none">
       {toastMessage && (
         <div className="bg-marca-escura text-white text-xs font-medium px-4 py-2 text-center animate-pulse">
           {toastMessage}
@@ -179,7 +180,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 title={menuIsOpen ? "Recolher Menu Lateral (Esc)" : "Abrir Menu Lateral de Módulos"}
               >
                 {menuIsOpen ? (
-                  <X className="w-5 h-5 text-marca-escura" />
+                  <X className={`w-5 h-5 text-white` /* contraste-ok: branco sobre o bg-marca-escura deste botao, 4,9:1 */} />
                 ) : (
                   <Menu className="w-5 h-5 text-tinta" />
                 )}
@@ -202,6 +203,9 @@ export const Navbar: React.FC<NavbarProps> = ({
               </div>
             </div>
           </div>
+
+          {/* Atalho de tela pelo codigo, como o "Cod. Prog." do Semeio */}
+          <CodigoTela setActiveView={setActiveView} className="hidden md:block shrink-0" />
 
           {/* Quick Metrics Bar */}
           <div className="hidden 2xl:flex shrink-0 items-center space-x-4 px-3 py-1.5 bg-superficie-2 rounded-lg border border-borda text-xs whitespace-nowrap">
