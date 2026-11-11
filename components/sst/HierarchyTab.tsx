@@ -438,7 +438,7 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
   return (
     <div className="space-y-6" id="hierarchy-tab-container">
       {/* Subtabs header and Search/Action bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900/80 p-4 rounded-xl border border-slate-800">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-superficie p-4 rounded-xl border border-borda">
         <div className="flex items-center space-x-2">
           <button
             type="button"
@@ -446,8 +446,8 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
             onClick={() => setActiveSubTab('SECTORS')}
             className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-2 ${
               activeSubTab === 'SECTORS'
-                ? 'bg-teal-500 text-slate-950 shadow-md shadow-teal-500/20'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+                ? 'bg-marca-escura text-white shadow-sm'
+                : 'text-tinta-2 hover:text-tinta hover:bg-superficie-2'
             }`}
           >
             <Layers className="w-4 h-4" />
@@ -459,8 +459,8 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
             onClick={() => setActiveSubTab('JOBS')}
             className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-2 ${
               activeSubTab === 'JOBS'
-                ? 'bg-teal-500 text-slate-950 shadow-md shadow-teal-500/20'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+                ? 'bg-marca-escura text-white shadow-sm'
+                : 'text-tinta-2 hover:text-tinta hover:bg-superficie-2'
             }`}
           >
             <Briefcase className="w-4 h-4" />
@@ -472,8 +472,8 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
             onClick={() => setActiveSubTab('UNITS')}
             className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-2 ${
               activeSubTab === 'UNITS'
-                ? 'bg-teal-500 text-slate-950 shadow-md shadow-teal-500/20'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+                ? 'bg-marca-escura text-white shadow-sm'
+                : 'text-tinta-2 hover:text-tinta hover:bg-superficie-2'
             }`}
           >
             <Building2 className="w-4 h-4" />
@@ -483,14 +483,14 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
 
         <div className="flex items-center gap-3">
           <div className="relative">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+            <Search className="w-4 h-4 text-tinta-2 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               id="hierarchy-search-input"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Buscar por nome, código ou CBO..."
-              className="bg-slate-950 border border-slate-700 rounded-lg pl-9 pr-3 py-1.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-teal-500"
+              className="bg-fundo border border-borda rounded-lg pl-9 pr-3 py-1.5 text-xs text-tinta placeholder-tinta-3 focus:outline-none focus:border-teal-500"
             />
           </div>
 
@@ -499,7 +499,7 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
               type="button"
               id="add-sector-btn"
               onClick={() => handleOpenSectorModal()}
-              className="px-3.5 py-1.5 bg-teal-500 hover:bg-teal-400 text-slate-950 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 shadow-sm"
+              className="bg-marca-escura text-white px-3.5 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 shadow-sm hover:opacity-90"
             >
               <Plus className="w-4 h-4" />
               Novo Setor
@@ -511,7 +511,7 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
               type="button"
               id="add-job-btn"
               onClick={() => handleOpenJobModal()}
-              className="px-3.5 py-1.5 bg-teal-500 hover:bg-teal-400 text-slate-950 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 shadow-sm"
+              className="bg-marca-escura text-white px-3.5 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 shadow-sm hover:opacity-90"
             >
               <Plus className="w-4 h-4" />
               Novo Cargo / CBO
@@ -523,7 +523,7 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
               type="button"
               id="add-unit-btn"
               onClick={() => handleOpenUnitModal()}
-              className="px-3.5 py-1.5 bg-teal-500 hover:bg-teal-400 text-slate-950 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 shadow-sm"
+              className="bg-marca-escura text-white px-3.5 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 shadow-sm hover:opacity-90"
             >
               <Plus className="w-4 h-4" />
               Nova Unidade
@@ -533,13 +533,13 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
       </div>
 
       {/* Info notice about hierarchy role in eSocial */}
-      <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-4 flex items-start gap-3">
-        <Info className="w-5 h-5 text-teal-400 shrink-0 mt-0.5" />
-        <div className="text-xs text-slate-300 space-y-1">
-          <p className="font-semibold text-slate-100">
+      <div className="bg-superficie border border-borda rounded-xl p-4 flex items-start gap-3">
+        <Info className="w-5 h-5 text-teal-700 shrink-0 mt-0.5" />
+        <div className="text-xs text-tinta space-y-1">
+          <p className="font-semibold text-tinta">
             Importância da Estrutura Hierárquica para os Eventos de SST (S-2240, S-2220 e S-2210):
           </p>
-          <p className="text-slate-400">
+          <p className="text-tinta-2">
             A hierarquia estrutural Unidade ➔ Setor ➔ Cargo é utilizada diretamente para popular as TAGs do eSocial de localização do ambiente de trabalho (<code>dscSetor</code>, <code>tpAmb</code>), código CBO oficial (Tabela 24/CBO 2002) e descrição das atividades exigidas pelo Manual de Orientação do eSocial (MOS).
           </p>
         </div>
@@ -556,45 +556,45 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
               <div 
                 key={sector.id} 
                 id={`sector-card-${sector.id}`}
-                className="bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-3 shadow-lg flex flex-col justify-between"
+                className="bg-superficie border border-borda rounded-xl p-4 space-y-3 shadow-sm flex flex-col justify-between"
               >
                 <div>
                   <div className="flex items-center justify-between">
-                    <span className="px-2 py-0.5 bg-teal-500/10 border border-teal-500/30 text-teal-300 text-[10px] font-mono font-bold rounded">
+                    <span className="px-2 py-0.5 bg-teal-500/10 border border-teal-500/30 text-teal-800 text-[10px] font-mono font-bold rounded">
                       {sector.code || 'SEC'}
                     </span>
-                    <span className="px-2 py-0.5 bg-slate-800 text-slate-400 text-[10px] rounded">
+                    <span className="px-2 py-0.5 bg-superficie-2 text-tinta-2 text-[10px] rounded">
                       {unit?.name || 'Matriz'}
                     </span>
                   </div>
 
-                  <h4 className="font-bold text-slate-100 text-sm mt-2">{sector.name}</h4>
-                  <p className="text-xs text-slate-400 mt-1 line-clamp-2">{sector.description}</p>
+                  <h4 className="font-bold text-tinta text-sm mt-2">{sector.name}</h4>
+                  <p className="text-xs text-tinta-2 mt-1 line-clamp-2">{sector.description}</p>
                 </div>
 
-                <div className="space-y-2 pt-2 border-t border-slate-800 text-xs">
-                  <div className="flex justify-between items-center text-slate-400">
+                <div className="space-y-2 pt-2 border-t border-borda text-xs">
+                  <div className="flex justify-between items-center text-tinta-2">
                     <span>Tipo Ambiente:</span>
-                    <strong className="text-slate-300">{sector.environment_type}</strong>
+                    <strong className="text-tinta">{sector.environment_type}</strong>
                   </div>
-                  <div className="flex justify-between items-center text-slate-400">
+                  <div className="flex justify-between items-center text-tinta-2">
                     <span>Cargos Vinculados:</span>
-                    <strong className="text-teal-400">{sectorJobs.length}</strong>
+                    <strong className="text-teal-700">{sectorJobs.length}</strong>
                   </div>
                 </div>
 
-                <div className="flex items-center justify-end gap-1 pt-2 border-t border-slate-800">
+                <div className="flex items-center justify-end gap-1 pt-2 border-t border-borda">
                   <button
                     type="button"
                     onClick={() => handleOpenSectorModal(sector)}
-                    className="p-1.5 text-slate-400 hover:text-teal-400 hover:bg-slate-800 rounded transition-colors"
+                    className="p-1.5 text-tinta-2 hover:text-teal-700 hover:bg-superficie-2 rounded transition-colors"
                   >
                     <Edit3 className="w-3.5 h-3.5" />
                   </button>
                   <button
                     type="button"
                     onClick={() => deleteHierarchySector(sector.id)}
-                    className="p-1.5 text-slate-400 hover:text-rose-400 hover:bg-slate-800 rounded transition-colors"
+                    className="p-1.5 text-tinta-2 hover:text-rose-700 hover:bg-superficie-2 rounded transition-colors"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
@@ -615,46 +615,46 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
               <div 
                 key={job.id} 
                 id={`job-card-${job.id}`}
-                className="bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-3 shadow-lg flex flex-col justify-between"
+                className="bg-superficie border border-borda rounded-xl p-4 space-y-3 shadow-sm flex flex-col justify-between"
               >
                 <div>
                   <div className="flex items-center justify-between">
-                    <span className="px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-[10px] font-mono font-bold rounded">
+                    <span className="px-2 py-0.5 bg-marca-suave border border-marca-borda text-marca-escura text-[10px] font-mono font-bold rounded">
                       CBO {job.cbo}
                     </span>
-                    <span className="px-2 py-0.5 bg-slate-800 text-slate-400 text-[10px] rounded">
+                    <span className="px-2 py-0.5 bg-superficie-2 text-tinta-2 text-[10px] rounded">
                       {sector?.name || 'Setor'}
                     </span>
                   </div>
 
-                  <h4 className="font-bold text-slate-100 text-sm mt-2">{job.name}</h4>
-                  <p className="text-xs text-slate-400 mt-1 line-clamp-2">{job.activities_description}</p>
+                  <h4 className="font-bold text-tinta text-sm mt-2">{job.name}</h4>
+                  <p className="text-xs text-tinta-2 mt-1 line-clamp-2">{job.activities_description}</p>
                 </div>
 
-                <div className="space-y-2 pt-2 border-t border-slate-800 text-xs">
-                  <div className="flex justify-between items-center text-slate-400">
+                <div className="space-y-2 pt-2 border-t border-borda text-xs">
+                  <div className="flex justify-between items-center text-tinta-2">
                     <span>Título CBO Oficial:</span>
-                    <strong className="text-slate-300">{job.cbo_title || job.name}</strong>
+                    <strong className="text-tinta">{job.cbo_title || job.name}</strong>
                   </div>
                   {job.requirements_notes && (
-                    <p className="text-[11px] text-slate-400 line-clamp-1 bg-slate-950 p-1.5 rounded border border-slate-800/80">
+                    <p className="text-[11px] text-tinta-2 line-clamp-1 bg-fundo p-1.5 rounded border border-borda">
                       {job.requirements_notes}
                     </p>
                   )}
                 </div>
 
-                <div className="flex items-center justify-end gap-1 pt-2 border-t border-slate-800">
+                <div className="flex items-center justify-end gap-1 pt-2 border-t border-borda">
                   <button
                     type="button"
                     onClick={() => handleOpenJobModal(job)}
-                    className="p-1.5 text-slate-400 hover:text-teal-400 hover:bg-slate-800 rounded transition-colors"
+                    className="p-1.5 text-tinta-2 hover:text-teal-700 hover:bg-superficie-2 rounded transition-colors"
                   >
                     <Edit3 className="w-3.5 h-3.5" />
                   </button>
                   <button
                     type="button"
                     onClick={() => deleteHierarchyJob(job.id)}
-                    className="p-1.5 text-slate-400 hover:text-rose-400 hover:bg-slate-800 rounded transition-colors"
+                    className="p-1.5 text-tinta-2 hover:text-rose-700 hover:bg-superficie-2 rounded transition-colors"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
@@ -667,9 +667,9 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
 
       {/* Units Table */}
       {activeSubTab === 'UNITS' && (
-        <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-x-auto shadow-lg" id="units-table">
-          <table className="w-full text-left text-xs text-slate-300">
-            <thead className="bg-slate-950 text-slate-400 uppercase text-[10px] tracking-wider border-b border-slate-800">
+        <div className="bg-superficie border border-borda rounded-xl overflow-x-auto shadow-sm" id="units-table">
+          <table className="w-full text-left text-xs text-tinta">
+            <thead className="bg-fundo text-tinta-2 uppercase text-[10px] tracking-wider border-b border-borda">
               <tr>
                 <th className="py-3 px-4">Código / Nome da Unidade</th>
                 <th className="py-3 px-4">Tipo</th>
@@ -681,23 +681,23 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
                 <th className="py-3 px-4 text-right">Ações</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/60">
+            <tbody className="divide-y divide-borda">
               {clientUnits.map((u) => (
-                <tr key={u.id} className="hover:bg-slate-800/40 transition-colors">
-                  <td className="py-3 px-4 font-semibold text-slate-100">
+                <tr key={u.id} className="hover:bg-superficie-2 transition-colors">
+                  <td className="py-3 px-4 font-semibold text-tinta">
                     <div>{u.name}</div>
-                    <div className="text-[10px] text-slate-500 font-mono">{u.id}</div>
+                    <div className="text-[10px] text-tinta-2 font-mono">{u.id}</div>
                   </td>
                   <td className="py-3 px-4">
-                    <span className="px-2 py-0.5 bg-slate-800 text-slate-300 rounded text-[10px] font-semibold">
+                    <span className="px-2 py-0.5 bg-superficie-2 text-tinta rounded text-[10px] font-semibold">
                       {u.document_type || 'MATRIZ'}
                     </span>
                   </td>
-                  <td className="py-3 px-4 font-mono text-slate-300">{u.document_number || '—'}</td>
+                  <td className="py-3 px-4 font-mono text-tinta">{u.document_number || '—'}</td>
                   <td className="py-3 px-4">{u.city} - {u.state}</td>
-                  <td className="py-3 px-4 font-mono text-slate-400">{u.cnae}</td>
+                  <td className="py-3 px-4 font-mono text-tinta-2">{u.cnae}</td>
                   <td className="py-3 px-4 text-center">
-                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-teal-500/10 text-teal-400 border border-teal-500/30">
+                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-teal-500/10 text-teal-800 border border-teal-500/30">
                       {u.risk_degree ? `Grau ${u.risk_degree}` : 'Grau n/c'}
                     </span>
                   </td>
@@ -720,8 +720,8 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
                           title="Campos do PGR que vivem no estabelecimento: seções 1.1, 1.2, 1.3, 6.1, 9.4 e 9.8"
                           className={`px-2 py-0.5 rounded text-[10px] font-bold border ${
                             completo
-                              ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
-                              : 'bg-amber-500/10 text-amber-400 border-amber-500/30'
+                              ? 'bg-marca-suave text-marca-escura border-marca-borda'
+                              : 'bg-amber-500/10 text-amber-800 border-amber-500/30'
                           }`}
                         >
                           {preenchidos}/{campos.length}
@@ -733,7 +733,7 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
                     <button
                       type="button"
                       onClick={() => handleOpenUnitModal(u)}
-                      className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-[10px] font-semibold"
+                      className="px-2.5 py-1 bg-superficie-2 hover:bg-superficie-3 text-tinta rounded-lg text-[10px] font-semibold"
                     >
                       Editar
                     </button>
@@ -747,17 +747,17 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
 
       {/* Sector Modal */}
       {isSectorModalOpen && (
-        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl animate-in fade-in zoom-in-95 duration-150">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <h3 className="text-base font-bold text-slate-100 flex items-center gap-2">
-                <Layers className="w-5 h-5 text-teal-400" />
+        <div className="fixed inset-0 bg-fundo backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-superficie border border-borda rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-sm animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between border-b border-borda pb-3">
+              <h3 className="text-base font-bold text-tinta flex items-center gap-2">
+                <Layers className="w-5 h-5 text-teal-700" />
                 {editingSector ? 'Editar Setor' : 'Cadastrar Novo Setor'}
               </h3>
               <button 
                 type="button" 
                 onClick={() => setIsSectorModalOpen(false)}
-                className="text-slate-400 hover:text-slate-200 text-sm font-bold"
+                className="text-tinta-2 hover:text-tinta text-sm font-bold"
               >
                 ✕
               </button>
@@ -766,35 +766,35 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
             <form onSubmit={handleSaveSector} className="space-y-4 text-xs">
               <div className="grid grid-cols-3 gap-3">
                 <div className="col-span-1">
-                  <label className="block text-slate-400 font-semibold mb-1">Código</label>
+                  <label className="block text-tinta-2 font-semibold mb-1">Código</label>
                   <input
                     type="text"
                     required
                     placeholder="SEC-01"
                     value={sectorForm.code}
                     onChange={(e) => setSectorForm({ ...sectorForm, code: e.target.value })}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 font-mono focus:outline-none focus:border-teal-500"
+                    className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta font-mono focus:outline-none focus:border-teal-500"
                   />
                 </div>
                 <div className="col-span-2">
-                  <label className="block text-slate-400 font-semibold mb-1">Nome do Setor</label>
+                  <label className="block text-tinta-2 font-semibold mb-1">Nome do Setor</label>
                   <input
                     type="text"
                     required
                     placeholder="Ex: Caldeiraria e Soldagem"
                     value={sectorForm.name}
                     onChange={(e) => setSectorForm({ ...sectorForm, name: e.target.value })}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 focus:outline-none focus:border-teal-500"
+                    className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta focus:outline-none focus:border-teal-500"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-slate-400 font-semibold mb-1">Tipo de Ambiente Físico</label>
+                <label className="block text-tinta-2 font-semibold mb-1">Tipo de Ambiente Físico</label>
                 <select
                   value={sectorForm.environment_type}
                   onChange={(e) => setSectorForm({ ...sectorForm, environment_type: e.target.value as any })}
-                  className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 focus:outline-none focus:border-teal-500"
+                  className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta focus:outline-none focus:border-teal-500"
                 >
                   <option value="OPERACIONAL_FECHADO">Operacional Fechado (Galpão / Oficina)</option>
                   <option value="OPERACIONAL_ABERTO">Operacional Aberto (Pátio / Externo)</option>
@@ -808,38 +808,38 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
               </div>
 
               <div>
-                <label className="block text-slate-400 font-semibold mb-1">Descrição do Setor e Processos</label>
+                <label className="block text-tinta-2 font-semibold mb-1">Descrição do Setor e Processos</label>
                 <textarea
                   rows={2}
                   value={sectorForm.description}
                   onChange={(e) => setSectorForm({ ...sectorForm, description: e.target.value })}
                   placeholder="Descreva as características do setor..."
-                  className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 focus:outline-none focus:border-teal-500"
+                  className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta focus:outline-none focus:border-teal-500"
                 />
               </div>
 
               <div>
-                <label className="block text-slate-400 font-semibold mb-1">Características Construtivas (NR-24 / PGR)</label>
+                <label className="block text-tinta-2 font-semibold mb-1">Características Construtivas (NR-24 / PGR)</label>
                 <input
                   type="text"
                   value={sectorForm.building_features}
                   onChange={(e) => setSectorForm({ ...sectorForm, building_features: e.target.value })}
                   placeholder="Piso, ventilação, iluminação, cobertura..."
-                  className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 focus:outline-none focus:border-teal-500"
+                  className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta focus:outline-none focus:border-teal-500"
                 />
               </div>
 
-              <div className="flex justify-end gap-2 pt-3 border-t border-slate-800">
+              <div className="flex justify-end gap-2 pt-3 border-t border-borda">
                 <button
                   type="button"
                   onClick={() => setIsSectorModalOpen(false)}
-                  className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold rounded-lg"
+                  className="px-4 py-2 bg-superficie-2 hover:bg-superficie-3 text-tinta font-semibold rounded-lg"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold rounded-lg shadow-md"
+                  className="bg-marca-escura text-white px-4 py-2 font-bold rounded-lg shadow-sm hover:opacity-90"
                 >
                   Salvar Setor
                 </button>
@@ -851,18 +851,18 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
 
       {/* Job Modal */}
       {isJobModalOpen && (
-        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-2xl w-full p-6 space-y-4 shadow-2xl animate-in fade-in zoom-in-95 duration-150 my-6 max-h-[90vh] flex flex-col">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3 flex-shrink-0">
+        <div className="fixed inset-0 bg-fundo backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-superficie border border-borda rounded-2xl max-w-2xl w-full p-6 space-y-4 shadow-sm animate-in fade-in zoom-in-95 duration-150 my-6 max-h-[90vh] flex flex-col">
+            <div className="flex items-center justify-between border-b border-borda pb-3 flex-shrink-0">
               <div className="flex items-center gap-2">
-                <div className="p-2 rounded-lg bg-teal-500/10 border border-teal-500/30 text-teal-400">
+                <div className="p-2 rounded-lg bg-teal-500/10 border border-teal-500/30 text-teal-800">
                   <Briefcase className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-slate-100">
+                  <h3 className="text-base font-bold text-tinta">
                     {editingJob ? 'Editar Cargo & CBO' : 'Cadastrar Novo Cargo / Função'}
                   </h3>
-                  <p className="text-xs text-slate-400">
+                  <p className="text-xs text-tinta-2">
                     Preenchimento automático por CBO oficial com descrição do MOS eSocial
                   </p>
                 </div>
@@ -870,7 +870,7 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
               <button 
                 type="button" 
                 onClick={() => setIsJobModalOpen(false)}
-                className="p-1 text-slate-400 hover:text-slate-200 hover:bg-slate-800 rounded-lg text-sm font-bold transition-colors"
+                className="p-1 text-tinta-2 hover:text-tinta hover:bg-superficie-2 rounded-lg text-sm font-bold transition-colors"
               >
                 ✕
               </button>
@@ -878,20 +878,20 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
 
             <div className="overflow-y-auto flex-1 pr-1 space-y-4 text-xs">
               {/* CBO Search Box & Auto-Fill Component */}
-              <div className="bg-slate-950 border border-teal-500/30 rounded-xl p-3.5 space-y-2.5">
+              <div className="bg-fundo border border-teal-500/30 rounded-xl p-3.5 space-y-2.5">
                 <div className="flex items-center justify-between">
-                  <label className="text-xs font-bold text-teal-300 flex items-center gap-1.5">
-                    <Sparkles className="w-3.5 h-3.5 text-teal-400" />
+                  <label className="text-xs font-bold text-teal-700 flex items-center gap-1.5">
+                    <Sparkles className="w-3.5 h-3.5 text-teal-700" />
                     Buscar e Selecionar CBO Oficial (Preenchimento Automático)
                   </label>
-                  <span className="text-[10px] text-slate-400">
+                  <span className="text-[10px] text-tinta-2">
                     {cboSearchResults.length} ocupações encontradas
                   </span>
                 </div>
 
                 {/* Search input */}
                 <div className="relative">
-                  <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+                  <Search className="w-4 h-4 text-tinta-2 absolute left-3 top-2.5" />
                   <input
                     type="text"
                     value={cboSearchQuery}
@@ -901,13 +901,13 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
                     }}
                     onFocus={() => setIsCboDropdownOpen(true)}
                     placeholder="Digite o código (ex: 7152-10) ou nome da função (ex: Soldador, Pedreiro, Eletricista)..."
-                    className="w-full bg-slate-900 border border-slate-700 rounded-lg pl-9 pr-8 py-2 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 text-xs"
+                    className="w-full bg-superficie border border-borda rounded-lg pl-9 pr-8 py-2 text-tinta placeholder-tinta-3 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 text-xs"
                   />
                   {cboSearchQuery && (
                     <button
                       type="button"
                       onClick={() => setCboSearchQuery('')}
-                      className="absolute right-2.5 top-2 text-slate-400 hover:text-slate-200 text-xs"
+                      className="absolute right-2.5 top-2 text-tinta-2 hover:text-tinta text-xs"
                     >
                       ✕
                     </button>
@@ -937,8 +937,8 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
                       }}
                       className={`px-2 py-0.5 rounded-full text-[10px] font-medium transition-all ${
                         cboCategoryFilter === cat.id
-                          ? 'bg-teal-500 text-slate-950 font-bold'
-                          : 'bg-slate-900 text-slate-400 hover:text-slate-200 border border-slate-800'
+                          ? 'bg-marca-escura text-white font-bold'
+                          : 'bg-superficie text-tinta-2 hover:text-tinta border border-borda'
                       }`}
                     >
                       {cat.label}
@@ -948,9 +948,9 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
 
                 {/* Dropdown list of results */}
                 {isCboDropdownOpen && (
-                  <div className="bg-slate-900 border border-slate-700 rounded-lg max-h-48 overflow-y-auto divide-y divide-slate-800 mt-1 shadow-xl">
+                  <div className="bg-superficie border border-borda rounded-lg max-h-48 overflow-y-auto divide-y divide-borda mt-1 shadow-sm">
                     {cboSearchResults.length === 0 ? (
-                      <div className="p-3 text-center text-slate-400 text-[11px]">
+                      <div className="p-3 text-center text-tinta-2 text-[11px]">
                         Nenhuma ocupação encontrada para &quot;{cboSearchQuery}&quot;. Você pode preencher os campos manualmente abaixo.
                       </div>
                     ) : (
@@ -958,27 +958,27 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
                         <div
                           key={item.code}
                           onClick={() => handleSelectCboItem(item)}
-                          className="p-2.5 hover:bg-slate-800/80 cursor-pointer transition-colors flex items-start justify-between gap-3 group"
+                          className="p-2.5 hover:bg-superficie-2 cursor-pointer transition-colors flex items-start justify-between gap-3 group"
                         >
                           <div className="space-y-0.5 min-w-0">
                             <div className="flex items-center gap-2">
-                              <span className="px-1.5 py-0.5 rounded bg-teal-500/20 text-teal-300 font-mono font-bold text-[11px] border border-teal-500/30">
+                              <span className="px-1.5 py-0.5 rounded bg-teal-500/20 text-teal-800 font-mono font-bold text-[11px] border border-teal-500/30">
                                 CBO {item.code}
                               </span>
-                              <span className="font-bold text-slate-200 group-hover:text-teal-300 text-xs">
+                              <span className="font-bold text-tinta group-hover:text-teal-700 text-xs">
                                 {item.title}
                               </span>
                             </div>
-                            <p className="text-[11px] text-slate-400 line-clamp-1">
+                            <p className="text-[11px] text-tinta-2 line-clamp-1">
                               {item.family_title} {item.synonyms?.length ? `• Sinônimos: ${item.synonyms.join(', ')}` : ''}
                             </p>
-                            <p className="text-[10px] text-slate-500 line-clamp-1 italic">
+                            <p className="text-[10px] text-tinta-2 line-clamp-1 italic">
                               MOS: {item.description_mos}
                             </p>
                           </div>
                           <button
                             type="button"
-                            className="px-2.5 py-1 bg-teal-600/20 hover:bg-teal-500 group-hover:bg-teal-500 text-teal-300 group-hover:text-slate-950 font-bold rounded text-[10px] whitespace-nowrap transition-colors flex-shrink-0"
+                            className="bg-teal-100 group-hover:bg-teal-200 text-teal-900 px-2.5 py-1 font-bold rounded text-[10px] whitespace-nowrap"
                           >
                             Preencher
                           </button>
@@ -990,8 +990,8 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
 
                 {/* Auto-filled status banner */}
                 {cboAutoFilledMessage && (
-                  <div className="p-2.5 bg-emerald-950/40 border border-emerald-500/30 rounded-lg flex items-start gap-2 text-[11px] text-emerald-300 animate-in fade-in">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
+                  <div className="p-2.5 bg-marca-suave border border-marca-borda rounded-lg flex items-start gap-2 text-[11px] text-marca-escura animate-in fade-in">
+                    <CheckCircle2 className="w-4 h-4 text-marca-escura flex-shrink-0 mt-0.5" />
                     <div className="flex-1">
                       <span>{cboAutoFilledMessage}</span>
                     </div>
@@ -1003,11 +1003,11 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
               <form id="job-form" onSubmit={handleSaveJob} className="space-y-3.5">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-slate-400 font-semibold mb-1">Setor Pertencente</label>
+                    <label className="block text-tinta-2 font-semibold mb-1">Setor Pertencente</label>
                     <select
                       value={jobForm.sector_id}
                       onChange={(e) => setJobForm({ ...jobForm, sector_id: e.target.value })}
-                      className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 focus:outline-none focus:border-teal-500 font-semibold"
+                      className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta focus:outline-none focus:border-teal-500 font-semibold"
                     >
                       {clientSectors.map(s => (
                         <option key={s.id} value={s.id}>{s.name} ({s.code || 'SEC'})</option>
@@ -1016,8 +1016,8 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
                   </div>
                   <div>
                     <div className="flex justify-between items-center mb-1">
-                      <label className="block text-slate-400 font-semibold">Código CBO (6 dígitos)</label>
-                      <span className="text-[10px] text-teal-400 font-mono">Formato: 0000-00</span>
+                      <label className="block text-tinta-2 font-semibold">Código CBO (6 dígitos)</label>
+                      <span className="text-[10px] text-teal-700 font-mono">Formato: 0000-00</span>
                     </div>
                     <input
                       type="text"
@@ -1025,31 +1025,31 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
                       placeholder="Ex: 7152-10"
                       value={jobForm.cbo}
                       onChange={(e) => setJobForm({ ...jobForm, cbo: e.target.value })}
-                      className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 font-mono font-bold focus:outline-none focus:border-teal-500"
+                      className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta font-mono font-bold focus:outline-none focus:border-teal-500"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-slate-400 font-semibold mb-1">Nome do Cargo / Função (Empresa)</label>
+                    <label className="block text-tinta-2 font-semibold mb-1">Nome do Cargo / Função (Empresa)</label>
                     <input
                       type="text"
                       required
                       placeholder="Ex: Pedreiro de Acabamento / Oficial"
                       value={jobForm.name}
                       onChange={(e) => setJobForm({ ...jobForm, name: e.target.value })}
-                      className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 font-medium focus:outline-none focus:border-teal-500"
+                      className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta font-medium focus:outline-none focus:border-teal-500"
                     />
                   </div>
                   <div>
-                    <label className="block text-slate-400 font-semibold mb-1">Título Oficial CBO (MTE / eSocial)</label>
+                    <label className="block text-tinta-2 font-semibold mb-1">Título Oficial CBO (MTE / eSocial)</label>
                     <input
                       type="text"
                       placeholder="Ex: Pedreiro"
                       value={jobForm.cbo_title}
                       onChange={(e) => setJobForm({ ...jobForm, cbo_title: e.target.value })}
-                      className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 focus:outline-none focus:border-teal-500"
+                      className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta focus:outline-none focus:border-teal-500"
                     />
                   </div>
                 </div>
@@ -1057,21 +1057,21 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
                 {/* Editable Detailed Activities */}
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <label className="text-slate-300 font-bold flex items-center gap-1.5">
-                      <BookOpen className="w-3.5 h-3.5 text-teal-400" />
+                    <label className="text-tinta font-bold flex items-center gap-1.5">
+                      <BookOpen className="w-3.5 h-3.5 text-teal-700" />
                       Descrição Detalhada das Atividades (MOS eSocial)
                     </label>
                     <div className="flex items-center gap-2">
                       <button
                         type="button"
                         onClick={handleRestoreCboStandardDesc}
-                        className="text-[10px] text-teal-400 hover:text-teal-300 font-semibold flex items-center gap-1 bg-teal-950/40 border border-teal-500/30 px-2 py-0.5 rounded hover:bg-teal-900/50 transition-colors"
+                        className="text-[10px] text-teal-700 hover:text-teal-700 font-semibold flex items-center gap-1 bg-teal-50 border border-teal-500/30 px-2 py-0.5 rounded hover:bg-teal-50 transition-colors"
                         title="Restaura a descrição oficial padrão do CBO selecionado"
                       >
                         <RotateCcw className="w-2.5 h-2.5" />
                         Restaurar Padrão MOS
                       </button>
-                      <span className="text-[10px] text-slate-500">
+                      <span className="text-[10px] text-tinta-2">
                         {jobForm.activities_description.length} caracteres
                       </span>
                     </div>
@@ -1082,17 +1082,17 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
                     value={jobForm.activities_description}
                     onChange={(e) => setJobForm({ ...jobForm, activities_description: e.target.value })}
                     placeholder="Descreva detalhadamente as rotinas, ferramentas operadas, postura de trabalho e tarefas realizadas..."
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg p-3 text-slate-100 leading-relaxed focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 text-xs"
+                    className="w-full bg-fundo border border-borda rounded-lg p-3 text-tinta leading-relaxed focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 text-xs"
                   />
-                  <p className="text-[10px] text-slate-400 flex items-center gap-1">
-                    <Info className="w-3 h-3 text-slate-500 flex-shrink-0" />
+                  <p className="text-[10px] text-tinta-2 flex items-center gap-1">
+                    <Info className="w-3 h-3 text-tinta-2 flex-shrink-0" />
                     Campo exigido no eSocial (Evento S-2240 e S-2220). Você pode editar, detalhar e adaptar as atividades livremente.
                   </p>
                 </div>
 
                 {/* Editable Requirements & Training */}
                 <div className="space-y-1.5">
-                  <label className="block text-slate-400 font-semibold">
+                  <label className="block text-tinta-2 font-semibold">
                     Requisitos de Treinamento / Normas Regulamentadoras & EPIs
                   </label>
                   <input
@@ -1100,10 +1100,10 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
                     value={jobForm.requirements_notes}
                     onChange={(e) => setJobForm({ ...jobForm, requirements_notes: e.target.value })}
                     placeholder="Ex: Treinamento NR-18, NR-35 (Altura), NR-06 (EPI)..."
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 focus:outline-none focus:border-teal-500"
+                    className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta focus:outline-none focus:border-teal-500"
                   />
-                  <div className="flex flex-wrap items-center gap-1 text-[10px] text-slate-400 pt-0.5">
-                    <span className="text-slate-500 font-medium">Adicionar atalhos de NRs:</span>
+                  <div className="flex flex-wrap items-center gap-1 text-[10px] text-tinta-2 pt-0.5">
+                    <span className="text-tinta-2 font-medium">Adicionar atalhos de NRs:</span>
                     {['NR-01', 'NR-06', 'NR-10', 'NR-12', 'NR-18', 'NR-33', 'NR-35', 'NR-34'].map(nr => (
                       <button
                         key={nr}
@@ -1118,7 +1118,7 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
                             });
                           }
                         }}
-                        className="px-1.5 py-0.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded border border-slate-700 transition-colors"
+                        className="px-1.5 py-0.5 bg-superficie-2 hover:bg-superficie-3 text-tinta rounded border border-borda transition-colors"
                       >
                         +{nr}
                       </button>
@@ -1129,35 +1129,35 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
                 {/* Proibicoes do posto: vao para a OS de quem ocupa o cargo (NR-01,
                     1.4.1, "c"). Nao ha lista padrao: so quem conhece o posto escreve. */}
                 <div className="space-y-1.5">
-                  <label className="block text-slate-400 font-semibold">
+                  <label className="block text-tinta-2 font-semibold">
                     Proibições e instruções específicas da função (Ordem de Serviço)
                   </label>
                   <textarea
                     rows={3}
                     value={jobForm.os_prohibitions}
                     onChange={(e) => setJobForm({ ...jobForm, os_prohibitions: e.target.value })}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg p-3 text-slate-100 leading-relaxed focus:outline-none focus:border-teal-500 text-xs"
+                    className="w-full bg-fundo border border-borda rounded-lg p-3 text-tinta leading-relaxed focus:outline-none focus:border-teal-500 text-xs"
                   />
-                  <p className="text-[10px] text-slate-400 flex items-center gap-1">
-                    <Info className="w-3 h-3 text-slate-500 flex-shrink-0" />
+                  <p className="text-[10px] text-tinta-2 flex items-center gap-1">
+                    <Info className="w-3 h-3 text-tinta-2 flex-shrink-0" />
                     Uma por linha. Saem na seção de proibições da OS de cada trabalhador deste cargo, ao gerar ou atualizar a OS.
                   </p>
                 </div>
               </form>
             </div>
 
-            <div className="flex justify-end gap-2 pt-3 border-t border-slate-800 flex-shrink-0">
+            <div className="flex justify-end gap-2 pt-3 border-t border-borda flex-shrink-0">
               <button
                 type="button"
                 onClick={() => setIsJobModalOpen(false)}
-                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold rounded-lg transition-colors"
+                className="px-4 py-2 bg-superficie-2 hover:bg-superficie-3 text-tinta font-semibold rounded-lg transition-colors"
               >
                 Cancelar
               </button>
               <button
                 type="submit"
                 form="job-form"
-                className="px-5 py-2 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold rounded-lg shadow-md transition-all flex items-center gap-1.5"
+                className="bg-marca-escura text-white px-5 py-2 font-bold rounded-lg shadow-sm transition-all flex items-center gap-1.5 hover:opacity-90"
               >
                 <Check className="w-4 h-4" />
                 {editingJob ? 'Atualizar Cargo' : 'Salvar Cargo'}
@@ -1169,17 +1169,17 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
 
       {/* Unit Modal */}
       {isUnitModalOpen && (
-        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-2xl w-full p-6 space-y-4 shadow-2xl animate-in fade-in zoom-in-95 duration-150 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <h3 className="text-base font-bold text-slate-100 flex items-center gap-2">
-                <Building2 className="w-5 h-5 text-teal-400" />
+        <div className="fixed inset-0 bg-fundo backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-superficie border border-borda rounded-2xl max-w-2xl w-full p-6 space-y-4 shadow-sm animate-in fade-in zoom-in-95 duration-150 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-borda pb-3">
+              <h3 className="text-base font-bold text-tinta flex items-center gap-2">
+                <Building2 className="w-5 h-5 text-teal-700" />
                 {editingUnit ? 'Editar Estabelecimento / Unidade' : 'Cadastrar Novo Estabelecimento / Unidade'}
               </h3>
               <button 
                 type="button" 
                 onClick={() => setIsUnitModalOpen(false)}
-                className="text-slate-400 hover:text-slate-200 text-sm font-bold"
+                className="text-tinta-2 hover:text-tinta text-sm font-bold"
               >
                 ✕
               </button>
@@ -1188,36 +1188,36 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
             <form onSubmit={handleSaveUnit} className="space-y-4 text-xs">
               <div className="grid grid-cols-3 gap-3">
                 <div className="col-span-1">
-                  <label className="block text-slate-400 font-semibold mb-1">Código</label>
+                  <label className="block text-tinta-2 font-semibold mb-1">Código</label>
                   <input
                     type="text"
                     required
                     placeholder="UN-01"
                     value={unitForm.code}
                     onChange={(e) => setUnitForm({ ...unitForm, code: e.target.value })}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 font-mono"
+                    className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta font-mono"
                   />
                 </div>
                 <div className="col-span-2">
-                  <label className="block text-slate-400 font-semibold mb-1">Nome da Unidade</label>
+                  <label className="block text-tinta-2 font-semibold mb-1">Nome da Unidade</label>
                   <input
                     type="text"
                     required
                     placeholder="Ex: Planta Industrial SP"
                     value={unitForm.name}
                     onChange={(e) => setUnitForm({ ...unitForm, name: e.target.value })}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                    className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-400 font-semibold mb-1">Tipo Estabelecimento</label>
+                  <label className="block text-tinta-2 font-semibold mb-1">Tipo Estabelecimento</label>
                   <select
                     value={unitForm.type}
                     onChange={(e) => setUnitForm({ ...unitForm, type: e.target.value as any })}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                    className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta"
                   >
                     <option value="MATRIZ">Matriz</option>
                     <option value="FILIAL">Filial</option>
@@ -1226,7 +1226,7 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
                   </select>
                 </div>
                 <div>
-                  <label className="block text-slate-400 font-semibold mb-1">Grau de Risco (NR-04, Anexo I)</label>
+                  <label className="block text-tinta-2 font-semibold mb-1">Grau de Risco (NR-04, Anexo I)</label>
                   <select
                     value={unitForm.risk_grade ?? ''}
                     onChange={(e) =>
@@ -1235,7 +1235,7 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
                         risk_grade: e.target.value === '' ? null : (Number(e.target.value) as 1 | 2 | 3 | 4)
                       })
                     }
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 font-bold text-teal-400"
+                    className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta font-bold text-teal-700"
                   >
                     <option value="">Não classificado</option>
                     <option value={1}>Grau de Risco 1</option>
@@ -1253,7 +1253,7 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
                     if (!consulta?.found || !consulta.riskDegree) return null;
                     if (consulta.riskDegree === unitForm.risk_grade) {
                       return (
-                        <p className="text-[10px] text-emerald-400 mt-1">
+                        <p className="text-[10px] text-marca-escura mt-1">
                           Confere com o Anexo I da NR-04 para este CNAE.
                         </p>
                       );
@@ -1262,7 +1262,7 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
                       <button
                         type="button"
                         onClick={() => setUnitForm({ ...unitForm, risk_grade: consulta.riskDegree as 1 | 2 | 3 | 4 })}
-                        className="text-[10px] text-amber-400 hover:text-amber-300 mt-1 text-left underline underline-offset-2"
+                        className="text-[10px] text-amber-700 hover:text-amber-700 mt-1 text-left underline underline-offset-2"
                       >
                         O Anexo I da NR-04 classifica este CNAE como grau {consulta.riskDegree}. Aplicar.
                       </button>
@@ -1273,71 +1273,71 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-400 font-semibold mb-1">CNPJ / CNO / CAEPF</label>
+                  <label className="block text-tinta-2 font-semibold mb-1">CNPJ / CNO / CAEPF</label>
                   <input
                     type="text"
                     required
                     placeholder="12.345.678/0001-99"
                     value={unitForm.cnpj_cno_caepf}
                     onChange={(e) => setUnitForm({ ...unitForm, cnpj_cno_caepf: e.target.value })}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 font-mono"
+                    className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta font-mono"
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-400 font-semibold mb-1">CNAE Preponderante</label>
+                  <label className="block text-tinta-2 font-semibold mb-1">CNAE Preponderante</label>
                   <input
                     type="text"
                     required
                     placeholder="41.20-4-00"
                     value={unitForm.cnae_preponderant}
                     onChange={(e) => setUnitForm({ ...unitForm, cnae_preponderant: e.target.value })}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 font-mono"
+                    className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta font-mono"
                   />
                 </div>
 
                 <div className="sm:col-span-2">
-                  <label className="block text-slate-400 font-semibold mb-1">Endereço da Unidade</label>
+                  <label className="block text-tinta-2 font-semibold mb-1">Endereço da Unidade</label>
                   <input
                     type="text"
                     placeholder="Rua, número, bairro"
                     value={unitForm.address}
                     onChange={(e) => setUnitForm({ ...unitForm, address: e.target.value })}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                    className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-slate-400 font-semibold mb-1">Município</label>
+                  <label className="block text-tinta-2 font-semibold mb-1">Município</label>
                   <input
                     type="text"
                     placeholder="Cidade da unidade"
                     value={unitForm.city}
                     onChange={(e) => setUnitForm({ ...unitForm, city: e.target.value })}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                    className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-slate-400 font-semibold mb-1">UF</label>
+                  <label className="block text-tinta-2 font-semibold mb-1">UF</label>
                   <input
                     type="text"
                     maxLength={2}
                     placeholder="BA"
                     value={unitForm.state}
                     onChange={(e) => setUnitForm({ ...unitForm, state: e.target.value.toUpperCase() })}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 uppercase"
+                    className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta uppercase"
                   />
                 </div>
               </div>
 
               {/* Secoes 1.1, 1.2 e 1.3 do PGR */}
-              <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 space-y-3">
+              <div className="p-3 bg-fundo rounded-xl border border-borda space-y-3">
                 <div>
-                  <h4 className="font-bold text-slate-200 text-xs flex items-center gap-1.5">
-                    <Users className="w-4 h-4 text-teal-400" />
+                  <h4 className="font-bold text-tinta text-xs flex items-center gap-1.5">
+                    <Users className="w-4 h-4 text-teal-700" />
                     Pessoas e Abrangência (PGR, seções 1.1 a 1.3)
                   </h4>
-                  <p className="text-[11px] text-slate-500 mt-0.5">
+                  <p className="text-[11px] text-tinta-2 mt-0.5">
                     Ficam no estabelecimento porque o PGR é emitido por estabelecimento
                     (subitem 1.5.3.1.1.1): matriz e filial têm turnos, terceirizados e
                     frentes de trabalho diferentes.
@@ -1346,7 +1346,7 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-slate-400 font-semibold mb-1">
+                    <label className="block text-tinta-2 font-semibold mb-1">
                       Nº de terceirizados neste local
                     </label>
                     <input
@@ -1354,28 +1354,28 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
                       placeholder="Ex.: 4"
                       value={unitForm.outsourced_worker_count}
                       onChange={(e) => setUnitForm({ ...unitForm, outsourced_worker_count: e.target.value })}
-                      className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                      className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta"
                     />
-                    <p className="text-[10px] text-slate-500 mt-1">
+                    <p className="text-[10px] text-tinta-2 mt-1">
                       Terceirizados contam para a abrangência do PGR, e não para o
                       dimensionamento do SESMT e da CIPA.
                     </p>
                   </div>
                   <div>
-                    <label className="block text-slate-400 font-semibold mb-1">Jornada e turnos</label>
+                    <label className="block text-tinta-2 font-semibold mb-1">Jornada e turnos</label>
                     <input
                       type="text"
                       placeholder="Ex.: 08h-17h48, seg-sex; turno noturno 22h-06h"
                       value={unitForm.work_shifts_description}
                       onChange={(e) => setUnitForm({ ...unitForm, work_shifts_description: e.target.value })}
-                      className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                      className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-slate-400 font-semibold mb-1">
+                    <label className="block text-tinta-2 font-semibold mb-1">
                       Responsável legal da organização
                     </label>
                     <input
@@ -1383,14 +1383,14 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
                       placeholder="Nome e cargo de quem assina pela empresa"
                       value={unitForm.legal_representative}
                       onChange={(e) => setUnitForm({ ...unitForm, legal_representative: e.target.value })}
-                      className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                      className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta"
                     />
-                    <p className="text-[10px] text-slate-500 mt-1">
+                    <p className="text-[10px] text-tinta-2 mt-1">
                       Vai para o termo de responsabilidade do PGR.
                     </p>
                   </div>
                   <div>
-                    <label className="block text-slate-400 font-semibold mb-1">
+                    <label className="block text-tinta-2 font-semibold mb-1">
                       Coordenador da implementação do PGR
                     </label>
                     <input
@@ -1398,9 +1398,9 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
                       placeholder="Nome e cargo de quem gere o plano de ação"
                       value={unitForm.pgr_coordinator}
                       onChange={(e) => setUnitForm({ ...unitForm, pgr_coordinator: e.target.value })}
-                      className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                      className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta"
                     />
-                    <p className="text-[10px] text-slate-500 mt-1">
+                    <p className="text-[10px] text-tinta-2 mt-1">
                       Responde pelo cronograma e pelas evidências (subitens 1.5.5.2 e 1.5.5.3).
                       Pode ser a mesma pessoa do responsável técnico.
                     </p>
@@ -1408,7 +1408,7 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
                 </div>
 
                 <div>
-                  <label className="block text-slate-400 font-semibold mb-1">
+                  <label className="block text-tinta-2 font-semibold mb-1">
                     Frentes de trabalho e locais externos
                   </label>
                   <textarea
@@ -1416,9 +1416,9 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
                     placeholder="Serviços na casa do cliente, atendimento externo, teletrabalho, obras de terceiros..."
                     value={unitForm.external_work_fronts}
                     onChange={(e) => setUnitForm({ ...unitForm, external_work_fronts: e.target.value })}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                    className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta"
                   />
-                  <p className="text-[10px] text-slate-500 mt-1">
+                  <p className="text-[10px] text-tinta-2 mt-1">
                     Se ninguém trabalha fora do estabelecimento, escreva &quot;nenhuma&quot;
                     — declarar é diferente de deixar em branco.
                   </p>
@@ -1426,13 +1426,13 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
               </div>
 
               {/* Caracterizacao do estabelecimento — secao 6.1 do PGR */}
-              <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 space-y-3">
+              <div className="p-3 bg-fundo rounded-xl border border-borda space-y-3">
                 <div>
-                  <h4 className="font-bold text-slate-200 text-xs flex items-center gap-1.5">
-                    <Building2 className="w-4 h-4 text-teal-400" />
+                  <h4 className="font-bold text-tinta text-xs flex items-center gap-1.5">
+                    <Building2 className="w-4 h-4 text-teal-700" />
                     Caracterização do Estabelecimento (PGR, seção 6.1)
                   </h4>
-                  <p className="text-[11px] text-slate-500 mt-0.5">
+                  <p className="text-[11px] text-tinta-2 mt-0.5">
                     Atende à alínea &quot;a&quot; do subitem 1.5.7.3.2 da NR-01. Descreva o que
                     existe de fato na data da avaliação — o auditor confronta este texto com o
                     local de trabalho.
@@ -1441,61 +1441,61 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-slate-400 font-semibold mb-1">Área construída (m²)</label>
+                    <label className="block text-tinta-2 font-semibold mb-1">Área construída (m²)</label>
                     <input
                       type="text"
                       placeholder="Ex.: 1.250"
                       value={unitForm.built_area_m2}
                       onChange={(e) => setUnitForm({ ...unitForm, built_area_m2: e.target.value })}
-                      className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                      className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta"
                     />
                   </div>
                   <div>
-                    <label className="block text-slate-400 font-semibold mb-1">Área total do terreno (m²)</label>
+                    <label className="block text-tinta-2 font-semibold mb-1">Área total do terreno (m²)</label>
                     <input
                       type="text"
                       placeholder="Ex.: 3.000"
                       value={unitForm.total_area_m2}
                       onChange={(e) => setUnitForm({ ...unitForm, total_area_m2: e.target.value })}
-                      className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                      className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-slate-400 font-semibold mb-1">Edificações e pavimentos</label>
+                  <label className="block text-tinta-2 font-semibold mb-1">Edificações e pavimentos</label>
                   <textarea
                     rows={2}
                     placeholder="Ex.: galpão em estrutura metálica, pé-direito 8 m; bloco administrativo térreo em alvenaria"
                     value={unitForm.buildings_description}
                     onChange={(e) => setUnitForm({ ...unitForm, buildings_description: e.target.value })}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                    className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-slate-400 font-semibold mb-1">Utilidades</label>
+                  <label className="block text-tinta-2 font-semibold mb-1">Utilidades</label>
                   <textarea
                     rows={2}
                     placeholder="Energia e subestação, caldeira, compressores, GLP, geradores, ar-condicionado central..."
                     value={unitForm.utilities_description}
                     onChange={(e) => setUnitForm({ ...unitForm, utilities_description: e.target.value })}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                    className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-slate-400 font-semibold mb-1">
-                    Entorno e perigos externos <span className="text-slate-600">(subitem 1.5.4.3.2)</span>
+                  <label className="block text-tinta-2 font-semibold mb-1">
+                    Entorno e perigos externos <span className="text-tinta-2">(subitem 1.5.4.3.2)</span>
                   </label>
                   <textarea
                     rows={2}
                     placeholder="Vias de tráfego intenso, área alagável, vizinhança industrial, índice de violência da região, fauna peçonhenta..."
                     value={unitForm.external_hazards}
                     onChange={(e) => setUnitForm({ ...unitForm, external_hazards: e.target.value })}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                    className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta"
                   />
-                  <p className="text-[10px] text-slate-500 mt-1">
+                  <p className="text-[10px] text-tinta-2 mt-1">
                     Perigo externo é o previsível que está fora do controle da organização, mas
                     atinge quem trabalha aqui. Assalto em trabalho externo e trânsito em
                     deslocamento a serviço entram.
@@ -1503,28 +1503,28 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
                 </div>
 
                 <div>
-                  <label className="block text-slate-400 font-semibold mb-1">Recursos de emergência</label>
+                  <label className="block text-tinta-2 font-semibold mb-1">Recursos de emergência</label>
                   <textarea
                     rows={2}
                     placeholder="Extintores e hidrantes, rotas de fuga, ponto de encontro, ambulatório, distância e nome do hospital de referência..."
                     value={unitForm.emergency_resources}
                     onChange={(e) => setUnitForm({ ...unitForm, emergency_resources: e.target.value })}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                    className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta"
                   />
-                  <p className="text-[10px] text-slate-500 mt-1">
+                  <p className="text-[10px] text-tinta-2 mt-1">
                     Alimenta também a seção 9.4 do PGR (preparação e resposta a emergências).
                   </p>
                 </div>
               </div>
 
               {/* Preparacao e resposta a emergencias — secao 9.4 do PGR */}
-              <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 space-y-3">
+              <div className="p-3 bg-fundo rounded-xl border border-borda space-y-3">
                 <div>
-                  <h4 className="font-bold text-slate-200 text-xs flex items-center gap-1.5">
-                    <Siren className="w-4 h-4 text-teal-400" />
+                  <h4 className="font-bold text-tinta text-xs flex items-center gap-1.5">
+                    <Siren className="w-4 h-4 text-teal-700" />
                     Emergências (PGR, seção 9.4)
                   </h4>
-                  <p className="text-[11px] text-slate-500 mt-0.5">
+                  <p className="text-[11px] text-tinta-2 mt-0.5">
                     Item 1.5.6 da NR-01. Os procedimentos se definem &quot;de acordo com os
                     riscos, as características e as circunstâncias das atividades&quot;
                     (subitem 1.5.6.1) — por isso ficam no estabelecimento, e não no cliente.
@@ -1532,34 +1532,34 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
                 </div>
 
                 <div>
-                  <label className="block text-slate-400 font-semibold mb-1">
-                    Cenários de emergência <span className="text-slate-600">(1.5.6.1)</span>
+                  <label className="block text-tinta-2 font-semibold mb-1">
+                    Cenários de emergência <span className="text-tinta-2">(1.5.6.1)</span>
                   </label>
                   <textarea
                     rows={2}
                     placeholder="Incêndio no depósito, vazamento de GLP, choque elétrico na subestação, queda de nível, acidente com veículo em rota..."
                     value={unitForm.emergency_scenarios}
                     onChange={(e) => setUnitForm({ ...unitForm, emergency_scenarios: e.target.value })}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                    className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta"
                   />
-                  <p className="text-[10px] text-slate-500 mt-1">
+                  <p className="text-[10px] text-tinta-2 mt-1">
                     Os cenários saem do inventário deste estabelecimento: o que pode dar errado
                     nos riscos que você já levantou.
                   </p>
                 </div>
 
                 <div>
-                  <label className="block text-slate-400 font-semibold mb-1">
-                    Abandono dos locais afetados <span className="text-slate-600">(1.5.6.2 &quot;a&quot;)</span>
+                  <label className="block text-tinta-2 font-semibold mb-1">
+                    Abandono dos locais afetados <span className="text-tinta-2">(1.5.6.2 &quot;a&quot;)</span>
                   </label>
                   <textarea
                     rows={2}
                     placeholder="Alarme sonoro acionado na portaria; duas rotas sinalizadas; ponto de encontro no estacionamento; brigada de 6 integrantes; responsável pela contagem..."
                     value={unitForm.emergency_evacuation}
                     onChange={(e) => setUnitForm({ ...unitForm, emergency_evacuation: e.target.value })}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                    className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta"
                   />
-                  <p className="text-[10px] text-slate-500 mt-1">
+                  <p className="text-[10px] text-tinta-2 mt-1">
                     A alínea &quot;a&quot; pede meios, responsáveis e recursos — as três coisas,
                     com nome de quem responde. Não cabe &quot;não aplicável&quot;: ao contrário
                     da alínea &quot;b&quot;, a &quot;a&quot; não tem essa ressalva.
@@ -1567,17 +1567,17 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
                 </div>
 
                 <div>
-                  <label className="block text-slate-400 font-semibold mb-1">
-                    Emergências de grande magnitude <span className="text-slate-600">(1.5.6.2 &quot;b&quot;)</span>
+                  <label className="block text-tinta-2 font-semibold mb-1">
+                    Emergências de grande magnitude <span className="text-tinta-2">(1.5.6.2 &quot;b&quot;)</span>
                   </label>
                   <textarea
                     rows={2}
                     placeholder="Plano de auxílio mútuo com as empresas do distrito, aviso ao Corpo de Bombeiros e à Defesa Civil... ou: não aplicável, por quê"
                     value={unitForm.emergency_large_scale}
                     onChange={(e) => setUnitForm({ ...unitForm, emergency_large_scale: e.target.value })}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                    className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta"
                   />
-                  <p className="text-[10px] text-slate-500 mt-1">
+                  <p className="text-[10px] text-tinta-2 mt-1">
                     A alínea vale &quot;quando aplicável&quot;. Se não for o caso aqui, escreva
                     &quot;não aplicável&quot; e o motivo — em branco não é declaração.
                   </p>
@@ -1585,31 +1585,31 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
 
                 <div className="grid grid-cols-[1fr_auto] gap-3">
                   <div>
-                    <label className="block text-slate-400 font-semibold mb-1">
-                      Periodicidade dos simulados <span className="text-slate-600">(1.5.6.3)</span>
+                    <label className="block text-tinta-2 font-semibold mb-1">
+                      Periodicidade dos simulados <span className="text-tinta-2">(1.5.6.3)</span>
                     </label>
                     <input
                       type="text"
                       placeholder="Ex.: anual, com abandono total; semestral na área de caldeira"
                       value={unitForm.emergency_drills}
                       onChange={(e) => setUnitForm({ ...unitForm, emergency_drills: e.target.value })}
-                      className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                      className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta"
                     />
-                    <p className="text-[10px] text-slate-500 mt-1">
+                    <p className="text-[10px] text-tinta-2 mt-1">
                       A NR-01 não fixa prazo: a periodicidade é a que o seu próprio
                       procedimento definir — e é essa que o auditor cobra. Mas o simulado
                       é obrigatório (subitem 1.5.6.3): &quot;não aplicável&quot; sai como pendência.
                     </p>
                   </div>
                   <div>
-                    <label className="block text-slate-400 font-semibold mb-1">Último simulado</label>
+                    <label className="block text-tinta-2 font-semibold mb-1">Último simulado</label>
                     <input
                       type="date"
                       value={unitForm.emergency_drill_last_date}
                       onChange={(e) => setUnitForm({ ...unitForm, emergency_drill_last_date: e.target.value })}
-                      className="bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                      className="bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta"
                     />
-                    <p className="text-[10px] text-slate-500 mt-1">
+                    <p className="text-[10px] text-tinta-2 mt-1">
                       Subitem 1.5.6.3.1: evidência.
                     </p>
                   </div>
@@ -1617,15 +1617,15 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
               </div>
 
               {/* Prevencao e combate ao assedio sexual — secao 9.8 do PGR */}
-              <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 space-y-3">
+              <div className="p-3 bg-fundo rounded-xl border border-borda space-y-3">
                 <div>
-                  <h4 className="font-bold text-slate-200 text-xs flex items-center gap-1.5">
-                    <ShieldAlert className="w-4 h-4 text-teal-400" />
+                  <h4 className="font-bold text-tinta text-xs flex items-center gap-1.5">
+                    <ShieldAlert className="w-4 h-4 text-teal-700" />
                     Assédio e violência (PGR, seção 9.8)
                   </h4>
-                  <p className="text-[11px] text-slate-500 mt-0.5">
+                  <p className="text-[11px] text-tinta-2 mt-0.5">
                     As três medidas do subitem 1.4.1.1 da NR-01 (Portaria MTP nº 4.219/2022).
-                    Valem para quem é <strong className="text-slate-400">obrigado a constituir
+                    Valem para quem é <strong className="text-tinta-2">obrigado a constituir
                     CIPA</strong> nos termos da NR-05 — e o PGR lê isso do próprio
                     dimensionamento: se este estabelecimento não se enquadra no Quadro I, a
                     seção sai como não aplicável em vez de pendente.
@@ -1633,34 +1633,34 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
                 </div>
 
                 <div>
-                  <label className="block text-slate-400 font-semibold mb-1">
-                    Regras de conduta e divulgação <span className="text-slate-600">(alínea &quot;a&quot;)</span>
+                  <label className="block text-tinta-2 font-semibold mb-1">
+                    Regras de conduta e divulgação <span className="text-tinta-2">(alínea &quot;a&quot;)</span>
                   </label>
                   <textarea
                     rows={2}
                     placeholder="Capítulo 7 do Regulamento Interno, revisão de 03/2026; divulgado no mural, na integração e por e-mail a todos os empregados"
                     value={unitForm.harassment_conduct_rules}
                     onChange={(e) => setUnitForm({ ...unitForm, harassment_conduct_rules: e.target.value })}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                    className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta"
                   />
-                  <p className="text-[10px] text-slate-500 mt-1">
+                  <p className="text-[10px] text-tinta-2 mt-1">
                     A alínea pede as regras <em>nas normas internas</em> e a ampla divulgação do
                     conteúdo. Diga onde estão e como foram divulgadas.
                   </p>
                 </div>
 
                 <div>
-                  <label className="block text-slate-400 font-semibold mb-1">
-                    Canal e procedimento de denúncia <span className="text-slate-600">(alínea &quot;b&quot;)</span>
+                  <label className="block text-tinta-2 font-semibold mb-1">
+                    Canal e procedimento de denúncia <span className="text-tinta-2">(alínea &quot;b&quot;)</span>
                   </label>
                   <textarea
                     rows={2}
                     placeholder="Canal por formulário e telefone 0800 operado por terceiro; comissão de apuração em até 30 dias; sanções previstas no regulamento; anonimato garantido"
                     value={unitForm.harassment_report_channel}
                     onChange={(e) => setUnitForm({ ...unitForm, harassment_report_channel: e.target.value })}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                    className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta"
                   />
-                  <p className="text-[10px] text-slate-500 mt-1">
+                  <p className="text-[10px] text-tinta-2 mt-1">
                     São quatro coisas na mesma alínea: recebimento e acompanhamento, apuração,
                     sanções aos responsáveis diretos e indiretos, e anonimato de quem denuncia.
                   </p>
@@ -1668,31 +1668,31 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
 
                 <div className="grid grid-cols-[1fr_auto] gap-3">
                   <div>
-                    <label className="block text-slate-400 font-semibold mb-1">
-                      Ações de capacitação e sensibilização <span className="text-slate-600">(alínea &quot;c&quot;)</span>
+                    <label className="block text-tinta-2 font-semibold mb-1">
+                      Ações de capacitação e sensibilização <span className="text-tinta-2">(alínea &quot;c&quot;)</span>
                     </label>
                     <input
                       type="text"
                       placeholder="Ex.: palestra de 2h para todos os níveis, com módulo de igualdade e diversidade"
                       value={unitForm.harassment_training_actions}
                       onChange={(e) => setUnitForm({ ...unitForm, harassment_training_actions: e.target.value })}
-                      className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                      className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta"
                     />
-                    <p className="text-[10px] text-slate-500 mt-1">
-                      Para <strong className="text-slate-400">todos os níveis hierárquicos</strong>,
+                    <p className="text-[10px] text-tinta-2 mt-1">
+                      Para <strong className="text-tinta-2">todos os níveis hierárquicos</strong>,
                       inclusive direção e chefias, sobre violência, assédio, igualdade e
                       diversidade.
                     </p>
                   </div>
                   <div>
-                    <label className="block text-slate-400 font-semibold mb-1">Última ação</label>
+                    <label className="block text-tinta-2 font-semibold mb-1">Última ação</label>
                     <input
                       type="date"
                       value={unitForm.harassment_training_last_date}
                       onChange={(e) => setUnitForm({ ...unitForm, harassment_training_last_date: e.target.value })}
-                      className="bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                      className="bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta"
                     />
-                    <p className="text-[10px] text-slate-500 mt-1">
+                    <p className="text-[10px] text-tinta-2 mt-1">
                       A alínea exige no mínimo a cada 12 meses. Com a data, o PGR calcula o
                       próximo prazo e aponta se venceu.
                     </p>
@@ -1700,17 +1700,17 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
                 </div>
               </div>
 
-              <div className="flex justify-end gap-2 pt-3 border-t border-slate-800">
+              <div className="flex justify-end gap-2 pt-3 border-t border-borda">
                 <button
                   type="button"
                   onClick={() => setIsUnitModalOpen(false)}
-                  className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold rounded-lg"
+                  className="px-4 py-2 bg-superficie-2 hover:bg-superficie-3 text-tinta font-semibold rounded-lg"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold rounded-lg shadow-md"
+                  className="bg-marca-escura text-white px-4 py-2 font-bold rounded-lg shadow-sm hover:opacity-90"
                 >
                   Salvar Unidade
                 </button>

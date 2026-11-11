@@ -91,7 +91,7 @@ export default async function ArtigoPage({ params }: Props) {
               <img
                 src={artigo.imagem_url}
                 alt={artigo.titulo}
-                className="w-full h-auto rounded-3xl shadow-lg"
+                className="w-full h-auto rounded-3xl shadow-sm"
               />
             </a>
           </div>

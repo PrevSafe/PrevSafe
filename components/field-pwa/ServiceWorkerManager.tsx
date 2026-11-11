@@ -97,19 +97,19 @@ export const ServiceWorkerManager: React.FC = () => {
   if (precisaRecarregar) {
     return (
       /* CANTO-FLUTUANTE: aviso de nova versao, sai da tela no primeiro clique */
-      <div className="fixed bottom-4 right-4 z-50 w-[min(24rem,calc(100vw-2rem))] bg-slate-900 border border-emerald-600/50 text-white p-4 rounded-2xl shadow-2xl flex items-start space-x-3">
-        <div className="p-2 rounded-xl shrink-0 bg-emerald-500/20 text-emerald-400">
+      <div className="fixed bottom-4 right-4 z-50 w-[min(24rem,calc(100vw-2rem))] bg-superficie border border-borda text-tinta p-4 rounded-2xl shadow-sm flex items-start space-x-3">
+        <div className="p-2 rounded-xl shrink-0 bg-marca-suave text-marca-escura">
           <RefreshCw className="w-5 h-5" />
         </div>
         <div className="space-y-2 text-xs min-w-0">
-          <div className="font-bold text-white">Nova versão do PrevSafe disponível</div>
-          <p className="text-slate-300 leading-relaxed text-[11px]">
+          <div className="font-bold text-tinta">Nova versão do PrevSafe disponível</div>
+          <p className="text-tinta leading-relaxed text-[11px]">
             Esta aba ainda está executando a versão anterior. Recarregue para usar a atualizada —
             cadastros e tabelas oficiais podem ter mudado.
           </p>
           <button
             onClick={() => window.location.reload()}
-            className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold transition"
+            className="px-3 py-1.5 bg-marca-escura hover:opacity-90 text-white rounded-lg text-xs font-semibold transition"
           >
             Recarregar agora
           </button>
@@ -122,11 +122,11 @@ export const ServiceWorkerManager: React.FC = () => {
 
   return (
     /* CANTO-FLUTUANTE: aviso de app pronto para uso offline, dispensavel */
-    <div className="fixed bottom-4 right-4 z-50 max-w-md bg-slate-900 border border-slate-800 text-white p-4 rounded-2xl shadow-2xl flex items-start space-x-3 animate-in fade-in slide-in-from-bottom-5 duration-300">
+    <div className="fixed bottom-4 right-4 z-50 max-w-md bg-superficie border border-borda text-tinta p-4 rounded-2xl shadow-sm flex items-start space-x-3 animate-in fade-in slide-in-from-bottom-5 duration-300">
       <div className={`p-2 rounded-xl flex-shrink-0 ${
-        bannerType === 'OFFLINE' ? 'bg-amber-500/20 text-amber-400' :
-        bannerType === 'SUCCESS' ? 'bg-teal-500/20 text-teal-400' :
-        'bg-indigo-500/20 text-indigo-400'
+        bannerType === 'OFFLINE' ? 'bg-amber-500/20 text-amber-800' :
+        bannerType === 'SUCCESS' ? 'bg-teal-500/20 text-teal-800' :
+        'bg-teal-500/20 text-teal-800'
       }`}>
         {bannerType === 'OFFLINE' ? <WifiOff className="w-5 h-5" /> : 
          bannerType === 'SUCCESS' ? <Zap className="w-5 h-5" /> :
@@ -134,17 +134,17 @@ export const ServiceWorkerManager: React.FC = () => {
       </div>
       <div className="space-y-1 text-xs">
         <div className="flex items-center space-x-2">
-          <span className="font-bold text-white">{isOnline ? 'Conectado à Rede' : 'Modo Offline Ativado'}</span>
-          <span className="text-[10px] font-mono bg-slate-800 px-1.5 py-0.5 rounded text-teal-300 flex items-center gap-1">
-            <Zap className="w-2.5 h-2.5 text-teal-400" />
+          <span className="font-bold text-tinta">{isOnline ? 'Conectado à Rede' : 'Modo Offline Ativado'}</span>
+          <span className="text-[10px] font-mono bg-superficie-2 px-1.5 py-0.5 rounded text-teal-700 flex items-center gap-1">
+            <Zap className="w-2.5 h-2.5 text-teal-700" />
             {swRegistered ? `Pré-cache Ativo ${latencyMs !== null ? `(${latencyMs}ms)` : ''}` : 'Cache Local'}
           </span>
         </div>
-        <p className="text-slate-300 leading-relaxed text-[11px]">{bannerMessage}</p>
+        <p className="text-tinta leading-relaxed text-[11px]">{bannerMessage}</p>
       </div>
       <button 
         onClick={() => setShowBanner(false)}
-        className="text-slate-500 hover:text-slate-300 text-xs p-1"
+        className="text-tinta-2 hover:text-tinta text-xs p-1"
       >
         ✕
       </button>

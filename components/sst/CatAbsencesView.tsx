@@ -42,26 +42,25 @@ export const CatAbsencesView: React.FC<CatAbsencesViewProps> = ({ onNavigate }) 
   return (
     <div className="space-y-6" id="cat-absences-workspace">
       {/* Top Header Card */}
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 relative overflow-hidden shadow-2xl">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-rose-500/10 via-red-500/5 to-transparent rounded-full blur-3xl pointer-events-none" />
+      <div className="bg-superficie border border-borda rounded-2xl p-6 relative overflow-hidden shadow-sm">
 
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
           <div className="space-y-2">
             <div className="flex items-center gap-2">
-              <span className="px-3 py-1 bg-rose-500/20 text-rose-300 font-bold text-xs rounded-full border border-rose-500/30 flex items-center gap-1.5">
+              <span className="px-3 py-1 bg-rose-500/20 text-rose-800 font-bold text-xs rounded-full border border-rose-500/30 flex items-center gap-1.5">
                 <AlertOctagon className="w-3.5 h-3.5" />
                 eSocial S-2210 & S-2230 • Lei 8.213/91 Art. 22
               </span>
-              <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-300 text-[11px] font-mono font-semibold rounded">
+              <span className="px-2 py-0.5 bg-marca-suave text-marca-escura text-[11px] font-mono font-semibold rounded">
                 Prazo Legal D+1 (Morte Imediata)
               </span>
             </div>
 
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-100 tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-tinta tracking-tight">
               CAT (S-2210) & Afastamentos Temporários (S-2230)
             </h1>
 
-            <p className="text-xs sm:text-sm text-slate-400 max-w-2xl">
+            <p className="text-xs sm:text-sm text-tinta-2 max-w-2xl">
               Emissão e transmissão da Comunicação de Acidente de Trabalho (CAT Inicial, Reabertura e Óbito) e gestão de atestados médicos, licenças de saúde e afastamentos previdenciários.
             </p>
           </div>
@@ -69,14 +68,14 @@ export const CatAbsencesView: React.FC<CatAbsencesViewProps> = ({ onNavigate }) 
           {/* Client context switch */}
           <div className="flex flex-col sm:flex-row lg:flex-col items-start lg:items-end gap-3">
             <div className="w-full sm:w-auto">
-              <label className="block text-[11px] font-semibold text-slate-400 mb-1">
+              <label className="block text-[11px] font-semibold text-tinta-2 mb-1">
                 Empresa / Cliente Selecionado:
               </label>
               <select
                 id="cat-client-selector"
                 value={selectedClientId}
                 onChange={(e) => setSelectedClientId(e.target.value)}
-                className="w-full sm:w-64 bg-slate-800 border border-slate-700 text-slate-200 text-xs sm:text-sm rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-rose-500 font-medium"
+                className="w-full sm:w-64 bg-superficie-2 border border-borda text-tinta text-xs sm:text-sm rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-rose-500 font-medium"
               >
                 <option value="">Todos os Clientes</option>
                 {clients.map(client => (
@@ -88,9 +87,9 @@ export const CatAbsencesView: React.FC<CatAbsencesViewProps> = ({ onNavigate }) 
             </div>
 
             {selectedClient && (
-              <div className="flex items-center gap-2 text-xs text-slate-400 bg-slate-800/80 px-3 py-1.5 rounded-lg border border-slate-700/50">
-                <Building2 className="w-3.5 h-3.5 text-rose-400" />
-                <span className="font-semibold text-slate-200 truncate max-w-[200px]">
+              <div className="flex items-center gap-2 text-xs text-tinta-2 bg-superficie-2 px-3 py-1.5 rounded-lg border border-borda">
+                <Building2 className="w-3.5 h-3.5 text-rose-700" />
+                <span className="font-semibold text-tinta truncate max-w-[200px]">
                   {selectedClient.trade_name || selectedClient.legal_name}
                 </span>
               </div>
@@ -99,43 +98,43 @@ export const CatAbsencesView: React.FC<CatAbsencesViewProps> = ({ onNavigate }) 
         </div>
 
         {/* Quick KPI Summary Bar */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6 pt-5 border-t border-slate-800/80">
-          <div className="bg-slate-800/50 rounded-xl p-3 border border-slate-700/40">
-            <span className="text-[11px] font-medium text-slate-400 block">Total de CATs Registradas</span>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6 pt-5 border-t border-borda">
+          <div className="bg-superficie-2 rounded-xl p-3 border border-borda">
+            <span className="text-[11px] font-medium text-tinta-2 block">Total de CATs Registradas</span>
             <div className="flex items-baseline gap-2 mt-1">
-              <span className="text-lg font-black text-slate-100">{clientCats.length}</span>
-              <span className="text-[10px] text-slate-500">registros</span>
+              <span className="text-lg font-black text-tinta">{clientCats.length}</span>
+              <span className="text-[10px] text-tinta-2">registros</span>
             </div>
           </div>
 
-          <div className="bg-slate-800/50 rounded-xl p-3 border border-slate-700/40">
-            <span className="text-[11px] font-medium text-slate-400 block">Transmitidas ao eSocial</span>
+          <div className="bg-superficie-2 rounded-xl p-3 border border-borda">
+            <span className="text-[11px] font-medium text-tinta-2 block">Transmitidas ao eSocial</span>
             <div className="flex items-baseline gap-2 mt-1">
-              <span className="text-lg font-black text-emerald-400">{transmittedCats}</span>
-              <span className="text-[10px] text-emerald-500/80">com recibo</span>
+              <span className="text-lg font-black text-marca-escura">{transmittedCats}</span>
+              <span className="text-[10px] text-marca-escura">com recibo</span>
             </div>
           </div>
 
-          <div className="bg-slate-800/50 rounded-xl p-3 border border-slate-700/40">
-            <span className="text-[11px] font-medium text-slate-400 block">Afastamentos Registrados</span>
+          <div className="bg-superficie-2 rounded-xl p-3 border border-borda">
+            <span className="text-[11px] font-medium text-tinta-2 block">Afastamentos Registrados</span>
             <div className="flex items-baseline gap-2 mt-1">
-              <span className="text-lg font-black text-rose-400">{clientAbsences.length}</span>
-              <span className="text-[10px] text-slate-500">atestados/licenças</span>
+              <span className="text-lg font-black text-rose-700">{clientAbsences.length}</span>
+              <span className="text-[10px] text-tinta-2">atestados/licenças</span>
             </div>
           </div>
 
-          <div className="bg-slate-800/50 rounded-xl p-3 border border-slate-700/40">
-            <span className="text-[11px] font-medium text-slate-400 block">Status eSocial S-2210</span>
+          <div className="bg-superficie-2 rounded-xl p-3 border border-borda">
+            <span className="text-[11px] font-medium text-tinta-2 block">Status eSocial S-2210</span>
             <div className="flex items-baseline gap-2 mt-1">
               {pendingCats > 0 ? (
                 <>
-                  <span className="text-lg font-black text-amber-400">{pendingCats} pendentes</span>
-                  <span className="text-[10px] text-amber-500">atenção ao prazo</span>
+                  <span className="text-lg font-black text-amber-700">{pendingCats} pendentes</span>
+                  <span className="text-[10px] text-amber-700">atenção ao prazo</span>
                 </>
               ) : (
                 <>
-                  <span className="text-lg font-black text-emerald-400">100% Em Dia</span>
-                  <span className="text-[10px] text-emerald-500">sem pendências</span>
+                  <span className="text-lg font-black text-marca-escura">100% Em Dia</span>
+                  <span className="text-[10px] text-marca-escura">sem pendências</span>
                 </>
               )}
             </div>

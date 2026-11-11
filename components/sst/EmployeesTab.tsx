@@ -381,25 +381,25 @@ export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) 
   return (
     <div className="space-y-6" id="employees-tab-container">
       {/* Top Bar Actions and Filters */}
-      <div className="flex flex-col gap-3 bg-slate-900/90 p-4 rounded-xl border border-slate-800 shadow">
+      <div className="flex flex-col gap-3 bg-superficie p-4 rounded-xl border border-borda shadow">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="relative">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <Search className="w-4 h-4 text-tinta-2 absolute left-3 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
                 id="emp-search-input"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Buscar por nome, CPF ou matrícula..."
-                className="bg-slate-950 border border-slate-700 rounded-lg pl-9 pr-3 py-1.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-teal-500 w-64"
+                className="bg-fundo border border-borda rounded-lg pl-9 pr-3 py-1.5 text-xs text-tinta placeholder-tinta-3 focus:outline-none focus:border-teal-500 w-64"
               />
             </div>
 
             <select
               value={filterGhe}
               onChange={(e) => setFilterGhe(e.target.value)}
-              className="bg-slate-950 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-teal-500"
+              className="bg-fundo border border-borda rounded-lg px-3 py-1.5 text-xs text-tinta focus:outline-none focus:border-teal-500"
             >
               <option value="ALL">Todos os GHEs</option>
               {ghes.map(g => (
@@ -413,7 +413,7 @@ export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) 
               type="button"
               id="add-employee-btn"
               onClick={() => handleOpenEmployeeModal()}
-              className="px-3.5 py-1.5 bg-teal-500 hover:bg-teal-400 text-slate-950 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 shadow-sm"
+              className="bg-marca-escura text-white px-3.5 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 shadow-sm hover:opacity-90"
             >
               <Plus className="w-4 h-4" />
               Novo Colaborador (eSocial)
@@ -422,9 +422,9 @@ export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) 
         </div>
 
         {/* Batch Operations Toolbar */}
-        <div className="pt-3 border-t border-slate-800 flex items-center justify-between flex-wrap gap-2 text-xs">
-          <div className="flex items-center gap-2 text-slate-400">
-            <span className="font-semibold text-slate-300">
+        <div className="pt-3 border-t border-borda flex items-center justify-between flex-wrap gap-2 text-xs">
+          <div className="flex items-center gap-2 text-tinta-2">
+            <span className="font-semibold text-tinta">
               {filteredEmployees.length} colaboradores ({selectedEmpIds.length} selecionados)
             </span>
           </div>
@@ -434,9 +434,9 @@ export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) 
               type="button"
               id="btn-emp-batch-generate-os"
               onClick={handleBatchGenerateOS}
-              className="px-2.5 py-1.5 bg-indigo-950 hover:bg-indigo-900 text-indigo-300 border border-indigo-800 rounded-lg font-bold flex items-center gap-1.5 transition-colors"
+              className="px-2.5 py-1.5 bg-teal-950 hover:bg-teal-900 text-white border border-teal-800 rounded-lg font-bold flex items-center gap-1.5 transition-colors"
             >
-              <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
+              <Sparkles className="w-3.5 h-3.5 text-teal-700" />
               Gerar OS em Lote
             </button>
 
@@ -444,9 +444,9 @@ export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) 
               type="button"
               id="btn-emp-batch-print-os"
               onClick={handleBatchPrintOS}
-              className="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-lg font-bold flex items-center gap-1.5 transition-colors"
+              className="px-2.5 py-1.5 bg-superficie-2 hover:bg-superficie-3 text-tinta border border-borda rounded-lg font-bold flex items-center gap-1.5 transition-colors"
             >
-              <Printer className="w-3.5 h-3.5 text-indigo-400" />
+              <Printer className="w-3.5 h-3.5 text-teal-700" />
               Imprimir OS (Lote PDF)
             </button>
 
@@ -454,9 +454,9 @@ export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) 
               type="button"
               id="btn-emp-batch-print-epi"
               onClick={handleBatchPrintEPI}
-              className="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-lg font-bold flex items-center gap-1.5 transition-colors"
+              className="px-2.5 py-1.5 bg-superficie-2 hover:bg-superficie-3 text-tinta border border-borda rounded-lg font-bold flex items-center gap-1.5 transition-colors"
             >
-              <HardHat className="w-3.5 h-3.5 text-amber-400" />
+              <HardHat className="w-3.5 h-3.5 text-amber-700" />
               Imprimir Fichas EPI (PDF)
             </button>
 
@@ -464,10 +464,10 @@ export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) 
               type="button"
               id="btn-emp-batch-print-kit"
               onClick={handleBatchPrintKitAdmissional}
-              className="px-2.5 py-1.5 bg-teal-950 hover:bg-teal-900 text-teal-300 border border-teal-800 rounded-lg font-bold flex items-center gap-1.5 transition-colors shadow-sm"
+              className="px-2.5 py-1.5 bg-teal-950 hover:bg-teal-900 text-white border border-teal-800 rounded-lg font-bold flex items-center gap-1.5 transition-colors shadow-sm"
               title="Imprime o Kit de Admissão Completo (OS NR-01 + Ficha de EPI NR-06 + Lista de Presença do Treinamento de Integração NR-01 item 1.7)"
             >
-              <CheckCheck className="w-3.5 h-3.5 text-teal-400" />
+              <CheckCheck className="w-3.5 h-3.5 text-teal-700" />
               Kit Admissional Completo (OS + EPI + Treinamento NR-01)
             </button>
           </div>
@@ -475,30 +475,30 @@ export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) 
       </div>
 
       {/* Info Banner for eSocial technical compliance */}
-      <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-4 flex items-start gap-3">
-        <Info className="w-5 h-5 text-teal-400 shrink-0 mt-0.5" />
-        <div className="text-xs text-slate-300 space-y-1">
-          <p className="font-semibold text-slate-100">
+      <div className="bg-superficie border border-borda rounded-xl p-4 flex items-start gap-3">
+        <Info className="w-5 h-5 text-teal-700 shrink-0 mt-0.5" />
+        <div className="text-xs text-tinta space-y-1">
+          <p className="font-semibold text-tinta">
             Emissão Documental Integrada (NR-01, NR-06 e eSocial):
           </p>
-          <p className="text-slate-400">
+          <p className="text-tinta-2">
             Você pode gerar e imprimir individualmente ou em lote as <strong>Ordens de Serviço (NR-01)</strong> e as <strong>Fichas de Entrega de EPI (NR-06)</strong> com termos de ciência e coleta de assinatura para os colaboradores.
           </p>
         </div>
       </div>
 
       {/* Employees Table */}
-      <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-lg" id="employees-table-container">
+      <div className="bg-superficie border border-borda rounded-xl overflow-hidden shadow-sm" id="employees-table-container">
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs text-slate-300">
-            <thead className="bg-slate-950 text-slate-400 uppercase text-[10px] tracking-wider border-b border-slate-800">
+          <table className="w-full text-left text-xs text-tinta">
+            <thead className="bg-fundo text-tinta-2 uppercase text-[10px] tracking-wider border-b border-borda">
               <tr>
                 <th className="py-3 px-3 w-10 text-center">
                   <input
                     type="checkbox"
                     checked={selectedEmpIds.length > 0 && selectedEmpIds.length === filteredEmployees.length}
                     onChange={handleSelectAll}
-                    className="rounded border-slate-700 text-teal-500 focus:ring-0 w-4 h-4 bg-slate-900"
+                    className="rounded border-borda text-teal-700 focus:ring-0 w-4 h-4 bg-superficie"
                   />
                 </th>
                 <th className="py-3 px-4">Trabalhador / CPF</th>
@@ -510,7 +510,7 @@ export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) 
                 <th className="py-3 px-4 text-right">Ações</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/60">
+            <tbody className="divide-y divide-borda">
               {filteredEmployees.map((emp) => {
                 const ghe = ghes.find(g => g.id === emp.ghe_id);
                 const episCount = emp.epis?.length || 0;
@@ -518,28 +518,28 @@ export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) 
                 const isSelected = selectedEmpIds.includes(emp.id);
 
                 return (
-                  <tr key={emp.id} id={`employee-row-${emp.id}`} className={`hover:bg-slate-800/40 transition-colors ${isSelected ? 'bg-teal-950/20' : ''}`}>
+                  <tr key={emp.id} id={`employee-row-${emp.id}`} className={`hover:bg-superficie-2 transition-colors ${isSelected ? 'bg-teal-50' : ''}`}>
                     <td className="py-3 px-3 text-center">
                       <input
                         type="checkbox"
                         checked={isSelected}
                         onChange={() => handleToggleSelect(emp.id)}
-                        className="rounded border-slate-700 text-teal-500 focus:ring-0 w-4 h-4 bg-slate-900"
+                        className="rounded border-borda text-teal-700 focus:ring-0 w-4 h-4 bg-superficie"
                       />
                     </td>
                     <td className="py-3 px-4">
-                      <div className="font-bold text-slate-100">{emp.name}</div>
-                      <div className="text-[11px] text-slate-400 font-mono">CPF: {emp.cpf}</div>
+                      <div className="font-bold text-tinta">{emp.name}</div>
+                      <div className="text-[11px] text-tinta-2 font-mono">CPF: {emp.cpf}</div>
                     </td>
-                    <td className="py-3 px-4 font-mono text-teal-400 font-semibold">
+                    <td className="py-3 px-4 font-mono text-teal-700 font-semibold">
                       {emp.registration_number}
                     </td>
-                    <td className="py-3 px-4 text-slate-300">
+                    <td className="py-3 px-4 text-tinta">
                       <div>{emp.job_title}</div>
-                      <div className="text-[10px] text-slate-500 font-mono">CBO {emp.cbo} • {emp.employment_regime}</div>
+                      <div className="text-[10px] text-tinta-2 font-mono">CBO {emp.cbo} • {emp.employment_regime}</div>
                     </td>
-                    <td className="py-3 px-4 text-slate-300">
-                      <span className="px-2 py-0.5 bg-slate-800 border border-slate-700 text-slate-200 text-[10px] rounded">
+                    <td className="py-3 px-4 text-tinta">
+                      <span className="px-2 py-0.5 bg-superficie-2 border border-borda text-tinta text-[10px] rounded">
                         {ghe?.name || emp.ghe_name || 'GHE Operacional'}
                       </span>
                     </td>
@@ -549,10 +549,10 @@ export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) 
                         <button
                           type="button"
                           onClick={() => handleIndividualPrintOS(emp)}
-                          className="px-2 py-0.5 bg-indigo-950/80 hover:bg-indigo-900 text-indigo-300 border border-indigo-800 text-[10px] rounded font-bold transition-colors flex items-center gap-1"
+                          className="px-2 py-0.5 bg-teal-50 hover:bg-teal-100 text-teal-700 border border-teal-200 text-[10px] rounded font-bold transition-colors flex items-center gap-1"
                           title="Imprimir Ordem de Serviço NR-01"
                         >
-                          <Printer className="w-3 h-3 text-indigo-400" />
+                          <Printer className="w-3 h-3 text-teal-700" />
                           {empOS ? `OS ${empOS.os_code}` : 'Gerar OS'}
                         </button>
 
@@ -560,16 +560,16 @@ export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) 
                         <button
                           type="button"
                           onClick={() => handleIndividualPrintEPI(emp)}
-                          className="px-2 py-0.5 bg-amber-950/80 hover:bg-amber-900 text-amber-300 border border-amber-800 text-[10px] rounded font-bold transition-colors flex items-center gap-1"
+                          className="px-2 py-0.5 bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 text-[10px] rounded font-bold transition-colors flex items-center gap-1"
                           title="Imprimir Ficha de Entrega de EPI NR-06"
                         >
-                          <HardHat className="w-3 h-3 text-amber-400" />
+                          <HardHat className="w-3 h-3 text-amber-700" />
                           Ficha EPI ({episCount})
                         </button>
                       </div>
                     </td>
                     <td className="py-3 px-4 text-center">
-                      <span className="px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[10px] rounded font-bold">
+                      <span className="px-2 py-0.5 bg-marca-suave border border-marca-borda text-marca-escura text-[10px] rounded font-bold">
                         {emp.current_aso_status}
                       </span>
                     </td>
@@ -578,7 +578,7 @@ export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) 
                         <button
                           type="button"
                           onClick={() => handleIndividualPrintKitAdmissional(emp)}
-                          className="p-1.5 text-teal-400 hover:text-teal-300 hover:bg-teal-950/60 rounded transition-colors"
+                          className="p-1.5 text-teal-700 hover:text-teal-700 hover:bg-teal-50 rounded transition-colors"
                           title="Imprimir Kit de Admissão (OS + EPI + Lista de Presença Treinamento de Integração)"
                         >
                           <CheckCheck className="w-3.5 h-3.5" />
@@ -586,7 +586,7 @@ export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) 
                         <button
                           type="button"
                           onClick={() => setViewingEmpDossier(emp)}
-                          className="p-1.5 text-slate-400 hover:text-teal-400 hover:bg-slate-800 rounded transition-colors"
+                          className="p-1.5 text-tinta-2 hover:text-teal-700 hover:bg-superficie-2 rounded transition-colors"
                           title="Ver Ficha Cadastral eSocial"
                         >
                           <Eye className="w-3.5 h-3.5" />
@@ -594,7 +594,7 @@ export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) 
                         <button
                           type="button"
                           onClick={() => handleOpenEmployeeModal(emp)}
-                          className="p-1.5 text-slate-400 hover:text-teal-400 hover:bg-slate-800 rounded transition-colors"
+                          className="p-1.5 text-tinta-2 hover:text-teal-700 hover:bg-superficie-2 rounded transition-colors"
                           title="Editar Colaborador"
                         >
                           <Edit3 className="w-3.5 h-3.5" />
@@ -602,7 +602,7 @@ export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) 
                         <button
                           type="button"
                           onClick={() => deleteEmployee(emp.id)}
-                          className="p-1.5 text-slate-400 hover:text-rose-400 hover:bg-slate-800 rounded transition-colors"
+                          className="p-1.5 text-tinta-2 hover:text-rose-700 hover:bg-superficie-2 rounded transition-colors"
                           title="Excluir Colaborador"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
@@ -619,17 +619,17 @@ export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) 
 
       {/* Employee Modal */}
       {isEmployeeModalOpen && (
-        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-2xl w-full p-6 space-y-4 shadow-2xl animate-in fade-in zoom-in-95 duration-150 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <h3 className="text-base font-bold text-slate-100 flex items-center gap-2">
-                <Users className="w-5 h-5 text-teal-400" />
+        <div className="fixed inset-0 bg-fundo backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-superficie border border-borda rounded-2xl max-w-2xl w-full p-6 space-y-4 shadow-sm animate-in fade-in zoom-in-95 duration-150 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-borda pb-3">
+              <h3 className="text-base font-bold text-tinta flex items-center gap-2">
+                <Users className="w-5 h-5 text-teal-700" />
                 {editingEmployee ? 'Editar Dados do Colaborador (eSocial)' : 'Cadastrar Novo Colaborador (Campos Obrigatórios MOS)'}
               </h3>
               <button 
                 type="button" 
                 onClick={() => setIsEmployeeModalOpen(false)}
-                className="text-slate-400 hover:text-slate-200 text-sm font-bold"
+                className="text-tinta-2 hover:text-tinta text-sm font-bold"
               >
                 ✕
               </button>
@@ -638,79 +638,79 @@ export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) 
             <form onSubmit={handleSaveEmployee} className="space-y-4 text-xs">
               <div className="grid grid-cols-3 gap-3">
                 <div className="col-span-2">
-                  <label className="block text-slate-400 font-semibold mb-1">Nome Completo do Trabalhador</label>
+                  <label className="block text-tinta-2 font-semibold mb-1">Nome Completo do Trabalhador</label>
                   <input
                     type="text"
                     required
                     placeholder="Ex.: Carlos Eduardo de Souza"
                     value={employeeForm.name}
                     onChange={(e) => setEmployeeForm({ ...employeeForm, name: e.target.value })}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 focus:outline-none focus:border-teal-500"
+                    className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta focus:outline-none focus:border-teal-500"
                   />
                 </div>
                 <div className="col-span-1">
-                  <label className="block text-slate-400 font-semibold mb-1">CPF (TAG cpfTrab)</label>
+                  <label className="block text-tinta-2 font-semibold mb-1">CPF (TAG cpfTrab)</label>
                   <input
                     type="text"
                     required
                     placeholder="123.456.789-00"
                     value={employeeForm.cpf}
                     onChange={(e) => setEmployeeForm({ ...employeeForm, cpf: e.target.value })}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 font-mono focus:outline-none focus:border-teal-500"
+                    className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta font-mono focus:outline-none focus:border-teal-500"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-3 gap-3">
                 <div>
-                  <label className="block text-slate-400 font-semibold mb-1">Matrícula eSocial</label>
+                  <label className="block text-tinta-2 font-semibold mb-1">Matrícula eSocial</label>
                   <input
                     type="text"
                     required
                     placeholder="MAT-001"
                     value={employeeForm.registration_number}
                     onChange={(e) => setEmployeeForm({ ...employeeForm, registration_number: e.target.value })}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 font-mono focus:outline-none focus:border-teal-500"
+                    className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta font-mono focus:outline-none focus:border-teal-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-400 font-semibold mb-1">PIS / PASEP / NIS</label>
+                  <label className="block text-tinta-2 font-semibold mb-1">PIS / PASEP / NIS</label>
                   <input
                     type="text"
                     value={employeeForm.nis_pis}
                     onChange={(e) => setEmployeeForm({ ...employeeForm, nis_pis: e.target.value })}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 font-mono focus:outline-none focus:border-teal-500"
+                    className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta font-mono focus:outline-none focus:border-teal-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-400 font-semibold mb-1">Data Nascimento</label>
+                  <label className="block text-tinta-2 font-semibold mb-1">Data Nascimento</label>
                   <input
                     type="date"
                     value={employeeForm.birth_date}
                     onChange={(e) => setEmployeeForm({ ...employeeForm, birth_date: e.target.value })}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 focus:outline-none focus:border-teal-500"
+                    className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta focus:outline-none focus:border-teal-500"
                   />
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-3 bg-slate-950 p-3 rounded-lg border border-slate-800">
+              <div className="grid grid-cols-3 gap-3 bg-fundo p-3 rounded-lg border border-borda">
                 <div>
-                  <label className="block text-slate-400 font-semibold mb-1">Sexo Biológico</label>
+                  <label className="block text-tinta-2 font-semibold mb-1">Sexo Biológico</label>
                   <select
                     value={employeeForm.gender}
                     onChange={(e) => setEmployeeForm({ ...employeeForm, gender: e.target.value as any })}
-                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-slate-100"
+                    className="w-full bg-superficie border border-borda rounded-lg px-3 py-1.5 text-tinta"
                   >
                     <option value="M">Masculino</option>
                     <option value="F">Feminino</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-slate-400 font-semibold mb-1">Categoria eSocial</label>
+                  <label className="block text-tinta-2 font-semibold mb-1">Categoria eSocial</label>
                   <select
                     value={employeeForm.worker_category}
                     onChange={(e) => setEmployeeForm({ ...employeeForm, worker_category: e.target.value as any })}
-                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-slate-100"
+                    className="w-full bg-superficie border border-borda rounded-lg px-3 py-1.5 text-tinta"
                   >
                     <option value="101">101 - CLT Geral</option>
                     <option value="103">103 - Aprendiz</option>
@@ -719,24 +719,24 @@ export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) 
                   </select>
                 </div>
                 <div>
-                  <label className="block text-slate-400 font-semibold mb-1">Data de Admissão</label>
+                  <label className="block text-tinta-2 font-semibold mb-1">Data de Admissão</label>
                   <input
                     type="date"
                     required
                     value={employeeForm.admission_date}
                     onChange={(e) => setEmployeeForm({ ...employeeForm, admission_date: e.target.value })}
-                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-slate-100"
+                    className="w-full bg-superficie border border-borda rounded-lg px-3 py-1.5 text-tinta"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-400 font-semibold mb-1">Cargo / Função e CBO</label>
+                  <label className="block text-tinta-2 font-semibold mb-1">Cargo / Função e CBO</label>
                   <select
                     value={employeeForm.job_id}
                     onChange={(e) => setEmployeeForm({ ...employeeForm, job_id: e.target.value })}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 focus:outline-none focus:border-teal-500"
+                    className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta focus:outline-none focus:border-teal-500"
                   >
                     {hierarchyJobs.map(j => (
                       <option key={j.id} value={j.id}>{j.name} (CBO {j.cbo})</option>
@@ -744,11 +744,11 @@ export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) 
                   </select>
                 </div>
                 <div>
-                  <label className="block text-slate-400 font-semibold mb-1">GHE Vinculado (Riscos)</label>
+                  <label className="block text-tinta-2 font-semibold mb-1">GHE Vinculado (Riscos)</label>
                   <select
                     value={employeeForm.ghe_id}
                     onChange={(e) => setEmployeeForm({ ...employeeForm, ghe_id: e.target.value })}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 focus:outline-none focus:border-teal-500 font-medium"
+                    className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta focus:outline-none focus:border-teal-500 font-medium"
                   >
                     {ghes.map(g => (
                       <option key={g.id} value={g.id}>{g.name} ({g.code})</option>
@@ -759,38 +759,38 @@ export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) 
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-400 font-semibold mb-1">E-mail</label>
+                  <label className="block text-tinta-2 font-semibold mb-1">E-mail</label>
                   <input
                     type="email"
                     value={employeeForm.email}
                     onChange={(e) => setEmployeeForm({ ...employeeForm, email: e.target.value })}
                     placeholder="colaborador@empresa.com.br"
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                    className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta"
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-400 font-semibold mb-1">Telefone / WhatsApp</label>
+                  <label className="block text-tinta-2 font-semibold mb-1">Telefone / WhatsApp</label>
                   <input
                     type="text"
                     value={employeeForm.phone}
                     onChange={(e) => setEmployeeForm({ ...employeeForm, phone: e.target.value })}
                     placeholder="(11) 98765-4321"
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                    className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta"
                   />
                 </div>
               </div>
 
-              <div className="flex justify-end gap-2 pt-3 border-t border-slate-800">
+              <div className="flex justify-end gap-2 pt-3 border-t border-borda">
                 <button
                   type="button"
                   onClick={() => setIsEmployeeModalOpen(false)}
-                  className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold rounded-lg"
+                  className="px-4 py-2 bg-superficie-2 hover:bg-superficie-3 text-tinta font-semibold rounded-lg"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold rounded-lg shadow-md"
+                  className="bg-marca-escura text-white px-4 py-2 font-bold rounded-lg shadow-sm hover:opacity-90"
                 >
                   Salvar Colaborador
                 </button>
@@ -802,17 +802,17 @@ export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) 
 
       {/* EPI Delivery Modal */}
       {isEpiModalOpen && selectedEmpForEpi && (
-        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl animate-in fade-in zoom-in-95 duration-150">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <h3 className="text-base font-bold text-slate-100 flex items-center gap-2">
-                <HardHat className="w-5 h-5 text-teal-400" />
+        <div className="fixed inset-0 bg-fundo backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-superficie border border-borda rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-sm animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between border-b border-borda pb-3">
+              <h3 className="text-base font-bold text-tinta flex items-center gap-2">
+                <HardHat className="w-5 h-5 text-teal-700" />
                 Entrega de EPI - {selectedEmpForEpi.name}
               </h3>
               <button 
                 type="button" 
                 onClick={() => setIsEpiModalOpen(false)}
-                className="text-slate-400 hover:text-slate-200 text-sm font-bold"
+                className="text-tinta-2 hover:text-tinta text-sm font-bold"
               >
                 ✕
               </button>
@@ -821,62 +821,62 @@ export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) 
             <form onSubmit={handleSaveEpi} className="space-y-4 text-xs">
               <div className="grid grid-cols-3 gap-3">
                 <div className="col-span-1">
-                  <label className="block text-slate-400 font-semibold mb-1">Nº CA</label>
+                  <label className="block text-tinta-2 font-semibold mb-1">Nº CA</label>
                   <input
                     type="text"
                     required
                     placeholder="14235"
                     value={epiForm.ca_number}
                     onChange={(e) => setEpiForm({ ...epiForm, ca_number: e.target.value })}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 font-mono focus:outline-none focus:border-teal-500"
+                    className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta font-mono focus:outline-none focus:border-teal-500"
                   />
                 </div>
                 <div className="col-span-2">
-                  <label className="block text-slate-400 font-semibold mb-1">Descrição do EPI</label>
+                  <label className="block text-tinta-2 font-semibold mb-1">Descrição do EPI</label>
                   <input
                     type="text"
                     required
                     value={epiForm.epi_name}
                     onChange={(e) => setEpiForm({ ...epiForm, epi_name: e.target.value })}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 focus:outline-none focus:border-teal-500"
+                    className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta focus:outline-none focus:border-teal-500"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-slate-400 font-semibold mb-1">Data da Entrega</label>
+                <label className="block text-tinta-2 font-semibold mb-1">Data da Entrega</label>
                 <input
                   type="date"
                   required
                   value={epiForm.delivery_date}
                   onChange={(e) => setEpiForm({ ...epiForm, delivery_date: e.target.value })}
-                  className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                  className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta"
                 />
               </div>
 
-              <div className="p-3 bg-slate-950 rounded-lg border border-slate-800">
-                <label className="flex items-center gap-2 cursor-pointer text-slate-300">
+              <div className="p-3 bg-fundo rounded-lg border border-borda">
+                <label className="flex items-center gap-2 cursor-pointer text-tinta">
                   <input
                     type="checkbox"
                     checked={epiForm.term_signed}
                     onChange={(e) => setEpiForm({ ...epiForm, term_signed: e.target.checked })}
-                    className="rounded border-slate-700 text-teal-500 focus:ring-teal-500"
+                    className="rounded border-borda text-teal-700 focus:ring-teal-500"
                   />
                   Termo de Responsabilidade e Guarda Assinado pelo Colaborador (NR-06)
                 </label>
               </div>
 
-              <div className="flex justify-end gap-2 pt-3 border-t border-slate-800">
+              <div className="flex justify-end gap-2 pt-3 border-t border-borda">
                 <button
                   type="button"
                   onClick={() => setIsEpiModalOpen(false)}
-                  className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold rounded-lg"
+                  className="px-4 py-2 bg-superficie-2 hover:bg-superficie-3 text-tinta font-semibold rounded-lg"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold rounded-lg shadow-md"
+                  className="bg-marca-escura text-white px-4 py-2 font-bold rounded-lg shadow-sm hover:opacity-90"
                 >
                   Registrar Entrega
                 </button>
@@ -888,82 +888,82 @@ export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) 
 
       {/* Viewing Dossier Modal */}
       {viewingEmpDossier && (
-        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-2xl w-full p-6 space-y-4 shadow-2xl animate-in fade-in zoom-in-95 duration-150 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <h3 className="text-base font-bold text-slate-100 flex items-center gap-2">
-                <FileText className="w-5 h-5 text-teal-400" />
+        <div className="fixed inset-0 bg-fundo backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-superficie border border-borda rounded-2xl max-w-2xl w-full p-6 space-y-4 shadow-sm animate-in fade-in zoom-in-95 duration-150 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-borda pb-3">
+              <h3 className="text-base font-bold text-tinta flex items-center gap-2">
+                <FileText className="w-5 h-5 text-teal-700" />
                 Ficha Técnica Ocupacional & eSocial do Trabalhador
               </h3>
               <button 
                 type="button" 
                 onClick={() => setViewingEmpDossier(null)}
-                className="text-slate-400 hover:text-slate-200 text-sm font-bold"
+                className="text-tinta-2 hover:text-tinta text-sm font-bold"
               >
                 ✕
               </button>
             </div>
 
             <div className="space-y-4 text-xs">
-              <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
+              <div className="bg-fundo p-4 rounded-xl border border-borda space-y-2">
                 <div className="flex justify-between items-start">
                   <div>
-                    <h4 className="font-bold text-slate-100 text-sm">{viewingEmpDossier.name}</h4>
-                    <p className="text-teal-400 font-semibold">{viewingEmpDossier.job_title} (CBO {viewingEmpDossier.cbo})</p>
+                    <h4 className="font-bold text-tinta text-sm">{viewingEmpDossier.name}</h4>
+                    <p className="text-teal-700 font-semibold">{viewingEmpDossier.job_title} (CBO {viewingEmpDossier.cbo})</p>
                   </div>
-                  <span className="px-2 py-0.5 bg-teal-500/10 text-teal-300 font-mono text-xs rounded border border-teal-500/30">
+                  <span className="px-2 py-0.5 bg-teal-500/10 text-teal-800 font-mono text-xs rounded border border-teal-500/30">
                     Matrícula: {viewingEmpDossier.registration_number}
                   </span>
                 </div>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-2 border-t border-slate-800 text-slate-400 text-[11px]">
-                  <div>CPF: <span className="text-slate-200 font-mono">{viewingEmpDossier.cpf}</span></div>
-                  <div>PIS: <span className="text-slate-200 font-mono">{viewingEmpDossier.nis_pis || '-'}</span></div>
-                  <div>Admissão: <span className="text-slate-200">{viewingEmpDossier.admission_date}</span></div>
-                  <div>Status: <span className="text-emerald-400 font-bold">{viewingEmpDossier.status}</span></div>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-2 border-t border-borda text-tinta-2 text-[11px]">
+                  <div>CPF: <span className="text-tinta font-mono">{viewingEmpDossier.cpf}</span></div>
+                  <div>PIS: <span className="text-tinta font-mono">{viewingEmpDossier.nis_pis || '-'}</span></div>
+                  <div>Admissão: <span className="text-tinta">{viewingEmpDossier.admission_date}</span></div>
+                  <div>Status: <span className="text-marca-escura font-bold">{viewingEmpDossier.status}</span></div>
                 </div>
               </div>
 
               {/* EPI History */}
               <div className="space-y-2">
-                <h5 className="font-bold text-slate-200 flex items-center gap-1.5">
-                  <HardHat className="w-4 h-4 text-teal-400" />
+                <h5 className="font-bold text-tinta flex items-center gap-1.5">
+                  <HardHat className="w-4 h-4 text-teal-700" />
                   Histórico de Equipamentos de Proteção Individual (EPI)
                 </h5>
                 {viewingEmpDossier.epis && viewingEmpDossier.epis.length > 0 ? (
                   <div className="space-y-1.5">
                     {viewingEmpDossier.epis.map((epi, idx) => (
-                      <div key={idx} className="p-2.5 bg-slate-950 rounded-lg border border-slate-800/80 flex justify-between items-center text-[11px]">
+                      <div key={idx} className="p-2.5 bg-fundo rounded-lg border border-borda flex justify-between items-center text-[11px]">
                         <div>
-                          <span className="font-bold text-slate-200">{epi.epi_name}</span>
-                          <span className="ml-2 font-mono text-teal-400">CA: {epi.ca_number}</span>
+                          <span className="font-bold text-tinta">{epi.epi_name}</span>
+                          <span className="ml-2 font-mono text-teal-700">CA: {epi.ca_number}</span>
                         </div>
-                        <div className="text-slate-400">
-                          Entregue em: <span className="text-slate-200">{epi.delivery_date}</span>
+                        <div className="text-tinta-2">
+                          Entregue em: <span className="text-tinta">{epi.delivery_date}</span>
                         </div>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <p className="text-slate-500 text-[11px]">Nenhum EPI registrado na ficha deste colaborador.</p>
+                  <p className="text-tinta-2 text-[11px]">Nenhum EPI registrado na ficha deste colaborador.</p>
                 )}
               </div>
 
               {/* ASO History */}
               <div className="space-y-2">
-                <h5 className="font-bold text-slate-200 flex items-center gap-1.5">
-                  <HeartPulse className="w-4 h-4 text-teal-400" />
+                <h5 className="font-bold text-tinta flex items-center gap-1.5">
+                  <HeartPulse className="w-4 h-4 text-teal-700" />
                   Histórico de Exames e Atestados (ASO)
                 </h5>
                 {viewingEmpDossier.aso_history && viewingEmpDossier.aso_history.length > 0 ? (
                   <div className="space-y-1.5">
                     {viewingEmpDossier.aso_history.map((aso, idx) => (
-                      <div key={idx} className="p-2.5 bg-slate-950 rounded-lg border border-slate-800/80 text-[11px] space-y-1.5">
+                      <div key={idx} className="p-2.5 bg-fundo rounded-lg border border-borda text-[11px] space-y-1.5">
                         <div className="flex justify-between items-center gap-2">
                           <div className="min-w-0">
-                            <span className="font-bold text-slate-200">ASO {aso.aso_type}</span>
-                            <span className="ml-2 text-slate-400">Médico: {aso.physician_name} (CRM {aso.physician_crm}/{aso.physician_uf})</span>
+                            <span className="font-bold text-tinta">ASO {aso.aso_type}</span>
+                            <span className="ml-2 text-tinta-2">Médico: {aso.physician_name} (CRM {aso.physician_crm}/{aso.physician_uf})</span>
                           </div>
-                          <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 font-bold rounded shrink-0">
+                          <span className="px-2 py-0.5 bg-marca-suave text-marca-escura font-bold rounded shrink-0">
                             {/* So apto ou inapto (NR-07, 7.5.19.1, "e"): a restricao fica no prontuario. */}
                             {aso.result === 'INAPTO' ? 'INAPTO' : aso.result ? 'APTO' : 'SEM CONCLUSÃO'} ({aso.exam_date})
                           </span>
@@ -978,21 +978,21 @@ export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) 
                             examResults e aparecem em ResultadosDoAso, que so
                             os mostra aos papeis Saude e Administrador. */}
                         {aso.exams && aso.exams.length > 0 ? (
-                          <ul className="pl-3 border-l border-slate-800 space-y-0.5">
+                          <ul className="pl-3 border-l border-borda space-y-0.5">
                             {aso.exams.map(ex => (
-                              <li key={ex.id} className="flex justify-between gap-2 text-slate-400">
+                              <li key={ex.id} className="flex justify-between gap-2 text-tinta-2">
                                 <span className="truncate">
-                                  <span className="font-mono text-slate-500">{ex.exam_code_table_27}</span>{' '}
+                                  <span className="font-mono text-tinta-2">{ex.exam_code_table_27}</span>{' '}
                                   {ex.exam_name}
                                 </span>
-                                <span className="shrink-0 text-slate-300">
+                                <span className="shrink-0 text-tinta">
                                   {ex.exam_date ? `realizado em ${formatDate(ex.exam_date)}` : 'data não lançada'}
                                 </span>
                               </li>
                             ))}
                           </ul>
                         ) : (
-                          <p className="pl-3 border-l border-slate-800 text-amber-500/80">
+                          <p className="pl-3 border-l border-borda text-amber-700">
                             Sem exames lançados — o S-2220 deste ASO fica retido até serem registrados.
                           </p>
                         )}
@@ -1002,16 +1002,16 @@ export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) 
                     ))}
                   </div>
                 ) : (
-                  <p className="text-slate-500 text-[11px]">Nenhum ASO emitido ainda para este colaborador.</p>
+                  <p className="text-tinta-2 text-[11px]">Nenhum ASO emitido ainda para este colaborador.</p>
                 )}
               </div>
             </div>
 
-            <div className="flex justify-end pt-3 border-t border-slate-800">
+            <div className="flex justify-end pt-3 border-t border-borda">
               <button
                 type="button"
                 onClick={() => setViewingEmpDossier(null)}
-                className="px-4 py-2 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold rounded-lg"
+                className="bg-marca-escura text-white px-4 py-2 font-bold rounded-lg hover:opacity-90"
               >
                 Fechar Ficha
               </button>
@@ -1022,27 +1022,27 @@ export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) 
 
       {/* Post-Registration Success Modal (OS & EPI Prompt) */}
       {justCreatedEmp && (
-        <div className="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-900 border-2 border-teal-500/50 rounded-2xl max-w-lg w-full p-6 space-y-5 shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 bg-fundo backdrop-blur-md z-50 flex items-center justify-center p-4">
+          <div className="bg-superficie border-2 border-teal-200 rounded-2xl max-w-lg w-full p-6 space-y-5 shadow-sm animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 rounded-xl bg-teal-500/20 border border-teal-500/40 flex items-center justify-center shrink-0">
-                <CheckCircle2 className="w-7 h-7 text-teal-400" />
+                <CheckCircle2 className="w-7 h-7 text-teal-700" />
               </div>
               <div>
-                <h3 className="text-base font-bold text-slate-100">
+                <h3 className="text-base font-bold text-tinta">
                   Colaborador Registrado com Sucesso!
                 </h3>
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-tinta-2">
                   {justCreatedEmp.name} • {justCreatedEmp.job_title} (CPF: {justCreatedEmp.cpf})
                 </p>
               </div>
             </div>
 
-            <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2 text-xs">
-              <p className="text-slate-300 font-semibold">
+            <div className="bg-fundo p-4 rounded-xl border border-borda space-y-2 text-xs">
+              <p className="text-tinta font-semibold">
                 Deseja gerar e imprimir os documentos de admissão e conformidade legal agora?
               </p>
-              <p className="text-slate-400 text-[11px]">
+              <p className="text-tinta-2 text-[11px]">
                 A <strong>Ordem de Serviço (NR-01)</strong> foi criada automaticamente com base no cargo e riscos do GHE. Você pode emitir a OS e a Ficha de EPI para coleta de assinatura física ou biométrica.
               </p>
             </div>
@@ -1052,20 +1052,20 @@ export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) 
                 type="button"
                 id="modal-print-os-btn"
                 onClick={() => handleIndividualPrintOS(justCreatedEmp)}
-                className="w-full py-2.5 px-4 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl flex items-center justify-between text-xs transition-colors shadow-lg shadow-indigo-600/20"
+                className="w-full py-2.5 px-4 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl flex items-center justify-between text-xs transition-colors shadow-sm"
               >
                 <div className="flex items-center gap-2">
                   <Printer className="w-4 h-4" />
                   <span>Imprimir Ordem de Serviço (NR-01 & CLT Art. 157)</span>
                 </div>
-                <span className="text-[10px] bg-indigo-700 px-2 py-0.5 rounded">PDF</span>
+                <span className="text-[10px] bg-teal-700 px-2 py-0.5 rounded">PDF</span>
               </button>
 
               <button
                 type="button"
                 id="modal-print-epi-btn"
                 onClick={() => handleIndividualPrintEPI(justCreatedEmp)}
-                className="w-full py-2.5 px-4 bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold rounded-xl flex items-center justify-between text-xs transition-colors shadow-lg shadow-amber-600/20"
+                className="w-full py-2.5 px-4 bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold rounded-xl flex items-center justify-between text-xs transition-colors shadow-sm border border-amber-200"
               >
                 <div className="flex items-center gap-2">
                   <HardHat className="w-4 h-4" />
@@ -1078,21 +1078,21 @@ export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) 
                 type="button"
                 id="modal-print-kit-btn"
                 onClick={() => handleIndividualPrintKitAdmissional(justCreatedEmp)}
-                className="w-full py-2.5 px-4 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold rounded-xl flex items-center justify-between text-xs transition-colors shadow-lg shadow-teal-500/20"
+                className="bg-marca-escura text-white w-full py-2.5 px-4 font-bold rounded-xl flex items-center justify-between text-xs transition-colors shadow-sm hover:opacity-90"
               >
                 <div className="flex items-center gap-2">
                   <CheckCheck className="w-4 h-4" />
                   <span>Imprimir Kit Completo de Admissão (OS + Ficha EPI + Treinamento NR-01)</span>
                 </div>
-                <span className="text-[10px] bg-teal-600 text-slate-950 px-2 py-0.5 rounded font-bold">PDF Completo</span>
+                <span className="bg-marca-escura text-white text-[10px] px-2 py-0.5 rounded font-bold">PDF Completo</span>
               </button>
             </div>
 
-            <div className="flex justify-end pt-2 border-t border-slate-800">
+            <div className="flex justify-end pt-2 border-t border-borda">
               <button
                 type="button"
                 onClick={() => setJustCreatedEmp(null)}
-                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-lg transition-colors"
+                className="px-4 py-2 bg-superficie-2 hover:bg-superficie-3 text-tinta text-xs font-semibold rounded-lg transition-colors"
               >
                 Concluir e Voltar à Lista
               </button>

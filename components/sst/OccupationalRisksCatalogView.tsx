@@ -449,60 +449,60 @@ const CARTOES_DE_GRUPO: Array<{
   {
     grupo: 'FÍSICO', rotulo: 'Físicos · grupo 1', exemplo: 'Ruído, calor, vibrações', Icone: Activity,
     marcado: 'border-amber-500 bg-amber-500/25 shadow-sm ring-2 ring-amber-500/40',
-    desmarcado: 'border-slate-800 hover:border-amber-500/30 hover:bg-amber-500/10',
-    texto: 'text-amber-300', icone: 'text-amber-400'
+    desmarcado: 'border-borda hover:border-amber-500/30 hover:bg-amber-500/10',
+    texto: 'text-amber-700', icone: 'text-amber-700'
   },
   {
     grupo: 'QUÍMICO', rotulo: 'Químicos · grupo 2', exemplo: 'Poeiras, vapores, fumos', Icone: Flame,
     marcado: 'border-rose-500 bg-rose-500/25 shadow-sm ring-2 ring-rose-500/40',
-    desmarcado: 'border-slate-800 hover:border-rose-500/30 hover:bg-rose-500/10',
-    texto: 'text-rose-300', icone: 'text-rose-400'
+    desmarcado: 'border-borda hover:border-rose-500/30 hover:bg-rose-500/10',
+    texto: 'text-rose-700', icone: 'text-rose-700'
   },
   {
     grupo: 'BIOLÓGICO', rotulo: 'Biológicos · grupo 3', exemplo: 'Vírus, bactérias, fungos', Icone: ShieldAlert,
-    marcado: 'border-emerald-500 bg-emerald-500/25 shadow-sm ring-2 ring-emerald-500/40',
-    desmarcado: 'border-slate-800 hover:border-emerald-500/30 hover:bg-emerald-500/10',
-    texto: 'text-emerald-300', icone: 'text-emerald-400'
+    marcado: 'border-marca-borda bg-marca-suave shadow-sm ring-2 ring-marca-escura',
+    desmarcado: 'border-borda hover:border-marca-borda hover:bg-marca-suave',
+    texto: 'text-marca-escura', icone: 'text-marca-escura'
   },
   {
     grupo: 'ERGONÔMICO', rotulo: 'Ergonômicos · grupo 4', exemplo: 'Postura, carga, repetição', Icone: Sliders,
-    marcado: 'border-purple-500 bg-purple-500/25 shadow-sm ring-2 ring-purple-500/40',
-    desmarcado: 'border-slate-800 hover:border-purple-500/30 hover:bg-purple-500/10',
-    texto: 'text-purple-300', icone: 'text-purple-400'
+    marcado: 'border-teal-500 bg-teal-500/25 shadow-sm ring-2 ring-teal-500/40',
+    desmarcado: 'border-borda hover:border-teal-500/30 hover:bg-teal-500/10',
+    texto: 'text-teal-700', icone: 'text-teal-700'
   },
   {
     grupo: 'ACIDENTES', rotulo: 'Acidentes · grupo 5', exemplo: 'Queda, choque, máquinas', Icone: Zap,
-    marcado: 'border-sky-500 bg-sky-500/25 shadow-sm ring-2 ring-sky-500/40',
-    desmarcado: 'border-slate-800 hover:border-sky-500/30 hover:bg-sky-500/10',
-    texto: 'text-sky-300', icone: 'text-sky-400'
+    marcado: 'border-teal-500 bg-teal-500/25 shadow-sm ring-2 ring-teal-500/40',
+    desmarcado: 'border-borda hover:border-teal-500/30 hover:bg-teal-500/10',
+    texto: 'text-teal-700', icone: 'text-teal-700'
   }
 ];
 
 const getGroupBadgeColor = (group: string | undefined) => {
   switch (grupoDoItem(group)) {
-    case 'FÍSICO': return 'bg-amber-500/15 text-amber-300 border-amber-500/30';
-    case 'QUÍMICO': return 'bg-rose-500/15 text-rose-300 border-rose-500/30';
-    case 'BIOLÓGICO': return 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30';
-    case 'ERGONÔMICO': return 'bg-purple-500/15 text-purple-300 border-purple-500/30';
-    case 'ACIDENTES': return 'bg-sky-500/15 text-sky-300 border-sky-500/30';
-    default: return 'bg-slate-950 text-slate-300 border-slate-800';
+    case 'FÍSICO': return 'bg-amber-500/15 text-amber-800 border-amber-500/30';
+    case 'QUÍMICO': return 'bg-rose-500/15 text-rose-800 border-rose-500/30';
+    case 'BIOLÓGICO': return 'bg-marca-suave text-marca-escura border-marca-borda';
+    case 'ERGONÔMICO': return 'bg-teal-500/15 text-teal-800 border-teal-500/30';
+    case 'ACIDENTES': return 'bg-teal-500/15 text-teal-800 border-teal-500/30';
+    default: return 'bg-fundo text-tinta border-borda';
   }
 };
 
 const SELO_DA_ORIGEM: Record<OrigemDoItem, { rotulo: string; classe: string; ajuda: string }> = {
   CURADO: {
     rotulo: 'Curado',
-    classe: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30',
+    classe: 'bg-marca-suave text-marca-escura border-marca-borda',
     ajuda: 'Item do sistema escrito e conferido, com fontes, efeitos, EPI e exames sugeridos.'
   },
   LISTAGEM: {
     rotulo: 'Listagem importada',
-    classe: 'bg-slate-800 text-slate-300 border-slate-700',
+    classe: 'bg-superficie-2 text-tinta border-borda',
     ajuda: 'Item do sistema importado da listagem de riscos: traz nome, grupo, meio de propagação, unidade, avaliação, limites e código. Os campos descritivos ficam vazios até alguém preenchê-los.'
   },
   USUARIO: {
     rotulo: 'Criado aqui',
-    classe: 'bg-indigo-500/15 text-indigo-300 border-indigo-500/30',
+    classe: 'bg-teal-500/15 text-teal-800 border-teal-500/30',
     ajuda: 'Item criado neste catálogo pelo usuário.'
   }
 };
@@ -1116,8 +1116,8 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
     return (
       <div
         key={item.id}
-        className={`p-5 transition-colors hover:bg-slate-800/60 ${
-          isSelected ? 'bg-indigo-500/20 border-l-4 border-l-indigo-600' : ''
+        className={`p-5 transition-colors hover:bg-superficie-2 ${
+          isSelected ? 'bg-teal-500/20 border-l-4 border-l-teal-600' : ''
         } ${ativo ? '' : 'opacity-60'}`}
       >
         <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
@@ -1126,7 +1126,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
             <button
               onClick={() => toggleSelectRisk(item)}
               disabled={!ativo}
-              className="mt-1 flex-shrink-0 text-slate-400 hover:text-indigo-400 disabled:cursor-not-allowed disabled:hover:text-slate-400"
+              className="mt-1 flex-shrink-0 text-tinta-2 hover:text-teal-700 disabled:cursor-not-allowed disabled:hover:text-tinta-2"
               title={
                 !ativo
                   ? 'Item inativo: reative para aplicar'
@@ -1134,9 +1134,9 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
               }
             >
               {isSelected ? (
-                <CheckSquare className="w-5 h-5 text-indigo-400" />
+                <CheckSquare className="w-5 h-5 text-teal-700" />
               ) : (
-                <Square className={`w-5 h-5 ${ativo ? 'text-slate-300' : 'text-slate-600'}`} />
+                <Square className={`w-5 h-5 ${ativo ? 'text-tinta' : 'text-tinta-2'}`} />
               )}
             </button>
 
@@ -1152,11 +1152,11 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                     codigo: ausencia de agente nocivo. */}
                 {codigoBruto ? (
                   <span
-                    className="font-mono text-xs font-semibold px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-800"
+                    className="font-mono text-xs font-semibold px-2 py-0.5 rounded bg-superficie-2 text-tinta border border-borda"
                     title={agenteOficial?.nome}
                   >
                     eSocial {codigo || codigoBruto}
-                    {ausencia && <span className="font-sans font-medium text-slate-400"> · ausência de agente nocivo</span>}
+                    {ausencia && <span className="font-sans font-medium text-tinta-2"> · ausência de agente nocivo</span>}
                   </span>
                 ) : item.code_table_24_pending ? (
                   // Enquadramento duvidoso: o campo fica vazio de proposito,
@@ -1164,14 +1164,14 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                   <button
                     type="button"
                     onClick={() => handleOpenEditModal(item)}
-                    className="text-xs font-semibold px-2 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/30 hover:bg-amber-500/25"
+                    className="text-xs font-semibold px-2 py-0.5 rounded bg-amber-500/15 text-amber-800 border border-amber-500/30 hover:bg-amber-500/25"
                     title={item.code_table_24_pending}
                   >
                     código a definir · preencher
                   </button>
                 ) : (
                   <span
-                    className="text-xs font-semibold px-2 py-0.5 rounded bg-slate-950 text-slate-500 border border-slate-800"
+                    className="text-xs font-semibold px-2 py-0.5 rounded bg-fundo text-tinta-2 border border-borda"
                     title="Risco do PGR sem agente nocivo correspondente no Anexo IV do Decreto 3.048/1999. Não é declarado no S-2240."
                   >
                     sem agente do Anexo IV
@@ -1182,7 +1182,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                     01.01.001, que é Arsênio. */}
                 {!!codigoBruto && !agenteOficial && (
                   <span
-                    className="text-xs font-bold px-2 py-0.5 rounded bg-rose-500/15 text-rose-300 border border-rose-500/30"
+                    className="text-xs font-bold px-2 py-0.5 rounded bg-rose-500/15 text-rose-800 border border-rose-500/30"
                     title={formatoDoCodigoTabela24(codigoBruto).motivo || 'Este código não consta na Tabela 24.'}
                   >
                     código inexistente
@@ -1190,7 +1190,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                 )}
                 {repetidoCom && (
                   <span
-                    className="text-xs font-semibold px-2 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/30"
+                    className="text-xs font-semibold px-2 py-0.5 rounded bg-amber-500/15 text-amber-800 border border-amber-500/30"
                     title={`Mesmo enquadramento de: ${repetidoCom.join('; ')}`}
                   >
                     enquadramento compartilhado
@@ -1204,27 +1204,27 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                 </span>
                 {!ativo && (
                   <span
-                    className="text-[11px] font-bold px-2 py-0.5 rounded border bg-slate-950 text-slate-400 border-slate-700"
+                    className="text-[11px] font-bold px-2 py-0.5 rounded border bg-fundo text-tinta-2 border-borda"
                     title="Desativado: não aparece para seleção nem é aplicado a GHEs. Os riscos já aplicados não mudam."
                   >
                     Inativo
                   </span>
                 )}
                 {norma && (
-                  <span className="text-xs font-semibold text-slate-400">
+                  <span className="text-xs font-semibold text-tinta-2">
                     Ref: {norma}
                   </span>
                 )}
                 <span className={`text-[11px] font-medium px-2 py-0.5 rounded-full ${
                   item.evaluation_type === 'QUANTITATIVA'
-                    ? 'bg-blue-500/15 text-blue-300 border border-blue-500/30'
-                    : 'bg-slate-800 text-slate-300'
+                    ? 'bg-teal-500/15 text-teal-800 border border-teal-500/30'
+                    : 'bg-superficie-2 text-tinta'
                 }`}>
                   Avaliação {item.evaluation_type}
                 </span>
               </div>
 
-              <h3 className="text-base font-bold text-slate-100">
+              <h3 className="text-base font-bold text-tinta">
                 {item.name}
               </h3>
 
@@ -1232,7 +1232,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                   sistema, e a ficha diz qual curado ja representa o risco. */}
               {duplicidade && (
                 <p
-                  className="text-[11px] font-semibold text-amber-300"
+                  className="text-[11px] font-semibold text-amber-700"
                   title="Item da listagem que repete um item curado. Vem desativado para o seletor não oferecer o mesmo risco duas vezes; pode ser reativado."
                 >
                   {duplicidade}
@@ -1242,9 +1242,9 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
               {/* Denominação oficial do agente, quando difere do nome
                   usado no catálogo: é ela que vale no S-2240. */}
               {agenteOficial && !ausencia && paraBusca(agenteOficial.nome).trim() !== paraBusca(item.name).trim() && (
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-tinta-2">
                   Agente no eSocial:{' '}
-                  <span className="text-slate-300">
+                  <span className="text-tinta">
                     {agenteOficial.nome}
                   </span>
                 </p>
@@ -1256,12 +1256,12 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                   a caixa de alerta não perder o sentido. */}
               {textoUtil(item.esocial_enquadramento_nota) && (
                 origem === 'LISTAGEM' ? (
-                  <p className="text-[11px] text-slate-500">
-                    <span className="font-semibold text-slate-400">Enquadramento no eSocial:</span>{' '}
+                  <p className="text-[11px] text-tinta-2">
+                    <span className="font-semibold text-tinta-2">Enquadramento no eSocial:</span>{' '}
                     {item.esocial_enquadramento_nota}
                   </p>
                 ) : (
-                  <p className="text-xs text-amber-300 bg-amber-500/15 border border-amber-500/30 rounded p-2">
+                  <p className="text-xs text-amber-800 bg-amber-500/15 border border-amber-500/30 rounded p-2">
                     <span className="font-semibold">Enquadramento no eSocial:</span>{' '}
                     {item.esocial_enquadramento_nota}
                   </p>
@@ -1269,8 +1269,8 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
               )}
 
               {efeito && (
-                <p className="text-sm text-slate-400">
-                  <span className="font-semibold text-slate-300">Danos Prováveis à Saúde:</span> {efeito}
+                <p className="text-sm text-tinta-2">
+                  <span className="font-semibold text-tinta">Danos Prováveis à Saúde:</span> {efeito}
                 </p>
               )}
 
@@ -1278,19 +1278,19 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
               {temDetalhes && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 pt-2 text-xs">
                   {unidade && (
-                    <div className="p-2 rounded bg-slate-950 border border-slate-800">
-                      <span className="font-semibold text-slate-500 block">Unidade:</span>
-                      <span className="font-medium text-slate-200">{unidade}</span>
+                    <div className="p-2 rounded bg-fundo border border-borda">
+                      <span className="font-semibold text-tinta-2 block">Unidade:</span>
+                      <span className="font-medium text-tinta">{unidade}</span>
                     </div>
                   )}
 
                   {limite && (
-                    <div className="p-2 rounded bg-slate-950 border border-slate-800">
-                      <span className="font-semibold text-slate-500 flex items-center gap-1.5 flex-wrap">
+                    <div className="p-2 rounded bg-fundo border border-borda">
+                      <span className="font-semibold text-tinta-2 flex items-center gap-1.5 flex-wrap">
                         Limite de tolerância:
                         {item.tolerance_limit_is_ceiling && (
                           <span
-                            className="px-1.5 py-px rounded text-[10px] font-bold bg-rose-500/15 text-rose-300 border border-rose-500/30"
+                            className="px-1.5 py-px rounded text-[10px] font-bold bg-rose-500/15 text-rose-800 border border-rose-500/30"
                             title="Valor teto: não pode ser ultrapassado em momento algum da jornada."
                           >
                             valor teto
@@ -1300,44 +1300,44 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                             ausente e "nao conferido" - nenhum dos dois e selo. */}
                         {item.skin_absorption === true && (
                           <span
-                            className="px-1.5 py-px rounded text-[10px] font-bold bg-amber-500/15 text-amber-300 border border-amber-500/30"
+                            className="px-1.5 py-px rounded text-[10px] font-bold bg-amber-500/15 text-amber-800 border border-amber-500/30"
                             title="O Quadro n. 1 do Anexo 11 da NR-15 marca este agente com absorção também pela pele: a via cutânea conta na avaliação e na proteção."
                           >
                             absorção também pela pele
                           </span>
                         )}
                       </span>
-                      <span className="font-medium text-slate-200">{limite}</span>
+                      <span className="font-medium text-tinta">{limite}</span>
                     </div>
                   )}
 
                   {nivel && (
-                    <div className="p-2 rounded bg-slate-950 border border-slate-800">
-                      <span className="font-semibold text-slate-500 block">Nível de ação:</span>
-                      <span className="font-medium text-slate-200">{nivel}</span>
+                    <div className="p-2 rounded bg-fundo border border-borda">
+                      <span className="font-semibold text-tinta-2 block">Nível de ação:</span>
+                      <span className="font-medium text-tinta">{nivel}</span>
                     </div>
                   )}
 
                   {meio && (
-                    <div className="p-2 rounded bg-slate-950 border border-slate-800">
-                      <span className="font-semibold text-slate-500 block">Meio de propagação:</span>
-                      <span className="font-medium text-slate-200">{meio}</span>
+                    <div className="p-2 rounded bg-fundo border border-borda">
+                      <span className="font-semibold text-tinta-2 block">Meio de propagação:</span>
+                      <span className="font-medium text-tinta">{meio}</span>
                     </div>
                   )}
 
                   {fonte && (
-                    <div className="p-2 rounded bg-slate-950 border border-slate-800">
-                      <span className="font-semibold text-slate-500 block">Fonte Típica:</span>
-                      <span className="font-medium text-slate-200 truncate block" title={fonte}>
+                    <div className="p-2 rounded bg-fundo border border-borda">
+                      <span className="font-semibold text-tinta-2 block">Fonte Típica:</span>
+                      <span className="font-medium text-tinta truncate block" title={fonte}>
                         {fonte}
                       </span>
                     </div>
                   )}
 
                   {classificacaoDoEfeito && (
-                    <div className="p-2 rounded bg-slate-950 border border-slate-800">
-                      <span className="font-semibold text-slate-500 block">Classificação do efeito:</span>
-                      <span className="font-medium text-slate-200">{classificacaoDoEfeito}</span>
+                    <div className="p-2 rounded bg-fundo border border-borda">
+                      <span className="font-semibold text-tinta-2 block">Classificação do efeito:</span>
+                      <span className="font-medium text-tinta">{classificacaoDoEfeito}</span>
                     </div>
                   )}
                 </div>
@@ -1346,11 +1346,11 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
               {enquadramento.length > 0 && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 text-xs">
                   {enquadramento.map(linha => (
-                    <div key={linha.rotulo} className="p-2 rounded bg-slate-950 border border-slate-800">
-                      <span className="font-semibold text-slate-500 block">{linha.rotulo}:</span>
-                      <span className="font-medium text-slate-200">{linha.valor}</span>
+                    <div key={linha.rotulo} className="p-2 rounded bg-fundo border border-borda">
+                      <span className="font-semibold text-tinta-2 block">{linha.rotulo}:</span>
+                      <span className="font-medium text-tinta">{linha.valor}</span>
                       {linha.detalhe && (
-                        <span className="text-[11px] text-slate-400 block mt-0.5">{linha.detalhe}</span>
+                        <span className="text-[11px] text-tinta-2 block mt-0.5">{linha.detalhe}</span>
                       )}
                     </div>
                   ))}
@@ -1358,7 +1358,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
               )}
 
               {naoInformados.length > 0 && (
-                <p className="text-[11px] text-slate-500">
+                <p className="text-[11px] text-tinta-2">
                   Não informado: {naoInformados.join(', ')}.
                 </p>
               )}
@@ -1368,11 +1368,11 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                 <div className="flex flex-wrap items-center gap-3 pt-2">
                   {epis.length > 0 && (
                     <div className="flex items-center gap-1.5 flex-wrap">
-                      <span className="text-[11px] font-bold text-amber-300 flex items-center gap-1">
+                      <span className="text-[11px] font-bold text-amber-700 flex items-center gap-1">
                         <HardHat className="w-3.5 h-3.5" /> EPIs Sugeridos:
                       </span>
                       {epis.map((epi, idx) => (
-                        <span key={idx} className="text-[11px] px-2 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/30">
+                        <span key={idx} className="text-[11px] px-2 py-0.5 rounded bg-amber-500/15 text-amber-800 border border-amber-500/30">
                           {epi.name}{epi.ca_example ? ` (CA ${epi.ca_example})` : ''}
                         </span>
                       ))}
@@ -1381,11 +1381,11 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
 
                   {exames.length > 0 && (
                     <div className="flex items-center gap-1.5 flex-wrap">
-                      <span className="text-[11px] font-bold text-blue-300 flex items-center gap-1">
+                      <span className="text-[11px] font-bold text-teal-700 flex items-center gap-1">
                         <Stethoscope className="w-3.5 h-3.5" /> Exames PCMSO (Tab 27):
                       </span>
                       {exames.map((ex, idx) => (
-                        <span key={idx} className="text-[11px] px-2 py-0.5 rounded bg-blue-500/15 text-blue-300 border border-blue-500/30">
+                        <span key={idx} className="text-[11px] px-2 py-0.5 rounded bg-teal-500/15 text-teal-800 border border-teal-500/30">
                           {ex.exam_name} [{ex.exam_code}] ({ex.periodicity_months}m)
                         </span>
                       ))}
@@ -1402,7 +1402,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
               id={`btn-apply-single-risk-${item.id}`}
               onClick={() => handleOpenApplyModal(item.id)}
               disabled={!ativo}
-              className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-indigo-300 bg-indigo-500/15 hover:bg-indigo-500/20 rounded-lg border border-indigo-500/30 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-teal-800 bg-teal-500/15 hover:bg-teal-500/20 rounded-lg border border-teal-500/30 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
               title={ativo ? 'Aplicar este risco a um GHE ou Árvore de Cargos' : 'Item inativo: reative para aplicar'}
             >
               <ArrowUpRight className="w-3.5 h-3.5" />
@@ -1412,7 +1412,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
             <button
               id={`btn-edit-risk-${item.id}`}
               onClick={() => handleOpenEditModal(item)}
-              className="p-1.5 text-slate-500 hover:text-emerald-300 hover:bg-emerald-500/15 rounded-lg border border-slate-800 transition-colors"
+              className="p-1.5 text-tinta-2 hover:text-marca-escura hover:bg-marca-suave rounded-lg border border-borda transition-colors"
               title="Editar caracterização do risco"
             >
               <Edit3 className="w-4 h-4" />
@@ -1423,8 +1423,8 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
               onClick={() => handleAlternarSituacao(item)}
               className={`inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold rounded-lg border transition-colors ${
                 ativo
-                  ? 'text-slate-400 border-slate-800 hover:text-amber-300 hover:bg-amber-500/15'
-                  : 'text-emerald-300 border-emerald-500/30 bg-emerald-500/15 hover:bg-emerald-500/20'
+                  ? 'text-tinta-2 border-borda hover:text-amber-800 hover:bg-amber-500/15'
+                  : 'text-marca-escura border-marca-borda bg-marca-suave hover:bg-marca-suave'
               }`}
               title={
                 ativo
@@ -1443,7 +1443,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
               <button
                 id={`btn-delete-risk-${item.id}`}
                 onClick={() => handleExcluir(item)}
-                className="p-1.5 text-slate-400 hover:text-rose-400 hover:bg-rose-500/15 rounded-lg border border-slate-800 transition-colors"
+                className="p-1.5 text-tinta-2 hover:text-rose-800 hover:bg-rose-500/15 rounded-lg border border-borda transition-colors"
                 title="Excluir este item criado aqui (não pode ser desfeito)"
               >
                 <Trash2 className="w-4 h-4" />
@@ -1460,25 +1460,25 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
   return (
     <div id="occupational-risks-catalog-view" className="space-y-6 pb-12">
       {/* Header with Stats & Actions */}
-      <div className="bg-slate-900 rounded-xl border border-slate-800 shadow-sm p-6">
+      <div className="bg-superficie rounded-xl border border-borda shadow-sm p-6">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div>
             <div className="flex flex-wrap items-center gap-2 mb-1">
-              <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+              <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-marca-suave text-marca-escura border border-marca-borda">
                 Tabela 24 do eSocial & NR-01/09/15/17
               </span>
-              <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-slate-800 text-slate-300">
+              <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-superficie-2 text-tinta">
                 {totais.ativos} ativos{totais.inativos > 0 ? ` · ${totais.inativos} inativos` : ''}
               </span>
-              <span className="px-2 py-0.5 rounded-full text-[11px] font-medium bg-slate-950 text-slate-400 border border-slate-800">
+              <span className="px-2 py-0.5 rounded-full text-[11px] font-medium bg-fundo text-tinta-2 border border-borda">
                 {totais.CURADO} curados · {totais.LISTAGEM} da listagem · {totais.USUARIO} criados aqui
               </span>
             </div>
-            <h1 className="text-2xl font-bold text-slate-100 tracking-tight flex items-center gap-2">
-              <ShieldAlert className="w-7 h-7 text-emerald-400" />
+            <h1 className="text-2xl font-bold text-tinta tracking-tight flex items-center gap-2">
+              <ShieldAlert className="w-7 h-7 text-marca-escura" />
               Catálogo Global de Riscos Ocupacionais
             </h1>
-            <p className="text-sm text-slate-400 max-w-3xl mt-1">
+            <p className="text-sm text-tinta-2 max-w-3xl mt-1">
               Agentes de risco para o inventário do PGR. Os itens curados trazem fonte geradora, danos à saúde,
               EPI e exames sugeridos; os importados da listagem trazem nome, grupo, meio de propagação, unidade,
               limites e código da Tabela 24, com os campos descritivos por preencher. Qualquer item ativo pode ser
@@ -1491,7 +1491,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
               id="btn-reset-catalog-defaults"
               onClick={handleRestaurarPadrao}
               title="Volta os itens do sistema (curados e da listagem) à versão do sistema, desfazendo edições e desativações. Os itens criados aqui não mudam. Pede confirmação."
-              className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-slate-400 bg-slate-950 border border-slate-800 rounded-lg hover:bg-slate-800 transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-tinta-2 bg-fundo border border-borda rounded-lg hover:bg-superficie-2 transition-colors"
             >
               <RotateCcw className="w-3.5 h-3.5" />
               Restaurar padrão
@@ -1500,7 +1500,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
             <button
               id="btn-apply-selected-risks"
               onClick={() => handleOpenApplyModal()}
-              className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm transition-colors"
+              className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-semibold text-white bg-teal-600 hover:bg-teal-700 rounded-lg shadow-sm transition-colors"
             >
               <ArrowUpRight className="w-4 h-4" />
               {riscosSelecionados.length > 0
@@ -1511,7 +1511,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
             <button
               id="btn-add-catalog-risk"
               onClick={handleOpenAddModal}
-              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg shadow-sm transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-marca-escura hover:bg-marca-escura rounded-lg shadow-sm transition-colors"
             >
               <Plus className="w-4 h-4" />
               Novo Risco no Catálogo
@@ -1520,7 +1520,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
         </div>
 
         {/* Group Cards Overview — contam o que passa pelos demais filtros */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mt-6 pt-6 border-t border-slate-800">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mt-6 pt-6 border-t border-borda">
           {CARTOES_DE_GRUPO.map(({ grupo, rotulo, exemplo, Icone, marcado, desmarcado, texto, icone }) => (
             <button
               key={grupo}
@@ -1532,8 +1532,8 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                 <Icone className={`w-4 h-4 ${icone}`} />
               </div>
               <div className="mt-2 flex items-baseline gap-1">
-                <span className="text-xl font-extrabold text-slate-100">{groupStats[grupo]}</span>
-                <span className="text-xs text-slate-500">agentes</span>
+                <span className="text-xl font-extrabold text-tinta">{groupStats[grupo]}</span>
+                <span className="text-xs text-tinta-2">agentes</span>
               </div>
               <span className={`text-[11px] block mt-0.5 ${texto}`}>{exemplo}</span>
             </button>
@@ -1542,13 +1542,13 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
       </div>
 
       {/* Filters Bar & Quick Search */}
-      <div className="bg-slate-900 rounded-xl border border-slate-800 shadow-sm p-4 space-y-3">
+      <div className="bg-superficie rounded-xl border border-borda shadow-sm p-4 space-y-3">
         <div className="relative">
-          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-tinta-2" />
           <input
             id="input-search-occupational-risks"
             type="text"
-            className="w-full pl-9 pr-4 py-2 text-sm bg-slate-950 text-slate-100 placeholder-slate-500 border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            className="w-full pl-9 pr-4 py-2 text-sm bg-fundo text-tinta placeholder-tinta-3 border border-borda rounded-lg focus:outline-none focus:ring-2 focus:ring-marca-escura"
             placeholder="Buscar por nome, código da Tabela 24 (ex.: 02.01.001), unidade (ex.: ppm, mg/m3), efeito, norma..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -1558,7 +1558,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
         <div className="flex flex-wrap items-center gap-2">
           <select
             id="select-filter-group"
-            className="px-3 py-2 text-sm border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-950 text-slate-100 placeholder-slate-500"
+            className="px-3 py-2 text-sm border border-borda rounded-lg focus:outline-none focus:ring-2 focus:ring-marca-escura bg-fundo text-tinta placeholder-tinta-3"
             value={selectedGroup}
             onChange={(e) => setSelectedGroup(e.target.value as 'ALL' | GrupoDoPgr)}
           >
@@ -1575,7 +1575,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
 
           <select
             id="select-filter-eval-type"
-            className="px-3 py-2 text-sm border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-950 text-slate-100 placeholder-slate-500"
+            className="px-3 py-2 text-sm border border-borda rounded-lg focus:outline-none focus:ring-2 focus:ring-marca-escura bg-fundo text-tinta placeholder-tinta-3"
             value={evaluationTypeFilter}
             onChange={(e) => setEvaluationTypeFilter(e.target.value)}
           >
@@ -1586,7 +1586,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
 
           <select
             id="select-filter-origin"
-            className="px-3 py-2 text-sm border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-950 text-slate-100 placeholder-slate-500"
+            className="px-3 py-2 text-sm border border-borda rounded-lg focus:outline-none focus:ring-2 focus:ring-marca-escura bg-fundo text-tinta placeholder-tinta-3"
             value={originFilter}
             onChange={(e) => setOriginFilter(e.target.value as 'ALL' | OrigemDoItem)}
           >
@@ -1598,7 +1598,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
 
           <select
             id="select-filter-status"
-            className="px-3 py-2 text-sm border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-950 text-slate-100 placeholder-slate-500"
+            className="px-3 py-2 text-sm border border-borda rounded-lg focus:outline-none focus:ring-2 focus:ring-marca-escura bg-fundo text-tinta placeholder-tinta-3"
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value as FiltroDeSituacao)}
           >
@@ -1611,17 +1611,17 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
             id="btn-toggle-select-all"
             onClick={toggleSelectAllRisks}
             disabled={selecionaveisFiltrados.length === 0}
-            className="px-3 py-2 text-xs font-semibold text-slate-300 border border-slate-700 rounded-lg hover:bg-slate-800/60 flex items-center gap-1.5 whitespace-nowrap disabled:opacity-40 disabled:cursor-not-allowed"
+            className="px-3 py-2 text-xs font-semibold text-tinta border border-borda rounded-lg hover:bg-superficie-2 flex items-center gap-1.5 whitespace-nowrap disabled:opacity-40 disabled:cursor-not-allowed"
             title="Seleciona os itens ativos que passam pelos filtros, inclusive os que ainda não foram carregados na lista"
           >
             {todosFiltradosSelecionados ? (
               <>
-                <CheckSquare className="w-4 h-4 text-emerald-400" />
+                <CheckSquare className="w-4 h-4 text-marca-escura" />
                 Desmarcar os {selecionaveisFiltrados.length} filtrados
               </>
             ) : (
               <>
-                <Square className="w-4 h-4 text-slate-400" />
+                <Square className="w-4 h-4 text-tinta-2" />
                 Selecionar os {selecionaveisFiltrados.length} filtrados
               </>
             )}
@@ -1630,7 +1630,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
           {filtrosAlterados && (
             <button
               onClick={limparFiltros}
-              className="px-3 py-2 text-xs font-semibold text-emerald-300 hover:bg-emerald-500/15 rounded-lg"
+              className="px-3 py-2 text-xs font-semibold text-marca-escura hover:bg-marca-suave rounded-lg"
             >
               Limpar filtros
             </button>
@@ -1639,10 +1639,10 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
       </div>
 
       {/* Risks Table / Cards List */}
-      <div className="bg-slate-900 rounded-xl border border-slate-800 shadow-sm overflow-hidden">
-        <div className="px-6 py-4 border-b border-slate-800 flex flex-wrap items-center justify-between gap-2">
+      <div className="bg-superficie rounded-xl border border-borda shadow-sm overflow-hidden">
+        <div className="px-6 py-4 border-b border-borda flex flex-wrap items-center justify-between gap-2">
           <div className="flex flex-wrap items-center gap-2">
-            <h2 className="text-base font-semibold text-slate-200">
+            <h2 className="text-base font-semibold text-tinta">
               Inventário de Riscos Catalogados ({filteredRisks.length})
             </h2>
             {selectedGroup !== 'ALL' && (
@@ -1651,16 +1651,16 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
               </span>
             )}
             {searchTerm !== buscaAdiada && (
-              <span className="text-[11px] text-slate-500">buscando…</span>
+              <span className="text-[11px] text-tinta-2">buscando…</span>
             )}
           </div>
 
-          <div className="flex items-center gap-3 text-xs text-slate-500">
+          <div className="flex items-center gap-3 text-xs text-tinta-2">
             <span>{riscosSelecionados.length} item(ns) selecionado(s) para aplicação</span>
             {riscosSelecionados.length > 0 && (
               <button
                 onClick={() => setSelectedRiskIdsToApply([])}
-                className="font-semibold text-slate-400 hover:text-rose-300"
+                className="font-semibold text-tinta-2 hover:text-rose-700"
               >
                 Limpar seleção
               </button>
@@ -1669,29 +1669,29 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
         </div>
 
         {filteredRisks.length === 0 ? (
-          <div className="p-12 text-center text-slate-500">
-            <ShieldAlert className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-            <p className="text-base font-semibold text-slate-300">Nenhum risco encontrado para os filtros aplicados</p>
-            <p className="text-sm text-slate-500 mt-1">
+          <div className="p-12 text-center text-tinta-2">
+            <ShieldAlert className="w-12 h-12 text-tinta mx-auto mb-3" />
+            <p className="text-base font-semibold text-tinta">Nenhum risco encontrado para os filtros aplicados</p>
+            <p className="text-sm text-tinta-2 mt-1">
               {statusFilter === 'ACTIVE' && totais.inativos > 0
                 ? 'A lista mostra só os itens ativos. Experimente incluir os inativos, limpar a busca ou cadastrar um novo agente.'
                 : 'Experimente limpar a busca ou adicionar um novo agente nocivo ao catálogo.'}
             </p>
             <button
               onClick={limparFiltros}
-              className="mt-4 px-4 py-2 text-xs font-semibold text-emerald-300 bg-emerald-500/15 rounded-lg hover:bg-emerald-500/20"
+              className="mt-4 px-4 py-2 text-xs font-semibold text-marca-escura bg-marca-suave rounded-lg hover:bg-marca-suave"
             >
               Limpar Filtros
             </button>
           </div>
         ) : (
           <>
-            <div className="divide-y divide-slate-800">
+            <div className="divide-y divide-borda">
               {visiveis.map(renderItem)}
             </div>
 
-            <div className="px-6 py-4 border-t border-slate-800 flex flex-wrap items-center justify-between gap-3">
-              <span className="text-xs text-slate-500">
+            <div className="px-6 py-4 border-t border-borda flex flex-wrap items-center justify-between gap-3">
+              <span className="text-xs text-tinta-2">
                 Mostrando {visiveis.length} de {filteredRisks.length}
                 {restantes > 0 ? '. Refine pela busca ou pelos filtros, ou carregue mais.' : '.'}
               </span>
@@ -1699,7 +1699,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                 <button
                   id="btn-show-more-risks"
                   onClick={() => setQuantosMostrar(n => n + TAMANHO_DA_PAGINA)}
-                  className="px-4 py-2 text-xs font-semibold text-slate-200 bg-slate-800 hover:bg-slate-700 rounded-lg"
+                  className="px-4 py-2 text-xs font-semibold text-tinta bg-superficie-2 hover:bg-superficie-3 rounded-lg"
                 >
                   Mostrar mais {Math.min(TAMANHO_DA_PAGINA, restantes)}
                 </button>
@@ -1711,24 +1711,24 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
 
       {/* Modal Add / Edit Risk in Catalog */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm overflow-y-auto">
-          <div className="bg-slate-900 rounded-xl shadow-2xl border border-slate-800 w-full max-w-3xl my-8 overflow-hidden">
-            <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-950">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-superficie backdrop-blur-sm overflow-y-auto">
+          <div className="bg-superficie rounded-xl shadow-sm border border-borda w-full max-w-3xl my-8 overflow-hidden">
+            <div className="px-6 py-4 border-b border-borda flex items-center justify-between bg-fundo">
               <div className="flex items-center gap-2">
-                <ShieldAlert className="w-5 h-5 text-emerald-400" />
-                <h3 className="text-lg font-bold text-slate-100">
+                <ShieldAlert className="w-5 h-5 text-marca-escura" />
+                <h3 className="text-lg font-bold text-tinta">
                   {editingItem ? 'Editar Caracterização do Risco Ocupacional' : 'Cadastrar Novo Risco no Catálogo'}
                 </h3>
               </div>
-              <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-slate-200">
+              <button onClick={() => setIsModalOpen(false)} className="text-tinta-2 hover:text-tinta">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <form onSubmit={handleSaveRisk} className="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
               {origemDoItemEmEdicao === 'LISTAGEM' && (
-                <p className="flex items-start gap-2 text-[11px] text-slate-400 bg-slate-950 border border-slate-800 rounded-lg p-3">
-                  <Info className="w-4 h-4 text-slate-500 flex-shrink-0" />
+                <p className="flex items-start gap-2 text-[11px] text-tinta-2 bg-fundo border border-borda rounded-lg p-3">
+                  <Info className="w-4 h-4 text-tinta-2 flex-shrink-0" />
                   <span>
                     Item importado da listagem de riscos. Ela traz nome, grupo, meio de propagação, unidade,
                     avaliação, limites e código; fonte geradora, danos à saúde, medidas de controle, EPI e exames
@@ -1742,7 +1742,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                     codigo precisa vir da tabela, e VAZIO e resposta valida -
                     risco ergonomico e de acidente nao constam do Anexo IV. */}
                 <div className="md:col-span-2">
-                  <label className="block text-xs font-bold text-slate-300 uppercase mb-1">
+                  <label className="block text-xs font-bold text-tinta uppercase mb-1">
                     Agente nocivo (Tabela 24 do eSocial)
                   </label>
                   <SeletorTabela24
@@ -1751,16 +1751,16 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                     onLimpar={() => setForm({ ...form, risk_code_table_24: '' })}
                   />
                   {editingItem?.code_table_24_pending && !form.risk_code_table_24 && (
-                    <p className="mt-1 text-[11px] text-amber-300">{editingItem.code_table_24_pending}</p>
+                    <p className="mt-1 text-[11px] text-amber-700">{editingItem.code_table_24_pending}</p>
                   )}
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-300 uppercase mb-1">
+                  <label className="block text-xs font-bold text-tinta uppercase mb-1">
                     Grupo de Risco *
                   </label>
                   <select
-                    className="w-full px-3 py-2 text-sm border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-950 text-slate-100 placeholder-slate-500"
+                    className="w-full px-3 py-2 text-sm border border-borda rounded-lg focus:outline-none focus:ring-2 focus:ring-marca-escura bg-fundo text-tinta placeholder-tinta-3"
                     value={form.group}
                     onChange={(e) => setForm({ ...form, group: e.target.value as RiskCategoryType })}
                   >
@@ -1776,12 +1776,12 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                 {/* Opcional: os itens da listagem nao trazem norma, e exigi-la
                     obrigava a inventar uma para salvar qualquer correcao. */}
                 <div>
-                  <label className="block text-xs font-bold text-slate-300 uppercase mb-1">
+                  <label className="block text-xs font-bold text-tinta uppercase mb-1">
                     Norma de referência
                   </label>
                   <input
                     type="text"
-                    className="bg-slate-950 w-full px-3 py-2 text-sm border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-100 placeholder-slate-500"
+                    className="bg-fundo w-full px-3 py-2 text-sm border border-borda rounded-lg focus:outline-none focus:ring-2 focus:ring-marca-escura text-tinta placeholder-tinta-3"
                     placeholder="Ex: NR-15 Anexo 1 / NR-09"
                     value={form.regulatory_norm_reference}
                     onChange={(e) => setForm({ ...form, regulatory_norm_reference: e.target.value })}
@@ -1790,12 +1790,12 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-300 uppercase mb-1">
+                <label className="block text-xs font-bold text-tinta uppercase mb-1">
                   Nome do Agente Nocivo / Fator de Risco *
                 </label>
                 <input
                   type="text"
-                  className="bg-slate-950 w-full px-3 py-2 text-sm font-semibold border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-100 placeholder-slate-500"
+                  className="bg-fundo w-full px-3 py-2 text-sm font-semibold border border-borda rounded-lg focus:outline-none focus:ring-2 focus:ring-marca-escura text-tinta placeholder-tinta-3"
                   required
                   placeholder="Ex: Ruído Contínuo ou Intermitente"
                   value={form.agent_name}
@@ -1806,11 +1806,11 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
               {/* Opcional pelo mesmo motivo da norma. Vazio, o risco aplicado
                   chega ao GHE sem o campo, e o PGR o aponta como pendente. */}
               <div>
-                <label className="block text-xs font-bold text-slate-300 uppercase mb-1">
+                <label className="block text-xs font-bold text-tinta uppercase mb-1">
                   Danos Prováveis à Saúde (Efeitos Nocivos)
                 </label>
                 <textarea
-                  className="bg-slate-950 w-full px-3 py-2 text-sm border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-100 placeholder-slate-500"
+                  className="bg-fundo w-full px-3 py-2 text-sm border border-borda rounded-lg focus:outline-none focus:ring-2 focus:ring-marca-escura text-tinta placeholder-tinta-3"
                   rows={2}
                   placeholder="Ex: Perda auditiva induzida por ruído ocupacional (PAIR), zumbido, estresse, fadiga."
                   value={form.harmful_effects}
@@ -1820,11 +1820,11 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-300 uppercase mb-1">
+                  <label className="block text-xs font-bold text-tinta uppercase mb-1">
                     Tipo de Avaliação *
                   </label>
                   <select
-                    className="w-full px-3 py-2 text-sm border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-950 text-slate-100 placeholder-slate-500"
+                    className="w-full px-3 py-2 text-sm border border-borda rounded-lg focus:outline-none focus:ring-2 focus:ring-marca-escura bg-fundo text-tinta placeholder-tinta-3"
                     value={form.evaluation_type_standard}
                     onChange={(e) => setForm({ ...form, evaluation_type_standard: e.target.value as 'QUALITATIVA' | 'QUANTITATIVA' })}
                   >
@@ -1834,12 +1834,12 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-300 uppercase mb-1">
+                  <label className="block text-xs font-bold text-tinta uppercase mb-1">
                     Unidade de Medição
                   </label>
                   <input
                     type="text"
-                    className="bg-slate-950 w-full px-3 py-2 text-sm border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-100 placeholder-slate-500"
+                    className="bg-fundo w-full px-3 py-2 text-sm border border-borda rounded-lg focus:outline-none focus:ring-2 focus:ring-marca-escura text-tinta placeholder-tinta-3"
                     placeholder="Ex: dB(A), ppm, mg/m³, m/s²"
                     value={form.measurement_unit_standard}
                     onChange={(e) => setForm({ ...form, measurement_unit_standard: e.target.value })}
@@ -1847,12 +1847,12 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-300 uppercase mb-1">
+                  <label className="block text-xs font-bold text-tinta uppercase mb-1">
                     Meio de Propagação
                   </label>
                   <input
                     type="text"
-                    className="bg-slate-950 w-full px-3 py-2 text-sm border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-100 placeholder-slate-500"
+                    className="bg-fundo w-full px-3 py-2 text-sm border border-borda rounded-lg focus:outline-none focus:ring-2 focus:ring-marca-escura text-tinta placeholder-tinta-3"
                     placeholder="Ex: Ar, contato, ar e contato"
                     value={form.propagation}
                     onChange={(e) => setForm({ ...form, propagation: e.target.value })}
@@ -1865,37 +1865,37 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                   acima; sem numero (limite que depende de tabela, como calor e
                   ruido de impacto), vale o texto digitado. */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="bg-slate-950 border border-slate-800 rounded-lg p-3 space-y-2">
-                  <label className="block text-xs font-bold text-slate-300 uppercase">
+                <div className="bg-fundo border border-borda rounded-lg p-3 space-y-2">
+                  <label className="block text-xs font-bold text-tinta uppercase">
                     Limite de Tolerância
                   </label>
                   <div className="flex items-center gap-3">
                     <input
                       type="text"
-                      className="bg-slate-900 w-28 px-3 py-2 text-sm border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-100 placeholder-slate-500"
+                      className="bg-superficie w-28 px-3 py-2 text-sm border border-borda rounded-lg focus:outline-none focus:ring-2 focus:ring-marca-escura text-tinta placeholder-tinta-3"
                       inputMode="decimal"
                       placeholder="Número"
                       value={form.tolerance_limit_number}
                       onChange={(e) => setForm({ ...form, tolerance_limit_number: e.target.value })}
                     />
-                    <label className="flex items-center gap-1.5 text-xs text-slate-300 cursor-pointer">
+                    <label className="flex items-center gap-1.5 text-xs text-tinta cursor-pointer">
                       <input
                         type="checkbox"
                         checked={form.tolerance_limit_is_ceiling}
                         onChange={(e) => setForm({ ...form, tolerance_limit_is_ceiling: e.target.checked })}
-                        className="rounded border-slate-700 text-rose-400 focus:ring-rose-500"
+                        className="rounded border-borda text-rose-700 focus:ring-rose-500"
                       />
                       Valor teto
                     </label>
                   </div>
                   {limiteDoFormulario !== undefined ? (
-                    <p className="text-[11px] text-slate-400">
+                    <p className="text-[11px] text-tinta-2">
                       {limiteDoFormulario === 'INVALIDO' ? (
-                        <span className="text-rose-300">Número inválido: use vírgula ou ponto decimal, sem separador de milhar, e maior que zero.</span>
+                        <span className="text-rose-700">Número inválido: use vírgula ou ponto decimal, sem separador de milhar, e maior que zero.</span>
                       ) : (
                         <>
                           Texto no inventário:{' '}
-                          <span className="font-semibold text-slate-200">
+                          <span className="font-semibold text-tinta">
                             {textoDoLimite(limiteDoFormulario, unidadeDoFormulario, form.tolerance_limit_is_ceiling)}
                           </span>
                         </>
@@ -1904,7 +1904,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                   ) : (
                     <input
                       type="text"
-                      className="bg-slate-900 w-full px-3 py-2 text-sm border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-100 placeholder-slate-500"
+                      className="bg-superficie w-full px-3 py-2 text-sm border border-borda rounded-lg focus:outline-none focus:ring-2 focus:ring-marca-escura text-tinta placeholder-tinta-3"
                       placeholder="Sem número: descreva. Ex: Quadro 1 do Anexo 3 da NR-15"
                       value={form.tolerance_limit_nr15}
                       onChange={(e) => setForm({ ...form, tolerance_limit_nr15: e.target.value })}
@@ -1912,26 +1912,26 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                   )}
                 </div>
 
-                <div className="bg-slate-950 border border-slate-800 rounded-lg p-3 space-y-2">
-                  <label className="block text-xs font-bold text-slate-300 uppercase">
+                <div className="bg-fundo border border-borda rounded-lg p-3 space-y-2">
+                  <label className="block text-xs font-bold text-tinta uppercase">
                     Nível de Ação (NR-09)
                   </label>
                   <input
                     type="text"
-                    className="bg-slate-900 w-28 px-3 py-2 text-sm border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-100 placeholder-slate-500"
+                    className="bg-superficie w-28 px-3 py-2 text-sm border border-borda rounded-lg focus:outline-none focus:ring-2 focus:ring-marca-escura text-tinta placeholder-tinta-3"
                     inputMode="decimal"
                     placeholder="Número"
                     value={form.action_level_number}
                     onChange={(e) => setForm({ ...form, action_level_number: e.target.value })}
                   />
                   {nivelDoFormulario !== undefined ? (
-                    <p className="text-[11px] text-slate-400">
+                    <p className="text-[11px] text-tinta-2">
                       {nivelDoFormulario === 'INVALIDO' ? (
-                        <span className="text-rose-300">Número inválido: use vírgula ou ponto decimal, sem separador de milhar, e maior que zero.</span>
+                        <span className="text-rose-700">Número inválido: use vírgula ou ponto decimal, sem separador de milhar, e maior que zero.</span>
                       ) : (
                         <>
                           Texto no inventário:{' '}
-                          <span className="font-semibold text-slate-200">
+                          <span className="font-semibold text-tinta">
                             {textoDoLimite(nivelDoFormulario, unidadeDoFormulario)}
                           </span>
                         </>
@@ -1940,7 +1940,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                   ) : (
                     <input
                       type="text"
-                      className="bg-slate-900 w-full px-3 py-2 text-sm border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-100 placeholder-slate-500"
+                      className="bg-superficie w-full px-3 py-2 text-sm border border-borda rounded-lg focus:outline-none focus:ring-2 focus:ring-marca-escura text-tinta placeholder-tinta-3"
                       placeholder="Sem número: descreva. Ex: limite menos 1,0 °C"
                       value={form.action_level_nr09}
                       onChange={(e) => setForm({ ...form, action_level_nr09: e.target.value })}
@@ -1950,12 +1950,12 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-300 uppercase mb-1">
+                <label className="block text-xs font-bold text-tinta uppercase mb-1">
                   Fonte Geradora Típica / Atividade
                 </label>
                 <input
                   type="text"
-                  className="bg-slate-950 w-full px-3 py-2 text-sm border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-100 placeholder-slate-500"
+                  className="bg-fundo w-full px-3 py-2 text-sm border border-borda rounded-lg focus:outline-none focus:ring-2 focus:ring-marca-escura text-tinta placeholder-tinta-3"
                   placeholder="Ex: Operação de maquinários rotativos, caldeiras, prensas"
                   value={form.suggested_source}
                   onChange={(e) => setForm({ ...form, suggested_source: e.target.value })}
@@ -1963,12 +1963,12 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-300 uppercase mb-1">
+                <label className="block text-xs font-bold text-tinta uppercase mb-1">
                   EPIs Sugeridos (com CA) - Separados por vírgula
                 </label>
                 <input
                   type="text"
-                  className="bg-slate-950 w-full px-3 py-2 text-sm border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-100 placeholder-slate-500"
+                  className="bg-fundo w-full px-3 py-2 text-sm border border-borda rounded-lg focus:outline-none focus:ring-2 focus:ring-marca-escura text-tinta placeholder-tinta-3"
                   placeholder="Ex: Protetor Auditivo tipo Plug (CA 14235), Óculos de Proteção (CA 27500)"
                   value={form.suggested_epis_text}
                   onChange={(e) => setForm({ ...form, suggested_epis_text: e.target.value })}
@@ -1980,9 +1980,9 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                   como Audiometria (0295 é Avaliação clínica) e [0296] como
                   Espirometria (0296 é Acuidade visual). Agora o exame é
                   escolhido da Tabela 27. */}
-              <div className="bg-slate-950 border border-slate-800 rounded-lg p-3 space-y-2">
+              <div className="bg-fundo border border-borda rounded-lg p-3 space-y-2">
                 <div className="flex items-center justify-between gap-3">
-                  <label className="block text-xs font-bold text-slate-300 uppercase">
+                  <label className="block text-xs font-bold text-tinta uppercase">
                     Exames PCMSO sugeridos ({form.suggested_exams.length})
                   </label>
                   <button
@@ -1996,14 +1996,14 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                         ],
                       })
                     }
-                    className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-semibold rounded-lg flex items-center gap-1"
+                    className="px-2.5 py-1 bg-marca-escura hover:opacity-90 text-white text-[11px] font-semibold rounded-lg flex items-center gap-1"
                   >
                     <Plus className="w-3 h-3" /> Adicionar exame
                   </button>
                 </div>
 
                 {form.suggested_exams.length === 0 ? (
-                  <p className="text-[11px] text-slate-500">
+                  <p className="text-[11px] text-tinta-2">
                     Nenhum exame sugerido. São recomendações que acompanham o agente ao ser
                     aplicado a um GHE — quais exames o trabalhador de fato realiza é decisão do
                     médico coordenador do PCMSO.
@@ -2027,7 +2027,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                         <div className="flex items-center gap-1 shrink-0">
                           <input
                             type="number"
-                            className="w-14 px-2 py-1.5 text-[11px] bg-slate-950 text-slate-100 border border-slate-700 rounded-lg text-center"
+                            className="w-14 px-2 py-1.5 text-[11px] bg-fundo text-tinta border border-borda rounded-lg text-center"
                             min={1}
                             value={ex.periodicidade_meses}
                             onChange={e => {
@@ -2039,7 +2039,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                               setForm({ ...form, suggested_exams: lista });
                             }}
                           />
-                          <span className="text-[10px] text-slate-500">meses</span>
+                          <span className="text-[10px] text-tinta-2">meses</span>
                         </div>
                         <button
                           type="button"
@@ -2049,7 +2049,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                               suggested_exams: form.suggested_exams.filter((_, j) => j !== i),
                             })
                           }
-                          className="text-slate-400 hover:text-rose-500 shrink-0"
+                          className="text-tinta-2 hover:text-rose-700 shrink-0"
                           title="Remover exame"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
@@ -2061,12 +2061,12 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-300 uppercase mb-1">
+                <label className="block text-xs font-bold text-tinta uppercase mb-1">
                   Medidas de Controle Recomendadas
                 </label>
                 <input
                   type="text"
-                  className="bg-slate-950 w-full px-3 py-2 text-sm border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-100 placeholder-slate-500"
+                  className="bg-fundo w-full px-3 py-2 text-sm border border-borda rounded-lg focus:outline-none focus:ring-2 focus:ring-marca-escura text-tinta placeholder-tinta-3"
                   placeholder="Ex: Enclausuramento acústico, EPC exaustão mecânica e pausas térmicas"
                   value={form.suggested_controls_summary}
                   onChange={(e) => setForm({ ...form, suggested_controls_summary: e.target.value })}
@@ -2078,12 +2078,12 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                   o formulario antigo gravava severidade 3, probabilidade 3,
                   GFIP '00' e "nao se aplica" sem campo na tela, e o risco
                   aplicado nascia classificado e enquadrado por ninguem. */}
-              <div className="bg-slate-950 border border-slate-800 rounded-lg p-3 space-y-3">
+              <div className="bg-fundo border border-borda rounded-lg p-3 space-y-3">
                 <div>
-                  <label className="block text-xs font-bold text-slate-300 uppercase">
+                  <label className="block text-xs font-bold text-tinta uppercase">
                     Classificação e enquadramento sugeridos
                   </label>
-                  <p className="text-[11px] text-slate-500 mt-0.5">
+                  <p className="text-[11px] text-tinta-2 mt-0.5">
                     Vão para o risco quando o item é aplicado a um GHE. O que ficar em &quot;Não informado&quot; não
                     é gravado: o risco aplicado nasce sem o campo, e o inventário mostra a pendência.
                   </p>
@@ -2091,9 +2091,9 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-[11px] font-semibold text-slate-400 mb-1">Severidade (S)</label>
+                    <label className="block text-[11px] font-semibold text-tinta-2 mb-1">Severidade (S)</label>
                     <select
-                      className="w-full px-3 py-2 text-sm border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-900 text-slate-100"
+                      className="w-full px-3 py-2 text-sm border border-borda rounded-lg focus:outline-none focus:ring-2 focus:ring-marca-escura bg-superficie text-tinta"
                       value={form.default_severity}
                       onChange={(e) => setForm({ ...form, default_severity: e.target.value as FormularioDoRisco['default_severity'] })}
                     >
@@ -2104,9 +2104,9 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                     </select>
                   </div>
                   <div>
-                    <label className="block text-[11px] font-semibold text-slate-400 mb-1">Probabilidade (P)</label>
+                    <label className="block text-[11px] font-semibold text-tinta-2 mb-1">Probabilidade (P)</label>
                     <select
-                      className="w-full px-3 py-2 text-sm border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-900 text-slate-100"
+                      className="w-full px-3 py-2 text-sm border border-borda rounded-lg focus:outline-none focus:ring-2 focus:ring-marca-escura bg-superficie text-tinta"
                       value={form.default_probability}
                       onChange={(e) => setForm({ ...form, default_probability: e.target.value as FormularioDoRisco['default_probability'] })}
                     >
@@ -2118,15 +2118,15 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                   </div>
                 </div>
                 {classificacaoNoFormulario ? (
-                  <p className="text-[11px] text-slate-400">
+                  <p className="text-[11px] text-tinta-2">
                     Matriz do modelo (seção 5.6):{' '}
-                    <span className="font-semibold text-slate-200">
+                    <span className="font-semibold text-tinta">
                       S{classificacaoNoFormulario.severidade} × P{classificacaoNoFormulario.probabilidade} ={' '}
                       {classificacaoNoFormulario.score} · {classificacaoNoFormulario.rotulo}
                     </span>
                   </p>
                 ) : soUmaGradacao ? (
-                  <p className="text-[11px] text-amber-300">
+                  <p className="text-[11px] text-amber-700">
                     Com só um dos dois, o risco aplicado nasce não classificado: a matriz precisa de severidade e
                     probabilidade.
                   </p>
@@ -2134,9 +2134,9 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-[11px] font-semibold text-slate-400 mb-1">Código GFIP</label>
+                    <label className="block text-[11px] font-semibold text-tinta-2 mb-1">Código GFIP</label>
                     <select
-                      className="w-full px-3 py-2 text-sm border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-900 text-slate-100"
+                      className="w-full px-3 py-2 text-sm border border-borda rounded-lg focus:outline-none focus:ring-2 focus:ring-marca-escura bg-superficie text-tinta"
                       value={form.gfip_code_suggested}
                       onChange={(e) => setForm({ ...form, gfip_code_suggested: e.target.value as FormularioDoRisco['gfip_code_suggested'] })}
                     >
@@ -2147,9 +2147,9 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                     </select>
                   </div>
                   <div>
-                    <label className="block text-[11px] font-semibold text-slate-400 mb-1">Aposentadoria especial</label>
+                    <label className="block text-[11px] font-semibold text-tinta-2 mb-1">Aposentadoria especial</label>
                     <select
-                      className="w-full px-3 py-2 text-sm border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-900 text-slate-100"
+                      className="w-full px-3 py-2 text-sm border border-borda rounded-lg focus:outline-none focus:ring-2 focus:ring-marca-escura bg-superficie text-tinta"
                       value={form.special_retirement_eligible}
                       onChange={(e) => setForm({ ...form, special_retirement_eligible: e.target.value as FormularioDoRisco['special_retirement_eligible'] })}
                     >
@@ -2159,9 +2159,9 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                     </select>
                   </div>
                   <div>
-                    <label className="block text-[11px] font-semibold text-slate-400 mb-1">Absorção também pela pele</label>
+                    <label className="block text-[11px] font-semibold text-tinta-2 mb-1">Absorção também pela pele</label>
                     <select
-                      className="w-full px-3 py-2 text-sm border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-900 text-slate-100"
+                      className="w-full px-3 py-2 text-sm border border-borda rounded-lg focus:outline-none focus:ring-2 focus:ring-marca-escura bg-superficie text-tinta"
                       value={form.skin_absorption}
                       onChange={(e) => setForm({ ...form, skin_absorption: e.target.value as FormularioDoRisco['skin_absorption'] })}
                     >
@@ -2177,9 +2177,9 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                     estava no formulario reaparece. */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div>
-                    <label className="block text-[11px] font-semibold text-slate-400 mb-1">Insalubridade</label>
+                    <label className="block text-[11px] font-semibold text-tinta-2 mb-1">Insalubridade</label>
                     <select
-                      className="w-full px-3 py-2 text-sm border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-900 text-slate-100"
+                      className="w-full px-3 py-2 text-sm border border-borda rounded-lg focus:outline-none focus:ring-2 focus:ring-marca-escura bg-superficie text-tinta"
                       value={form.insalubridade_applicable}
                       onChange={(e) => setForm({ ...form, insalubridade_applicable: e.target.value as FormularioDoRisco['insalubridade_applicable'] })}
                     >
@@ -2189,9 +2189,9 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                     </select>
                   </div>
                   <div>
-                    <label className="block text-[11px] font-semibold text-slate-400 mb-1">Grau</label>
+                    <label className="block text-[11px] font-semibold text-tinta-2 mb-1">Grau</label>
                     <select
-                      className="w-full px-3 py-2 text-sm border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-900 text-slate-100 disabled:opacity-50"
+                      className="w-full px-3 py-2 text-sm border border-borda rounded-lg focus:outline-none focus:ring-2 focus:ring-marca-escura bg-superficie text-tinta disabled:opacity-50"
                       disabled={form.insalubridade_applicable === 'NAO'}
                       value={form.insalubridade_applicable === 'NAO' ? '' : form.insalubridade_degree_suggested}
                       onChange={(e) => setForm({ ...form, insalubridade_degree_suggested: e.target.value as FormularioDoRisco['insalubridade_degree_suggested'] })}
@@ -2203,10 +2203,10 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                     </select>
                   </div>
                   <div>
-                    <label className="block text-[11px] font-semibold text-slate-400 mb-1">Base legal</label>
+                    <label className="block text-[11px] font-semibold text-tinta-2 mb-1">Base legal</label>
                     <input
                       type="text"
-                      className="w-full px-3 py-2 text-sm border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-900 text-slate-100 placeholder-slate-500 disabled:opacity-50"
+                      className="w-full px-3 py-2 text-sm border border-borda rounded-lg focus:outline-none focus:ring-2 focus:ring-marca-escura bg-superficie text-tinta placeholder-tinta-3 disabled:opacity-50"
                       disabled={form.insalubridade_applicable === 'NAO'}
                       placeholder="Ex: NR-15 Anexo nº 1"
                       value={form.insalubridade_applicable === 'NAO' ? '' : form.insalubridade_legal_basis}
@@ -2217,9 +2217,9 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div>
-                    <label className="block text-[11px] font-semibold text-slate-400 mb-1">Periculosidade</label>
+                    <label className="block text-[11px] font-semibold text-tinta-2 mb-1">Periculosidade</label>
                     <select
-                      className="w-full px-3 py-2 text-sm border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-900 text-slate-100"
+                      className="w-full px-3 py-2 text-sm border border-borda rounded-lg focus:outline-none focus:ring-2 focus:ring-marca-escura bg-superficie text-tinta"
                       value={form.periculosidade_applicable}
                       onChange={(e) => setForm({ ...form, periculosidade_applicable: e.target.value as FormularioDoRisco['periculosidade_applicable'] })}
                     >
@@ -2229,10 +2229,10 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                     </select>
                   </div>
                   <div className="sm:col-span-2">
-                    <label className="block text-[11px] font-semibold text-slate-400 mb-1">Base legal</label>
+                    <label className="block text-[11px] font-semibold text-tinta-2 mb-1">Base legal</label>
                     <input
                       type="text"
-                      className="w-full px-3 py-2 text-sm border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-900 text-slate-100 placeholder-slate-500 disabled:opacity-50"
+                      className="w-full px-3 py-2 text-sm border border-borda rounded-lg focus:outline-none focus:ring-2 focus:ring-marca-escura bg-superficie text-tinta placeholder-tinta-3 disabled:opacity-50"
                       disabled={form.periculosidade_applicable === 'NAO'}
                       placeholder="Ex: NR-16 Anexo nº 4"
                       value={form.periculosidade_applicable === 'NAO' ? '' : form.periculosidade_legal_basis}
@@ -2242,17 +2242,17 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-slate-800 flex items-center justify-end gap-3">
+              <div className="pt-4 border-t border-borda flex items-center justify-end gap-3">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 text-sm font-semibold text-slate-300 bg-slate-800 hover:bg-slate-700 rounded-lg"
+                  className="px-4 py-2 text-sm font-semibold text-tinta bg-superficie-2 hover:bg-superficie-3 rounded-lg"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg shadow-sm"
+                  className="px-5 py-2 text-sm font-semibold text-white bg-marca-escura hover:bg-marca-escura rounded-lg shadow-sm"
                 >
                   {editingItem ? 'Salvar Alterações' : 'Cadastrar no Catálogo'}
                 </button>
@@ -2264,16 +2264,16 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
 
       {/* Modal Apply Selected Risks to Client GHE / Jobs / Sector Tree */}
       {isApplyModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm overflow-y-auto">
-          <div className="bg-slate-900 rounded-xl shadow-2xl border border-slate-800 w-full max-w-2xl my-8 overflow-hidden">
-            <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-indigo-500/15">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-superficie backdrop-blur-sm overflow-y-auto">
+          <div className="bg-superficie rounded-xl shadow-sm border border-borda w-full max-w-2xl my-8 overflow-hidden">
+            <div className="px-6 py-4 border-b border-borda flex items-center justify-between bg-teal-500/15">
               <div className="flex items-center gap-2">
-                <ArrowUpRight className="w-5 h-5 text-indigo-400" />
-                <h3 className="text-lg font-bold text-slate-100">
+                <ArrowUpRight className="w-5 h-5 text-teal-700" />
+                <h3 className="text-lg font-bold text-tinta">
                   Aplicar Riscos Ocupacionais a GHEs ou Árvore de Cargos
                 </h3>
               </div>
-              <button onClick={() => setIsApplyModalOpen(false)} className="text-slate-400 hover:text-slate-200">
+              <button onClick={() => setIsApplyModalOpen(false)} className="text-tinta-2 hover:text-tinta">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -2283,16 +2283,16 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                   itens, o modal desenha no maximo LIMITE_DE_ETIQUETAS
                   etiquetas e LIMITE_DA_BUSCA_NO_MODAL resultados; item
                   inativo nao aparece na busca. */}
-              <div className="p-3 bg-slate-950 border border-slate-800 rounded-lg space-y-2">
+              <div className="p-3 bg-fundo border border-borda rounded-lg space-y-2">
                 <div className="flex items-center justify-between gap-2">
-                  <span className="text-xs font-bold text-slate-300 uppercase">
+                  <span className="text-xs font-bold text-tinta uppercase">
                     Riscos Selecionados para Aplicação ({riscosSelecionados.length}):
                   </span>
                   {riscosSelecionados.length > 0 && (
                     <button
                       type="button"
                       onClick={() => setSelectedRiskIdsToApply([])}
-                      className="text-[11px] font-semibold text-slate-400 hover:text-rose-300"
+                      className="text-[11px] font-semibold text-tinta-2 hover:text-rose-700"
                     >
                       Limpar seleção
                     </button>
@@ -2300,18 +2300,18 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                 </div>
 
                 {riscosSelecionados.length === 0 ? (
-                  <p className="text-[11px] text-slate-500">
+                  <p className="text-[11px] text-tinta-2">
                     Nenhum risco selecionado. Busque abaixo para incluir.
                   </p>
                 ) : (
                   <div className="flex flex-wrap gap-1.5 max-h-28 overflow-y-auto">
                     {riscosSelecionados.slice(0, LIMITE_DE_ETIQUETAS).map(r => (
-                      <span key={r.id} className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded bg-slate-900 border border-slate-800 text-slate-200 font-medium">
+                      <span key={r.id} className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded bg-superficie border border-borda text-tinta font-medium">
                         {r.name}{r.code_table_24 ? ` (${r.code_table_24})` : ''}
                         <button
                           type="button"
                           onClick={() => toggleSelectRisk(r)}
-                          className="text-slate-500 hover:text-rose-300"
+                          className="text-tinta-2 hover:text-rose-700"
                           title="Tirar da seleção"
                         >
                           <X className="w-3 h-3" />
@@ -2319,7 +2319,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                       </span>
                     ))}
                     {riscosSelecionados.length > LIMITE_DE_ETIQUETAS && (
-                      <span className="text-xs px-1 py-0.5 text-slate-500">
+                      <span className="text-xs px-1 py-0.5 text-tinta-2">
                         e mais {riscosSelecionados.length - LIMITE_DE_ETIQUETAS}
                       </span>
                     )}
@@ -2327,10 +2327,10 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                 )}
 
                 <div className="relative">
-                  <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500" />
+                  <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-tinta-2" />
                   <input
                     type="text"
-                    className="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-900 text-slate-100 placeholder-slate-500 border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full pl-8 pr-3 py-1.5 text-xs bg-superficie text-tinta placeholder-tinta-3 border border-borda rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
                     placeholder="Incluir risco: busque por nome, código da Tabela 24 ou unidade..."
                     value={buscaNoModal}
                     onChange={(e) => setBuscaNoModal(e.target.value)}
@@ -2339,22 +2339,22 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
 
                 {resultadosNoModal.buscou && (
                   resultadosNoModal.total === 0 ? (
-                    <p className="text-[11px] text-slate-500">Nenhum item ativo encontrado.</p>
+                    <p className="text-[11px] text-tinta-2">Nenhum item ativo encontrado.</p>
                   ) : (
-                    <div className="max-h-48 overflow-y-auto border border-slate-800 rounded-lg p-1.5 space-y-0.5">
+                    <div className="max-h-48 overflow-y-auto border border-borda rounded-lg p-1.5 space-y-0.5">
                       {resultadosNoModal.itens.map(r => {
                         const marcado = selecionados.has(r.id);
                         return (
-                          <label key={r.id} className="flex items-center gap-2 p-1.5 hover:bg-slate-800/60 rounded cursor-pointer text-xs">
+                          <label key={r.id} className="flex items-center gap-2 p-1.5 hover:bg-superficie-2 rounded cursor-pointer text-xs">
                             <input
                               type="checkbox"
                               checked={marcado}
                               onChange={() => toggleSelectRisk(r)}
-                              className="rounded border-slate-700 text-indigo-400 focus:ring-indigo-500"
+                              className="rounded border-borda text-teal-700 focus:ring-teal-500"
                             />
-                            <span className="font-semibold text-slate-200 min-w-0 truncate">{r.name}</span>
+                            <span className="font-semibold text-tinta min-w-0 truncate">{r.name}</span>
                             {r.code_table_24 && (
-                              <span className="text-slate-500 font-mono text-[11px] flex-shrink-0">{r.code_table_24}</span>
+                              <span className="text-tinta-2 font-mono text-[11px] flex-shrink-0">{r.code_table_24}</span>
                             )}
                             <span className={`ml-auto flex-shrink-0 px-1.5 py-px rounded text-[10px] font-bold border ${getGroupBadgeColor(r.group)}`}>
                               {String(r.group || '').replace(/_/g, ' ')}
@@ -2363,7 +2363,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                         );
                       })}
                       {resultadosNoModal.total > resultadosNoModal.itens.length && (
-                        <p className="text-[11px] text-slate-500 px-1.5 py-1">
+                        <p className="text-[11px] text-tinta-2 px-1.5 py-1">
                           Mostrando {resultadosNoModal.itens.length} de {resultadosNoModal.total}. Refine a busca para ver os demais.
                         </p>
                       )}
@@ -2374,11 +2374,11 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
 
               {/* Target Client */}
               <div>
-                <label className="block text-xs font-bold text-slate-300 uppercase mb-1">
+                <label className="block text-xs font-bold text-tinta uppercase mb-1">
                   Empresa / Cliente de Destino *
                 </label>
                 <select
-                  className="w-full px-3 py-2 text-sm border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-950 text-slate-100 placeholder-slate-500"
+                  className="w-full px-3 py-2 text-sm border border-borda rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 bg-fundo text-tinta placeholder-tinta-3"
                   value={applyClientId}
                   onChange={(e) => {
                     setApplyClientId(e.target.value);
@@ -2396,7 +2396,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
 
               {/* Target Mode Selector */}
               <div>
-                <label className="block text-xs font-bold text-slate-300 uppercase mb-1.5">
+                <label className="block text-xs font-bold text-tinta uppercase mb-1.5">
                   Modo de Aplicação de Destino *
                 </label>
                 <div className="grid grid-cols-3 gap-2">
@@ -2405,11 +2405,11 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                     onClick={() => setApplyTargetMode('GHE')}
                     className={`p-3 rounded-lg border text-left text-xs font-bold transition-all ${
                       applyTargetMode === 'GHE'
-                        ? 'border-indigo-600 bg-indigo-500/15 text-indigo-300 ring-2 ring-indigo-500/40'
-                        : 'border-slate-800 text-slate-300 hover:bg-slate-800/60'
+                        ? 'border-teal-600 bg-teal-500/15 text-teal-800 ring-2 ring-teal-500/40'
+                        : 'border-borda text-tinta hover:bg-superficie-2'
                     }`}
                   >
-                    <Layers className="w-4 h-4 mb-1 text-indigo-400" />
+                    <Layers className="w-4 h-4 mb-1 text-teal-700" />
                     Vários / Específico GHE
                   </button>
 
@@ -2418,11 +2418,11 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                     onClick={() => setApplyTargetMode('JOB')}
                     className={`p-3 rounded-lg border text-left text-xs font-bold transition-all ${
                       applyTargetMode === 'JOB'
-                        ? 'border-indigo-600 bg-indigo-500/15 text-indigo-300 ring-2 ring-indigo-500/40'
-                        : 'border-slate-800 text-slate-300 hover:bg-slate-800/60'
+                        ? 'border-teal-600 bg-teal-500/15 text-teal-800 ring-2 ring-teal-500/40'
+                        : 'border-borda text-tinta hover:bg-superficie-2'
                     }`}
                   >
-                    <Briefcase className="w-4 h-4 mb-1 text-indigo-400" />
+                    <Briefcase className="w-4 h-4 mb-1 text-teal-700" />
                     Cargos Específicos
                   </button>
 
@@ -2431,11 +2431,11 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                     onClick={() => setApplyTargetMode('SECTOR_TREE')}
                     className={`p-3 rounded-lg border text-left text-xs font-bold transition-all ${
                       applyTargetMode === 'SECTOR_TREE'
-                        ? 'border-indigo-600 bg-indigo-500/15 text-indigo-300 ring-2 ring-indigo-500/40'
-                        : 'border-slate-800 text-slate-300 hover:bg-slate-800/60'
+                        ? 'border-teal-600 bg-teal-500/15 text-teal-800 ring-2 ring-teal-500/40'
+                        : 'border-borda text-tinta hover:bg-superficie-2'
                     }`}
                   >
-                    <Building2 className="w-4 h-4 mb-1 text-indigo-400" />
+                    <Building2 className="w-4 h-4 mb-1 text-teal-700" />
                     Árvore de Setores / Áreas
                   </button>
                 </div>
@@ -2444,19 +2444,19 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
               {/* Target Selection Lists */}
               {applyTargetMode === 'GHE' && (
                 <div>
-                  <label className="block text-xs font-bold text-slate-300 uppercase mb-1">
+                  <label className="block text-xs font-bold text-tinta uppercase mb-1">
                     Selecione os GHEs de Destino ({selectedTargetGheIds.length} selecionados):
                   </label>
                   {clientGhesForModal.length === 0 ? (
-                    <p className="text-xs text-amber-300 p-3 bg-amber-500/15 rounded-lg">
+                    <p className="text-xs text-amber-800 p-3 bg-amber-500/15 rounded-lg">
                       Nenhum GHE cadastrado para este cliente. Cadastre ou vincule um GHE antes de aplicar.
                     </p>
                   ) : (
-                    <div className="space-y-1.5 max-h-40 overflow-y-auto border border-slate-800 rounded-lg p-2">
+                    <div className="space-y-1.5 max-h-40 overflow-y-auto border border-borda rounded-lg p-2">
                       {clientGhesForModal.map(g => {
                         const checked = selectedTargetGheIds.includes(g.id);
                         return (
-                          <label key={g.id} className="flex items-center gap-2 p-1.5 hover:bg-slate-800/60 rounded cursor-pointer text-xs">
+                          <label key={g.id} className="flex items-center gap-2 p-1.5 hover:bg-superficie-2 rounded cursor-pointer text-xs">
                             <input
                               type="checkbox"
                               checked={checked}
@@ -2467,10 +2467,10 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                                   setSelectedTargetGheIds(prev => [...prev, g.id]);
                                 }
                               }}
-                              className="rounded border-slate-700 text-indigo-400 focus:ring-indigo-500"
+                              className="rounded border-borda text-teal-700 focus:ring-teal-500"
                             />
-                            <span className="font-semibold text-slate-200">{g.name}</span>
-                            <span className="text-slate-500 font-mono text-[11px]">({g.code})</span>
+                            <span className="font-semibold text-tinta">{g.name}</span>
+                            <span className="text-tinta-2 font-mono text-[11px]">({g.code})</span>
                           </label>
                         );
                       })}
@@ -2481,19 +2481,19 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
 
               {applyTargetMode === 'JOB' && (
                 <div>
-                  <label className="block text-xs font-bold text-slate-300 uppercase mb-1">
+                  <label className="block text-xs font-bold text-tinta uppercase mb-1">
                     Selecione os Cargos de Destino ({selectedTargetJobIds.length} selecionados):
                   </label>
                   {clientJobsForModal.length === 0 ? (
-                    <p className="text-xs text-amber-300 p-3 bg-amber-500/15 rounded-lg">
+                    <p className="text-xs text-amber-800 p-3 bg-amber-500/15 rounded-lg">
                       Nenhum cargo cadastrado na hierarquia desta empresa.
                     </p>
                   ) : (
-                    <div className="space-y-1.5 max-h-40 overflow-y-auto border border-slate-800 rounded-lg p-2">
+                    <div className="space-y-1.5 max-h-40 overflow-y-auto border border-borda rounded-lg p-2">
                       {clientJobsForModal.map(job => {
                         const checked = selectedTargetJobIds.includes(job.id);
                         return (
-                          <label key={job.id} className="flex items-center gap-2 p-1.5 hover:bg-slate-800/60 rounded cursor-pointer text-xs">
+                          <label key={job.id} className="flex items-center gap-2 p-1.5 hover:bg-superficie-2 rounded cursor-pointer text-xs">
                             <input
                               type="checkbox"
                               checked={checked}
@@ -2504,10 +2504,10 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                                   setSelectedTargetJobIds(prev => [...prev, job.id]);
                                 }
                               }}
-                              className="rounded border-slate-700 text-indigo-400 focus:ring-indigo-500"
+                              className="rounded border-borda text-teal-700 focus:ring-teal-500"
                             />
-                            <span className="font-semibold text-slate-200">{job.name}</span>
-                            <span className="text-slate-500 text-[11px]">CBO: {job.cbo || 'N/A'}</span>
+                            <span className="font-semibold text-tinta">{job.name}</span>
+                            <span className="text-tinta-2 text-[11px]">CBO: {job.cbo || 'N/A'}</span>
                           </label>
                         );
                       })}
@@ -2518,19 +2518,19 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
 
               {applyTargetMode === 'SECTOR_TREE' && (
                 <div>
-                  <label className="block text-xs font-bold text-slate-300 uppercase mb-1">
+                  <label className="block text-xs font-bold text-tinta uppercase mb-1">
                     Selecione os Setores / Árvore da Empresa:
                   </label>
                   {clientSectorsForModal.length === 0 ? (
-                    <p className="text-xs text-amber-300 p-3 bg-amber-500/15 rounded-lg">
+                    <p className="text-xs text-amber-800 p-3 bg-amber-500/15 rounded-lg">
                       Nenhum setor cadastrado na estrutura hierárquica.
                     </p>
                   ) : (
-                    <div className="space-y-1.5 max-h-40 overflow-y-auto border border-slate-800 rounded-lg p-2">
+                    <div className="space-y-1.5 max-h-40 overflow-y-auto border border-borda rounded-lg p-2">
                       {clientSectorsForModal.map(sec => {
                         const checked = selectedTargetSectorIds.includes(sec.id);
                         return (
-                          <label key={sec.id} className="flex items-center gap-2 p-1.5 hover:bg-slate-800/60 rounded cursor-pointer text-xs">
+                          <label key={sec.id} className="flex items-center gap-2 p-1.5 hover:bg-superficie-2 rounded cursor-pointer text-xs">
                             <input
                               type="checkbox"
                               checked={checked}
@@ -2541,10 +2541,10 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                                   setSelectedTargetSectorIds(prev => [...prev, sec.id]);
                                 }
                               }}
-                              className="rounded border-slate-700 text-indigo-400 focus:ring-indigo-500"
+                              className="rounded border-borda text-teal-700 focus:ring-teal-500"
                             />
-                            <span className="font-semibold text-slate-200">{sec.name}</span>
-                            <span className="text-slate-500 text-[11px]">({sec.code})</span>
+                            <span className="font-semibold text-tinta">{sec.name}</span>
+                            <span className="text-tinta-2 text-[11px]">({sec.code})</span>
                           </label>
                         );
                       })}
@@ -2554,12 +2554,12 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
               )}
 
               {/* Situacao operacional — alinea "b" do subitem 1.5.7.3.2 */}
-              <div className="p-3 bg-slate-950 border border-slate-800 rounded-lg space-y-2">
+              <div className="p-3 bg-fundo border border-borda rounded-lg space-y-2">
                 <div>
-                  <span className="font-bold text-slate-200 text-xs block">
-                    Situação operacional destes riscos <span className="text-rose-400">*</span>
+                  <span className="font-bold text-tinta text-xs block">
+                    Situação operacional destes riscos <span className="text-rose-700">*</span>
                   </span>
-                  <span className="text-[11px] text-slate-500">
+                  <span className="text-[11px] text-tinta-2">
                     Vale para todos os riscos desta aplicação. Um risco que também exista na
                     manutenção ou na limpeza pode ser ajustado depois, no próprio GHE.
                   </span>
@@ -2581,8 +2581,8 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                         }
                         className={`text-left px-3 py-2 rounded-lg border transition-colors ${
                           marcada
-                            ? 'bg-teal-500/15 border-teal-500/50 text-teal-200'
-                            : 'bg-slate-900 border-slate-700 text-slate-400 hover:border-slate-600'
+                            ? 'bg-teal-500/15 border-teal-500/50 text-teal-800'
+                            : 'bg-superficie border-borda text-tinta-2 hover:border-borda'
                         }`}
                       >
                         <span className="block text-xs font-bold">
@@ -2596,7 +2596,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                   situacaoAplicada.includes('EMERGENCIA')) && (
                   <input
                     type="text"
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 text-xs focus:outline-none focus:border-teal-500"
+                    className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta text-xs focus:outline-none focus:border-teal-500"
                     placeholder="Qual a circunstância? Ex.: limpeza e ajuste; parada programada"
                     value={situacaoNota}
                     onChange={(e) => setSituacaoNota(e.target.value)}
@@ -2605,19 +2605,19 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
               </div>
 
               {/* Include PCMSO Exams Checkbox */}
-              <div className="p-3 bg-blue-500/15 border border-blue-500/30 rounded-lg">
+              <div className="p-3 bg-teal-500/15 border border-teal-500/30 rounded-lg">
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={includeSuggestedExams}
                     onChange={(e) => setIncludeSuggestedExams(e.target.checked)}
-                    className="rounded border-blue-500/30 text-blue-400 focus:ring-blue-500"
+                    className="rounded border-teal-500/30 text-teal-700 focus:ring-teal-500"
                   />
                   <div className="text-xs">
-                    <span className="font-bold text-blue-300 block">
+                    <span className="font-bold text-teal-700 block">
                       Vincular automaticamente os exames PCMSO sugeridos (Tabela 27)
                     </span>
-                    <span className="text-blue-300">
+                    <span className="text-teal-700">
                       Gera os protocolos com os exames sugeridos no catálogo para os GHEs de destino.
                       {selecionadosSemExame > 0 &&
                         ` ${selecionadosSemExame} dos riscos selecionados não têm exame sugerido e não geram protocolo.`}
@@ -2628,19 +2628,19 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
 
               {/* Result Feedback */}
               {applyFeedback && (
-                <div className="p-3 bg-emerald-500/15 border border-emerald-500/30 rounded-lg flex items-center gap-2 text-xs text-emerald-300 font-medium">
-                  <CheckCircle2 className="w-5 h-5 text-emerald-400 flex-shrink-0" />
+                <div className="p-3 bg-marca-suave border border-marca-borda rounded-lg flex items-center gap-2 text-xs text-marca-escura font-medium">
+                  <CheckCircle2 className="w-5 h-5 text-marca-escura flex-shrink-0" />
                   <div>
                     <span className="font-bold">{applyFeedback.message}</span>
                   </div>
                 </div>
               )}
 
-              <div className="pt-4 border-t border-slate-800 flex items-center justify-end gap-3">
+              <div className="pt-4 border-t border-borda flex items-center justify-end gap-3">
                 <button
                   type="button"
                   onClick={() => setIsApplyModalOpen(false)}
-                  className="px-4 py-2 text-sm font-semibold text-slate-300 bg-slate-800 hover:bg-slate-700 rounded-lg"
+                  className="px-4 py-2 text-sm font-semibold text-tinta bg-superficie-2 hover:bg-superficie-3 rounded-lg"
                 >
                   Fechar
                 </button>
@@ -2648,7 +2648,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                   type="button"
                   onClick={handleExecuteApply}
                   disabled={riscosSelecionados.length === 0}
-                  className="px-5 py-2 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm flex items-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed"
+                  className="px-5 py-2 text-sm font-semibold text-white bg-teal-600 hover:bg-teal-700 rounded-lg shadow-sm flex items-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   <ArrowUpRight className="w-4 h-4" />
                   Confirmar Aplicação em Lote

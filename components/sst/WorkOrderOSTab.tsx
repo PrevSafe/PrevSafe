@@ -48,12 +48,12 @@ const METODO_DA_ASSINATURA: Record<SSTWorkOrderSignatureMethod, string> = {
 };
 
 const COR_DA_CATEGORIA: Record<string, string> = {
-  'Físico': 'bg-blue-500/10 text-blue-300 border-blue-500/30',
-  'Químico': 'bg-rose-500/10 text-rose-300 border-rose-500/30',
-  'Biológico': 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30',
-  'Ergonômico': 'bg-amber-500/10 text-amber-300 border-amber-500/30',
-  'Psicossocial': 'bg-violet-500/10 text-violet-300 border-violet-500/30',
-  'Acidentes': 'bg-orange-500/10 text-orange-300 border-orange-500/30'
+  'Físico': 'bg-teal-500/10 text-teal-800 border-teal-500/30',
+  'Químico': 'bg-rose-500/10 text-rose-700 border-rose-500/30',
+  'Biológico': 'bg-marca-suave text-marca-escura border-marca-borda',
+  'Ergonômico': 'bg-amber-500/10 text-amber-800 border-amber-500/30',
+  'Psicossocial': 'bg-teal-500/10 text-teal-800 border-teal-500/30',
+  'Acidentes': 'bg-amber-500/10 text-amber-800 border-amber-500/30'
 };
 
 /** "Ausencia de risco" registrada no inventario: nao tem fonte, avaliacao nem medida. */
@@ -63,8 +63,8 @@ const ehAusenciaDeRisco = (r: RiscoDaOrdemDeServico) =>
 /** Um dado do risco, ou o aviso de que o inventario nao o registra - nunca um texto no lugar. */
 const CampoDoRisco: React.FC<{ rotulo: string; valor?: string; vazio: string }> = ({ rotulo, valor, vazio }) => (
   <div>
-    <dt className="text-slate-500">{rotulo}</dt>
-    <dd className={valor ? 'text-slate-200' : 'text-slate-500 italic'}>{valor || vazio}</dd>
+    <dt className="text-tinta-2">{rotulo}</dt>
+    <dd className={valor ? 'text-tinta' : 'text-tinta-2 italic'}>{valor || vazio}</dd>
   </div>
 );
 
@@ -72,11 +72,11 @@ const CampoDoRisco: React.FC<{ rotulo: string; valor?: string; vazio: string }> 
 const ListaDaOS: React.FC<{ itens?: string[]; vazio: string }> = ({ itens, vazio }) => {
   const validos = (itens || []).filter(Boolean);
   return validos.length > 0 ? (
-    <ul className="list-disc list-inside text-slate-300 space-y-0.5">
+    <ul className="list-disc list-inside text-tinta space-y-0.5">
       {validos.map((t, i) => <li key={i}>{t}</li>)}
     </ul>
   ) : (
-    <p className="text-slate-500 italic">{vazio}</p>
+    <p className="text-tinta-2 italic">{vazio}</p>
   );
 };
 
@@ -316,74 +316,74 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
     <div className="space-y-6">
       {/* Top Banner / Summary */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-xl flex items-center justify-between shadow-sm">
+        <div className="bg-superficie border border-borda p-4 rounded-xl flex items-center justify-between shadow-sm">
           <div>
-            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total de Ordens de Serviço</p>
-            <p className="text-2xl font-black text-slate-100 mt-1">{totalCount}</p>
-            <p className="text-[11px] text-slate-500 mt-0.5">NR-01 item 1.4.1</p>
+            <p className="text-xs font-semibold text-tinta-2 uppercase tracking-wider">Total de Ordens de Serviço</p>
+            <p className="text-2xl font-black text-tinta mt-1">{totalCount}</p>
+            <p className="text-[11px] text-tinta-2 mt-0.5">NR-01 item 1.4.1</p>
           </div>
-          <div className="p-3 bg-indigo-500/10 border border-indigo-500/20 rounded-xl text-indigo-400">
+          <div className="p-3 bg-teal-500/10 border border-teal-500/20 rounded-xl text-teal-800">
             <FileText className="w-6 h-6" />
           </div>
         </div>
 
-        <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-xl flex items-center justify-between shadow-sm">
+        <div className="bg-superficie border border-borda p-4 rounded-xl flex items-center justify-between shadow-sm">
           <div>
-            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Assinadas / Biometria</p>
-            <p className="text-2xl font-black text-emerald-400 mt-1">{signedCount}</p>
-            <p className="text-[11px] text-emerald-500/80 mt-0.5">
+            <p className="text-xs font-semibold text-tinta-2 uppercase tracking-wider">Assinadas / Biometria</p>
+            <p className="text-2xl font-black text-marca-escura mt-1">{signedCount}</p>
+            <p className="text-[11px] text-marca-escura mt-0.5">
               {totalCount > 0 ? `${((signedCount / totalCount) * 100).toFixed(0)}% com validade jurídica` : '0%'}
             </p>
           </div>
-          <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-emerald-400">
+          <div className="p-3 bg-marca-suave border border-marca-borda rounded-xl text-marca-escura">
             <CheckCircle2 className="w-6 h-6" />
           </div>
         </div>
 
-        <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-xl flex items-center justify-between shadow-sm">
+        <div className="bg-superficie border border-borda p-4 rounded-xl flex items-center justify-between shadow-sm">
           <div>
-            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Pendentes de Assinatura</p>
-            <p className="text-2xl font-black text-amber-400 mt-1">{pendingCount}</p>
-            <p className="text-[11px] text-amber-500/80 mt-0.5">Aguardando termo / coleta</p>
+            <p className="text-xs font-semibold text-tinta-2 uppercase tracking-wider">Pendentes de Assinatura</p>
+            <p className="text-2xl font-black text-amber-700 mt-1">{pendingCount}</p>
+            <p className="text-[11px] text-amber-700 mt-0.5">Aguardando termo / coleta</p>
           </div>
-          <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl text-amber-400">
+          <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl text-amber-800">
             <AlertTriangle className="w-6 h-6" />
           </div>
         </div>
 
-        <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-xl flex items-center justify-between shadow-sm">
+        <div className="bg-superficie border border-borda p-4 rounded-xl flex items-center justify-between shadow-sm">
           <div>
-            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Empresa Selecionada</p>
-            <p className="text-sm font-bold text-slate-200 mt-1 truncate max-w-[150px]">
+            <p className="text-xs font-semibold text-tinta-2 uppercase tracking-wider">Empresa Selecionada</p>
+            <p className="text-sm font-bold text-tinta mt-1 truncate max-w-[150px]">
               {activeClient?.trade_name || activeClient?.legal_name || 'Geral'}
             </p>
-            <p className="text-[11px] text-slate-500 mt-0.5">CNPJ: {activeClient?.document_number || 'S/N'}</p>
+            <p className="text-[11px] text-tinta-2 mt-0.5">CNPJ: {activeClient?.document_number || 'S/N'}</p>
           </div>
-          <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-xl text-blue-400">
+          <div className="p-3 bg-teal-500/10 border border-teal-500/20 rounded-xl text-teal-800">
             <Building2 className="w-6 h-6" />
           </div>
         </div>
       </div>
 
       {/* Action Toolbar */}
-      <div className="bg-slate-900/70 border border-slate-800 p-4 rounded-xl flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+      <div className="bg-superficie border border-borda p-4 rounded-xl flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
         {/* Search & Filters */}
         <div className="flex flex-wrap items-center gap-3 flex-1">
           <div className="relative flex-1 min-w-[220px]">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+            <Search className="w-4 h-4 text-tinta-2 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               placeholder="Buscar por colaborador, CPF, função ou código OS..."
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
-              className="w-full pl-9 pr-3 py-2 bg-slate-950/80 border border-slate-800 rounded-lg text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-colors"
+              className="w-full pl-9 pr-3 py-2 bg-fundo border border-borda rounded-lg text-xs text-tinta placeholder-tinta-3 focus:outline-none focus:border-teal-500 transition-colors"
             />
           </div>
 
           <select
             value={filterGhe}
             onChange={e => setFilterGhe(e.target.value)}
-            className="bg-slate-950/80 border border-slate-800 rounded-lg text-xs text-slate-200 py-2 px-3 focus:outline-none focus:border-indigo-500"
+            className="bg-fundo border border-borda rounded-lg text-xs text-tinta py-2 px-3 focus:outline-none focus:border-teal-500"
           >
             <option value="ALL">Todos os GHEs</option>
             {uniqueGhes.map(ghe => (
@@ -394,7 +394,7 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
           <select
             value={filterSignature}
             onChange={e => setFilterSignature(e.target.value)}
-            className="bg-slate-950/80 border border-slate-800 rounded-lg text-xs text-slate-200 py-2 px-3 focus:outline-none focus:border-indigo-500"
+            className="bg-fundo border border-borda rounded-lg text-xs text-tinta py-2 px-3 focus:outline-none focus:border-teal-500"
           >
             <option value="ALL">Status Assinatura (Todos)</option>
             <option value="SIGNED">Assinadas ✓</option>
@@ -406,7 +406,7 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
         <div className="flex flex-wrap items-center gap-2 shrink-0">
           <button
             onClick={handleGenerateAllForClient}
-            className="px-3 py-2 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white rounded-lg text-xs font-bold transition-all shadow-md shadow-indigo-600/20 flex items-center gap-1.5"
+            className="bg-teal-700 px-3 py-2 text-white rounded-lg text-xs font-bold transition-all shadow-md flex items-center gap-1.5"
             title="Gera automaticamente as Ordens de Serviço de todos os funcionários com base nas funções, GHE e riscos do PGR"
           >
             <Sparkles className="w-3.5 h-3.5" />
@@ -416,7 +416,7 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
           <button
             onClick={handleAtualizarNaoAssinadas}
             disabled={!selectedClientId}
-            className="px-3 py-2 bg-sky-600/20 hover:bg-sky-600/30 disabled:opacity-50 disabled:cursor-not-allowed text-sky-300 border border-sky-500/30 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5"
+            className="px-3 py-2 bg-teal-600/20 hover:bg-teal-600/30 disabled:opacity-50 disabled:cursor-not-allowed text-teal-800 border border-teal-500/30 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5"
             title={selectedClientId
               ? 'Refaz as OS ainda não assinadas deste cliente com o inventário de riscos, o plano de ação e o cadastro de hoje. As assinadas não mudam.'
               : 'Selecione um cliente para atualizar as OS dele.'}
@@ -427,7 +427,7 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
 
           <button
             onClick={() => setIsCreateModalOpen(true)}
-            className="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-100 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5 border border-slate-700"
+            className="px-3 py-2 bg-superficie-2 hover:bg-superficie-3 text-tinta rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5 border border-borda"
           >
             <Plus className="w-3.5 h-3.5" />
             Nova OS
@@ -435,7 +435,7 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
 
           <button
             onClick={handleExportSelectedPDF}
-            className="px-3 py-2 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/30 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5"
+            className="px-3 py-2 bg-marca-suave hover:bg-marca-suave text-marca-escura border border-marca-borda rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5"
             title="Exportar PDF oficial da(s) OS selecionada(s)"
           >
             <Printer className="w-3.5 h-3.5" />
@@ -444,10 +444,10 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
 
           <button
             onClick={handleExportExcel}
-            className="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5"
+            className="px-3 py-2 bg-superficie-2 hover:bg-superficie-3 text-tinta border border-borda rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5"
             title="Exportar dados para Excel (.xlsx)"
           >
-            <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-400" />
+            <FileSpreadsheet className="w-3.5 h-3.5 text-marca-escura" />
             Excel
           </button>
         </div>
@@ -458,29 +458,29 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
         <div
           className={`p-3 rounded-xl border text-xs flex items-start justify-between gap-3 ${
             aviso.tipo === 'ok'
-              ? 'bg-emerald-950/30 border-emerald-900/50 text-emerald-300'
-              : 'bg-rose-950/30 border-rose-900/50 text-rose-300'
+              ? 'bg-marca-suave border-marca-borda text-marca-escura'
+              : 'bg-rose-50 border-rose-200 text-rose-700'
           }`}
         >
           <span className="whitespace-pre-line">{aviso.texto}</span>
-          <button onClick={() => setAviso(null)} className="text-slate-400 hover:text-slate-200 shrink-0" title="Fechar aviso">
+          <button onClick={() => setAviso(null)} className="text-tinta-2 hover:text-tinta shrink-0" title="Fechar aviso">
             <X className="w-4 h-4" />
           </button>
         </div>
       )}
 
       {/* Table Container */}
-      <div className="bg-slate-900/60 border border-slate-800 rounded-xl overflow-hidden shadow-sm">
+      <div className="bg-superficie border border-borda rounded-xl overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-slate-950/80 border-b border-slate-800 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+              <tr className="bg-fundo border-b border-borda text-[11px] font-bold text-tinta-2 uppercase tracking-wider">
                 <th className="py-3 px-3 w-10 text-center">
                   <input
                     type="checkbox"
                     checked={selectedOSIds.length === filteredOS.length && filteredOS.length > 0}
                     onChange={handleSelectAll}
-                    className="rounded bg-slate-900 border-slate-700 text-indigo-600 focus:ring-0"
+                    className="rounded bg-superficie border-borda text-teal-700 focus:ring-0"
                   />
                 </th>
                 <th className="py-3 px-3">Código OS / Emissão</th>
@@ -492,13 +492,13 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
                 <th className="py-3 px-3 text-right">Ações</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/60 text-xs text-slate-300">
+            <tbody className="divide-y divide-borda text-xs text-tinta">
               {filteredOS.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="text-center py-10 text-slate-500">
+                  <td colSpan={8} className="text-center py-10 text-tinta-2">
                     <FileText className="w-10 h-10 mx-auto mb-2 opacity-30" />
                     <p className="font-semibold text-sm">Nenhuma Ordem de Serviço encontrada.</p>
-                    <p className="text-xs text-slate-600 mt-1">
+                    <p className="text-xs text-tinta-2 mt-1">
                       Clique em &quot;Gerar OS em Lote (PGR)&quot; ou &quot;Nova OS&quot; para emitir ordens de serviço conformes com a NR-01.
                     </p>
                   </td>
@@ -520,8 +520,8 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
                   return (
                     <tr
                       key={os.id}
-                      className={`hover:bg-slate-800/40 transition-colors ${
-                        isSelected ? 'bg-indigo-950/20' : ''
+                      className={`hover:bg-superficie-2 transition-colors ${
+                        isSelected ? 'bg-teal-50' : ''
                       }`}
                     >
                       <td className="py-3 px-3 text-center">
@@ -529,20 +529,20 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
                           type="checkbox"
                           checked={isSelected}
                           onChange={() => handleToggleSelect(os.id)}
-                          className="rounded bg-slate-900 border-slate-700 text-indigo-600 focus:ring-0"
+                          className="rounded bg-superficie border-borda text-teal-700 focus:ring-0"
                         />
                       </td>
 
                       <td className="py-3 px-3">
-                        <div className="font-mono font-bold text-indigo-400">{os.os_code}</div>
-                        <div className="text-[11px] text-slate-500 flex items-center gap-1 mt-0.5">
+                        <div className="font-mono font-bold text-teal-700">{os.os_code}</div>
+                        <div className="text-[11px] text-tinta-2 flex items-center gap-1 mt-0.5">
                           <Clock className="w-3 h-3" />
                           {formatDate(os.issue_date)} (Rev {os.revision})
                         </div>
                         {totalPendencias > 0 && (
                           <button
                             onClick={() => setViewingOS(os)}
-                            className="mt-1 inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/30 transition-colors"
+                            className="mt-1 inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 hover:bg-amber-500/20 text-amber-800 border border-amber-500/30 transition-colors"
                             title={os.pendencias?.join('\n')}
                           >
                             <AlertTriangle className="w-3 h-3" />
@@ -552,39 +552,39 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
                       </td>
 
                       <td className="py-3 px-3">
-                        <div className="font-bold text-slate-100">{os.employee_name}</div>
-                        <div className="text-[11px] text-slate-400 font-mono">CPF: {os.employee_cpf}</div>
+                        <div className="font-bold text-tinta">{os.employee_name}</div>
+                        <div className="text-[11px] text-tinta-2 font-mono">CPF: {os.employee_cpf}</div>
                       </td>
 
                       <td className="py-3 px-3">
-                        <div className="font-medium text-slate-200">{os.employee_job_title}</div>
-                        <div className="text-[11px] text-slate-400">
+                        <div className="font-medium text-tinta">{os.employee_job_title}</div>
+                        <div className="text-[11px] text-tinta-2">
                           {os.employee_sector} {os.employee_cbo ? `• CBO ${os.employee_cbo}` : ''}
                         </div>
                       </td>
 
                       <td className="py-3 px-3">
-                        <span className="inline-block px-2 py-0.5 bg-slate-800 text-slate-300 rounded text-[10px] font-semibold mb-1">
+                        <span className="inline-block px-2 py-0.5 bg-superficie-2 text-tinta rounded text-[10px] font-semibold mb-1">
                           {os.employee_ghe_name || 'GHE não atribuído'}
                         </span>
-                        <div className="text-[11px] text-slate-400">
+                        <div className="text-[11px] text-tinta-2">
                           {totalRisks} agente(s) mapeado(s)
                         </div>
                       </td>
 
                       <td className="py-3 px-3">
-                        <div className="text-[11px] text-slate-300 max-w-[160px] truncate" title={os.mandatory_epis?.map(e => `${e.epi_name} (CA ${e.ca_number})`).join(', ')}>
+                        <div className="text-[11px] text-tinta max-w-[160px] truncate" title={os.mandatory_epis?.map(e => `${e.epi_name} (CA ${e.ca_number})`).join(', ')}>
                           {os.mandatory_epis && os.mandatory_epis.length > 0 ? (
                             <span>{os.mandatory_epis.length} EPI(s) com C.A.</span>
                           ) : (
-                            <span className="text-slate-500">Nenhum EPI definido</span>
+                            <span className="text-tinta-2">Nenhum EPI definido</span>
                           )}
                         </div>
                       </td>
 
                       <td className="py-3 px-3">
                         {os.employee_signed ? (
-                          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-marca-suave text-marca-escura border border-marca-borda">
                             <CheckCircle2 className="w-3 h-3" />
                             Assinado ({diaDaAssinatura(os)})
                           </div>
@@ -594,7 +594,7 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
                               setSigningOS(os);
                               setIsSignModalOpen(true);
                             }}
-                            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/20 transition-colors"
+                            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-500/10 hover:bg-amber-500/20 text-amber-800 border border-amber-500/20 transition-colors"
                           >
                             <Fingerprint className="w-3 h-3" />
                             Coletar Assinatura
@@ -606,7 +606,7 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
                         <div className="flex items-center justify-end gap-1.5">
                           <button
                             onClick={() => setViewingOS(os)}
-                            className="p-1.5 text-slate-400 hover:text-slate-200 hover:bg-slate-800 rounded-lg transition-colors"
+                            className="p-1.5 text-tinta-2 hover:text-tinta hover:bg-superficie-2 rounded-lg transition-colors"
                             title="Visualizar Detalhes da OS"
                           >
                             <Eye className="w-4 h-4" />
@@ -614,7 +614,7 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
 
                           <button
                             onClick={() => exportWorkOrderOSPDF(os, organization)}
-                            className="p-1.5 text-emerald-400 hover:text-emerald-300 hover:bg-emerald-950/40 rounded-lg transition-colors"
+                            className="p-1.5 text-marca-escura hover:text-marca-escura hover:bg-marca-suave rounded-lg transition-colors"
                             title="Baixar PDF Oficial NR-01"
                           >
                             <FileDown className="w-4 h-4" />
@@ -622,7 +622,7 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
 
                           <button
                             onClick={() => handleAtualizarComInventario(os)}
-                            className="p-1.5 text-sky-400 hover:text-sky-300 hover:bg-sky-950/40 rounded-lg transition-colors"
+                            className="p-1.5 text-teal-700 hover:text-teal-700 hover:bg-teal-50 rounded-lg transition-colors"
                             title={os.employee_signed
                               ? 'Atualizar com o inventário: cria uma revisão nova, a assinar (a assinada não muda)'
                               : 'Atualizar com o inventário'}
@@ -636,7 +636,7 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
                                 deleteWorkOrderOS(os.id);
                               }
                             }}
-                            className="p-1.5 text-rose-400 hover:text-rose-300 hover:bg-rose-950/40 rounded-lg transition-colors"
+                            className="p-1.5 text-rose-700 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition-colors"
                             title="Excluir OS"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -655,42 +655,42 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
       {/* ================= MODAL: VIEW WORK ORDER ================= */}
       {viewingOS && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-4xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-superficie border border-borda rounded-2xl w-full max-w-4xl max-h-[90vh] flex flex-col shadow-sm overflow-hidden animate-in fade-in zoom-in-95 duration-200">
             {/* Modal Header */}
-            <div className="px-6 py-4 bg-slate-950 border-b border-slate-800 flex items-center justify-between">
+            <div className="px-6 py-4 bg-fundo border-b border-borda flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-indigo-500/10 border border-indigo-500/20 rounded-xl text-indigo-400">
+                <div className="p-2 bg-teal-500/10 border border-teal-500/20 rounded-xl text-teal-800">
                   <FileText className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-slate-100">
+                  <h3 className="text-base font-bold text-tinta">
                     Ordem de Serviço de Segurança e Saúde (NR-01) - {viewingOS.os_code}
                   </h3>
-                  <p className="text-xs text-slate-400">
+                  <p className="text-xs text-tinta-2">
                     {viewingOS.employee_name} • CPF: {viewingOS.employee_cpf} • {viewingOS.employee_job_title}
                   </p>
                 </div>
               </div>
               <button
                 onClick={fecharVisualizacao}
-                className="p-1.5 text-slate-400 hover:text-slate-200 hover:bg-slate-800 rounded-lg"
+                className="p-1.5 text-tinta-2 hover:text-tinta hover:bg-superficie-2 rounded-lg"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {/* Modal Body */}
-            <div className="p-6 overflow-y-auto space-y-6 text-xs text-slate-300">
+            <div className="p-6 overflow-y-auto space-y-6 text-xs text-tinta">
               {aviso?.noModal && (
                 <div
                   className={`p-3 rounded-xl border text-xs flex items-start justify-between gap-3 ${
                     aviso.tipo === 'ok'
-                      ? 'bg-emerald-950/30 border-emerald-900/50 text-emerald-300'
-                      : 'bg-rose-950/30 border-rose-900/50 text-rose-300'
+                      ? 'bg-marca-suave border-marca-borda text-marca-escura'
+                      : 'bg-rose-50 border-rose-200 text-rose-700'
                   }`}
                 >
                   <span className="whitespace-pre-line">{aviso.texto}</span>
-                  <button onClick={() => setAviso(null)} className="text-slate-400 hover:text-slate-200 shrink-0" title="Fechar aviso">
+                  <button onClick={() => setAviso(null)} className="text-tinta-2 hover:text-tinta shrink-0" title="Fechar aviso">
                     <X className="w-4 h-4" />
                   </button>
                 </div>
@@ -698,15 +698,15 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
 
               {/* Pendencias em destaque: a OS nao deve ser entregue assim */}
               {temPendenciaNaOS && (
-                <div className="p-4 bg-amber-950/30 border border-amber-600/50 rounded-xl space-y-2">
-                  <p className="text-[11px] font-bold text-amber-300 uppercase tracking-wider flex items-center gap-1.5">
+                <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl space-y-2">
+                  <p className="text-[11px] font-bold text-amber-700 uppercase tracking-wider flex items-center gap-1.5">
                     <AlertTriangle className="w-4 h-4" />
                     Pendências — resolva antes de entregar esta OS ao trabalhador
                   </p>
-                  <ul className="list-disc pl-5 space-y-1 text-amber-100/90">
+                  <ul className="list-disc pl-5 space-y-1 text-amber-700">
                     {viewingOS.pendencias?.map((p, i) => <li key={i}>{p}</li>)}
                   </ul>
-                  <p className="text-[11px] text-amber-400/80">
+                  <p className="text-[11px] text-amber-700">
                     Depois de corrigir o cadastro, use &quot;Atualizar com o inventário&quot; para refazer a OS.
                   </p>
                 </div>
@@ -714,8 +714,8 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
 
               {/* OS gravada antes de risks_detail: sem o detalhe do inventario nem as pendencias */}
               {!osComDetalhe && (
-                <div className="p-3 bg-slate-950/60 border border-slate-700 rounded-xl text-[11px] text-slate-400 flex items-start gap-2">
-                  <Info className="w-4 h-4 shrink-0 text-sky-400" />
+                <div className="p-3 bg-fundo border border-borda rounded-xl text-[11px] text-tinta-2 flex items-start gap-2">
+                  <Info className="w-4 h-4 shrink-0 text-teal-700" />
                   <span>
                     OS gerada antes da regra atual: não traz o detalhe dos riscos do inventário (fonte, danos,
                     avaliação e medidas) nem a lista de pendências. Use &quot;Atualizar com o inventário&quot; para refazê-la
@@ -725,33 +725,33 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
               )}
 
               {/* Employer & Employee Banner */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-950/60 p-4 rounded-xl border border-slate-800">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-fundo p-4 rounded-xl border border-borda">
                 <div>
-                  <h4 className="text-[11px] font-bold text-indigo-400 uppercase tracking-wider mb-2">Dados do Empregador</h4>
-                  <p><span className="text-slate-400">Empresa:</span> <strong className="text-slate-200">{viewingOS.employer_name || 'Não informado'}</strong></p>
-                  <p><span className="text-slate-400">CNPJ:</span> <span className="font-mono text-slate-200">{viewingOS.employer_document || 'Não informado'}</span></p>
-                  <p><span className="text-slate-400">CNAE / Grau de Risco:</span> {viewingOS.employer_cnae || 'Não informado'} (Grau {viewingOS.employer_risk_grade || 'não informado'})</p>
-                  <p><span className="text-slate-400">Estabelecimento:</span> {estabelecimentoDaOS || 'Não informado'}</p>
+                  <h4 className="text-[11px] font-bold text-teal-700 uppercase tracking-wider mb-2">Dados do Empregador</h4>
+                  <p><span className="text-tinta-2">Empresa:</span> <strong className="text-tinta">{viewingOS.employer_name || 'Não informado'}</strong></p>
+                  <p><span className="text-tinta-2">CNPJ:</span> <span className="font-mono text-tinta">{viewingOS.employer_document || 'Não informado'}</span></p>
+                  <p><span className="text-tinta-2">CNAE / Grau de Risco:</span> {viewingOS.employer_cnae || 'Não informado'} (Grau {viewingOS.employer_risk_grade || 'não informado'})</p>
+                  <p><span className="text-tinta-2">Estabelecimento:</span> {estabelecimentoDaOS || 'Não informado'}</p>
                 </div>
 
                 <div>
-                  <h4 className="text-[11px] font-bold text-indigo-400 uppercase tracking-wider mb-2">Dados do Trabalhador</h4>
-                  <p><span className="text-slate-400">Nome:</span> <strong className="text-slate-200">{viewingOS.employee_name}</strong></p>
-                  <p><span className="text-slate-400">CPF:</span> <span className="font-mono text-slate-200">{viewingOS.employee_cpf || 'Não informado'}</span></p>
-                  <p><span className="text-slate-400">Cargo / CBO:</span> {viewingOS.employee_job_title || 'Não informado'} (CBO: {viewingOS.employee_cbo || 'não informado'})</p>
-                  <p><span className="text-slate-400">Setor / GHE:</span> {viewingOS.employee_sector || 'Não informado'} | {viewingOS.employee_ghe_name || 'GHE não atribuído'}</p>
+                  <h4 className="text-[11px] font-bold text-teal-700 uppercase tracking-wider mb-2">Dados do Trabalhador</h4>
+                  <p><span className="text-tinta-2">Nome:</span> <strong className="text-tinta">{viewingOS.employee_name}</strong></p>
+                  <p><span className="text-tinta-2">CPF:</span> <span className="font-mono text-tinta">{viewingOS.employee_cpf || 'Não informado'}</span></p>
+                  <p><span className="text-tinta-2">Cargo / CBO:</span> {viewingOS.employee_job_title || 'Não informado'} (CBO: {viewingOS.employee_cbo || 'não informado'})</p>
+                  <p><span className="text-tinta-2">Setor / GHE:</span> {viewingOS.employee_sector || 'Não informado'} | {viewingOS.employee_ghe_name || 'GHE não atribuído'}</p>
                 </div>
               </div>
 
               {/* Job Description */}
               <div className="space-y-2">
-                <h4 className="text-xs font-bold text-slate-100 uppercase tracking-wider flex items-center gap-1.5 text-indigo-400">
+                <h4 className="text-xs font-bold text-tinta uppercase tracking-wider flex items-center gap-1.5 text-teal-700">
                   <Layers className="w-3.5 h-3.5" />
                   1. Atividades do Cargo
                 </h4>
-                <div className="p-3 bg-slate-950/40 border border-slate-800 rounded-lg text-slate-300 leading-relaxed">
+                <div className="p-3 bg-fundo border border-borda rounded-lg text-tinta leading-relaxed">
                   {atividadesDaOS || (
-                    <span className="text-slate-500 italic">
+                    <span className="text-tinta-2 italic">
                       Não informado{temPendenciaNaOS ? ' (ver as pendências acima)' : ''}.
                     </span>
                   )}
@@ -760,7 +760,7 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
 
               {/* Risks Inventory */}
               <div className="space-y-2">
-                <h4 className="text-xs font-bold text-slate-100 uppercase tracking-wider flex items-center gap-1.5 text-indigo-400">
+                <h4 className="text-xs font-bold text-tinta uppercase tracking-wider flex items-center gap-1.5 text-teal-700">
                   <ShieldCheck className="w-3.5 h-3.5" />
                   2. Riscos Ocupacionais do Inventário (NR-01, 1.4.1, &quot;b&quot;, I e IV)
                 </h4>
@@ -768,12 +768,12 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
                   viewingOS.risks_detail.length > 0 ? (
                     <div className="space-y-2">
                       {viewingOS.risks_detail.map((r, i) => (
-                        <div key={i} className="p-3 bg-slate-950/40 border border-slate-800 rounded-lg space-y-2">
+                        <div key={i} className="p-3 bg-fundo border border-borda rounded-lg space-y-2">
                           <div className="flex flex-wrap items-center gap-2">
-                            <span className={`px-2 py-0.5 rounded border text-[10px] font-bold ${COR_DA_CATEGORIA[r.categoria] || 'bg-slate-800 text-slate-300 border-slate-700'}`}>
+                            <span className={`px-2 py-0.5 rounded border text-[10px] font-bold ${COR_DA_CATEGORIA[r.categoria] || 'bg-superficie-2 text-tinta border-borda'}`}>
                               {r.categoria}
                             </span>
-                            <strong className="text-slate-100">{r.agente}</strong>
+                            <strong className="text-tinta">{r.agente}</strong>
                           </div>
                           {!ehAusenciaDeRisco(r) && (
                             <dl className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-1.5 text-[11px]">
@@ -791,27 +791,27 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
                       ))}
                     </div>
                   ) : (
-                    <p className="p-3 bg-slate-950/40 border border-slate-800 rounded-lg text-slate-500 italic">
+                    <p className="p-3 bg-fundo border border-borda rounded-lg text-tinta-2 italic">
                       Nenhum risco do inventário nesta OS{temPendenciaNaOS ? ' (ver as pendências acima)' : ''}.
                     </p>
                   )
                 ) : (
                   // OS antiga: as listas por categoria, como foram gravadas.
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <div className="p-3 bg-slate-950/40 border border-slate-800 rounded-lg">
-                      <p className="font-bold text-blue-400 mb-1">Riscos Físicos:</p>
+                    <div className="p-3 bg-fundo border border-borda rounded-lg">
+                      <p className="font-bold text-teal-700 mb-1">Riscos Físicos:</p>
                       <ListaDaOS itens={viewingOS.physical_risks} vazio="Nenhum registrado nesta OS." />
                     </div>
-                    <div className="p-3 bg-slate-950/40 border border-slate-800 rounded-lg">
-                      <p className="font-bold text-rose-400 mb-1">Riscos Químicos & Biológicos:</p>
+                    <div className="p-3 bg-fundo border border-borda rounded-lg">
+                      <p className="font-bold text-rose-700 mb-1">Riscos Químicos & Biológicos:</p>
                       <ListaDaOS itens={[...(viewingOS.chemical_risks || []), ...(viewingOS.biological_risks || [])]} vazio="Nenhum registrado nesta OS." />
                     </div>
-                    <div className="p-3 bg-slate-950/40 border border-slate-800 rounded-lg">
-                      <p className="font-bold text-amber-400 mb-1">Riscos Ergonômicos:</p>
+                    <div className="p-3 bg-fundo border border-borda rounded-lg">
+                      <p className="font-bold text-amber-700 mb-1">Riscos Ergonômicos:</p>
                       <ListaDaOS itens={viewingOS.ergonomic_risks} vazio="Nenhum registrado nesta OS." />
                     </div>
-                    <div className="p-3 bg-slate-950/40 border border-slate-800 rounded-lg">
-                      <p className="font-bold text-orange-400 mb-1">Riscos de Acidentes / Mecânicos:</p>
+                    <div className="p-3 bg-fundo border border-borda rounded-lg">
+                      <p className="font-bold text-amber-700 mb-1">Riscos de Acidentes / Mecânicos:</p>
                       <ListaDaOS itens={viewingOS.accident_mechanical_risks} vazio="Nenhum registrado nesta OS." />
                     </div>
                   </div>
@@ -820,13 +820,13 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
 
               {/* Medidas de prevencao adotadas: EPC, medidas administrativas e EPI */}
               <div className="space-y-2">
-                <h4 className="text-xs font-bold text-slate-100 uppercase tracking-wider flex items-center gap-1.5 text-indigo-400">
+                <h4 className="text-xs font-bold text-tinta uppercase tracking-wider flex items-center gap-1.5 text-teal-700">
                   <HardHat className="w-3.5 h-3.5" />
                   3. Medidas de Prevenção Adotadas (NR-01, 1.4.1, &quot;b&quot;, II)
                 </h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  <div className="p-3 bg-slate-950/40 border border-slate-800 rounded-lg">
-                    <p className="font-bold text-sky-400 mb-1">Proteção coletiva (EPC)</p>
+                  <div className="p-3 bg-fundo border border-borda rounded-lg">
+                    <p className="font-bold text-teal-700 mb-1">Proteção coletiva (EPC)</p>
                     <ListaDaOS
                       itens={viewingOS.collective_protections_epc}
                       vazio={osComDetalhe
@@ -834,9 +834,9 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
                         : 'Nenhuma registrada nesta OS.'}
                     />
                   </div>
-                  <div className="p-3 bg-slate-950/40 border border-slate-800 rounded-lg">
+                  <div className="p-3 bg-fundo border border-borda rounded-lg">
                     {/* Na OS antiga eram boas praticas genericas, nao medidas adotadas */}
-                    <p className="font-bold text-sky-400 mb-1">
+                    <p className="font-bold text-teal-700 mb-1">
                       {osComDetalhe ? 'Medidas administrativas e de organização do trabalho' : 'Procedimentos registrados nesta OS'}
                     </p>
                     <ListaDaOS
@@ -845,26 +845,26 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
                     />
                   </div>
                 </div>
-                <div className="p-3 bg-slate-950/40 border border-slate-800 rounded-lg">
-                  <p className="font-bold text-sky-400 mb-1">Proteção individual (EPI, NR-06)</p>
+                <div className="p-3 bg-fundo border border-borda rounded-lg">
+                  <p className="font-bold text-teal-700 mb-1">Proteção individual (EPI, NR-06)</p>
                   {viewingOS.mandatory_epis && viewingOS.mandatory_epis.length > 0 ? (
-                    <div className="divide-y divide-slate-800">
+                    <div className="divide-y divide-borda">
                       {viewingOS.mandatory_epis.map((epi, idx) => (
                         <div key={idx} className="py-2 flex flex-wrap items-center justify-between gap-2">
                           <div>
-                            <strong className="text-slate-200">{epi.epi_name}</strong>
-                            <span className="ml-2 px-2 py-0.5 bg-indigo-500/10 text-indigo-400 rounded text-[10px] font-mono">
+                            <strong className="text-tinta">{epi.epi_name}</strong>
+                            <span className="ml-2 px-2 py-0.5 bg-teal-500/10 text-teal-800 rounded text-[10px] font-mono">
                               CA {epi.ca_number || 'não informado'}
                             </span>
                           </div>
                           {epi.usage_recommendation && (
-                            <span className="text-slate-400 text-[11px]">{epi.usage_recommendation}</span>
+                            <span className="text-tinta-2 text-[11px]">{epi.usage_recommendation}</span>
                           )}
                         </div>
                       ))}
                     </div>
                   ) : (
-                    <p className="text-slate-500 italic">
+                    <p className="text-tinta-2 italic">
                       {osComDetalhe ? 'Nenhum EPI definido no inventário de riscos.' : 'Nenhum EPI registrado nesta OS.'}
                     </p>
                   )}
@@ -873,11 +873,11 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
 
               {/* Emergencia: os procedimentos do estabelecimento */}
               <div className="space-y-2">
-                <h4 className="text-xs font-bold text-slate-100 uppercase tracking-wider flex items-center gap-1.5 text-indigo-400">
+                <h4 className="text-xs font-bold text-tinta uppercase tracking-wider flex items-center gap-1.5 text-teal-700">
                   <AlertTriangle className="w-3.5 h-3.5" />
                   4. Em Caso de Acidente ou Emergência (NR-01, 1.4.1, &quot;e&quot;)
                 </h4>
-                <div className="p-3 bg-amber-950/20 border border-amber-900/40 rounded-lg">
+                <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg">
                   <ListaDaOS
                     itens={viewingOS.emergency_accident_conduct}
                     vazio={temPendenciaNaOS ? 'Não informado (ver as pendências acima).' : 'Não informado.'}
@@ -887,16 +887,16 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
 
               {/* Obrigacoes e, so quando houver, proibicoes do posto */}
               <div className="space-y-2">
-                <h4 className="text-xs font-bold text-slate-100 uppercase tracking-wider flex items-center gap-1.5 text-indigo-400">
+                <h4 className="text-xs font-bold text-tinta uppercase tracking-wider flex items-center gap-1.5 text-teal-700">
                   <UserCheck className="w-3.5 h-3.5" />
                   5. Obrigações do Trabalhador
                 </h4>
-                <div className="p-3 bg-slate-950/40 border border-slate-800 rounded-lg">
+                <div className="p-3 bg-fundo border border-borda rounded-lg">
                   <ListaDaOS itens={viewingOS.mandatory_employee_obligations} vazio="Não informado." />
                 </div>
                 {(viewingOS.prohibitions_unsafe_acts?.length || 0) > 0 && (
-                  <div className="p-3 bg-rose-950/20 border border-rose-900/30 rounded-lg">
-                    <p className="font-bold text-rose-300 mb-1">Proibições expressas e atos inseguros:</p>
+                  <div className="p-3 bg-rose-50 border border-rose-200 rounded-lg">
+                    <p className="font-bold text-rose-700 mb-1">Proibições expressas e atos inseguros:</p>
                     <ListaDaOS itens={viewingOS.prohibitions_unsafe_acts} vazio="" />
                   </div>
                 )}
@@ -904,37 +904,37 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
 
               {/* Ato faltoso: o texto gravado na OS */}
               {viewingOS.disciplinary_sanctions_text && (
-                <div className="p-3 bg-rose-950/20 border border-rose-900/30 rounded-lg text-rose-300">
+                <div className="p-3 bg-rose-50 border border-rose-200 rounded-lg text-rose-700">
                   <p className="font-bold mb-1">Ato faltoso (CLT, art. 158):</p>
                   <p className="text-[11px] leading-relaxed">{viewingOS.disciplinary_sanctions_text}</p>
                 </div>
               )}
 
               {/* Legal Framework & Signatures */}
-              <div className="p-4 bg-slate-950 rounded-xl border border-slate-800 flex flex-col md:flex-row items-center justify-between gap-4">
+              <div className="p-4 bg-fundo rounded-xl border border-borda flex flex-col md:flex-row items-center justify-between gap-4">
                 <div>
-                  <p className="text-slate-400 text-[11px]">Amparo Legal:</p>
-                  <p className="font-semibold text-slate-200 text-[11px]">{viewingOS.legal_framework || 'Não informado'}</p>
+                  <p className="text-tinta-2 text-[11px]">Amparo Legal:</p>
+                  <p className="font-semibold text-tinta text-[11px]">{viewingOS.legal_framework || 'Não informado'}</p>
                 </div>
                 <div className="text-right">
                   {viewingOS.employee_signed ? (
                     <>
-                      <div className="text-emerald-400 font-bold flex items-center gap-1.5">
+                      <div className="text-marca-escura font-bold flex items-center gap-1.5">
                         <CheckCircle2 className="w-4 h-4" />
                         Assinado em {diaDaAssinatura(viewingOS)}
                       </div>
-                      <p className="text-[10px] text-slate-500 mt-0.5">
+                      <p className="text-[10px] text-tinta-2 mt-0.5">
                         {METODO_DA_ASSINATURA[viewingOS.signature_method] || 'método não registrado'}
                       </p>
                     </>
                   ) : (
-                    <div className="text-amber-400 font-bold flex items-center gap-1.5">
+                    <div className="text-amber-700 font-bold flex items-center gap-1.5">
                       <AlertTriangle className="w-4 h-4" />
                       Assinatura Pendente
                     </div>
                   )}
                   {viewingOS.signature_hash && (
-                    <p className="text-[10px] font-mono text-slate-500 mt-0.5 truncate max-w-[240px]">
+                    <p className="text-[10px] font-mono text-tinta-2 mt-0.5 truncate max-w-[240px]">
                       Hash: {viewingOS.signature_hash}
                     </p>
                   )}
@@ -943,10 +943,10 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
             </div>
 
             {/* Modal Footer */}
-            <div className="px-6 py-4 bg-slate-950 border-t border-slate-800 flex items-center justify-between">
+            <div className="px-6 py-4 bg-fundo border-t border-borda flex items-center justify-between">
               <button
                 onClick={fecharVisualizacao}
-                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold"
+                className="px-4 py-2 bg-superficie-2 hover:bg-superficie-3 text-tinta rounded-xl text-xs font-semibold"
               >
                 Fechar
               </button>
@@ -954,7 +954,7 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
               <div className="flex flex-wrap items-center justify-end gap-2">
                 <button
                   onClick={() => handleAtualizarComInventario(viewingOS)}
-                  className="px-4 py-2 bg-sky-600/20 hover:bg-sky-600/30 text-sky-300 border border-sky-500/30 rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5"
+                  className="px-4 py-2 bg-teal-600/20 hover:bg-teal-600/30 text-teal-800 border border-teal-500/30 rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5"
                   title={viewingOS.employee_signed
                     ? 'A OS assinada não muda: será criada uma revisão nova, a assinar'
                     : 'Refaz esta OS com o inventário de riscos, o plano de ação e o cadastro de hoje'}
@@ -969,7 +969,7 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
                       setSigningOS(viewingOS);
                       setIsSignModalOpen(true);
                     }}
-                    className="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-white rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5"
+                    className="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5"
                   >
                     <Fingerprint className="w-3.5 h-3.5" />
                     Coletar Assinatura / Biometria
@@ -978,7 +978,7 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
 
                 <button
                   onClick={() => exportWorkOrderOSPDF(viewingOS, organization)}
-                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5 shadow-md shadow-indigo-600/20"
+                  className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5 shadow-md"
                 >
                   <Printer className="w-3.5 h-3.5" />
                   Imprimir PDF Oficial
@@ -992,15 +992,15 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
       {/* ================= MODAL: CREATE / GENERATE SINGLE OS ================= */}
       {isCreateModalOpen && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-[32rem] shadow-2xl p-6 space-y-5 animate-in fade-in zoom-in-95 duration-200">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <h3 className="text-base font-bold text-slate-100 flex items-center gap-2">
-                <FileText className="w-5 h-5 text-indigo-400" />
+          <div className="bg-superficie border border-borda rounded-2xl w-full max-w-[32rem] shadow-sm p-6 space-y-5 animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between border-b border-borda pb-3">
+              <h3 className="text-base font-bold text-tinta flex items-center gap-2">
+                <FileText className="w-5 h-5 text-teal-700" />
                 Gerar Nova Ordem de Serviço (NR-01)
               </h3>
               <button
                 onClick={() => setIsCreateModalOpen(false)}
-                className="text-slate-400 hover:text-slate-200"
+                className="text-tinta-2 hover:text-tinta"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -1008,11 +1008,11 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
 
             <div className="space-y-4 text-xs">
               <div className="space-y-1.5">
-                <label className="font-semibold text-slate-300">Selecione o Colaborador:</label>
+                <label className="font-semibold text-tinta">Selecione o Colaborador:</label>
                 <select
                   value={selectedEmployeeToGenerate}
                   onChange={e => setSelectedEmployeeToGenerate(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-slate-100 focus:border-indigo-500 focus:outline-none"
+                  className="w-full bg-fundo border border-borda rounded-xl p-2.5 text-tinta focus:border-teal-500 focus:outline-none"
                 >
                   <option value="">-- Selecione um colaborador --</option>
                   {employees
@@ -1023,18 +1023,18 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
                       </option>
                     ))}
                 </select>
-                <p className="text-[11px] text-slate-500">
+                <p className="text-[11px] text-tinta-2">
                   O sistema irá cruzar automaticamente o GHE do colaborador com os riscos mapeados no PGR e a relação de EPIs.
                 </p>
               </div>
 
-              <div className="p-3 bg-indigo-950/30 border border-indigo-900/40 rounded-xl text-indigo-300 space-y-1">
+              <div className="p-3 bg-teal-50 border border-teal-200 rounded-xl text-teal-700 space-y-1">
                 <div className="font-bold flex items-center gap-1.5">
                   <Info className="w-4 h-4" />
                   Conteúdo da OS (NR-01, 1.4.1, &quot;c&quot;)
                 </div>
                 {/* O texto antigo prometia "proibicoes do Art. 158" e diretrizes de emergencia que eram fixas; hoje tudo sai do cadastro. */}
-                <p className="text-[11px] text-indigo-200/80">
+                <p className="text-[11px] text-teal-700">
                   A OS traz os riscos do inventário do GHE do trabalhador, as medidas de prevenção adotadas, os procedimentos
                   de emergência do estabelecimento e as obrigações do trabalhador (NR-01, 1.4.2). O que faltar no cadastro
                   aparece como pendência, e não como texto padrão.
@@ -1042,17 +1042,17 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
               </div>
             </div>
 
-            <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-800">
+            <div className="flex items-center justify-end gap-3 pt-3 border-t border-borda">
               <button
                 onClick={() => setIsCreateModalOpen(false)}
-                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold"
+                className="px-4 py-2 bg-superficie-2 hover:bg-superficie-3 text-tinta rounded-xl text-xs font-semibold"
               >
                 Cancelar
               </button>
               <button
                 onClick={handleGenerateIndividual}
                 disabled={!selectedEmployeeToGenerate}
-                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5"
+                className="px-4 py-2 bg-teal-600 hover:bg-teal-700 disabled:opacity-50 text-white rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5"
               >
                 <Sparkles className="w-3.5 h-3.5" />
                 Gerar Ordem de Serviço
@@ -1065,10 +1065,10 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
       {/* ================= MODAL: COLLECT SIGNATURE / BIOMETRICS ================= */}
       {isSignModalOpen && signingOS && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-[28rem] shadow-2xl p-6 space-y-5 animate-in fade-in zoom-in-95 duration-200">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <h3 className="text-base font-bold text-slate-100 flex items-center gap-2">
-                <Fingerprint className="w-5 h-5 text-emerald-400" />
+          <div className="bg-superficie border border-borda rounded-2xl w-full max-w-[28rem] shadow-sm p-6 space-y-5 animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between border-b border-borda pb-3">
+              <h3 className="text-base font-bold text-tinta flex items-center gap-2">
+                <Fingerprint className="w-5 h-5 text-marca-escura" />
                 Coleta de Assinatura - {signingOS.os_code}
               </h3>
               <button
@@ -1076,29 +1076,29 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
                   setIsSignModalOpen(false);
                   setSigningOS(null);
                 }}
-                className="text-slate-400 hover:text-slate-200"
+                className="text-tinta-2 hover:text-tinta"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <div className="space-y-4 text-xs">
-              <div className="p-3 bg-slate-950 rounded-xl border border-slate-800">
-                <p className="text-slate-400 text-[11px]">Colaborador:</p>
-                <p className="font-bold text-slate-100 text-sm">{signingOS.employee_name}</p>
-                <p className="font-mono text-slate-400 text-xs">CPF: {signingOS.employee_cpf}</p>
+              <div className="p-3 bg-fundo rounded-xl border border-borda">
+                <p className="text-tinta-2 text-[11px]">Colaborador:</p>
+                <p className="font-bold text-tinta text-sm">{signingOS.employee_name}</p>
+                <p className="font-mono text-tinta-2 text-xs">CPF: {signingOS.employee_cpf}</p>
               </div>
 
               <div className="space-y-1.5">
-                <label className="font-semibold text-slate-300">Método de Assinatura Legal:</label>
+                <label className="font-semibold text-tinta">Método de Assinatura Legal:</label>
                 <div className="grid grid-cols-2 gap-2">
                   <button
                     type="button"
                     onClick={() => setSignatureMethod('DIGITAL_BIOMETRIC')}
                     className={`p-3 rounded-xl border text-left transition-all ${
                       signatureMethod === 'DIGITAL_BIOMETRIC'
-                        ? 'bg-emerald-500/10 border-emerald-500 text-emerald-300 font-bold'
-                        : 'bg-slate-950 border-slate-800 text-slate-400'
+                        ? 'bg-marca-suave border-marca-borda text-marca-escura font-bold'
+                        : 'bg-fundo border-borda text-tinta-2'
                     }`}
                   >
                     <Camera className="w-4 h-4 mb-1.5" />
@@ -1110,8 +1110,8 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
                     onClick={() => setSignatureMethod('PHYSICAL_MANUAL')}
                     className={`p-3 rounded-xl border text-left transition-all ${
                       signatureMethod === 'PHYSICAL_MANUAL'
-                        ? 'bg-emerald-500/10 border-emerald-500 text-emerald-300 font-bold'
-                        : 'bg-slate-950 border-slate-800 text-slate-400'
+                        ? 'bg-marca-suave border-marca-borda text-marca-escura font-bold'
+                        : 'bg-fundo border-borda text-tinta-2'
                     }`}
                   >
                     <UserCheck className="w-4 h-4 mb-1.5" />
@@ -1120,18 +1120,18 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
                 </div>
               </div>
 
-              <div className="p-3 bg-slate-950/60 rounded-xl border border-slate-800 text-[11px] text-slate-400">
+              <div className="p-3 bg-fundo rounded-xl border border-borda text-[11px] text-tinta-2">
                 Ao confirmar, o sistema registrará data, hora e hash SHA-256 de integridade criptográfica conforme a Portaria MTP nº 672/2021.
               </div>
             </div>
 
-            <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-800">
+            <div className="flex items-center justify-end gap-3 pt-3 border-t border-borda">
               <button
                 onClick={() => {
                   setIsSignModalOpen(false);
                   setSigningOS(null);
                 }}
-                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold"
+                className="px-4 py-2 bg-superficie-2 hover:bg-superficie-3 text-tinta rounded-xl text-xs font-semibold"
               >
                 Cancelar
               </button>
@@ -1139,7 +1139,7 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
               <button
                 onClick={handleSignConfirm}
                 disabled={isSimulatingBiometry}
-                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5"
+                className="px-4 py-2 bg-marca-escura hover:opacity-90 text-white rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5"
               >
                 {isSimulatingBiometry ? (
                   <>Validando Biometria...</>

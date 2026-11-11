@@ -493,14 +493,14 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
   return (
     <div id="proposals-view-container" className="space-y-6 pb-12">
       {/* Header Bento Card */}
-      <div id="proposals-header" className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl">
+      <div id="proposals-header" className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-superficie border border-borda rounded-3xl p-6 shadow-sm">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-indigo-500/10 border border-indigo-500/20 rounded-2xl flex items-center justify-center text-indigo-400">
+          <div className="w-10 h-10 bg-teal-500/10 border border-teal-500/20 rounded-2xl flex items-center justify-center text-teal-800">
             <FileSpreadsheet className="w-5 h-5" />
           </div>
           <div>
-            <h1 className="text-xl font-bold tracking-tight text-white">Propostas Comerciais SST & Catálogo de NRs</h1>
-            <p className="text-xs text-slate-400 mt-0.5">
+            <h1 className="text-xl font-bold tracking-tight text-tinta">Propostas Comerciais SST & Catálogo de NRs</h1>
+            <p className="text-xs text-tinta-2 mt-0.5">
               Elaboração técnica com seleção em grid de NRs, edição completa de valores/descrições e motor de descontos (RN001).
             </p>
           </div>
@@ -509,7 +509,7 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
           <button 
             id="btn-create-proposal"
             onClick={handleOpenNewProposal}
-            className="px-4 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-2xl text-xs font-bold shadow-lg shadow-emerald-950/40 transition flex items-center space-x-1.5"
+            className="bg-marca-escura px-4 py-2.5 text-white rounded-2xl text-xs font-bold shadow-sm transition flex items-center space-x-1.5"
           >
             <Plus className="w-4 h-4" />
             <span>Criar Nova Proposta</span>
@@ -532,36 +532,36 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
                 onClick={() => setSelectedProposal(prop)}
                 className={`p-5 rounded-3xl border cursor-pointer transition flex flex-col justify-between ${
                   isSelected 
-                    ? 'bg-slate-900 border-indigo-500/80 shadow-lg shadow-indigo-500/10 ring-1 ring-indigo-500/40' 
-                    : 'bg-slate-900/60 border-slate-800 hover:border-slate-700 hover:bg-slate-900/90'
+                    ? 'bg-superficie border-borda shadow-sm ring-1 ring-teal-500/40' 
+                    : 'bg-superficie border-borda hover:border-borda hover:bg-superficie'
                 }`}
               >
                 <div className="flex items-start justify-between">
                   <div className="min-w-0 flex-1 pr-2">
                     <div className="flex items-center space-x-2">
-                      <span className="font-mono text-xs font-bold text-slate-200">{prop.proposal_number}</span>
+                      <span className="font-mono text-xs font-bold text-tinta">{prop.proposal_number}</span>
                       <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${
-                        prop.status === 'APPROVED' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
-                        prop.status === 'SENT' ? 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20' :
-                        prop.status === 'VIEWED' ? 'bg-purple-500/10 text-purple-400 border-purple-500/20' :
-                        prop.status === 'REJECTED' ? 'bg-rose-500/10 text-rose-400 border-rose-500/20' : 'bg-slate-800 text-slate-300 border-slate-700'
+                        prop.status === 'APPROVED' ? 'bg-marca-suave text-marca-escura border-marca-borda' :
+                        prop.status === 'SENT' ? 'bg-teal-500/10 text-teal-800 border-teal-500/20' :
+                        prop.status === 'VIEWED' ? 'bg-teal-500/10 text-teal-800 border-teal-500/20' :
+                        prop.status === 'REJECTED' ? 'bg-rose-500/10 text-rose-700 border-rose-500/20' : 'bg-superficie-2 text-tinta border-borda'
                       }`}>
                         {prop.status}
                       </span>
                     </div>
-                    <div className="text-sm font-semibold text-white mt-2 truncate">{client?.trade_name}</div>
-                    <div className="text-xs text-slate-400 truncate mt-0.5">{prop.title}</div>
+                    <div className="text-sm font-semibold text-tinta mt-2 truncate">{client?.trade_name}</div>
+                    <div className="text-xs text-tinta-2 truncate mt-0.5">{prop.title}</div>
                   </div>
                   <div className="text-right font-mono flex-shrink-0">
-                    <span className="text-sm font-bold text-emerald-400 block">
+                    <span className="text-sm font-bold text-marca-escura block">
                       R$ {prop.total.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                     </span>
                     {prop.discount > 0 && (
-                      <span className="text-[10px] text-rose-400 block font-medium">
+                      <span className="text-[10px] text-rose-700 block font-medium">
                         Desc: -R$ {prop.discount.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                       </span>
                     )}
-                    <span className="text-[10px] text-slate-500 mt-1 block">
+                    <span className="text-[10px] text-tinta-2 mt-1 block">
                       Validade: {dataDoRegistro(prop.valid_until)}
                     </span>
                   </div>
@@ -573,42 +573,42 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
 
         {/* Selected Proposal Preview / Action Pane */}
         {selectedProposal ? (
-          <div id="proposal-detail-pane" className="lg:col-span-7 bg-slate-900 p-6 rounded-3xl border border-slate-800 shadow-xl space-y-6 flex flex-col justify-between">
+          <div id="proposal-detail-pane" className="lg:col-span-7 bg-superficie p-6 rounded-3xl border border-borda shadow-sm space-y-6 flex flex-col justify-between">
             <div className="space-y-5">
               {/* Header */}
-              <div className="flex items-start justify-between border-b border-slate-800/80 pb-4 gap-3">
+              <div className="flex items-start justify-between border-b border-borda pb-4 gap-3">
                 <div className="min-w-0 flex-1">
-                  <div className="flex items-center space-x-2 font-mono text-xs text-slate-400">
+                  <div className="flex items-center space-x-2 font-mono text-xs text-tinta-2">
                     <span>Proposta Nº</span>
-                    <span className="font-bold text-slate-200">{selectedProposal.proposal_number}</span>
+                    <span className="font-bold text-tinta">{selectedProposal.proposal_number}</span>
                     <span>•</span>
                     <span>{dataDoRegistro(selectedProposal.created_at)}</span>
                   </div>
-                  <h2 className="text-lg font-bold text-white mt-1 break-words">{selectedProposal.title}</h2>
-                  <p className="text-xs text-slate-400 mt-0.5">
-                    Cliente: <strong className="text-slate-200">{clients.find(c => c.id === selectedProposal.client_id)?.trade_name}</strong>
+                  <h2 className="text-lg font-bold text-tinta mt-1 break-words">{selectedProposal.title}</h2>
+                  <p className="text-xs text-tinta-2 mt-0.5">
+                    Cliente: <strong className="text-tinta">{clients.find(c => c.id === selectedProposal.client_id)?.trade_name}</strong>
                   </p>
                 </div>
 
                 <div className="flex items-center space-x-2 flex-shrink-0">
                   <button
                     onClick={() => handleOpenEditProposal(selectedProposal)}
-                    className="p-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-semibold border border-slate-700 transition flex items-center space-x-1"
+                    className="p-2 bg-superficie-2 hover:bg-superficie-3 text-tinta rounded-xl text-xs font-semibold border border-borda transition flex items-center space-x-1"
                     title="Editar Proposta, Preços e Descrições de NRs"
                   >
-                    <Edit2 className="w-3.5 h-3.5 text-indigo-400" />
+                    <Edit2 className="w-3.5 h-3.5 text-teal-700" />
                     <span>Editar / Descontos</span>
                   </button>
                   <button
                     onClick={() => setDeletingProposal(selectedProposal)}
-                    className="p-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 rounded-xl text-xs font-semibold border border-rose-500/20 transition"
+                    className="p-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-800 rounded-xl text-xs font-semibold border border-rose-500/20 transition"
                     title="Excluir Proposta"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
                   <span className={`text-xs font-bold px-3 py-1 rounded-full border ${
-                    selectedProposal.status === 'APPROVED' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
-                    selectedProposal.status === 'SENT' ? 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20' : 'bg-slate-800 text-slate-300 border-slate-700'
+                    selectedProposal.status === 'APPROVED' ? 'bg-marca-suave text-marca-escura border-marca-borda' :
+                    selectedProposal.status === 'SENT' ? 'bg-teal-500/10 text-teal-800 border-teal-500/20' : 'bg-superficie-2 text-tinta border-borda'
                   }`}>
                     {selectedProposal.status}
                   </span>
@@ -618,14 +618,14 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
               {/* Scope Items Table */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold uppercase text-slate-400 tracking-wider">
+                  <span className="text-xs font-semibold uppercase text-tinta-2 tracking-wider">
                     Serviços e Laudos Regulamentares ({selectedProposal.items.length})
                   </span>
-                  <span className="text-[11px] text-slate-400">Escopos e Valores Customizados</span>
+                  <span className="text-[11px] text-tinta-2">Escopos e Valores Customizados</span>
                 </div>
-                <div className="border border-slate-800 rounded-2xl overflow-x-auto bg-slate-950/40">
+                <div className="border border-borda rounded-2xl overflow-x-auto bg-fundo">
                   <table className="w-full text-left text-xs">
-                    <thead className="text-slate-400 font-semibold border-b border-slate-800 text-[11px] uppercase bg-slate-900/60">
+                    <thead className="text-tinta-2 font-semibold border-b border-borda text-[11px] uppercase bg-superficie">
                       <tr>
                         <th className="py-3 px-3.5">Serviço Técnico / NR</th>
                         <th className="py-3 px-3.5 text-center">Qtd</th>
@@ -634,35 +634,35 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
                         <th className="py-3 px-3.5 text-right">Total Líquido</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-800/60">
+                    <tbody className="divide-y divide-borda">
                       {selectedProposal.items.map((item, idx) => {
                         const itemDisc = item.discount || 0;
                         const hasDiscount = itemDisc > 0;
 
                         return (
-                          <tr key={idx} className="hover:bg-slate-800/30 transition">
+                          <tr key={idx} className="hover:bg-superficie-2 transition">
                             <td className="py-3.5 px-3.5">
-                              <div className="font-bold text-slate-100">{item.service_name}</div>
-                              <div className="text-[11px] text-slate-400 mt-1 whitespace-pre-line leading-relaxed">
+                              <div className="font-bold text-tinta">{item.service_name}</div>
+                              <div className="text-[11px] text-tinta-2 mt-1 whitespace-pre-line leading-relaxed">
                                 {item.description}
                               </div>
                             </td>
-                            <td className="py-3.5 px-3.5 text-center font-mono text-slate-300">
+                            <td className="py-3.5 px-3.5 text-center font-mono text-tinta">
                               {item.quantity}
                             </td>
-                            <td className="py-3.5 px-3.5 text-right font-mono text-slate-300">
+                            <td className="py-3.5 px-3.5 text-right font-mono text-tinta">
                               R$ {item.unit_price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                             </td>
                             <td className="py-3.5 px-3.5 text-right font-mono">
                               {hasDiscount ? (
-                                <span className="text-rose-400 text-[11px] font-semibold bg-rose-500/10 px-2 py-0.5 rounded-full border border-rose-500/20">
+                                <span className="text-rose-700 text-[11px] font-semibold bg-rose-500/10 px-2 py-0.5 rounded-full border border-rose-500/20">
                                   - R$ {itemDisc.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                                 </span>
                               ) : (
-                                <span className="text-slate-500 text-[11px]">-</span>
+                                <span className="text-tinta-2 text-[11px]">-</span>
                               )}
                             </td>
-                            <td className="py-3.5 px-3.5 text-right font-mono font-bold text-emerald-400">
+                            <td className="py-3.5 px-3.5 text-right font-mono font-bold text-marca-escura">
                               R$ {item.total.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                             </td>
                           </tr>
@@ -674,67 +674,67 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
               </div>
 
               {/* Financial Summary Bento Box */}
-              <div className="bg-slate-950/60 p-4 rounded-2xl border border-slate-800 space-y-2 text-xs">
-                <div className="flex justify-between text-slate-400">
+              <div className="bg-fundo p-4 rounded-2xl border border-borda space-y-2 text-xs">
+                <div className="flex justify-between text-tinta-2">
                   <span>Subtotal Bruto (Soma dos Serviços):</span>
-                  <span className="font-mono text-slate-200">
+                  <span className="font-mono text-tinta">
                     R$ {selectedProposal.subtotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                   </span>
                 </div>
                 {selectedProposal.discount > 0 && (
-                  <div className="flex justify-between text-rose-400 font-medium">
+                  <div className="flex justify-between text-rose-700 font-medium">
                     <span>Desconto Total Concedido:</span>
                     <span className="font-mono">
                       - R$ {selectedProposal.discount.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                     </span>
                   </div>
                 )}
-                <div className="flex justify-between text-base font-bold text-white pt-2 border-t border-slate-800">
+                <div className="flex justify-between text-base font-bold text-tinta pt-2 border-t border-borda">
                   <span>Valor Total da Proposta:</span>
-                  <span className="font-mono text-emerald-400">
+                  <span className="font-mono text-marca-escura">
                     R$ {selectedProposal.total.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                   </span>
                 </div>
                 {/* Era "Condicao padrao." quando nao havia observacao: uma
                     condicao que ninguem definiu. */}
-                <div className="text-[11px] text-slate-400 pt-2 border-t border-slate-800/60 leading-relaxed space-y-0.5">
-                  <strong className="text-slate-300 block">Forma de pagamento:</strong>
+                <div className="text-[11px] text-tinta-2 pt-2 border-t border-borda leading-relaxed space-y-0.5">
+                  <strong className="text-tinta block">Forma de pagamento:</strong>
                   {!planoInformado(selectedProposal.payment_plan) ? (
-                    <span className="text-amber-300">Não definida. Edite a proposta para incluir as condições de pagamento.</span>
+                    <span className="text-amber-700">Não definida. Edite a proposta para incluir as condições de pagamento.</span>
                   ) : faltasDoPlano(selectedProposal.payment_plan, selectedProposal.total).length > 0 ? (
-                    <span className="text-amber-300">
+                    <span className="text-amber-700">
                       Em definição: {faltasDoPlano(selectedProposal.payment_plan, selectedProposal.total)[0]}
                     </span>
                   ) : (
                     <>
                       {descreverPlano(selectedProposal.payment_plan).map((linha, i) => (
-                        <span key={i} className="block text-slate-300">{String.fromCharCode(97 + i)}) {linha}</span>
+                        <span key={i} className="block text-tinta">{String.fromCharCode(97 + i)}) {linha}</span>
                       ))}
                       {selectedProposal.payment_plan?.observacoes?.trim() && (
                         <span className="block">Condição acordada: {selectedProposal.payment_plan.observacoes.trim()}</span>
                       )}
-                      <span className="block text-slate-500">{cronogramaDoPlano(selectedProposal.payment_plan).length} parcela(s) no cronograma.</span>
+                      <span className="block text-tinta-2">{cronogramaDoPlano(selectedProposal.payment_plan).length} parcela(s) no cronograma.</span>
                     </>
                   )}
                 </div>
                 {selectedProposal.description?.trim() && (
-                  <div className="text-[11px] text-slate-400 leading-relaxed">
-                    <strong className="text-slate-300">Observações:</strong> {selectedProposal.description}
+                  <div className="text-[11px] text-tinta-2 leading-relaxed">
+                    <strong className="text-tinta">Observações:</strong> {selectedProposal.description}
                   </div>
                 )}
-                <div className="text-[11px] text-slate-500">
+                <div className="text-[11px] text-tinta-2">
                   Validade da Proposta: Até {dataDoRegistro(selectedProposal.valid_until)}
                 </div>
               </div>
             </div>
 
             {/* Actions Bar */}
-            <div className="pt-4 border-t border-slate-800/80 flex flex-wrap gap-2 justify-between items-center">
+            <div className="pt-4 border-t border-borda flex flex-wrap gap-2 justify-between items-center">
               <div className="flex flex-wrap gap-2">
                 <button
                   id="btn-send-proposal"
                   onClick={() => setShowSendModal(true)}
-                  className="px-3.5 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-semibold rounded-xl shadow-md transition flex items-center space-x-1.5"
+                  className="bg-teal-700 px-3.5 py-2 text-white text-xs font-semibold rounded-xl shadow-md transition flex items-center space-x-1.5"
                 >
                   <Share2 className="w-3.5 h-3.5" />
                   <span>Enviar ao Cliente (WhatsApp / E-mail)</span>
@@ -756,7 +756,7 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
                         alert(`Não foi possível gerar o PDF da proposta.\n\n${err?.message || 'Erro desconhecido'}`);
                       }
                     }}
-                    className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-xl border border-slate-700 transition flex items-center space-x-1.5"
+                    className="px-3.5 py-2 bg-superficie-2 hover:bg-superficie-3 text-tinta text-xs font-semibold rounded-xl border border-borda transition flex items-center space-x-1.5"
                   >
                     {acao === 'baixar' ? <Download className="w-3.5 h-3.5" /> : <Printer className="w-3.5 h-3.5" />}
                     <span>{acao === 'baixar' ? 'Baixar PDF' : 'Imprimir'}</span>
@@ -775,14 +775,14 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
                       if (motivo === null) return;
                       rejectProposal(selectedProposal.id, motivo.trim() || undefined);
                     }}
-                    className="px-3.5 py-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 text-xs font-semibold rounded-xl border border-rose-500/30 transition"
+                    className="px-3.5 py-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-800 text-xs font-semibold rounded-xl border border-rose-500/30 transition"
                   >
                     Recusar
                   </button>
                   <button
                     id="btn-approve-proposal"
                     onClick={() => handleApprove(selectedProposal)}
-                    className="px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-bold rounded-xl shadow-md transition flex items-center space-x-1.5"
+                    className="bg-marca-escura px-4 py-2 text-white text-xs font-bold rounded-xl shadow-md transition flex items-center space-x-1.5"
                   >
                     <CheckCircle2 className="w-4 h-4" />
                     <span>Aprovar & Gerar Contrato (RN001)</span>
@@ -796,19 +796,19 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
 
       {/* Builder / Edit Modal with Interactive NR Catalog Grid & Item Price/Description/Discount Customization */}
       {showBuilderModal && (
-        <div id="modal-proposal-builder" className="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-2 sm:p-4">
-          <div className="bg-slate-900 rounded-3xl max-w-5xl w-full p-4 sm:p-6 shadow-2xl border border-slate-800 max-h-[92vh] overflow-y-auto text-slate-100 space-y-6">
+        <div id="modal-proposal-builder" className="fixed inset-0 bg-fundo backdrop-blur-md z-50 flex items-center justify-center p-2 sm:p-4">
+          <div className="bg-superficie rounded-3xl max-w-5xl w-full p-4 sm:p-6 shadow-sm border border-borda max-h-[92vh] overflow-y-auto text-tinta space-y-6">
             {/* Modal Header */}
-            <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+            <div className="flex items-center justify-between border-b border-borda pb-4">
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 bg-indigo-500/10 border border-indigo-500/20 rounded-xl flex items-center justify-center text-indigo-400">
+                <div className="w-9 h-9 bg-teal-500/10 border border-teal-500/20 rounded-xl flex items-center justify-center text-teal-800">
                   <SlidersHorizontal className="w-4 h-4" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-white">
+                  <h3 className="text-base font-bold text-tinta">
                     {editingProposal ? 'Editar Proposta & Escopos de NRs' : 'Novo Orçamento & Proposta Comercial SST'}
                   </h3>
-                  <p className="text-xs text-slate-400">
+                  <p className="text-xs text-tinta-2">
                     Selecione serviços do Catálogo de NRs, altere valores unitários, personalize descrições e aplique descontos.
                   </p>
                 </div>
@@ -818,7 +818,7 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
                   setShowBuilderModal(false);
                   setEditingProposal(null);
                 }} 
-                className="p-1.5 text-slate-400 hover:text-slate-200 hover:bg-slate-800 rounded-lg transition"
+                className="p-1.5 text-tinta-2 hover:text-tinta hover:bg-superficie-2 rounded-lg transition"
               >
                 ✕
               </button>
@@ -828,11 +828,11 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
               {/* Client & Proposal Info */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block font-semibold text-slate-300 mb-1">Cliente Contratante *</label>
+                  <label className="block font-semibold text-tinta mb-1">Cliente Contratante *</label>
                   <select
                     value={builderClientId}
                     onChange={(e) => setBuilderClientId(e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                   >
                     <option value="">Selecione o cliente</option>
                     {clients.map(c => (
@@ -841,13 +841,13 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
                   </select>
                 </div>
                 <div>
-                  <label className="block font-semibold text-slate-300 mb-1">Título da Proposta Comercial *</label>
+                  <label className="block font-semibold text-tinta mb-1">Título da Proposta Comercial *</label>
                   <input
                     type="text"
                     required
                     value={builderTitle}
                     onChange={(e) => setBuilderTitle(e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                     placeholder="Ex: Proposta de Gestão Integrada de SST e Laudos Técnicos 2026"
                   />
                 </div>
@@ -856,14 +856,14 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
               {/* ========================================================================= */}
               {/* SECTION 1: CATÁLOGO DE SERVIÇOS & NRs (GRID INTERATIVO DE SELEÇÃO) */}
               {/* ========================================================================= */}
-              <div className="p-4 bg-slate-950/70 rounded-2xl border border-slate-800/80 space-y-3">
+              <div className="p-4 bg-fundo rounded-2xl border border-borda space-y-3">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
-                    <BookOpen className="w-4 h-4 text-emerald-400" />
-                    <span className="font-bold text-slate-200 text-xs">
+                    <BookOpen className="w-4 h-4 text-marca-escura" />
+                    <span className="font-bold text-tinta text-xs">
                       Catálogo de Serviços de Normas Regulamentadoras (NRs)
                     </span>
-                    <span className="text-[10px] text-slate-400 bg-slate-800 px-2 py-0.5 rounded-full">
+                    <span className="text-[10px] text-tinta-2 bg-superficie-2 px-2 py-0.5 rounded-full">
                       {filteredCatalog.length} disponíveis
                     </span>
                   </div>
@@ -871,9 +871,9 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
                   <button
                     type="button"
                     onClick={handleAddCustomItem}
-                    className="px-3 py-1.5 bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 rounded-xl text-[11px] font-semibold transition flex items-center self-start sm:self-auto space-x-1"
+                    className="px-3 py-1.5 bg-teal-500/10 hover:bg-teal-500/20 text-teal-800 border border-teal-500/30 rounded-xl text-[11px] font-semibold transition flex items-center self-start sm:self-auto space-x-1"
                   >
-                    <Plus className="w-3 h-3 text-indigo-400" />
+                    <Plus className="w-3 h-3 text-teal-700" />
                     <span>+ Adicionar Item Personalizado / Avulso</span>
                   </button>
                 </div>
@@ -881,13 +881,13 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
                 {/* Filters & Search in Catalog */}
                 <div className="flex flex-col sm:flex-row gap-2 items-center">
                   <div className="relative flex-1 w-full">
-                    <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5" />
+                    <Search className="w-3.5 h-3.5 text-tinta-2 absolute left-3 top-2.5" />
                     <input
                       type="text"
                       value={catalogSearch}
                       onChange={(e) => setCatalogSearch(e.target.value)}
                       placeholder="Pesquisar por NR (ex: NR-01, NR-10, NR-35, CIPA, LTCAT, Laudo, Treinamento)..."
-                      className="w-full pl-9 pr-3 py-2 bg-slate-900 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500"
+                      className="w-full pl-9 pr-3 py-2 bg-superficie border border-borda rounded-xl text-xs text-tinta placeholder-tinta-3 focus:outline-none focus:border-teal-500"
                     />
                   </div>
 
@@ -905,8 +905,8 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
                         onClick={() => setCatalogCategory(cat.key)}
                         className={`px-2.5 py-1.5 rounded-xl text-[10px] font-medium transition ${
                           catalogCategory === cat.key
-                            ? 'bg-indigo-600 text-white font-bold'
-                            : 'bg-slate-900 text-slate-400 hover:text-slate-200 border border-slate-800'
+                            ? 'bg-teal-700 text-white font-bold'
+                            : 'bg-superficie text-tinta-2 hover:text-tinta border border-borda'
                         }`}
                       >
                         {cat.label}
@@ -926,33 +926,33 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
                         onClick={() => handleAddItemFromCatalog(tmpl)}
                         className={`p-3 rounded-xl border text-left cursor-pointer transition flex flex-col justify-between group ${
                           isAlreadyAdded 
-                            ? 'bg-emerald-950/20 border-emerald-500/40 hover:bg-emerald-950/30' 
-                            : 'bg-slate-900/80 border-slate-800 hover:border-indigo-500/50 hover:bg-slate-900'
+                            ? 'bg-marca-suave border-marca-borda hover:bg-marca-suave' 
+                            : 'bg-superficie border-borda hover:border-teal-500/50 hover:bg-superficie'
                         }`}
                       >
                         <div>
                           <div className="flex items-center justify-between gap-1">
-                            <span className="font-mono text-[10px] font-bold px-1.5 py-0.5 rounded bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+                            <span className="font-mono text-[10px] font-bold px-1.5 py-0.5 rounded bg-teal-500/10 text-teal-800 border border-teal-500/20">
                               {tmpl.code}
                             </span>
-                            <span className="text-[10px] text-slate-400 flex items-center gap-1 font-mono">
+                            <span className="text-[10px] text-tinta-2 flex items-center gap-1 font-mono">
                               <Clock className="w-2.5 h-2.5" />
                               {tmpl.default_duration_days}d
                             </span>
                           </div>
-                          <h4 className="font-bold text-white text-[11px] mt-1.5 line-clamp-1 group-hover:text-indigo-300 transition">
+                          <h4 className="font-bold text-tinta text-[11px] mt-1.5 line-clamp-1 group-hover:text-teal-700 transition">
                             {tmpl.name}
                           </h4>
-                          <p className="text-[10px] text-slate-400 line-clamp-2 mt-0.5">
+                          <p className="text-[10px] text-tinta-2 line-clamp-2 mt-0.5">
                             {tmpl.description}
                           </p>
                         </div>
 
-                        <div className="flex items-center justify-between mt-2 pt-2 border-t border-slate-800/60">
-                          <span className="font-mono text-[11px] font-bold text-emerald-400">
+                        <div className="flex items-center justify-between mt-2 pt-2 border-t border-borda">
+                          <span className="font-mono text-[11px] font-bold text-marca-escura">
                             R$ {tmpl.default_price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                           </span>
-                          <span className="text-[10px] font-semibold text-indigo-400 flex items-center space-x-1 group-hover:translate-x-0.5 transition">
+                          <span className="text-[10px] font-semibold text-teal-700 flex items-center space-x-1 group-hover:translate-x-0.5 transition">
                             <span>{isAlreadyAdded ? '+ Incluir Outro' : '+ Selecionar'}</span>
                           </span>
                         </div>
@@ -968,22 +968,22 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
               <div className="space-y-3">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
-                    <Layers className="w-4 h-4 text-indigo-400" />
-                    <label className="block font-bold text-slate-200 text-xs">
+                    <Layers className="w-4 h-4 text-teal-700" />
+                    <label className="block font-bold text-tinta text-xs">
                       Itens do Orçamento Selecionados do Grid ({builderItems.length})
                     </label>
                   </div>
 
                   {/* Batch Discount Quick Helpers */}
                   {builderItems.length > 0 && (
-                    <div className="flex items-center gap-1.5 self-start sm:self-auto bg-slate-950 px-2.5 py-1 rounded-xl border border-slate-800">
-                      <span className="text-[10px] text-slate-400 font-medium">Aplicar Desconto em Todos:</span>
+                    <div className="flex items-center gap-1.5 self-start sm:self-auto bg-fundo px-2.5 py-1 rounded-xl border border-borda">
+                      <span className="text-[10px] text-tinta-2 font-medium">Aplicar Desconto em Todos:</span>
                       {[0, 5, 10, 15, 20].map(pct => (
                         <button
                           key={pct}
                           type="button"
                           onClick={() => handleApplyBatchDiscountToAllItems(pct)}
-                          className="px-2 py-0.5 rounded bg-slate-900 hover:bg-indigo-600 text-slate-300 hover:text-white text-[10px] font-mono border border-slate-800 transition"
+                          className="px-2 py-0.5 rounded bg-superficie hover:bg-teal-50 text-tinta-2 text-[10px] font-mono border border-borda transition"
                           title={`Aplicar ${pct}% de desconto em todos os itens`}
                         >
                           {pct}%
@@ -994,7 +994,7 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
                 </div>
 
                 {builderItems.length === 0 ? (
-                  <div className="p-8 text-center bg-slate-950/40 rounded-2xl border border-dashed border-slate-800 text-slate-400">
+                  <div className="p-8 text-center bg-fundo rounded-2xl border border-dashed border-borda text-tinta-2">
                     <p className="text-xs">Nenhum serviço selecionado ainda. Clique em um dos serviços do Catálogo de NRs acima para incluir.</p>
                   </div>
                 ) : (
@@ -1006,19 +1006,19 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
                       return (
                         <div
                           key={item.id || idx}
-                          className="p-4 bg-slate-950/90 border border-slate-800 hover:border-slate-700 rounded-2xl space-y-3 transition w-full overflow-hidden"
+                          className="p-4 bg-fundo border border-borda hover:border-borda rounded-2xl space-y-3 transition w-full overflow-hidden"
                         >
                           {/* Top Row: Service Name & Actions (Clean responsive containment) */}
                           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
                             <div className="flex items-center gap-2 min-w-0 flex-1">
-                              <span className="w-6 h-6 rounded-lg bg-slate-800 text-slate-300 flex items-center justify-center font-mono text-[10px] font-bold flex-shrink-0">
+                              <span className="w-6 h-6 rounded-lg bg-superficie-2 text-tinta flex items-center justify-center font-mono text-[10px] font-bold flex-shrink-0">
                                 {idx + 1}
                               </span>
                               <input
                                 type="text"
                                 value={item.service_name}
                                 onChange={(e) => handleUpdateItemField(idx, 'service_name', e.target.value)}
-                                className="w-full min-w-0 px-3 py-1.5 bg-slate-900 border border-slate-800 rounded-xl text-xs font-bold text-white focus:outline-none focus:border-indigo-500 truncate"
+                                className="w-full min-w-0 px-3 py-1.5 bg-superficie border border-borda rounded-xl text-xs font-bold text-tinta focus:outline-none focus:border-teal-500 truncate"
                                 placeholder="Nome do Serviço / Norma Regulamentadora"
                               />
                             </div>
@@ -1028,7 +1028,7 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
                                 <button
                                   type="button"
                                   onClick={() => handleResetItemToCatalog(idx)}
-                                  className="p-1.5 px-2 text-slate-400 hover:text-indigo-300 hover:bg-slate-800 rounded-lg transition text-[10px] flex items-center space-x-1 border border-slate-800"
+                                  className="p-1.5 px-2 text-tinta-2 hover:text-teal-700 hover:bg-superficie-2 rounded-lg transition text-[10px] flex items-center space-x-1 border border-borda"
                                   title="Restaurar preço e descrição original do catálogo"
                                 >
                                   <RotateCcw className="w-3 h-3" />
@@ -1038,7 +1038,7 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
                               <button
                                 type="button"
                                 onClick={() => handleDuplicateItem(idx)}
-                                className="p-1.5 px-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800 rounded-lg transition text-[10px] flex items-center space-x-1 border border-slate-800"
+                                className="p-1.5 px-2 text-tinta-2 hover:text-tinta hover:bg-superficie-2 rounded-lg transition text-[10px] flex items-center space-x-1 border border-borda"
                                 title="Duplicar Item"
                               >
                                 <Copy className="w-3 h-3" />
@@ -1047,10 +1047,10 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
                               <button
                                 type="button"
                                 onClick={() => handleRemoveItem(idx)}
-                                className="p-1.5 px-2.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 hover:text-rose-300 border border-rose-500/30 rounded-xl text-[11px] font-bold transition flex items-center space-x-1"
+                                className="p-1.5 px-2.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-800 hover:text-rose-800 border border-rose-500/30 rounded-xl text-[11px] font-bold transition flex items-center space-x-1"
                                 title="Remover do Orçamento"
                               >
-                                <Trash2 className="w-3.5 h-3.5 text-rose-400" />
+                                <Trash2 className="w-3.5 h-3.5 text-rose-700" />
                                 <span>Remover</span>
                               </button>
                             </div>
@@ -1058,23 +1058,23 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
 
                           {/* Middle Row: Editable Description */}
                           <div>
-                            <label className="block text-[10px] font-semibold text-slate-400 mb-1">
+                            <label className="block text-[10px] font-semibold text-tinta-2 mb-1">
                               Descrição do Escopo Técnico & Metodologia (Totalmente Editável):
                             </label>
                             <textarea
                               rows={2}
                               value={item.description}
                               onChange={(e) => handleUpdateItemField(idx, 'description', e.target.value)}
-                              className="w-full min-w-0 px-3 py-2 bg-slate-900 border border-slate-800 rounded-xl text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-indigo-500 leading-relaxed"
+                              className="w-full min-w-0 px-3 py-2 bg-superficie border border-borda rounded-xl text-xs text-tinta placeholder-tinta-3 focus:outline-none focus:border-teal-500 leading-relaxed"
                               placeholder="Detalhes do escopo técnico, metodologia aplicada, locais vistoriados, portarias e entregáveis deste laudo/treinamento..."
                             />
                           </div>
 
                           {/* Bottom Row: Values, Quantities, Discounts & Net Total in High-Contrast Grid */}
-                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 p-3 bg-slate-900/60 rounded-xl border border-slate-800/80">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 p-3 bg-superficie rounded-xl border border-borda">
                             {/* Quantity */}
                             <div>
-                              <label className="block text-[10px] font-semibold text-slate-400 mb-1">
+                              <label className="block text-[10px] font-semibold text-tinta-2 mb-1">
                                 Quantidade (Un/GHEs)
                               </label>
                               <input
@@ -1082,18 +1082,18 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
                                 min="1"
                                 value={item.quantity}
                                 onChange={(e) => handleUpdateItemField(idx, 'quantity', e.target.value)}
-                                className="w-full px-2.5 py-1.5 bg-slate-950 border border-slate-800 rounded-lg text-xs font-mono text-white text-center focus:outline-none focus:border-indigo-500"
+                                className="w-full px-2.5 py-1.5 bg-fundo border border-borda rounded-lg text-xs font-mono text-tinta text-center focus:outline-none focus:border-teal-500"
                               />
                             </div>
 
                             {/* Unit Price */}
                             <div>
                               <div className="flex items-center justify-between mb-1">
-                                <label className="text-[10px] font-semibold text-slate-400">
+                                <label className="text-[10px] font-semibold text-tinta-2">
                                   Preço Unitário (R$)
                                 </label>
                                 {item.original_price && item.original_price !== item.unit_price && (
-                                  <span className="text-[9px] text-slate-500 line-through font-mono">
+                                  <span className="text-[9px] text-tinta-2 line-through font-mono">
                                     R${item.original_price}
                                   </span>
                                 )}
@@ -1104,22 +1104,22 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
                                 step="10"
                                 value={item.unit_price}
                                 onChange={(e) => handleUpdateItemField(idx, 'unit_price', e.target.value)}
-                                className="w-full px-2.5 py-1.5 bg-slate-950 border border-slate-800 rounded-lg text-xs font-mono text-white font-bold focus:outline-none focus:border-indigo-500"
+                                className="w-full px-2.5 py-1.5 bg-fundo border border-borda rounded-lg text-xs font-mono text-tinta font-bold focus:outline-none focus:border-teal-500"
                               />
                             </div>
 
                             {/* Item Discount Controls */}
                             <div>
                               <div className="flex items-center justify-between mb-1">
-                                <label className="text-[10px] font-semibold text-slate-400">
+                                <label className="text-[10px] font-semibold text-tinta-2">
                                   Desconto do Item
                                 </label>
-                                <div className="flex items-center bg-slate-950 rounded border border-slate-800 p-0.5">
+                                <div className="flex items-center bg-fundo rounded border border-borda p-0.5">
                                   <button
                                     type="button"
                                     onClick={() => handleUpdateItemField(idx, 'discount_type', 'PERCENT')}
                                     className={`px-1.5 py-0.2 rounded text-[9px] font-bold ${
-                                      item.discount_type === 'PERCENT' ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-white'
+                                      item.discount_type === 'PERCENT' ? 'bg-teal-700 text-white' : 'text-tinta hover:text-tinta'
                                     }`}
                                   >
                                     %
@@ -1128,7 +1128,7 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
                                     type="button"
                                     onClick={() => handleUpdateItemField(idx, 'discount_type', 'FIXED')}
                                     className={`px-1.5 py-0.2 rounded text-[9px] font-bold ${
-                                      item.discount_type === 'FIXED' ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-white'
+                                      item.discount_type === 'FIXED' ? 'bg-teal-700 text-white' : 'text-tinta hover:text-tinta'
                                     }`}
                                   >
                                     R$
@@ -1141,7 +1141,7 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
                                   min="0"
                                   value={item.discount_value || 0}
                                   onChange={(e) => handleUpdateItemField(idx, 'discount_value', e.target.value)}
-                                  className="w-full px-2 py-1.5 bg-slate-950 border border-slate-800 rounded-lg text-xs font-mono text-rose-300 focus:outline-none focus:border-rose-500"
+                                  className="w-full px-2 py-1.5 bg-fundo border border-borda rounded-lg text-xs font-mono text-rose-700 focus:outline-none focus:border-rose-500"
                                 />
                               </div>
                               {/* Quick discount chips */}
@@ -1151,7 +1151,7 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
                                     key={pct}
                                     type="button"
                                     onClick={() => handleSetQuickItemDiscount(idx, pct)}
-                                    className="px-1 py-0.5 bg-slate-950 hover:bg-slate-800 text-[9px] font-mono text-slate-400 hover:text-slate-200 rounded border border-slate-800/80"
+                                    className="px-1 py-0.5 bg-fundo hover:bg-superficie-2 text-[9px] font-mono text-tinta-2 hover:text-tinta rounded border border-borda"
                                   >
                                     {pct}%
                                   </button>
@@ -1160,16 +1160,16 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
                             </div>
 
                             {/* Net Row Total */}
-                            <div className="p-2 bg-emerald-500/10 border border-emerald-500/20 rounded-xl flex flex-col justify-between text-right">
+                            <div className="p-2 bg-marca-suave border border-marca-borda rounded-xl flex flex-col justify-between text-right">
                               <div className="flex items-center justify-between text-[10px]">
-                                <span className="text-slate-400">Total Líquido:</span>
+                                <span className="text-tinta-2">Total Líquido:</span>
                                 {hasDiscount && (
-                                  <span className="text-rose-400 font-mono text-[9px]">
+                                  <span className="text-rose-700 font-mono text-[9px]">
                                     -R${item.discount?.toFixed(0)}
                                   </span>
                                 )}
                               </div>
-                              <span className="font-mono text-sm font-bold text-emerald-300">
+                              <span className="font-mono text-sm font-bold text-marca-escura">
                                 R$ {item.total.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                               </span>
                             </div>
@@ -1184,18 +1184,18 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
               {/* ========================================================================= */}
               {/* SECTION 3: DESCONTO GLOBAL DA PROPOSTA & CONDIÇÕES DE PAGAMENTO */}
               {/* ========================================================================= */}
-              <div className="p-4 bg-slate-950/70 rounded-2xl border border-slate-800 space-y-4">
+              <div className="p-4 bg-fundo rounded-2xl border border-borda space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   {/* Global Discount */}
                   <div>
                     <div className="flex items-center justify-between mb-1">
-                      <label className="font-semibold text-slate-300 text-xs">Desconto Global Adicional</label>
-                      <div className="flex items-center bg-slate-900 rounded border border-slate-800 p-0.5">
+                      <label className="font-semibold text-tinta text-xs">Desconto Global Adicional</label>
+                      <div className="flex items-center bg-superficie rounded border border-borda p-0.5">
                         <button
                           type="button"
                           onClick={() => setGlobalDiscountType('FIXED')}
                           className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                            globalDiscountType === 'FIXED' ? 'bg-indigo-600 text-white' : 'text-slate-400'
+                            globalDiscountType === 'FIXED' ? 'bg-teal-700 text-white' : 'text-tinta'
                           }`}
                         >
                           R$ Fixo
@@ -1204,7 +1204,7 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
                           type="button"
                           onClick={() => setGlobalDiscountType('PERCENT')}
                           className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                            globalDiscountType === 'PERCENT' ? 'bg-indigo-600 text-white' : 'text-slate-400'
+                            globalDiscountType === 'PERCENT' ? 'bg-teal-700 text-white' : 'text-tinta'
                           }`}
                         >
                           % Geral
@@ -1217,18 +1217,18 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
                         min="0"
                         value={globalDiscountValue}
                         onChange={(e) => setGlobalDiscountValue(Number(e.target.value))}
-                        className="w-full px-3 py-2 bg-slate-900 border border-slate-800 rounded-xl text-xs font-mono text-rose-300 focus:outline-none focus:border-indigo-500"
+                        className="w-full px-3 py-2 bg-superficie border border-borda rounded-xl text-xs font-mono text-rose-700 focus:outline-none focus:border-teal-500"
                         placeholder="0"
                       />
                     </div>
-                    <span className="text-[10px] text-slate-500 mt-1 block">
+                    <span className="text-[10px] text-tinta-2 mt-1 block">
                       Aplicado sobre o saldo após descontos unitários.
                     </span>
                   </div>
 
                   {/* Validity Days */}
                   <div>
-                    <label className="block font-semibold text-slate-300 mb-1 text-xs">
+                    <label className="block font-semibold text-tinta mb-1 text-xs">
                       Validade da Proposta (Dias)
                     </label>
                     <input
@@ -1236,9 +1236,9 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
                       min="1"
                       value={builderValidityDays}
                       onChange={(e) => setBuilderValidityDays(Number(e.target.value))}
-                      className="w-full px-3 py-2 bg-slate-900 border border-slate-800 rounded-xl text-xs font-mono text-white focus:outline-none focus:border-indigo-500"
+                      className="w-full px-3 py-2 bg-superficie border border-borda rounded-xl text-xs font-mono text-tinta focus:outline-none focus:border-teal-500"
                     />
-                    <span className="text-[10px] text-slate-500 mt-1 block">
+                    <span className="text-[10px] text-tinta-2 mt-1 block">
                       Padrão comercial: 30 dias corridos.
                     </span>
                   </div>
@@ -1246,47 +1246,47 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
                   {/* Observacoes. A forma de pagamento tem secao propria abaixo:
                       aqui ela era texto livre, que o contrato nao lia. */}
                   <div>
-                    <label className="block font-semibold text-slate-300 mb-1 text-xs">
+                    <label className="block font-semibold text-tinta mb-1 text-xs">
                       Observações da proposta
                     </label>
                     <textarea
                       rows={2}
                       value={builderNotes}
                       onChange={(e) => setBuilderNotes(e.target.value)}
-                      className="w-full px-3 py-2 bg-slate-900 border border-slate-800 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-indigo-500"
+                      className="w-full px-3 py-2 bg-superficie border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                     />
-                    <span className="text-[10px] text-slate-500 mt-1 block">
+                    <span className="text-[10px] text-tinta-2 mt-1 block">
                       Escopo, premissas ou exclusões. A forma de pagamento vai em Condições de pagamento, abaixo do total.
                     </span>
                   </div>
                 </div>
 
                 {/* Final Summary Bento Box */}
-                <div className="p-4 bg-slate-900 rounded-2xl border border-slate-800/80 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+                <div className="p-4 bg-superficie rounded-2xl border border-borda grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
                   <div>
-                    <span className="text-[10px] uppercase font-bold text-slate-400 block">Subtotal Bruto</span>
-                    <span className="font-mono text-slate-200 font-bold text-sm">
+                    <span className="text-[10px] uppercase font-bold text-tinta-2 block">Subtotal Bruto</span>
+                    <span className="font-mono text-tinta font-bold text-sm">
                       R$ {grossSubtotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                     </span>
                   </div>
 
                   <div>
-                    <span className="text-[10px] uppercase font-bold text-rose-400 block">Descontos Totais</span>
-                    <span className="font-mono text-rose-400 font-bold text-sm">
+                    <span className="text-[10px] uppercase font-bold text-rose-700 block">Descontos Totais</span>
+                    <span className="font-mono text-rose-700 font-bold text-sm">
                       - R$ {totalDiscount.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                     </span>
                   </div>
 
                   <div>
-                    <span className="text-[10px] uppercase font-bold text-indigo-400 block">Economia Cliente</span>
-                    <span className="font-mono text-indigo-300 font-bold text-sm">
+                    <span className="text-[10px] uppercase font-bold text-teal-700 block">Economia Cliente</span>
+                    <span className="font-mono text-teal-700 font-bold text-sm">
                       {totalSavingsPercentage}%
                     </span>
                   </div>
 
-                  <div className="p-2.5 bg-emerald-500/10 rounded-xl border border-emerald-500/20 text-right">
-                    <span className="text-[10px] uppercase font-bold text-emerald-400 block">Total Final Líquido</span>
-                    <span className="font-mono text-base font-bold text-emerald-300">
+                  <div className="p-2.5 bg-marca-suave rounded-xl border border-marca-borda text-right">
+                    <span className="text-[10px] uppercase font-bold text-marca-escura block">Total Final Líquido</span>
+                    <span className="font-mono text-base font-bold text-marca-escura">
                       R$ {netTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                     </span>
                   </div>
@@ -1294,25 +1294,25 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
               </div>
 
               {/* Condicoes de pagamento: distribuem o total liquido acima */}
-              <div className="p-4 bg-slate-950/60 rounded-2xl border border-slate-800">
+              <div className="p-4 bg-fundo rounded-2xl border border-borda">
                 <PlanoDePagamentoEditor plano={builderPlano} onChange={setBuilderPlano} total={netTotal} />
               </div>
 
               {/* Modal Actions Footer */}
-              <div className="flex items-center justify-between pt-4 border-t border-slate-800">
+              <div className="flex items-center justify-between pt-4 border-t border-borda">
                 <button
                   type="button"
                   onClick={() => {
                     setShowBuilderModal(false);
                     setEditingProposal(null);
                   }}
-                  className="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold transition"
+                  className="px-4 py-2.5 bg-superficie-2 hover:bg-superficie-3 text-tinta rounded-xl text-xs font-semibold transition"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-xl text-xs font-bold shadow-lg shadow-emerald-950/40 transition flex items-center space-x-1.5"
+                  className="bg-marca-escura px-5 py-2.5 text-white rounded-xl text-xs font-bold shadow-sm transition flex items-center space-x-1.5"
                 >
                   <Check className="w-4 h-4" />
                   <span>{editingProposal ? 'Atualizar Proposta Comercial' : 'Salvar Proposta Comercial'}</span>
@@ -1325,34 +1325,34 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
 
       {/* Delete Proposal Modal */}
       {deletingProposal && (
-        <div id="modal-delete-proposal" className="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-900 rounded-3xl max-w-md w-full p-6 shadow-2xl border border-rose-500/20 text-slate-100 space-y-4">
-            <div className="flex items-center space-x-3 text-rose-400">
+        <div id="modal-delete-proposal" className="fixed inset-0 bg-fundo backdrop-blur-md z-50 flex items-center justify-center p-4">
+          <div className="bg-superficie rounded-3xl max-w-md w-full p-6 shadow-sm border border-rose-200 text-tinta space-y-4">
+            <div className="flex items-center space-x-3 text-rose-700">
               <div className="p-3 bg-rose-500/10 rounded-2xl border border-rose-500/20">
                 <AlertTriangle className="w-6 h-6" />
               </div>
               <div>
-                <h3 className="text-base font-bold text-white">Excluir Proposta</h3>
-                <p className="text-xs text-slate-400">Esta ação removerá a proposta comercial do sistema.</p>
+                <h3 className="text-base font-bold text-tinta">Excluir Proposta</h3>
+                <p className="text-xs text-tinta-2">Esta ação removerá a proposta comercial do sistema.</p>
               </div>
             </div>
 
-            <p className="text-xs text-slate-300">
-              Tem certeza de que deseja remover a proposta <strong className="text-white">{deletingProposal.proposal_number}</strong> ({deletingProposal.title})?
+            <p className="text-xs text-tinta">
+              Tem certeza de que deseja remover a proposta <strong className="text-tinta">{deletingProposal.proposal_number}</strong> ({deletingProposal.title})?
             </p>
 
             <div className="flex justify-end space-x-3 pt-2">
               <button
                 type="button"
                 onClick={() => setDeletingProposal(null)}
-                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold"
+                className="px-4 py-2 bg-superficie-2 hover:bg-superficie-3 text-tinta rounded-xl text-xs font-semibold"
               >
                 Cancelar
               </button>
               <button
                 type="button"
                 onClick={handleDeleteProposalConfirm}
-                className="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white rounded-xl text-xs font-semibold shadow-md"
+                className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-semibold shadow-md"
               >
                 Confirmar Exclusão
               </button>
@@ -1363,36 +1363,36 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
 
       {/* Multichannel Send Modal */}
       {showSendModal && selectedProposal && (
-        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-900 rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-800 text-slate-100">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3 mb-3">
-              <h3 className="text-sm font-bold text-white">Enviar Proposta ao Cliente</h3>
-              <button onClick={() => setShowSendModal(false)} className="text-slate-400 hover:text-slate-200">✕</button>
+        <div className="fixed inset-0 bg-fundo backdrop-blur-md z-50 flex items-center justify-center p-4">
+          <div className="bg-superficie rounded-3xl max-w-md w-full p-6 shadow-sm border border-borda text-tinta">
+            <div className="flex items-center justify-between border-b border-borda pb-3 mb-3">
+              <h3 className="text-sm font-bold text-tinta">Enviar Proposta ao Cliente</h3>
+              <button onClick={() => setShowSendModal(false)} className="text-tinta-2 hover:text-tinta">✕</button>
             </div>
-            <p className="text-xs text-slate-400 mb-4">
+            <p className="text-xs text-tinta-2 mb-4">
               Escolha o canal de transmissão direta para a diretoria/RH da empresa contratante:
             </p>
             <div className="space-y-2.5">
               <button
                 onClick={() => handleSendProposal(selectedProposal, 'WHATSAPP')}
-                className="w-full p-4 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 rounded-2xl text-left flex items-center justify-between text-xs font-semibold text-emerald-200 transition"
+                className="w-full p-4 bg-marca-suave hover:bg-marca-suave border border-marca-borda rounded-2xl text-left flex items-center justify-between text-xs font-semibold text-marca-escura transition"
               >
                 <div>
-                  <div className="font-bold text-white">📱 Abrir no WhatsApp</div>
-                  <div className="text-[10px] text-emerald-400">Abre o WhatsApp com a mensagem pronta para você enviar</div>
+                  <div className="font-bold text-tinta">📱 Abrir no WhatsApp</div>
+                  <div className="text-[10px] text-marca-escura">Abre o WhatsApp com a mensagem pronta para você enviar</div>
                 </div>
-                <Send className="w-4 h-4 text-emerald-400" />
+                <Send className="w-4 h-4 text-marca-escura" />
               </button>
 
               <button
                 onClick={() => handleSendProposal(selectedProposal, 'EMAIL')}
-                className="w-full p-4 bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/30 rounded-2xl text-left flex items-center justify-between text-xs font-semibold text-indigo-200 transition"
+                className="w-full p-4 bg-teal-500/10 hover:bg-teal-500/20 border border-teal-500/30 rounded-2xl text-left flex items-center justify-between text-xs font-semibold text-teal-800 transition"
               >
                 <div>
-                  <div className="font-bold text-white">✉️ Abrir no E-mail</div>
-                  <div className="text-[10px] text-indigo-400">Abre seu programa de e-mail com a mensagem pronta</div>
+                  <div className="font-bold text-tinta">✉️ Abrir no E-mail</div>
+                  <div className="text-[10px] text-teal-700">Abre seu programa de e-mail com a mensagem pronta</div>
                 </div>
-                <Send className="w-4 h-4 text-indigo-400" />
+                <Send className="w-4 h-4 text-teal-700" />
               </button>
             </div>
           </div>

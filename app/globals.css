@@ -1,5 +1,148 @@
 @import "tailwindcss";
 
+/* ---------------------------------------------------------------------------
+ * Tema claro PrevSafe
+ *
+ * Cores da identidade visual da marca: petroleo #0E3A46, teal #006064,
+ * verde #2FB24A, cinza #F2F4F5. Os componentes passam a usar estes tokens
+ * (bg-superficie, text-tinta, border-borda) em vez de escrever slate-900 /
+ * slate-400 a mao, que era o que prendia o sistema ao tema escuro.
+ *
+ * Trocar o tema inteiro depois passa a ser redefinir estes valores, e nao
+ * reescrever 5 mil classes espalhadas por 95 arquivos.
+ * ------------------------------------------------------------------------- */
+@theme {
+  --color-fundo:        #F2F4F5;
+  --color-superficie:   #FFFFFF;
+  --color-superficie-2: #F7F9FA;
+  --color-superficie-3: #EDF1F3;
+
+  --color-borda:        #DFE5E8;
+  --color-borda-forte:  #C9D4D8;
+
+  --color-tinta:        #0E3A46;
+  --color-tinta-2:      #4D6168;
+  --color-tinta-3:      #596D75;
+
+  --color-marca:        #2FB24A;
+  --color-marca-escura: #1B7A31;
+  --color-marca-suave:  #EAF7ED;
+  --color-marca-borda:  #C2E3CB;
+
+  --color-petroleo:     #0E3A46;
+  --color-teal:         #006064;
+
+  /* -------------------------------------------------------------------
+   * Rampas do Tailwind redefinidas.
+   *
+   * O sistema usa ~4.500 classes de cor espalhadas pelos componentes
+   * (teal, amber, rose, slate, emerald, red). Redefinir as rampas aqui
+   * acerta todas de uma vez, sem reescrever classe por classe.
+   *
+   * A regra: tom claro (50-200) e fundo de painel, entao fica quase
+   * neutro -- so um sopro de cor. Tom escuro (600-950) e texto ou botao,
+   * entao mantem cor suficiente para ler como cor. E isso que tira o
+   * rosa da pagina inteira e o marrom do banner, sem perder a distincao
+   * entre um aviso e um erro.
+   *
+   * Geradas por scripts/paleta-calma.py (--provar mede os pares).
+   * ----------------------------------------------------------------- */
+  /* slate */
+  --color-slate-50: #F7F9F9;
+  --color-slate-100: #EDF2F3;
+  --color-slate-200: #DDE6E8;
+  --color-slate-300: #C6D3D6;
+  --color-slate-400: #A2B5B9;
+  --color-slate-500: #7C9499;
+  --color-slate-600: #4C666B;
+  --color-slate-700: #3C5358;
+  --color-slate-800: #304246;
+  --color-slate-900: #253336;
+  --color-slate-950: #151E1F;
+
+  /* teal */
+  --color-teal-50: #F2FAFB;
+  --color-teal-100: #E2F6F6;
+  --color-teal-200: #CAEBEC;
+  --color-teal-300: #A8DCDD;
+  --color-teal-400: #6FC1C3;
+  --color-teal-500: #23A2A6;
+  --color-teal-600: #007378;
+  --color-teal-700: #005E63;
+  --color-teal-800: #004B4F;
+  --color-teal-900: #003A3D;
+  --color-teal-950: #002224;
+
+  /* emerald */
+  --color-emerald-50: #F4FAF5;
+  --color-emerald-100: #E8F5E9;
+  --color-emerald-200: #D5EBD7;
+  --color-emerald-300: #BADABD;
+  --color-emerald-400: #8EC094;
+  --color-emerald-500: #61A16B;
+  --color-emerald-600: #287238;
+  --color-emerald-700: #1C5D2B;
+  --color-emerald-800: #174A22;
+  --color-emerald-900: #133A1B;
+  --color-emerald-950: #09220E;
+
+  /* amber */
+  --color-amber-50: #FCF8F3;
+  --color-amber-100: #F9EFE4;
+  --color-amber-200: #F1E1CF;
+  --color-amber-300: #E4CCB0;
+  --color-amber-400: #CDAA80;
+  --color-amber-500: #B1864F;
+  --color-amber-600: #83560D;
+  --color-amber-700: #6C4502;
+  --color-amber-800: #563705;
+  --color-amber-900: #432B07;
+  --color-amber-950: #281804;
+
+  /* rose */
+  --color-rose-50: #FEF6F6;
+  --color-rose-100: #FDEDEC;
+  --color-rose-200: #F7DDDC;
+  --color-rose-300: #ECC6C5;
+  --color-rose-400: #D8A1A0;
+  --color-rose-500: #BE7A79;
+  --color-rose-600: #8E484A;
+  --color-rose-700: #76393B;
+  --color-rose-800: #5E2E2F;
+  --color-rose-900: #492424;
+  --color-rose-950: #2C1414;
+
+  /* red */
+  --color-red-50: #FEF6F6;
+  --color-red-100: #FEEDEB;
+  --color-red-200: #F9DCD9;
+  --color-red-300: #EFC5C1;
+  --color-red-400: #DC9F9A;
+  --color-red-500: #C27872;
+  --color-red-600: #934641;
+  --color-red-700: #7A3733;
+  --color-red-800: #612C29;
+  --color-red-900: #4B2220;
+  --color-red-950: #2D1311;
+}
+
+@layer base {
+  /* O preflight do Tailwind faz campo de formulario herdar a cor do pai
+   * (color: inherit). Com 246 campos sem cor propria, o texto digitado
+   * assumia a cor do container -- e sumia quando o container era claro.
+   * Aqui fica a cor do tema; qualquer text-* na propria classe ainda vence. */
+  input,
+  select,
+  textarea {
+    color: var(--color-tinta);
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--color-tinta-3);
+  }
+}
+
 :root {
   --tenant-primary: #10b981;
   --tenant-primary-rgb: 16, 185, 129;

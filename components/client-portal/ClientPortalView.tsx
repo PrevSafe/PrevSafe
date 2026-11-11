@@ -256,7 +256,7 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
   return (
     <div className="space-y-6 pb-16">
       {/* Header Bento Card with Client Selector & Tenant Branding */}
-      <div className="bg-slate-900 border border-slate-800 text-white p-6 rounded-3xl shadow-xl flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative overflow-hidden">
+      <div className="bg-superficie border border-borda text-tinta p-6 rounded-3xl shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative overflow-hidden">
         <div 
           className="absolute -right-20 -top-20 w-72 h-72 rounded-full blur-3xl opacity-10 pointer-events-none transition-all"
           style={{ backgroundColor: 'var(--tenant-primary)' }}
@@ -267,11 +267,11 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
             <span>{tenantTheme.portal_brand_name || 'Portal do Cliente SST'} • {tenantTheme.portal_tagline || 'Área Segura de Autoatendimento'}</span>
           </div>
           <div className="flex flex-wrap items-center gap-3">
-            <h1 className="text-2xl font-bold tracking-tight text-white">{currentClient.trade_name}</h1>
-            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+            <h1 className="text-2xl font-bold tracking-tight text-tinta">{currentClient.trade_name}</h1>
+            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-marca-suave text-marca-escura border border-marca-borda">
               Grau de Risco {currentClient.risk_degree}
             </span>
-            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-500/10 text-blue-400 border border-blue-500/20">
+            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-teal-500/10 text-teal-800 border border-teal-500/20">
               {currentClient.employee_count} Colaboradores
             </span>
             {activeTenantContext && (
@@ -280,18 +280,18 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
               </span>
             )}
           </div>
-          <p className="text-xs text-slate-400">
-            CNPJ: <span className="font-mono text-slate-300">{currentClient.document_number}</span> • {currentClient.address} • {currentClient.city}/{currentClient.state}
+          <p className="text-xs text-tinta-2">
+            CNPJ: <span className="font-mono text-tinta">{currentClient.document_number}</span> • {currentClient.address} • {currentClient.city}/{currentClient.state}
           </p>
         </div>
 
         {/* Client Switcher Selector */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 bg-slate-950 p-3 rounded-2xl border border-slate-800 relative z-10">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 bg-fundo p-3 rounded-2xl border border-borda relative z-10">
           <div className="text-xs">
-            <span className="text-slate-400 block text-[10px] font-bold uppercase">Empresa Autenticada:</span>
+            <span className="text-tinta-2 block text-[10px] font-bold uppercase">Empresa Autenticada:</span>
             {contaDeCliente ? (
               // Sem seletor: a conta so tem a propria empresa.
-              <span className="block text-white font-bold mt-1">
+              <span className="block text-tinta font-bold mt-1">
                 {clientesDoPortal[0]
                   ? `${clientesDoPortal[0].trade_name} (${clientesDoPortal[0].document_number})`
                   : 'Conta sem empresa vinculada — peça ao administrador para vinculá-la'}
@@ -300,7 +300,7 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
               <select
                 value={selectedClientId}
                 onChange={(e) => handleClientChange(e.target.value)}
-                className="bg-slate-900 text-white text-xs font-bold rounded-xl border border-slate-800 px-3 py-1.5 focus:outline-none focus:border-emerald-500 mt-1 cursor-pointer"
+                className="bg-superficie text-tinta text-xs font-bold rounded-xl border border-borda px-3 py-1.5 focus:outline-none focus:border-marca-escura mt-1 cursor-pointer"
               >
                 {clientesDoPortal.map(c => (
                   <option key={c.id} value={c.id}>
@@ -310,10 +310,10 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
               </select>
             )}
           </div>
-          <div className="h-8 w-px bg-slate-800 hidden sm:block" />
+          <div className="h-8 w-px bg-superficie-2 hidden sm:block" />
           <div className="flex items-center space-x-2 text-tenant-primary text-xs font-bold">
             <ShieldCheck className="w-5 h-5 flex-shrink-0" />
-            <span className="text-[11px] text-slate-300 leading-tight">eSocial S-2240<br/><span className="text-tenant-primary font-normal">Sincronizado</span></span>
+            <span className="text-[11px] text-tinta leading-tight">eSocial S-2240<br/><span className="text-tenant-primary font-normal">Sincronizado</span></span>
           </div>
         </div>
       </div>
@@ -323,15 +323,15 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
         <div 
           onClick={() => setActiveTab('OS')}
           className={`p-3.5 rounded-2xl border transition cursor-pointer ${
-            activeTab === 'OS' ? 'bg-slate-900 border-tenant-primary shadow-tenant-glow' : 'bg-slate-900 border-slate-800 hover:border-slate-700'
+            activeTab === 'OS' ? 'bg-superficie border-tenant-primary shadow-tenant-glow' : 'bg-superficie border-borda hover:border-borda'
           }`}
         >
-          <div className="flex items-center justify-between text-slate-400 text-xs font-semibold">
+          <div className="flex items-center justify-between text-tinta-2 text-xs font-semibold">
             <span>Ordens de Serviço</span>
             <Clock className="w-4 h-4 text-tenant-primary" />
           </div>
-          <div className="text-2xl font-bold text-white mt-1 font-mono">{clientOS.length}</div>
-          <div className="text-[10px] text-slate-400 mt-0.5">
+          <div className="text-2xl font-bold text-tinta mt-1 font-mono">{clientOS.length}</div>
+          <div className="text-[10px] text-tinta-2 mt-0.5">
             {clientOS.filter(o => o.status === 'WAITING_ACCEPTANCE').length} aguardando aceite
           </div>
         </div>
@@ -339,29 +339,29 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
         <div 
           onClick={() => setActiveTab('DOCS')}
           className={`p-3.5 rounded-2xl border transition cursor-pointer ${
-            activeTab === 'DOCS' ? 'bg-slate-900 border-tenant-primary shadow-tenant-glow' : 'bg-slate-900 border-slate-800 hover:border-slate-700'
+            activeTab === 'DOCS' ? 'bg-superficie border-tenant-primary shadow-tenant-glow' : 'bg-superficie border-borda hover:border-borda'
           }`}
         >
-          <div className="flex items-center justify-between text-slate-400 text-xs font-semibold">
+          <div className="flex items-center justify-between text-tinta-2 text-xs font-semibold">
             <span>Laudos Liberados</span>
             <FileText className="w-4 h-4 text-tenant-primary" />
           </div>
-          <div className="text-2xl font-bold text-white mt-1 font-mono">{clientDocs.length}</div>
-          <div className="text-[10px] text-slate-400 mt-0.5">Com ART & Liberação</div>
+          <div className="text-2xl font-bold text-tinta mt-1 font-mono">{clientDocs.length}</div>
+          <div className="text-[10px] text-tinta-2 mt-0.5">Com ART & Liberação</div>
         </div>
 
         <div 
           onClick={() => setActiveTab('SIGNATURES')}
           className={`p-3.5 rounded-2xl border transition cursor-pointer ${
-            activeTab === 'SIGNATURES' ? 'bg-slate-900 border-teal-500 shadow-teal-500/20' : 'bg-slate-900 border-slate-800 hover:border-slate-700'
+            activeTab === 'SIGNATURES' ? 'bg-superficie border-teal-200' : 'bg-superficie border-borda hover:border-borda'
           }`}
         >
-          <div className="flex items-center justify-between text-slate-400 text-xs font-semibold">
+          <div className="flex items-center justify-between text-tinta-2 text-xs font-semibold">
             <span>Assinaturas Digitais</span>
-            <ShieldCheck className="w-4 h-4 text-teal-400" />
+            <ShieldCheck className="w-4 h-4 text-teal-700" />
           </div>
-          <div className="text-2xl font-bold text-teal-400 mt-1 font-mono">{clientSignatures.length}</div>
-          <div className="text-[10px] text-slate-400 mt-0.5">
+          <div className="text-2xl font-bold text-teal-700 mt-1 font-mono">{clientSignatures.length}</div>
+          <div className="text-[10px] text-tinta-2 mt-0.5">
             {clientSignatures.filter(s => s.status === 'PENDING' || s.status === 'PARTIALLY_SIGNED').length} pendente(s) de aceite
           </div>
         </div>
@@ -369,15 +369,15 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
         <div 
           onClick={() => setActiveTab('REQUESTS')}
           className={`p-3.5 rounded-2xl border transition cursor-pointer ${
-            activeTab === 'REQUESTS' ? 'bg-slate-900 border-tenant-primary shadow-tenant-glow' : 'bg-slate-900 border-slate-800 hover:border-slate-700'
+            activeTab === 'REQUESTS' ? 'bg-superficie border-tenant-primary shadow-tenant-glow' : 'bg-superficie border-borda hover:border-borda'
           }`}
         >
-          <div className="flex items-center justify-between text-slate-400 text-xs font-semibold">
+          <div className="flex items-center justify-between text-tinta-2 text-xs font-semibold">
             <span>Pendências</span>
-            <AlertCircle className="w-4 h-4 text-amber-400" />
+            <AlertCircle className="w-4 h-4 text-amber-700" />
           </div>
-          <div className="text-2xl font-bold text-white mt-1 font-mono">{openRequestsCount}</div>
-          <div className="text-[10px] text-slate-400 mt-0.5">
+          <div className="text-2xl font-bold text-tinta mt-1 font-mono">{openRequestsCount}</div>
+          <div className="text-[10px] text-tinta-2 mt-0.5">
             {openRequestsCount > 0 ? 'Ação necessária' : 'Tudo em dia'}
           </div>
         </div>
@@ -385,26 +385,26 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
         <div 
           onClick={() => setActiveTab('EVALUATIONS')}
           className={`p-3.5 rounded-2xl border transition cursor-pointer ${
-            activeTab === 'EVALUATIONS' ? 'bg-slate-900 border-tenant-primary shadow-tenant-glow' : 'bg-slate-900 border-slate-800 hover:border-slate-700'
+            activeTab === 'EVALUATIONS' ? 'bg-superficie border-tenant-primary shadow-tenant-glow' : 'bg-superficie border-borda hover:border-borda'
           }`}
         >
-          <div className="flex items-center justify-between text-slate-400 text-xs font-semibold">
+          <div className="flex items-center justify-between text-tinta-2 text-xs font-semibold">
             <span>NPS & Satisfação</span>
-            <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
+            <Star className="w-4 h-4 text-amber-700 fill-amber-400" />
           </div>
-          <div className="text-2xl font-bold text-white mt-1 font-mono">
+          <div className="text-2xl font-bold text-tinta mt-1 font-mono">
             {clientEvals.length > 0 ? (clientEvals.reduce((acc, curr) => acc + curr.nps_score, 0) / clientEvals.length).toFixed(1) : '10.0'}
           </div>
-          <div className="text-[10px] text-slate-400 mt-0.5">{clientEvals.length} avaliação(ões)</div>
+          <div className="text-[10px] text-tinta-2 mt-0.5">{clientEvals.length} avaliação(ões)</div>
         </div>
       </div>
 
       {/* Main Tab Navigation */}
-      <div className="flex overflow-x-auto bg-slate-900 p-1.5 rounded-2xl border border-slate-800 gap-1 scrollbar-none">
+      <div className="flex overflow-x-auto bg-superficie p-1.5 rounded-2xl border border-borda gap-1 scrollbar-none">
         <button
           onClick={() => setActiveTab('OS')}
           className={`px-4 py-2.5 rounded-xl text-xs font-bold transition whitespace-nowrap flex items-center space-x-2 ${
-            activeTab === 'OS' ? 'bg-tenant-primary text-white shadow-tenant-glow' : 'text-slate-400 hover:text-white'
+            activeTab === 'OS' ? 'bg-tenant-primary text-tinta shadow-tenant-glow' : 'text-tinta-2 hover:text-tinta'
           }`}
         >
           <Clock className="w-4 h-4" />
@@ -414,7 +414,7 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
         <button
           onClick={() => setActiveTab('DOCS')}
           className={`px-4 py-2.5 rounded-xl text-xs font-bold transition whitespace-nowrap flex items-center space-x-2 ${
-            activeTab === 'DOCS' ? 'bg-tenant-primary text-white shadow-tenant-glow' : 'text-slate-400 hover:text-white'
+            activeTab === 'DOCS' ? 'bg-tenant-primary text-tinta shadow-tenant-glow' : 'text-tinta-2 hover:text-tinta'
           }`}
         >
           <FileText className="w-4 h-4" />
@@ -424,13 +424,13 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
         <button
           onClick={() => setActiveTab('SIGNATURES')}
           className={`px-4 py-2.5 rounded-xl text-xs font-bold transition whitespace-nowrap flex items-center space-x-2 ${
-            activeTab === 'SIGNATURES' ? 'bg-teal-500 text-slate-950 font-black shadow-lg shadow-teal-500/20' : 'text-slate-400 hover:text-white'
+            activeTab === 'SIGNATURES' ? 'bg-marca-escura text-white font-black shadow-sm' : 'text-tinta hover:text-tinta'
           }`}
         >
           <ShieldCheck className="w-4 h-4" />
           <span>Assinaturas Digitais ({clientSignatures.length})</span>
           {clientSignatures.filter(s => s.status === 'PENDING' || s.status === 'PARTIALLY_SIGNED').length > 0 && (
-            <span className="px-1.5 py-0.2 bg-amber-400 text-slate-950 text-[10px] font-black rounded-full animate-pulse">
+            <span className="px-1.5 py-0.2 bg-amber-100 text-amber-900 text-[10px] font-black rounded-full animate-pulse border border-amber-200">
               {clientSignatures.filter(s => s.status === 'PENDING' || s.status === 'PARTIALLY_SIGNED').length}
             </span>
           )}
@@ -439,13 +439,13 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
         <button
           onClick={() => setActiveTab('REQUESTS')}
           className={`px-4 py-2.5 rounded-xl text-xs font-bold transition whitespace-nowrap flex items-center space-x-2 ${
-            activeTab === 'REQUESTS' ? 'bg-tenant-primary text-white shadow-tenant-glow' : 'text-slate-400 hover:text-white'
+            activeTab === 'REQUESTS' ? 'bg-tenant-primary text-tinta shadow-tenant-glow' : 'text-tinta-2 hover:text-tinta'
           }`}
         >
           <AlertCircle className="w-4 h-4" />
           <span>Pendências & Chamados ({clientRequests.length})</span>
           {openRequestsCount > 0 && (
-            <span className="px-1.5 py-0.2 bg-amber-500 text-slate-950 text-[10px] font-black rounded-full">
+            <span className="px-1.5 py-0.2 bg-amber-100 text-amber-900 text-[10px] font-black rounded-full border border-amber-200">
               {openRequestsCount}
             </span>
           )}
@@ -454,7 +454,7 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
         <button
           onClick={() => setActiveTab('CONTRACTS')}
           className={`px-4 py-2.5 rounded-xl text-xs font-bold transition whitespace-nowrap flex items-center space-x-2 ${
-            activeTab === 'CONTRACTS' ? 'bg-tenant-primary text-white shadow-tenant-glow' : 'text-slate-400 hover:text-white'
+            activeTab === 'CONTRACTS' ? 'bg-tenant-primary text-tinta shadow-tenant-glow' : 'text-tinta-2 hover:text-tinta'
           }`}
         >
           <Award className="w-4 h-4" />
@@ -464,7 +464,7 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
         <button
           onClick={() => setActiveTab('EVALUATIONS')}
           className={`px-4 py-2.5 rounded-xl text-xs font-bold transition whitespace-nowrap flex items-center space-x-2 ${
-            activeTab === 'EVALUATIONS' ? 'bg-tenant-primary text-white shadow-tenant-glow' : 'text-slate-400 hover:text-white'
+            activeTab === 'EVALUATIONS' ? 'bg-tenant-primary text-tinta shadow-tenant-glow' : 'text-tinta-2 hover:text-tinta'
           }`}
         >
           <Star className="w-4 h-4" />
@@ -477,16 +477,16 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
         <div className="space-y-6">
           {/* OS Selector Pills if multiple */}
           {clientOS.length > 1 && (
-            <div className="flex flex-wrap gap-2 items-center bg-slate-900/60 p-3 rounded-2xl border border-slate-800">
-              <span className="text-xs text-slate-400 font-semibold mr-1">Selecione o Laudo / Serviço:</span>
+            <div className="flex flex-wrap gap-2 items-center bg-superficie p-3 rounded-2xl border border-borda">
+              <span className="text-xs text-tinta-2 font-semibold mr-1">Selecione o Laudo / Serviço:</span>
               {clientOS.map(os => (
                 <button
                   key={os.id}
                   onClick={() => setSelectedOS(os)}
                   className={`px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-2 border ${
                     selectedOS?.id === os.id
-                      ? 'bg-indigo-600 text-white border-indigo-500 shadow-md'
-                      : 'bg-slate-950 text-slate-300 border-slate-800 hover:border-slate-700'
+                      ? 'bg-teal-700 text-white border-teal-500 shadow-md'
+                      : 'bg-fundo text-tinta border-borda hover:border-borda'
                   }`}
                 >
                   <span className="font-mono">{os.os_number}</span>
@@ -500,21 +500,21 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
           )}
 
           {selectedOS ? (
-            <div className="bg-slate-900 p-6 rounded-3xl border border-slate-800 shadow-xl space-y-6">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800/80 pb-5">
+            <div className="bg-superficie p-6 rounded-3xl border border-borda shadow-sm space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-borda pb-5">
                 <div>
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="font-mono text-xs font-bold bg-slate-950 text-indigo-300 border border-slate-800 px-2.5 py-0.5 rounded-full">
+                    <span className="font-mono text-xs font-bold bg-fundo text-teal-700 border border-borda px-2.5 py-0.5 rounded-full">
                       {selectedOS.os_number}
                     </span>
                     <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${
                       selectedOS.status === 'ACCEPTED' || selectedOS.status === 'COMPLETED' 
-                        ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
+                        ? 'bg-marca-suave text-marca-escura border-marca-borda' :
                       selectedOS.status === 'WAITING_ACCEPTANCE' || selectedOS.status === 'DELIVERED' 
-                        ? 'bg-purple-500/10 text-purple-300 border-purple-500/20 animate-pulse' :
+                        ? 'bg-teal-500/10 text-teal-800 border-teal-500/20 animate-pulse' :
                       selectedOS.status === 'REWORK'
-                        ? 'bg-rose-500/10 text-rose-400 border-rose-500/20' :
-                        'bg-blue-500/10 text-blue-400 border-blue-500/20'
+                        ? 'bg-rose-500/10 text-rose-700 border-rose-500/20' :
+                        'bg-teal-500/10 text-teal-800 border-teal-500/20'
                     }`}>
                       {selectedOS.status === 'WAITING_ACCEPTANCE' || selectedOS.status === 'DELIVERED' 
                         ? 'AGUARDANDO SEU ACEITE FORMAL' 
@@ -525,9 +525,9 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
                         : 'EM ANDAMENTO'}
                     </span>
                   </div>
-                  <h2 className="text-xl font-bold text-white mt-2">{selectedOS.service_name}</h2>
-                  <p className="text-xs text-slate-400 mt-0.5">
-                    Responsável Técnico: <strong className="text-slate-300">{selectedOS.technical_responsible_name}</strong> • Prazo Previsto: <span className="font-mono text-slate-300">{formatDate(selectedOS.due_date)}</span>
+                  <h2 className="text-xl font-bold text-tinta mt-2">{selectedOS.service_name}</h2>
+                  <p className="text-xs text-tinta-2 mt-0.5">
+                    Responsável Técnico: <strong className="text-tinta">{selectedOS.technical_responsible_name}</strong> • Prazo Previsto: <span className="font-mono text-tinta">{formatDate(selectedOS.due_date)}</span>
                   </p>
                 </div>
 
@@ -537,14 +537,14 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
                     <>
                       <button
                         onClick={() => setShowReworkModal(true)}
-                        className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-2xl transition flex items-center space-x-1.5"
+                        className="px-4 py-2 bg-superficie-2 hover:bg-superficie-3 text-tinta text-xs font-semibold rounded-2xl transition flex items-center space-x-1.5"
                       >
-                        <RotateCcw className="w-3.5 h-3.5 text-rose-400" />
+                        <RotateCcw className="w-3.5 h-3.5 text-rose-700" />
                         <span>Solicitar Ajuste Técnico</span>
                       </button>
                       <button
                         onClick={() => setShowAcceptModal(true)}
-                        className="px-5 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-bold rounded-2xl shadow-lg shadow-emerald-950/40 transition flex items-center space-x-1.5"
+                        className="bg-marca-escura px-5 py-2 text-white text-xs font-bold rounded-2xl shadow-sm transition flex items-center space-x-1.5"
                       >
                         <CheckCircle2 className="w-4 h-4" />
                         <span>Dar Aceite Formal no Laudo</span>
@@ -558,9 +558,9 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
                         setEvalOSId(selectedOS.id);
                         setShowFeedbackModal(true);
                       }}
-                      className="px-4 py-2 bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 text-xs font-bold rounded-2xl transition flex items-center space-x-1.5"
+                      className="px-4 py-2 bg-amber-500/10 hover:bg-amber-500/20 text-amber-800 border border-amber-500/30 text-xs font-bold rounded-2xl transition flex items-center space-x-1.5"
                     >
-                      <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
+                      <Star className="w-4 h-4 text-amber-700 fill-amber-400" />
                       <span>Avaliar Atendimento</span>
                     </button>
                   )}
@@ -569,13 +569,13 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
 
               {/* Visual Progress Bar */}
               <div className="space-y-2">
-                <div className="flex justify-between text-xs font-semibold text-slate-300">
+                <div className="flex justify-between text-xs font-semibold text-tinta">
                   <span>Andamento da Elaboração Técnica</span>
-                  <span className="font-mono text-emerald-400">{selectedOS.progress}% Concluído</span>
+                  <span className="font-mono text-marca-escura">{selectedOS.progress}% Concluído</span>
                 </div>
-                <div className="w-full h-3 bg-slate-950 rounded-full overflow-hidden border border-slate-800">
+                <div className="w-full h-3 bg-fundo rounded-full overflow-hidden border border-borda">
                   <div 
-                    className="h-full bg-emerald-500 rounded-full transition-all duration-500" 
+                    className="h-full bg-marca rounded-full transition-all duration-500" 
                     style={{ width: `${selectedOS.progress}%` }} 
                   />
                 </div>
@@ -583,31 +583,31 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
 
               {/* Stages List in Bento Grid */}
               <div className="space-y-3">
-                <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider">Cronograma de Etapas do Laudo</h3>
+                <h3 className="text-xs font-bold text-tinta uppercase tracking-wider">Cronograma de Etapas do Laudo</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
                   {selectedOS.stages.map((stage, idx) => (
-                    <div key={stage.id} className="p-4 bg-slate-950/60 border border-slate-800 rounded-2xl space-y-2 text-xs">
+                    <div key={stage.id} className="p-4 bg-fundo border border-borda rounded-2xl space-y-2 text-xs">
                       <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-mono text-slate-500">Etapa 0{idx + 1}</span>
+                        <span className="text-[10px] font-mono text-tinta-2">Etapa 0{idx + 1}</span>
                         {stage.status === 'COMPLETED' ? (
-                          <span className="flex items-center space-x-1 text-emerald-400 text-[11px] font-bold">
+                          <span className="flex items-center space-x-1 text-marca-escura text-[11px] font-bold">
                             <CheckCircle2 className="w-3.5 h-3.5" />
                             <span>Concluída</span>
                           </span>
                         ) : stage.status === 'IN_PROGRESS' ? (
-                          <span className="flex items-center space-x-1 text-blue-400 text-[11px] font-bold">
+                          <span className="flex items-center space-x-1 text-teal-700 text-[11px] font-bold">
                             <Clock className="w-3.5 h-3.5 animate-spin" />
                             <span>Em Execução</span>
                           </span>
                         ) : (
-                          <span className="text-slate-500 text-[11px]">Pendente</span>
+                          <span className="text-tinta-2 text-[11px]">Pendente</span>
                         )}
                       </div>
-                      <h4 className="font-bold text-white text-xs">{stage.name}</h4>
-                      <p className="text-[11px] text-slate-400 line-clamp-2">{stage.description}</p>
+                      <h4 className="font-bold text-tinta text-xs">{stage.name}</h4>
+                      <p className="text-[11px] text-tinta-2 line-clamp-2">{stage.description}</p>
                       
                       {stage.tasks && stage.tasks.length > 0 && (
-                        <div className="pt-2 border-t border-slate-800/60 text-[10px] text-slate-400">
+                        <div className="pt-2 border-t border-borda text-[10px] text-tinta-2">
                           {stage.tasks.filter(t => t.status === 'COMPLETED').length} de {stage.tasks.length} entregáveis concluídos
                         </div>
                       )}
@@ -617,9 +617,9 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
               </div>
             </div>
           ) : (
-            <div className="p-12 text-center bg-slate-900 border border-slate-800 rounded-3xl text-slate-400">
-              <Clock className="w-10 h-10 mx-auto mb-3 text-slate-600" />
-              <p className="text-sm font-semibold text-white">Nenhuma Ordem de Serviço cadastrada para esta empresa</p>
+            <div className="p-12 text-center bg-superficie border border-borda rounded-3xl text-tinta-2">
+              <Clock className="w-10 h-10 mx-auto mb-3 text-tinta-2" />
+              <p className="text-sm font-semibold text-tinta">Nenhuma Ordem de Serviço cadastrada para esta empresa</p>
               <p className="text-xs mt-1">Quando a PrevSafe iniciar um serviço, ele aparecerá aqui com acompanhamento em tempo real.</p>
             </div>
           )}
@@ -629,30 +629,30 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
       {/* ==================== TAB 2: LAUDOS & DOCUMENTOS ==================== */}
       {activeTab === 'DOCS' && (
         <div className="space-y-6">
-          <div className="bg-slate-900 p-6 rounded-3xl border border-slate-800 shadow-xl space-y-5">
+          <div className="bg-superficie p-6 rounded-3xl border border-borda shadow-sm space-y-5">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
-                <h2 className="text-base font-bold text-white">Laudos Técnicos e Documentos Emitidos</h2>
-                <p className="text-xs text-slate-400 mt-0.5">Arquivos oficiais com ART assinada e prontos para fiscalizações e eSocial.</p>
+                <h2 className="text-base font-bold text-tinta">Laudos Técnicos e Documentos Emitidos</h2>
+                <p className="text-xs text-tinta-2 mt-0.5">Arquivos oficiais com ART assinada e prontos para fiscalizações e eSocial.</p>
               </div>
 
               {/* Filters */}
               <div className="flex flex-wrap items-center gap-2">
                 <div className="relative">
-                  <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-slate-400" />
+                  <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-tinta-2" />
                   <input
                     type="text"
                     placeholder="Buscar laudo ou documento..."
                     value={docSearch}
                     onChange={(e) => setDocSearch(e.target.value)}
-                    className="pl-8 pr-3 py-1.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500"
+                    className="pl-8 pr-3 py-1.5 bg-fundo border border-borda rounded-xl text-xs text-tinta placeholder-tinta-3 focus:outline-none focus:border-teal-500"
                   />
                 </div>
 
                 <select
                   value={docTypeFilter}
                   onChange={(e) => setDocTypeFilter(e.target.value)}
-                  className="px-3 py-1.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500"
+                  className="px-3 py-1.5 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                 >
                   <option value="ALL">Todos os Tipos</option>
                   <option value="PGR">PGR</option>
@@ -668,31 +668,31 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
             {filteredDocs.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {filteredDocs.map((doc) => (
-                  <div key={doc.id} className="p-4 bg-slate-950/60 border border-slate-800 rounded-2xl flex flex-col justify-between text-xs hover:border-slate-700 transition gap-3">
+                  <div key={doc.id} className="p-4 bg-fundo border border-borda rounded-2xl flex flex-col justify-between text-xs hover:border-borda transition gap-3">
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex items-start space-x-3">
-                        <div className="p-2.5 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-xl flex-shrink-0 mt-0.5">
+                        <div className="p-2.5 bg-marca-suave text-marca-escura border border-marca-borda rounded-xl flex-shrink-0 mt-0.5">
                           <FileText className="w-5 h-5" />
                         </div>
                         <div>
                           <div className="flex items-center space-x-2">
-                            <span className="font-mono text-[10px] font-bold text-indigo-300 bg-slate-900 px-2 py-0.5 rounded-full border border-slate-800">
+                            <span className="font-mono text-[10px] font-bold text-teal-700 bg-superficie px-2 py-0.5 rounded-full border border-borda">
                               {doc.doc_number}
                             </span>
-                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-marca-suave text-marca-escura border border-marca-borda">
                               {doc.document_type}
                             </span>
                           </div>
-                          <div className="font-bold text-white text-xs mt-1.5">{doc.name}</div>
-                          <div className="text-slate-400 font-mono text-[11px] mt-0.5">
+                          <div className="font-bold text-tinta text-xs mt-1.5">{doc.name}</div>
+                          <div className="text-tinta-2 font-mono text-[11px] mt-0.5">
                             Versão {doc.current_version}.0 • Liberado para download
                           </div>
                         </div>
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-between pt-3 border-t border-slate-800/80">
-                      <span className="text-[11px] text-slate-500">
+                    <div className="flex items-center justify-between pt-3 border-t border-borda">
+                      <span className="text-[11px] text-tinta-2">
                         {formatDate(doc.created_at)} • {doc.uploaded_by_name}
                       </span>
                       <div className="flex space-x-2">
@@ -701,14 +701,14 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
                             setSelectedDocPreview(doc);
                             setShowDocPreviewModal(true);
                           }}
-                          className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 rounded-xl font-semibold transition flex items-center space-x-1"
+                          className="px-3 py-1.5 bg-superficie hover:bg-superficie-2 text-tinta border border-borda rounded-xl font-semibold transition flex items-center space-x-1"
                         >
                           <Eye className="w-3.5 h-3.5" />
                           <span>Ver Detalhes</span>
                         </button>
                         <button
                           onClick={() => alert(`Baixando cópia oficial do laudo ${doc.name} com certificado digital e ART vinculada.`)}
-                          className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold transition flex items-center space-x-1 shadow-md shadow-emerald-950/30"
+                          className="px-3 py-1.5 bg-marca-escura hover:opacity-90 text-white rounded-xl font-bold transition flex items-center space-x-1 shadow-md"
                         >
                           <Download className="w-3.5 h-3.5" />
                           <span>Baixar PDF</span>
@@ -719,7 +719,7 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
                 ))}
               </div>
             ) : (
-              <div className="p-8 text-center bg-slate-950/40 rounded-2xl border border-slate-800 text-slate-400 text-xs">
+              <div className="p-8 text-center bg-fundo rounded-2xl border border-borda text-tinta-2 text-xs">
                 Nenhum documento encontrado com os filtros selecionados.
               </div>
             )}
@@ -730,18 +730,18 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
       {/* ==================== TAB: ASSINATURAS ELETRÔNICAS & ACEITE DIGITAL (LEI 14.063/2020) ==================== */}
       {activeTab === 'SIGNATURES' && (
         <div className="space-y-6">
-          <div className="bg-slate-900 p-6 rounded-3xl border border-slate-800 shadow-xl space-y-5">
+          <div className="bg-superficie p-6 rounded-3xl border border-borda shadow-sm space-y-5">
             
             {/* Header & Legal Framework Notice */}
-            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-800 pb-5">
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-borda pb-5">
               <div className="space-y-1">
                 <div className="flex items-center space-x-2">
-                  <h2 className="text-base font-bold text-white">Central de Assinaturas & Aceites Digitais</h2>
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-teal-500/10 text-teal-300 border border-teal-500/20">
+                  <h2 className="text-base font-bold text-tinta">Central de Assinaturas & Aceites Digitais</h2>
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-teal-500/10 text-teal-800 border border-teal-500/20">
                     Lei 14.063/2020, art. 4º, I
                   </span>
                 </div>
-                <p className="text-xs text-slate-400 leading-relaxed max-w-2xl">
+                <p className="text-xs text-tinta-2 leading-relaxed max-w-2xl">
                   Revise e assine eletronicamente os laudos técnicos de SST, ordens de serviço e eventos do eSocial da sua empresa. 
                   Cada assinatura registra data, hora e IP do signatário e um código SHA-256 do conteúdo assinado, que permite conferir em /validar que o registro não foi alterado depois de assinado. É assinatura eletrônica simples: não utiliza certificado ICP-Brasil nem carimbo do tempo.
                 </p>
@@ -752,7 +752,7 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
                 <select
                   value={sigFilterType}
                   onChange={(e) => setSigFilterType(e.target.value)}
-                  className="px-3 py-1.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-teal-500"
+                  className="px-3 py-1.5 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                 >
                   <option value="ALL">Todos os Documentos</option>
                   <option value="PGR_NR01">PGR (NR-01)</option>
@@ -766,7 +766,7 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
                 <select
                   value={sigFilterStatus}
                   onChange={(e) => setSigFilterStatus(e.target.value)}
-                  className="px-3 py-1.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-teal-500"
+                  className="px-3 py-1.5 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                 >
                   <option value="ALL">Todos os Status</option>
                   <option value="PENDING">Pendentes de Aceite</option>
@@ -803,34 +803,34 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
                         key={env.id} 
                         className={`p-5 rounded-2xl border transition space-y-4 ${
                           needsMySignature 
-                            ? 'bg-slate-950 border-teal-500/50 ring-1 ring-teal-500/30' 
-                            : 'bg-slate-950/60 border-slate-800 hover:border-slate-700'
+                            ? 'bg-fundo border-teal-500/50 ring-1 ring-teal-500/30' 
+                            : 'bg-fundo border-borda hover:border-borda'
                         }`}
                       >
                         <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
                           <div className="flex items-start space-x-3">
                             <div className={`p-2.5 rounded-2xl border flex-shrink-0 mt-0.5 ${
-                              isFullySigned ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' :
-                              isRejected ? 'bg-rose-500/10 border-rose-500/20 text-rose-400' :
-                              'bg-amber-500/10 border-amber-500/20 text-amber-400'
+                              isFullySigned ? 'bg-marca-suave border-marca-borda text-marca-escura' :
+                              isRejected ? 'bg-rose-500/10 border-rose-500/20 text-rose-700' :
+                              'bg-amber-500/10 border-amber-500/20 text-amber-800'
                             }`}>
                               <ShieldCheck className="w-6 h-6" />
                             </div>
                             <div>
                               <div className="flex flex-wrap items-center gap-2">
-                                <span className="font-mono text-[10px] font-bold text-teal-300 bg-slate-900 px-2 py-0.5 rounded-full border border-slate-800">
+                                <span className="font-mono text-[10px] font-bold text-teal-700 bg-superficie px-2 py-0.5 rounded-full border border-borda">
                                   {env.document_number}
                                 </span>
                                 <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${
-                                  isFullySigned ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
-                                  isRejected ? 'bg-rose-500/10 text-rose-400 border-rose-500/20' :
-                                  'bg-amber-500/10 text-amber-400 border-amber-500/20 animate-pulse'
+                                  isFullySigned ? 'bg-marca-suave text-marca-escura border-marca-borda' :
+                                  isRejected ? 'bg-rose-500/10 text-rose-700 border-rose-500/20' :
+                                  'bg-amber-500/10 text-amber-800 border-amber-500/20 animate-pulse'
                                 }`}>
                                   {isFullySigned ? 'CONCLUÍDO & HOMOLOGADO' : isRejected ? 'RECUSADO' : 'AGUARDANDO SEU ACEITE DIGITAL'}
                                 </span>
                               </div>
-                              <h3 className="text-sm font-bold text-white mt-1">{env.document_title}</h3>
-                              <p className="text-[11px] text-slate-400 mt-0.5">
+                              <h3 className="text-sm font-bold text-tinta mt-1">{env.document_title}</h3>
+                              <p className="text-[11px] text-tinta-2 mt-0.5">
                                 Criado em {new Date(env.created_at).toLocaleDateString('pt-BR')}{env.expires_at ? ` • Expira em ${new Date(env.expires_at).toLocaleDateString('pt-BR')}` : ''}
                               </p>
                             </div>
@@ -845,7 +845,7 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
                                   setActiveSignerForPortal(employerSigner.id);
                                   setShowSignatureModal(true);
                                 }}
-                                className="px-5 py-2.5 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold rounded-xl text-xs flex items-center space-x-1.5 transition shadow-lg shadow-teal-500/20"
+                                className="bg-marca-escura text-white px-5 py-2.5 font-bold rounded-xl text-xs flex items-center space-x-1.5 transition shadow-sm hover:opacity-90"
                               >
                                 <PenTool className="w-4 h-4" />
                                 <span>Assinar & Dar Aceite</span>
@@ -856,9 +856,9 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
                                   setSelectedSignatureEnvelope(env);
                                   setShowSignatureModal(true);
                                 }}
-                                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold rounded-xl text-xs flex items-center space-x-1.5 transition"
+                                className="px-4 py-2 bg-superficie-2 hover:bg-superficie-3 text-tinta font-bold rounded-xl text-xs flex items-center space-x-1.5 transition"
                               >
-                                <Eye className="w-4 h-4 text-teal-400" />
+                                <Eye className="w-4 h-4 text-teal-700" />
                                 <span>Ver Certificado & Trilha</span>
                               </button>
                             )}
@@ -866,21 +866,21 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
                         </div>
 
                         {/* Signers Row */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5 pt-3 border-t border-slate-800/80 text-xs">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5 pt-3 border-t border-borda text-xs">
                           {env.signers.map(s => {
                             const isSg = s.signature_status === 'SIGNED';
                             const isRj = s.signature_status === 'REJECTED';
 
                             return (
-                              <div key={s.id} className="p-2.5 bg-slate-900/80 rounded-xl border border-slate-800 flex items-center justify-between">
+                              <div key={s.id} className="p-2.5 bg-superficie rounded-xl border border-borda flex items-center justify-between">
                                 <div>
-                                  <span className="font-bold text-white text-[11px] block">{s.name}</span>
-                                  <span className="text-[10px] text-slate-400 block">{s.role_description || s.role_title}</span>
+                                  <span className="font-bold text-tinta text-[11px] block">{s.name}</span>
+                                  <span className="text-[10px] text-tinta-2 block">{s.role_description || s.role_title}</span>
                                 </div>
                                 <span className={`px-2 py-0.5 rounded text-[9px] font-bold ${
-                                  isSg ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' :
-                                  isRj ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20' :
-                                  'bg-amber-500/10 text-amber-400 border border-amber-500/20'
+                                  isSg ? 'bg-marca-suave text-marca-escura border border-marca-borda' :
+                                  isRj ? 'bg-rose-500/10 text-rose-700 border border-rose-500/20' :
+                                  'bg-amber-500/10 text-amber-800 border border-amber-500/20'
                                 }`}>
                                   {isSg ? 'Assinado' : isRj ? 'Recusado' : 'Pendente'}
                                 </span>
@@ -890,16 +890,16 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
                         </div>
 
                         {/* Cryptographic SHA-256 footer */}
-                        <div className="flex flex-wrap items-center justify-between gap-2 text-[10px] text-slate-400 bg-slate-900/40 p-2 rounded-xl border border-slate-800/60 font-mono">
+                        <div className="flex flex-wrap items-center justify-between gap-2 text-[10px] text-tinta-2 bg-superficie p-2 rounded-xl border border-borda font-mono">
                           <span className="truncate max-w-md">SHA-256: {env.document_sha256}</span>
-                          <span className="text-teal-400">Assinatura eletrônica simples (Lei 14.063/2020, art. 4º, I)</span>
+                          <span className="text-teal-700">Assinatura eletrônica simples (Lei 14.063/2020, art. 4º, I)</span>
                         </div>
                       </div>
                     );
                   })}
               </div>
             ) : (
-              <div className="p-8 text-center bg-slate-950/40 rounded-2xl border border-slate-800 text-slate-400 text-xs">
+              <div className="p-8 text-center bg-fundo rounded-2xl border border-borda text-tinta-2 text-xs">
                 Nenhum envelope de assinatura digital encontrado com os filtros selecionados.
               </div>
             )}
@@ -912,18 +912,18 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
       {/* ==================== TAB 3: PENDÊNCIAS & CHAMADOS (CRUD) ==================== */}
       {activeTab === 'REQUESTS' && (
         <div className="space-y-6">
-          <div className="bg-slate-900 p-6 rounded-3xl border border-slate-800 shadow-xl space-y-5">
+          <div className="bg-superficie p-6 rounded-3xl border border-borda shadow-sm space-y-5">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
-                <h2 className="text-base font-bold text-white">Central de Pendências & Solicitações</h2>
-                <p className="text-xs text-slate-400 mt-0.5">
+                <h2 className="text-base font-bold text-tinta">Central de Pendências & Solicitações</h2>
+                <p className="text-xs text-tinta-2 mt-0.5">
                   Envie documentos solicitados pela engenharia ou abra novos chamados para nossa equipe.
                 </p>
               </div>
 
               <button
                 onClick={() => setShowNewRequestModal(true)}
-                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-2xl shadow-lg transition flex items-center space-x-1.5 self-start sm:self-auto"
+                className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold rounded-2xl shadow-sm transition flex items-center space-x-1.5 self-start sm:self-auto"
               >
                 <Plus className="w-4 h-4" />
                 <span>+ Abrir Novo Chamado</span>
@@ -938,36 +938,36 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
                     className={`p-4 rounded-2xl border transition flex flex-col md:flex-row md:items-center justify-between gap-4 text-xs ${
                       req.status === 'OPEN' 
                         ? 'bg-amber-500/5 border-amber-500/30' 
-                        : 'bg-slate-950/60 border-slate-800'
+                        : 'bg-fundo border-borda'
                     }`}
                   >
                     <div className="space-y-1.5">
                       <div className="flex items-center space-x-2">
-                        <span className="font-mono text-[10px] font-bold text-slate-300 bg-slate-900 px-2 py-0.5 rounded-full border border-slate-800">
+                        <span className="font-mono text-[10px] font-bold text-tinta bg-superficie px-2 py-0.5 rounded-full border border-borda">
                           {req.req_number}
                         </span>
                         <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
                           req.status === 'OPEN'
-                            ? 'bg-amber-500/10 text-amber-400 border-amber-500/20'
-                            : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+                            ? 'bg-amber-500/10 text-amber-800 border-amber-500/20'
+                            : 'bg-marca-suave text-marca-escura border-marca-borda'
                         }`}>
                           {req.status === 'OPEN' ? 'PENDENTE / ABERTO' : 'RESOLVIDO'}
                         </span>
-                        <span className="text-[10px] text-slate-400 font-semibold uppercase">
+                        <span className="text-[10px] text-tinta-2 font-semibold uppercase">
                           {req.type}
                         </span>
                       </div>
-                      <h4 className="font-bold text-white text-xs">{req.title}</h4>
-                      <p className="text-slate-300 text-xs">{req.description}</p>
+                      <h4 className="font-bold text-tinta text-xs">{req.title}</h4>
+                      <p className="text-tinta text-xs">{req.description}</p>
                       
                       {req.resolution_notes && (
-                        <div className="mt-2 p-2.5 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-emerald-300 text-[11px]">
+                        <div className="mt-2 p-2.5 bg-marca-suave border border-marca-borda rounded-xl text-marca-escura text-[11px]">
                           <strong>Resolução:</strong> {req.resolution_notes}
                         </div>
                       )}
 
-                      <div className="text-[10px] text-slate-500 pt-1">
-                        Prazo Limite: <span className="font-mono text-slate-400">{formatDate(req.due_date)}</span>
+                      <div className="text-[10px] text-tinta-2 pt-1">
+                        Prazo Limite: <span className="font-mono text-tinta-2">{formatDate(req.due_date)}</span>
                       </div>
                     </div>
 
@@ -978,7 +978,7 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
                             setSelectedRequestToResolve(req);
                             setShowResolveModal(true);
                           }}
-                          className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold transition flex items-center space-x-1 shadow-md"
+                          className="px-3.5 py-2 bg-marca-escura hover:opacity-90 text-white rounded-xl font-bold transition flex items-center space-x-1 shadow-md"
                         >
                           <Send className="w-3.5 h-3.5" />
                           <span>Enviar / Resolver</span>
@@ -990,7 +990,7 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
                             deleteRequest(req.id);
                           }
                         }}
-                        className="p-2 text-slate-400 hover:text-rose-400 hover:bg-slate-900 rounded-xl transition"
+                        className="p-2 text-tinta-2 hover:text-rose-700 hover:bg-superficie rounded-xl transition"
                         title="Excluir Chamado"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -1000,7 +1000,7 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
                 ))}
               </div>
             ) : (
-              <div className="p-8 text-center bg-slate-950/40 rounded-2xl border border-slate-800 text-slate-400 text-xs">
+              <div className="p-8 text-center bg-fundo rounded-2xl border border-borda text-tinta-2 text-xs">
                 Nenhuma pendência ou chamado aberto no momento.
               </div>
             )}
@@ -1011,44 +1011,44 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
       {/* ==================== TAB 4: CONTRATOS & VIGÊNCIA ==================== */}
       {activeTab === 'CONTRACTS' && (
         <div className="space-y-6">
-          <div className="bg-slate-900 p-6 rounded-3xl border border-slate-800 shadow-xl space-y-5">
+          <div className="bg-superficie p-6 rounded-3xl border border-borda shadow-sm space-y-5">
             <div>
-              <h2 className="text-base font-bold text-white">Contratos de Prestação de Serviços SST</h2>
-              <p className="text-xs text-slate-400 mt-0.5">Gestão de vigência, cobertura de programas e termos de responsabilidade técnica.</p>
+              <h2 className="text-base font-bold text-tinta">Contratos de Prestação de Serviços SST</h2>
+              <p className="text-xs text-tinta-2 mt-0.5">Gestão de vigência, cobertura de programas e termos de responsabilidade técnica.</p>
             </div>
 
             {clientContracts.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {clientContracts.map((contract) => (
-                  <div key={contract.id} className="p-5 bg-slate-950/60 border border-slate-800 rounded-2xl space-y-4 text-xs">
+                  <div key={contract.id} className="p-5 bg-fundo border border-borda rounded-2xl space-y-4 text-xs">
                     <div className="flex items-start justify-between">
                       <div>
                         <div className="flex items-center space-x-2">
-                          <span className="font-mono text-xs font-bold text-indigo-300 bg-slate-900 px-2 py-0.5 rounded-full border border-slate-800">
+                          <span className="font-mono text-xs font-bold text-teal-700 bg-superficie px-2 py-0.5 rounded-full border border-borda">
                             {contract.contract_number}
                           </span>
-                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-marca-suave text-marca-escura border border-marca-borda">
                             VIGENTE
                           </span>
                         </div>
-                        <h4 className="font-bold text-white text-sm mt-2">{contract.title}</h4>
+                        <h4 className="font-bold text-tinta text-sm mt-2">{contract.title}</h4>
                       </div>
                       <div className="text-right">
-                        <span className="text-emerald-400 font-bold font-mono text-sm block">
+                        <span className="text-marca-escura font-bold font-mono text-sm block">
                           {formatCurrency(contract.total_value)}
                         </span>
-                        <span className="text-[10px] text-slate-500">{contract.recurrence || 'MENSAL'}</span>
+                        <span className="text-[10px] text-tinta-2">{contract.recurrence || 'MENSAL'}</span>
                       </div>
                     </div>
 
-                    <div className="p-3 bg-slate-900 rounded-xl border border-slate-800 space-y-1.5 text-[11px] text-slate-300">
+                    <div className="p-3 bg-superficie rounded-xl border border-borda space-y-1.5 text-[11px] text-tinta">
                       <div className="flex justify-between">
-                        <span className="text-slate-400">Vigência:</span>
-                        <span className="font-mono text-white">{formatDate(contract.start_date)} até {formatDate(contract.end_date)}</span>
+                        <span className="text-tinta-2">Vigência:</span>
+                        <span className="font-mono text-tinta">{formatDate(contract.start_date)} até {formatDate(contract.end_date)}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-slate-400">Assinatura Digital:</span>
-                        <span className="text-emerald-400 font-semibold">
+                        <span className="text-tinta-2">Assinatura Digital:</span>
+                        <span className="text-marca-escura font-semibold">
                           {contract.signatures && contract.signatures.length > 0 
                             ? `Assinado por ${contract.signatures[0].signer_name}` 
                             : 'Assinado eletronicamente'}
@@ -1058,7 +1058,7 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
 
                     <button
                       onClick={() => alert(`Baixando cópia do contrato ${contract.contract_number} em PDF.`)}
-                      className="w-full py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl font-semibold transition flex items-center justify-center space-x-1"
+                      className="w-full py-2 bg-superficie-2 hover:bg-superficie-3 text-tinta rounded-xl font-semibold transition flex items-center justify-center space-x-1"
                     >
                       <Download className="w-3.5 h-3.5" />
                       <span>Baixar Cópia do Contrato (PDF)</span>
@@ -1067,7 +1067,7 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
                 ))}
               </div>
             ) : (
-              <div className="p-8 text-center bg-slate-950/40 rounded-2xl border border-slate-800 text-slate-400 text-xs">
+              <div className="p-8 text-center bg-fundo rounded-2xl border border-borda text-tinta-2 text-xs">
                 Nenhum contrato ativo cadastrado para este cliente.
               </div>
             )}
@@ -1078,11 +1078,11 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
       {/* ==================== TAB 5: AVALIAÇÕES & NPS (CRUD) ==================== */}
       {activeTab === 'EVALUATIONS' && (
         <div className="space-y-6">
-          <div className="bg-slate-900 p-6 rounded-3xl border border-slate-800 shadow-xl space-y-5">
+          <div className="bg-superficie p-6 rounded-3xl border border-borda shadow-sm space-y-5">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
-                <h2 className="text-base font-bold text-white">Pesquisas de Satisfação & Histórico de NPS</h2>
-                <p className="text-xs text-slate-400 mt-0.5">Sua avaliação direta sobre a qualidade do atendimento e elaboração técnica da PrevSafe.</p>
+                <h2 className="text-base font-bold text-tinta">Pesquisas de Satisfação & Histórico de NPS</h2>
+                <p className="text-xs text-tinta-2 mt-0.5">Sua avaliação direta sobre a qualidade do atendimento e elaboração técnica da PrevSafe.</p>
               </div>
 
               <button
@@ -1090,7 +1090,7 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
                   setEvalOSId(clientOS[0]?.id || '');
                   setShowFeedbackModal(true);
                 }}
-                className="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold rounded-2xl shadow-lg transition flex items-center space-x-1.5 self-start sm:self-auto"
+                className="px-4 py-2 bg-amber-100 hover:bg-amber-200 text-amber-900 text-xs font-bold rounded-2xl shadow-sm transition flex items-center space-x-1.5 self-start sm:self-auto border border-amber-200"
               >
                 <Star className="w-4 h-4 fill-slate-950" />
                 <span>+ Enviar Nova Avaliação</span>
@@ -1100,28 +1100,28 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
             {clientEvals.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {clientEvals.map((ev) => (
-                  <div key={ev.id} className="p-5 bg-slate-950/60 border border-slate-800 rounded-2xl space-y-3.5 text-xs">
+                  <div key={ev.id} className="p-5 bg-fundo border border-borda rounded-2xl space-y-3.5 text-xs">
                     <div className="flex items-start justify-between">
                       <div>
                         <div className="flex items-center space-x-2">
-                          <span className="font-bold text-white text-xs">{ev.service_title}</span>
+                          <span className="font-bold text-tinta text-xs">{ev.service_title}</span>
                         </div>
-                        <span className="text-[10px] text-slate-500 mt-0.5 block font-mono">{formatDate(ev.created_at)}</span>
+                        <span className="text-[10px] text-tinta-2 mt-0.5 block font-mono">{formatDate(ev.created_at)}</span>
                       </div>
-                      <div className="px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-mono font-black text-sm rounded-xl">
+                      <div className="px-3 py-1 bg-marca-suave border border-marca-borda text-marca-escura font-mono font-black text-sm rounded-xl">
                         NPS {ev.nps_score}/10
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-2 text-[11px] bg-slate-900 p-2.5 rounded-xl border border-slate-800">
-                      <div><span className="text-slate-400">Qualidade:</span> <strong className="text-white">{ev.quality_score}/5</strong></div>
-                      <div><span className="text-slate-400">Pontualidade:</span> <strong className="text-white">{ev.deadline_score}/5</strong></div>
-                      <div><span className="text-slate-400">Atendimento:</span> <strong className="text-white">{ev.service_score}/5</strong></div>
-                      <div><span className="text-slate-400">Comunicação:</span> <strong className="text-white">{ev.communication_score}/5</strong></div>
+                    <div className="grid grid-cols-2 gap-2 text-[11px] bg-superficie p-2.5 rounded-xl border border-borda">
+                      <div><span className="text-tinta-2">Qualidade:</span> <strong className="text-tinta">{ev.quality_score}/5</strong></div>
+                      <div><span className="text-tinta-2">Pontualidade:</span> <strong className="text-tinta">{ev.deadline_score}/5</strong></div>
+                      <div><span className="text-tinta-2">Atendimento:</span> <strong className="text-tinta">{ev.service_score}/5</strong></div>
+                      <div><span className="text-tinta-2">Comunicação:</span> <strong className="text-tinta">{ev.communication_score}/5</strong></div>
                     </div>
 
                     {ev.comment && (
-                      <p className="text-xs text-slate-300 italic bg-slate-900/40 p-2.5 rounded-xl border border-slate-800/60">
+                      <p className="text-xs text-tinta italic bg-superficie p-2.5 rounded-xl border border-borda">
                         &ldquo;{ev.comment}&rdquo;
                       </p>
                     )}
@@ -1129,7 +1129,7 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
                 ))}
               </div>
             ) : (
-              <div className="p-8 text-center bg-slate-950/40 rounded-2xl border border-slate-800 text-slate-400 text-xs">
+              <div className="p-8 text-center bg-fundo rounded-2xl border border-borda text-tinta-2 text-xs">
                 Nenhuma avaliação registrada ainda. Clique em &ldquo;+ Enviar Nova Avaliação&rdquo; para avaliar o serviço da PrevSafe.
               </div>
             )}
@@ -1139,70 +1139,70 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
 
       {/* ==================== MODAL: TERMO DE ACEITE TÉCNICO FORMAL (RN008) ==================== */}
       {showAcceptModal && selectedOS && (
-        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-900 rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-800 text-slate-100 animate-in fade-in zoom-in-95 duration-200">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
+        <div className="fixed inset-0 bg-fundo backdrop-blur-md z-50 flex items-center justify-center p-4">
+          <div className="bg-superficie rounded-3xl max-w-md w-full p-6 shadow-sm border border-borda text-tinta animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between border-b border-borda pb-3 mb-4">
               <div className="flex items-center space-x-2">
-                <ShieldCheck className="w-5 h-5 text-emerald-400" />
-                <h3 className="text-base font-bold text-white">Termo de Aceite Técnico Formal</h3>
+                <ShieldCheck className="w-5 h-5 text-marca-escura" />
+                <h3 className="text-base font-bold text-tinta">Termo de Aceite Técnico Formal</h3>
               </div>
-              <button onClick={() => setShowAcceptModal(false)} className="text-slate-400 hover:text-slate-200">✕</button>
+              <button onClick={() => setShowAcceptModal(false)} className="text-tinta-2 hover:text-tinta">✕</button>
             </div>
 
             <form onSubmit={handleConfirmAccept} className="space-y-3.5 text-xs">
-              <p className="text-slate-300 leading-relaxed">
-                Ao confirmar o aceite, sua empresa atesta o recebimento integral do documento <strong className="text-white">{selectedOS.service_name}</strong>, validando as informações técnicas e liberando a conclusão formal do serviço.
+              <p className="text-tinta leading-relaxed">
+                Ao confirmar o aceite, sua empresa atesta o recebimento integral do documento <strong className="text-tinta">{selectedOS.service_name}</strong>, validando as informações técnicas e liberando a conclusão formal do serviço.
               </p>
 
               <div>
-                <label className="block font-semibold text-slate-300 mb-1">Nome do Responsável pelo Aceite *</label>
+                <label className="block font-semibold text-tinta mb-1">Nome do Responsável pelo Aceite *</label>
                 <input
                   type="text"
                   required
                   value={acceptorName}
                   onChange={(e) => setAcceptorName(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-300 mb-1">CPF do Responsável *</label>
+                <label className="block font-semibold text-tinta mb-1">CPF do Responsável *</label>
                 <input
                   type="text"
                   required
                   value={acceptorCpf}
                   onChange={(e) => setAcceptorCpf(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-300 mb-1">Cargo / Função *</label>
+                <label className="block font-semibold text-tinta mb-1">Cargo / Função *</label>
                 <input
                   type="text"
                   required
                   value={acceptorRole}
                   onChange={(e) => setAcceptorRole(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                 />
               </div>
 
-              <div className="p-3 bg-emerald-500/10 rounded-2xl border border-emerald-500/20 text-[11px] text-emerald-300 space-y-1">
+              <div className="p-3 bg-marca-suave rounded-2xl border border-marca-borda text-[11px] text-marca-escura space-y-1">
                 <div>• Data, hora e IP do aceite registrados nos Audit Logs</div>
                 <div>• Conclusão automática da Ordem de Serviço (RN008)</div>
               </div>
 
-              <div className="flex justify-end space-x-2 pt-4 border-t border-slate-800">
+              <div className="flex justify-end space-x-2 pt-4 border-t border-borda">
                 <button
                   type="button"
                   onClick={() => setShowAcceptModal(false)}
-                  className="px-4 py-2 bg-slate-800 text-slate-300 rounded-xl font-semibold hover:bg-slate-700"
+                  className="px-4 py-2 bg-superficie-2 text-tinta rounded-xl font-semibold hover:bg-superficie-3"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold shadow-md flex items-center space-x-1"
+                  className="px-4 py-2 bg-marca-escura hover:opacity-90 text-white rounded-xl font-bold shadow-md flex items-center space-x-1"
                 >
                   <CheckCircle2 className="w-4 h-4" />
                   <span>Confirmar e Assinar Aceite</span>
@@ -1215,15 +1215,15 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
 
       {/* ==================== MODAL: SOLICITAR AJUSTE / REWORK (RN009) ==================== */}
       {showReworkModal && selectedOS && (
-        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-900 rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-800 text-slate-100 animate-in fade-in zoom-in-95 duration-200">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
-              <h3 className="text-base font-bold text-white">Solicitar Revisão / Ajuste Técnico</h3>
-              <button onClick={() => setShowReworkModal(false)} className="text-slate-400 hover:text-slate-200">✕</button>
+        <div className="fixed inset-0 bg-fundo backdrop-blur-md z-50 flex items-center justify-center p-4">
+          <div className="bg-superficie rounded-3xl max-w-md w-full p-6 shadow-sm border border-borda text-tinta animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between border-b border-borda pb-3 mb-4">
+              <h3 className="text-base font-bold text-tinta">Solicitar Revisão / Ajuste Técnico</h3>
+              <button onClick={() => setShowReworkModal(false)} className="text-tinta-2 hover:text-tinta">✕</button>
             </div>
 
             <form onSubmit={handleConfirmRework} className="space-y-3.5 text-xs">
-              <p className="text-slate-300">
+              <p className="text-tinta">
                 Por favor, especifique detalhadamente quais pontos ou dados técnicos necessitam de revisão pela nossa equipe:
               </p>
               <textarea
@@ -1231,20 +1231,20 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
                 required
                 value={reworkComment}
                 onChange={(e) => setReworkComment(e.target.value)}
-                className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500"
+                className="w-full p-3 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
               />
 
-              <div className="flex justify-end space-x-2 pt-4 border-t border-slate-800">
+              <div className="flex justify-end space-x-2 pt-4 border-t border-borda">
                 <button
                   type="button"
                   onClick={() => setShowReworkModal(false)}
-                  className="px-4 py-2 bg-slate-800 text-slate-300 rounded-xl font-semibold hover:bg-slate-700"
+                  className="px-4 py-2 bg-superficie-2 text-tinta rounded-xl font-semibold hover:bg-superficie-3"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white rounded-xl font-bold shadow-md"
+                  className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl font-bold shadow-md"
                 >
                   Enviar para Engenharia
                 </button>
@@ -1256,23 +1256,23 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
 
       {/* ==================== MODAL: PESQUISA DE SATISFAÇÃO & NPS (RN010) ==================== */}
       {showFeedbackModal && (
-        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-900 rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-800 text-slate-100 max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-200">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
+        <div className="fixed inset-0 bg-fundo backdrop-blur-md z-50 flex items-center justify-center p-4">
+          <div className="bg-superficie rounded-3xl max-w-lg w-full p-6 shadow-sm border border-borda text-tinta max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between border-b border-borda pb-3 mb-4">
               <div className="flex items-center space-x-2">
-                <Star className="w-5 h-5 text-amber-400 fill-amber-400" />
-                <h3 className="text-base font-bold text-white">Pesquisa de Satisfação & NPS</h3>
+                <Star className="w-5 h-5 text-amber-700 fill-amber-400" />
+                <h3 className="text-base font-bold text-tinta">Pesquisa de Satisfação & NPS</h3>
               </div>
-              <button onClick={() => setShowFeedbackModal(false)} className="text-slate-400 hover:text-slate-200">✕</button>
+              <button onClick={() => setShowFeedbackModal(false)} className="text-tinta-2 hover:text-tinta">✕</button>
             </div>
 
             <form onSubmit={handleSendFeedback} className="space-y-4 text-xs">
               <div>
-                <label className="block font-semibold text-slate-300 mb-1">Serviço Avaliado:</label>
+                <label className="block font-semibold text-tinta mb-1">Serviço Avaliado:</label>
                 <select
                   value={evalOSId}
                   onChange={(e) => setEvalOSId(e.target.value)}
-                  className="w-full p-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white"
+                  className="w-full p-2 bg-fundo border border-borda rounded-xl text-xs text-tinta"
                 >
                   {clientOS.map(os => (
                     <option key={os.id} value={os.id}>{os.os_number} - {os.service_name}</option>
@@ -1281,7 +1281,7 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
               </div>
 
               <div>
-                <label className="block font-bold text-white mb-2">
+                <label className="block font-bold text-tinta mb-2">
                   Em uma escala de 0 a 10, quanto você recomendaria a PrevSafe para outra empresa? (NPS)
                 </label>
                 <div className="flex justify-between gap-1 mt-2">
@@ -1292,8 +1292,8 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
                       onClick={() => setNpsScore(num)}
                       className={`w-8 h-8 rounded-xl font-mono font-bold text-xs transition ${
                         npsScore === num 
-                          ? 'bg-emerald-600 text-white ring-2 ring-emerald-400 shadow-md' 
-                          : 'bg-slate-950 hover:bg-slate-800 text-slate-300 border border-slate-800'
+                          ? 'bg-marca-escura text-white ring-2 ring-marca-escura shadow-md' 
+                          : 'bg-fundo hover:bg-superficie-2 text-tinta border border-borda'
                       }`}
                     >
                       {num}
@@ -1302,10 +1302,10 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
                 </div>
               </div>
 
-              <div className="space-y-3 pt-3 border-t border-slate-800">
+              <div className="space-y-3 pt-3 border-t border-borda">
                 <div className="flex justify-between items-center">
-                  <span className="font-semibold text-slate-300">Qualidade Técnica dos Laudos:</span>
-                  <select value={techScore} onChange={(e) => setTechScore(Number(e.target.value))} className="p-1.5 bg-slate-950 border border-slate-800 rounded-xl font-mono text-white">
+                  <span className="font-semibold text-tinta">Qualidade Técnica dos Laudos:</span>
+                  <select value={techScore} onChange={(e) => setTechScore(Number(e.target.value))} className="p-1.5 bg-fundo border border-borda rounded-xl font-mono text-tinta">
                     <option value={5}>5 - Excelente</option>
                     <option value={4}>4 - Bom</option>
                     <option value={3}>3 - Regular</option>
@@ -1314,8 +1314,8 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
                 </div>
 
                 <div className="flex justify-between items-center">
-                  <span className="font-semibold text-slate-300">Pontualidade no Prazo de Entrega:</span>
-                  <select value={puncScore} onChange={(e) => setPuncScore(Number(e.target.value))} className="p-1.5 bg-slate-950 border border-slate-800 rounded-xl font-mono text-white">
+                  <span className="font-semibold text-tinta">Pontualidade no Prazo de Entrega:</span>
+                  <select value={puncScore} onChange={(e) => setPuncScore(Number(e.target.value))} className="p-1.5 bg-fundo border border-borda rounded-xl font-mono text-tinta">
                     <option value={5}>5 - No prazo acordado</option>
                     <option value={4}>4 - Pequeno atraso justificado</option>
                     <option value={2}>2 - Atraso</option>
@@ -1323,16 +1323,16 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
                 </div>
 
                 <div className="flex justify-between items-center">
-                  <span className="font-semibold text-slate-300">Atendimento da Equipe Técnica:</span>
-                  <select value={servScore} onChange={(e) => setServScore(Number(e.target.value))} className="p-1.5 bg-slate-950 border border-slate-800 rounded-xl font-mono text-white">
+                  <span className="font-semibold text-tinta">Atendimento da Equipe Técnica:</span>
+                  <select value={servScore} onChange={(e) => setServScore(Number(e.target.value))} className="p-1.5 bg-fundo border border-borda rounded-xl font-mono text-tinta">
                     <option value={5}>5 - Muito prestativo e cordial</option>
                     <option value={4}>4 - Bom atendimento</option>
                   </select>
                 </div>
 
                 <div className="flex justify-between items-center">
-                  <span className="font-semibold text-slate-300">Clareza na Comunicação:</span>
-                  <select value={clarScore} onChange={(e) => setClarScore(Number(e.target.value))} className="p-1.5 bg-slate-950 border border-slate-800 rounded-xl font-mono text-white">
+                  <span className="font-semibold text-tinta">Clareza na Comunicação:</span>
+                  <select value={clarScore} onChange={(e) => setClarScore(Number(e.target.value))} className="p-1.5 bg-fundo border border-borda rounded-xl font-mono text-tinta">
                     <option value={5}>5 - Muito clara</option>
                     <option value={4}>4 - Adequada</option>
                   </select>
@@ -1340,26 +1340,26 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-300 mb-1">Comentários ou Sugestões:</label>
+                <label className="block font-semibold text-tinta mb-1">Comentários ou Sugestões:</label>
                 <textarea
                   rows={2}
                   value={evalComment}
                   onChange={(e) => setEvalComment(e.target.value)}
-                  className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full p-2.5 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                 />
               </div>
 
-              <div className="flex justify-end space-x-2 pt-4 border-t border-slate-800">
+              <div className="flex justify-end space-x-2 pt-4 border-t border-borda">
                 <button
                   type="button"
                   onClick={() => setShowFeedbackModal(false)}
-                  className="px-4 py-2 bg-slate-800 text-slate-300 rounded-xl font-semibold hover:bg-slate-700"
+                  className="px-4 py-2 bg-superficie-2 text-tinta rounded-xl font-semibold hover:bg-superficie-3"
                 >
                   Fechar
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold shadow-md"
+                  className="px-4 py-2 bg-marca-escura hover:opacity-90 text-white rounded-xl font-bold shadow-md"
                 >
                   Enviar Avaliação
                 </button>
@@ -1371,20 +1371,20 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
 
       {/* ==================== MODAL: ABRIR NOVO CHAMADO PELO CLIENTE ==================== */}
       {showNewRequestModal && (
-        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-900 rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-800 text-slate-100 animate-in fade-in zoom-in-95 duration-200">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
-              <h3 className="text-base font-bold text-white">Abrir Nova Solicitação / Dúvida</h3>
-              <button onClick={() => setShowNewRequestModal(false)} className="text-slate-400 hover:text-slate-200">✕</button>
+        <div className="fixed inset-0 bg-fundo backdrop-blur-md z-50 flex items-center justify-center p-4">
+          <div className="bg-superficie rounded-3xl max-w-md w-full p-6 shadow-sm border border-borda text-tinta animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between border-b border-borda pb-3 mb-4">
+              <h3 className="text-base font-bold text-tinta">Abrir Nova Solicitação / Dúvida</h3>
+              <button onClick={() => setShowNewRequestModal(false)} className="text-tinta-2 hover:text-tinta">✕</button>
             </div>
 
             <form onSubmit={handleCreateNewRequest} className="space-y-3.5 text-xs">
               <div>
-                <label className="block font-semibold text-slate-300 mb-1">Tipo de Solicitação *</label>
+                <label className="block font-semibold text-tinta mb-1">Tipo de Solicitação *</label>
                 <select
                   value={reqType}
                   onChange={(e) => setReqType(e.target.value as RequestItem['type'])}
-                  className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white"
+                  className="w-full p-2.5 bg-fundo border border-borda rounded-xl text-xs text-tinta"
                 >
                   <option value="INFORMATION">Dúvida Técnica sobre Normas / EPIs</option>
                   <option value="DOCUMENT">Envio Voluntário de Arquivo / Lista</option>
@@ -1395,35 +1395,35 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-300 mb-1">Título da Solicitação *</label>
+                <label className="block font-semibold text-tinta mb-1">Título da Solicitação *</label>
                 <input
                   type="text"
                   required
                   placeholder="Ex: Dúvida sobre enquadramento NR-15 ruído"
                   value={reqTitle}
                   onChange={(e) => setReqTitle(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-300 mb-1">Descrição Detalhada *</label>
+                <label className="block font-semibold text-tinta mb-1">Descrição Detalhada *</label>
                 <textarea
                   rows={3}
                   required
                   placeholder="Explique detalhadamente o que você precisa..."
                   value={reqDescription}
                   onChange={(e) => setReqDescription(e.target.value)}
-                  className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full p-3 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-300 mb-1">Prioridade</label>
+                <label className="block font-semibold text-tinta mb-1">Prioridade</label>
                 <select
                   value={reqPriority}
                   onChange={(e) => setReqPriority(e.target.value as RequestItem['priority'])}
-                  className="w-full p-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white"
+                  className="w-full p-2 bg-fundo border border-borda rounded-xl text-xs text-tinta"
                 >
                   <option value="LOW">Baixa</option>
                   <option value="MEDIUM">Média</option>
@@ -1432,17 +1432,17 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
                 </select>
               </div>
 
-              <div className="flex justify-end space-x-2 pt-4 border-t border-slate-800">
+              <div className="flex justify-end space-x-2 pt-4 border-t border-borda">
                 <button
                   type="button"
                   onClick={() => setShowNewRequestModal(false)}
-                  className="px-4 py-2 bg-slate-800 text-slate-300 rounded-xl font-semibold hover:bg-slate-700"
+                  className="px-4 py-2 bg-superficie-2 text-tinta rounded-xl font-semibold hover:bg-superficie-3"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-bold shadow-md"
+                  className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl font-bold shadow-md"
                 >
                   Registrar Chamado
                 </button>
@@ -1454,34 +1454,34 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
 
       {/* ==================== MODAL: RESOLVER PENDÊNCIA / ENVIAR ARQUIVO ==================== */}
       {showResolveModal && selectedRequestToResolve && (
-        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-900 rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-800 text-slate-100 animate-in fade-in zoom-in-95 duration-200">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
-              <h3 className="text-base font-bold text-white">Responder Pendência Técnica</h3>
-              <button onClick={() => setShowResolveModal(false)} className="text-slate-400 hover:text-slate-200">✕</button>
+        <div className="fixed inset-0 bg-fundo backdrop-blur-md z-50 flex items-center justify-center p-4">
+          <div className="bg-superficie rounded-3xl max-w-md w-full p-6 shadow-sm border border-borda text-tinta animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between border-b border-borda pb-3 mb-4">
+              <h3 className="text-base font-bold text-tinta">Responder Pendência Técnica</h3>
+              <button onClick={() => setShowResolveModal(false)} className="text-tinta-2 hover:text-tinta">✕</button>
             </div>
 
             <form onSubmit={handleResolvePendingRequest} className="space-y-3.5 text-xs">
-              <div className="p-3 bg-slate-950 rounded-2xl border border-slate-800">
-                <span className="text-[10px] font-mono text-indigo-400 font-bold">{selectedRequestToResolve.req_number}</span>
-                <h4 className="font-bold text-white mt-1">{selectedRequestToResolve.title}</h4>
-                <p className="text-slate-400 text-xs mt-1">{selectedRequestToResolve.description}</p>
+              <div className="p-3 bg-fundo rounded-2xl border border-borda">
+                <span className="text-[10px] font-mono text-teal-700 font-bold">{selectedRequestToResolve.req_number}</span>
+                <h4 className="font-bold text-tinta mt-1">{selectedRequestToResolve.title}</h4>
+                <p className="text-tinta-2 text-xs mt-1">{selectedRequestToResolve.description}</p>
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-300 mb-1">Anexar Arquivo / Comprovante (Simulação)</label>
+                <label className="block font-semibold text-tinta mb-1">Anexar Arquivo / Comprovante (Simulação)</label>
                 <div className="flex items-center space-x-2">
                   <input
                     type="text"
                     placeholder="Nome do arquivo (ex: lista_colaboradores_2026.xlsx)"
                     value={attachedFileName}
                     onChange={(e) => setAttachedFileName(e.target.value)}
-                    className="flex-1 px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500"
+                    className="flex-1 px-3 py-2 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                   />
                   <button
                     type="button"
                     onClick={() => setAttachedFileName('ficha_epi_assinada_setor_usinagem.pdf')}
-                    className="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl font-semibold text-[11px]"
+                    className="px-3 py-2 bg-superficie-2 hover:bg-superficie-3 text-tinta rounded-xl font-semibold text-[11px]"
                   >
                     Exemplo
                   </button>
@@ -1489,27 +1489,27 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-300 mb-1">Notas / Observações para a Engenharia</label>
+                <label className="block font-semibold text-tinta mb-1">Notas / Observações para a Engenharia</label>
                 <textarea
                   rows={3}
                   placeholder="Informações adicionais para a PrevSafe..."
                   value={resolveNotes}
                   onChange={(e) => setResolveNotes(e.target.value)}
-                  className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full p-3 bg-fundo border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500"
                 />
               </div>
 
-              <div className="flex justify-end space-x-2 pt-4 border-t border-slate-800">
+              <div className="flex justify-end space-x-2 pt-4 border-t border-borda">
                 <button
                   type="button"
                   onClick={() => setShowResolveModal(false)}
-                  className="px-4 py-2 bg-slate-800 text-slate-300 rounded-xl font-semibold hover:bg-slate-700"
+                  className="px-4 py-2 bg-superficie-2 text-tinta rounded-xl font-semibold hover:bg-superficie-3"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold shadow-md"
+                  className="px-4 py-2 bg-marca-escura hover:opacity-90 text-white rounded-xl font-bold shadow-md"
                 >
                   Enviar e Concluir Pendência
                 </button>
@@ -1521,51 +1521,51 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
 
       {/* ==================== MODAL: PRÉVIA DETALHADA DO LAUDO ==================== */}
       {showDocPreviewModal && selectedDocPreview && (
-        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-900 rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-800 text-slate-100 animate-in fade-in zoom-in-95 duration-200">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
+        <div className="fixed inset-0 bg-fundo backdrop-blur-md z-50 flex items-center justify-center p-4">
+          <div className="bg-superficie rounded-3xl max-w-lg w-full p-6 shadow-sm border border-borda text-tinta animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between border-b border-borda pb-3 mb-4">
               <div className="flex items-center space-x-2">
-                <FileText className="w-5 h-5 text-indigo-400" />
-                <h3 className="text-base font-bold text-white">Ficha Técnica do Documento</h3>
+                <FileText className="w-5 h-5 text-teal-700" />
+                <h3 className="text-base font-bold text-tinta">Ficha Técnica do Documento</h3>
               </div>
-              <button onClick={() => setShowDocPreviewModal(false)} className="text-slate-400 hover:text-slate-200">✕</button>
+              <button onClick={() => setShowDocPreviewModal(false)} className="text-tinta-2 hover:text-tinta">✕</button>
             </div>
 
             <div className="space-y-3.5 text-xs">
-              <div className="p-4 bg-slate-950 rounded-2xl border border-slate-800 space-y-2">
+              <div className="p-4 bg-fundo rounded-2xl border border-borda space-y-2">
                 <div className="flex justify-between items-center">
-                  <span className="font-mono text-xs font-bold text-indigo-300">{selectedDocPreview.doc_number}</span>
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                  <span className="font-mono text-xs font-bold text-teal-700">{selectedDocPreview.doc_number}</span>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-marca-suave text-marca-escura border border-marca-borda">
                     {selectedDocPreview.status}
                   </span>
                 </div>
-                <h4 className="font-bold text-white text-sm">{selectedDocPreview.name}</h4>
-                <p className="text-slate-400 text-xs">
+                <h4 className="font-bold text-tinta text-sm">{selectedDocPreview.name}</h4>
+                <p className="text-tinta-2 text-xs">
                   Tipo: <strong>{selectedDocPreview.document_type}</strong> • Versão Oficial: <strong>{selectedDocPreview.current_version}.0</strong>
                 </p>
               </div>
 
-              <div className="grid grid-cols-2 gap-2 text-slate-300">
-                <div className="p-3 bg-slate-950 rounded-xl border border-slate-800">
-                  <span className="text-slate-500 block text-[10px] uppercase font-bold">Emitido Por</span>
-                  <strong className="text-white">{selectedDocPreview.uploaded_by_name}</strong>
+              <div className="grid grid-cols-2 gap-2 text-tinta">
+                <div className="p-3 bg-fundo rounded-xl border border-borda">
+                  <span className="text-tinta-2 block text-[10px] uppercase font-bold">Emitido Por</span>
+                  <strong className="text-tinta">{selectedDocPreview.uploaded_by_name}</strong>
                 </div>
-                <div className="p-3 bg-slate-950 rounded-xl border border-slate-800">
-                  <span className="text-slate-500 block text-[10px] uppercase font-bold">Data de Emissão</span>
-                  <strong className="text-white font-mono">{formatDate(selectedDocPreview.created_at)}</strong>
+                <div className="p-3 bg-fundo rounded-xl border border-borda">
+                  <span className="text-tinta-2 block text-[10px] uppercase font-bold">Data de Emissão</span>
+                  <strong className="text-tinta font-mono">{formatDate(selectedDocPreview.created_at)}</strong>
                 </div>
               </div>
 
-              <div className="p-3 bg-indigo-500/10 border border-indigo-500/20 rounded-xl text-indigo-300 text-[11px] space-y-1">
+              <div className="p-3 bg-teal-500/10 border border-teal-500/20 rounded-xl text-teal-800 text-[11px] space-y-1">
                 <div>✓ Anotação de Responsabilidade Técnica (ART/CREA) assinada digitalmente.</div>
                 <div>✓ Conformidade com a Portaria MTP nº 672/2021 e layout S-2240 eSocial.</div>
               </div>
 
-              <div className="flex justify-end space-x-2 pt-4 border-t border-slate-800">
+              <div className="flex justify-end space-x-2 pt-4 border-t border-borda">
                 <button
                   type="button"
                   onClick={() => setShowDocPreviewModal(false)}
-                  className="px-4 py-2 bg-slate-800 text-slate-300 rounded-xl font-semibold hover:bg-slate-700"
+                  className="px-4 py-2 bg-superficie-2 text-tinta rounded-xl font-semibold hover:bg-superficie-3"
                 >
                   Fechar
                 </button>
@@ -1575,7 +1575,7 @@ export const ClientPortalView: React.FC<{ onNavigate: (view: string) => void }> 
                     alert(`Iniciando download do laudo oficial ${selectedDocPreview.name}...`);
                     setShowDocPreviewModal(false);
                   }}
-                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold shadow-md flex items-center space-x-1"
+                  className="px-4 py-2 bg-marca-escura hover:opacity-90 text-white rounded-xl font-bold shadow-md flex items-center space-x-1"
                 >
                   <Download className="w-4 h-4" />
                   <span>Baixar Arquivo PDF</span>

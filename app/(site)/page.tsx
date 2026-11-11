@@ -46,7 +46,7 @@ export default async function HomePage() {
   return (
     <>
       {/* ---------------- Topo ---------------- */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-slate-900 via-slate-900 to-emerald-950">
+      <section className="bg-superficie relative overflow-hidden">
         <div className="absolute inset-0 opacity-20" aria-hidden="true">
           <div className="absolute -top-24 -right-24 w-[28rem] h-[28rem] rounded-full bg-emerald-500 blur-3xl" />
           <div className="absolute -bottom-32 -left-20 w-[24rem] h-[24rem] rounded-full bg-teal-400 blur-3xl" />
@@ -74,7 +74,7 @@ export default async function HomePage() {
               <div className="mt-8 flex flex-col sm:flex-row gap-3">
                 <Link
                   href="/contato"
-                  className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold transition shadow-lg shadow-emerald-950/40"
+                  className="bg-marca-escura text-white inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-bold transition shadow-sm hover:opacity-90"
                 >
                   Diagnóstico gratuito
                   <ArrowRight className="w-4 h-4" aria-hidden="true" />
@@ -219,7 +219,7 @@ export default async function HomePage() {
               ['Acompanhamento', 'Prazos monitorados, exames no vencimento e eventos enviados ao eSocial.'],
             ].map(([titulo, texto], i) => (
               <li key={titulo} className="bg-slate-800/60 border border-slate-700 rounded-2xl p-6">
-                <span className="inline-flex w-9 h-9 rounded-xl bg-emerald-500 text-slate-950 font-bold items-center justify-center">
+                <span className="bg-marca-escura text-white inline-flex w-9 h-9 rounded-xl font-bold items-center justify-center">
                   {i + 1}
                 </span>
                 <h3 className="mt-4 font-bold">{titulo}</h3>

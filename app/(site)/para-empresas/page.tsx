@@ -65,7 +65,7 @@ const ETAPAS = [
 export default function ParaEmpresasPage() {
   return (
     <>
-      <section className="bg-gradient-to-b from-slate-900 to-emerald-950 text-white py-16 sm:py-20">
+      <section className="bg-superficie text-tinta py-16 sm:py-20">
         <div className="mx-auto max-w-[76rem] px-4 sm:px-6 grid lg:grid-cols-2 gap-12 items-center">
           <div>
             <nav aria-label="Trilha" className="text-sm text-slate-400">
@@ -177,7 +177,7 @@ export default function ParaEmpresasPage() {
             <ol className="mt-5 space-y-4">
               {ETAPAS.map(([t, d], i) => (
                 <li key={t} className="flex gap-3.5">
-                  <span className="shrink-0 w-7 h-7 rounded-lg bg-emerald-500 text-slate-950 text-sm font-bold flex items-center justify-center">
+                  <span className="bg-marca-escura text-white shrink-0 w-7 h-7 rounded-lg text-sm font-bold flex items-center justify-center">
                     {i + 1}
                   </span>
                   <div>

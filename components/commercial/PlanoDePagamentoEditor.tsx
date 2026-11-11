@@ -36,9 +36,9 @@ interface PlanoDePagamentoEditorProps {
   somenteLeitura?: boolean;
 }
 
-const CAMPO = 'w-full px-3 py-2 bg-slate-900 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-indigo-500 disabled:opacity-60';
-const ROTULO = 'block font-semibold text-slate-300 mb-1 text-[11px]';
-const DICA = 'text-[10px] text-slate-500 mt-1 block';
+const CAMPO = 'w-full px-3 py-2 bg-superficie border border-borda rounded-xl text-xs text-tinta focus:outline-none focus:border-teal-500 disabled:opacity-60';
+const ROTULO = 'block font-semibold text-tinta mb-1 text-[11px]';
+const DICA = 'text-[10px] text-tinta-2 mt-1 block';
 
 /** Campo numerico: vazio fica vazio (undefined), e nao zero. */
 const numeroOuVazio = (v: string): number | undefined => {
@@ -76,16 +76,16 @@ export const PlanoDePagamentoEditor: React.FC<PlanoDePagamentoEditorProps> = ({ 
     <div className="space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2">
-          <Wallet className="w-4 h-4 text-emerald-400" />
-          <span className="font-semibold text-slate-200 text-xs">Condições de pagamento</span>
+          <Wallet className="w-4 h-4 text-marca-escura" />
+          <span className="font-semibold text-tinta text-xs">Condições de pagamento</span>
         </div>
-        <div className="text-[11px] font-mono text-slate-400">
-          Total a distribuir: <span className="text-slate-200">{formatCurrency(total)}</span>
+        <div className="text-[11px] font-mono text-tinta-2">
+          Total a distribuir: <span className="text-tinta">{formatCurrency(total)}</span>
           {partes.length > 0 && (
             <>
-              {' · '}no plano: <span className="text-slate-200">{formatCurrency(deCentavos(somaCentavos))}</span>
+              {' · '}no plano: <span className="text-tinta">{formatCurrency(deCentavos(somaCentavos))}</span>
               {saldoCentavos !== 0 && (
-                <span className={saldoCentavos > 0 ? 'text-amber-400' : 'text-rose-400'}>
+                <span className={saldoCentavos > 0 ? 'text-amber-700' : 'text-rose-700'}>
                   {' · '}{saldoCentavos > 0 ? 'faltam' : 'sobram'} {formatCurrency(deCentavos(Math.abs(saldoCentavos)))}
                 </span>
               )}
@@ -95,7 +95,7 @@ export const PlanoDePagamentoEditor: React.FC<PlanoDePagamentoEditorProps> = ({ 
       </div>
 
       {partes.length === 0 && (
-        <p className="text-[11px] text-slate-500">
+        <p className="text-[11px] text-tinta-2">
           Nenhuma forma de pagamento definida. Sem ela, a cláusula 7 do contrato sai com a forma de pagamento em aberto.
           Combine as formas abaixo: por exemplo, uma entrada no Pix e o restante em parcelas fixas no boleto ou no cartão.
         </p>
@@ -108,16 +108,16 @@ export const PlanoDePagamentoEditor: React.FC<PlanoDePagamentoEditorProps> = ({ 
           ? deCentavos(Math.floor(emCentavos(parte.valor) / n))
           : undefined;
         return (
-          <div key={parte.id} className="p-3 bg-slate-950 rounded-xl border border-slate-800 space-y-2.5">
+          <div key={parte.id} className="p-3 bg-fundo rounded-xl border border-borda space-y-2.5">
             <div className="flex items-center justify-between gap-2">
-              <span className="text-[11px] font-bold text-indigo-300">
+              <span className="text-[11px] font-bold text-teal-700">
                 Forma {i + 1} · {ROTULO_DO_TIPO[parte.tipo]}
               </span>
               {!somenteLeitura && (
                 <button
                   type="button"
                   onClick={() => removerParte(parte.id)}
-                  className="text-slate-500 hover:text-rose-400 transition"
+                  className="text-tinta-2 hover:text-rose-700 transition"
                   title="Remover esta forma de pagamento"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
@@ -169,7 +169,7 @@ export const PlanoDePagamentoEditor: React.FC<PlanoDePagamentoEditorProps> = ({ 
                   />
                   {!somenteLeitura && saldoParaParte(parte) > 0 && (
                     <button type="button" onClick={() => atualizarParte(parte.id, { valor: saldoParaParte(parte) })}
-                      className="text-[10px] text-indigo-400 hover:text-indigo-300 mt-1">
+                      className="text-[10px] text-teal-700 hover:text-teal-700 mt-1">
                       Usar o saldo ({formatCurrency(saldoParaParte(parte))})
                     </button>
                   )}
@@ -224,7 +224,7 @@ export const PlanoDePagamentoEditor: React.FC<PlanoDePagamentoEditorProps> = ({ 
                   />
                   {!somenteLeitura && saldoParaParte(parte) > 0 && (
                     <button type="button" onClick={() => atualizarParte(parte.id, { valor: saldoParaParte(parte) })}
-                      className="text-[10px] text-indigo-400 hover:text-indigo-300 mt-1">
+                      className="text-[10px] text-teal-700 hover:text-teal-700 mt-1">
                       Usar o saldo ({formatCurrency(saldoParaParte(parte))})
                     </button>
                   )}
@@ -255,7 +255,7 @@ export const PlanoDePagamentoEditor: React.FC<PlanoDePagamentoEditorProps> = ({ 
                   <span className={DICA}>As demais vencem no mesmo dia, contado a partir desta data (dia 31 vira o último dia do mês quando ele não existe).</span>
                 </div>
                 {parcelas && parcelas.length > 1 && parcelas[parcelas.length - 1].centavos !== parcelas[0].centavos && (
-                  <div className="col-span-2 sm:col-span-4 text-[10px] text-slate-400">
+                  <div className="col-span-2 sm:col-span-4 text-[10px] text-tinta-2">
                     O valor não se divide em centavos iguais: {parcelas.length - 1} de {formatCurrency(deCentavos(parcelas[0].centavos))} e
                     a última de {formatCurrency(deCentavos(parcelas[parcelas.length - 1].centavos))}.
                   </div>
@@ -267,7 +267,7 @@ export const PlanoDePagamentoEditor: React.FC<PlanoDePagamentoEditorProps> = ({ 
               <div className="space-y-1.5">
                 {(parte.parcelas || []).map((p, j) => (
                   <div key={j} className="grid grid-cols-[auto_1fr_1fr_auto] items-end gap-2">
-                    <span className="text-[10px] font-mono text-slate-500 pb-2">{j + 1}.</span>
+                    <span className="text-[10px] font-mono text-tinta-2 pb-2">{j + 1}.</span>
                     <div>
                       {j === 0 && <label className={ROTULO}>Vencimento</label>}
                       <input
@@ -300,7 +300,7 @@ export const PlanoDePagamentoEditor: React.FC<PlanoDePagamentoEditorProps> = ({ 
                       <button
                         type="button"
                         onClick={() => atualizarParte(parte.id, { parcelas: (parte.parcelas || []).filter((_, k) => k !== j) })}
-                        className="text-slate-500 hover:text-rose-400 pb-2"
+                        className="text-tinta-2 hover:text-rose-700 pb-2"
                         title="Remover parcela"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -312,7 +312,7 @@ export const PlanoDePagamentoEditor: React.FC<PlanoDePagamentoEditorProps> = ({ 
                   <button
                     type="button"
                     onClick={() => atualizarParte(parte.id, { parcelas: [...(parte.parcelas || []), {}] })}
-                    className="text-[11px] text-indigo-400 hover:text-indigo-300 flex items-center gap-1"
+                    className="text-[11px] text-teal-700 hover:text-teal-700 flex items-center gap-1"
                   >
                     <Plus className="w-3 h-3" /> Incluir parcela
                   </button>
@@ -330,7 +330,7 @@ export const PlanoDePagamentoEditor: React.FC<PlanoDePagamentoEditorProps> = ({ 
               key={tipo}
               type="button"
               onClick={() => incluirParte(tipo)}
-              className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg text-[11px] font-semibold border border-slate-700 flex items-center gap-1"
+              className="px-3 py-1.5 bg-superficie-2 hover:bg-superficie-3 text-tinta rounded-lg text-[11px] font-semibold border border-borda flex items-center gap-1"
             >
               <Plus className="w-3 h-3" /> {ROTULO_DO_TIPO[tipo]}
             </button>
@@ -353,7 +353,7 @@ export const PlanoDePagamentoEditor: React.FC<PlanoDePagamentoEditorProps> = ({ 
       {faltas.length > 0 && (
         <div className="p-2.5 bg-amber-500/10 border border-amber-500/30 rounded-xl space-y-1">
           {faltas.map((f, i) => (
-            <p key={i} className="text-[11px] text-amber-300 flex gap-1.5">
+            <p key={i} className="text-[11px] text-amber-700 flex gap-1.5">
               <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-px" /> {f}
             </p>
           ))}
@@ -361,21 +361,21 @@ export const PlanoDePagamentoEditor: React.FC<PlanoDePagamentoEditorProps> = ({ 
       )}
 
       {cronograma.length > 0 && (
-        <div className="rounded-xl border border-slate-800 overflow-hidden">
-          <div className="px-3 py-2 bg-slate-900 text-[11px] font-semibold text-slate-300 flex items-center gap-1.5">
-            {faltas.length === 0 && <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />}
+        <div className="rounded-xl border border-borda overflow-hidden">
+          <div className="px-3 py-2 bg-superficie text-[11px] font-semibold text-tinta flex items-center gap-1.5">
+            {faltas.length === 0 && <CheckCircle2 className="w-3.5 h-3.5 text-marca-escura" />}
             Cronograma ({cronograma.length} {cronograma.length === 1 ? 'parcela' : 'parcelas'})
           </div>
           <div className="max-h-[220px] overflow-y-auto">
             <table className="w-full text-[11px]">
               <tbody>
                 {cronograma.map((p) => (
-                  <tr key={p.numero} className="border-t border-slate-800/70">
-                    <td className="px-3 py-1.5 font-mono text-slate-500">{p.numero}ª</td>
-                    <td className="px-3 py-1.5 font-mono text-slate-200">{formatDate(p.vencimento)}</td>
-                    <td className="px-3 py-1.5 font-mono text-emerald-300 text-right">{formatCurrency(p.valor)}</td>
-                    <td className="px-3 py-1.5 text-slate-300">{ROTULO_DA_FORMA[p.forma]}</td>
-                    <td className="px-3 py-1.5 text-slate-500">{p.rotulo}</td>
+                  <tr key={p.numero} className="border-t border-borda">
+                    <td className="px-3 py-1.5 font-mono text-tinta-2">{p.numero}ª</td>
+                    <td className="px-3 py-1.5 font-mono text-tinta">{formatDate(p.vencimento)}</td>
+                    <td className="px-3 py-1.5 font-mono text-marca-escura text-right">{formatCurrency(p.valor)}</td>
+                    <td className="px-3 py-1.5 text-tinta">{ROTULO_DA_FORMA[p.forma]}</td>
+                    <td className="px-3 py-1.5 text-tinta-2">{p.rotulo}</td>
                   </tr>
                 ))}
               </tbody>

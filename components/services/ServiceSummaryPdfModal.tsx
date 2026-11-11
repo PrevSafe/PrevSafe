@@ -110,22 +110,22 @@ export const ServiceSummaryPdfModal: React.FC<ServiceSummaryPdfModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in">
-      <div className="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-4xl max-h-[90vh] shadow-2xl flex flex-col overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-fundo backdrop-blur-sm animate-in fade-in">
+      <div className="bg-superficie border border-borda rounded-3xl w-full max-w-4xl max-h-[90vh] shadow-sm flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-900/90">
+        <div className="px-6 py-4 border-b border-borda flex items-center justify-between bg-superficie">
           <div className="flex items-center space-x-3">
-            <div className="p-2.5 rounded-2xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+            <div className="p-2.5 rounded-2xl bg-marca-suave text-marca-escura border border-marca-borda">
               <Briefcase className="w-5 h-5" />
             </div>
             <div>
               <div className="flex items-center space-x-2">
-                <h2 className="text-base font-bold text-white">Exportação de Resumo de Ordens de Serviço em PDF</h2>
-                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 uppercase">
+                <h2 className="text-base font-bold text-tinta">Exportação de Resumo de Ordens de Serviço em PDF</h2>
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-marca-suave text-marca-escura border border-marca-borda uppercase">
                   PDF Vetorial Oficial
                 </span>
               </div>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-tinta-2">
                 Gere dossiês técnicos detalhados e relatórios consolidados de entregas SST.
               </p>
             </div>
@@ -135,14 +135,14 @@ export const ServiceSummaryPdfModal: React.FC<ServiceSummaryPdfModalProps> = ({
             <button
               onClick={handleExportPdf}
               disabled={targetOrders.length === 0}
-              className="px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-2xl text-xs font-bold transition shadow-lg shadow-emerald-950/40 flex items-center space-x-2 disabled:opacity-50"
+              className="bg-marca-escura px-4 py-2 text-white rounded-2xl text-xs font-bold transition shadow-sm flex items-center space-x-2 disabled:opacity-50"
             >
               <Download className="w-4 h-4" />
               <span>Baixar Arquivo PDF ({targetOrders.length})</span>
             </button>
             <button
               onClick={onClose}
-              className="p-2 text-slate-400 hover:text-white rounded-xl hover:bg-slate-800 transition"
+              className="p-2 text-tinta-2 hover:text-tinta rounded-xl hover:bg-superficie-2 transition"
             >
               <X className="w-5 h-5" />
             </button>
@@ -153,23 +153,23 @@ export const ServiceSummaryPdfModal: React.FC<ServiceSummaryPdfModalProps> = ({
         <div className="flex-1 p-6 overflow-y-auto space-y-6">
           {/* Mode Switcher */}
           <div className="space-y-2">
-            <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider">Tipo de Relatório</label>
+            <label className="text-xs font-semibold text-tinta uppercase tracking-wider">Tipo de Relatório</label>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <button
                 type="button"
                 onClick={() => setMode('BATCH')}
                 className={`p-4 rounded-2xl border text-left transition flex items-start space-x-3 ${
                   mode === 'BATCH'
-                    ? 'bg-emerald-500/10 border-emerald-500/40 text-white'
-                    : 'bg-slate-950/60 border-slate-800 text-slate-400 hover:text-slate-200'
+                    ? 'bg-marca-suave border-marca-borda text-tinta'
+                    : 'bg-fundo border-borda text-tinta-2 hover:text-tinta'
                 }`}
               >
-                <div className={`p-2 rounded-xl ${mode === 'BATCH' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-slate-800 text-slate-400'}`}>
+                <div className={`p-2 rounded-xl ${mode === 'BATCH' ? 'bg-marca-suave text-marca-escura' : 'bg-superficie-2 text-tinta-2'}`}>
                   <Layers className="w-5 h-5" />
                 </div>
                 <div>
                   <div className="text-sm font-bold">Relatório Consolidado (Tabela Geral)</div>
-                  <div className="text-xs text-slate-400 mt-0.5">Visão geral de todas as O.S. ativas, progresso, responsáveis e prazos SLA.</div>
+                  <div className="text-xs text-tinta-2 mt-0.5">Visão geral de todas as O.S. ativas, progresso, responsáveis e prazos SLA.</div>
                 </div>
               </button>
 
@@ -178,16 +178,16 @@ export const ServiceSummaryPdfModal: React.FC<ServiceSummaryPdfModalProps> = ({
                 onClick={() => setMode('SINGLE')}
                 className={`p-4 rounded-2xl border text-left transition flex items-start space-x-3 ${
                   mode === 'SINGLE'
-                    ? 'bg-emerald-500/10 border-emerald-500/40 text-white'
-                    : 'bg-slate-950/60 border-slate-800 text-slate-400 hover:text-slate-200'
+                    ? 'bg-marca-suave border-marca-borda text-tinta'
+                    : 'bg-fundo border-borda text-tinta-2 hover:text-tinta'
                 }`}
               >
-                <div className={`p-2 rounded-xl ${mode === 'SINGLE' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-slate-800 text-slate-400'}`}>
+                <div className={`p-2 rounded-xl ${mode === 'SINGLE' ? 'bg-marca-suave text-marca-escura' : 'bg-superficie-2 text-tinta-2'}`}>
                   <FileText className="w-5 h-5" />
                 </div>
                 <div>
                   <div className="text-sm font-bold">Dossiê Técnico Detalhado (O.S. Única)</div>
-                  <div className="text-xs text-slate-400 mt-0.5">Cronograma de etapas, sub-tarefas, status e termos de aceite formal para assinatura.</div>
+                  <div className="text-xs text-tinta-2 mt-0.5">Cronograma de etapas, sub-tarefas, status e termos de aceite formal para assinatura.</div>
                 </div>
               </button>
             </div>
@@ -195,12 +195,12 @@ export const ServiceSummaryPdfModal: React.FC<ServiceSummaryPdfModalProps> = ({
 
           {/* Conditional Options based on Mode */}
           {mode === 'SINGLE' ? (
-            <div className="space-y-3 bg-slate-950/40 p-4 rounded-2xl border border-slate-800">
-              <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider">Selecione a Ordem de Serviço</label>
+            <div className="space-y-3 bg-fundo p-4 rounded-2xl border border-borda">
+              <label className="text-xs font-semibold text-tinta uppercase tracking-wider">Selecione a Ordem de Serviço</label>
               <select
                 value={selectedOSId}
                 onChange={(e) => setSelectedOSId(e.target.value)}
-                className="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-700 rounded-2xl text-xs text-white focus:outline-none focus:border-emerald-500"
+                className="w-full px-3.5 py-2.5 bg-superficie border border-borda rounded-2xl text-xs text-tinta focus:outline-none focus:border-marca-escura"
               >
                 {serviceOrders.map(os => {
                   const client = clients.find(c => c.id === os.client_id);
@@ -218,47 +218,47 @@ export const ServiceSummaryPdfModal: React.FC<ServiceSummaryPdfModalProps> = ({
                 const client = clients.find(c => c.id === sel?.client_id);
                 if (!sel) return null;
                 return (
-                  <div className="mt-3 p-4 bg-slate-900 rounded-xl border border-slate-800/80 space-y-2 text-xs">
+                  <div className="mt-3 p-4 bg-superficie rounded-xl border border-borda space-y-2 text-xs">
                     <div className="flex items-center justify-between">
-                      <span className="font-bold text-emerald-400">{sel.os_number}</span>
-                      <span className="px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 font-mono text-[10px]">{sel.status}</span>
+                      <span className="font-bold text-marca-escura">{sel.os_number}</span>
+                      <span className="px-2 py-0.5 rounded-full bg-superficie-2 text-tinta font-mono text-[10px]">{sel.status}</span>
                     </div>
-                    <div className="text-white font-medium">{sel.title}</div>
-                    <div className="text-slate-400 flex flex-wrap gap-4 pt-1">
-                      <span>Cliente: <strong className="text-slate-300">{client?.trade_name}</strong></span>
-                      <span>Responsável: <strong className="text-slate-300">{sel.technical_responsible_name || 'N/A'}</strong></span>
-                      <span>Prazo: <strong className="text-slate-300">{formatDate(sel.due_date)}</strong></span>
-                      <span>Etapas: <strong className="text-slate-300">{sel.stages?.length || 0}</strong></span>
+                    <div className="text-tinta font-medium">{sel.title}</div>
+                    <div className="text-tinta-2 flex flex-wrap gap-4 pt-1">
+                      <span>Cliente: <strong className="text-tinta">{client?.trade_name}</strong></span>
+                      <span>Responsável: <strong className="text-tinta">{sel.technical_responsible_name || 'N/A'}</strong></span>
+                      <span>Prazo: <strong className="text-tinta">{formatDate(sel.due_date)}</strong></span>
+                      <span>Etapas: <strong className="text-tinta">{sel.stages?.length || 0}</strong></span>
                     </div>
                   </div>
                 );
               })()}
             </div>
           ) : (
-            <div className="space-y-4 bg-slate-950/40 p-4 rounded-2xl border border-slate-800">
+            <div className="space-y-4 bg-fundo p-4 rounded-2xl border border-borda">
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <span className="text-xs font-semibold text-slate-300 uppercase tracking-wider">Filtrar Ordens de Serviço</span>
+                <span className="text-xs font-semibold text-tinta uppercase tracking-wider">Filtrar Ordens de Serviço</span>
                 <div className="flex items-center space-x-2">
                   <button
                     type="button"
                     onClick={toggleSelectAll}
-                    className="text-xs text-emerald-400 hover:text-emerald-300 font-medium"
+                    className="text-xs text-marca-escura hover:text-marca-escura font-medium"
                   >
                     {selectedIds.length === filteredOrders.length ? 'Desmarcar Todos' : 'Selecionar Todos'}
                   </button>
-                  <span className="text-xs text-slate-500">|</span>
-                  <span className="text-xs text-slate-400">{selectedIds.length} de {filteredOrders.length} selecionadas</span>
+                  <span className="text-xs text-tinta-2">|</span>
+                  <span className="text-xs text-tinta-2">{selectedIds.length} de {filteredOrders.length} selecionadas</span>
                 </div>
               </div>
 
               {/* Filters */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
-                  <label className="text-[11px] text-slate-400 mb-1 block">Status</label>
+                  <label className="text-[11px] text-tinta-2 mb-1 block">Status</label>
                   <select
                     value={statusFilter}
                     onChange={(e) => setStatusFilter(e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white"
+                    className="w-full px-3 py-2 bg-superficie border border-borda rounded-xl text-xs text-tinta"
                   >
                     <option value="ALL">Todos os Status</option>
                     <option value="IN_PROGRESS">Em Andamento</option>
@@ -270,11 +270,11 @@ export const ServiceSummaryPdfModal: React.FC<ServiceSummaryPdfModalProps> = ({
                 </div>
 
                 <div>
-                  <label className="text-[11px] text-slate-400 mb-1 block">Cliente</label>
+                  <label className="text-[11px] text-tinta-2 mb-1 block">Cliente</label>
                   <select
                     value={clientFilter}
                     onChange={(e) => setClientFilter(e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white"
+                    className="w-full px-3 py-2 bg-superficie border border-borda rounded-xl text-xs text-tinta"
                   >
                     <option value="ALL">Todos os Clientes</option>
                     {clients.map(c => (
@@ -284,11 +284,11 @@ export const ServiceSummaryPdfModal: React.FC<ServiceSummaryPdfModalProps> = ({
                 </div>
 
                 <div>
-                  <label className="text-[11px] text-slate-400 mb-1 block">Prioridade</label>
+                  <label className="text-[11px] text-tinta-2 mb-1 block">Prioridade</label>
                   <select
                     value={priorityFilter}
                     onChange={(e) => setPriorityFilter(e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white"
+                    className="w-full px-3 py-2 bg-superficie border border-borda rounded-xl text-xs text-tinta"
                   >
                     <option value="ALL">Todas as Prioridades</option>
                     <option value="URGENT">Urgente</option>
@@ -309,22 +309,22 @@ export const ServiceSummaryPdfModal: React.FC<ServiceSummaryPdfModalProps> = ({
                       key={os.id}
                       className={`flex items-center space-x-3 p-2.5 rounded-xl border text-xs cursor-pointer transition ${
                         isChecked 
-                          ? 'bg-emerald-950/30 border-emerald-500/40 text-white' 
-                          : 'bg-slate-900 border-slate-800 text-slate-400'
+                          ? 'bg-marca-suave border-marca-borda text-tinta' 
+                          : 'bg-superficie border-borda text-tinta-2'
                       }`}
                     >
                       <input
                         type="checkbox"
                         checked={isChecked}
                         onChange={() => toggleOrderSelection(os.id)}
-                        className="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 border-slate-700 bg-slate-800"
+                        className="w-4 h-4 rounded text-marca-escura focus:ring-marca-escura border-borda bg-superficie-2"
                       />
                       <div className="flex-1 truncate">
-                        <span className="font-bold font-mono text-emerald-300">{os.os_number}</span>{' '}
-                        <span className="text-white">{os.title}</span>{' '}
-                        <span className="text-slate-400">({client?.trade_name})</span>
+                        <span className="font-bold font-mono text-marca-escura">{os.os_number}</span>{' '}
+                        <span className="text-tinta">{os.title}</span>{' '}
+                        <span className="text-tinta-2">({client?.trade_name})</span>
                       </div>
-                      <span className="text-[10px] px-2 py-0.5 rounded font-mono bg-slate-800 text-slate-300">
+                      <span className="text-[10px] px-2 py-0.5 rounded font-mono bg-superficie-2 text-tinta">
                         {os.status}
                       </span>
                     </label>

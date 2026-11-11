@@ -100,20 +100,20 @@ export const CommercialDashboard: React.FC<{ onNavigate: (view: string) => void 
   return (
     <div className="space-y-6 pb-12">
       {/* Header Bento Card */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-superficie border border-borda rounded-3xl p-6 shadow-sm">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-indigo-500/10 border border-indigo-500/20 rounded-2xl flex items-center justify-center text-indigo-400">
+          <div className="w-10 h-10 bg-teal-500/10 border border-teal-500/20 rounded-2xl flex items-center justify-center text-teal-800">
             <TrendingUp className="w-5 h-5" />
           </div>
           <div>
-            <h1 className="text-xl font-bold tracking-tight text-white">Dashboard Comercial SST</h1>
-            <p className="text-xs text-slate-400 mt-0.5">Funil de vendas, taxa de conversão de propostas e ciclo de fechamento de contratos.</p>
+            <h1 className="text-xl font-bold tracking-tight text-tinta">Dashboard Comercial SST</h1>
+            <p className="text-xs text-tinta-2 mt-0.5">Funil de vendas, taxa de conversão de propostas e ciclo de fechamento de contratos.</p>
           </div>
         </div>
         <div className="flex items-center space-x-2">
           <button 
             onClick={() => onNavigate('proposals')}
-            className="px-4 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-2xl text-xs font-bold shadow-lg shadow-emerald-950/40 transition flex items-center space-x-1.5"
+            className="bg-marca-escura px-4 py-2.5 text-white rounded-2xl text-xs font-bold shadow-sm transition flex items-center space-x-1.5"
           >
             <Plus className="w-4 h-4" />
             <span>Nova Proposta Comercial</span>
@@ -123,59 +123,59 @@ export const CommercialDashboard: React.FC<{ onNavigate: (view: string) => void 
 
       {/* KPIs Bento Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-5">
-        <div className="bg-slate-900 p-5 rounded-3xl border border-slate-800 shadow-xl flex flex-col justify-between">
+        <div className="bg-superficie p-5 rounded-3xl border border-borda shadow-sm flex flex-col justify-between">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Taxa de Conversão</span>
-            <div className="p-2.5 rounded-2xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+            <span className="text-xs font-semibold text-tinta-2 uppercase tracking-wider">Taxa de Conversão</span>
+            <div className="p-2.5 rounded-2xl bg-marca-suave text-marca-escura border border-marca-borda">
               <Percent className="w-4 h-4" />
             </div>
           </div>
           <div>
-            <div className="text-3xl font-extrabold text-emerald-400 mt-3">{conversionRate}%</div>
-            <div className="text-[11px] text-slate-400 mt-1">Propostas enviadas → Aprovadas</div>
+            <div className="text-3xl font-extrabold text-marca-escura mt-3">{conversionRate}%</div>
+            <div className="text-[11px] text-tinta-2 mt-1">Propostas enviadas → Aprovadas</div>
           </div>
         </div>
 
-        <div className="bg-slate-900 p-5 rounded-3xl border border-slate-800 shadow-xl flex flex-col justify-between">
+        <div className="bg-superficie p-5 rounded-3xl border border-borda shadow-sm flex flex-col justify-between">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Ticket Médio</span>
-            <div className="p-2.5 rounded-2xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+            <span className="text-xs font-semibold text-tinta-2 uppercase tracking-wider">Ticket Médio</span>
+            <div className="p-2.5 rounded-2xl bg-teal-500/10 text-teal-800 border border-teal-500/20">
               <DollarSign className="w-4 h-4" />
             </div>
           </div>
           <div>
-            <div className="text-2xl font-extrabold text-white mt-3">
+            <div className="text-2xl font-extrabold text-tinta mt-3">
               R$ {averageTicket.toLocaleString('pt-BR')}
             </div>
-            <div className="text-[11px] text-indigo-400 mt-1 font-medium">+15% em pacotes integrados</div>
+            <div className="text-[11px] text-teal-700 mt-1 font-medium">+15% em pacotes integrados</div>
           </div>
         </div>
 
-        <div className="bg-slate-900 p-5 rounded-3xl border border-slate-800 shadow-xl flex flex-col justify-between">
+        <div className="bg-superficie p-5 rounded-3xl border border-borda shadow-sm flex flex-col justify-between">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Tempo Fechamento</span>
-            <div className="p-2.5 rounded-2xl bg-purple-500/10 text-purple-400 border border-purple-500/20">
+            <span className="text-xs font-semibold text-tinta-2 uppercase tracking-wider">Tempo Fechamento</span>
+            <div className="p-2.5 rounded-2xl bg-teal-500/10 text-teal-800 border border-teal-500/20">
               <Clock className="w-4 h-4" />
             </div>
           </div>
           <div>
-            <div className="text-3xl font-extrabold text-white mt-3">{averageApprovalDays} dias</div>
-            <div className="text-[11px] text-purple-400 mt-1">Agilizado pelo envio via WhatsApp</div>
+            <div className="text-3xl font-extrabold text-tinta mt-3">{averageApprovalDays} dias</div>
+            <div className="text-[11px] text-teal-700 mt-1">Agilizado pelo envio via WhatsApp</div>
           </div>
         </div>
 
-        <div className="bg-slate-900 p-5 rounded-3xl border border-slate-800 shadow-xl flex flex-col justify-between">
+        <div className="bg-superficie p-5 rounded-3xl border border-borda shadow-sm flex flex-col justify-between">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Pipeline Ativo</span>
-            <div className="p-2.5 rounded-2xl bg-amber-500/10 text-amber-400 border border-amber-500/20">
+            <span className="text-xs font-semibold text-tinta-2 uppercase tracking-wider">Pipeline Ativo</span>
+            <div className="p-2.5 rounded-2xl bg-amber-500/10 text-amber-800 border border-amber-500/20">
               <TrendingUp className="w-4 h-4" />
             </div>
           </div>
           <div>
-            <div className="text-2xl font-extrabold text-amber-400 mt-3">
+            <div className="text-2xl font-extrabold text-amber-700 mt-3">
               R$ {opportunities.reduce((acc, o) => acc + o.estimated_value, 0).toLocaleString('pt-BR')}
             </div>
-            <div className="text-[11px] text-slate-400 mt-1">{opportunities.length} oportunidades ativas</div>
+            <div className="text-[11px] text-tinta-2 mt-1">{opportunities.length} oportunidades ativas</div>
           </div>
         </div>
       </div>
@@ -183,15 +183,15 @@ export const CommercialDashboard: React.FC<{ onNavigate: (view: string) => void 
       {/* Funnel & Source Charts in Bento Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         {/* Sales Funnel */}
-        <div className="bg-slate-900 p-6 rounded-3xl border border-slate-800 shadow-xl lg:col-span-2 flex flex-col justify-between">
+        <div className="bg-superficie p-6 rounded-3xl border border-borda shadow-sm lg:col-span-2 flex flex-col justify-between">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h2 className="text-base font-bold text-white">Funil Comercial Completo (Lead → Contrato)</h2>
-              <p className="text-xs text-slate-400 mt-0.5">Conversão por etapa do ciclo de contratação</p>
+              <h2 className="text-base font-bold text-tinta">Funil Comercial Completo (Lead → Contrato)</h2>
+              <p className="text-xs text-tinta-2 mt-0.5">Conversão por etapa do ciclo de contratação</p>
             </div>
             <button 
               onClick={() => onNavigate('crm-leads')}
-              className="text-xs text-emerald-400 font-semibold hover:underline"
+              className="text-xs text-marca-escura font-semibold hover:underline"
             >
               Ver Leads →
             </button>
@@ -212,13 +212,13 @@ export const CommercialDashboard: React.FC<{ onNavigate: (view: string) => void 
         </div>
 
         {/* Lead Sources Pie */}
-        <div className="bg-slate-900 p-6 rounded-3xl border border-slate-800 shadow-xl flex flex-col justify-between">
+        <div className="bg-superficie p-6 rounded-3xl border border-borda shadow-sm flex flex-col justify-between">
           <div>
-            <h2 className="text-base font-bold text-white mb-0.5">Origem dos Leads</h2>
-            <p className="text-xs text-slate-400 mb-3">Canais de captação de clientes SST</p>
+            <h2 className="text-base font-bold text-tinta mb-0.5">Origem dos Leads</h2>
+            <p className="text-xs text-tinta-2 mb-3">Canais de captação de clientes SST</p>
             <div className="h-40">
               {sourceData.length === 0 ? (
-                <div className="h-full flex items-center justify-center text-center text-xs text-slate-500 px-4">
+                <div className="h-full flex items-center justify-center text-center text-xs text-tinta-2 px-4">
                   Nenhum lead cadastrado ainda. A origem é preenchida no cadastro de cada lead.
                 </div>
               ) : (
@@ -237,14 +237,14 @@ export const CommercialDashboard: React.FC<{ onNavigate: (view: string) => void 
               )}
             </div>
           </div>
-          <div className="space-y-1.5 mt-2 pt-2 border-t border-slate-800/80">
+          <div className="space-y-1.5 mt-2 pt-2 border-t border-borda">
             {sourceData.map((s, idx) => (
-              <div key={idx} className="flex items-center justify-between text-xs text-slate-300">
+              <div key={idx} className="flex items-center justify-between text-xs text-tinta">
                 <div className="flex items-center space-x-2">
                   <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: s.color }} />
                   <span>{s.name}</span>
                 </div>
-                <span className="font-bold text-white font-mono">
+                <span className="font-bold text-tinta font-mono">
                   {s.value} ({Math.round((s.value / totalLeads) * 100)}%)
                 </span>
               </div>
@@ -287,20 +287,20 @@ export const QualityDashboard: React.FC<{ onNavigate: (view: string) => void }> 
   return (
     <div className="space-y-6 pb-12">
       {/* Header Bento Card */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-superficie border border-borda rounded-3xl p-6 shadow-sm">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl flex items-center justify-center text-emerald-400">
+          <div className="w-10 h-10 bg-marca-suave border border-marca-borda rounded-2xl flex items-center justify-center text-marca-escura">
             <Star className="w-5 h-5" />
           </div>
           <div>
-            <h1 className="text-xl font-bold tracking-tight text-white">Dashboard de Qualidade & Pós-Venda</h1>
-            <p className="text-xs text-slate-400 mt-0.5">Indicadores de satisfação (NPS), índice de retrabalho técnico e avaliações dos clientes.</p>
+            <h1 className="text-xl font-bold tracking-tight text-tinta">Dashboard de Qualidade & Pós-Venda</h1>
+            <p className="text-xs text-tinta-2 mt-0.5">Indicadores de satisfação (NPS), índice de retrabalho técnico e avaliações dos clientes.</p>
           </div>
         </div>
         <div className="flex items-center space-x-2">
           <button 
             onClick={() => onNavigate('evaluations')}
-            className="px-4 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-2xl text-xs font-bold shadow-lg shadow-emerald-950/40 transition"
+            className="bg-marca-escura px-4 py-2.5 text-white rounded-2xl text-xs font-bold shadow-sm transition"
           >
             Ver Todas as Avaliações
           </button>
@@ -309,35 +309,35 @@ export const QualityDashboard: React.FC<{ onNavigate: (view: string) => void }> 
 
       {/* Quality KPI Cards in Bento Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-5">
-        <div className="bg-slate-900 p-5 rounded-3xl border border-slate-800 shadow-xl flex flex-col justify-between">
-          <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider">NPS Global</div>
+        <div className="bg-superficie p-5 rounded-3xl border border-borda shadow-sm flex flex-col justify-between">
+          <div className="text-xs font-semibold text-tinta-2 uppercase tracking-wider">NPS Global</div>
           <div>
-            <div className="text-3xl font-extrabold text-emerald-400 mt-2">{averageNps}</div>
-            <div className="text-[11px] text-emerald-400 font-medium mt-1">Zona de Excelência (100% Promotores)</div>
+            <div className="text-3xl font-extrabold text-marca-escura mt-2">{averageNps}</div>
+            <div className="text-[11px] text-marca-escura font-medium mt-1">Zona de Excelência (100% Promotores)</div>
           </div>
         </div>
 
-        <div className="bg-slate-900 p-5 rounded-3xl border border-slate-800 shadow-xl flex flex-col justify-between">
-          <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Índice de Retrabalho</div>
+        <div className="bg-superficie p-5 rounded-3xl border border-borda shadow-sm flex flex-col justify-between">
+          <div className="text-xs font-semibold text-tinta-2 uppercase tracking-wider">Índice de Retrabalho</div>
           <div>
-            <div className="text-3xl font-extrabold text-white mt-2">{reworkRate}%</div>
-            <div className="text-[11px] text-emerald-400 font-medium mt-1">Meta interna: abaixo de 5%</div>
+            <div className="text-3xl font-extrabold text-tinta mt-2">{reworkRate}%</div>
+            <div className="text-[11px] text-marca-escura font-medium mt-1">Meta interna: abaixo de 5%</div>
           </div>
         </div>
 
-        <div className="bg-slate-900 p-5 rounded-3xl border border-slate-800 shadow-xl flex flex-col justify-between">
-          <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Entregas no Prazo</div>
+        <div className="bg-superficie p-5 rounded-3xl border border-borda shadow-sm flex flex-col justify-between">
+          <div className="text-xs font-semibold text-tinta-2 uppercase tracking-wider">Entregas no Prazo</div>
           <div>
-            <div className="text-3xl font-extrabold text-emerald-400 mt-2">96.4%</div>
-            <div className="text-[11px] text-slate-400 mt-1">Garantido por controle de SLA</div>
+            <div className="text-3xl font-extrabold text-marca-escura mt-2">96.4%</div>
+            <div className="text-[11px] text-tinta-2 mt-1">Garantido por controle de SLA</div>
           </div>
         </div>
 
-        <div className="bg-slate-900 p-5 rounded-3xl border border-slate-800 shadow-xl flex flex-col justify-between">
-          <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Reclamações Formais</div>
+        <div className="bg-superficie p-5 rounded-3xl border border-borda shadow-sm flex flex-col justify-between">
+          <div className="text-xs font-semibold text-tinta-2 uppercase tracking-wider">Reclamações Formais</div>
           <div>
-            <div className="text-3xl font-extrabold text-white mt-2">0</div>
-            <div className="text-[11px] text-emerald-400 font-medium mt-1">Zero litígios ou autos de infração</div>
+            <div className="text-3xl font-extrabold text-tinta mt-2">0</div>
+            <div className="text-[11px] text-marca-escura font-medium mt-1">Zero litígios ou autos de infração</div>
           </div>
         </div>
       </div>
@@ -345,22 +345,22 @@ export const QualityDashboard: React.FC<{ onNavigate: (view: string) => void }> 
       {/* Criteria Breakdown & Reviews List in Bento Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         {/* Quality Criteria Progress Bars */}
-        <div className="bg-slate-900 p-6 rounded-3xl border border-slate-800 shadow-xl space-y-4 flex flex-col justify-between">
+        <div className="bg-superficie p-6 rounded-3xl border border-borda shadow-sm space-y-4 flex flex-col justify-between">
           <div>
-            <h2 className="text-base font-bold text-white">Média por Critério de Avaliação (1 a 5)</h2>
-            <p className="text-xs text-slate-400 mt-0.5">Notas atribuídas pelos clientes após aceite formal</p>
+            <h2 className="text-base font-bold text-tinta">Média por Critério de Avaliação (1 a 5)</h2>
+            <p className="text-xs text-tinta-2 mt-0.5">Notas atribuídas pelos clientes após aceite formal</p>
           </div>
 
           <div className="space-y-4 pt-2">
             {criteriaScores.map((c, idx) => (
               <div key={idx} className="space-y-1.5">
-                <div className="flex justify-between text-xs font-medium text-slate-300">
+                <div className="flex justify-between text-xs font-medium text-tinta">
                   <span>{c.name}</span>
-                  <span className="font-bold text-emerald-400 font-mono">{c.score.toFixed(1)} / 5.0</span>
+                  <span className="font-bold text-marca-escura font-mono">{c.score.toFixed(1)} / 5.0</span>
                 </div>
-                <div className="w-full h-2 bg-slate-950 rounded-full overflow-hidden border border-slate-800">
+                <div className="w-full h-2 bg-fundo rounded-full overflow-hidden border border-borda">
                   <div 
-                    className="h-full bg-emerald-500 rounded-full" 
+                    className="h-full bg-marca rounded-full" 
                     style={{ width: `${(c.score / 5) * 100}%` }}
                   />
                 </div>
@@ -370,27 +370,27 @@ export const QualityDashboard: React.FC<{ onNavigate: (view: string) => void }> 
         </div>
 
         {/* Real Customer Testimonials */}
-        <div className="bg-slate-900 p-6 rounded-3xl border border-slate-800 shadow-xl space-y-4 flex flex-col justify-between">
+        <div className="bg-superficie p-6 rounded-3xl border border-borda shadow-sm space-y-4 flex flex-col justify-between">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-base font-bold text-white">Últimos Feedbacks Registrados</h2>
-              <p className="text-xs text-slate-400 mt-0.5">Retorno dos clientes após conclusão de serviço</p>
+              <h2 className="text-base font-bold text-tinta">Últimos Feedbacks Registrados</h2>
+              <p className="text-xs text-tinta-2 mt-0.5">Retorno dos clientes após conclusão de serviço</p>
             </div>
-            <span className="text-xs text-slate-500 font-mono">{evaluations.length} avaliações</span>
+            <span className="text-xs text-tinta-2 font-mono">{evaluations.length} avaliações</span>
           </div>
 
           <div className="space-y-3">
             {evaluations.map((ev) => (
-              <div key={ev.id} className="p-4 bg-slate-950/60 rounded-2xl border border-slate-800 space-y-1.5">
+              <div key={ev.id} className="p-4 bg-fundo rounded-2xl border border-borda space-y-1.5">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-white">{ev.service_title}</span>
-                  <div className="flex items-center text-amber-400 text-xs">
+                  <span className="text-xs font-bold text-tinta">{ev.service_title}</span>
+                  <div className="flex items-center text-amber-700 text-xs">
                     {'★'.repeat(ev.overall_score)}
-                    <span className="ml-1.5 text-[11px] font-bold text-slate-300">({ev.nps_score}/10 NPS)</span>
+                    <span className="ml-1.5 text-[11px] font-bold text-tinta">({ev.nps_score}/10 NPS)</span>
                   </div>
                 </div>
-                <p className="text-xs text-slate-300 italic">&ldquo;{ev.comment}&rdquo;</p>
-                <div className="text-[10px] text-slate-500 font-mono">
+                <p className="text-xs text-tinta italic">&ldquo;{ev.comment}&rdquo;</p>
+                <div className="text-[10px] text-tinta-2 font-mono">
                   {formatDate(ev.created_at)}
                 </div>
               </div>

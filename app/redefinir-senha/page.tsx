@@ -95,26 +95,26 @@ export default function RedefinirSenhaPage() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-slate-950 flex items-center justify-center p-4 font-sans">
-      <div className="w-full max-w-md bg-slate-900/90 border border-slate-800 rounded-3xl shadow-2xl p-6 sm:p-8">
+    <div className="min-h-screen w-full bg-fundo flex items-center justify-center p-4 font-sans">
+      <div className="w-full max-w-md bg-superficie border border-borda rounded-3xl shadow-sm p-6 sm:p-8">
         <div className="mb-6">
           <div>
-            <div className="text-lg font-bold text-white tracking-tight">PrevSafe</div>
-            <p className="text-xs text-slate-400">Redefinição de senha</p>
+            <div className="text-lg font-bold text-tinta tracking-tight">PrevSafe</div>
+            <p className="text-xs text-tinta-2">Redefinição de senha</p>
           </div>
         </div>
 
         {status === 'VERIFICANDO' && (
           <div className="py-10 flex flex-col items-center text-center space-y-3">
-            <RefreshCw className="w-6 h-6 text-emerald-500 animate-spin" />
-            <p className="text-xs text-slate-400">Validando seu link de redefinição...</p>
+            <RefreshCw className="w-6 h-6 text-marca-escura animate-spin" />
+            <p className="text-xs text-tinta-2">Validando seu link de redefinição...</p>
           </div>
         )}
 
         {status === 'LINK_INVALIDO' && (
           <div className="space-y-4">
-            <div className="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-start space-x-2.5">
-              <AlertCircle className="w-4 h-4 flex-shrink-0 text-rose-400 mt-0.5" />
+            <div className="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-700 text-xs flex items-start space-x-2.5">
+              <AlertCircle className="w-4 h-4 flex-shrink-0 text-rose-700 mt-0.5" />
               <span>
                 Este link de redefinição é inválido, expirou ou já foi utilizado. Volte à tela de acesso e
                 solicite um novo.
@@ -122,7 +122,7 @@ export default function RedefinirSenhaPage() {
             </div>
             <a
               href="/"
-              className="block w-full py-3 px-4 bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs rounded-xl text-center transition"
+              className="block w-full py-3 px-4 bg-superficie-2 hover:bg-superficie-3 text-tinta font-bold text-xs rounded-xl text-center transition"
             >
               Voltar para o acesso
             </a>
@@ -131,8 +131,8 @@ export default function RedefinirSenhaPage() {
 
         {status === 'CONCLUIDO' && (
           <div className="space-y-4">
-            <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs flex items-start space-x-2.5">
-              <CheckCircle2 className="w-4 h-4 flex-shrink-0 text-emerald-400 mt-0.5" />
+            <div className="p-3.5 rounded-xl bg-marca-suave border border-marca-borda text-marca-escura text-xs flex items-start space-x-2.5">
+              <CheckCircle2 className="w-4 h-4 flex-shrink-0 text-marca-escura mt-0.5" />
               <span>Senha redefinida com sucesso! Redirecionando para o sistema...</span>
             </div>
           </div>
@@ -140,21 +140,21 @@ export default function RedefinirSenhaPage() {
 
         {status === 'PRONTO' && (
           <form onSubmit={handleSubmit} className="space-y-4">
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-tinta-2">
               Defina sua nova senha de acesso. Use ao menos 8 caracteres.
             </p>
 
             {errorMessage && (
-              <div className="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-center space-x-2.5">
-                <AlertCircle className="w-4 h-4 flex-shrink-0 text-rose-400" />
+              <div className="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-700 text-xs flex items-center space-x-2.5">
+                <AlertCircle className="w-4 h-4 flex-shrink-0 text-rose-700" />
                 <span>{errorMessage}</span>
               </div>
             )}
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">Nova senha</label>
+              <label className="block text-xs font-semibold text-tinta mb-1.5">Nova senha</label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-tinta-2">
                   <Lock className="w-4 h-4" />
                 </div>
                 <input
@@ -164,12 +164,12 @@ export default function RedefinirSenhaPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full pl-10 pr-10 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500"
+                  className="w-full pl-10 pr-10 py-2.5 bg-fundo border border-borda rounded-xl text-xs text-tinta placeholder-tinta-3 focus:outline-none focus:border-marca-escura"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-500 hover:text-slate-300 transition"
+                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-tinta-2 hover:text-tinta transition"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -177,9 +177,9 @@ export default function RedefinirSenhaPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">Confirmar nova senha</label>
+              <label className="block text-xs font-semibold text-tinta mb-1.5">Confirmar nova senha</label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-tinta-2">
                   <Lock className="w-4 h-4" />
                 </div>
                 <input
@@ -189,7 +189,7 @@ export default function RedefinirSenhaPage() {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full pl-10 pr-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500"
+                  className="w-full pl-10 pr-4 py-2.5 bg-fundo border border-borda rounded-xl text-xs text-tinta placeholder-tinta-3 focus:outline-none focus:border-marca-escura"
                 />
               </div>
             </div>
@@ -197,7 +197,7 @@ export default function RedefinirSenhaPage() {
             <button
               type="submit"
               disabled={isSaving}
-              className="w-full py-3 px-4 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs rounded-xl shadow-lg transition flex items-center justify-center space-x-2 disabled:opacity-50"
+              className="bg-marca-escura w-full py-3 px-4 text-white font-bold text-xs rounded-xl shadow-sm transition flex items-center justify-center space-x-2 disabled:opacity-50"
             >
               {isSaving ? (
                 <>

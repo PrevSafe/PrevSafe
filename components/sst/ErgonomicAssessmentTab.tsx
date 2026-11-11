@@ -265,33 +265,33 @@ export const ErgonomicAssessmentTab: React.FC<ErgonomicAssessmentTabProps> = ({ 
 
   if (!selectedClientId) {
     return (
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-8 text-center">
-        <Activity className="w-8 h-8 text-slate-600 mx-auto mb-3" />
-        <p className="text-sm text-slate-400">Selecione um cliente para registrar a avaliação ergonômica.</p>
+      <div className="bg-superficie border border-borda rounded-2xl p-8 text-center">
+        <Activity className="w-8 h-8 text-tinta-2 mx-auto mb-3" />
+        <p className="text-sm text-tinta-2">Selecione um cliente para registrar a avaliação ergonômica.</p>
       </div>
     );
   }
 
   return (
     <div className="space-y-4">
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+      <div className="bg-superficie border border-borda rounded-2xl p-5">
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div>
-            <h3 className="text-base font-bold text-slate-100 flex items-center gap-2">
-              <Activity className="w-5 h-5 text-teal-400" />
+            <h3 className="text-base font-bold text-tinta flex items-center gap-2">
+              <Activity className="w-5 h-5 text-teal-700" />
               Avaliação Ergonômica Preliminar
-              <span className="text-[11px] font-semibold text-slate-500">NR-17, item 17.3</span>
+              <span className="text-[11px] font-semibold text-tinta-2">NR-17, item 17.3</span>
             </h3>
-            <p className="text-xs text-slate-400 mt-1 max-w-[46rem]">
-              Alimenta as seções 5.3 e 7.4 do PGR. A NR-17 <strong className="text-slate-300">não
+            <p className="text-xs text-tinta-2 mt-1 max-w-[46rem]">
+              Alimenta as seções 5.3 e 7.4 do PGR. A NR-17 <strong className="text-tinta">não
               prescreve método</strong>: o subitem 17.3.1.1 admite abordagem qualitativa,
               semiquantitativa, quantitativa ou combinação, e a alínea &quot;c&quot; do 17.3.3 diz
               que a análise não está adstrita a ferramentas específicas. Aqui se registra a
               conclusão de quem avalia, aspecto por aspecto — não uma pontuação.
             </p>
-            <p className="text-xs text-slate-400 mt-1 max-w-[46rem]">
-              <Brain className="w-3.5 h-3.5 inline text-teal-400 mr-1" />
-              Os <strong className="text-slate-300">fatores de risco psicossociais</strong> também são avaliados
+            <p className="text-xs text-tinta-2 mt-1 max-w-[46rem]">
+              <Brain className="w-3.5 h-3.5 inline text-teal-700 mr-1" />
+              Os <strong className="text-tinta">fatores de risco psicossociais</strong> também são avaliados
               aqui, em cada situação: desde {VIGENCIA_DO_CAPITULO_1_5} o subitem 1.5.3.2.1 da NR-01 manda
               considerá-los nos termos da NR-17, e o fator presente vai ao inventário do PGR.
             </p>
@@ -299,7 +299,7 @@ export const ErgonomicAssessmentTab: React.FC<ErgonomicAssessmentTabProps> = ({ 
           <button
             type="button"
             onClick={() => abrirModal()}
-            className="px-4 py-2 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold rounded-lg shadow-md flex items-center gap-1.5 text-sm shrink-0"
+            className="bg-marca-escura text-white px-4 py-2 font-bold rounded-lg shadow-sm flex items-center gap-1.5 text-sm shrink-0 hover:opacity-90"
           >
             <Plus className="w-4 h-4" />
             Nova Avaliação
@@ -312,21 +312,21 @@ export const ErgonomicAssessmentTab: React.FC<ErgonomicAssessmentTabProps> = ({ 
         className={`rounded-2xl p-4 border flex items-start gap-2.5 ${
           dispensaAET === null
             ? 'bg-amber-500/10 border-amber-500/30'
-            : 'bg-slate-900 border-slate-800'
+            : 'bg-superficie border-borda'
         }`}
       >
         <Info
           className={`w-4 h-4 mt-0.5 shrink-0 ${
-            dispensaAET === null ? 'text-amber-400' : 'text-teal-400'
+            dispensaAET === null ? 'text-amber-700' : 'text-teal-700'
           }`}
         />
         <div>
           {dispensaAET === true && (
             <>
-              <p className="text-sm text-slate-200 font-semibold">
+              <p className="text-sm text-tinta font-semibold">
                 Esta organização está dispensada de elaborar a AET.
               </p>
-              <p className="text-xs text-slate-400 mt-1">
+              <p className="text-xs text-tinta-2 mt-1">
                 {NR17_FUNDAMENTO_DA_DISPENSA} A AET continua devida nas situações das alíneas
                 &quot;c&quot; e &quot;d&quot; — saúde do trabalhador e análise de acidente ou doença.
               </p>
@@ -334,10 +334,10 @@ export const ErgonomicAssessmentTab: React.FC<ErgonomicAssessmentTabProps> = ({ 
           )}
           {dispensaAET === false && (
             <>
-              <p className="text-sm text-slate-200 font-semibold">
+              <p className="text-sm text-tinta font-semibold">
                 Esta organização não se enquadra na dispensa do item 17.3.4.
               </p>
-              <p className="text-xs text-slate-400 mt-1">
+              <p className="text-xs text-tinta-2 mt-1">
                 A AET é devida em qualquer das quatro situações do item 17.3.2.
               </p>
             </>
@@ -349,12 +349,12 @@ export const ErgonomicAssessmentTab: React.FC<ErgonomicAssessmentTabProps> = ({ 
                 porte, ou falta o grau de risco. O aviso dizia sempre "porte
                 não informado" — e mandava preencher o que já estava lá.
               */}
-              <p className="text-sm text-amber-200 font-semibold">
+              <p className="text-sm text-amber-700 font-semibold">
                 {String(cliente?.porte || '').trim()
                   ? 'Grau de risco NR-04 não classificado.'
                   : 'Porte da organização não informado.'}
               </p>
-              <p className="text-xs text-amber-200/70 mt-1">
+              <p className="text-xs text-amber-700 mt-1">
                 A dispensa de elaborar a AET do item 17.3.4 alcança ME e EPP de graus de risco 1 e 2
                 e o MEI — depende dos dois campos. Preencha em CRM &gt; Clientes &amp; Unidades,
                 ao editar o cliente. O PGR sai com pendência enquanto isso — a dispensa não se presume.
@@ -367,10 +367,10 @@ export const ErgonomicAssessmentTab: React.FC<ErgonomicAssessmentTabProps> = ({ 
       {/* Coerencia com o inventario e cobertura dos GHE */}
       {aeps.length > 0 && (ghesSemAep.length > 0 || !temRiscoErgonomico) && (
         <div className="bg-amber-500/10 border border-amber-500/30 rounded-2xl p-4 flex items-start gap-2.5">
-          <AlertTriangle className="w-4 h-4 text-amber-400 mt-0.5 shrink-0" />
+          <AlertTriangle className="w-4 h-4 text-amber-700 mt-0.5 shrink-0" />
           <div>
-            <p className="text-sm text-amber-200 font-semibold">Lacunas de cobertura</p>
-            <ul className="text-xs text-amber-200/70 mt-1 space-y-0.5 list-disc list-inside">
+            <p className="text-sm text-amber-700 font-semibold">Lacunas de cobertura</p>
+            <ul className="text-xs text-amber-700 mt-1 space-y-0.5 list-disc list-inside">
               {ghesSemAep.length > 0 && (
                 <li>
                   {ghesSemAep.length} GHE sem avaliação:{' '}
@@ -390,20 +390,20 @@ export const ErgonomicAssessmentTab: React.FC<ErgonomicAssessmentTabProps> = ({ 
       )}
 
       {aeps.length === 0 ? (
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex items-start gap-2.5">
-          <AlertTriangle className="w-4 h-4 text-amber-400 mt-0.5 shrink-0" />
+        <div className="bg-superficie border border-borda rounded-2xl p-5 flex items-start gap-2.5">
+          <AlertTriangle className="w-4 h-4 text-amber-700 mt-0.5 shrink-0" />
           <div>
-            <p className="text-sm text-slate-200 font-semibold">Nenhuma avaliação registrada.</p>
-            <p className="text-xs text-slate-400 mt-1">
+            <p className="text-sm text-tinta font-semibold">Nenhuma avaliação registrada.</p>
+            <p className="text-xs text-tinta-2 mt-1">
               O subitem 17.3.1.2.1 exige que a AEP seja registrada, e o item 17.2.1 aplica a NR-17 a
               todas as situações de trabalho. Aqui não cabe declaração de inexistência.
             </p>
           </div>
         </div>
       ) : (
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
+        <div className="bg-superficie border border-borda rounded-2xl overflow-hidden">
           <table className="w-full text-xs">
-            <thead className="bg-slate-950 text-slate-400 uppercase text-[10px] tracking-wider">
+            <thead className="bg-fundo text-tinta-2 uppercase text-[10px] tracking-wider">
               <tr>
                 <th className="py-3 px-4 text-left">Situação de trabalho</th>
                 <th className="py-3 px-4 text-left">Abordagem</th>
@@ -412,7 +412,7 @@ export const ErgonomicAssessmentTab: React.FC<ErgonomicAssessmentTabProps> = ({ 
                 <th className="py-3 px-4 text-center">Ações</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800">
+            <tbody className="divide-y divide-borda">
               {aeps.map((a) => {
                 const falta = pendenciasDe(a);
                 const inadequados = NR17_ASPECTOS.filter(
@@ -428,54 +428,54 @@ export const ErgonomicAssessmentTab: React.FC<ErgonomicAssessmentTabProps> = ({ 
                   )
                 ].filter(Boolean).join('; ');
                 return (
-                  <tr key={a.id} className="hover:bg-slate-950/50 align-top">
+                  <tr key={a.id} className="hover:bg-fundo align-top">
                     <td className="py-3 px-4">
-                      <p className="font-bold text-slate-100">{a.situation_name}</p>
-                      {alcance && <p className="text-[10px] text-slate-500">{alcance}</p>}
+                      <p className="font-bold text-tinta">{a.situation_name}</p>
+                      {alcance && <p className="text-[10px] text-tinta-2">{alcance}</p>}
                       {a.worker_count ? (
-                        <p className="text-[10px] text-slate-500">{a.worker_count} trabalhador(es)</p>
+                        <p className="text-[10px] text-tinta-2">{a.worker_count} trabalhador(es)</p>
                       ) : null}
                     </td>
-                    <td className="py-3 px-4 text-slate-300">
+                    <td className="py-3 px-4 text-tinta">
                       {a.approach
                         ? ABORDAGEM_POR_EXTENSO[a.approach]
-                        : <span className="text-amber-400">Não informada</span>}
+                        : <span className="text-amber-700">Não informada</span>}
                       {a.assessment_date && (
-                        <p className="text-[10px] text-slate-500">{formatDate(a.assessment_date)}</p>
+                        <p className="text-[10px] text-tinta-2">{formatDate(a.assessment_date)}</p>
                       )}
-                      {a.assessor && <p className="text-[10px] text-slate-500">{a.assessor}</p>}
+                      {a.assessor && <p className="text-[10px] text-tinta-2">{a.assessor}</p>}
                     </td>
                     <td className="py-3 px-4">
-                      <p className="text-slate-300">
+                      <p className="text-tinta">
                         {avaliados.length}/{NR17_ASPECTOS.length} avaliados
                       </p>
                       {inadequados.length > 0 && (
-                        <p className="text-[10px] text-rose-300 mt-0.5">
+                        <p className="text-[10px] text-rose-700 mt-0.5">
                           {inadequados.length} inadequado(s): {inadequados.map((x) => x.rotulo).join(', ')}
                         </p>
                       )}
                       {(() => {
                         const psico = resumoPsicossocial(a);
                         return avaliacaoIniciada(a) ? (
-                          <p className="text-[10px] text-slate-400 mt-0.5">
+                          <p className="text-[10px] text-tinta-2 mt-0.5">
                             Psicossociais: {psico.avaliados}/{psico.total} avaliados
                             {psico.presentes.length > 0 && (
-                              <span className="text-rose-300"> · {psico.presentes.length} presente(s)</span>
+                              <span className="text-rose-700"> · {psico.presentes.length} presente(s)</span>
                             )}
                           </p>
                         ) : (
-                          <p className="text-[10px] text-amber-400 mt-0.5">Psicossociais: não avaliados</p>
+                          <p className="text-[10px] text-amber-700 mt-0.5">Psicossociais: não avaliados</p>
                         );
                       })()}
                     </td>
                     <td className="py-3 px-4">
                       {falta.length === 0 ? (
-                        <span className="text-emerald-400 font-semibold flex items-center gap-1">
+                        <span className="text-marca-escura font-semibold flex items-center gap-1">
                           <CheckCircle2 className="w-3.5 h-3.5" />
                           Completa
                         </span>
                       ) : (
-                        <span className="text-amber-400">{falta.join('; ')}</span>
+                        <span className="text-amber-700">{falta.join('; ')}</span>
                       )}
                     </td>
                     <td className="py-3 px-4">
@@ -483,7 +483,7 @@ export const ErgonomicAssessmentTab: React.FC<ErgonomicAssessmentTabProps> = ({ 
                         <button
                           type="button"
                           onClick={() => abrirModal(a)}
-                          className="p-1.5 text-slate-400 hover:text-teal-400 hover:bg-slate-800 rounded-lg transition-colors"
+                          className="p-1.5 text-tinta-2 hover:text-teal-700 hover:bg-superficie-2 rounded-lg transition-colors"
                           title="Editar avaliação"
                         >
                           <Edit3 className="w-3.5 h-3.5" />
@@ -491,12 +491,12 @@ export const ErgonomicAssessmentTab: React.FC<ErgonomicAssessmentTabProps> = ({ 
                         <button
                           type="button"
                           onClick={() => setPsicossocialDe(a)}
-                          className="p-1.5 text-slate-400 hover:text-teal-400 hover:bg-slate-800 rounded-lg transition-colors relative"
+                          className="p-1.5 text-tinta-2 hover:text-teal-700 hover:bg-superficie-2 rounded-lg transition-colors relative"
                           title="Fatores psicossociais"
                         >
                           <Brain className="w-3.5 h-3.5" />
                           {resumoPsicossocial(a).presentes.length > 0 && (
-                            <span className="absolute -top-0.5 -right-0.5 text-[9px] font-bold bg-rose-500 text-white rounded-full px-1 leading-tight">
+                            <span className="absolute -top-0.5 -right-0.5 text-[9px] font-bold bg-rose-700 text-white rounded-full px-1 leading-tight">
                               {resumoPsicossocial(a).presentes.length}
                             </span>
                           )}
@@ -504,12 +504,12 @@ export const ErgonomicAssessmentTab: React.FC<ErgonomicAssessmentTabProps> = ({ 
                         <button
                           type="button"
                           onClick={() => setFotosDe(a)}
-                          className="p-1.5 text-slate-400 hover:text-teal-400 hover:bg-slate-800 rounded-lg transition-colors relative"
+                          className="p-1.5 text-tinta-2 hover:text-teal-700 hover:bg-superficie-2 rounded-lg transition-colors relative"
                           title="Fotografias"
                         >
                           <Camera className="w-3.5 h-3.5" />
                           {(a.photo_evidence || []).some((e) => e.situacao === 'ATIVA') && (
-                            <span className="absolute -top-0.5 -right-0.5 text-[9px] font-bold bg-teal-500 text-slate-950 rounded-full px-1 leading-tight">
+                            <span className="bg-marca-escura text-white absolute -top-0.5 -right-0.5 text-[9px] font-bold rounded-full px-1 leading-tight">
                               {(a.photo_evidence || []).filter((e) => e.situacao === 'ATIVA').length}
                             </span>
                           )}
@@ -524,7 +524,7 @@ export const ErgonomicAssessmentTab: React.FC<ErgonomicAssessmentTabProps> = ({ 
                               if (r?.message) alert(r.message);
                             }
                           }}
-                          className="p-1.5 text-slate-400 hover:text-rose-400 hover:bg-slate-800 rounded-lg transition-colors"
+                          className="p-1.5 text-tinta-2 hover:text-rose-700 hover:bg-superficie-2 rounded-lg transition-colors"
                           title="Remover avaliação"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
@@ -540,11 +540,11 @@ export const ErgonomicAssessmentTab: React.FC<ErgonomicAssessmentTabProps> = ({ 
       )}
 
       {/* Parametros do 17.8, para consulta ao avaliar */}
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5">
-        <h4 className="text-sm font-bold text-slate-100">
-          Parâmetros de conforto <span className="text-slate-500 font-normal">(item 17.8)</span>
+      <div className="bg-superficie border border-borda rounded-2xl p-5">
+        <h4 className="text-sm font-bold text-tinta">
+          Parâmetros de conforto <span className="text-tinta-2 font-normal">(item 17.8)</span>
         </h4>
-        <p className="text-xs text-slate-400 mt-1">
+        <p className="text-xs text-tinta-2 mt-1">
           Na redação vigente. Os valores da redação anterior ainda circulam e são outros: 20 a 23 °C,
           umidade mínima de 40% e iluminamento pela ABNT NBR 5413. Nenhum dos três está no texto
           atual — a umidade deixou de ter valor numérico.
@@ -552,9 +552,9 @@ export const ErgonomicAssessmentTab: React.FC<ErgonomicAssessmentTabProps> = ({ 
         <div className="mt-3 space-y-2">
           {PARAMETROS_DE_CONFORTO.map((c) => (
             <div key={c.item} className="text-xs">
-              <span className="font-bold text-slate-200">{c.item}</span>
-              <span className="text-slate-500"> · {c.fonte}</span>
-              <p className="text-slate-400">{c.parametro}</p>
+              <span className="font-bold text-tinta">{c.item}</span>
+              <span className="text-tinta-2"> · {c.fonte}</span>
+              <p className="text-tinta-2">{c.parametro}</p>
             </div>
           ))}
         </div>
@@ -569,17 +569,17 @@ export const ErgonomicAssessmentTab: React.FC<ErgonomicAssessmentTabProps> = ({ 
       )}
 
       {isModalOpen && (
-        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-[56rem] w-full p-6 space-y-4 shadow-2xl animate-in fade-in zoom-in-95 duration-150 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <h3 className="text-base font-bold text-slate-100 flex items-center gap-2">
-                <Activity className="w-5 h-5 text-teal-400" />
+        <div className="fixed inset-0 bg-fundo backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-superficie border border-borda rounded-2xl max-w-[56rem] w-full p-6 space-y-4 shadow-sm animate-in fade-in zoom-in-95 duration-150 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-borda pb-3">
+              <h3 className="text-base font-bold text-tinta flex items-center gap-2">
+                <Activity className="w-5 h-5 text-teal-700" />
                 {editando ? 'Editar Avaliação Ergonômica' : 'Nova Avaliação Ergonômica Preliminar'}
               </h3>
               <button
                 type="button"
                 onClick={() => setIsModalOpen(false)}
-                className="text-slate-400 hover:text-slate-200 text-sm font-bold"
+                className="text-tinta-2 hover:text-tinta text-sm font-bold"
               >
                 Fechar
               </button>
@@ -588,7 +588,7 @@ export const ErgonomicAssessmentTab: React.FC<ErgonomicAssessmentTabProps> = ({ 
             <form onSubmit={salvar} className="space-y-4 text-xs">
               <div className="grid grid-cols-[1fr_auto] gap-3">
                 <div>
-                  <label className="block text-slate-400 font-semibold mb-1">
+                  <label className="block text-tinta-2 font-semibold mb-1">
                     Situação de trabalho avaliada
                   </label>
                   <input
@@ -597,27 +597,27 @@ export const ErgonomicAssessmentTab: React.FC<ErgonomicAssessmentTabProps> = ({ 
                     placeholder="Ex.: Recepção — atendimento ao público em posto informatizado"
                     value={form.situation_name}
                     onChange={(e) => setForm({ ...form, situation_name: e.target.value })}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                    className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta"
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-400 font-semibold mb-1">Trabalhadores</label>
+                  <label className="block text-tinta-2 font-semibold mb-1">Trabalhadores</label>
                   <input
                     type="text"
                     placeholder="4"
                     value={form.worker_count}
                     onChange={(e) => setForm({ ...form, worker_count: e.target.value })}
-                    className="w-[6rem] bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                    className="w-[6rem] bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta"
                   />
                 </div>
               </div>
 
               {/* Alcance */}
-              <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 space-y-3">
-                <label className="block text-slate-300 font-bold">A que GHE e cargos corresponde</label>
+              <div className="p-3 bg-fundo rounded-xl border border-borda space-y-3">
+                <label className="block text-tinta font-bold">A que GHE e cargos corresponde</label>
                 {ghesDoCliente.length > 0 && (
                   <div>
-                    <p className="text-slate-400 font-semibold mb-1">GHE</p>
+                    <p className="text-tinta-2 font-semibold mb-1">GHE</p>
                     <div className="flex flex-wrap gap-1.5">
                       {ghesDoCliente.map((g: any) => (
                         <button
@@ -626,8 +626,8 @@ export const ErgonomicAssessmentTab: React.FC<ErgonomicAssessmentTabProps> = ({ 
                           onClick={() => alternarLista('ghe_ids', g.id)}
                           className={`px-2 py-1 rounded-lg border text-[11px] font-semibold transition-colors ${
                             form.ghe_ids.includes(g.id)
-                              ? 'bg-teal-500 text-slate-950 border-teal-400'
-                              : 'bg-slate-900 text-slate-300 border-slate-700 hover:bg-slate-800'
+                              ? 'bg-marca-escura text-white border-teal-400'
+                              : 'bg-superficie text-tinta border-borda hover:bg-superficie-2'
                           }`}
                         >
                           {g.code || g.name}
@@ -638,7 +638,7 @@ export const ErgonomicAssessmentTab: React.FC<ErgonomicAssessmentTabProps> = ({ 
                 )}
                 {cargosDoCliente.length > 0 && (
                   <div>
-                    <p className="text-slate-400 font-semibold mb-1">Cargos</p>
+                    <p className="text-tinta-2 font-semibold mb-1">Cargos</p>
                     <div className="flex flex-wrap gap-1.5">
                       {cargosDoCliente.map((j) => (
                         <button
@@ -647,8 +647,8 @@ export const ErgonomicAssessmentTab: React.FC<ErgonomicAssessmentTabProps> = ({ 
                           onClick={() => alternarLista('job_ids', j.id)}
                           className={`px-2 py-1 rounded-lg border text-[11px] font-semibold transition-colors ${
                             form.job_ids.includes(j.id)
-                              ? 'bg-teal-500 text-slate-950 border-teal-400'
-                              : 'bg-slate-900 text-slate-300 border-slate-700 hover:bg-slate-800'
+                              ? 'bg-marca-escura text-white border-teal-400'
+                              : 'bg-superficie text-tinta border-borda hover:bg-superficie-2'
                           }`}
                         >
                           {j.name}
@@ -660,12 +660,12 @@ export const ErgonomicAssessmentTab: React.FC<ErgonomicAssessmentTabProps> = ({ 
               </div>
 
               {/* Abordagem e autoria */}
-              <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 space-y-3">
+              <div className="p-3 bg-fundo rounded-xl border border-borda space-y-3">
                 <div>
-                  <label className="block text-slate-300 font-bold">
-                    Abordagem empregada <span className="text-slate-500 font-normal">(subitem 17.3.1.1)</span>
+                  <label className="block text-tinta font-bold">
+                    Abordagem empregada <span className="text-tinta-2 font-normal">(subitem 17.3.1.1)</span>
                   </label>
-                  <p className="text-[10px] text-slate-500 mt-0.5">
+                  <p className="text-[10px] text-tinta-2 mt-0.5">
                     A norma admite as quatro, conforme o risco e os requisitos legais. Não há uma
                     correta: há a que você usou, e ela vai para o documento.
                   </p>
@@ -678,8 +678,8 @@ export const ErgonomicAssessmentTab: React.FC<ErgonomicAssessmentTabProps> = ({ 
                       onClick={() => setForm({ ...form, approach: k })}
                       className={`px-3 py-1.5 rounded-lg font-semibold border transition-colors ${
                         form.approach === k
-                          ? 'bg-teal-500 text-slate-950 border-teal-400'
-                          : 'bg-slate-900 text-slate-300 border-slate-700 hover:bg-slate-800'
+                          ? 'bg-marca-escura text-white border-teal-400'
+                          : 'bg-superficie text-tinta border-borda hover:bg-superficie-2'
                       }`}
                     >
                       {ABORDAGEM_POR_EXTENSO[k]}
@@ -687,7 +687,7 @@ export const ErgonomicAssessmentTab: React.FC<ErgonomicAssessmentTabProps> = ({ 
                   ))}
                 </div>
                 <div>
-                  <label className="block text-slate-400 font-semibold mb-1">
+                  <label className="block text-tinta-2 font-semibold mb-1">
                     Métodos, técnicas e ferramentas empregados
                   </label>
                   <textarea
@@ -695,37 +695,37 @@ export const ErgonomicAssessmentTab: React.FC<ErgonomicAssessmentTabProps> = ({ 
                     placeholder="Ex.: observação direta da tarefa em dois turnos, entrevista com os quatro trabalhadores, registro fotográfico das posturas, medição de iluminamento pela NHO 11"
                     value={form.methods}
                     onChange={(e) => setForm({ ...form, methods: e.target.value })}
-                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                    className="w-full bg-superficie border border-borda rounded-lg px-3 py-2 text-tinta"
                   />
                 </div>
                 <div className="grid grid-cols-[auto_1fr] gap-3">
                   <div>
-                    <label className="block text-slate-400 font-semibold mb-1">Data</label>
+                    <label className="block text-tinta-2 font-semibold mb-1">Data</label>
                     <input
                       type="date"
                       value={form.assessment_date}
                       onChange={(e) => setForm({ ...form, assessment_date: e.target.value })}
-                      className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                      className="bg-superficie border border-borda rounded-lg px-3 py-2 text-tinta"
                     />
                   </div>
                   <div>
-                    <label className="block text-slate-400 font-semibold mb-1">Quem avaliou</label>
+                    <label className="block text-tinta-2 font-semibold mb-1">Quem avaliou</label>
                     <input
                       type="text"
                       placeholder="Nome e registro profissional"
                       value={form.assessor}
                       onChange={(e) => setForm({ ...form, assessor: e.target.value })}
-                      className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                      className="w-full bg-superficie border border-borda rounded-lg px-3 py-2 text-tinta"
                     />
                   </div>
                 </div>
               </div>
 
               {/* Aspectos: um por capitulo da NR-17 */}
-              <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 space-y-3">
+              <div className="p-3 bg-fundo rounded-xl border border-borda space-y-3">
                 <div>
-                  <label className="block text-slate-300 font-bold">Conclusão por aspecto</label>
-                  <p className="text-[10px] text-slate-500 mt-0.5">
+                  <label className="block text-tinta font-bold">Conclusão por aspecto</label>
+                  <p className="text-[10px] text-tinta-2 mt-0.5">
                     Um por capítulo da NR-17. Aspecto sem conclusão é aspecto não avaliado, e sai como
                     pendência — ausência não é &quot;adequado&quot;.
                   </p>
@@ -733,14 +733,14 @@ export const ErgonomicAssessmentTab: React.FC<ErgonomicAssessmentTabProps> = ({ 
                 {NR17_ASPECTOS.map((asp) => {
                   const atual = form.aspects[asp.chave] || {};
                   return (
-                    <div key={asp.chave} className="p-2.5 bg-slate-900 rounded-lg border border-slate-800">
+                    <div key={asp.chave} className="p-2.5 bg-superficie rounded-lg border border-borda">
                       <div className="flex items-start justify-between gap-3 flex-wrap">
                         <div className="flex-1 min-w-[16rem]">
-                          <p className="font-bold text-slate-200">
+                          <p className="font-bold text-tinta">
                             {asp.rotulo}
-                            <span className="text-slate-500 font-normal"> · {asp.fonte}</span>
+                            <span className="text-tinta-2 font-normal"> · {asp.fonte}</span>
                           </p>
-                          <p className="text-[10px] text-slate-500">{asp.ajuda}</p>
+                          <p className="text-[10px] text-tinta-2">{asp.ajuda}</p>
                         </div>
                         <div className="flex gap-1.5">
                           {(Object.keys(CONCLUSAO_POR_EXTENSO) as ConclusaoDoAspecto[]).map((k) => (
@@ -751,9 +751,9 @@ export const ErgonomicAssessmentTab: React.FC<ErgonomicAssessmentTabProps> = ({ 
                               className={`px-2 py-1 rounded-lg border text-[10px] font-semibold transition-colors ${
                                 atual.conclusao === k
                                   ? k === 'INADEQUADO'
-                                    ? 'bg-rose-500 text-white border-rose-400'
-                                    : 'bg-teal-500 text-slate-950 border-teal-400'
-                                  : 'bg-slate-950 text-slate-400 border-slate-700 hover:bg-slate-800'
+                                    ? 'bg-rose-700 text-white border-rose-400'
+                                    : 'bg-marca-escura text-white border-teal-400'
+                                  : 'bg-fundo text-tinta-2 border-borda hover:bg-superficie-2'
                               }`}
                             >
                               {k === 'ADEQUADO' ? 'Adequado' : k === 'INADEQUADO' ? 'Inadequado' : 'N/A'}
@@ -771,7 +771,7 @@ export const ErgonomicAssessmentTab: React.FC<ErgonomicAssessmentTabProps> = ({ 
                           }
                           value={atual.observacao || ''}
                           onChange={(e) => definirAspecto(asp.chave, 'observacao', e.target.value)}
-                          className="w-full mt-2 bg-slate-950 border border-slate-700 rounded-lg px-3 py-1.5 text-slate-100"
+                          className="w-full mt-2 bg-fundo border border-borda rounded-lg px-3 py-1.5 text-tinta"
                         />
                       )}
                     </div>
@@ -780,13 +780,13 @@ export const ErgonomicAssessmentTab: React.FC<ErgonomicAssessmentTabProps> = ({ 
               </div>
 
               {/* Medidas de prevencao */}
-              <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 space-y-2">
+              <div className="p-3 bg-fundo rounded-xl border border-borda space-y-2">
                 <div>
-                  <label className="block text-slate-300 font-bold">
-                    Medidas de prevenção <span className="text-slate-500 font-normal">(subitem 17.4.3.1)</span>
+                  <label className="block text-tinta font-bold">
+                    Medidas de prevenção <span className="text-tinta-2 font-normal">(subitem 17.4.3.1)</span>
                   </label>
-                  <p className="text-[10px] text-slate-500 mt-0.5">
-                    Devem incluir <strong className="text-slate-400">duas ou mais</strong> das
+                  <p className="text-[10px] text-tinta-2 mt-0.5">
+                    Devem incluir <strong className="text-tinta-2">duas ou mais</strong> das
                     alternativas. Quando não for possível adotar as das alíneas &quot;c&quot; e
                     &quot;d&quot;, as das alíneas &quot;a&quot; e &quot;b&quot; tornam-se
                     obrigatórias (subitem 17.4.3.1.1).
@@ -800,14 +800,14 @@ export const ErgonomicAssessmentTab: React.FC<ErgonomicAssessmentTabProps> = ({ 
                       onChange={() => alternarLista('prevention_measures', alt.alinea)}
                       className="mt-0.5 accent-teal-500"
                     />
-                    <span className="text-slate-300">
-                      <strong className="text-slate-200">{alt.alinea})</strong> {alt.texto}
+                    <span className="text-tinta">
+                      <strong className="text-tinta">{alt.alinea})</strong> {alt.texto}
                     </span>
                   </label>
                 ))}
                 {inadequadosNoForm.length > 0
                   && form.prevention_measures.length < NR17_MINIMO_DE_ALTERNATIVAS && (
-                  <p className="text-[10px] text-amber-400 flex items-start gap-1.5">
+                  <p className="text-[10px] text-amber-700 flex items-start gap-1.5">
                     <Info className="w-3 h-3 mt-0.5 shrink-0" />
                     Há {inadequadosNoForm.length} aspecto(s) inadequado(s) e{' '}
                     {form.prevention_measures.length} medida(s): o subitem 17.4.3.1 exige duas ou
@@ -818,14 +818,14 @@ export const ErgonomicAssessmentTab: React.FC<ErgonomicAssessmentTabProps> = ({ 
                   && !form.prevention_measures.includes('c')
                   && !form.prevention_measures.includes('d')
                   && !(form.prevention_measures.includes('a') && form.prevention_measures.includes('b')) && (
-                  <p className="text-[10px] text-amber-400 flex items-start gap-1.5">
+                  <p className="text-[10px] text-amber-700 flex items-start gap-1.5">
                     <Info className="w-3 h-3 mt-0.5 shrink-0" />
                     Sem as alíneas &quot;c&quot; ou &quot;d&quot;, as alíneas &quot;a&quot; e
                     &quot;b&quot; passam a ser obrigatórias (subitem 17.4.3.1.1).
                   </p>
                 )}
                 <div>
-                  <label className="block text-slate-400 font-semibold mb-1">
+                  <label className="block text-tinta-2 font-semibold mb-1">
                     Como as medidas foram implementadas
                   </label>
                   <textarea
@@ -833,19 +833,19 @@ export const ErgonomicAssessmentTab: React.FC<ErgonomicAssessmentTabProps> = ({ 
                     placeholder="Ex.: pausa de 10 min a cada 50 min fora do posto; revezamento entre recepção e arquivo a cada 2 h; cadeira com regulagem de altura e apoio lombar"
                     value={form.prevention_description}
                     onChange={(e) => setForm({ ...form, prevention_description: e.target.value })}
-                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                    className="w-full bg-superficie border border-borda rounded-lg px-3 py-2 text-tinta"
                   />
                 </div>
               </div>
 
               {/* Oitiva dos empregados */}
-              <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 space-y-2">
+              <div className="p-3 bg-fundo rounded-xl border border-borda space-y-2">
                 <div>
-                  <label className="block text-slate-300 font-bold flex items-center gap-1.5">
-                    <Users className="w-3.5 h-3.5 text-teal-400" />
-                    Os empregados foram ouvidos? <span className="text-slate-500 font-normal">(item 17.3.8)</span>
+                  <label className="block text-tinta font-bold flex items-center gap-1.5">
+                    <Users className="w-3.5 h-3.5 text-teal-700" />
+                    Os empregados foram ouvidos? <span className="text-tinta-2 font-normal">(item 17.3.8)</span>
                   </label>
-                  <p className="text-[10px] text-slate-500 mt-0.5">
+                  <p className="text-[10px] text-tinta-2 mt-0.5">
                     A organização deve garantir que os empregados sejam ouvidos durante o processo da
                     AEP e na AET. Não é opcional, e em branco sai como pendência.
                   </p>
@@ -859,9 +859,9 @@ export const ErgonomicAssessmentTab: React.FC<ErgonomicAssessmentTabProps> = ({ 
                       className={`px-3 py-1.5 rounded-lg font-semibold border transition-colors ${
                         form.workers_heard === v
                           ? v === 'SIM'
-                            ? 'bg-teal-500 text-slate-950 border-teal-400'
-                            : 'bg-rose-500 text-white border-rose-400'
-                          : 'bg-slate-900 text-slate-300 border-slate-700 hover:bg-slate-800'
+                            ? 'bg-marca-escura text-white border-teal-400'
+                            : 'bg-rose-700 text-white border-rose-400'
+                          : 'bg-superficie text-tinta border-borda hover:bg-superficie-2'
                       }`}
                     >
                       {v === 'SIM' ? 'Sim' : 'Não'}
@@ -875,7 +875,7 @@ export const ErgonomicAssessmentTab: React.FC<ErgonomicAssessmentTabProps> = ({ 
                       title="Quando foram ouvidos"
                       value={form.workers_heard_date}
                       onChange={(e) => setForm({ ...form, workers_heard_date: e.target.value })}
-                      className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                      className="bg-superficie border border-borda rounded-lg px-3 py-2 text-tinta"
                     />
                     <input
                       type="text"
@@ -884,16 +884,16 @@ export const ErgonomicAssessmentTab: React.FC<ErgonomicAssessmentTabProps> = ({ 
                       title="Quantos empregados foram ouvidos (número, nunca nomes)"
                       value={form.workers_heard_count}
                       onChange={(e) => setForm({ ...form, workers_heard_count: e.target.value })}
-                      className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                      className="bg-superficie border border-borda rounded-lg px-3 py-2 text-tinta"
                     />
                     <input
                       type="text"
                       placeholder="Como: entrevista, roda de conversa, oficina, questionário anônimo, CIPA"
                       value={form.workers_heard_note}
                       onChange={(e) => setForm({ ...form, workers_heard_note: e.target.value })}
-                      className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                      className="bg-superficie border border-borda rounded-lg px-3 py-2 text-tinta"
                     />
-                    <p className="md:col-span-3 text-[10px] text-slate-500">
+                    <p className="md:col-span-3 text-[10px] text-tinta-2">
                       Registre número, nunca nomes. Na avaliação psicossocial, data, número e forma são exigidos:
                       sem a voz do trabalhador ela não é válida (Manual do GRO, item 17.2).
                     </p>
@@ -902,14 +902,14 @@ export const ErgonomicAssessmentTab: React.FC<ErgonomicAssessmentTabProps> = ({ 
               </div>
 
               {/* Gatilhos da AET */}
-              <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 space-y-2">
+              <div className="p-3 bg-fundo rounded-xl border border-borda space-y-2">
                 <div>
-                  <label className="block text-slate-300 font-bold">
+                  <label className="block text-tinta font-bold">
                     Gatilhos da AET observados nesta situação{' '}
-                    <span className="text-slate-500 font-normal">(item 17.3.2)</span>
+                    <span className="text-tinta-2 font-normal">(item 17.3.2)</span>
                   </label>
                   {dispensaAET === true && (
-                    <p className="text-[10px] text-slate-500 mt-0.5">
+                    <p className="text-[10px] text-tinta-2 mt-0.5">
                       Nesta organização, dispensada pelo item 17.3.4, apenas as alíneas &quot;c&quot; e
                       &quot;d&quot; obrigam à AET (subitem 17.3.4.1).
                     </p>
@@ -923,31 +923,31 @@ export const ErgonomicAssessmentTab: React.FC<ErgonomicAssessmentTabProps> = ({ 
                       onChange={() => alternarLista('aet_triggers', g.alinea)}
                       className="mt-0.5 accent-teal-500"
                     />
-                    <span className="text-slate-300">
-                      <strong className="text-slate-200">{g.alinea})</strong> {g.texto}
+                    <span className="text-tinta">
+                      <strong className="text-tinta">{g.alinea})</strong> {g.texto}
                     </span>
                   </label>
                 ))}
                 {form.aet_triggers.length > 0 && (
                   <div className="grid grid-cols-[auto_1fr] gap-3 pt-1">
                     <div>
-                      <label className="block text-slate-400 font-semibold mb-1">Relatório da AET</label>
+                      <label className="block text-tinta-2 font-semibold mb-1">Relatório da AET</label>
                       <input
                         type="date"
                         value={form.aet_report_date}
                         onChange={(e) => setForm({ ...form, aet_report_date: e.target.value })}
-                        className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                        className="bg-superficie border border-borda rounded-lg px-3 py-2 text-tinta"
                       />
-                      <p className="text-[10px] text-slate-500 mt-1">Guarda de 20 anos (17.3.7).</p>
+                      <p className="text-[10px] text-tinta-2 mt-1">Guarda de 20 anos (17.3.7).</p>
                     </div>
                     <div>
-                      <label className="block text-slate-400 font-semibold mb-1">Identificação do relatório</label>
+                      <label className="block text-tinta-2 font-semibold mb-1">Identificação do relatório</label>
                       <input
                         type="text"
                         placeholder="Ex.: AET-2026-03, elaborada por..."
                         value={form.aet_report_reference}
                         onChange={(e) => setForm({ ...form, aet_report_reference: e.target.value })}
-                        className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                        className="w-full bg-superficie border border-borda rounded-lg px-3 py-2 text-tinta"
                       />
                     </div>
                   </div>
@@ -955,27 +955,27 @@ export const ErgonomicAssessmentTab: React.FC<ErgonomicAssessmentTabProps> = ({ 
               </div>
 
               <div>
-                <label className="block text-slate-400 font-semibold mb-1">Observações</label>
+                <label className="block text-tinta-2 font-semibold mb-1">Observações</label>
                 <input
                   type="text"
                   placeholder="Revisão prevista, restrições observadas, encaminhamentos"
                   value={form.notes}
                   onChange={(e) => setForm({ ...form, notes: e.target.value })}
-                  className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100"
+                  className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta"
                 />
               </div>
 
-              <div className="flex justify-end gap-2 pt-3 border-t border-slate-800">
+              <div className="flex justify-end gap-2 pt-3 border-t border-borda">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold rounded-lg"
+                  className="px-4 py-2 bg-superficie-2 hover:bg-superficie-3 text-tinta font-semibold rounded-lg"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold rounded-lg shadow-md flex items-center gap-1.5"
+                  className="bg-marca-escura text-white px-5 py-2 font-bold rounded-lg shadow-sm flex items-center gap-1.5 hover:opacity-90"
                 >
                   <Check className="w-4 h-4" />
                   {editando ? 'Atualizar Avaliação' : 'Registrar Avaliação'}

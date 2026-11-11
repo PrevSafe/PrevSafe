@@ -92,26 +92,25 @@ export const SSTUnifiedEngineeringView: React.FC<SSTUnifiedEngineeringViewProps>
   return (
     <div className="space-y-6" id="sst-unified-workspace">
       {/* Top Header Card */}
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 relative overflow-hidden shadow-2xl">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-teal-500/10 via-emerald-500/5 to-transparent rounded-full blur-3xl pointer-events-none" />
+      <div className="bg-superficie border border-borda rounded-2xl p-6 relative overflow-hidden shadow-sm">
 
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
           <div className="space-y-2">
             <div className="flex items-center gap-2">
-              <span className="px-3 py-1 bg-teal-500/20 text-teal-300 font-bold text-xs rounded-full border border-teal-500/30 flex items-center gap-1.5">
+              <span className="px-3 py-1 bg-teal-500/20 text-teal-800 font-bold text-xs rounded-full border border-teal-500/30 flex items-center gap-1.5">
                 <ShieldCheck className="w-3.5 h-3.5" />
                 Módulo Integrado SST & eSocial (PGR • PCMSO • LTCAT • S-2210/2220/2240)
               </span>
-              <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-300 text-[11px] font-mono font-semibold rounded">
+              <span className="px-2 py-0.5 bg-marca-suave text-marca-escura text-[11px] font-mono font-semibold rounded">
                 MOS e leiaute S-1.3
               </span>
             </div>
 
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-100 tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-tinta tracking-tight">
               Engenharia SST & Eventos eSocial
             </h1>
 
-            <p className="text-xs sm:text-sm text-slate-400 max-w-2xl">
+            <p className="text-xs sm:text-sm text-tinta-2 max-w-2xl">
               Central unificada para criação da hierarquia (Unidade/Setor/Cargo), inventário de riscos ambientais (PGR/LTCAT), aplicação de exames (PCMSO/ASO), cadastro de trabalhadores e emissão de CATs/Afastamentos com geração automática de XMLs do eSocial.
             </p>
           </div>
@@ -119,14 +118,14 @@ export const SSTUnifiedEngineeringView: React.FC<SSTUnifiedEngineeringViewProps>
           {/* Client context switch & quick links */}
           <div className="flex flex-col sm:flex-row lg:flex-col items-start lg:items-end gap-3">
             <div className="w-full sm:w-auto">
-              <label className="block text-[11px] font-semibold text-slate-400 mb-1">
+              <label className="block text-[11px] font-semibold text-tinta-2 mb-1">
                 Empresa / Cliente Selecionado:
               </label>
               <select
                 id="sst-client-selector"
                 value={selectedClientId}
                 onChange={(e) => setSelectedClientId(e.target.value)}
-                className="w-full sm:w-64 bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-xs font-semibold text-teal-300 focus:outline-none focus:border-teal-500 shadow-inner"
+                className="w-full sm:w-64 bg-fundo border border-borda rounded-xl px-3.5 py-2 text-xs font-semibold text-teal-700 focus:outline-none focus:border-teal-500 shadow-inner"
               >
                 {clients.map(c => (
                   <option key={c.id} value={c.id}>
@@ -141,7 +140,7 @@ export const SSTUnifiedEngineeringView: React.FC<SSTUnifiedEngineeringViewProps>
                 type="button"
                 id="nav-to-esocial-robot-btn"
                 onClick={() => onNavigate('esocial')}
-                className="text-xs text-teal-400 hover:text-teal-300 font-semibold flex items-center gap-1 transition-colors"
+                className="text-xs text-teal-700 hover:text-teal-700 font-semibold flex items-center gap-1 transition-colors"
               >
                 Ir para o Painel de Transmissão & Robô eSocial
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -151,73 +150,73 @@ export const SSTUnifiedEngineeringView: React.FC<SSTUnifiedEngineeringViewProps>
         </div>
 
         {/* Quick KPI Stats Counter Strip */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 mt-6 pt-5 border-t border-slate-800/80">
-          <div className="bg-slate-950/70 p-3 rounded-xl border border-slate-800/80">
-            <div className="flex items-center justify-between text-slate-500 text-[10px] uppercase font-bold">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 mt-6 pt-5 border-t border-borda">
+          <div className="bg-fundo p-3 rounded-xl border border-borda">
+            <div className="flex items-center justify-between text-tinta-2 text-[10px] uppercase font-bold">
               <span>Hierarquia</span>
-              <Building2 className="w-3.5 h-3.5 text-teal-400" />
+              <Building2 className="w-3.5 h-3.5 text-teal-700" />
             </div>
-            <div className="text-lg font-black text-slate-100 mt-1">{clientSectors.length} setores</div>
-            <div className="text-[10px] text-slate-400">{clientJobs.length} cargos CBO</div>
+            <div className="text-lg font-black text-tinta mt-1">{clientSectors.length} setores</div>
+            <div className="text-[10px] text-tinta-2">{clientJobs.length} cargos CBO</div>
           </div>
 
-          <div className="bg-slate-950/70 p-3 rounded-xl border border-slate-800/80">
-            <div className="flex items-center justify-between text-slate-500 text-[10px] uppercase font-bold">
+          <div className="bg-fundo p-3 rounded-xl border border-borda">
+            <div className="flex items-center justify-between text-tinta-2 text-[10px] uppercase font-bold">
               <span>GHEs & Riscos</span>
-              <ShieldAlert className="w-3.5 h-3.5 text-amber-400" />
+              <ShieldAlert className="w-3.5 h-3.5 text-amber-700" />
             </div>
-            <div className="text-lg font-black text-slate-100 mt-1">{clientGhes.length} GHEs</div>
-            <div className="text-[10px] text-slate-400">{clientRisks.length} riscos NR-01/NR-15</div>
+            <div className="text-lg font-black text-tinta mt-1">{clientGhes.length} GHEs</div>
+            <div className="text-[10px] text-tinta-2">{clientRisks.length} riscos NR-01/NR-15</div>
           </div>
 
-          <div className="bg-slate-950/70 p-3 rounded-xl border border-slate-800/80">
-            <div className="flex items-center justify-between text-slate-500 text-[10px] uppercase font-bold">
+          <div className="bg-fundo p-3 rounded-xl border border-borda">
+            <div className="flex items-center justify-between text-tinta-2 text-[10px] uppercase font-bold">
               <span>PCMSO & Exames</span>
-              <Stethoscope className="w-3.5 h-3.5 text-blue-400" />
+              <Stethoscope className="w-3.5 h-3.5 text-teal-700" />
             </div>
-            <div className="text-lg font-black text-slate-100 mt-1">{clientExamProtocols.length} exames</div>
-            <div className="text-[10px] text-slate-400">Tabela 27 eSocial</div>
+            <div className="text-lg font-black text-tinta mt-1">{clientExamProtocols.length} exames</div>
+            <div className="text-[10px] text-tinta-2">Tabela 27 eSocial</div>
           </div>
 
-          <div className="bg-slate-950/70 p-3 rounded-xl border border-slate-800/80">
-            <div className="flex items-center justify-between text-slate-500 text-[10px] uppercase font-bold">
+          <div className="bg-fundo p-3 rounded-xl border border-borda">
+            <div className="flex items-center justify-between text-tinta-2 text-[10px] uppercase font-bold">
               <span>Trabalhadores</span>
-              <Users className="w-3.5 h-3.5 text-teal-400" />
+              <Users className="w-3.5 h-3.5 text-teal-700" />
             </div>
-            <div className="text-lg font-black text-slate-100 mt-1">{clientEmployees.length} ativos</div>
-            <div className="text-[10px] text-slate-400">Matrícula & Ficha EPI</div>
+            <div className="text-lg font-black text-tinta mt-1">{clientEmployees.length} ativos</div>
+            <div className="text-[10px] text-tinta-2">Matrícula & Ficha EPI</div>
           </div>
 
-          <div className="bg-slate-950/70 p-3 rounded-xl border border-slate-800/80">
-            <div className="flex items-center justify-between text-slate-500 text-[10px] uppercase font-bold">
+          <div className="bg-fundo p-3 rounded-xl border border-borda">
+            <div className="flex items-center justify-between text-tinta-2 text-[10px] uppercase font-bold">
               <span>OS & Treinamentos</span>
-              <Briefcase className="w-3.5 h-3.5 text-teal-400" />
+              <Briefcase className="w-3.5 h-3.5 text-teal-700" />
             </div>
-            <div className="text-lg font-black text-slate-100 mt-1">{clientWorkOrders.length} OS emitidas</div>
-            <div className="text-[10px] text-slate-400">{clientTrainings.length} treinamentos NR</div>
+            <div className="text-lg font-black text-tinta mt-1">{clientWorkOrders.length} OS emitidas</div>
+            <div className="text-[10px] text-tinta-2">{clientTrainings.length} treinamentos NR</div>
           </div>
 
-          <div className="bg-slate-950/70 p-3 rounded-xl border border-slate-800/80">
-            <div className="flex items-center justify-between text-slate-500 text-[10px] uppercase font-bold">
+          <div className="bg-fundo p-3 rounded-xl border border-borda">
+            <div className="flex items-center justify-between text-tinta-2 text-[10px] uppercase font-bold">
               <span>Eventos eSocial</span>
-              <FileCode2 className="w-3.5 h-3.5 text-emerald-400" />
+              <FileCode2 className="w-3.5 h-3.5 text-marca-escura" />
             </div>
-            <div className="text-lg font-black text-emerald-400 mt-1">{clientEvents.length} XMLs</div>
-            <div className="text-[10px] text-slate-400">S-2210, 2220, 2240</div>
+            <div className="text-lg font-black text-marca-escura mt-1">{clientEvents.length} XMLs</div>
+            <div className="text-[10px] text-tinta-2">S-2210, 2220, 2240</div>
           </div>
         </div>
       </div>
 
       {/* Main Unified Navigation Tabs */}
-      <div className="flex items-center space-x-2 border-b border-slate-800 pb-2 overflow-x-auto">
+      <div className="flex items-center space-x-2 border-b border-borda pb-2 overflow-x-auto">
         <button
           type="button"
           id="main-tab-hierarchy-btn"
           onClick={() => setActiveTab('HIERARCHY')}
           className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 shrink-0 ${
             activeTab === 'HIERARCHY'
-              ? 'bg-teal-500 text-slate-950 shadow-lg shadow-teal-500/20'
-              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
+              ? 'bg-marca-escura text-white shadow-sm'
+              : 'text-tinta-2 hover:text-tinta hover:bg-superficie'
           }`}
         >
           <Building2 className="w-4 h-4" />
@@ -230,8 +229,8 @@ export const SSTUnifiedEngineeringView: React.FC<SSTUnifiedEngineeringViewProps>
           onClick={() => setActiveTab('GHE_RISKS')}
           className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 shrink-0 ${
             activeTab === 'GHE_RISKS'
-              ? 'bg-teal-500 text-slate-950 shadow-lg shadow-teal-500/20'
-              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
+              ? 'bg-marca-escura text-white shadow-sm'
+              : 'text-tinta-2 hover:text-tinta hover:bg-superficie'
           }`}
         >
           <ShieldAlert className="w-4 h-4" />
@@ -247,8 +246,8 @@ export const SSTUnifiedEngineeringView: React.FC<SSTUnifiedEngineeringViewProps>
           onClick={() => setActiveTab('ACTION_PLAN')}
           className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 shrink-0 ${
             activeTab === 'ACTION_PLAN'
-              ? 'bg-teal-500 text-slate-950 shadow-lg shadow-teal-500/20'
-              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
+              ? 'bg-marca-escura text-white shadow-sm'
+              : 'text-tinta-2 hover:text-tinta hover:bg-superficie'
           }`}
         >
           <ClipboardList className="w-4 h-4" />
@@ -261,8 +260,8 @@ export const SSTUnifiedEngineeringView: React.FC<SSTUnifiedEngineeringViewProps>
           onClick={() => setActiveTab('EXAMS_PCMSO')}
           className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 shrink-0 ${
             activeTab === 'EXAMS_PCMSO'
-              ? 'bg-teal-500 text-slate-950 shadow-lg shadow-teal-500/20'
-              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
+              ? 'bg-marca-escura text-white shadow-sm'
+              : 'text-tinta-2 hover:text-tinta hover:bg-superficie'
           }`}
         >
           <Stethoscope className="w-4 h-4" />
@@ -275,8 +274,8 @@ export const SSTUnifiedEngineeringView: React.FC<SSTUnifiedEngineeringViewProps>
           onClick={() => setActiveTab('EMPLOYEES')}
           className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 shrink-0 ${
             activeTab === 'EMPLOYEES'
-              ? 'bg-teal-500 text-slate-950 shadow-lg shadow-teal-500/20'
-              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
+              ? 'bg-marca-escura text-white shadow-sm'
+              : 'text-tinta-2 hover:text-tinta hover:bg-superficie'
           }`}
         >
           <Users className="w-4 h-4" />
@@ -289,8 +288,8 @@ export const SSTUnifiedEngineeringView: React.FC<SSTUnifiedEngineeringViewProps>
           onClick={() => setActiveTab('WORK_ORDERS_OS')}
           className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 shrink-0 ${
             activeTab === 'WORK_ORDERS_OS'
-              ? 'bg-indigo-500 text-white shadow-lg shadow-indigo-500/20'
-              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
+              ? 'bg-teal-700 text-white shadow-sm'
+              : 'text-tinta-2 hover:text-tinta hover:bg-superficie'
           }`}
         >
           <FileText className="w-4 h-4" />
@@ -303,8 +302,8 @@ export const SSTUnifiedEngineeringView: React.FC<SSTUnifiedEngineeringViewProps>
           onClick={() => setActiveTab('DOCS_XML')}
           className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 shrink-0 ${
             activeTab === 'DOCS_XML'
-              ? 'bg-emerald-500 text-slate-950 shadow-lg shadow-emerald-500/20'
-              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
+              ? 'bg-marca text-slate-950 shadow-sm'
+              : 'text-tinta-2 hover:text-tinta hover:bg-superficie'
           }`}
         >
           <FileCode2 className="w-4 h-4" />
@@ -317,8 +316,8 @@ export const SSTUnifiedEngineeringView: React.FC<SSTUnifiedEngineeringViewProps>
           onClick={() => setActiveTab('INTEGRATION_TRAINING')}
           className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 shrink-0 ${
             activeTab === 'INTEGRATION_TRAINING'
-              ? 'bg-cyan-500 text-slate-950 shadow-lg shadow-cyan-500/20'
-              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
+              ? 'bg-marca-escura text-white shadow-sm'
+              : 'text-tinta-2 hover:text-tinta hover:bg-superficie'
           }`}
         >
           <GraduationCap className="w-4 h-4" />
@@ -331,8 +330,8 @@ export const SSTUnifiedEngineeringView: React.FC<SSTUnifiedEngineeringViewProps>
           onClick={() => setActiveTab('SIGNATURES')}
           className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 shrink-0 ${
             activeTab === 'SIGNATURES'
-              ? 'bg-teal-500 text-slate-950 shadow-lg shadow-teal-500/20'
-              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
+              ? 'bg-marca-escura text-white shadow-sm'
+              : 'text-tinta-2 hover:text-tinta hover:bg-superficie'
           }`}
         >
           <PenTool className="w-4 h-4" />
@@ -345,8 +344,8 @@ export const SSTUnifiedEngineeringView: React.FC<SSTUnifiedEngineeringViewProps>
           onClick={() => setActiveTab('CONTRACTED')}
           className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 shrink-0 ${
             activeTab === 'CONTRACTED'
-              ? 'bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/20'
-              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
+              ? 'bg-marca-escura text-white shadow-sm'
+              : 'text-tinta-2 hover:text-tinta hover:bg-superficie'
           }`}
         >
           <Handshake className="w-4 h-4" />
@@ -359,8 +358,8 @@ export const SSTUnifiedEngineeringView: React.FC<SSTUnifiedEngineeringViewProps>
           onClick={() => setActiveTab('MACHINES')}
           className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 shrink-0 ${
             activeTab === 'MACHINES'
-              ? 'bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/20'
-              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
+              ? 'bg-marca-escura text-white shadow-sm'
+              : 'text-tinta-2 hover:text-tinta hover:bg-superficie'
           }`}
         >
           <Cog className="w-4 h-4" />
@@ -373,8 +372,8 @@ export const SSTUnifiedEngineeringView: React.FC<SSTUnifiedEngineeringViewProps>
           onClick={() => setActiveTab('CHEMICALS')}
           className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 shrink-0 ${
             activeTab === 'CHEMICALS'
-              ? 'bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/20'
-              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
+              ? 'bg-marca-escura text-white shadow-sm'
+              : 'text-tinta-2 hover:text-tinta hover:bg-superficie'
           }`}
         >
           <FlaskConical className="w-4 h-4" />
@@ -387,8 +386,8 @@ export const SSTUnifiedEngineeringView: React.FC<SSTUnifiedEngineeringViewProps>
           onClick={() => setActiveTab('TRAINING_MATRIX')}
           className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 shrink-0 ${
             activeTab === 'TRAINING_MATRIX'
-              ? 'bg-cyan-500 text-slate-950 shadow-lg shadow-cyan-500/20'
-              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
+              ? 'bg-marca-escura text-white shadow-sm'
+              : 'text-tinta-2 hover:text-tinta hover:bg-superficie'
           }`}
         >
           <GraduationCap className="w-4 h-4" />
@@ -401,8 +400,8 @@ export const SSTUnifiedEngineeringView: React.FC<SSTUnifiedEngineeringViewProps>
           onClick={() => setActiveTab('ERGONOMICS')}
           className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 shrink-0 ${
             activeTab === 'ERGONOMICS'
-              ? 'bg-cyan-500 text-slate-950 shadow-lg shadow-cyan-500/20'
-              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
+              ? 'bg-marca-escura text-white shadow-sm'
+              : 'text-tinta-2 hover:text-tinta hover:bg-superficie'
           }`}
         >
           <Activity className="w-4 h-4" />
@@ -415,8 +414,8 @@ export const SSTUnifiedEngineeringView: React.FC<SSTUnifiedEngineeringViewProps>
           onClick={() => setActiveTab('TECHNICAL_RESPONSIBILITY')}
           className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 shrink-0 ${
             activeTab === 'TECHNICAL_RESPONSIBILITY'
-              ? 'bg-teal-500 text-slate-950 shadow-lg shadow-teal-500/20'
-              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
+              ? 'bg-marca-escura text-white shadow-sm'
+              : 'text-tinta-2 hover:text-tinta hover:bg-superficie'
           }`}
         >
           <BadgeCheck className="w-4 h-4" />

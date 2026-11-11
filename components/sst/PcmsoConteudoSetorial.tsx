@@ -37,7 +37,7 @@ interface PcmsoConteudoSetorialProps {
 
 // Os controles levam a classe por extenso: scripts/verificar-tema.mjs le o
 // className literal de cada input, select e textarea.
-const DICA = 'text-[11px] text-slate-500 mt-1';
+const DICA = 'text-[11px] text-tinta-2 mt-1';
 
 export const PcmsoConteudoSetorial: React.FC<PcmsoConteudoSetorialProps> = ({ selectedClientId }) => {
   const {
@@ -141,7 +141,7 @@ export const PcmsoConteudoSetorial: React.FC<PcmsoConteudoSetorialProps> = ({ se
 
   if (comConteudo.length === 0) {
     return (
-      <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 text-xs text-slate-400">
+      <div className="bg-superficie border border-borda rounded-xl p-4 text-xs text-tinta-2">
         O CNAE principal deste cliente não indica NR setorial que acrescente conteúdo ao PCMSO.
       </div>
     );
@@ -154,9 +154,9 @@ export const PcmsoConteudoSetorial: React.FC<PcmsoConteudoSetorialProps> = ({ se
 
   return (
     <div className="space-y-4" id="pcmso-conteudo-setorial">
-      <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-4 text-xs text-slate-300 space-y-1">
-        <p className="font-semibold text-slate-100">Conteúdo que a NR setorial manda constar do PCMSO</p>
-        <p className="text-slate-400">
+      <div className="bg-superficie border border-borda rounded-xl p-4 text-xs text-tinta space-y-1">
+        <p className="font-semibold text-tinta">Conteúdo que a NR setorial manda constar do PCMSO</p>
+        <p className="text-tinta-2">
           O sistema não redige este conteúdo: é ato do médico responsável pelo PCMSO. Registre aqui o que ele
           redigiu, ou identifique o documento anexo ao PCMSO que o contém. O PDF imprime cada item na seção 5.8,
           atribuído ao médico e com a data; o item sem registro completo continua pendência na seção 11.1.
@@ -164,10 +164,10 @@ export const PcmsoConteudoSetorial: React.FC<PcmsoConteudoSetorialProps> = ({ se
       </div>
 
       {comConteudo.map((e) => (
-        <div key={e.nr} className="bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-3">
+        <div key={e.nr} className="bg-superficie border border-borda rounded-xl p-4 space-y-3">
           <div>
-            <h3 className="text-sm font-bold text-slate-100">{e.nr} — {e.titulo}</h3>
-            <p className="text-[11px] text-amber-300 mt-1">{e.motivo}</p>
+            <h3 className="text-sm font-bold text-tinta">{e.nr} — {e.titulo}</h3>
+            <p className="text-[11px] text-amber-700 mt-1">{e.motivo}</p>
           </div>
 
           {e.aRedigir.map((item) => {
@@ -177,29 +177,29 @@ export const PcmsoConteudoSetorial: React.FC<PcmsoConteudoSetorialProps> = ({ se
             const aberto = editando === item.chave;
             const antigo = medicoAnteriorForaDaLista(item.chave);
             return (
-              <div key={item.chave} className="border border-slate-800 rounded-lg p-3 bg-slate-950/60 space-y-2">
+              <div key={item.chave} className="border border-borda rounded-lg p-3 bg-fundo space-y-2">
                 <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2">
-                  <p className="text-xs text-slate-200 font-semibold">{item.texto}</p>
+                  <p className="text-xs text-tinta font-semibold">{item.texto}</p>
                   {valido ? (
-                    <span className="shrink-0 px-2 py-0.5 text-[10px] font-bold rounded bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 flex items-center gap-1">
+                    <span className="shrink-0 px-2 py-0.5 text-[10px] font-bold rounded bg-marca-suave border border-marca-borda text-marca-escura flex items-center gap-1">
                       <CheckCircle2 className="w-3 h-3" /> Registrado
                     </span>
                   ) : (
-                    <span className="shrink-0 px-2 py-0.5 text-[10px] font-bold rounded bg-amber-500/10 border border-amber-500/30 text-amber-300 flex items-center gap-1">
+                    <span className="shrink-0 px-2 py-0.5 text-[10px] font-bold rounded bg-amber-500/10 border border-amber-500/30 text-amber-800 flex items-center gap-1">
                       <AlertTriangle className="w-3 h-3" /> {guardado ? 'Registro incompleto' : 'Pendente'}
                     </span>
                   )}
                 </div>
 
                 {valido && !aberto && (
-                  <div className="text-[11px] text-slate-400 space-y-1">
+                  <div className="text-[11px] text-tinta-2 space-y-1">
                     {valido.forma === 'ANEXO' ? (
                       <p className="flex items-start gap-1">
                         <Paperclip className="w-3 h-3 mt-0.5 shrink-0" />
-                        <span>Documento anexo: <strong className="text-slate-200">{valido.anexo_titulo}</strong>, de {formatDate(valido.data)}. Arquivado em: {valido.anexo_local}.</span>
+                        <span>Documento anexo: <strong className="text-tinta">{valido.anexo_titulo}</strong>, de {formatDate(valido.data)}. Arquivado em: {valido.anexo_local}.</span>
                       </p>
                     ) : (
-                      <p className="whitespace-pre-wrap text-slate-300 bg-slate-950 border border-slate-800 rounded p-2 max-h-[160px] overflow-y-auto">{valido.texto}</p>
+                      <p className="whitespace-pre-wrap text-tinta bg-fundo border border-borda rounded p-2 max-h-[160px] overflow-y-auto">{valido.texto}</p>
                     )}
                     <p>Redigido por {valido.autor}{valido.forma === 'ANEXO' ? '' : ` em ${formatDate(valido.data)}`}.
                       {valido.registrado_por ? ` Registrado por ${valido.registrado_por}.` : ''}</p>
@@ -207,7 +207,7 @@ export const PcmsoConteudoSetorial: React.FC<PcmsoConteudoSetorialProps> = ({ se
                 )}
 
                 {faltamNoGuardado.length > 0 && !aberto && (
-                  <p className="text-[11px] text-amber-300">Não sai no PCMSO até completar: falta {faltamNoGuardado.join('; ')}.</p>
+                  <p className="text-[11px] text-amber-700">Não sai no PCMSO até completar: falta {faltamNoGuardado.join('; ')}.</p>
                 )}
 
                 {!aberto && (
@@ -216,7 +216,7 @@ export const PcmsoConteudoSetorial: React.FC<PcmsoConteudoSetorialProps> = ({ se
                       <button
                         type="button"
                         onClick={() => apagar(item)}
-                        className="px-2 py-1 text-[11px] font-semibold text-slate-400 hover:text-rose-400 hover:bg-slate-800 rounded flex items-center gap-1"
+                        className="px-2 py-1 text-[11px] font-semibold text-tinta-2 hover:text-rose-700 hover:bg-superficie-2 rounded flex items-center gap-1"
                       >
                         <Trash2 className="w-3 h-3" /> Apagar
                       </button>
@@ -224,7 +224,7 @@ export const PcmsoConteudoSetorial: React.FC<PcmsoConteudoSetorialProps> = ({ se
                     <button
                       type="button"
                       onClick={() => abrir(item)}
-                      className="px-2.5 py-1 text-[11px] font-bold rounded bg-teal-500 hover:bg-teal-400 text-slate-950 flex items-center gap-1"
+                      className="bg-marca-escura text-white px-2.5 py-1 text-[11px] font-bold rounded flex items-center gap-1 hover:opacity-90"
                     >
                       <Edit3 className="w-3 h-3" /> {guardado ? 'Editar registro' : 'Registrar conteúdo'}
                     </button>
@@ -232,9 +232,9 @@ export const PcmsoConteudoSetorial: React.FC<PcmsoConteudoSetorialProps> = ({ se
                 )}
 
                 {aberto && (
-                  <div className="space-y-3 pt-2 border-t border-slate-800">
+                  <div className="space-y-3 pt-2 border-t border-borda">
                     <div>
-                      <p className="text-[11px] font-semibold text-slate-300 mb-1">Como o conteúdo integra o PCMSO</p>
+                      <p className="text-[11px] font-semibold text-tinta mb-1">Como o conteúdo integra o PCMSO</p>
                       <div className="flex flex-wrap gap-2">
                         {([['TEXTO', 'Texto redigido pelo médico', FileText], ['ANEXO', 'Documento anexo ao PCMSO', Paperclip]] as const).map(([valor, rotulo, Icone]) => (
                           <button
@@ -243,8 +243,8 @@ export const PcmsoConteudoSetorial: React.FC<PcmsoConteudoSetorialProps> = ({ se
                             onClick={() => setRascunho({ ...rascunho, forma: valor })}
                             className={`px-3 py-1.5 rounded-lg text-xs font-semibold border flex items-center gap-1.5 ${
                               rascunho.forma === valor
-                                ? 'bg-teal-500/15 border-teal-500/50 text-teal-300'
-                                : 'bg-slate-950 border-slate-700 text-slate-400 hover:text-slate-200'
+                                ? 'bg-teal-500/15 border-teal-500/50 text-teal-800'
+                                : 'bg-fundo border-borda text-tinta-2 hover:text-tinta'
                             }`}
                           >
                             <Icone className="w-3.5 h-3.5" /> {rotulo}
@@ -259,7 +259,7 @@ export const PcmsoConteudoSetorial: React.FC<PcmsoConteudoSetorialProps> = ({ se
 
                     {rascunho.forma === 'TEXTO' && (
                       <div>
-                        <label className="block text-[11px] font-semibold text-slate-300 mb-1" htmlFor={`setorial-texto-${item.chave}`}>
+                        <label className="block text-[11px] font-semibold text-tinta mb-1" htmlFor={`setorial-texto-${item.chave}`}>
                           Conteúdo redigido pelo médico
                         </label>
                         <textarea
@@ -267,7 +267,7 @@ export const PcmsoConteudoSetorial: React.FC<PcmsoConteudoSetorialProps> = ({ se
                           rows={10}
                           value={rascunho.texto}
                           onChange={(ev) => setRascunho({ ...rascunho, texto: ev.target.value })}
-                          className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-teal-500"
+                          className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-xs text-tinta focus:outline-none focus:border-teal-500"
                         />
                         <p className={DICA}>
                           Transcreva o que o médico redigiu, sem resumir. É conteúdo do programa: sem nome, CPF ou resultado
@@ -279,7 +279,7 @@ export const PcmsoConteudoSetorial: React.FC<PcmsoConteudoSetorialProps> = ({ se
                     {rascunho.forma === 'ANEXO' && (
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                         <div>
-                          <label className="block text-[11px] font-semibold text-slate-300 mb-1" htmlFor={`setorial-titulo-${item.chave}`}>
+                          <label className="block text-[11px] font-semibold text-tinta mb-1" htmlFor={`setorial-titulo-${item.chave}`}>
                             Título do documento anexo
                           </label>
                           <input
@@ -287,12 +287,12 @@ export const PcmsoConteudoSetorial: React.FC<PcmsoConteudoSetorialProps> = ({ se
                             type="text"
                             value={rascunho.anexo_titulo}
                             onChange={(ev) => setRascunho({ ...rascunho, anexo_titulo: ev.target.value })}
-                            className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-teal-500"
+                            className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-xs text-tinta focus:outline-none focus:border-teal-500"
                           />
                           <p className={DICA}>Como o documento está intitulado. Sem nome ou CPF de trabalhador.</p>
                         </div>
                         <div>
-                          <label className="block text-[11px] font-semibold text-slate-300 mb-1" htmlFor={`setorial-local-${item.chave}`}>
+                          <label className="block text-[11px] font-semibold text-tinta mb-1" htmlFor={`setorial-local-${item.chave}`}>
                             Onde fica arquivado
                           </label>
                           <input
@@ -300,7 +300,7 @@ export const PcmsoConteudoSetorial: React.FC<PcmsoConteudoSetorialProps> = ({ se
                             type="text"
                             value={rascunho.anexo_local}
                             onChange={(ev) => setRascunho({ ...rascunho, anexo_local: ev.target.value })}
-                            className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-teal-500"
+                            className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-xs text-tinta focus:outline-none focus:border-teal-500"
                           />
                           <p className={DICA}>Local físico ou sistema em que o anexo fica guardado e pode ser consultado.</p>
                         </div>
@@ -309,14 +309,14 @@ export const PcmsoConteudoSetorial: React.FC<PcmsoConteudoSetorialProps> = ({ se
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                       <div>
-                        <label className="block text-[11px] font-semibold text-slate-300 mb-1" htmlFor={`setorial-autor-${item.chave}`}>
+                        <label className="block text-[11px] font-semibold text-tinta mb-1" htmlFor={`setorial-autor-${item.chave}`}>
                           Médico que redigiu
                         </label>
                         <select
                           id={`setorial-autor-${item.chave}`}
                           value={rascunho.autor_id}
                           onChange={(ev) => setRascunho({ ...rascunho, autor_id: ev.target.value })}
-                          className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-teal-500"
+                          className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-xs text-tinta focus:outline-none focus:border-teal-500"
                         >
                           <option value="">Selecione</option>
                           {medicos.map((m) => (
@@ -333,7 +333,7 @@ export const PcmsoConteudoSetorial: React.FC<PcmsoConteudoSetorialProps> = ({ se
                         </p>
                       </div>
                       <div>
-                        <label className="block text-[11px] font-semibold text-slate-300 mb-1" htmlFor={`setorial-data-${item.chave}`}>
+                        <label className="block text-[11px] font-semibold text-tinta mb-1" htmlFor={`setorial-data-${item.chave}`}>
                           {rascunho.forma === 'ANEXO' ? 'Data do documento anexo' : 'Data da redação'}
                         </label>
                         <input
@@ -342,7 +342,7 @@ export const PcmsoConteudoSetorial: React.FC<PcmsoConteudoSetorialProps> = ({ se
                           max={hoje}
                           value={rascunho.data}
                           onChange={(ev) => setRascunho({ ...rascunho, data: ev.target.value })}
-                          className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-teal-500"
+                          className="w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-xs text-tinta focus:outline-none focus:border-teal-500"
                         />
                         <p className={DICA}>
                           {rascunho.forma === 'ANEXO' ? 'A data que consta do documento.' : 'Quando o médico redigiu este conteúdo.'}
@@ -351,7 +351,7 @@ export const PcmsoConteudoSetorial: React.FC<PcmsoConteudoSetorialProps> = ({ se
                     </div>
 
                     {erros.length > 0 && (
-                      <div className="p-3 rounded-lg border border-rose-500/30 bg-rose-500/10 text-[11px] text-rose-300">
+                      <div className="p-3 rounded-lg border border-rose-500/30 bg-rose-500/10 text-[11px] text-rose-700">
                         <p className="font-bold">Não registrado. Falta:</p>
                         <ul className="list-disc list-inside">
                           {erros.map((x, i) => <li key={i}>{x}</li>)}
@@ -363,14 +363,14 @@ export const PcmsoConteudoSetorial: React.FC<PcmsoConteudoSetorialProps> = ({ se
                       <button
                         type="button"
                         onClick={() => { setEditando(null); setErros([]); }}
-                        className="px-3 py-1.5 text-xs font-semibold text-slate-400 hover:text-slate-200 hover:bg-slate-800 rounded-lg"
+                        className="px-3 py-1.5 text-xs font-semibold text-tinta-2 hover:text-tinta hover:bg-superficie-2 rounded-lg"
                       >
                         Cancelar
                       </button>
                       <button
                         type="button"
                         onClick={() => salvar(item)}
-                        className="px-3.5 py-1.5 text-xs font-bold rounded-lg bg-teal-500 hover:bg-teal-400 text-slate-950"
+                        className="bg-marca-escura text-white px-3.5 py-1.5 text-xs font-bold rounded-lg hover:opacity-90"
                       >
                         Salvar registro
                       </button>

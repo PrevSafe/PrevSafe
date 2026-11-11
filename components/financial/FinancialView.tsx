@@ -376,27 +376,27 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
     <div className="space-y-6">
       {/* Toast Alert */}
       {actionSuccessMessage && (
-        <div className="fixed top-20 right-6 z-50 bg-emerald-950/95 border border-emerald-500/80 text-emerald-200 px-4 py-3 rounded-xl shadow-2xl backdrop-blur-md flex items-center space-x-3 animate-in fade-in slide-in-from-top-2 duration-300">
-          <ShieldCheck className="w-5 h-5 text-emerald-400 shrink-0" />
+        <div className="fixed top-20 right-6 z-50 bg-marca-suave border border-marca-borda text-marca-escura px-4 py-3 rounded-xl shadow-sm backdrop-blur-md flex items-center space-x-3 animate-in fade-in slide-in-from-top-2 duration-300">
+          <ShieldCheck className="w-5 h-5 text-marca-escura shrink-0" />
           <span className="text-sm font-medium">{actionSuccessMessage}</span>
         </div>
       )}
 
       {/* Header & Title */}
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 bg-slate-900/60 p-5 rounded-2xl border border-slate-800 backdrop-blur-md">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 bg-superficie p-5 rounded-2xl border border-borda backdrop-blur-md">
         <div>
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-700 flex items-center justify-center shadow-lg shadow-emerald-950/50">
-              <DollarSign className="w-6 h-6 text-white" />
+            <div className="bg-marca w-10 h-10 rounded-xl flex items-center justify-center shadow-sm">
+              <DollarSign className="w-6 h-6 text-tinta" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-white tracking-tight flex items-center space-x-2">
+              <h1 className="text-xl font-bold text-tinta tracking-tight flex items-center space-x-2">
                 <span>Gestão Financeira & Fluxo de Caixa</span>
-                <span className="text-xs px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-mono">
+                <span className="text-xs px-2.5 py-0.5 rounded-full bg-marca-suave text-marca-escura border border-marca-borda font-mono">
                   PrevSafe Finance
                 </span>
               </h1>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-tinta-2">
                 Contas a pagar, contas a receber, DRE gerencial de SST e conciliação de contratos (MRR).
               </p>
             </div>
@@ -407,24 +407,24 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
         <div className="flex flex-wrap items-center gap-2.5">
           <button
             onClick={() => handleOpenNewModal('RECEIVABLE')}
-            className="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold shadow-lg shadow-emerald-950/40 flex items-center space-x-1.5 transition active:scale-95 touch-manipulation"
+            className="px-3.5 py-2 rounded-xl bg-marca-escura hover:opacity-90 text-white text-xs font-semibold shadow-sm flex items-center space-x-1.5 transition active:scale-95 touch-manipulation"
           >
             <Plus className="w-4 h-4" />
             <span>+ Nova Receita</span>
           </button>
           <button
             onClick={() => handleOpenNewModal('PAYABLE')}
-            className="px-3.5 py-2 rounded-xl bg-rose-600/90 hover:bg-rose-500 text-white text-xs font-semibold shadow-lg shadow-rose-950/40 flex items-center space-x-1.5 transition active:scale-95 touch-manipulation"
+            className="px-3.5 py-2 rounded-xl bg-rose-600/90 hover:bg-rose-700 text-white text-xs font-semibold shadow-sm flex items-center space-x-1.5 transition active:scale-95 touch-manipulation"
           >
             <Plus className="w-4 h-4" />
             <span>+ Nova Despesa</span>
           </button>
           <button
             onClick={handleBatchContractBilling}
-            className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-semibold flex items-center space-x-1.5 transition active:scale-95 touch-manipulation"
+            className="px-3.5 py-2 rounded-xl bg-superficie-2 hover:bg-superficie-3 text-tinta border border-borda text-xs font-semibold flex items-center space-x-1.5 transition active:scale-95 touch-manipulation"
             title="Gera cobranças de mensalidade de todos os contratos SST ativos"
           >
-            <RefreshCw className="w-3.5 h-3.5 text-cyan-400" />
+            <RefreshCw className="w-3.5 h-3.5 text-teal-700" />
             <span>Faturar Contratos (MRR)</span>
           </button>
         </div>
@@ -433,19 +433,19 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
       {/* KPI Cards Row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">
         {/* Saldo Atual */}
-        <div className="bg-slate-900/80 p-3.5 rounded-xl border border-slate-800/80 relative overflow-hidden group hover:border-emerald-500/40 transition">
+        <div className="bg-superficie p-3.5 rounded-xl border border-borda relative overflow-hidden group hover:border-marca-escura transition">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Saldo em Caixa</span>
-            <div className="w-6 h-6 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center">
-              <DollarSign className="w-3.5 h-3.5 text-emerald-400" />
+            <span className="text-[10px] font-semibold text-tinta-2 uppercase tracking-wider">Saldo em Caixa</span>
+            <div className="w-6 h-6 rounded-lg bg-marca-suave border border-marca-borda flex items-center justify-center">
+              <DollarSign className="w-3.5 h-3.5 text-marca-escura" />
             </div>
           </div>
           <div className="mt-1.5">
-            <div className="text-lg font-bold text-emerald-400 tracking-tight">
+            <div className="text-lg font-bold text-marca-escura tracking-tight">
               {formatCurrency(cashFlowSummary.current_balance)}
             </div>
-            <div className="mt-0.5 flex items-center space-x-1 text-[10px] text-slate-400">
-              <span className="text-emerald-400 font-semibold flex items-center">
+            <div className="mt-0.5 flex items-center space-x-1 text-[10px] text-tinta-2">
+              <span className="text-marca-escura font-semibold flex items-center">
                 <ArrowUpRight className="w-3 h-3" /> +14.2%
               </span>
               <span>vs. ant.</span>
@@ -454,37 +454,37 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
         </div>
 
         {/* A Receber no Mês */}
-        <div className="bg-slate-900/80 p-3.5 rounded-xl border border-slate-800/80 relative overflow-hidden group hover:border-blue-500/40 transition">
+        <div className="bg-superficie p-3.5 rounded-xl border border-borda relative overflow-hidden group hover:border-teal-500/40 transition">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">A Receber (Mês)</span>
-            <div className="w-6 h-6 rounded-lg bg-blue-500/10 border border-blue-500/30 flex items-center justify-center">
-              <TrendingUp className="w-3.5 h-3.5 text-blue-400" />
+            <span className="text-[10px] font-semibold text-tinta-2 uppercase tracking-wider">A Receber (Mês)</span>
+            <div className="w-6 h-6 rounded-lg bg-teal-500/10 border border-teal-500/30 flex items-center justify-center">
+              <TrendingUp className="w-3.5 h-3.5 text-teal-700" />
             </div>
           </div>
           <div className="mt-1.5">
-            <div className="text-lg font-bold text-blue-400 tracking-tight">
+            <div className="text-lg font-bold text-teal-700 tracking-tight">
               {formatCurrency(cashFlowSummary.total_receivable_month)}
             </div>
-            <div className="mt-0.5 text-[10px] text-slate-400 truncate">
-              Realizado: <span className="text-emerald-400 font-medium">{formatCurrency(cashFlowSummary.received_month)}</span>
+            <div className="mt-0.5 text-[10px] text-tinta-2 truncate">
+              Realizado: <span className="text-marca-escura font-medium">{formatCurrency(cashFlowSummary.received_month)}</span>
             </div>
           </div>
         </div>
 
         {/* A Pagar no Mês */}
-        <div className="bg-slate-900/80 p-3.5 rounded-xl border border-slate-800/80 relative overflow-hidden group hover:border-rose-500/40 transition">
+        <div className="bg-superficie p-3.5 rounded-xl border border-borda relative overflow-hidden group hover:border-rose-500/40 transition">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">A Pagar (Mês)</span>
+            <span className="text-[10px] font-semibold text-tinta-2 uppercase tracking-wider">A Pagar (Mês)</span>
             <div className="w-6 h-6 rounded-lg bg-rose-500/10 border border-rose-500/30 flex items-center justify-center">
-              <TrendingDown className="w-3.5 h-3.5 text-rose-400" />
+              <TrendingDown className="w-3.5 h-3.5 text-rose-700" />
             </div>
           </div>
           <div className="mt-1.5">
-            <div className="text-lg font-bold text-rose-400 tracking-tight">
+            <div className="text-lg font-bold text-rose-700 tracking-tight">
               {formatCurrency(cashFlowSummary.total_payable_month)}
             </div>
-            <div className="mt-0.5 text-[10px] text-slate-400 truncate">
-              Quitado: <span className="text-slate-300 font-medium">{formatCurrency(cashFlowSummary.paid_month)}</span>
+            <div className="mt-0.5 text-[10px] text-tinta-2 truncate">
+              Quitado: <span className="text-tinta font-medium">{formatCurrency(cashFlowSummary.paid_month)}</span>
             </div>
           </div>
         </div>
@@ -492,20 +492,20 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
         {/* Status de Conciliação Bancária */}
         <div 
           onClick={() => setActiveTab('reconciliation')}
-          className="bg-slate-900/80 p-3.5 rounded-xl border border-slate-800/80 hover:border-emerald-500/60 transition cursor-pointer group"
+          className="bg-superficie p-3.5 rounded-xl border border-borda hover:border-marca-escura transition cursor-pointer group"
         >
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Conciliação</span>
+            <span className="text-[10px] font-semibold text-tinta-2 uppercase tracking-wider">Conciliação</span>
             <div className="w-6 h-6 rounded-lg bg-teal-500/10 border border-teal-500/30 flex items-center justify-center">
-              <ShieldCheck className="w-3.5 h-3.5 text-teal-400" />
+              <ShieldCheck className="w-3.5 h-3.5 text-teal-700" />
             </div>
           </div>
           <div className="mt-1.5">
-            <div className="text-lg font-bold text-teal-400 tracking-tight flex items-center space-x-1.5">
+            <div className="text-lg font-bold text-teal-700 tracking-tight flex items-center space-x-1.5">
               <span>{cashFlowSummary.reconciled_count || 0}</span>
-              <span className="text-xs text-slate-500 font-normal">/ {transactions.length} auditados</span>
+              <span className="text-xs text-tinta-2 font-normal">/ {transactions.length} auditados</span>
             </div>
-            <div className="mt-0.5 text-[10px] text-amber-400/90 truncate">
+            <div className="mt-0.5 text-[10px] text-amber-700 truncate">
               {cashFlowSummary.pending_reconciliation_count || 0} pendentes de extrato
             </div>
           </div>
@@ -514,53 +514,53 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
         {/* Alertas de Vencimento Próximo */}
         <div 
           onClick={() => setActiveTab('alerts')}
-          className="bg-slate-900/80 p-3.5 rounded-xl border border-slate-800/80 hover:border-amber-500/60 transition cursor-pointer group relative overflow-hidden"
+          className="bg-superficie p-3.5 rounded-xl border border-borda hover:border-amber-500/60 transition cursor-pointer group relative overflow-hidden"
         >
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Alertas Vencimento</span>
+            <span className="text-[10px] font-semibold text-tinta-2 uppercase tracking-wider">Alertas Vencimento</span>
             <div className="w-6 h-6 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center">
-              <BellRing className="w-3.5 h-3.5 text-amber-400" />
+              <BellRing className="w-3.5 h-3.5 text-amber-700" />
             </div>
           </div>
           <div className="mt-1.5">
-            <div className="text-lg font-bold text-amber-400 tracking-tight flex items-center space-x-1.5">
+            <div className="text-lg font-bold text-amber-700 tracking-tight flex items-center space-x-1.5">
               <span>{cashFlowSummary.due_soon_count || 0}</span>
-              <span className="text-xs text-slate-400 font-normal">a vencer (5d)</span>
+              <span className="text-xs text-tinta-2 font-normal">a vencer (5d)</span>
             </div>
-            <div className="mt-0.5 text-[10px] text-rose-400 truncate font-semibold">
+            <div className="mt-0.5 text-[10px] text-rose-700 truncate font-semibold">
               {cashFlowSummary.overdue_count || 0} títulos em atraso
             </div>
           </div>
         </div>
 
         {/* Inadimplência & Atrasos */}
-        <div className="bg-slate-900/80 p-3.5 rounded-xl border border-slate-800/80 relative overflow-hidden group hover:border-amber-500/40 transition">
+        <div className="bg-superficie p-3.5 rounded-xl border border-borda relative overflow-hidden group hover:border-amber-500/40 transition">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Inadimplência</span>
+            <span className="text-[10px] font-semibold text-tinta-2 uppercase tracking-wider">Inadimplência</span>
             <div className="w-6 h-6 rounded-lg bg-rose-500/10 border border-rose-500/30 flex items-center justify-center">
-              <AlertTriangle className="w-3.5 h-3.5 text-rose-400" />
+              <AlertTriangle className="w-3.5 h-3.5 text-rose-700" />
             </div>
           </div>
           <div className="mt-1.5">
-            <div className="text-lg font-bold text-rose-400 tracking-tight">
+            <div className="text-lg font-bold text-rose-700 tracking-tight">
               {cashFlowSummary.default_rate_percent}%
             </div>
-            <div className="mt-0.5 text-[10px] text-slate-400 truncate">
-              Vencidos: <span className="text-rose-300 font-semibold">{formatCurrency(cashFlowSummary.overdue_receivables)}</span>
+            <div className="mt-0.5 text-[10px] text-tinta-2 truncate">
+              Vencidos: <span className="text-rose-700 font-semibold">{formatCurrency(cashFlowSummary.overdue_receivables)}</span>
             </div>
           </div>
         </div>
       </div>
 
       {/* Main Tabs Navigation */}
-      <div className="flex flex-wrap items-center justify-between border-b border-slate-800 pb-3 gap-3">
+      <div className="flex flex-wrap items-center justify-between border-b border-borda pb-3 gap-3">
         <div className="flex items-center space-x-2 overflow-x-auto pb-1 max-w-full">
           <button
             onClick={() => setActiveTab('overview')}
             className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition flex items-center space-x-2 whitespace-nowrap ${
               activeTab === 'overview'
-                ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
-                : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+                ? 'bg-marca-suave text-marca-escura border border-marca-borda'
+                : 'text-tinta-2 hover:text-tinta hover:bg-superficie-2'
             }`}
           >
             <BarChart3 className="w-4 h-4" />
@@ -571,8 +571,8 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
             onClick={() => setActiveTab('receivables')}
             className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition flex items-center space-x-2 whitespace-nowrap ${
               activeTab === 'receivables'
-                ? 'bg-blue-500/20 text-blue-300 border border-blue-500/40'
-                : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+                ? 'bg-teal-500/20 text-teal-800 border border-teal-500/40'
+                : 'text-tinta-2 hover:text-tinta hover:bg-superficie-2'
             }`}
           >
             <TrendingUp className="w-4 h-4" />
@@ -586,8 +586,8 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
             onClick={() => setActiveTab('payables')}
             className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition flex items-center space-x-2 whitespace-nowrap ${
               activeTab === 'payables'
-                ? 'bg-rose-500/20 text-rose-300 border border-rose-500/40'
-                : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+                ? 'bg-rose-500/20 text-rose-800 border border-rose-500/40'
+                : 'text-tinta-2 hover:text-tinta hover:bg-superficie-2'
             }`}
           >
             <TrendingDown className="w-4 h-4" />
@@ -598,8 +598,8 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
             onClick={() => setActiveTab('reconciliation')}
             className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition flex items-center space-x-2 whitespace-nowrap ${
               activeTab === 'reconciliation'
-                ? 'bg-teal-500/20 text-teal-300 border border-teal-500/40'
-                : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+                ? 'bg-teal-500/20 text-teal-800 border border-teal-500/40'
+                : 'text-tinta-2 hover:text-tinta hover:bg-superficie-2'
             }`}
           >
             <ShieldCheck className="w-4 h-4" />
@@ -610,11 +610,11 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
             onClick={() => setActiveTab('alerts')}
             className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition flex items-center space-x-2 whitespace-nowrap ${
               activeTab === 'alerts'
-                ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
-                : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+                ? 'bg-amber-500/20 text-amber-800 border border-amber-500/40'
+                : 'text-tinta-2 hover:text-tinta hover:bg-superficie-2'
             }`}
           >
-            <BellRing className="w-4 h-4 text-amber-400" />
+            <BellRing className="w-4 h-4 text-amber-700" />
             <span>Alertas de Vencimento ({ (cashFlowSummary.due_soon_count || 0) + (cashFlowSummary.overdue_count || 0) })</span>
           </button>
 
@@ -622,8 +622,8 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
             onClick={() => setActiveTab('dre')}
             className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition flex items-center space-x-2 whitespace-nowrap ${
               activeTab === 'dre'
-                ? 'bg-purple-500/20 text-purple-300 border border-purple-500/40'
-                : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+                ? 'bg-teal-500/20 text-teal-800 border border-teal-500/40'
+                : 'text-tinta-2 hover:text-tinta hover:bg-superficie-2'
             }`}
           >
             <PieChartIcon className="w-4 h-4" />
@@ -634,8 +634,8 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
             onClick={() => setActiveTab('billing')}
             className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition flex items-center space-x-2 whitespace-nowrap ${
               activeTab === 'billing'
-                ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
-                : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+                ? 'bg-amber-500/20 text-amber-800 border border-amber-500/40'
+                : 'text-tinta-2 hover:text-tinta hover:bg-superficie-2'
             }`}
           >
             <FileSignature className="w-4 h-4" />
@@ -647,20 +647,20 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
         {(activeTab === 'receivables' || activeTab === 'payables' || activeTab === 'overview') && (
           <div className="flex items-center space-x-2">
             <div className="relative min-w-[180px] sm:min-w-[220px]">
-              <Search className="w-3.5 h-3.5 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
+              <Search className="w-3.5 h-3.5 text-tinta-2 absolute left-3 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
                 placeholder="Filtrar por cliente, título, doc..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full bg-slate-900 border border-slate-800 rounded-xl pl-8 pr-3 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-emerald-500/60"
+                className="w-full bg-superficie border border-borda rounded-xl pl-8 pr-3 py-1.5 text-xs text-tinta placeholder-tinta-3 focus:outline-none focus:border-marca-escura"
               />
             </div>
 
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="bg-slate-900 border border-slate-800 rounded-xl px-2.5 py-1.5 text-xs text-slate-300 focus:outline-none focus:border-emerald-500/60"
+              className="bg-superficie border border-borda rounded-xl px-2.5 py-1.5 text-xs text-tinta focus:outline-none focus:border-marca-escura"
             >
               <option value="ALL">Status: Todos</option>
               <option value="PENDING">Pendentes / A Vencer</option>
@@ -677,30 +677,30 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
       {activeTab === 'overview' && (
         <div className="space-y-6">
           {/* Main Chart Card */}
-          <div className="bg-slate-900/60 p-5 rounded-2xl border border-slate-800">
+          <div className="bg-superficie p-5 rounded-2xl border border-borda">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
               <div>
-                <h3 className="text-base font-bold text-white flex items-center space-x-2">
-                  <BarChart3 className="w-4 h-4 text-emerald-400" />
+                <h3 className="text-base font-bold text-tinta flex items-center space-x-2">
+                  <BarChart3 className="w-4 h-4 text-marca-escura" />
                   <span>Evolução do Fluxo de Caixa (Realizado vs. Projetado)</span>
                 </h3>
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-tinta-2">
                   Histórico de entradas/saídas e projeção de liquidez para os próximos períodos de SST.
                 </p>
               </div>
 
               <div className="flex items-center space-x-3 text-xs">
                 <div className="flex items-center space-x-1.5">
-                  <div className="w-3 h-3 rounded-sm bg-emerald-500" />
-                  <span className="text-slate-300">Entradas (Receitas)</span>
+                  <div className="w-3 h-3 rounded-sm bg-marca" />
+                  <span className="text-tinta">Entradas (Receitas)</span>
                 </div>
                 <div className="flex items-center space-x-1.5">
                   <div className="w-3 h-3 rounded-sm bg-rose-500" />
-                  <span className="text-slate-300">Saídas (Custos/Despesas)</span>
+                  <span className="text-tinta">Saídas (Custos/Despesas)</span>
                 </div>
                 <div className="flex items-center space-x-1.5">
-                  <div className="w-3 h-3 rounded-sm bg-cyan-400" />
-                  <span className="text-slate-300">Saldo Caixa</span>
+                  <div className="w-3 h-3 rounded-sm bg-teal-400" />
+                  <span className="text-tinta">Saldo Caixa</span>
                 </div>
               </div>
             </div>
@@ -739,12 +739,12 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
           {/* Breakdown Charts Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Receitas por Linha de Serviço */}
-            <div className="bg-slate-900/60 p-5 rounded-2xl border border-slate-800">
-              <h4 className="text-sm font-bold text-white mb-1 flex items-center space-x-2">
-                <TrendingUp className="w-4 h-4 text-emerald-400" />
+            <div className="bg-superficie p-5 rounded-2xl border border-borda">
+              <h4 className="text-sm font-bold text-tinta mb-1 flex items-center space-x-2">
+                <TrendingUp className="w-4 h-4 text-marca-escura" />
                 <span>Origem das Receitas por Serviço SST</span>
               </h4>
-              <p className="text-xs text-slate-400 mb-4">
+              <p className="text-xs text-tinta-2 mb-4">
                 Composição do faturamento entre programas regulatórios, exames e mensalidades.
               </p>
 
@@ -776,20 +776,20 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
                 {revenueByCategoryData.map((item, idx) => (
                   <div key={idx} className="flex items-center space-x-2 text-[11px]">
                     <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: item.color }} />
-                    <span className="text-slate-300 truncate">{item.name}:</span>
-                    <span className="font-semibold text-white">{formatCurrency(item.value)}</span>
+                    <span className="text-tinta truncate">{item.name}:</span>
+                    <span className="font-semibold text-tinta">{formatCurrency(item.value)}</span>
                   </div>
                 ))}
               </div>
             </div>
 
             {/* Despesas por Categoria */}
-            <div className="bg-slate-900/60 p-5 rounded-2xl border border-slate-800">
-              <h4 className="text-sm font-bold text-white mb-1 flex items-center space-x-2">
-                <TrendingDown className="w-4 h-4 text-rose-400" />
+            <div className="bg-superficie p-5 rounded-2xl border border-borda">
+              <h4 className="text-sm font-bold text-tinta mb-1 flex items-center space-x-2">
+                <TrendingDown className="w-4 h-4 text-rose-700" />
                 <span>Distribuição de Custos Operacionais & Despesas</span>
               </h4>
-              <p className="text-xs text-slate-400 mb-4">
+              <p className="text-xs text-tinta-2 mb-4">
                 Honorários médicos, clínicas credenciadas, metrologia RBC e infraestrutura.
               </p>
 
@@ -821,8 +821,8 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
                 {expenseByCategoryData.map((item, idx) => (
                   <div key={idx} className="flex items-center space-x-2 text-[11px]">
                     <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: item.color }} />
-                    <span className="text-slate-300 truncate">{item.name}:</span>
-                    <span className="font-semibold text-white">{formatCurrency(item.value)}</span>
+                    <span className="text-tinta truncate">{item.name}:</span>
+                    <span className="font-semibold text-tinta">{formatCurrency(item.value)}</span>
                   </div>
                 ))}
               </div>
@@ -831,41 +831,41 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
 
           {/* Quick Action Matrix for SST Financial Workflows */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="p-4 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-emerald-500/50 transition cursor-pointer" onClick={() => setActiveTab('receivables')}>
+            <div className="p-4 rounded-xl bg-superficie border border-borda hover:border-marca-escura transition cursor-pointer" onClick={() => setActiveTab('receivables')}>
               <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-bold text-white">Contas a Receber</span>
-                <ChevronRight className="w-4 h-4 text-emerald-400" />
+                <span className="text-xs font-bold text-tinta">Contas a Receber</span>
+                <ChevronRight className="w-4 h-4 text-marca-escura" />
               </div>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-tinta-2">
                 {receivables.filter(r => r.status === 'PENDING').length} títulos pendentes e {receivables.filter(r => r.status === 'OVERDUE').length} em atraso.
               </p>
-              <div className="mt-3 text-sm font-bold text-emerald-400">
+              <div className="mt-3 text-sm font-bold text-marca-escura">
                 {formatCurrency(receivables.reduce((acc, curr) => curr.status !== 'PAID' ? acc + curr.final_amount : acc, 0))} a liquidar
               </div>
             </div>
 
-            <div className="p-4 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-rose-500/50 transition cursor-pointer" onClick={() => setActiveTab('payables')}>
+            <div className="p-4 rounded-xl bg-superficie border border-borda hover:border-rose-500/50 transition cursor-pointer" onClick={() => setActiveTab('payables')}>
               <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-bold text-white">Contas a Pagar</span>
-                <ChevronRight className="w-4 h-4 text-rose-400" />
+                <span className="text-xs font-bold text-tinta">Contas a Pagar</span>
+                <ChevronRight className="w-4 h-4 text-rose-700" />
               </div>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-tinta-2">
                 Honorários médicos, laudos credenciados e custos fixos operacionais.
               </p>
-              <div className="mt-3 text-sm font-bold text-rose-400">
+              <div className="mt-3 text-sm font-bold text-rose-700">
                 {formatCurrency(payables.reduce((acc, curr) => curr.status !== 'PAID' ? acc + curr.final_amount : acc, 0))} a pagar
               </div>
             </div>
 
-            <div className="p-4 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-purple-500/50 transition cursor-pointer" onClick={() => setActiveTab('dre')}>
+            <div className="p-4 rounded-xl bg-superficie border border-borda hover:border-teal-500/50 transition cursor-pointer" onClick={() => setActiveTab('dre')}>
               <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-bold text-white">Margem de Lucro SST</span>
-                <ChevronRight className="w-4 h-4 text-purple-400" />
+                <span className="text-xs font-bold text-tinta">Margem de Lucro SST</span>
+                <ChevronRight className="w-4 h-4 text-teal-700" />
               </div>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-tinta-2">
                 DRE Gerencial detalhado com apuração de margem por contrato.
               </p>
-              <div className="mt-3 text-sm font-bold text-purple-300">
+              <div className="mt-3 text-sm font-bold text-teal-700">
                 Margem Operacional ~48.5%
               </div>
             </div>
@@ -879,9 +879,9 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
       {(activeTab === 'receivables' || activeTab === 'payables') && (
         <div className="space-y-4">
           {/* Action Toolbar */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-slate-900/80 p-4 rounded-xl border border-slate-800">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-superficie p-4 rounded-xl border border-borda">
             <div className="flex items-center space-x-2">
-              <span className="text-xs font-semibold text-slate-300">
+              <span className="text-xs font-semibold text-tinta">
                 Exibindo {filteredTransactions.length} lançamentos de {activeTab === 'receivables' ? 'Contas a Receber' : 'Contas a Pagar'}
               </span>
             </div>
@@ -889,8 +889,8 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
             <div className="flex items-center space-x-2">
               <button
                 onClick={() => handleOpenNewModal(activeTab === 'receivables' ? 'RECEIVABLE' : 'PAYABLE')}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold text-white flex items-center space-x-1.5 transition ${
-                  activeTab === 'receivables' ? 'bg-emerald-600 hover:bg-emerald-500' : 'bg-rose-600 hover:bg-rose-500'
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold text-tinta flex items-center space-x-1.5 transition ${
+                  activeTab === 'receivables' ? 'bg-marca hover:bg-marca-escura' : 'bg-rose-600 hover:bg-rose-500'
                 }`}
               >
                 <Plus className="w-3.5 h-3.5" />
@@ -900,11 +900,11 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
           </div>
 
           {/* Transactions List */}
-          <div className="bg-slate-900/60 rounded-2xl border border-slate-800 overflow-hidden">
+          <div className="bg-superficie rounded-2xl border border-borda overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="border-b border-slate-800 bg-slate-950/60 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                  <tr className="border-b border-borda bg-fundo text-[11px] font-bold text-tinta-2 uppercase tracking-wider">
                     <th className="py-3.5 px-4">Status / Baixa</th>
                     <th className="py-3.5 px-4">Conciliação</th>
                     <th className="py-3.5 px-4">Título / Descrição</th>
@@ -915,10 +915,10 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
                     <th className="py-3.5 px-4 text-center">Ações Rápidas</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800/80 text-xs">
+                <tbody className="divide-y divide-borda text-xs">
                   {filteredTransactions.length === 0 ? (
                     <tr>
-                      <td colSpan={8} className="text-center py-10 text-slate-500">
+                      <td colSpan={8} className="text-center py-10 text-tinta-2">
                         Nenhum lançamento encontrado para os filtros selecionados.
                       </td>
                     </tr>
@@ -932,26 +932,26 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
                       return (
                         <tr 
                           key={tx.id} 
-                          className="hover:bg-slate-800/40 transition group"
+                          className="hover:bg-superficie-2 transition group"
                         >
                           {/* Status Badge & Quick Toggle */}
                           <td className="py-3 px-4 whitespace-nowrap">
                             <div className="flex flex-col space-y-1">
                               {isPaid && (
-                                <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 w-fit">
-                                  <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+                                <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-marca-suave text-marca-escura border border-marca-borda w-fit">
+                                  <CheckCircle2 className="w-3 h-3 text-marca-escura" />
                                   <span>{tx.type === 'RECEIVABLE' ? 'Recebido' : 'Pago'}</span>
                                 </span>
                               )}
                               {isOverdue && (
-                                <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-rose-500/15 text-rose-300 border border-rose-500/30 w-fit">
-                                  <AlertTriangle className="w-3 h-3 text-rose-400" />
+                                <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-rose-500/15 text-rose-800 border border-rose-500/30 w-fit">
+                                  <AlertTriangle className="w-3 h-3 text-rose-700" />
                                   <span>Vencido</span>
                                 </span>
                               )}
                               {isPending && (
-                                <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-blue-500/15 text-blue-300 border border-blue-500/30 w-fit">
-                                  <Clock className="w-3 h-3 text-blue-400" />
+                                <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-teal-500/15 text-teal-800 border border-teal-500/30 w-fit">
+                                  <Clock className="w-3 h-3 text-teal-700" />
                                   <span>A Vencer</span>
                                 </span>
                               )}
@@ -974,7 +974,7 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
                                   }
                                 }}
                                 className={`text-[9px] font-medium underline transition text-left ${
-                                  isPaid ? 'text-slate-500 hover:text-amber-400' : 'text-emerald-400 hover:text-emerald-300'
+                                  isPaid ? 'text-tinta-2 hover:text-amber-700' : 'text-marca-escura hover:text-marca-escura'
                                 }`}
                               >
                                 {isPaid ? 'Reabrir pendência' : `Marcar como ${tx.type === 'RECEIVABLE' ? 'recebido' : 'pago'}`}
@@ -987,43 +987,43 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
                             {reconStatus === 'RECONCILED' && (
                               <button
                                 onClick={() => setSelectedTxForReconciliation(tx)}
-                                className="inline-flex items-center space-x-1 px-2 py-0.5 rounded-md text-[10px] font-medium bg-teal-500/10 text-teal-300 border border-teal-500/30 hover:bg-teal-500/20 transition"
+                                className="inline-flex items-center space-x-1 px-2 py-0.5 rounded-md text-[10px] font-medium bg-teal-500/10 text-teal-800 border border-teal-500/30 hover:bg-teal-500/20 transition"
                                 title="Conciliado com extrato. Clique para ver detalhes"
                               >
-                                <CheckCheck className="w-3 h-3 text-teal-400" />
+                                <CheckCheck className="w-3 h-3 text-teal-700" />
                                 <span>Conciliado</span>
                               </button>
                             )}
                             {reconStatus === 'PENDING_RECONCILIATION' && (
                               <button
                                 onClick={() => setSelectedTxForReconciliation(tx)}
-                                className="inline-flex items-center space-x-1 px-2 py-0.5 rounded-md text-[10px] font-medium bg-amber-500/10 text-amber-300 border border-amber-500/30 hover:bg-amber-500/20 transition"
+                                className="inline-flex items-center space-x-1 px-2 py-0.5 rounded-md text-[10px] font-medium bg-amber-500/10 text-amber-800 border border-amber-500/30 hover:bg-amber-500/20 transition"
                                 title="Pendente de conciliação bancária. Clique para conciliar"
                               >
-                                <Clock className="w-3 h-3 text-amber-400" />
+                                <Clock className="w-3 h-3 text-amber-700" />
                                 <span>Pendente</span>
                               </button>
                             )}
                             {reconStatus === 'DISCREPANCY' && (
                               <button
                                 onClick={() => setSelectedTxForReconciliation(tx)}
-                                className="inline-flex items-center space-x-1 px-2 py-0.5 rounded-md text-[10px] font-medium bg-rose-500/10 text-rose-300 border border-rose-500/30 hover:bg-rose-500/20 transition"
+                                className="inline-flex items-center space-x-1 px-2 py-0.5 rounded-md text-[10px] font-medium bg-rose-500/10 text-rose-800 border border-rose-500/30 hover:bg-rose-500/20 transition"
                                 title="Divergência de valor identificada no extrato"
                               >
-                                <AlertTriangle className="w-3 h-3 text-rose-400" />
+                                <AlertTriangle className="w-3 h-3 text-rose-700" />
                                 <span>Divergência</span>
                               </button>
                             )}
                             {reconStatus === 'UNRECONCILED' && (
                               <button
                                 onClick={() => setSelectedTxForReconciliation(tx)}
-                                className="inline-flex items-center space-x-1 px-2 py-0.5 rounded-md text-[10px] font-medium bg-slate-800 text-slate-400 border border-slate-700 hover:bg-slate-700 transition"
+                                className="inline-flex items-center space-x-1 px-2 py-0.5 rounded-md text-[10px] font-medium bg-superficie-2 text-tinta-2 border border-borda hover:bg-superficie-3 transition"
                               >
                                 <span>Não conciliado</span>
                               </button>
                             )}
                             {tx.reconciled_at && (
-                              <div className="text-[9px] text-slate-500 font-mono mt-0.5">
+                              <div className="text-[9px] text-tinta-2 font-mono mt-0.5">
                                 Ref: {tx.reconciliation_ref || 'OK'}
                               </div>
                             )}
@@ -1031,12 +1031,12 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
 
                           {/* Title & Document */}
                           <td className="py-3 px-4">
-                            <div className="font-semibold text-slate-100 max-w-[260px] truncate" title={tx.title}>
+                            <div className="font-semibold text-tinta max-w-[260px] truncate" title={tx.title}>
                               {tx.title}
                             </div>
-                            <div className="text-[11px] text-slate-400 flex items-center space-x-2 mt-0.5">
+                            <div className="text-[11px] text-tinta-2 flex items-center space-x-2 mt-0.5">
                               {tx.document_number && (
-                                <span className="font-mono bg-slate-800 px-1.5 py-0.2 rounded border border-slate-700">
+                                <span className="font-mono bg-superficie-2 px-1.5 py-0.2 rounded border border-borda">
                                   {tx.document_number}
                                 </span>
                               )}
@@ -1047,35 +1047,35 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
                           </td>
 
                           {/* Client or Supplier */}
-                          <td className="py-3 px-4 text-slate-300 max-w-[180px] truncate">
+                          <td className="py-3 px-4 text-tinta max-w-[180px] truncate">
                             {activeTab === 'receivables' ? (
                               <div className="flex items-center space-x-1.5" title={tx.client_name}>
-                                <Building className="w-3.5 h-3.5 text-blue-400 shrink-0" />
+                                <Building className="w-3.5 h-3.5 text-teal-700 shrink-0" />
                                 <span>{tx.client_name || 'Cliente Geral'}</span>
                               </div>
                             ) : (
                               <div className="flex items-center space-x-1.5" title={tx.supplier_name}>
-                                <User className="w-3.5 h-3.5 text-rose-400 shrink-0" />
+                                <User className="w-3.5 h-3.5 text-rose-700 shrink-0" />
                                 <span>{tx.supplier_name || 'Fornecedor PrevSafe'}</span>
                               </div>
                             )}
                           </td>
 
                           {/* Category */}
-                          <td className="py-3 px-4 text-slate-300">
-                            <span className="text-[11px] px-2 py-0.5 rounded-md bg-slate-800/80 border border-slate-700 text-slate-300">
+                          <td className="py-3 px-4 text-tinta">
+                            <span className="text-[11px] px-2 py-0.5 rounded-md bg-superficie-2 border border-borda text-tinta">
                               {tx.category_name}
                             </span>
                           </td>
 
                           {/* Due Date */}
-                          <td className="py-3 px-4 whitespace-nowrap text-slate-300">
+                          <td className="py-3 px-4 whitespace-nowrap text-tinta">
                             <div className="flex items-center space-x-1 font-mono text-[11px]">
-                              <Calendar className="w-3 h-3 text-slate-500" />
+                              <Calendar className="w-3 h-3 text-tinta-2" />
                               <span>{formatDate(tx.due_date)}</span>
                             </div>
                             {tx.payment_date && (
-                              <div className="text-[10px] text-emerald-400 font-mono mt-0.5">
+                              <div className="text-[10px] text-marca-escura font-mono mt-0.5">
                                 Pago em: {formatDate(tx.payment_date)}
                               </div>
                             )}
@@ -1084,12 +1084,12 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
                           {/* Final Amount */}
                           <td className="py-3 px-4 whitespace-nowrap text-right">
                             <div className={`font-bold font-mono text-sm ${
-                              tx.type === 'RECEIVABLE' ? 'text-emerald-400' : 'text-rose-400'
+                              tx.type === 'RECEIVABLE' ? 'text-marca-escura' : 'text-rose-700'
                             }`}>
                               {tx.type === 'RECEIVABLE' ? '+' : '-'} {formatCurrency(tx.final_amount)}
                             </div>
                             {tx.discount ? (
-                              <div className="text-[10px] text-slate-500">Desc: -{formatCurrency(tx.discount)}</div>
+                              <div className="text-[10px] text-tinta-2">Desc: -{formatCurrency(tx.discount)}</div>
                             ) : null}
                           </td>
 
@@ -1100,7 +1100,7 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
                               {!isPaid && (
                                 <button
                                   onClick={() => handleOpenSettlement(tx)}
-                                  className="p-1.5 rounded-lg bg-emerald-600/20 hover:bg-emerald-600 text-emerald-300 hover:text-white transition"
+                                  className="p-1.5 rounded-lg bg-marca-suave hover:bg-marca-borda text-marca-escura transition"
                                   title="Liquidação Detalhada (Juros/Desconto)"
                                 >
                                   <Check className="w-3.5 h-3.5" />
@@ -1110,7 +1110,7 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
                               {/* Conciliação Modal */}
                               <button
                                 onClick={() => setSelectedTxForReconciliation(tx)}
-                                className="p-1.5 rounded-lg bg-teal-600/20 hover:bg-teal-600 text-teal-300 hover:text-white transition"
+                                className="p-1.5 rounded-lg bg-teal-50 hover:bg-teal-100 text-teal-700 transition"
                                 title="Conciliar com Extrato Bancário"
                               >
                                 <ShieldCheck className="w-3.5 h-3.5" />
@@ -1120,7 +1120,7 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
                               {tx.type === 'RECEIVABLE' && !isPaid && (
                                 <button
                                   onClick={() => setSelectedTxForReminder(tx)}
-                                  className="p-1.5 rounded-lg bg-amber-600/20 hover:bg-amber-600 text-amber-300 hover:text-white transition"
+                                  className="p-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-700 transition"
                                   title="Enviar Lembrete de Vencimento (WhatsApp / Email)"
                                 >
                                   <BellRing className="w-3.5 h-3.5" />
@@ -1131,7 +1131,7 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
                               {tx.type === 'RECEIVABLE' && (
                                 <button
                                   onClick={() => setSelectedTxForReceipt(tx)}
-                                  className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition"
+                                  className="p-1.5 rounded-lg bg-superficie-2 hover:bg-superficie-3 text-tinta hover:text-tinta transition"
                                   title="Visualizar Recibo / Fatura Timbrada"
                                 >
                                   <FileText className="w-3.5 h-3.5" />
@@ -1146,7 +1146,7 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
                                     showNotification('Lançamento removido do financeiro.');
                                   }
                                 }}
-                                className="p-1.5 rounded-lg bg-slate-800/80 hover:bg-rose-950 hover:text-rose-400 text-slate-500 transition"
+                                className="p-1.5 rounded-lg bg-superficie-2 hover:bg-rose-100 text-rose-700 transition"
                                 title="Excluir Lançamento"
                               >
                                 <Trash2 className="w-3.5 h-3.5" />
@@ -1210,14 +1210,14 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
       {/* ========================================================================= */}
       {activeTab === 'dre' && (
         <div className="space-y-6">
-          <div className="bg-slate-900/60 p-6 rounded-2xl border border-slate-800">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 pb-4 border-b border-slate-800">
+          <div className="bg-superficie p-6 rounded-2xl border border-borda">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 pb-4 border-b border-borda">
               <div>
-                <h3 className="text-lg font-bold text-white flex items-center space-x-2">
-                  <PieChartIcon className="w-5 h-5 text-purple-400" />
+                <h3 className="text-lg font-bold text-tinta flex items-center space-x-2">
+                  <PieChartIcon className="w-5 h-5 text-teal-700" />
                   <span>Demonstrativo do Resultado do Exercício (DRE Gerencial SST)</span>
                 </h3>
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-tinta-2">
                   Visão contábil e de rentabilidade para consultoria de Segurança e Medicina do Trabalho.
                 </p>
               </div>
@@ -1225,7 +1225,7 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
               <div className="flex items-center space-x-2">
                 <button 
                   onClick={() => window.print()}
-                  className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold flex items-center space-x-1.5 border border-slate-700 transition"
+                  className="px-3 py-1.5 rounded-xl bg-superficie-2 hover:bg-superficie-3 text-tinta text-xs font-semibold flex items-center space-x-1.5 border border-borda transition"
                 >
                   <Printer className="w-3.5 h-3.5" />
                   <span>Imprimir DRE</span>
@@ -1236,122 +1236,122 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
             {/* DRE Structured Table */}
             <div className="space-y-3 font-sans text-xs sm:text-sm">
               {/* (+) Receita Bruta */}
-              <div className="p-3.5 rounded-xl bg-slate-800/40 border border-slate-800 flex items-center justify-between font-bold text-white">
+              <div className="p-3.5 rounded-xl bg-superficie-2 border border-borda flex items-center justify-between font-bold text-tinta">
                 <div className="flex items-center space-x-2">
-                  <span className="text-emerald-400 font-mono">(+)</span>
+                  <span className="text-marca-escura font-mono">(+)</span>
                   <span>RECEITA OPERACIONAL BRUTA DE SST</span>
                 </div>
-                <span className="font-mono text-emerald-400 text-base">{formatCurrency(cashFlowSummary.total_receivable_month * 1.05)}</span>
+                <span className="font-mono text-marca-escura text-base">{formatCurrency(cashFlowSummary.total_receivable_month * 1.05)}</span>
               </div>
 
-              <div className="pl-6 pr-4 space-y-1.5 text-xs text-slate-400 border-l-2 border-emerald-500/30 my-2">
+              <div className="pl-6 pr-4 space-y-1.5 text-xs text-tinta-2 border-l-2 border-marca-escura my-2">
                 <div className="flex justify-between">
                   <span>• Mensalidades de Gestão SST & eSocial (MRR):</span>
-                  <span className="text-slate-200 font-mono">{formatCurrency(cashFlowSummary.total_receivable_month * 0.45)}</span>
+                  <span className="text-tinta font-mono">{formatCurrency(cashFlowSummary.total_receivable_month * 0.45)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>• Elaboração e Renovação de Programas (PGR / PCMSO / AET):</span>
-                  <span className="text-slate-200 font-mono">{formatCurrency(cashFlowSummary.total_receivable_month * 0.30)}</span>
+                  <span className="text-tinta font-mono">{formatCurrency(cashFlowSummary.total_receivable_month * 0.30)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>• Laudos Técnicos Ambientais (LTCAT / Insalubridade / Periculosidade):</span>
-                  <span className="text-slate-200 font-mono">{formatCurrency(cashFlowSummary.total_receivable_month * 0.15)}</span>
+                  <span className="text-tinta font-mono">{formatCurrency(cashFlowSummary.total_receivable_month * 0.15)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>• Treinamentos Normativos (NR-35, NR-33, NR-10, CIPA):</span>
-                  <span className="text-slate-200 font-mono">{formatCurrency(cashFlowSummary.total_receivable_month * 0.10)}</span>
+                  <span className="text-tinta font-mono">{formatCurrency(cashFlowSummary.total_receivable_month * 0.10)}</span>
                 </div>
               </div>
 
               {/* (-) Deduções */}
-              <div className="p-3 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-between text-slate-300 font-semibold">
+              <div className="p-3 rounded-xl bg-superficie border border-borda flex items-center justify-between text-tinta font-semibold">
                 <div className="flex items-center space-x-2">
-                  <span className="text-rose-400 font-mono">(-)</span>
+                  <span className="text-rose-700 font-mono">(-)</span>
                   <span>Deduções da Receita Bruta (Impostos & Descontos Incondicionais)</span>
                 </div>
-                <span className="font-mono text-rose-400">{formatCurrency(cashFlowSummary.total_receivable_month * 0.08)}</span>
+                <span className="font-mono text-rose-700">{formatCurrency(cashFlowSummary.total_receivable_month * 0.08)}</span>
               </div>
 
               {/* (=) Receita Líquida */}
-              <div className="p-3.5 rounded-xl bg-slate-800/80 border border-slate-700 flex items-center justify-between font-bold text-white">
+              <div className="p-3.5 rounded-xl bg-superficie-2 border border-borda flex items-center justify-between font-bold text-tinta">
                 <div className="flex items-center space-x-2">
-                  <span className="text-cyan-400 font-mono">(=)</span>
+                  <span className="text-teal-700 font-mono">(=)</span>
                   <span>RECEITA OPERACIONAL LÍQUIDA</span>
                 </div>
-                <span className="font-mono text-cyan-400 text-base">{formatCurrency(cashFlowSummary.total_receivable_month * 0.97)}</span>
+                <span className="font-mono text-teal-700 text-base">{formatCurrency(cashFlowSummary.total_receivable_month * 0.97)}</span>
               </div>
 
               {/* (-) Custos Diretos SST */}
-              <div className="p-3 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-between text-slate-300 font-semibold">
+              <div className="p-3 rounded-xl bg-superficie border border-borda flex items-center justify-between text-tinta font-semibold">
                 <div className="flex items-center space-x-2">
-                  <span className="text-rose-400 font-mono">(-)</span>
+                  <span className="text-rose-700 font-mono">(-)</span>
                   <span>CUSTOS DIRETOS DOS SERVIÇOS DE SST (CPV)</span>
                 </div>
-                <span className="font-mono text-rose-400">{formatCurrency(cashFlowSummary.total_payable_month * 0.55)}</span>
+                <span className="font-mono text-rose-700">{formatCurrency(cashFlowSummary.total_payable_month * 0.55)}</span>
               </div>
 
-              <div className="pl-6 pr-4 space-y-1.5 text-xs text-slate-400 border-l-2 border-rose-500/30 my-2">
+              <div className="pl-6 pr-4 space-y-1.5 text-xs text-tinta-2 border-l-2 border-rose-500/30 my-2">
                 <div className="flex justify-between">
                   <span>• Honorários Médicos (Médico Coordenador & Examinadores PCMSO):</span>
-                  <span className="text-slate-200 font-mono">{formatCurrency(cashFlowSummary.total_payable_month * 0.25)}</span>
+                  <span className="text-tinta font-mono">{formatCurrency(cashFlowSummary.total_payable_month * 0.25)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>• Clínicas Credenciadas & Exames Complementares (Audiometria/Lab):</span>
-                  <span className="text-slate-200 font-mono">{formatCurrency(cashFlowSummary.total_payable_month * 0.18)}</span>
+                  <span className="text-tinta font-mono">{formatCurrency(cashFlowSummary.total_payable_month * 0.18)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>• Calibração RBC de Aparelhos de Medição (Ruído/Luz/Vibração):</span>
-                  <span className="text-slate-200 font-mono">{formatCurrency(cashFlowSummary.total_payable_month * 0.08)}</span>
+                  <span className="text-tinta font-mono">{formatCurrency(cashFlowSummary.total_payable_month * 0.08)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>• Honorários de Engenharia e Peritos de Campo:</span>
-                  <span className="text-slate-200 font-mono">{formatCurrency(cashFlowSummary.total_payable_month * 0.04)}</span>
+                  <span className="text-tinta font-mono">{formatCurrency(cashFlowSummary.total_payable_month * 0.04)}</span>
                 </div>
               </div>
 
               {/* (=) Margem de Contribuição */}
-              <div className="p-3.5 rounded-xl bg-slate-800/80 border border-slate-700 flex items-center justify-between font-bold text-white">
+              <div className="p-3.5 rounded-xl bg-superficie-2 border border-borda flex items-center justify-between font-bold text-tinta">
                 <div className="flex items-center space-x-2">
-                  <span className="text-emerald-400 font-mono">(=)</span>
+                  <span className="text-marca-escura font-mono">(=)</span>
                   <span>MARGEM DE CONTRIBUIÇÃO BRUTA</span>
                 </div>
-                <span className="font-mono text-emerald-400 text-base">{formatCurrency(cashFlowSummary.total_receivable_month * 0.97 - cashFlowSummary.total_payable_month * 0.55)}</span>
+                <span className="font-mono text-marca-escura text-base">{formatCurrency(cashFlowSummary.total_receivable_month * 0.97 - cashFlowSummary.total_payable_month * 0.55)}</span>
               </div>
 
               {/* (-) Despesas Fixas & Administrativas */}
-              <div className="p-3 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-between text-slate-300 font-semibold">
+              <div className="p-3 rounded-xl bg-superficie border border-borda flex items-center justify-between text-tinta font-semibold">
                 <div className="flex items-center space-x-2">
-                  <span className="text-rose-400 font-mono">(-)</span>
+                  <span className="text-rose-700 font-mono">(-)</span>
                   <span>DESPESAS OPERACIONAIS FIXAS & ADMINISTRATIVAS</span>
                 </div>
-                <span className="font-mono text-rose-400">{formatCurrency(cashFlowSummary.total_payable_month * 0.45)}</span>
+                <span className="font-mono text-rose-700">{formatCurrency(cashFlowSummary.total_payable_month * 0.45)}</span>
               </div>
 
-              <div className="pl-6 pr-4 space-y-1.5 text-xs text-slate-400 border-l-2 border-amber-500/30 my-2">
+              <div className="pl-6 pr-4 space-y-1.5 text-xs text-tinta-2 border-l-2 border-amber-500/30 my-2">
                 <div className="flex justify-between">
                   <span>• Software SaaS, Servidores Nuvem & Assinaturas Digitais eSocial:</span>
-                  <span className="text-slate-200 font-mono">{formatCurrency(890)}</span>
+                  <span className="text-tinta font-mono">{formatCurrency(890)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>• Aluguel, Condomínio e Instalações Sede Consultoria:</span>
-                  <span className="text-slate-200 font-mono">{formatCurrency(4200)}</span>
+                  <span className="text-tinta font-mono">{formatCurrency(4200)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>• Impostos Simples Nacional / ISSQN:</span>
-                  <span className="text-slate-200 font-mono">{formatCurrency(2940)}</span>
+                  <span className="text-tinta font-mono">{formatCurrency(2940)}</span>
                 </div>
               </div>
 
               {/* (=) Lucro Operacional Líquido */}
-              <div className="p-4 rounded-xl bg-gradient-to-r from-emerald-950/80 to-teal-950/80 border border-emerald-500/50 flex items-center justify-between font-bold text-white shadow-lg">
+              <div className="bg-superficie p-4 rounded-xl border border-borda flex items-center justify-between font-bold text-tinta shadow-sm">
                 <div>
-                  <div className="text-sm font-bold text-emerald-300 flex items-center space-x-2">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                  <div className="text-sm font-bold text-marca-escura flex items-center space-x-2">
+                    <CheckCircle2 className="w-4 h-4 text-marca-escura" />
                     <span>LUCRO LÍQUIDO OPERACIONAL (EBITDA GERENCIAL)</span>
                   </div>
-                  <span className="text-[11px] text-slate-400 font-normal">Resultado disponível para reinvestimento ou distribuição</span>
+                  <span className="text-[11px] text-tinta-2 font-normal">Resultado disponível para reinvestimento ou distribuição</span>
                 </div>
-                <span className="font-mono text-xl text-emerald-400">
+                <span className="font-mono text-xl text-marca-escura">
                   {formatCurrency((cashFlowSummary.total_receivable_month * 0.97) - cashFlowSummary.total_payable_month)}
                 </span>
               </div>
@@ -1366,21 +1366,21 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
       {activeTab === 'billing' && (
         <div className="space-y-6">
           {/* Contracts Section */}
-          <div className="bg-slate-900/60 p-5 rounded-2xl border border-slate-800">
+          <div className="bg-superficie p-5 rounded-2xl border border-borda">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
               <div>
-                <h3 className="text-base font-bold text-white flex items-center space-x-2">
-                  <FileSignature className="w-4 h-4 text-blue-400" />
+                <h3 className="text-base font-bold text-tinta flex items-center space-x-2">
+                  <FileSignature className="w-4 h-4 text-teal-700" />
                   <span>Contratos Ativos & Recorrência (MRR)</span>
                 </h3>
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-tinta-2">
                   Dispare faturamentos mensais com 1 clique para gerar boletos e títulos a receber.
                 </p>
               </div>
 
               <button
                 onClick={handleBatchContractBilling}
-                className="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold flex items-center space-x-1.5 shadow-lg shadow-blue-950/40 transition active:scale-95 touch-manipulation"
+                className="px-3.5 py-2 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold flex items-center space-x-1.5 shadow-sm transition active:scale-95 touch-manipulation"
               >
                 <RefreshCw className="w-3.5 h-3.5" />
                 <span>Gerar Faturamento do Mês</span>
@@ -1392,27 +1392,27 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
                 const clientObj = clients.find(c => c.id === contract.client_id);
                 const clientName = clientObj?.trade_name || clientObj?.legal_name || 'Cliente PrevSafe';
                 return (
-                  <div key={contract.id} className="p-4 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-blue-500/40 transition flex flex-col justify-between">
+                  <div key={contract.id} className="p-4 rounded-xl bg-superficie border border-borda hover:border-teal-500/40 transition flex flex-col justify-between">
                     <div>
-                      <div className="flex items-center justify-between text-xs font-mono text-slate-400 mb-1">
+                      <div className="flex items-center justify-between text-xs font-mono text-tinta-2 mb-1">
                         <span>{contract.contract_number}</span>
-                        <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 text-[10px]">
+                        <span className="px-2 py-0.5 rounded-full bg-marca-suave text-marca-escura border border-marca-borda text-[10px]">
                           {contract.status}
                         </span>
                       </div>
-                      <h4 className="text-sm font-bold text-white truncate" title={contract.title}>
+                      <h4 className="text-sm font-bold text-tinta truncate" title={contract.title}>
                         {contract.title}
                       </h4>
-                      <p className="text-xs text-slate-400 mt-1 flex items-center space-x-1">
-                        <Building className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                      <p className="text-xs text-tinta-2 mt-1 flex items-center space-x-1">
+                        <Building className="w-3.5 h-3.5 text-tinta-2 shrink-0" />
                         <span className="truncate">{clientName}</span>
                       </p>
                     </div>
 
-                    <div className="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between">
+                    <div className="mt-4 pt-3 border-t border-borda flex items-center justify-between">
                       <div>
-                        <span className="text-[10px] text-slate-500 uppercase font-semibold">Valor do Contrato</span>
-                        <div className="font-bold text-sm text-emerald-400 font-mono">
+                        <span className="text-[10px] text-tinta-2 uppercase font-semibold">Valor do Contrato</span>
+                        <div className="font-bold text-sm text-marca-escura font-mono">
                           {formatCurrency(contract.total_value)}
                         </div>
                       </div>
@@ -1424,7 +1424,7 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
                             ? `${r.criadas.length} parcela(s) do contrato ${contract.contract_number} lançada(s) em Contas a Receber.`
                             : (r.motivo || 'Nada a lançar.'));
                         }}
-                        className="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium border border-slate-700 transition"
+                        className="px-2.5 py-1.5 rounded-lg bg-superficie-2 hover:bg-superficie-3 text-tinta text-xs font-medium border border-borda transition"
                       >
                         Lançar parcelas
                       </button>
@@ -1436,14 +1436,14 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
           </div>
 
           {/* Service Orders Ready to Bill */}
-          <div className="bg-slate-900/60 p-5 rounded-2xl border border-slate-800">
+          <div className="bg-superficie p-5 rounded-2xl border border-borda">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h3 className="text-base font-bold text-white flex items-center space-x-2">
-                  <Briefcase className="w-4 h-4 text-emerald-400" />
+                <h3 className="text-base font-bold text-tinta flex items-center space-x-2">
+                  <Briefcase className="w-4 h-4 text-marca-escura" />
                   <span>Ordens de Serviço Concluídas (Prontas para Faturamento)</span>
                 </h3>
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-tinta-2">
                   Converta serviços entregues e laudos homologados em cobranças imediatas.
                 </p>
               </div>
@@ -1454,27 +1454,27 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
                 const clientObj = clients.find(c => c.id === os.client_id);
                 const clientName = clientObj?.trade_name || clientObj?.legal_name || 'Cliente PrevSafe';
                 return (
-                  <div key={os.id} className="p-4 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-emerald-500/40 transition flex flex-col justify-between">
+                  <div key={os.id} className="p-4 rounded-xl bg-superficie border border-borda hover:border-marca-escura transition flex flex-col justify-between">
                     <div>
-                      <div className="flex items-center justify-between text-xs font-mono text-slate-400 mb-1">
+                      <div className="flex items-center justify-between text-xs font-mono text-tinta-2 mb-1">
                         <span>{os.os_number}</span>
-                        <span className="px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-300 border border-blue-500/30 text-[10px]">
+                        <span className="px-2 py-0.5 rounded-full bg-teal-500/10 text-teal-800 border border-teal-500/30 text-[10px]">
                           {os.status}
                         </span>
                       </div>
-                      <h4 className="text-sm font-bold text-white truncate" title={os.title}>
+                      <h4 className="text-sm font-bold text-tinta truncate" title={os.title}>
                         {os.title}
                       </h4>
-                      <p className="text-xs text-slate-400 mt-1 flex items-center space-x-1">
-                        <Building className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                      <p className="text-xs text-tinta-2 mt-1 flex items-center space-x-1">
+                        <Building className="w-3.5 h-3.5 text-tinta-2 shrink-0" />
                         <span className="truncate">{clientName}</span>
                       </p>
                     </div>
 
-                    <div className="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between">
+                    <div className="mt-4 pt-3 border-t border-borda flex items-center justify-between">
                       <div>
-                        <span className="text-[10px] text-slate-500 uppercase font-semibold">Serviço Técnico</span>
-                        <div className="font-bold text-sm text-emerald-400 font-mono">
+                        <span className="text-[10px] text-tinta-2 uppercase font-semibold">Serviço Técnico</span>
+                        <div className="font-bold text-sm text-marca-escura font-mono">
                           {formatCurrency(3500)}
                         </div>
                       </div>
@@ -1484,7 +1484,7 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
                           const tx = generateReceivableFromServiceOrder(os.id);
                           if (tx) showNotification(`Recebível gerado com sucesso a partir da OS ${os.os_number}!`);
                         }}
-                        className="px-2.5 py-1.5 rounded-lg bg-emerald-600/20 hover:bg-emerald-600 text-emerald-300 hover:text-white text-xs font-semibold transition"
+                        className="px-2.5 py-1.5 rounded-lg bg-marca-suave hover:bg-marca-borda text-marca-escura text-xs font-semibold transition"
                       >
                         Faturar OS
                       </button>
@@ -1501,25 +1501,25 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
       {/* MODAL: NOVO LANÇAMENTO (RECEITA OU DESPESA) */}
       {/* ========================================================================= */}
       {isNewTxModalOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-slate-900 border border-slate-800 w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-            <div className={`p-4 border-b border-slate-800 flex items-center justify-between ${
-              txTypeToCreate === 'RECEIVABLE' ? 'bg-emerald-950/40' : 'bg-rose-950/40'
+        <div className="fixed inset-0 z-50 bg-fundo backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-superficie border border-borda w-full max-w-lg rounded-2xl shadow-sm overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className={`p-4 border-b border-borda flex items-center justify-between ${
+              txTypeToCreate === 'RECEIVABLE' ? 'bg-marca-suave' : 'bg-rose-50'
             }`}>
               <div className="flex items-center space-x-2.5">
                 <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                  txTypeToCreate === 'RECEIVABLE' ? 'bg-emerald-500 text-white' : 'bg-rose-500 text-white'
+                  txTypeToCreate === 'RECEIVABLE' ? 'bg-marca-escura text-white' : 'bg-rose-700 text-white'
                 }`}>
                   <Plus className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-white">
+                  <h3 className="text-sm font-bold text-tinta">
                     {txTypeToCreate === 'RECEIVABLE' ? 'Novo Título a Receber (Receita SST)' : 'Novo Título a Pagar (Despesa / Custo)'}
                   </h3>
-                  <p className="text-[11px] text-slate-400">Preencha os dados do documento e condições financeiras</p>
+                  <p className="text-[11px] text-tinta-2">Preencha os dados do documento e condições financeiras</p>
                 </div>
               </div>
-              <button onClick={() => setIsNewTxModalOpen(false)} className="text-slate-400 hover:text-white p-1 rounded-lg">
+              <button onClick={() => setIsNewTxModalOpen(false)} className="text-tinta-2 hover:text-tinta p-1 rounded-lg">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -1527,25 +1527,25 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
             <form onSubmit={handleSaveNewTransaction} className="p-5 space-y-4 text-xs">
               {/* Title */}
               <div>
-                <label className="block text-slate-300 font-medium mb-1">Título do Lançamento *</label>
+                <label className="block text-tinta font-medium mb-1">Título do Lançamento *</label>
                 <input
                   type="text"
                   required
                   placeholder={txTypeToCreate === 'RECEIVABLE' ? 'Ex: Mensalidade SST S-2240 e Gestão de Riscos' : 'Ex: Honorários Médicos Dr. Roberto - PCMSO'}
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-200 placeholder-slate-500 focus:outline-none focus:border-emerald-500"
+                  className="w-full bg-fundo border border-borda rounded-xl px-3 py-2 text-tinta placeholder-tinta-3 focus:outline-none focus:border-marca-escura"
                 />
               </div>
 
               {/* Client or Supplier */}
               {txTypeToCreate === 'RECEIVABLE' ? (
                 <div>
-                  <label className="block text-slate-300 font-medium mb-1">Cliente Vinculado</label>
+                  <label className="block text-tinta font-medium mb-1">Cliente Vinculado</label>
                   <select
                     value={newClientId}
                     onChange={(e) => setNewClientId(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-200 focus:outline-none focus:border-emerald-500"
+                    className="w-full bg-fundo border border-borda rounded-xl px-3 py-2 text-tinta focus:outline-none focus:border-marca-escura"
                   >
                     {clients.map(c => (
                       <option key={c.id} value={c.id}>
@@ -1556,14 +1556,14 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
                 </div>
               ) : (
                 <div>
-                  <label className="block text-slate-300 font-medium mb-1">Fornecedor / Profissional Credenciado *</label>
+                  <label className="block text-tinta font-medium mb-1">Fornecedor / Profissional Credenciado *</label>
                   <input
                     type="text"
                     required
                     placeholder="Ex: Laboratório MedLab, Dr. Roberto Silva CRM/SP..."
                     value={newSupplierName}
                     onChange={(e) => setNewSupplierName(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-200 placeholder-slate-500 focus:outline-none focus:border-emerald-500"
+                    className="w-full bg-fundo border border-borda rounded-xl px-3 py-2 text-tinta placeholder-tinta-3 focus:outline-none focus:border-marca-escura"
                   />
                 </div>
               )}
@@ -1571,11 +1571,11 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
               {/* Category & Amount */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-300 font-medium mb-1">Categoria SST</label>
+                  <label className="block text-tinta font-medium mb-1">Categoria SST</label>
                   <select
                     value={newCategory}
                     onChange={(e) => setNewCategory(e.target.value as FinancialCategoryKey)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-200 focus:outline-none focus:border-emerald-500"
+                    className="w-full bg-fundo border border-borda rounded-xl px-3 py-2 text-tinta focus:outline-none focus:border-marca-escura"
                   >
                     {txTypeToCreate === 'RECEIVABLE' ? (
                       <>
@@ -1603,7 +1603,7 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
                 </div>
 
                 <div>
-                  <label className="block text-slate-300 font-medium mb-1">Valor (R$) *</label>
+                  <label className="block text-tinta font-medium mb-1">Valor (R$) *</label>
                   <input
                     type="number"
                     step="0.01"
@@ -1611,7 +1611,7 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
                     placeholder="0,00"
                     value={newAmount}
                     onChange={(e) => setNewAmount(e.target.value === '' ? '' : Number(e.target.value))}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-200 focus:outline-none focus:border-emerald-500 font-mono font-semibold"
+                    className="w-full bg-fundo border border-borda rounded-xl px-3 py-2 text-tinta focus:outline-none focus:border-marca-escura font-mono font-semibold"
                   />
                 </div>
               </div>
@@ -1619,22 +1619,22 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
               {/* Due Date & Payment Method */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-300 font-medium mb-1">Data de Vencimento *</label>
+                  <label className="block text-tinta font-medium mb-1">Data de Vencimento *</label>
                   <input
                     type="date"
                     required
                     value={newDueDate}
                     onChange={(e) => setNewDueDate(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-200 focus:outline-none focus:border-emerald-500 font-mono"
+                    className="w-full bg-fundo border border-borda rounded-xl px-3 py-2 text-tinta focus:outline-none focus:border-marca-escura font-mono"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-slate-300 font-medium mb-1">Forma de Pagamento</label>
+                  <label className="block text-tinta font-medium mb-1">Forma de Pagamento</label>
                   <select
                     value={newPaymentMethod}
                     onChange={(e) => setNewPaymentMethod(e.target.value as FinancialPaymentMethod)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-200 focus:outline-none focus:border-emerald-500"
+                    className="w-full bg-fundo border border-borda rounded-xl px-3 py-2 text-tinta focus:outline-none focus:border-marca-escura"
                   >
                     <option value="BOLETO">Boleto Bancário</option>
                     <option value="PIX">PIX (Chave / QR Code)</option>
@@ -1648,41 +1648,41 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
               {/* Document Number & Notes */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-300 font-medium mb-1">Número do Documento (NF/Recibo)</label>
+                  <label className="block text-tinta font-medium mb-1">Número do Documento (NF/Recibo)</label>
                   <input
                     type="text"
                     placeholder="Ex: NF-e 2026/0512"
                     value={newDocNumber}
                     onChange={(e) => setNewDocNumber(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-200 placeholder-slate-500 focus:outline-none focus:border-emerald-500 font-mono"
+                    className="w-full bg-fundo border border-borda rounded-xl px-3 py-2 text-tinta placeholder-tinta-3 focus:outline-none focus:border-marca-escura font-mono"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-slate-300 font-medium mb-1">Observações Internas</label>
+                  <label className="block text-tinta font-medium mb-1">Observações Internas</label>
                   <input
                     type="text"
                     placeholder="Observações adicionais..."
                     value={newNotes}
                     onChange={(e) => setNewNotes(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-200 placeholder-slate-500 focus:outline-none focus:border-emerald-500"
+                    className="w-full bg-fundo border border-borda rounded-xl px-3 py-2 text-tinta placeholder-tinta-3 focus:outline-none focus:border-marca-escura"
                   />
                 </div>
               </div>
 
               {/* Submit Buttons */}
-              <div className="pt-4 border-t border-slate-800 flex items-center justify-end space-x-2">
+              <div className="pt-4 border-t border-borda flex items-center justify-end space-x-2">
                 <button
                   type="button"
                   onClick={() => setIsNewTxModalOpen(false)}
-                  className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium transition"
+                  className="px-4 py-2 rounded-xl bg-superficie-2 hover:bg-superficie-3 text-tinta font-medium transition"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className={`px-4 py-2 rounded-xl text-white font-semibold shadow-lg transition ${
-                    txTypeToCreate === 'RECEIVABLE' ? 'bg-emerald-600 hover:bg-emerald-500 shadow-emerald-950/40' : 'bg-rose-600 hover:bg-rose-500 shadow-rose-950/40'
+                  className={`px-4 py-2 rounded-xl text-tinta font-semibold shadow-lg transition ${
+                    txTypeToCreate === 'RECEIVABLE' ? 'bg-marca hover:bg-marca-escura' : 'bg-rose-600 hover:bg-rose-500'
                   }`}
                 >
                   Salvar Lançamento
@@ -1697,51 +1697,51 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
       {/* MODAL: BAIXA / LIQUIDAÇÃO DE TÍTULO */}
       {/* ========================================================================= */}
       {selectedTxForSettlement && (
-        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-slate-900 border border-slate-800 w-full max-w-md rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-            <div className="p-4 border-b border-slate-800 bg-emerald-950/40 flex items-center justify-between">
+        <div className="fixed inset-0 z-50 bg-fundo backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-superficie border border-borda w-full max-w-md rounded-2xl shadow-sm overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="p-4 border-b border-borda bg-marca-suave flex items-center justify-between">
               <div className="flex items-center space-x-2.5">
-                <div className="w-8 h-8 rounded-lg bg-emerald-500 text-white flex items-center justify-center">
+                <div className="w-8 h-8 rounded-lg bg-marca-escura text-white flex items-center justify-center">
                   <Check className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-white">Confirmar Baixa / Liquidação</h3>
-                  <p className="text-[11px] text-slate-400">Registrar pagamento efetivo no fluxo de caixa</p>
+                  <h3 className="text-sm font-bold text-tinta">Confirmar Baixa / Liquidação</h3>
+                  <p className="text-[11px] text-tinta-2">Registrar pagamento efetivo no fluxo de caixa</p>
                 </div>
               </div>
-              <button onClick={() => setSelectedTxForSettlement(null)} className="text-slate-400 hover:text-white p-1 rounded-lg">
+              <button onClick={() => setSelectedTxForSettlement(null)} className="text-tinta-2 hover:text-tinta p-1 rounded-lg">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <div className="p-5 space-y-4 text-xs">
-              <div className="p-3 bg-slate-950 rounded-xl border border-slate-800">
-                <div className="text-[11px] text-slate-400 uppercase font-semibold">Título</div>
-                <div className="font-bold text-sm text-white mt-0.5">{selectedTxForSettlement.title}</div>
+              <div className="p-3 bg-fundo rounded-xl border border-borda">
+                <div className="text-[11px] text-tinta-2 uppercase font-semibold">Título</div>
+                <div className="font-bold text-sm text-tinta mt-0.5">{selectedTxForSettlement.title}</div>
                 <div className="mt-2 flex items-center justify-between text-xs font-mono">
-                  <span className="text-slate-400">Valor Original:</span>
-                  <span className="text-slate-200 font-bold">{formatCurrency(selectedTxForSettlement.amount)}</span>
+                  <span className="text-tinta-2">Valor Original:</span>
+                  <span className="text-tinta font-bold">{formatCurrency(selectedTxForSettlement.amount)}</span>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-300 font-medium mb-1">Data do Pagamento *</label>
+                  <label className="block text-tinta font-medium mb-1">Data do Pagamento *</label>
                   <input
                     type="date"
                     required
                     value={settlementDate}
                     onChange={(e) => setSettlementDate(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-200 focus:outline-none focus:border-emerald-500 font-mono"
+                    className="w-full bg-fundo border border-borda rounded-xl px-3 py-2 text-tinta focus:outline-none focus:border-marca-escura font-mono"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-slate-300 font-medium mb-1">Meio de Pagamento</label>
+                  <label className="block text-tinta font-medium mb-1">Meio de Pagamento</label>
                   <select
                     value={settlementMethod}
                     onChange={(e) => setSettlementMethod(e.target.value as FinancialPaymentMethod)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-200 focus:outline-none focus:border-emerald-500"
+                    className="w-full bg-fundo border border-borda rounded-xl px-3 py-2 text-tinta focus:outline-none focus:border-marca-escura"
                   >
                     <option value="PIX">PIX</option>
                     <option value="BOLETO">Boleto Compensado</option>
@@ -1754,59 +1754,59 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-300 font-medium mb-1">Desconto Concedido (R$)</label>
+                  <label className="block text-tinta font-medium mb-1">Desconto Concedido (R$)</label>
                   <input
                     type="number"
                     step="0.01"
                     value={settlementDiscount}
                     onChange={(e) => setSettlementDiscount(Number(e.target.value))}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-200 font-mono"
+                    className="w-full bg-fundo border border-borda rounded-xl px-3 py-2 text-tinta font-mono"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-slate-300 font-medium mb-1">Juros / Multa (R$)</label>
+                  <label className="block text-tinta font-medium mb-1">Juros / Multa (R$)</label>
                   <input
                     type="number"
                     step="0.01"
                     value={settlementInterest}
                     onChange={(e) => setSettlementInterest(Number(e.target.value))}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-200 font-mono"
+                    className="w-full bg-fundo border border-borda rounded-xl px-3 py-2 text-tinta font-mono"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-slate-300 font-medium mb-1">Notas de Conciliação / Autenticação</label>
+                <label className="block text-tinta font-medium mb-1">Notas de Conciliação / Autenticação</label>
                 <input
                   type="text"
                   placeholder="Ex: Comprovante TED Itaú Autenticação 988412..."
                   value={settlementNotes}
                   onChange={(e) => setSettlementNotes(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-200 placeholder-slate-500 focus:outline-none focus:border-emerald-500"
+                  className="w-full bg-fundo border border-borda rounded-xl px-3 py-2 text-tinta placeholder-tinta-3 focus:outline-none focus:border-marca-escura"
                 />
               </div>
 
               {/* Total Summary */}
-              <div className="p-3 rounded-xl bg-emerald-950/30 border border-emerald-500/30 flex items-center justify-between">
-                <span className="text-xs font-semibold text-emerald-300">Valor Final a Baixar:</span>
-                <span className="font-mono text-base font-bold text-emerald-400">
+              <div className="p-3 rounded-xl bg-marca-suave border border-marca-borda flex items-center justify-between">
+                <span className="text-xs font-semibold text-marca-escura">Valor Final a Baixar:</span>
+                <span className="font-mono text-base font-bold text-marca-escura">
                   {formatCurrency(selectedTxForSettlement.amount - settlementDiscount + settlementInterest)}
                 </span>
               </div>
 
-              <div className="pt-3 border-t border-slate-800 flex items-center justify-end space-x-2">
+              <div className="pt-3 border-t border-borda flex items-center justify-end space-x-2">
                 <button
                   type="button"
                   onClick={() => setSelectedTxForSettlement(null)}
-                  className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium transition"
+                  className="px-4 py-2 rounded-xl bg-superficie-2 hover:bg-superficie-3 text-tinta font-medium transition"
                 >
                   Cancelar
                 </button>
                 <button
                   type="button"
                   onClick={handleConfirmSettlement}
-                  className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold shadow-lg shadow-emerald-950/40 transition"
+                  className="px-4 py-2 rounded-xl bg-marca-escura hover:opacity-90 text-white font-semibold shadow-sm transition"
                 >
                   Confirmar Baixa
                 </button>
@@ -1820,80 +1820,80 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
       {/* MODAL: RECIBO & FATURA TIMBRADA PREVSAFE */}
       {/* ========================================================================= */}
       {selectedTxForReceipt && (
-        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-slate-900 border border-slate-800 w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-            <div className="p-4 border-b border-slate-800 bg-slate-950 flex items-center justify-between">
+        <div className="fixed inset-0 z-50 bg-fundo backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-superficie border border-borda w-full max-w-2xl rounded-2xl shadow-sm overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="p-4 border-b border-borda bg-fundo flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <ShieldCheck className="w-5 h-5 text-emerald-400" />
-                <span className="text-sm font-bold text-white">Comprovante / Recibo de Prestação de Serviços SST</span>
+                <ShieldCheck className="w-5 h-5 text-marca-escura" />
+                <span className="text-sm font-bold text-tinta">Comprovante / Recibo de Prestação de Serviços SST</span>
               </div>
               <div className="flex items-center space-x-2">
                 <button
                   onClick={() => window.print()}
-                  className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white"
+                  className="p-1.5 rounded-lg bg-superficie-2 hover:bg-superficie-3 text-tinta hover:text-tinta"
                   title="Imprimir"
                 >
                   <Printer className="w-4 h-4" />
                 </button>
-                <button onClick={() => setSelectedTxForReceipt(null)} className="text-slate-400 hover:text-white p-1 rounded-lg">
+                <button onClick={() => setSelectedTxForReceipt(null)} className="text-tinta-2 hover:text-tinta p-1 rounded-lg">
                   <X className="w-5 h-5" />
                 </button>
               </div>
             </div>
 
             {/* Timbrated Content */}
-            <div className="p-6 space-y-5 bg-slate-950/90 font-sans text-xs">
+            <div className="p-6 space-y-5 bg-fundo font-sans text-xs">
               {/* Header */}
-              <div className="flex items-start justify-between border-b border-slate-800 pb-4">
+              <div className="flex items-start justify-between border-b border-borda pb-4">
                 <div>
-                  <div className="text-base font-bold text-white tracking-tight">{organization.legal_name || organization.name}</div>
-                  <div className="text-slate-400 text-[11px] mt-0.5">CNPJ: {organization.document_number}</div>
-                  <div className="text-slate-400 text-[11px]">{[organization.email, organization.phone].filter(Boolean).join(' • ')}</div>
+                  <div className="text-base font-bold text-tinta tracking-tight">{organization.legal_name || organization.name}</div>
+                  <div className="text-tinta-2 text-[11px] mt-0.5">CNPJ: {organization.document_number}</div>
+                  <div className="text-tinta-2 text-[11px]">{[organization.email, organization.phone].filter(Boolean).join(' • ')}</div>
                 </div>
                 <div className="text-right font-mono">
-                  <div className="text-xs font-bold text-emerald-400">{selectedTxForReceipt.document_number || 'FAT-2026-0091'}</div>
-                  <div className="text-[10px] text-slate-400">Emissão: {formatDate(selectedTxForReceipt.created_at)}</div>
-                  <div className="text-[10px] text-slate-400">Vencimento: {formatDate(selectedTxForReceipt.due_date)}</div>
+                  <div className="text-xs font-bold text-marca-escura">{selectedTxForReceipt.document_number || 'FAT-2026-0091'}</div>
+                  <div className="text-[10px] text-tinta-2">Emissão: {formatDate(selectedTxForReceipt.created_at)}</div>
+                  <div className="text-[10px] text-tinta-2">Vencimento: {formatDate(selectedTxForReceipt.due_date)}</div>
                 </div>
               </div>
 
               {/* Client Info */}
-              <div className="p-3.5 rounded-xl bg-slate-900 border border-slate-800 space-y-1">
-                <div className="text-[10px] text-slate-500 uppercase font-semibold">Tomador dos Serviços (Cliente)</div>
-                <div className="font-bold text-sm text-white">{selectedTxForReceipt.client_name}</div>
-                <div className="text-slate-400 text-[11px]">Unidade / Contrato: Gestão Integrada de Segurança e Saúde Ocupacional</div>
+              <div className="p-3.5 rounded-xl bg-superficie border border-borda space-y-1">
+                <div className="text-[10px] text-tinta-2 uppercase font-semibold">Tomador dos Serviços (Cliente)</div>
+                <div className="font-bold text-sm text-tinta">{selectedTxForReceipt.client_name}</div>
+                <div className="text-tinta-2 text-[11px]">Unidade / Contrato: Gestão Integrada de Segurança e Saúde Ocupacional</div>
               </div>
 
               {/* Service Description */}
               <div className="space-y-2">
-                <div className="text-[10px] text-slate-500 uppercase font-semibold">Detalhamento dos Serviços SST</div>
-                <div className="p-3 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-between">
+                <div className="text-[10px] text-tinta-2 uppercase font-semibold">Detalhamento dos Serviços SST</div>
+                <div className="p-3 rounded-xl bg-superficie border border-borda flex items-center justify-between">
                   <div>
-                    <div className="font-bold text-slate-100">{selectedTxForReceipt.title}</div>
-                    <div className="text-[11px] text-slate-400 mt-0.5">{selectedTxForReceipt.description || selectedTxForReceipt.category_name}</div>
+                    <div className="font-bold text-tinta">{selectedTxForReceipt.title}</div>
+                    <div className="text-[11px] text-tinta-2 mt-0.5">{selectedTxForReceipt.description || selectedTxForReceipt.category_name}</div>
                   </div>
-                  <div className="font-bold font-mono text-sm text-emerald-400">
+                  <div className="font-bold font-mono text-sm text-marca-escura">
                     {formatCurrency(selectedTxForReceipt.final_amount)}
                   </div>
                 </div>
               </div>
 
               {/* PIX Payment / Barcode Area */}
-              <div className="p-4 rounded-xl bg-slate-900 border border-slate-800 flex flex-col sm:flex-row items-center gap-4">
+              <div className="p-4 rounded-xl bg-superficie border border-borda flex flex-col sm:flex-row items-center gap-4">
                 <div className="w-20 h-20 bg-white rounded-lg flex items-center justify-center p-1 shrink-0">
                   <QrCode className="w-16 h-16 text-slate-900" />
                 </div>
                 <div className="flex-1 space-y-1 text-center sm:text-left">
-                  <div className="text-xs font-bold text-white flex items-center justify-center sm:justify-start space-x-1.5">
-                    <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+                  <div className="text-xs font-bold text-tinta flex items-center justify-center sm:justify-start space-x-1.5">
+                    <Sparkles className="w-3.5 h-3.5 text-marca-escura" />
                     <span>Pagamento Instantâneo via PIX</span>
                   </div>
-                  <p className="text-[11px] text-slate-400 font-mono truncate max-w-[320px]">
+                  <p className="text-[11px] text-tinta-2 font-mono truncate max-w-[320px]">
                     {selectedTxForReceipt.barcode_or_pix || 'Chave PIX não informada nesta cobrança'}
                   </p>
                   <button
                     onClick={() => copyPixToClipboard(selectedTxForReceipt.barcode_or_pix || '')}
-                    className="mt-1 px-3 py-1 rounded-lg bg-emerald-600/20 hover:bg-emerald-600 text-emerald-300 hover:text-white text-[11px] font-semibold flex items-center space-x-1.5 transition mx-auto sm:mx-0"
+                    className="mt-1 px-3 py-1 rounded-lg bg-marca-suave hover:bg-marca-borda text-marca-escura text-[11px] font-semibold flex items-center space-x-1.5 transition mx-auto sm:mx-0"
                   >
                     <Copy className="w-3 h-3" />
                     <span>{copiedPix ? 'Chave Copiada!' : 'Copiar Chave Pix / Código'}</span>
@@ -1902,7 +1902,7 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
               </div>
 
               {/* Footer */}
-              <div className="pt-3 border-t border-slate-800 text-[10px] text-slate-500 text-center">
+              <div className="pt-3 border-t border-borda text-[10px] text-tinta-2 text-center">
                 Documento emitido eletronicamente pela plataforma PrevSafe SST. Válido para prestação de contas fiscais e contratuais.
               </div>
             </div>

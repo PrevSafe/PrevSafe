@@ -432,51 +432,51 @@ export const GlobalCommandPalette: React.FC<GlobalCommandPaletteProps> = ({
 
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-start justify-center pt-16 sm:pt-24 px-4 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-150"
+      className="fixed inset-0 z-50 flex items-start justify-center pt-16 sm:pt-24 px-4 bg-fundo backdrop-blur-md animate-in fade-in duration-150"
       onClick={onClose}
     >
       <div 
-        className="w-full max-w-2xl bg-slate-900 border border-slate-700/80 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[80vh] animate-in zoom-in-95 duration-150"
+        className="w-full max-w-2xl bg-superficie border border-borda rounded-2xl shadow-sm overflow-hidden flex flex-col max-h-[80vh] animate-in zoom-in-95 duration-150"
         onClick={e => e.stopPropagation()}
         onKeyDown={handleKeyDown}
       >
         {/* Search Bar Input */}
-        <div className="flex items-center px-4 py-3.5 border-b border-slate-800 bg-slate-900/90 gap-3">
-          <Search className="w-5 h-5 text-emerald-400 flex-shrink-0" />
+        <div className="flex items-center px-4 py-3.5 border-b border-borda bg-superficie gap-3">
+          <Search className="w-5 h-5 text-marca-escura flex-shrink-0" />
           <input
             ref={inputRef}
             type="text"
             value={query}
             onChange={e => setQuery(e.target.value)}
             placeholder="Buscar telas, ordens de serviço, clientes ou ações rápidas..."
-            className="w-full bg-transparent text-sm sm:text-base text-slate-100 placeholder-slate-400 focus:outline-none"
+            className="w-full bg-transparent text-sm sm:text-base text-tinta placeholder-tinta-3 focus:outline-none"
           />
           {query && (
             <button
               onClick={() => setQuery('')}
-              className="p-1 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition"
+              className="p-1 text-tinta-2 hover:text-tinta rounded-lg hover:bg-superficie-2 transition"
             >
               <X className="w-4 h-4" />
             </button>
           )}
           <div className="hidden sm:flex items-center gap-1.5 flex-shrink-0">
-            <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-400">
+            <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded bg-superficie-2 border border-borda text-tinta-2">
               Esc
             </span>
-            <span className="text-xs text-slate-500">fechar</span>
+            <span className="text-xs text-tinta-2">fechar</span>
           </div>
         </div>
 
         {/* Results List */}
         <div 
           ref={listRef}
-          className="flex-1 overflow-y-auto p-2 divide-y divide-slate-800/40"
+          className="flex-1 overflow-y-auto p-2 divide-y divide-borda"
         >
           {filteredItems.length === 0 ? (
-            <div className="py-12 px-6 text-center text-slate-400">
-              <Search className="w-8 h-8 mx-auto mb-3 text-slate-600" />
-              <p className="text-sm font-medium text-slate-300">Nenhum resultado encontrado para &quot;{query}&quot;</p>
-              <p className="text-xs text-slate-500 mt-1">Tente buscar por &quot;OS&quot;, &quot;PGR&quot;, &quot;CIPA&quot;, &quot;EPI&quot;, ou pressione <span className="font-mono text-emerald-400">Ctrl+N</span> para criar uma OS.</p>
+            <div className="py-12 px-6 text-center text-tinta-2">
+              <Search className="w-8 h-8 mx-auto mb-3 text-tinta-2" />
+              <p className="text-sm font-medium text-tinta">Nenhum resultado encontrado para &quot;{query}&quot;</p>
+              <p className="text-xs text-tinta-2 mt-1">Tente buscar por &quot;OS&quot;, &quot;PGR&quot;, &quot;CIPA&quot;, &quot;EPI&quot;, ou pressione <span className="font-mono text-marca-escura">Ctrl+N</span> para criar uma OS.</p>
             </div>
           ) : (
             <div className="space-y-1">
@@ -491,35 +491,35 @@ export const GlobalCommandPalette: React.FC<GlobalCommandPaletteProps> = ({
                     onMouseEnter={() => setSelectedIndex(idx)}
                     className={`w-full text-left px-3.5 py-2.5 rounded-xl flex items-center justify-between gap-3 transition-colors ${
                       isSelected 
-                        ? 'bg-emerald-500/15 border border-emerald-500/30 text-white' 
-                        : 'text-slate-300 hover:bg-slate-800/60 hover:text-white border border-transparent'
+                        ? 'bg-marca-suave border border-marca-borda text-tinta' 
+                        : 'text-tinta hover:bg-superficie-2 hover:text-tinta border border-transparent'
                     }`}
                   >
                     <div className="flex items-center gap-3 min-w-0">
                       <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
                         item.category === 'ACTIONS'
-                          ? 'bg-emerald-500/20 text-emerald-400'
+                          ? 'bg-marca-suave text-marca-escura'
                           : item.category === 'SERVICE_ORDERS'
-                          ? 'bg-blue-500/20 text-blue-400'
+                          ? 'bg-teal-500/20 text-teal-800'
                           : item.category === 'CLIENTS'
-                          ? 'bg-amber-500/20 text-amber-400'
-                          : 'bg-slate-800 text-slate-300'
+                          ? 'bg-amber-500/20 text-amber-800'
+                          : 'bg-superficie-2 text-tinta'
                       }`}>
                         <IconComponent className="w-4 h-4" />
                       </div>
                       <div className="truncate">
                         <div className="flex items-center gap-2">
-                          <span className="text-sm font-semibold tracking-tight text-white truncate">
+                          <span className="text-sm font-semibold tracking-tight text-tinta truncate">
                             {item.title}
                           </span>
                           {item.badge && (
-                            <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700/60">
+                            <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-superficie-2 text-tinta-2 border border-borda">
                               {item.badge}
                             </span>
                           )}
                         </div>
                         {item.subtitle && (
-                          <p className="text-xs text-slate-400 truncate mt-0.5">
+                          <p className="text-xs text-tinta-2 truncate mt-0.5">
                             {item.subtitle}
                           </p>
                         )}
@@ -528,12 +528,12 @@ export const GlobalCommandPalette: React.FC<GlobalCommandPaletteProps> = ({
 
                     <div className="flex items-center gap-2 flex-shrink-0">
                       {item.shortcut && (
-                        <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+                        <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-marca-suave text-marca-escura border border-marca-borda">
                           {item.shortcut}
                         </span>
                       )}
                       {isSelected && (
-                        <div className="flex items-center gap-1 text-[11px] text-emerald-400 font-medium">
+                        <div className="flex items-center gap-1 text-[11px] text-marca-escura font-medium">
                           <span>Selecionar</span>
                           <CornerDownLeft className="w-3.5 h-3.5" />
                         </div>
@@ -547,25 +547,25 @@ export const GlobalCommandPalette: React.FC<GlobalCommandPaletteProps> = ({
         </div>
 
         {/* Footer with Global Shortcut Guides */}
-        <div className="px-4 py-2.5 bg-slate-950/80 border-t border-slate-800 text-[11px] text-slate-400 flex flex-wrap items-center justify-between gap-3">
+        <div className="px-4 py-2.5 bg-fundo border-t border-borda text-[11px] text-tinta-2 flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <span className="flex items-center gap-1">
-              <kbd className="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 font-mono text-[10px] text-slate-300">↑</kbd>
-              <kbd className="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 font-mono text-[10px] text-slate-300">↓</kbd>
+              <kbd className="px-1.5 py-0.5 rounded bg-superficie-2 border border-borda font-mono text-[10px] text-tinta">↑</kbd>
+              <kbd className="px-1.5 py-0.5 rounded bg-superficie-2 border border-borda font-mono text-[10px] text-tinta">↓</kbd>
               <span>Navegar</span>
             </span>
             <span className="flex items-center gap-1">
-              <kbd className="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 font-mono text-[10px] text-slate-300">↵</kbd>
+              <kbd className="px-1.5 py-0.5 rounded bg-superficie-2 border border-borda font-mono text-[10px] text-tinta">↵</kbd>
               <span>Abrir</span>
             </span>
             <span className="flex items-center gap-1">
-              <kbd className="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 font-mono text-[10px] text-slate-300">Esc</kbd>
+              <kbd className="px-1.5 py-0.5 rounded bg-superficie-2 border border-borda font-mono text-[10px] text-tinta">Esc</kbd>
               <span>Fechar</span>
             </span>
           </div>
 
-          <div className="flex items-center gap-2 text-emerald-400">
-            <kbd className="px-1.5 py-0.5 rounded bg-emerald-500/20 border border-emerald-500/40 font-mono text-[10px] text-emerald-300">
+          <div className="flex items-center gap-2 text-marca-escura">
+            <kbd className="px-1.5 py-0.5 rounded bg-marca-suave border border-marca-borda font-mono text-[10px] text-marca-escura">
               Ctrl+N
             </kbd>
             <span>Nova OS Direta</span>
@@ -677,36 +677,36 @@ export const QuickNewOSModal: React.FC<QuickNewOSModalProps> = ({
 
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-150"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-fundo backdrop-blur-md animate-in fade-in duration-150"
       onClick={onClose}
     >
       <div 
-        className="w-full max-w-xl bg-slate-900 border border-slate-700/80 rounded-2xl shadow-2xl overflow-hidden flex flex-col animate-in zoom-in-95 duration-150"
+        className="w-full max-w-xl bg-superficie border border-borda rounded-2xl shadow-sm overflow-hidden flex flex-col animate-in zoom-in-95 duration-150"
         onClick={e => e.stopPropagation()}
         onKeyDown={handleModalKeyDown}
       >
         {/* Modal Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-slate-900/90">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-borda bg-superficie">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center border border-emerald-500/30">
+            <div className="w-10 h-10 rounded-xl bg-marca-suave text-marca-escura flex items-center justify-center border border-marca-borda">
               <Plus className="w-5 h-5" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="text-base font-bold text-white tracking-tight">
+                <h3 className="text-base font-bold text-tinta tracking-tight">
                   Nova Ordem de Serviço (OS)
                 </h3>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-marca-suave text-marca-escura border border-marca-borda">
                   Ctrl + N
                 </span>
               </div>
-              <p className="text-xs text-slate-400">Atalho rápido para abertura e alocação de equipe técnica</p>
+              <p className="text-xs text-tinta-2">Atalho rápido para abertura e alocação de equipe técnica</p>
             </div>
           </div>
 
           <button
             onClick={onClose}
-            className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition"
+            className="p-1.5 text-tinta-2 hover:text-tinta rounded-lg hover:bg-superficie-2 transition"
             title="Fechar (Esc)"
           >
             <X className="w-5 h-5" />
@@ -716,7 +716,7 @@ export const QuickNewOSModal: React.FC<QuickNewOSModalProps> = ({
         {/* Modal Form */}
         <form onSubmit={handleSubmit} className="p-6 space-y-4 max-h-[75vh] overflow-y-auto">
           {errorMsg && (
-            <div className="p-3 bg-rose-500/15 border border-rose-500/30 rounded-xl text-rose-300 text-xs flex items-center gap-2">
+            <div className="p-3 bg-rose-500/15 border border-rose-500/30 rounded-xl text-rose-800 text-xs flex items-center gap-2">
               <AlertTriangle className="w-4 h-4 flex-shrink-0" />
               <span>{errorMsg}</span>
             </div>
@@ -724,13 +724,13 @@ export const QuickNewOSModal: React.FC<QuickNewOSModalProps> = ({
 
           {/* Cliente */}
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-              Empresa Contratante / Cliente <span className="text-emerald-400">*</span>
+            <label className="block text-xs font-semibold text-tinta mb-1.5">
+              Empresa Contratante / Cliente <span className="text-marca-escura">*</span>
             </label>
             <select
               value={clientId}
               onChange={e => setClientId(e.target.value)}
-              className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500"
+              className="w-full bg-superficie-2 border border-borda rounded-xl px-3.5 py-2.5 text-sm text-tinta focus:outline-none focus:border-marca-escura"
               required
               autoFocus
             >
@@ -746,13 +746,13 @@ export const QuickNewOSModal: React.FC<QuickNewOSModalProps> = ({
           {/* Modelo de Serviço (Template) */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+              <label className="block text-xs font-semibold text-tinta mb-1.5">
                 Modelo de Serviço SST
               </label>
               <select
                 value={templateId}
                 onChange={e => handleTemplateChange(e.target.value)}
-                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500"
+                className="w-full bg-superficie-2 border border-borda rounded-xl px-3 py-2 text-sm text-tinta focus:outline-none focus:border-marca-escura"
               >
                 <option value="">Serviço Personalizado (Sem template)</option>
                 {serviceTemplates.map(tmpl => (
@@ -764,13 +764,13 @@ export const QuickNewOSModal: React.FC<QuickNewOSModalProps> = ({
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+              <label className="block text-xs font-semibold text-tinta mb-1.5">
                 Prioridade da Execução
               </label>
               <select
                 value={priority}
                 onChange={e => setPriority(e.target.value as PriorityLevel)}
-                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500"
+                className="w-full bg-superficie-2 border border-borda rounded-xl px-3 py-2 text-sm text-tinta focus:outline-none focus:border-marca-escura"
               >
                 <option value="LOW">Baixa</option>
                 <option value="MEDIUM">Média</option>
@@ -782,15 +782,15 @@ export const QuickNewOSModal: React.FC<QuickNewOSModalProps> = ({
 
           {/* Título da OS */}
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-              Título da Ordem de Serviço <span className="text-emerald-400">*</span>
+            <label className="block text-xs font-semibold text-tinta mb-1.5">
+              Título da Ordem de Serviço <span className="text-marca-escura">*</span>
             </label>
             <input
               type="text"
               value={title}
               onChange={e => setTitle(e.target.value)}
               placeholder="Ex: Elaboração do PGR 2026 e Inventário de Riscos"
-              className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500"
+              className="w-full bg-superficie-2 border border-borda rounded-xl px-3.5 py-2.5 text-sm text-tinta focus:outline-none focus:border-marca-escura"
               required
             />
           </div>
@@ -798,20 +798,20 @@ export const QuickNewOSModal: React.FC<QuickNewOSModalProps> = ({
           {/* Prazo e Responsável */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                Prazo de Entrega (SLA) <span className="text-emerald-400">*</span>
+              <label className="block text-xs font-semibold text-tinta mb-1.5">
+                Prazo de Entrega (SLA) <span className="text-marca-escura">*</span>
               </label>
               <input
                 type="date"
                 value={dueDate}
                 onChange={e => setDueDate(e.target.value)}
-                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500"
+                className="w-full bg-superficie-2 border border-borda rounded-xl px-3 py-2 text-sm text-tinta focus:outline-none focus:border-marca-escura"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+              <label className="block text-xs font-semibold text-tinta mb-1.5">
                 Responsável Técnico
               </label>
               <input
@@ -819,14 +819,14 @@ export const QuickNewOSModal: React.FC<QuickNewOSModalProps> = ({
                 value={technicalResp}
                 onChange={e => setTechnicalResp(e.target.value)}
                 placeholder="Ex: Eng. Eduardo Vasconcelos"
-                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500"
+                className="w-full bg-superficie-2 border border-borda rounded-xl px-3 py-2 text-sm text-tinta focus:outline-none focus:border-marca-escura"
               />
             </div>
           </div>
 
           {/* Observações */}
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+            <label className="block text-xs font-semibold text-tinta mb-1.5">
               Observações / Instruções de Campo
             </label>
             <textarea
@@ -834,15 +834,15 @@ export const QuickNewOSModal: React.FC<QuickNewOSModalProps> = ({
               onChange={e => setNotes(e.target.value)}
               placeholder="Detalhes adicionais de alocação de equipamentos de medição, contato na planta, etc."
               rows={2}
-              className="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-emerald-500 resize-none"
+              className="w-full bg-superficie-2 border border-borda rounded-xl p-3 text-sm text-tinta focus:outline-none focus:border-marca-escura resize-none"
             />
           </div>
 
           {/* Action Buttons */}
-          <div className="pt-3 border-t border-slate-800 flex items-center justify-between gap-3">
-            <div className="text-[11px] text-slate-400 hidden sm:flex items-center gap-1.5">
+          <div className="pt-3 border-t border-borda flex items-center justify-between gap-3">
+            <div className="text-[11px] text-tinta-2 hidden sm:flex items-center gap-1.5">
               <span>Pressione</span>
-              <kbd className="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 font-mono text-[10px] text-slate-300">Ctrl + Enter</kbd>
+              <kbd className="px-1.5 py-0.5 rounded bg-superficie-2 border border-borda font-mono text-[10px] text-tinta">Ctrl + Enter</kbd>
               <span>para salvar</span>
             </div>
 
@@ -850,14 +850,14 @@ export const QuickNewOSModal: React.FC<QuickNewOSModalProps> = ({
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2 rounded-xl text-xs font-medium text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 border border-slate-700 transition"
+                className="px-4 py-2 rounded-xl text-xs font-medium text-tinta hover:text-tinta bg-superficie-2 hover:bg-superficie-3 border border-borda transition"
               >
                 Cancelar (Esc)
               </button>
 
               <button
                 type="submit"
-                className="px-4 py-2 rounded-xl text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-500 border border-emerald-500 flex items-center gap-2 shadow-lg shadow-emerald-950/40 transition"
+                className="px-4 py-2 rounded-xl text-xs font-semibold text-white bg-marca-escura hover:opacity-90 border border-marca-escura flex items-center gap-2 shadow-sm transition"
               >
                 <Plus className="w-4 h-4" />
                 <span>Criar Ordem de Serviço</span>
@@ -893,35 +893,35 @@ export const ShortcutsHelpModal: React.FC<ShortcutsHelpModalProps> = ({ isOpen, 
 
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-150"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-fundo backdrop-blur-md animate-in fade-in duration-150"
       onClick={onClose}
     >
       <div 
-        className="w-full max-w-md bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl p-6 space-y-4"
+        className="w-full max-w-md bg-superficie border border-borda rounded-2xl shadow-sm p-6 space-y-4"
         onClick={e => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+        <div className="flex items-center justify-between pb-3 border-b border-borda">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-marca-suave text-marca-escura flex items-center justify-center">
               <Keyboard className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-white">Atalhos de Teclado Globais</h3>
-              <p className="text-xs text-slate-400">Produtividade para usuários administrativos</p>
+              <h3 className="text-sm font-bold text-tinta">Atalhos de Teclado Globais</h3>
+              <p className="text-xs text-tinta-2">Produtividade para usuários administrativos</p>
             </div>
           </div>
-          <button onClick={onClose} className="text-slate-400 hover:text-white p-1 rounded-lg">
+          <button onClick={onClose} className="text-tinta-2 hover:text-tinta p-1 rounded-lg">
             <X className="w-4 h-4" />
           </button>
         </div>
 
         <div className="space-y-2.5">
           {shortcuts.map((s, idx) => (
-            <div key={idx} className="flex items-center justify-between py-1.5 px-2 rounded-lg bg-slate-800/50 border border-slate-700/40">
-              <span className="text-xs text-slate-300">{s.desc}</span>
+            <div key={idx} className="flex items-center justify-between py-1.5 px-2 rounded-lg bg-superficie-2 border border-borda">
+              <span className="text-xs text-tinta">{s.desc}</span>
               <div className="flex items-center gap-1">
                 {s.keys.map((k, kIdx) => (
-                  <kbd key={kIdx} className="px-2 py-0.5 rounded bg-slate-900 border border-slate-700 font-mono text-[10px] text-emerald-400 font-semibold shadow-xs">
+                  <kbd key={kIdx} className="px-2 py-0.5 rounded bg-superficie border border-borda font-mono text-[10px] text-marca-escura font-semibold shadow-xs">
                     {k}
                   </kbd>
                 ))}
@@ -930,8 +930,8 @@ export const ShortcutsHelpModal: React.FC<ShortcutsHelpModalProps> = ({ isOpen, 
           ))}
         </div>
 
-        <div className="pt-2 text-center text-xs text-slate-400">
-          Também compatível com <span className="font-mono text-slate-300">⌘ (Command)</span> no macOS.
+        <div className="pt-2 text-center text-xs text-tinta-2">
+          Também compatível com <span className="font-mono text-tinta">⌘ (Command)</span> no macOS.
         </div>
       </div>
     </div>

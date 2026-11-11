@@ -63,7 +63,7 @@ export default async function AtualizacoesPage() {
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={destaque.imagem_url} alt="" className="w-full h-full min-h-[16rem] object-cover object-top" />
                   ) : (
-                    <div className="w-full min-h-[16rem] bg-gradient-to-br from-emerald-600 to-teal-800" aria-hidden="true" />
+                    <div className="bg-marca-suave w-full min-h-[16rem]" aria-hidden="true" />
                   )}
                   <div className="p-7">
                     {destaque.categoria && (

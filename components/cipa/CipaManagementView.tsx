@@ -303,25 +303,25 @@ export const CipaManagementView: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Top Banner & Selector */}
-      <div className="rounded-2xl bg-gradient-to-r from-slate-900 via-teal-950 to-slate-900 p-6 text-white shadow-xl border border-teal-800/30">
+      <div className="bg-superficie rounded-2xl p-6 text-tinta shadow-sm border border-teal-200">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="space-y-2">
             <div className="flex flex-wrap items-center gap-2.5">
-              <span className="flex items-center gap-1.5 rounded-full bg-teal-500/20 border border-teal-400/40 px-3 py-1 text-xs font-bold text-teal-300">
+              <span className="flex items-center gap-1.5 rounded-full bg-teal-500/20 border border-teal-400/40 px-3 py-1 text-xs font-bold text-teal-800">
                 <ShieldCheck className="h-3.5 w-3.5" />
                 Módulo Legal de CIPA &amp; Eleições Digitais
               </span>
-              <span className="rounded-full bg-emerald-500/20 border border-emerald-400/30 px-3 py-1 text-xs font-semibold text-emerald-300">
+              <span className="rounded-full bg-marca-suave border border-marca-borda px-3 py-1 text-xs font-semibold text-marca-escura">
                 Lei nº 14.457/2022 (Combate ao Assédio)
               </span>
-              <span className="rounded-full bg-blue-500/20 border border-blue-400/30 px-3 py-1 text-xs font-semibold text-blue-300">
+              <span className="rounded-full bg-teal-500/20 border border-teal-400/30 px-3 py-1 text-xs font-semibold text-teal-800">
                 LGPD &amp; Votação Auditável SHA-256
               </span>
             </div>
-            <h1 className="text-2xl font-black tracking-tight text-white sm:text-3xl">
+            <h1 className="text-2xl font-black tracking-tight text-tinta sm:text-3xl">
               Gestão Integral da CIPA &amp; Normas Setoriais
             </h1>
-            <p className="text-sm text-slate-300 max-w-3xl leading-relaxed">
+            <p className="text-sm text-tinta max-w-3xl leading-relaxed">
               Controle completo do processo eleitoral, dimensionamento automático pelo Quadro I, cronogramas regulamentares, escrutínio digital seguro, apuração com desempate legal e emissão instantânea de Atas em PDF.
             </p>
           </div>
@@ -329,14 +329,14 @@ export const CipaManagementView: React.FC = () => {
           <div className="flex flex-wrap items-center gap-3">
             <button
               onClick={() => setIsNewProcessModalOpen(true)}
-              className="flex items-center gap-2 rounded-xl bg-teal-600 hover:bg-teal-500 px-4 py-2.5 text-xs font-bold text-white shadow-lg shadow-teal-900/40 transition active:scale-95"
+              className="flex items-center gap-2 rounded-xl bg-teal-600 hover:bg-teal-700 px-4 py-2.5 text-xs font-bold text-white shadow-sm transition active:scale-95"
             >
               <Plus className="h-4 w-4" />
               Novo Processo CIPA
             </button>
             <button
               onClick={() => setIsVotingModalOpen(true)}
-              className="flex items-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 px-4 py-2.5 text-xs font-bold text-white shadow-lg shadow-emerald-900/40 transition active:scale-95"
+              className="flex items-center gap-2 rounded-xl bg-marca-escura hover:opacity-90 px-4 py-2.5 text-xs font-bold text-white shadow-sm transition active:scale-95"
             >
               <Vote className="h-4 w-4" />
               Cabine de Votação
@@ -345,9 +345,9 @@ export const CipaManagementView: React.FC = () => {
         </div>
 
         {/* Norm Filter Buttons */}
-        <div className="mt-6 pt-5 border-t border-slate-800 flex flex-wrap items-center gap-2">
-          <span className="text-xs font-bold uppercase tracking-wider text-slate-400 mr-2 flex items-center gap-1.5">
-            <Filter className="h-3.5 w-3.5 text-teal-400" />
+        <div className="mt-6 pt-5 border-t border-borda flex flex-wrap items-center gap-2">
+          <span className="text-xs font-bold uppercase tracking-wider text-tinta-2 mr-2 flex items-center gap-1.5">
+            <Filter className="h-3.5 w-3.5 text-teal-700" />
             Norma Regulamentadora:
           </span>
           {(['ALL', 'NR-05', 'NR-31.7', 'NR-22.36', 'NR-18.17', 'NR-30', 'NR-32'] as const).map((normKey) => (
@@ -356,8 +356,8 @@ export const CipaManagementView: React.FC = () => {
               onClick={() => setSelectedNormFilter(normKey)}
               className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
                 selectedNormFilter === normKey
-                  ? 'bg-teal-500 text-slate-950 font-bold shadow-sm'
-                  : 'bg-slate-800/80 text-slate-300 hover:bg-slate-700/80 border border-slate-700/50'
+                  ? 'bg-marca-escura text-white font-bold shadow-sm'
+                  : 'bg-superficie-2 text-tinta hover:bg-superficie-3 border border-borda'
               }`}
             >
               {normKey === 'ALL' ? 'Todas as Normas' : normKey}
@@ -369,7 +369,7 @@ export const CipaManagementView: React.FC = () => {
       {/* Process Selection Pill Selector */}
       {filteredProcesses.length > 0 && (
         <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-thin">
-          <span className="text-xs font-bold text-slate-500 whitespace-nowrap">Processos Ativos:</span>
+          <span className="text-xs font-bold text-tinta-2 whitespace-nowrap">Processos Ativos:</span>
           {filteredProcesses.map(proc => (
             <button
               key={proc.id}
@@ -377,15 +377,15 @@ export const CipaManagementView: React.FC = () => {
               className={`flex items-center gap-2 rounded-xl px-3.5 py-2 text-xs font-semibold whitespace-nowrap transition border ${
                 currentProcess?.id === proc.id
                   ? 'bg-teal-50 border-teal-600 text-teal-900 shadow-sm ring-1 ring-teal-500/20'
-                  : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+                  : 'bg-white border-slate-200 text-tinta-2 hover:bg-slate-50'
               }`}
             >
-              <Building2 className="h-3.5 w-3.5 text-teal-600" />
+              <Building2 className="h-3.5 w-3.5 text-teal-700" />
               <span>{proc.client_name}</span>
               <span className="rounded bg-teal-200/60 px-1.5 py-0.2 text-[10px] font-bold text-teal-800">
                 {proc.norm}
               </span>
-              <span className="text-[11px] text-slate-400">{proc.mandate_year}</span>
+              <span className="text-[11px] text-tinta-2">{proc.mandate_year}</span>
             </button>
           ))}
         </div>
@@ -397,7 +397,7 @@ export const CipaManagementView: React.FC = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Status & Norm */}
             <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm space-y-1.5">
-              <div className="flex items-center justify-between text-xs text-slate-500 font-medium">
+              <div className="flex items-center justify-between text-xs text-tinta-2 font-medium">
                 <span>Norma &amp; Mandato</span>
                 <span className="rounded-md bg-teal-50 px-2 py-0.5 font-bold text-teal-700 text-[11px] border border-teal-100">
                   {currentProcess.norm}
@@ -406,7 +406,7 @@ export const CipaManagementView: React.FC = () => {
               <div className="text-lg font-bold text-slate-900 truncate">
                 Gestão {currentProcess.mandate_year}
               </div>
-              <div className="flex items-center gap-1.5 text-xs text-emerald-600 font-semibold">
+              <div className="flex items-center gap-1.5 text-xs text-marca-escura font-semibold">
                 <CheckCircle2 className="h-3.5 w-3.5" />
                 {currentProcess.status === 'INAUGURATION_COMPLETED' ? 'Comissão Empossada' :
                  currentProcess.status === 'VOTING_IN_PROGRESS' ? 'Votação Aberta' :
@@ -416,20 +416,20 @@ export const CipaManagementView: React.FC = () => {
 
             {/* Electoral Quorum */}
             <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm space-y-1.5">
-              <div className="flex items-center justify-between text-xs text-slate-500 font-medium">
+              <div className="flex items-center justify-between text-xs text-tinta-2 font-medium">
                 <span>Quórum Eleitoral (Mín. 50%)</span>
-                <Vote className="h-4 w-4 text-teal-600" />
+                <Vote className="h-4 w-4 text-teal-700" />
               </div>
               <div className="text-lg font-bold text-slate-900 flex items-center gap-2">
                 <span>{currentProcess.quorum_percentage}%</span>
-                <span className="text-xs font-normal text-slate-500">
+                <span className="text-xs font-normal text-tinta-2">
                   ({currentProcess.total_votes_cast}/{currentProcess.total_eligible_voters} votos)
                 </span>
               </div>
               <div className="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
                 <div 
                   className={`h-full rounded-full ${
-                    currentProcess.quorum_percentage >= 50 ? 'bg-emerald-500' : 'bg-amber-500'
+                    currentProcess.quorum_percentage >= 50 ? 'bg-marca' : 'bg-amber-500'
                   }`}
                   style={{ width: `${Math.min(currentProcess.quorum_percentage, 100)}%` }}
                 />
@@ -438,29 +438,29 @@ export const CipaManagementView: React.FC = () => {
 
             {/* Dimensioning Summary */}
             <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm space-y-1.5">
-              <div className="flex items-center justify-between text-xs text-slate-500 font-medium">
+              <div className="flex items-center justify-between text-xs text-tinta-2 font-medium">
                 <span>Dimensionamento Quadro I</span>
-                <Users className="h-4 w-4 text-teal-600" />
+                <Users className="h-4 w-4 text-teal-700" />
               </div>
               <div className="text-lg font-bold text-slate-900">
                 {currentProcess.dimensioning.effective_members_employee + currentProcess.dimensioning.effective_members_employer} Titulares
               </div>
-              <div className="text-xs text-slate-500">
+              <div className="text-xs text-tinta-2">
                 +{currentProcess.dimensioning.substitute_members_employee + currentProcess.dimensioning.substitute_members_employer} Suplentes (Grau {currentProcess.risk_grade})
               </div>
             </div>
 
             {/* Mandatory Training */}
             <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm space-y-1.5">
-              <div className="flex items-center justify-between text-xs text-slate-500 font-medium">
+              <div className="flex items-center justify-between text-xs text-tinta-2 font-medium">
                 <span>Treinamento Obrigatório</span>
-                <Award className="h-4 w-4 text-teal-600" />
+                <Award className="h-4 w-4 text-teal-700" />
               </div>
               <div className="text-lg font-bold text-slate-900">
                 {currentProcess.dimensioning.training_hours_required} Horas
               </div>
               <div className="text-xs text-teal-700 font-medium flex items-center gap-1">
-                <Sparkles className="h-3 w-3 text-amber-500" />
+                <Sparkles className="h-3 w-3 text-amber-700" />
                 Inclui Módulo Lei 14.457/2022
               </div>
             </div>
@@ -487,7 +487,7 @@ export const CipaManagementView: React.FC = () => {
                     className={`flex items-center gap-2 px-4 py-3 text-xs font-semibold border-b-2 transition ${
                       isActive
                         ? 'border-teal-600 text-teal-700 bg-teal-50/50'
-                        : 'border-transparent text-slate-600 hover:text-slate-900 hover:border-slate-300'
+                        : 'border-transparent text-tinta-2 hover:text-slate-900 hover:border-borda-forte'
                     }`}
                   >
                     <Icon className="h-4 w-4" />
@@ -525,12 +525,12 @@ export const CipaManagementView: React.FC = () => {
                   <div className="rounded-xl border border-slate-200 bg-slate-50/70 p-4 space-y-2">
                     <div className="flex items-center justify-between">
                       <span className="text-[11px] font-bold text-teal-700 uppercase">Etapa 1 • Edital</span>
-                      <Calendar className="h-4 w-4 text-teal-600" />
+                      <Calendar className="h-4 w-4 text-teal-700" />
                     </div>
                     <div className="text-sm font-bold text-slate-800">
                       {currentProcess.timeline.edital_publication_date}
                     </div>
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs text-tinta-2">
                       Publicação do Edital de Convocação (Mínimo de 45 dias antes do fim do mandato).
                     </p>
                   </div>
@@ -538,12 +538,12 @@ export const CipaManagementView: React.FC = () => {
                   <div className="rounded-xl border border-slate-200 bg-slate-50/70 p-4 space-y-2">
                     <div className="flex items-center justify-between">
                       <span className="text-[11px] font-bold text-teal-700 uppercase">Etapa 2 • Inscrições</span>
-                      <Users className="h-4 w-4 text-teal-600" />
+                      <Users className="h-4 w-4 text-teal-700" />
                     </div>
                     <div className="text-sm font-bold text-slate-800">
                       {currentProcess.timeline.candidacy_start_date} a {currentProcess.timeline.candidacy_end_date}
                     </div>
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs text-tinta-2">
                       Período de Inscrição dos Empregados (Mínimo obrigatório de 15 dias corridos).
                     </p>
                   </div>
@@ -551,12 +551,12 @@ export const CipaManagementView: React.FC = () => {
                   <div className="rounded-xl border border-slate-200 bg-slate-50/70 p-4 space-y-2">
                     <div className="flex items-center justify-between">
                       <span className="text-[11px] font-bold text-teal-700 uppercase">Etapa 3 • Eleição</span>
-                      <Vote className="h-4 w-4 text-teal-600" />
+                      <Vote className="h-4 w-4 text-teal-700" />
                     </div>
                     <div className="text-sm font-bold text-slate-800">
                       {currentProcess.timeline.voting_start_date} a {currentProcess.timeline.voting_end_date}
                     </div>
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs text-tinta-2">
                       Votação Secreta Online / Urna Híbrida (Mínimo de 30 dias antes do fim do mandato).
                     </p>
                   </div>
@@ -564,12 +564,12 @@ export const CipaManagementView: React.FC = () => {
                   <div className="rounded-xl border border-slate-200 bg-slate-50/70 p-4 space-y-2">
                     <div className="flex items-center justify-between">
                       <span className="text-[11px] font-bold text-teal-700 uppercase">Etapa 4 • Posse</span>
-                      <Award className="h-4 w-4 text-teal-600" />
+                      <Award className="h-4 w-4 text-teal-700" />
                     </div>
                     <div className="text-sm font-bold text-slate-800">
                       {currentProcess.timeline.inauguration_date}
                     </div>
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs text-tinta-2">
                       Cerimônia de Posse após capacitação de {currentProcess.dimensioning.training_hours_required}h.
                     </p>
                   </div>
@@ -586,12 +586,12 @@ export const CipaManagementView: React.FC = () => {
                 <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                   <div>
                     <h3 className="text-sm font-bold text-slate-900">Comissão Eleitoral</h3>
-                    <p className="text-xs text-slate-500">Organização e condução do escrutínio</p>
+                    <p className="text-xs text-tinta-2">Organização e condução do escrutínio</p>
                   </div>
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => handlePrintDocument('COMMISSION_CONSTITUTION')}
-                      className="rounded-lg border border-slate-300 p-2 text-slate-600 hover:bg-slate-50 transition"
+                      className="rounded-lg border border-slate-300 p-2 text-tinta-2 hover:bg-slate-50 transition"
                       title="Imprimir Ata de Constituição"
                     >
                       <Printer className="h-4 w-4" />
@@ -617,13 +617,13 @@ export const CipaManagementView: React.FC = () => {
                             {m.role === 'PRESIDENT' ? 'Presidente' : m.role === 'SECRETARY' ? 'Secretário' : 'Membro'}
                           </span>
                         </div>
-                        <div className="text-[11px] text-slate-500 mt-0.5">
+                        <div className="text-[11px] text-tinta-2 mt-0.5">
                           CPF: {m.cpf} • {m.represented_party === 'EMPLOYER' ? 'Empregador' : 'Empregados'} • {m.department}
                         </div>
                       </div>
                       <button
                         onClick={() => deleteElectoralCommissionMember(currentProcess.id, m.id)}
-                        className="text-xs text-red-600 hover:underline"
+                        className="text-xs text-red-700 hover:underline"
                       >
                         Remover
                       </button>
@@ -637,7 +637,7 @@ export const CipaManagementView: React.FC = () => {
                 <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                   <div>
                     <h3 className="text-sm font-bold text-slate-900">Representantes Indicados do Empregador</h3>
-                    <p className="text-xs text-slate-500">Presidente da CIPA e membros da bancada patronal</p>
+                    <p className="text-xs text-tinta-2">Presidente da CIPA e membros da bancada patronal</p>
                   </div>
                   <button
                     onClick={() => setIsAddAppointeeModalOpen(true)}
@@ -659,13 +659,13 @@ export const CipaManagementView: React.FC = () => {
                             {a.is_president ? '★ Presidente da CIPA' : a.role}
                           </span>
                         </div>
-                        <div className="text-[11px] text-slate-500 mt-0.5">
+                        <div className="text-[11px] text-tinta-2 mt-0.5">
                           {a.job_title} ({a.department}) • Treinamento: {a.training_completed ? `Concluído (${a.training_hours}h)` : 'Pendente'}
                         </div>
                       </div>
                       <button
                         onClick={() => deleteEmployerAppointee(currentProcess.id, a.id)}
-                        className="text-xs text-red-600 hover:underline"
+                        className="text-xs text-red-700 hover:underline"
                       >
                         Remover
                       </button>
@@ -709,7 +709,7 @@ export const CipaManagementView: React.FC = () => {
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs">
                     <thead>
-                      <tr className="border-b border-slate-200 bg-slate-50/80 text-slate-500 font-semibold">
+                      <tr className="border-b border-slate-200 bg-slate-50/80 text-tinta-2 font-semibold">
                         <th className="p-3">Nº</th>
                         <th className="p-3">Nome do Candidato</th>
                         <th className="p-3">Cargo / Setor</th>
@@ -723,21 +723,21 @@ export const CipaManagementView: React.FC = () => {
                       {currentProcess.candidates.map(c => (
                         <tr key={c.id} className="hover:bg-slate-50/60">
                           <td className="p-3 font-bold text-slate-900">
-                            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-slate-800 text-white text-xs">
+                            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-superficie-2 text-tinta text-xs">
                               {c.candidacy_number}
                             </span>
                           </td>
                           <td className="p-3">
                             <div className="font-bold text-slate-800">{c.name}</div>
-                            <div className="text-[11px] text-slate-400">CPF: {c.cpf}</div>
+                            <div className="text-[11px] text-tinta-2">CPF: {c.cpf}</div>
                           </td>
                           <td className="p-3">
                             <div>{c.job_title}</div>
-                            <div className="text-[11px] text-slate-400">{c.department}</div>
+                            <div className="text-[11px] text-tinta-2">{c.department}</div>
                           </td>
-                          <td className="p-3 text-slate-600">{c.registration_date}</td>
+                          <td className="p-3 text-tinta-2">{c.registration_date}</td>
                           <td className="p-3">
-                            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-0.5 text-[11px] font-bold text-emerald-800">
+                            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-0.5 text-[11px] font-bold text-marca-escura">
                               <ShieldCheck className="h-3 w-3" /> Protegido Art. 10 ADCT
                             </span>
                           </td>
@@ -747,7 +747,7 @@ export const CipaManagementView: React.FC = () => {
                           <td className="p-3 text-right">
                             <button
                               onClick={() => deleteCipaCandidate(currentProcess.id, c.id)}
-                              className="text-xs text-red-600 hover:underline"
+                              className="text-xs text-red-700 hover:underline"
                             >
                               Excluir
                             </button>
@@ -790,7 +790,7 @@ export const CipaManagementView: React.FC = () => {
                     <h3 className="text-sm font-bold text-slate-900">
                       Trilha de Auditoria Criptográfica de Votos ({currentProcess.audit_votes.length})
                     </h3>
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs text-tinta-2">
                       Registros anônimos auditáveis em conformidade com a LGPD e item 5.5.4 da NR-05
                     </p>
                   </div>
@@ -802,7 +802,7 @@ export const CipaManagementView: React.FC = () => {
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs font-mono">
                     <thead>
-                      <tr className="border-b border-slate-200 bg-slate-50 text-slate-500 font-sans font-semibold">
+                      <tr className="border-b border-slate-200 bg-slate-50 text-tinta-2 font-sans font-semibold">
                         <th className="p-2.5">Hash do Voto Anônimo</th>
                         <th className="p-2.5">Eleitor (Mascarado)</th>
                         <th className="p-2.5">Método de Validação</th>
@@ -816,20 +816,20 @@ export const CipaManagementView: React.FC = () => {
                           <td className="p-2.5 text-slate-700 font-bold truncate max-w-xs">
                             {v.anonymous_vote_hash}
                           </td>
-                          <td className="p-2.5 text-slate-600">{v.voter_cpf_masked}</td>
+                          <td className="p-2.5 text-tinta-2">{v.voter_cpf_masked}</td>
                           <td className="p-2.5 font-sans">
                             <span className="inline-flex items-center gap-1 rounded bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-700">
                               {v.verification_method}
                               {v.facial_biometric_confidence && ` (${v.facial_biometric_confidence}%)`}
                             </span>
                           </td>
-                          <td className="p-2.5 text-slate-500">{new Date(v.casted_at).toLocaleTimeString()}</td>
+                          <td className="p-2.5 text-tinta-2">{new Date(v.casted_at).toLocaleTimeString()}</td>
                           <td className="p-2.5 text-teal-700 font-bold">{v.audit_proof_receipt}</td>
                         </tr>
                       ))}
                       {currentProcess.audit_votes.length === 0 && (
                         <tr>
-                          <td colSpan={5} className="p-4 text-center text-slate-400 font-sans">
+                          <td colSpan={5} className="p-4 text-center text-tinta-2 font-sans">
                             Nenhum voto computado ainda. Clique em "Abrir Cabine de Votação" para iniciar.
                           </td>
                         </tr>
@@ -874,7 +874,7 @@ export const CipaManagementView: React.FC = () => {
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs">
                     <thead>
-                      <tr className="border-b border-slate-200 bg-slate-50 text-slate-500 font-semibold">
+                      <tr className="border-b border-slate-200 bg-slate-50 text-tinta-2 font-semibold">
                         <th className="p-3">Posição</th>
                         <th className="p-3">Candidato</th>
                         <th className="p-3">Votos</th>
@@ -890,14 +890,14 @@ export const CipaManagementView: React.FC = () => {
                           </td>
                           <td className="p-3">
                             <div className="font-bold text-slate-900">{c.name}</div>
-                            <div className="text-[11px] text-slate-400">{c.job_title} ({c.department})</div>
+                            <div className="text-[11px] text-tinta-2">{c.job_title} ({c.department})</div>
                           </td>
                           <td className="p-3 font-black text-sm text-teal-700">
                             {c.votes_received}
                           </td>
                           <td className="p-3">
                             {c.elected_role === 'VICE_PRESIDENT' && (
-                              <span className="rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-bold text-emerald-800">
+                              <span className="rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-bold text-marca-escura">
                                 ★ Vice-Presidente da CIPA
                               </span>
                             )}
@@ -912,10 +912,10 @@ export const CipaManagementView: React.FC = () => {
                               </span>
                             )}
                             {(!c.elected_role || c.elected_role === 'NOT_ELECTED') && (
-                              <span className="text-slate-400 text-xs">Não eleito</span>
+                              <span className="text-tinta-2 text-xs">Não eleito</span>
                             )}
                           </td>
-                          <td className="p-3 text-slate-500 text-[11px]">
+                          <td className="p-3 text-tinta-2 text-[11px]">
                             Tempo de Casa: {c.tiebreaker_seniority_months} meses • Idade: {c.tiebreaker_age_years} anos
                           </td>
                         </tr>
@@ -964,10 +964,10 @@ export const CipaManagementView: React.FC = () => {
                           <span className="text-[11px] font-bold text-teal-700 uppercase">
                             {m.type === 'ORDINARY' ? `${m.meeting_number || 1}ª Reunião Ordinária` : 'Reunião Extraordinária'}
                           </span>
-                          <span className="text-xs text-slate-500 font-medium">{m.date}</span>
+                          <span className="text-xs text-tinta-2 font-medium">{m.date}</span>
                         </div>
                         <div className="text-sm font-bold text-slate-800">{m.title}</div>
-                        <ul className="text-xs text-slate-600 space-y-1 list-disc list-inside">
+                        <ul className="text-xs text-tinta-2 space-y-1 list-disc list-inside">
                           {(m.agenda_topics || []).map((t, idx) => (
                             <li key={idx} className="truncate">{t}</li>
                           ))}
@@ -975,13 +975,13 @@ export const CipaManagementView: React.FC = () => {
                       </div>
                       
                       <div className="pt-2.5 border-t border-slate-200 flex items-center justify-between text-xs">
-                        <span className="text-emerald-600 font-semibold flex items-center gap-1">
+                        <span className="text-marca-escura font-semibold flex items-center gap-1">
                           <CheckCircle2 className="h-3.5 w-3.5" /> {m.is_signed_by_all ? 'Ata Assinada' : 'Ata Registrada'}
                         </span>
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() => setSelectedMeetingForView(m)}
-                            className="text-slate-600 hover:text-slate-900 font-medium underline"
+                            className="text-tinta-2 hover:text-slate-900 font-medium underline"
                           >
                             Detalhes
                           </button>
@@ -998,9 +998,9 @@ export const CipaManagementView: React.FC = () => {
 
                   {(!currentProcess.meetings || currentProcess.meetings.length === 0) && (
                     <div className="col-span-full py-12 text-center rounded-xl border border-dashed border-slate-200 bg-slate-50/50">
-                      <FileText className="h-8 w-8 text-slate-400 mx-auto mb-2" />
+                      <FileText className="h-8 w-8 text-tinta-2 mx-auto mb-2" />
                       <div className="text-sm font-bold text-slate-700">Nenhuma reunião registrada ainda</div>
-                      <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
+                      <p className="text-xs text-tinta-2 mt-1 max-w-sm mx-auto">
                         Clique no botão acima "Registrar Reunião" para documentar as reuniões mensais ordinárias ou extraordinárias da CIPA.
                       </p>
                     </div>
@@ -1039,14 +1039,14 @@ export const CipaManagementView: React.FC = () => {
                           <FileText className="h-5 w-5" />
                           <h4 className="font-bold text-slate-900 text-sm">{doc.title}</h4>
                         </div>
-                        <p className="text-xs text-slate-500 mt-1">{doc.subtitle}</p>
+                        <p className="text-xs text-tinta-2 mt-1">{doc.subtitle}</p>
                       </div>
 
                       <button
                         onClick={() => handlePrintDocument(doc.id as CipaDocumentType)}
                         className="flex items-center justify-center gap-2 rounded-xl bg-white border border-slate-300 py-2 text-xs font-bold text-slate-700 hover:bg-teal-50 hover:border-teal-400 hover:text-teal-800 transition shadow-sm"
                       >
-                        <Printer className="h-3.5 w-3.5 text-teal-600" />
+                        <Printer className="h-3.5 w-3.5 text-teal-700" />
                         Imprimir / Exportar PDF
                       </button>
                     </div>
@@ -1057,7 +1057,7 @@ export const CipaManagementView: React.FC = () => {
           )}
         </>
       ) : (
-        <div className="rounded-xl border border-slate-200 bg-white p-12 text-center text-slate-500">
+        <div className="rounded-xl border border-slate-200 bg-white p-12 text-center text-tinta-2">
           Nenhum processo da CIPA cadastrado. Clique no botão acima para criar o primeiro processo.
         </div>
       )}
@@ -1074,11 +1074,11 @@ export const CipaManagementView: React.FC = () => {
 
       {/* New CIPA Process Modal */}
       {isNewProcessModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm">
-          <div className="w-full max-w-xl rounded-2xl bg-white p-6 shadow-2xl border border-slate-200 max-h-[90vh] overflow-y-auto space-y-5 text-xs text-slate-700">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-superficie p-4 backdrop-blur-sm">
+          <div className="w-full max-w-xl rounded-2xl bg-white p-6 shadow-sm border border-slate-200 max-h-[90vh] overflow-y-auto space-y-5 text-xs text-slate-700">
             <div className="flex items-center justify-between border-b pb-3">
               <h3 className="text-base font-bold text-slate-900">Novo Processo Eleitoral CIPA</h3>
-              <button onClick={() => setIsNewProcessModalOpen(false)} className="text-slate-400 hover:text-slate-600 font-bold text-sm">✕</button>
+              <button onClick={() => setIsNewProcessModalOpen(false)} className="text-tinta-2 hover:text-tinta-2 font-bold text-sm">✕</button>
             </div>
 
             <form onSubmit={handleCreateProcess} className="space-y-4">
@@ -1195,11 +1195,11 @@ export const CipaManagementView: React.FC = () => {
 
       {/* Add Candidate Modal */}
       {isAddCandidateModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm">
-          <div className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-2xl border border-slate-200 max-h-[90vh] overflow-y-auto space-y-4 text-xs text-slate-700">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-superficie p-4 backdrop-blur-sm">
+          <div className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-sm border border-slate-200 max-h-[90vh] overflow-y-auto space-y-4 text-xs text-slate-700">
             <div className="flex items-center justify-between border-b pb-3">
               <h3 className="text-base font-bold text-slate-900">Inscrição de Candidato da CIPA</h3>
-              <button onClick={() => setIsAddCandidateModalOpen(false)} className="text-slate-400 font-bold">✕</button>
+              <button onClick={() => setIsAddCandidateModalOpen(false)} className="text-tinta-2 font-bold">✕</button>
             </div>
             <form onSubmit={handleAddCandidate} className="space-y-3">
               <div>
@@ -1310,11 +1310,11 @@ export const CipaManagementView: React.FC = () => {
 
       {/* Add Commission Member Modal */}
       {isAddCommissionModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm">
-          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl border border-slate-200 space-y-4 text-xs text-slate-700">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-superficie p-4 backdrop-blur-sm">
+          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-sm border border-slate-200 space-y-4 text-xs text-slate-700">
             <div className="flex items-center justify-between border-b pb-3">
               <h3 className="text-base font-bold text-slate-900">Adicionar Membro da Comissão Eleitoral</h3>
-              <button onClick={() => setIsAddCommissionModalOpen(false)} className="text-slate-400 font-bold">✕</button>
+              <button onClick={() => setIsAddCommissionModalOpen(false)} className="text-tinta-2 font-bold">✕</button>
             </div>
             <form onSubmit={handleAddCommissionMember} className="space-y-3">
               <div>
@@ -1397,11 +1397,11 @@ export const CipaManagementView: React.FC = () => {
 
       {/* Add Appointee Modal */}
       {isAddAppointeeModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm">
-          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl border border-slate-200 space-y-4 text-xs text-slate-700">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-superficie p-4 backdrop-blur-sm">
+          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-sm border border-slate-200 space-y-4 text-xs text-slate-700">
             <div className="flex items-center justify-between border-b pb-3">
               <h3 className="text-base font-bold text-slate-900">Novo Indicado pelo Empregador</h3>
-              <button onClick={() => setIsAddAppointeeModalOpen(false)} className="text-slate-400 font-bold">✕</button>
+              <button onClick={() => setIsAddAppointeeModalOpen(false)} className="text-tinta-2 font-bold">✕</button>
             </div>
             <form onSubmit={handleAddAppointee} className="space-y-3">
               <div>
@@ -1483,11 +1483,11 @@ export const CipaManagementView: React.FC = () => {
 
       {/* Add Meeting Modal */}
       {isAddMeetingModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm">
-          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl border border-slate-200 space-y-4 text-xs text-slate-700">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-superficie p-4 backdrop-blur-sm">
+          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-sm border border-slate-200 space-y-4 text-xs text-slate-700">
             <div className="flex items-center justify-between border-b pb-3">
               <h3 className="text-base font-bold text-slate-900">Registrar Reunião da CIPA</h3>
-              <button onClick={() => setIsAddMeetingModalOpen(false)} className="text-slate-400 font-bold">✕</button>
+              <button onClick={() => setIsAddMeetingModalOpen(false)} className="text-tinta-2 font-bold">✕</button>
             </div>
             <form onSubmit={handleAddMeeting} className="space-y-3">
               <div>
@@ -1556,8 +1556,8 @@ export const CipaManagementView: React.FC = () => {
 
       {/* View Meeting & Ata Details Modal */}
       {selectedMeetingForView && currentProcess && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm">
-          <div className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-2xl border border-slate-200 space-y-4 text-xs text-slate-700">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-superficie p-4 backdrop-blur-sm">
+          <div className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-sm border border-slate-200 space-y-4 text-xs text-slate-700">
             <div className="flex items-center justify-between border-b pb-3">
               <div>
                 <span className="text-[11px] font-bold text-teal-700 uppercase">
@@ -1567,18 +1567,18 @@ export const CipaManagementView: React.FC = () => {
                 </span>
                 <h3 className="text-base font-bold text-slate-900">{selectedMeetingForView.title}</h3>
               </div>
-              <button onClick={() => setSelectedMeetingForView(null)} className="text-slate-400 hover:text-slate-600 font-bold text-base">✕</button>
+              <button onClick={() => setSelectedMeetingForView(null)} className="text-tinta-2 hover:text-tinta-2 font-bold text-base">✕</button>
             </div>
 
             <div className="space-y-3">
               <div className="grid grid-cols-2 gap-3 bg-slate-50 p-3 rounded-xl border border-slate-200">
                 <div>
-                  <span className="text-slate-500 font-medium">Data Realizada:</span>
+                  <span className="text-tinta-2 font-medium">Data Realizada:</span>
                   <div className="font-bold text-slate-800">{selectedMeetingForView.date}</div>
                 </div>
                 <div>
-                  <span className="text-slate-500 font-medium">Status da Ata:</span>
-                  <div className="font-bold text-emerald-700 flex items-center gap-1">
+                  <span className="text-tinta-2 font-medium">Status da Ata:</span>
+                  <div className="font-bold text-marca-escura flex items-center gap-1">
                     <CheckCircle2 className="h-3.5 w-3.5" /> Assinada Digitalmente
                   </div>
                 </div>
@@ -1591,14 +1591,14 @@ export const CipaManagementView: React.FC = () => {
                     <li key={idx} className="text-slate-700 font-medium">{topic}</li>
                   ))}
                   {(!selectedMeetingForView.agenda_topics || selectedMeetingForView.agenda_topics.length === 0) && (
-                    <li className="text-slate-400 italic">Nenhum tópico registrado</li>
+                    <li className="text-tinta-2 italic">Nenhum tópico registrado</li>
                   )}
                 </ul>
               </div>
 
               <div>
                 <h4 className="font-bold text-slate-900 mb-1.5">Membros Presentes / Bancadas:</h4>
-                <div className="text-[11px] text-slate-600 bg-slate-50/70 p-2.5 rounded-lg border border-slate-200 space-y-1">
+                <div className="text-[11px] text-tinta-2 bg-slate-50/70 p-2.5 rounded-lg border border-slate-200 space-y-1">
                   <div>• <strong>Bancada do Empregador:</strong> {(currentProcess.employer_appointees || []).map(a => a.name).join(', ') || 'Representantes patronais'}</div>
                   <div>• <strong>Bancada dos Empregados:</strong> {(currentProcess.candidates || []).filter(c => c.elected_role && c.elected_role !== 'NOT_ELECTED').map(c => c.name).join(', ') || 'Representantes eleitos'}</div>
                 </div>
@@ -1612,7 +1612,7 @@ export const CipaManagementView: React.FC = () => {
                   deleteCipaMeeting(currentProcess.id, selectedMeetingForView.id);
                   setSelectedMeetingForView(null);
                 }}
-                className="text-red-600 hover:text-red-800 font-semibold text-xs"
+                className="text-red-700 hover:text-red-800 font-semibold text-xs"
               >
                 Excluir Registro
               </button>
@@ -1621,7 +1621,7 @@ export const CipaManagementView: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setSelectedMeetingForView(null)}
-                  className="rounded-lg border px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50"
+                  className="rounded-lg border px-4 py-2 text-xs font-semibold text-tinta-2 hover:bg-slate-50"
                 >
                   Fechar
                 </button>

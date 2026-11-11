@@ -48,34 +48,34 @@ export const TutorialDetailModal: React.FC<TutorialDetailModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto animate-in fade-in duration-200">
-      <div className="bg-slate-900 border border-slate-700/80 rounded-3xl w-full max-w-5xl max-h-[92vh] flex flex-col shadow-2xl overflow-hidden">
+    <div className="fixed inset-0 z-50 bg-fundo backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto animate-in fade-in duration-200">
+      <div className="bg-superficie border border-borda rounded-3xl w-full max-w-5xl max-h-[92vh] flex flex-col shadow-sm overflow-hidden">
         {/* Modal Top Header */}
-        <div className="p-4 sm:p-6 border-b border-slate-800 bg-slate-950/70 flex items-start justify-between gap-4">
+        <div className="p-4 sm:p-6 border-b border-borda bg-fundo flex items-start justify-between gap-4">
           <div className="space-y-1.5 flex-1">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+              <span className="text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-marca-suave text-marca-escura border border-marca-borda">
                 {tutorial.categoryLabel}
               </span>
-              <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700 font-medium">
+              <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-superficie-2 text-tinta border border-borda font-medium">
                 Nível: {tutorial.difficulty}
               </span>
-              <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-400 font-mono flex items-center space-x-1">
-                <Clock className="w-3 h-3 text-slate-400" />
+              <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-superficie-2 text-tinta-2 font-mono flex items-center space-x-1">
+                <Clock className="w-3 h-3 text-tinta-2" />
                 <span>{tutorial.estimatedMinutes} min de leitura</span>
               </span>
               {tutorial.regulatoryRef && (
-                <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30 font-medium">
+                <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-teal-500/20 text-teal-800 border border-teal-500/30 font-medium">
                   {tutorial.regulatoryRef}
                 </span>
               )}
             </div>
 
-            <h2 className="text-lg sm:text-xl font-bold text-white tracking-tight">
+            <h2 className="text-lg sm:text-xl font-bold text-tinta tracking-tight">
               {tutorial.title}
             </h2>
 
-            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-3xl">
+            <p className="text-xs sm:text-sm text-tinta leading-relaxed max-w-3xl">
               {tutorial.subtitle}
             </p>
           </div>
@@ -83,7 +83,7 @@ export const TutorialDetailModal: React.FC<TutorialDetailModalProps> = ({
           <div className="flex items-center space-x-2 shrink-0">
             <button
               onClick={handleLaunchTool}
-              className="hidden sm:flex items-center space-x-1.5 px-3.5 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-xl text-xs font-semibold shadow-lg shadow-emerald-950/50 transition active:scale-95"
+              className="bg-marca-escura hidden sm:flex items-center space-x-1.5 px-3.5 py-2 text-white rounded-xl text-xs font-semibold shadow-sm transition active:scale-95"
             >
               <span>Abrir no Sistema</span>
               <ExternalLink className="w-3.5 h-3.5" />
@@ -91,7 +91,7 @@ export const TutorialDetailModal: React.FC<TutorialDetailModalProps> = ({
 
             <button
               onClick={onClose}
-              className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition"
+              className="p-2 rounded-xl bg-superficie-2 hover:bg-superficie-3 text-tinta hover:text-tinta transition"
               title="Fechar Tutorial"
             >
               <X className="w-5 h-5" />
@@ -100,13 +100,13 @@ export const TutorialDetailModal: React.FC<TutorialDetailModalProps> = ({
         </div>
 
         {/* Modal Navigation Tabs */}
-        <div className="px-4 sm:px-6 bg-slate-950/40 border-b border-slate-800 flex items-center space-x-1 overflow-x-auto scrollbar-none">
+        <div className="px-4 sm:px-6 bg-fundo border-b border-borda flex items-center space-x-1 overflow-x-auto scrollbar-none">
           <button
             onClick={() => setActiveTab('STEPS')}
             className={`py-3 px-3.5 text-xs font-bold border-b-2 transition whitespace-nowrap flex items-center space-x-2 ${
               activeTab === 'STEPS'
-                ? 'border-emerald-400 text-emerald-300'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
+                ? 'border-marca-escura text-marca-escura'
+                : 'border-transparent text-tinta-2 hover:text-tinta'
             }`}
           >
             <BookOpen className="w-4 h-4" />
@@ -117,11 +117,11 @@ export const TutorialDetailModal: React.FC<TutorialDetailModalProps> = ({
             onClick={() => setActiveTab('INFOGRAPHIC')}
             className={`py-3 px-3.5 text-xs font-bold border-b-2 transition whitespace-nowrap flex items-center space-x-2 ${
               activeTab === 'INFOGRAPHIC'
-                ? 'border-emerald-400 text-emerald-300'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
+                ? 'border-marca-escura text-marca-escura'
+                : 'border-transparent text-tinta-2 hover:text-tinta'
             }`}
           >
-            <Sparkles className="w-4 h-4 text-emerald-400" />
+            <Sparkles className="w-4 h-4 text-marca-escura" />
             <span>2. Infográfico do Processo</span>
           </button>
 
@@ -129,11 +129,11 @@ export const TutorialDetailModal: React.FC<TutorialDetailModalProps> = ({
             onClick={() => setActiveTab('VIDEO')}
             className={`py-3 px-3.5 text-xs font-bold border-b-2 transition whitespace-nowrap flex items-center space-x-2 ${
               activeTab === 'VIDEO'
-                ? 'border-emerald-400 text-emerald-300'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
+                ? 'border-marca-escura text-marca-escura'
+                : 'border-transparent text-tinta-2 hover:text-tinta'
             }`}
           >
-            <PlayCircle className="w-4 h-4 text-rose-400" />
+            <PlayCircle className="w-4 h-4 text-rose-700" />
             <span>3. Vídeo Simulador ({tutorial.videoSimulator.totalDurationSeconds}s)</span>
           </button>
 
@@ -141,11 +141,11 @@ export const TutorialDetailModal: React.FC<TutorialDetailModalProps> = ({
             onClick={() => setActiveTab('CHECKLIST')}
             className={`py-3 px-3.5 text-xs font-bold border-b-2 transition whitespace-nowrap flex items-center space-x-2 ${
               activeTab === 'CHECKLIST'
-                ? 'border-emerald-400 text-emerald-300'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
+                ? 'border-marca-escura text-marca-escura'
+                : 'border-transparent text-tinta-2 hover:text-tinta'
             }`}
           >
-            <CheckSquare className="w-4 h-4 text-blue-400" />
+            <CheckSquare className="w-4 h-4 text-teal-700" />
             <span>4. Boas Práticas & Erros Comuns</span>
           </button>
 
@@ -153,11 +153,11 @@ export const TutorialDetailModal: React.FC<TutorialDetailModalProps> = ({
             onClick={() => setActiveTab('FAQ')}
             className={`py-3 px-3.5 text-xs font-bold border-b-2 transition whitespace-nowrap flex items-center space-x-2 ${
               activeTab === 'FAQ'
-                ? 'border-emerald-400 text-emerald-300'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
+                ? 'border-marca-escura text-marca-escura'
+                : 'border-transparent text-tinta-2 hover:text-tinta'
             }`}
           >
-            <HelpCircle className="w-4 h-4 text-amber-400" />
+            <HelpCircle className="w-4 h-4 text-amber-700" />
             <span>5. Perguntas Frequentes</span>
           </button>
         </div>
@@ -168,7 +168,7 @@ export const TutorialDetailModal: React.FC<TutorialDetailModalProps> = ({
           {activeTab === 'STEPS' && (
             <div className="space-y-6">
               {/* Step Navigation Pill Selector */}
-              <div className="flex items-center justify-between gap-2 p-2 bg-slate-950/60 rounded-2xl border border-slate-800">
+              <div className="flex items-center justify-between gap-2 p-2 bg-fundo rounded-2xl border border-borda">
                 <div className="flex items-center space-x-1.5 overflow-x-auto scrollbar-none py-1">
                   {tutorial.steps.map((st, idx) => (
                     <button
@@ -176,11 +176,11 @@ export const TutorialDetailModal: React.FC<TutorialDetailModalProps> = ({
                       onClick={() => setCurrentStepIndex(idx)}
                       className={`px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-1.5 whitespace-nowrap ${
                         currentStepIndex === idx
-                          ? 'bg-emerald-500 text-slate-950 shadow-md'
-                          : 'bg-slate-900 text-slate-400 hover:text-slate-200 border border-slate-800'
+                          ? 'bg-marca text-slate-950 shadow-md'
+                          : 'bg-superficie text-tinta-2 hover:text-tinta border border-borda'
                       }`}
                     >
-                      <span className="w-4 h-4 rounded-full bg-slate-950/30 flex items-center justify-center text-[10px]">
+                      <span className="w-4 h-4 rounded-full bg-fundo flex items-center justify-center text-[10px]">
                         {st.stepNumber}
                       </span>
                       <span>Passo {st.stepNumber}</span>
@@ -192,14 +192,14 @@ export const TutorialDetailModal: React.FC<TutorialDetailModalProps> = ({
                   <button
                     disabled={currentStepIndex === 0}
                     onClick={() => setCurrentStepIndex(prev => Math.max(0, prev - 1))}
-                    className="p-1.5 rounded-lg bg-slate-800 text-slate-300 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-slate-700"
+                    className="p-1.5 rounded-lg bg-superficie-2 text-tinta disabled:opacity-30 disabled:cursor-not-allowed hover:bg-superficie-3"
                   >
                     <ChevronLeft className="w-4 h-4" />
                   </button>
                   <button
                     disabled={currentStepIndex === tutorial.steps.length - 1}
                     onClick={() => setCurrentStepIndex(prev => Math.min(tutorial.steps.length - 1, prev + 1))}
-                    className="p-1.5 rounded-lg bg-slate-800 text-slate-300 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-slate-700"
+                    className="p-1.5 rounded-lg bg-superficie-2 text-tinta disabled:opacity-30 disabled:cursor-not-allowed hover:bg-superficie-3"
                   >
                     <ChevronRight className="w-4 h-4" />
                   </button>
@@ -207,19 +207,19 @@ export const TutorialDetailModal: React.FC<TutorialDetailModalProps> = ({
               </div>
 
               {/* Active Step Description Card */}
-              <div className="p-4 sm:p-5 bg-slate-950/90 rounded-2xl border border-slate-800 space-y-2">
+              <div className="p-4 sm:p-5 bg-fundo rounded-2xl border border-borda space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold uppercase text-emerald-400 tracking-wider">
+                  <span className="text-xs font-bold uppercase text-marca-escura tracking-wider">
                     Passo {currentStep.stepNumber} de {tutorial.steps.length}
                   </span>
-                  <span className="text-xs font-mono text-slate-400">
+                  <span className="text-xs font-mono text-tinta-2">
                     Ação: <strong>{currentStep.highlightAction}</strong>
                   </span>
                 </div>
-                <h3 className="text-base font-bold text-white">
+                <h3 className="text-base font-bold text-tinta">
                   {currentStep.title}
                 </h3>
-                <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                <p className="text-xs sm:text-sm text-tinta leading-relaxed">
                   {currentStep.description}
                 </p>
               </div>
@@ -247,48 +247,48 @@ export const TutorialDetailModal: React.FC<TutorialDetailModalProps> = ({
           {/* TAB 4: CHECKLIST & BOAS PRÁTICAS */}
           {activeTab === 'CHECKLIST' && (
             <div className="space-y-6">
-              <div className="p-5 bg-slate-950/80 rounded-2xl border border-slate-800 space-y-3">
-                <h3 className="text-sm font-bold text-white flex items-center space-x-2">
-                  <CheckSquare className="w-4 h-4 text-emerald-400" />
+              <div className="p-5 bg-fundo rounded-2xl border border-borda space-y-3">
+                <h3 className="text-sm font-bold text-tinta flex items-center space-x-2">
+                  <CheckSquare className="w-4 h-4 text-marca-escura" />
                   <span>Por que este processo é importante? (Utilidade no Negócio)</span>
                 </h3>
-                <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                <p className="text-xs sm:text-sm text-tinta leading-relaxed">
                   {tutorial.processUtility}
                 </p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="p-5 bg-slate-950/80 rounded-2xl border border-slate-800 space-y-3">
-                  <h4 className="text-xs font-bold text-emerald-400 uppercase tracking-wider flex items-center space-x-1.5">
+                <div className="p-5 bg-fundo rounded-2xl border border-borda space-y-3">
+                  <h4 className="text-xs font-bold text-marca-escura uppercase tracking-wider flex items-center space-x-1.5">
                     <ShieldCheck className="w-4 h-4" />
                     <span>Boas Práticas Recomendadas</span>
                   </h4>
-                  <ul className="space-y-2 text-xs text-slate-300">
+                  <ul className="space-y-2 text-xs text-tinta">
                     <li className="flex items-start space-x-2">
-                      <span className="text-emerald-400 font-bold">✓</span>
+                      <span className="text-marca-escura font-bold">✓</span>
                       <span>Sempre confira os dados cadastrais antes de emitir a versão final.</span>
                     </li>
                     <li className="flex items-start space-x-2">
-                      <span className="text-emerald-400 font-bold">✓</span>
+                      <span className="text-marca-escura font-bold">✓</span>
                       <span>Mantenha os contatos de e-mail e WhatsApp atualizados para automações.</span>
                     </li>
                     <li className="flex items-start space-x-2">
-                      <span className="text-emerald-400 font-bold">✓</span>
+                      <span className="text-marca-escura font-bold">✓</span>
                       <span>Acione a Pausa Regulamentar de SLA no primeiro sinal de pendência do cliente.</span>
                     </li>
                   </ul>
                 </div>
 
-                <div className="p-5 bg-slate-950/80 rounded-2xl border border-slate-800 space-y-3">
-                  <h4 className="text-xs font-bold text-rose-400 uppercase tracking-wider flex items-center space-x-1.5">
+                <div className="p-5 bg-fundo rounded-2xl border border-borda space-y-3">
+                  <h4 className="text-xs font-bold text-rose-700 uppercase tracking-wider flex items-center space-x-1.5">
                     <AlertTriangle className="w-4 h-4" />
                     <span>Erros Comuns a Evitar</span>
                   </h4>
                   <div className="space-y-3">
                     {tutorial.commonMistakes.map((cm, idx) => (
                       <div key={idx} className="text-xs space-y-1">
-                        <p className="font-semibold text-rose-300">❌ {cm.mistake}</p>
-                        <p className="text-slate-400">💡 <strong>Como prevenir:</strong> {cm.prevention}</p>
+                        <p className="font-semibold text-rose-700">❌ {cm.mistake}</p>
+                        <p className="text-tinta-2">💡 <strong>Como prevenir:</strong> {cm.prevention}</p>
                       </div>
                     ))}
                   </div>
@@ -300,17 +300,17 @@ export const TutorialDetailModal: React.FC<TutorialDetailModalProps> = ({
           {/* TAB 5: FAQ */}
           {activeTab === 'FAQ' && (
             <div className="space-y-4">
-              <h3 className="text-sm font-bold text-white mb-3">
+              <h3 className="text-sm font-bold text-tinta mb-3">
                 Dúvidas Frequentes sobre {tutorial.title}
               </h3>
               <div className="space-y-3">
                 {tutorial.faq.map((item, idx) => (
-                  <div key={idx} className="p-4 bg-slate-950/80 rounded-2xl border border-slate-800 space-y-1.5">
-                    <h4 className="text-xs sm:text-sm font-bold text-emerald-300 flex items-start space-x-2">
-                      <span className="text-slate-500 font-mono">Q{idx + 1}:</span>
+                  <div key={idx} className="p-4 bg-fundo rounded-2xl border border-borda space-y-1.5">
+                    <h4 className="text-xs sm:text-sm font-bold text-marca-escura flex items-start space-x-2">
+                      <span className="text-tinta-2 font-mono">Q{idx + 1}:</span>
                       <span>{item.question}</span>
                     </h4>
-                    <p className="text-xs text-slate-300 leading-relaxed pl-6">
+                    <p className="text-xs text-tinta leading-relaxed pl-6">
                       {item.answer}
                     </p>
                   </div>
@@ -321,22 +321,22 @@ export const TutorialDetailModal: React.FC<TutorialDetailModalProps> = ({
         </div>
 
         {/* Modal Bottom Sticky Action Bar */}
-        <div className="p-4 bg-slate-950 border-t border-slate-800 flex items-center justify-between gap-4">
-          <div className="text-xs text-slate-400 hidden sm:block">
-            Módulo Vinculado: <strong className="text-white">{tutorial.categoryLabel}</strong>
+        <div className="p-4 bg-fundo border-t border-borda flex items-center justify-between gap-4">
+          <div className="text-xs text-tinta-2 hidden sm:block">
+            Módulo Vinculado: <strong className="text-tinta">{tutorial.categoryLabel}</strong>
           </div>
 
           <div className="flex items-center space-x-3 w-full sm:w-auto justify-end">
             <button
               onClick={onClose}
-              className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold transition"
+              className="px-4 py-2 bg-superficie-2 hover:bg-superficie-3 text-tinta rounded-xl text-xs font-semibold transition"
             >
               Fechar Tutorial
             </button>
 
             <button
               onClick={handleLaunchTool}
-              className="flex-1 sm:flex-none flex items-center justify-center space-x-2 px-5 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-xl text-xs font-bold shadow-lg shadow-emerald-950/50 transition active:scale-95"
+              className="bg-marca-escura flex-1 sm:flex-none flex items-center justify-center space-x-2 px-5 py-2 text-white rounded-xl text-xs font-bold shadow-sm transition active:scale-95"
             >
               <span>Experimentar Ferramenta no Sistema</span>
               <ArrowRight className="w-4 h-4" />

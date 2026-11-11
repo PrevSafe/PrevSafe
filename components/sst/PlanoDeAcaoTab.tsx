@@ -91,29 +91,29 @@ const ROTULO_DA_ORIGEM: Record<PgrActionPlanItem['origin'], string> = {
 };
 
 const COR_DO_STATUS: Record<StatusDaAcaoDoPlano, string> = {
-  SUGERIDA: 'bg-indigo-500/15 text-indigo-300 border-indigo-500/30',
-  NAO_INICIADA: 'bg-slate-800 text-slate-300 border-slate-700',
-  EM_ANDAMENTO: 'bg-sky-500/15 text-sky-300 border-sky-500/30',
-  CONCLUIDA: 'bg-teal-500/15 text-teal-300 border-teal-500/30',
-  EFICACIA_VERIFICADA: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30',
-  DESCARTADA: 'bg-slate-900 text-slate-500 border-slate-800'
+  SUGERIDA: 'bg-teal-500/15 text-teal-800 border-teal-500/30',
+  NAO_INICIADA: 'bg-superficie-2 text-tinta border-borda',
+  EM_ANDAMENTO: 'bg-teal-500/15 text-teal-800 border-teal-500/30',
+  CONCLUIDA: 'bg-teal-500/15 text-teal-800 border-teal-500/30',
+  EFICACIA_VERIFICADA: 'bg-marca-suave text-marca-escura border-marca-borda',
+  DESCARTADA: 'bg-superficie text-tinta-2 border-borda'
 };
-const COR_ATRASADA = 'bg-rose-500/15 text-rose-300 border-rose-500/30';
+const COR_ATRASADA = 'bg-rose-500/15 text-rose-800 border-rose-500/30';
 
 const COR_DO_NIVEL: Record<string, string> = {
-  MUITO_ALTO: 'bg-rose-500/15 text-rose-300 border-rose-500/30',
-  ALTO: 'bg-orange-500/15 text-orange-300 border-orange-500/30',
-  MEDIO: 'bg-amber-500/15 text-amber-300 border-amber-500/30',
-  BAIXO: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
+  MUITO_ALTO: 'bg-rose-500/15 text-rose-800 border-rose-500/30',
+  ALTO: 'bg-amber-500/15 text-amber-800 border-amber-500/30',
+  MEDIO: 'bg-amber-500/15 text-amber-800 border-amber-500/30',
+  BAIXO: 'bg-marca-suave text-marca-escura border-marca-borda'
 };
 
-const ROTULO = 'block text-slate-400 font-semibold mb-1';
+const ROTULO = 'block text-tinta-2 font-semibold mb-1';
 const CAMPO =
-  'w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 text-xs focus:outline-none focus:border-teal-500';
+  'w-full bg-fundo border border-borda rounded-lg px-3 py-2 text-tinta text-xs focus:outline-none focus:border-teal-500';
 const BOTAO = 'px-2.5 py-1.5 rounded-lg text-[11px] font-semibold flex items-center gap-1 transition-colors border';
-const BOTAO_NEUTRO = `${BOTAO} bg-slate-900 border-slate-700 text-slate-300 hover:border-slate-500 hover:text-slate-100`;
-const BOTAO_PRINCIPAL = `${BOTAO} bg-teal-500 border-teal-400 text-slate-950 hover:bg-teal-400`;
-const BOTAO_PERIGO = `${BOTAO} bg-rose-500/10 border-rose-500/30 text-rose-300 hover:bg-rose-500/20`;
+const BOTAO_NEUTRO = `${BOTAO} bg-superficie border-borda text-tinta hover:border-borda-forte hover:text-tinta`;
+const BOTAO_PRINCIPAL = `bg-marca-escura text-white ${BOTAO} border-teal-400 hover:opacity-90`;
+const BOTAO_PERIGO = `${BOTAO} bg-rose-500/10 border-rose-500/30 text-rose-700 hover:bg-rose-500/20`;
 
 const acaoConcluida = (a: PgrActionPlanItem | null | undefined) =>
   !!a && (a.status === 'CONCLUIDA' || a.status === 'EFICACIA_VERIFICADA');
@@ -213,22 +213,22 @@ const Modal: React.FC<{
   aoFechar: () => void;
   children: React.ReactNode;
 }> = ({ titulo, subtitulo, icone, largura, aoFechar, children }) => (
-  <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+  <div className="fixed inset-0 bg-fundo backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div
-      className={`bg-slate-900 border border-slate-800 rounded-2xl w-full ${largura} p-5 sm:p-6 space-y-4 shadow-2xl animate-in fade-in zoom-in-95 duration-150 max-h-[90vh] overflow-y-auto`}
+      className={`bg-superficie border border-borda rounded-2xl w-full ${largura} p-5 sm:p-6 space-y-4 shadow-sm animate-in fade-in zoom-in-95 duration-150 max-h-[90vh] overflow-y-auto`}
     >
-      <div className="flex items-start justify-between gap-3 border-b border-slate-800 pb-3">
+      <div className="flex items-start justify-between gap-3 border-b border-borda pb-3">
         <div className="min-w-0">
-          <h3 className="text-base font-bold text-slate-100 flex items-center gap-2">
+          <h3 className="text-base font-bold text-tinta flex items-center gap-2">
             {icone}
             {titulo}
           </h3>
-          {subtitulo && <p className="text-[11px] text-slate-400 mt-1 break-words">{subtitulo}</p>}
+          {subtitulo && <p className="text-[11px] text-tinta-2 mt-1 break-words">{subtitulo}</p>}
         </div>
         <button
           type="button"
           onClick={aoFechar}
-          className="text-slate-400 hover:text-slate-200 p-1 rounded-lg hover:bg-slate-800 shrink-0"
+          className="text-tinta-2 hover:text-tinta p-1 rounded-lg hover:bg-superficie-2 shrink-0"
           title="Fechar"
         >
           <X className="w-5 h-5" />
@@ -241,13 +241,13 @@ const Modal: React.FC<{
 
 const ErroDoModal: React.FC<{ texto: string | null }> = ({ texto }) =>
   texto ? (
-    <div className="p-3 bg-rose-500/10 border border-rose-500/30 rounded-xl flex items-start gap-2 text-xs text-rose-200">
-      <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
+    <div className="p-3 bg-rose-500/10 border border-rose-500/30 rounded-xl flex items-start gap-2 text-xs text-rose-700">
+      <AlertTriangle className="w-4 h-4 text-rose-700 shrink-0 mt-0.5" />
       <span className="break-words">{texto}</span>
     </div>
   ) : null;
 
-const Obrigatorio = () => <span className="text-rose-400">*</span>;
+const Obrigatorio = () => <span className="text-rose-700">*</span>;
 
 // ---------------------------------------------------------------------------
 // Tela
@@ -552,9 +552,9 @@ export const PlanoDeAcaoTab: React.FC<PlanoDeAcaoTabProps> = ({ selectedClientId
 
   if (!selectedClientId) {
     return (
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-8 text-center">
-        <ClipboardList className="w-8 h-8 text-slate-600 mx-auto mb-3" />
-        <p className="text-sm text-slate-400">Selecione um cliente para ver o plano de ação do PGR.</p>
+      <div className="bg-superficie border border-borda rounded-2xl p-8 text-center">
+        <ClipboardList className="w-8 h-8 text-tinta-2 mx-auto mb-3" />
+        <p className="text-sm text-tinta-2">Selecione um cliente para ver o plano de ação do PGR.</p>
       </div>
     );
   }
@@ -575,20 +575,20 @@ export const PlanoDeAcaoTab: React.FC<PlanoDeAcaoTabProps> = ({ selectedClientId
         id={`acao-pgr-${a.id}`}
         className={`rounded-xl border p-3 space-y-2.5 ${
           descartada
-            ? 'bg-slate-950/40 border-slate-800/70 opacity-80'
+            ? 'bg-fundo border-borda opacity-80'
             : aceita
-              ? 'bg-slate-950 border-slate-800'
-              : 'bg-indigo-950/20 border-dashed border-indigo-700/50'
+              ? 'bg-fundo border-borda'
+              : 'bg-teal-50 border-dashed border-teal-700/50'
         }`}
       >
         <div className="flex items-center gap-1.5 flex-wrap">
           {numero ? (
-            <span className="px-1.5 py-0.5 bg-slate-800 text-slate-200 font-mono font-bold text-[10px] rounded">
+            <span className="px-1.5 py-0.5 bg-superficie-2 text-tinta font-mono font-bold text-[10px] rounded">
               {numero}
             </span>
           ) : (
             <span
-              className="px-1.5 py-0.5 bg-slate-900 border border-slate-800 text-slate-500 text-[10px] rounded"
+              className="px-1.5 py-0.5 bg-superficie border border-borda text-tinta-2 text-[10px] rounded"
               title={
                 descartada
                   ? 'Ação descartada: não sai no PGR, e o registro fica.'
@@ -605,22 +605,22 @@ export const PlanoDeAcaoTab: React.FC<PlanoDeAcaoTabProps> = ({ selectedClientId
           >
             {statusExibido(a, hoje)}
           </span>
-          <span className="px-1.5 py-0.5 bg-slate-900 border border-slate-800 text-slate-300 text-[10px] font-semibold rounded">
+          <span className="px-1.5 py-0.5 bg-superficie border border-borda text-tinta text-[10px] font-semibold rounded">
             {ROTULO_DO_TIPO[a.action_type] || a.action_type}
           </span>
-          <span className="px-1.5 py-0.5 bg-slate-900 border border-slate-800 text-slate-400 text-[10px] rounded">
+          <span className="px-1.5 py-0.5 bg-superficie border border-borda text-tinta-2 text-[10px] rounded">
             Origem: {ROTULO_DA_ORIGEM[a.origin] || a.origin}
           </span>
         </div>
 
-        <p className="text-xs text-slate-100 font-semibold break-words whitespace-pre-line">{a.measure}</p>
+        <p className="text-xs text-tinta font-semibold break-words whitespace-pre-line">{a.measure}</p>
 
-        <p className="text-[11px] text-slate-400 break-words">
-          <span className="text-slate-500">Hierarquia:</span>{' '}
+        <p className="text-[11px] text-tinta-2 break-words">
+          <span className="text-tinta-2">Hierarquia:</span>{' '}
           {numeralDa(a.hierarchy)}. {ROTULO_DA_HIERARQUIA[a.hierarchy] || a.hierarchy}
           {justificativa && (
             <>
-              {' '}— <span className="text-slate-300">{justificativa}</span>
+              {' '}— <span className="text-tinta">{justificativa}</span>
               {a.hierarchy_justification_note ? ` (${a.hierarchy_justification_note})` : ''}
             </>
           )}
@@ -628,43 +628,43 @@ export const PlanoDeAcaoTab: React.FC<PlanoDeAcaoTabProps> = ({ selectedClientId
 
         <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1.5 text-[11px]">
           <div className="min-w-0">
-            <dt className="text-slate-500">Responsável</dt>
-            <dd className="text-slate-200 break-words">
+            <dt className="text-tinta-2">Responsável</dt>
+            <dd className="text-tinta break-words">
               {a.responsible || (
-                <span className={aceita ? 'text-amber-300' : 'text-slate-500'}>
+                <span className={aceita ? 'text-amber-700' : 'text-tinta-2'}>
                   {aceita ? 'não definido' : 'a definir no aceite'}
                 </span>
               )}
             </dd>
           </div>
           <div className="min-w-0">
-            <dt className="text-slate-500">Prazo</dt>
-            <dd className="text-slate-200">
+            <dt className="text-tinta-2">Prazo</dt>
+            <dd className="text-tinta">
               {aceita || descartada ? (
                 dataValida(a.deadline) ? (
-                  <span className={atrasada ? 'text-rose-300 font-semibold' : ''}>{dataBR(a.deadline)}</span>
+                  <span className={atrasada ? 'text-rose-700 font-semibold' : ''}>{dataBR(a.deadline)}</span>
                 ) : (
-                  <span className="text-amber-300">não definido</span>
+                  <span className="text-amber-700">não definido</span>
                 )
               ) : dataValida(a.deadline) ? (
-                <span className="text-slate-400">sugerido {dataBR(a.deadline)} — a confirmar no aceite</span>
+                <span className="text-tinta-2">sugerido {dataBR(a.deadline)} — a confirmar no aceite</span>
               ) : (
-                <span className="text-slate-500">a definir no aceite</span>
+                <span className="text-tinta-2">a definir no aceite</span>
               )}
             </dd>
           </div>
           <div className="min-w-0">
-            <dt className="text-slate-500">Forma de acompanhamento</dt>
-            <dd className="text-slate-300 break-words">{a.monitoring || <span className="text-slate-500">—</span>}</dd>
+            <dt className="text-tinta-2">Forma de acompanhamento</dt>
+            <dd className="text-tinta break-words">{a.monitoring || <span className="text-tinta-2">—</span>}</dd>
           </div>
           <div className="min-w-0">
-            <dt className="text-slate-500">Forma de aferição de resultados</dt>
-            <dd className="text-slate-300 break-words">{a.measurement || <span className="text-slate-500">—</span>}</dd>
+            <dt className="text-tinta-2">Forma de aferição de resultados</dt>
+            <dd className="text-tinta break-words">{a.measurement || <span className="text-tinta-2">—</span>}</dd>
           </div>
         </dl>
 
         {a.accepted_at && (
-          <p className="text-[10px] text-slate-500">
+          <p className="text-[10px] text-tinta-2">
             Aceita em {dataLocal(a.accepted_at)}{a.accepted_by ? ` por ${a.accepted_by}` : ''}
           </p>
         )}
@@ -673,22 +673,22 @@ export const PlanoDeAcaoTab: React.FC<PlanoDeAcaoTabProps> = ({ selectedClientId
             novo: o registro da implementacao nao se apaga (1.5.5.3.1). */}
         {(acaoConcluida(a) || (a.completed_at && !descartada)) && (
           <div className="p-2.5 bg-teal-500/5 border border-teal-500/20 rounded-lg text-[11px] space-y-1">
-            <p className="text-slate-300">
-              <span className="text-slate-500">
+            <p className="text-tinta">
+              <span className="text-tinta-2">
                 {acaoConcluida(a) ? 'Conclusão:' : 'Conclusão anterior (ação reaberta):'}
               </span>{' '}
               {dataBR(a.completed_at) || '—'}
-              <span className="text-slate-500"> · Trabalhadores informados em:</span>{' '}
+              <span className="text-tinta-2"> · Trabalhadores informados em:</span>{' '}
               {dataBR(a.workers_informed_at) || '—'}
             </p>
             {a.evidence && (
-              <p className="text-slate-300 break-words whitespace-pre-line">
-                <span className="text-slate-500">Evidência:</span> {a.evidence}
+              <p className="text-tinta break-words whitespace-pre-line">
+                <span className="text-tinta-2">Evidência:</span> {a.evidence}
               </p>
             )}
             {a.status === 'EFICACIA_VERIFICADA' && (
-              <p className="text-emerald-300 break-words whitespace-pre-line">
-                <span className="text-slate-500">Eficácia aferida em {dataBR(a.effectiveness_checked_at) || '—'}:</span>{' '}
+              <p className="text-marca-escura break-words whitespace-pre-line">
+                <span className="text-tinta-2">Eficácia aferida em {dataBR(a.effectiveness_checked_at) || '—'}:</span>{' '}
                 {a.effectiveness_result}
               </p>
             )}
@@ -696,18 +696,18 @@ export const PlanoDeAcaoTab: React.FC<PlanoDeAcaoTabProps> = ({ selectedClientId
         )}
 
         {descartada && a.discard_reason && (
-          <p className="text-[11px] text-slate-400 break-words">
-            <span className="text-slate-500">Motivo do descarte:</span> {a.discard_reason}
+          <p className="text-[11px] text-tinta-2 break-words">
+            <span className="text-tinta-2">Motivo do descarte:</span> {a.discard_reason}
           </p>
         )}
 
         {faltas.length > 0 && (
           <div className="p-2.5 bg-amber-500/10 border border-amber-500/30 rounded-lg">
-            <p className="text-[10px] font-bold text-amber-300 uppercase tracking-wide flex items-center gap-1">
+            <p className="text-[10px] font-bold text-amber-700 uppercase tracking-wide flex items-center gap-1">
               <AlertTriangle className="w-3.5 h-3.5" />
               {aceita ? 'O que falta (sai como pendência no PGR)' : 'Sugestão: não entra no PGR até ser aceita'}
             </p>
-            <ul className="mt-1 space-y-0.5 text-[11px] text-amber-200/90 list-disc list-inside">
+            <ul className="mt-1 space-y-0.5 text-[11px] text-amber-700 list-disc list-inside">
               {faltas.map((f) => (
                 <li key={f} className="break-words">{f}</li>
               ))}
@@ -791,21 +791,21 @@ export const PlanoDeAcaoTab: React.FC<PlanoDeAcaoTabProps> = ({ selectedClientId
   return (
     <div className="space-y-4" id="plano-de-acao-tab">
       {/* Cabecalho */}
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4">
+      <div className="bg-superficie border border-borda rounded-2xl p-5 space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
           <div className="min-w-0">
-            <h3 className="text-base font-bold text-slate-100 flex items-center gap-2 flex-wrap">
-              <ClipboardList className="w-5 h-5 text-teal-400" />
+            <h3 className="text-base font-bold text-tinta flex items-center gap-2 flex-wrap">
+              <ClipboardList className="w-5 h-5 text-teal-700" />
               Plano de Ação do PGR
-              <span className="text-[11px] font-semibold text-slate-500">NR-01, subitens 1.5.5.2 e 1.5.5.3</span>
+              <span className="text-[11px] font-semibold text-tinta-2">NR-01, subitens 1.5.5.2 e 1.5.5.3</span>
             </h3>
-            <p className="text-xs text-slate-400 mt-1 max-w-[46rem]">
-              Sugestão <strong className="text-slate-300">não entra no PGR</strong> até ser aceita com
+            <p className="text-xs text-tinta-2 mt-1 max-w-[46rem]">
+              Sugestão <strong className="text-tinta">não entra no PGR</strong> até ser aceita com
               responsável, prazo, forma de acompanhamento e forma de aferição de resultados — o
               &quot;cronograma com responsáveis, formas de acompanhamento e aferição de resultados&quot; do
               subitem 1.5.5.2.2. Risco sem ação aceita sai no PGR como pendência.
             </p>
-            <p className="text-xs text-slate-500 mt-1 max-w-[46rem]">
+            <p className="text-xs text-tinta-2 mt-1 max-w-[46rem]">
               Ordem e numeração da seção 8 do PGR: prioridade da classificação e, no mesmo nível, número de
               expostos. A implementação e cada ajuste ficam no histórico da ação (subitem 1.5.5.3.1).
             </p>
@@ -815,7 +815,7 @@ export const PlanoDeAcaoTab: React.FC<PlanoDeAcaoTabProps> = ({ selectedClientId
             id="btn-sugerir-acoes-plano"
             onClick={sugerir}
             disabled={grupos.length === 0}
-            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white font-bold rounded-lg shadow-md flex items-center justify-center gap-1.5 text-xs shrink-0"
+            className="px-4 py-2 bg-teal-600 hover:bg-teal-700 disabled:opacity-50 text-white font-bold rounded-lg shadow-md flex items-center justify-center gap-1.5 text-xs shrink-0"
           >
             <Sparkles className="w-4 h-4" />
             Sugerir ações para riscos sem plano
@@ -823,45 +823,45 @@ export const PlanoDeAcaoTab: React.FC<PlanoDeAcaoTabProps> = ({ selectedClientId
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
-          <div className="bg-slate-950/70 p-3 rounded-xl border border-slate-800">
-            <span className="text-[10px] uppercase font-bold text-slate-500 block">Riscos sem ação</span>
-            <span className={`text-lg font-black ${riscosSemAcao > 0 ? 'text-amber-300' : 'text-slate-100'}`}>
+          <div className="bg-fundo p-3 rounded-xl border border-borda">
+            <span className="text-[10px] uppercase font-bold text-tinta-2 block">Riscos sem ação</span>
+            <span className={`text-lg font-black ${riscosSemAcao > 0 ? 'text-amber-700' : 'text-tinta'}`}>
               {riscosSemAcao}
             </span>
-            <span className="text-[10px] text-slate-400 block">
+            <span className="text-[10px] text-tinta-2 block">
               de {grupos.length} · {riscosSemAceita} sem ação aceita
             </span>
           </div>
-          <div className="bg-slate-950/70 p-3 rounded-xl border border-slate-800">
-            <span className="text-[10px] uppercase font-bold text-slate-500 block">Sugestões</span>
-            <span className={`text-lg font-black ${sugeridas > 0 ? 'text-indigo-300' : 'text-slate-100'}`}>
+          <div className="bg-fundo p-3 rounded-xl border border-borda">
+            <span className="text-[10px] uppercase font-bold text-tinta-2 block">Sugestões</span>
+            <span className={`text-lg font-black ${sugeridas > 0 ? 'text-teal-700' : 'text-tinta'}`}>
               {sugeridas}
             </span>
-            <span className="text-[10px] text-slate-400 block">aguardando aceite</span>
+            <span className="text-[10px] text-tinta-2 block">aguardando aceite</span>
           </div>
-          <div className="bg-slate-950/70 p-3 rounded-xl border border-slate-800">
-            <span className="text-[10px] uppercase font-bold text-slate-500 block">Ações aceitas</span>
-            <span className="text-lg font-black text-slate-100">{aceitas.length}</span>
-            <span className="text-[10px] text-slate-400 block">no plano do PGR</span>
+          <div className="bg-fundo p-3 rounded-xl border border-borda">
+            <span className="text-[10px] uppercase font-bold text-tinta-2 block">Ações aceitas</span>
+            <span className="text-lg font-black text-tinta">{aceitas.length}</span>
+            <span className="text-[10px] text-tinta-2 block">no plano do PGR</span>
           </div>
-          <div className="bg-slate-950/70 p-3 rounded-xl border border-slate-800">
-            <span className="text-[10px] uppercase font-bold text-slate-500 block">Atrasadas</span>
-            <span className={`text-lg font-black ${atrasadas > 0 ? 'text-rose-300' : 'text-slate-100'}`}>
+          <div className="bg-fundo p-3 rounded-xl border border-borda">
+            <span className="text-[10px] uppercase font-bold text-tinta-2 block">Atrasadas</span>
+            <span className={`text-lg font-black ${atrasadas > 0 ? 'text-rose-700' : 'text-tinta'}`}>
               {atrasadas}
             </span>
-            <span className="text-[10px] text-slate-400 block">prazo vencido</span>
+            <span className="text-[10px] text-tinta-2 block">prazo vencido</span>
           </div>
-          <div className="bg-slate-950/70 p-3 rounded-xl border border-slate-800">
-            <span className="text-[10px] uppercase font-bold text-slate-500 block">Com faltas</span>
-            <span className={`text-lg font-black ${comFaltas > 0 ? 'text-amber-300' : 'text-slate-100'}`}>
+          <div className="bg-fundo p-3 rounded-xl border border-borda">
+            <span className="text-[10px] uppercase font-bold text-tinta-2 block">Com faltas</span>
+            <span className={`text-lg font-black ${comFaltas > 0 ? 'text-amber-700' : 'text-tinta'}`}>
               {comFaltas}
             </span>
-            <span className="text-[10px] text-slate-400 block">aceitas, com pendência</span>
+            <span className="text-[10px] text-tinta-2 block">aceitas, com pendência</span>
           </div>
-          <div className="bg-slate-950/70 p-3 rounded-xl border border-slate-800">
-            <span className="text-[10px] uppercase font-bold text-slate-500 block">Descartadas</span>
-            <span className="text-lg font-black text-slate-100">{descartadas}</span>
-            <span className="text-[10px] text-slate-400 block">registro mantido</span>
+          <div className="bg-fundo p-3 rounded-xl border border-borda">
+            <span className="text-[10px] uppercase font-bold text-tinta-2 block">Descartadas</span>
+            <span className="text-lg font-black text-tinta">{descartadas}</span>
+            <span className="text-[10px] text-tinta-2 block">registro mantido</span>
           </div>
         </div>
 
@@ -878,15 +878,15 @@ export const PlanoDeAcaoTab: React.FC<PlanoDeAcaoTabProps> = ({ selectedClientId
         <div
           className={`p-3 rounded-xl border flex items-start justify-between gap-3 text-xs ${
             aviso.ok
-              ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-200'
-              : 'bg-amber-500/10 border-amber-500/30 text-amber-200'
+              ? 'bg-marca-suave border-marca-borda text-marca-escura'
+              : 'bg-amber-500/10 border-amber-500/30 text-amber-800'
           }`}
         >
           <div className="flex items-start gap-2 min-w-0">
             {aviso.ok ? (
-              <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+              <CheckCircle2 className="w-4 h-4 text-marca-escura shrink-0 mt-0.5" />
             ) : (
-              <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+              <AlertTriangle className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
             )}
             <span className="font-medium break-words">{aviso.texto}</span>
           </div>
@@ -901,11 +901,11 @@ export const PlanoDeAcaoTab: React.FC<PlanoDeAcaoTabProps> = ({ selectedClientId
       )}
 
       {grupos.length === 0 ? (
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex items-start gap-2.5">
-          <Info className="w-4 h-4 text-teal-400 mt-0.5 shrink-0" />
+        <div className="bg-superficie border border-borda rounded-2xl p-5 flex items-start gap-2.5">
+          <Info className="w-4 h-4 text-teal-700 mt-0.5 shrink-0" />
           <div>
-            <p className="text-sm text-slate-200 font-semibold">Nenhum risco no inventário deste cliente.</p>
-            <p className="text-xs text-slate-400 mt-1">
+            <p className="text-sm text-tinta font-semibold">Nenhum risco no inventário deste cliente.</p>
+            <p className="text-xs text-tinta-2 mt-1">
               O plano de ação nasce do inventário: caracterize os riscos na aba 2 (GHE &amp; Inventário de
               Riscos) e volte aqui.
             </p>
@@ -929,19 +929,19 @@ export const PlanoDeAcaoTab: React.FC<PlanoDeAcaoTabProps> = ({ selectedClientId
               <div
                 key={r?.id}
                 id={`plano-risco-${r?.id}`}
-                className="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3"
+                className="bg-superficie border border-borda rounded-2xl p-4 space-y-3"
               >
                 <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
                   <div className="min-w-0 space-y-1">
                     <div className="flex items-center gap-1.5 flex-wrap">
-                      <span className="px-2 py-0.5 bg-teal-500 text-slate-950 font-mono font-bold text-[10px] rounded">
+                      <span className="bg-marca-escura text-white px-2 py-0.5 font-mono font-bold text-[10px] rounded">
                         {g.id}
                       </span>
                       <span
                         className={`px-2 py-0.5 border text-[10px] font-bold rounded ${
                           g.classificado
                             ? COR_DO_NIVEL[g.classificado.nivel] || COR_DO_NIVEL.MEDIO
-                            : 'bg-slate-800 text-slate-400 border-slate-700'
+                            : 'bg-superficie-2 text-tinta-2 border-borda'
                         }`}
                       >
                         {g.classificado
@@ -949,28 +949,28 @@ export const PlanoDeAcaoTab: React.FC<PlanoDeAcaoTabProps> = ({ selectedClientId
                           : 'Não classificado'}
                       </span>
                       {r?.risk_category && (
-                        <span className="px-2 py-0.5 bg-slate-800 text-slate-300 text-[10px] font-semibold rounded">
+                        <span className="px-2 py-0.5 bg-superficie-2 text-tinta text-[10px] font-semibold rounded">
                           {r.risk_category}
                         </span>
                       )}
                       {r?.status === 'INACTIVE' && (
-                        <span className="px-2 py-0.5 bg-slate-800 text-slate-500 text-[10px] rounded">
+                        <span className="px-2 py-0.5 bg-superficie-2 text-tinta-2 text-[10px] rounded">
                           Risco inativo
                         </span>
                       )}
                     </div>
-                    <p className="text-sm font-bold text-slate-100 break-words">{r?.agent_name}</p>
-                    <p className="text-[11px] text-slate-400 flex items-center gap-1 flex-wrap">
+                    <p className="text-sm font-bold text-tinta break-words">{r?.agent_name}</p>
+                    <p className="text-[11px] text-tinta-2 flex items-center gap-1 flex-wrap">
                       <span>{g.gheNome}</span>
-                      <span className="text-slate-600">·</span>
+                      <span className="text-tinta-2">·</span>
                       <Users className="w-3 h-3" />
                       <span>{g.expostos} exposto(s)</span>
                     </p>
                     {g.prazoDaFaixa ? (
-                      <p className="text-[11px] text-slate-400">
-                        <span className="text-slate-500">Prazo da classificação:</span> {g.prazoDaFaixa.rotulo}
+                      <p className="text-[11px] text-tinta-2">
+                        <span className="text-tinta-2">Prazo da classificação:</span> {g.prazoDaFaixa.rotulo}
                         {g.prazoDaFaixa.elevado && nivelDaFaixa && (
-                          <span className="text-amber-300">
+                          <span className="text-amber-700">
                             {' '}— prazo da faixa de cima ({DECISAO_POR_NIVEL[nivelDaFaixa].rotulo}) pelo número de
                             expostos: {EXPOSTOS_QUE_ELEVAM_O_PRAZO} ou mais, ou{' '}
                             {Math.round(FRACAO_DO_EFETIVO_QUE_ELEVA_O_PRAZO * 100)}% ou mais do efetivo (seção 5.7)
@@ -978,7 +978,7 @@ export const PlanoDeAcaoTab: React.FC<PlanoDeAcaoTabProps> = ({ selectedClientId
                         )}
                       </p>
                     ) : (
-                      <p className="text-[11px] text-amber-300">
+                      <p className="text-[11px] text-amber-700">
                         Sem severidade e probabilidade não há prioridade nem prazo de faixa: classifique o risco no
                         inventário (seção 5.6).
                       </p>
@@ -996,15 +996,15 @@ export const PlanoDeAcaoTab: React.FC<PlanoDeAcaoTabProps> = ({ selectedClientId
 
                 {ativas.length === 0 && sugestaoDoInventario && (
                   <div className="p-3 rounded-xl border border-dashed border-amber-500/40 bg-amber-500/5 space-y-1">
-                    <p className="text-[11px] font-bold text-amber-300 flex items-center gap-1">
+                    <p className="text-[11px] font-bold text-amber-700 flex items-center gap-1">
                       <AlertTriangle className="w-3.5 h-3.5" />
                       Sem ação no plano — no PGR sai como {sugestaoDoInventario.numero}, com a pendência
                     </p>
-                    <p className="text-[11px] text-slate-300 break-words">
+                    <p className="text-[11px] text-tinta break-words">
                       Sugestão pelo estado dos controles: {sugestaoDoInventario.medida}{' '}
-                      <span className="text-slate-500">({sugestaoDoInventario.hierarquia} · {sugestaoDoInventario.tipo})</span>
+                      <span className="text-tinta-2">({sugestaoDoInventario.hierarquia} · {sugestaoDoInventario.tipo})</span>
                     </p>
-                    <p className="text-[10px] text-slate-500">
+                    <p className="text-[10px] text-tinta-2">
                       Use &quot;Sugerir ações para riscos sem plano&quot; para gravá-la como sugestão, ou &quot;Nova
                       ação&quot; para cadastrar a medida.
                     </p>
@@ -1018,7 +1018,7 @@ export const PlanoDeAcaoTab: React.FC<PlanoDeAcaoTabProps> = ({ selectedClientId
                     <button
                       type="button"
                       onClick={() => setDescartadasAbertas((d) => ({ ...d, [r?.id]: !abertas }))}
-                      className="text-[11px] text-slate-400 hover:text-slate-200 font-semibold flex items-center gap-1"
+                      className="text-[11px] text-tinta-2 hover:text-tinta font-semibold flex items-center gap-1"
                     >
                       {abertas ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
                       {descartadasDoRisco.length} ação(ões) descartada(s) — o registro fica
@@ -1039,7 +1039,7 @@ export const PlanoDeAcaoTab: React.FC<PlanoDeAcaoTabProps> = ({ selectedClientId
         <Modal
           largura="max-w-[44rem]"
           aoFechar={() => setFormulario(null)}
-          icone={<ClipboardList className="w-5 h-5 text-teal-400" />}
+          icone={<ClipboardList className="w-5 h-5 text-teal-700" />}
           titulo={
             formulario.modo === 'NOVA'
               ? 'Nova ação no plano'
@@ -1084,7 +1084,7 @@ export const PlanoDeAcaoTab: React.FC<PlanoDeAcaoTabProps> = ({ selectedClientId
                     </option>
                   ))}
                 </select>
-                <p className="text-[10px] text-slate-500 mt-1">
+                <p className="text-[10px] text-tinta-2 mt-1">
                   Ordem de prioridade da alínea &quot;g&quot; do item 1.4.1.
                 </p>
               </div>
@@ -1108,7 +1108,7 @@ export const PlanoDeAcaoTab: React.FC<PlanoDeAcaoTabProps> = ({ selectedClientId
 
             {justificarNoFormulario && (
               <div className="p-3 bg-amber-500/5 border border-amber-500/30 rounded-xl space-y-2">
-                <p className="text-[11px] text-amber-200">
+                <p className="text-[11px] text-amber-700">
                   {ROTULO_DA_HIERARQUIA[form.hierarchy as HierarquiaDaMedida]} só se adota nas hipóteses do
                   subitem 1.5.5.1.2: inviabilidade técnica da proteção coletiva, proteção coletiva insuficiente
                   ou em fase de estudo, planejamento ou implantação, ou caráter complementar ou emergencial.
@@ -1150,17 +1150,17 @@ export const PlanoDeAcaoTab: React.FC<PlanoDeAcaoTabProps> = ({ selectedClientId
               </div>
             )}
             {form.hierarchy === 'ADMINISTRATIVA' && !justificarNoFormulario && (
-              <p className="text-[11px] text-slate-400 flex items-start gap-1.5">
-                <Info className="w-3.5 h-3.5 text-teal-400 shrink-0 mt-0.5" />
+              <p className="text-[11px] text-tinta-2 flex items-start gap-1.5">
+                <Info className="w-3.5 h-3.5 text-teal-700 shrink-0 mt-0.5" />
                 Para fator ergonômico ou psicossocial, a organização do trabalho é a própria medida da NR-17
                 (item 17.4), e não a exceção: não precisa da justificativa do subitem 1.5.5.1.2.
               </p>
             )}
 
-            <div className="p-3 bg-slate-950 border border-slate-800 rounded-xl space-y-3">
-              <p className="font-bold text-slate-200">
+            <div className="p-3 bg-fundo border border-borda rounded-xl space-y-3">
+              <p className="font-bold text-tinta">
                 Cronograma{' '}
-                <span className="text-[10px] font-normal text-slate-500">
+                <span className="text-[10px] font-normal text-tinta-2">
                   subitem 1.5.5.2.2{aceitandoNoFormulario ? ' — obrigatório para a ação aceita' : ''}
                 </span>
               </p>
@@ -1188,7 +1188,7 @@ export const PlanoDeAcaoTab: React.FC<PlanoDeAcaoTabProps> = ({ selectedClientId
                     className={CAMPO}
                   />
                   {grupoDoFormulario?.prazoDaFaixa ? (
-                    <p className="text-[10px] text-slate-500 mt-1">
+                    <p className="text-[10px] text-tinta-2 mt-1">
                       Prazo da classificação: {grupoDoFormulario.prazoDaFaixa.rotulo}
                       {limiteDoFormulario ? `, até ${dataBR(limiteDoFormulario)}` : ''}
                       {formulario.modo === 'EDITAR' && anteriorDoFormulario?.accepted_at
@@ -1201,7 +1201,7 @@ export const PlanoDeAcaoTab: React.FC<PlanoDeAcaoTabProps> = ({ selectedClientId
                           <button
                             type="button"
                             onClick={() => setForm({ ...form, deadline: limiteDoFormulario })}
-                            className="text-teal-400 hover:text-teal-300 font-semibold underline"
+                            className="text-teal-700 hover:text-teal-700 font-semibold underline"
                           >
                             usar esta data
                           </button>
@@ -1209,14 +1209,14 @@ export const PlanoDeAcaoTab: React.FC<PlanoDeAcaoTabProps> = ({ selectedClientId
                       )}
                     </p>
                   ) : (
-                    <p className="text-[10px] text-amber-300 mt-1">
+                    <p className="text-[10px] text-amber-700 mt-1">
                       Risco sem classificação: não há prazo de faixa para conferir (seção 5.6).
                     </p>
                   )}
                   {/* faltasDaAcao confere o prazo ACEITO (o original): prorrogar
                       depois e permitido, com motivo. Por isso o aviso muda. */}
                   {limiteDoFormulario && dataValida(form.deadline) && form.deadline > limiteDoFormulario && (
-                    <p className="text-[10px] text-amber-300 mt-1">
+                    <p className="text-[10px] text-amber-700 mt-1">
                       {mudaPrazoAceito
                         ? 'Prorrogação além do limite da classificação (seção 5.7): fica registrada com o motivo.'
                         : 'Prazo além do limite da classificação: o PGR aponta a pendência (seção 5.7).'}
@@ -1237,7 +1237,7 @@ export const PlanoDeAcaoTab: React.FC<PlanoDeAcaoTabProps> = ({ selectedClientId
                     placeholder="Por que o prazo aceito mudou"
                     className={CAMPO}
                   />
-                  <p className="text-[10px] text-slate-500 mt-1">
+                  <p className="text-[10px] text-tinta-2 mt-1">
                     Prazo aceito: {dataBR(anteriorDoFormulario?.deadline)}
                     {anteriorDoFormulario?.original_deadline && anteriorDoFormulario.original_deadline !== anteriorDoFormulario.deadline
                       ? ` (original ${dataBR(anteriorDoFormulario.original_deadline)})`
@@ -1276,9 +1276,9 @@ export const PlanoDeAcaoTab: React.FC<PlanoDeAcaoTabProps> = ({ selectedClientId
             <div>
               <label className={ROTULO}>Status</label>
               {concluidaNoFormulario ? (
-                <p className="text-slate-300">
+                <p className="text-tinta">
                   {ROTULO_DO_STATUS[form.status]}{' '}
-                  <span className="text-slate-500">— para voltar a andamento, use &quot;Reabrir&quot; e informe o motivo.</span>
+                  <span className="text-tinta-2">— para voltar a andamento, use &quot;Reabrir&quot; e informe o motivo.</span>
                 </p>
               ) : (
                 <select
@@ -1294,7 +1294,7 @@ export const PlanoDeAcaoTab: React.FC<PlanoDeAcaoTabProps> = ({ selectedClientId
                 </select>
               )}
               {formulario.modo === 'NOVA' && form.status === 'SUGERIDA' && (
-                <p className="text-[10px] text-slate-500 mt-1">
+                <p className="text-[10px] text-tinta-2 mt-1">
                   Registrada como sugestão, a ação não entra no PGR até ser aceita.
                 </p>
               )}
@@ -1302,17 +1302,17 @@ export const PlanoDeAcaoTab: React.FC<PlanoDeAcaoTabProps> = ({ selectedClientId
 
             <ErroDoModal texto={erroDoModal} />
 
-            <div className="flex flex-col-reverse sm:flex-row justify-end gap-2 pt-3 border-t border-slate-800">
+            <div className="flex flex-col-reverse sm:flex-row justify-end gap-2 pt-3 border-t border-borda">
               <button
                 type="button"
                 onClick={() => setFormulario(null)}
-                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold rounded-lg"
+                className="px-4 py-2 bg-superficie-2 hover:bg-superficie-3 text-tinta font-semibold rounded-lg"
               >
                 Cancelar
               </button>
               <button
                 type="submit"
-                className="px-4 py-2 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold rounded-lg shadow-md"
+                className="bg-marca-escura text-white px-4 py-2 font-bold rounded-lg shadow-sm hover:opacity-90"
               >
                 {formulario.modo === 'ACEITAR'
                   ? 'Aceitar e incluir no plano'
@@ -1332,13 +1332,13 @@ export const PlanoDeAcaoTab: React.FC<PlanoDeAcaoTabProps> = ({ selectedClientId
           aoFechar={() => setRegistro(null)}
           icone={
             registro.tipo === 'CONCLUIR' ? (
-              <Flag className="w-5 h-5 text-teal-400" />
+              <Flag className="w-5 h-5 text-teal-700" />
             ) : registro.tipo === 'EFICACIA' ? (
-              <Gauge className="w-5 h-5 text-emerald-400" />
+              <Gauge className="w-5 h-5 text-marca-escura" />
             ) : registro.tipo === 'REABRIR' ? (
-              <RotateCcw className="w-5 h-5 text-amber-400" />
+              <RotateCcw className="w-5 h-5 text-amber-700" />
             ) : (
-              <Ban className="w-5 h-5 text-rose-400" />
+              <Ban className="w-5 h-5 text-rose-700" />
             )
           }
           titulo={
@@ -1355,7 +1355,7 @@ export const PlanoDeAcaoTab: React.FC<PlanoDeAcaoTabProps> = ({ selectedClientId
           <form onSubmit={salvarRegistro} className="space-y-4 text-xs">
             {registro.tipo === 'CONCLUIR' && (
               <>
-                <p className="text-[11px] text-slate-400">
+                <p className="text-[11px] text-tinta-2">
                   A implementação fica registrada com a data e a evidência (subitem 1.5.5.3.1), e com a data em
                   que os trabalhadores foram informados dos procedimentos e das limitações da medida (subitem
                   1.5.5.1.3).
@@ -1404,13 +1404,13 @@ export const PlanoDeAcaoTab: React.FC<PlanoDeAcaoTabProps> = ({ selectedClientId
 
             {registro.tipo === 'EFICACIA' && (
               <>
-                <p className="text-[11px] text-slate-400">
+                <p className="text-[11px] text-tinta-2">
                   A aferição é o que sustenta &quot;eficácia verificada&quot; (subitem 1.5.5.3.2). Forma prevista:{' '}
-                  <span className="text-slate-300">{acaoDoRegistro.measurement || 'não definida'}</span>.
+                  <span className="text-tinta">{acaoDoRegistro.measurement || 'não definida'}</span>.
                   {ehControleDoRisco && ' Esta é a medida de controle do risco: registrada a eficácia, o inventário passa a indicar o controle como eficaz — o que vai ao PGR, ao LTCAT e ao S-2240.'}
                 </p>
-                <p className="text-[11px] text-amber-200 flex items-start gap-1.5">
-                  <AlertTriangle className="w-3.5 h-3.5 text-amber-400 shrink-0 mt-0.5" />
+                <p className="text-[11px] text-amber-700 flex items-start gap-1.5">
+                  <AlertTriangle className="w-3.5 h-3.5 text-amber-700 shrink-0 mt-0.5" />
                   Se a aferição mostrou que a medida não funcionou, não registre eficácia: use &quot;Reabrir&quot; e
                   informe o motivo (subitem 1.5.5.3.2.1).
                 </p>
@@ -1427,7 +1427,7 @@ export const PlanoDeAcaoTab: React.FC<PlanoDeAcaoTabProps> = ({ selectedClientId
                     className={CAMPO}
                   />
                   {dataValida(acaoDoRegistro.completed_at) && (
-                    <p className="text-[10px] text-slate-500 mt-1">
+                    <p className="text-[10px] text-tinta-2 mt-1">
                       Concluída em {dataBR(acaoDoRegistro.completed_at)}: a aferição não pode ser anterior.
                     </p>
                   )}
@@ -1449,7 +1449,7 @@ export const PlanoDeAcaoTab: React.FC<PlanoDeAcaoTabProps> = ({ selectedClientId
 
             {registro.tipo === 'REABRIR' && (
               <>
-                <p className="text-[11px] text-slate-400">
+                <p className="text-[11px] text-tinta-2">
                   Medida ineficaz se corrige (subitem 1.5.5.3.2.1): a ação volta a &quot;Em andamento&quot; e o motivo
                   fica no histórico.
                   {acaoDoRegistro.status === 'EFICACIA_VERIFICADA' && ehControleDoRisco &&
@@ -1475,7 +1475,7 @@ export const PlanoDeAcaoTab: React.FC<PlanoDeAcaoTabProps> = ({ selectedClientId
                     onChange={(e) => setFormRegistro({ ...formRegistro, novoPrazo: e.target.value })}
                     className={CAMPO}
                   />
-                  <p className="text-[10px] text-slate-500 mt-1">
+                  <p className="text-[10px] text-tinta-2 mt-1">
                     Prazo atual: {dataBR(acaoDoRegistro.deadline) || '—'}. Em branco, o prazo continua o mesmo.
                   </p>
                 </div>
@@ -1484,7 +1484,7 @@ export const PlanoDeAcaoTab: React.FC<PlanoDeAcaoTabProps> = ({ selectedClientId
 
             {registro.tipo === 'DESCARTAR' && (
               <>
-                <p className="text-[11px] text-slate-400">
+                <p className="text-[11px] text-tinta-2">
                   A ação descartada sai do plano do PGR, mas o registro fica, com o motivo (subitem 1.5.5.3.1).
                   Ação descartada não se altera depois: para retomar a medida, cadastre outra ação.
                 </p>
@@ -1504,11 +1504,11 @@ export const PlanoDeAcaoTab: React.FC<PlanoDeAcaoTabProps> = ({ selectedClientId
 
             <ErroDoModal texto={erroDoModal} />
 
-            <div className="flex flex-col-reverse sm:flex-row justify-end gap-2 pt-3 border-t border-slate-800">
+            <div className="flex flex-col-reverse sm:flex-row justify-end gap-2 pt-3 border-t border-borda">
               <button
                 type="button"
                 onClick={() => setRegistro(null)}
-                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold rounded-lg"
+                className="px-4 py-2 bg-superficie-2 hover:bg-superficie-3 text-tinta font-semibold rounded-lg"
               >
                 Cancelar
               </button>
@@ -1516,8 +1516,8 @@ export const PlanoDeAcaoTab: React.FC<PlanoDeAcaoTabProps> = ({ selectedClientId
                 type="submit"
                 className={`px-4 py-2 font-bold rounded-lg shadow-md ${
                   registro.tipo === 'DESCARTAR'
-                    ? 'bg-rose-500 hover:bg-rose-400 text-white'
-                    : 'bg-teal-500 hover:bg-teal-400 text-slate-950'
+                    ? 'bg-rose-600 hover:bg-rose-700 text-white'
+                    : 'bg-marca-escura text-white hover:opacity-90'
                 }`}
               >
                 {registro.tipo === 'CONCLUIR'
@@ -1538,13 +1538,13 @@ export const PlanoDeAcaoTab: React.FC<PlanoDeAcaoTabProps> = ({ selectedClientId
         <Modal
           largura="max-w-[38rem]"
           aoFechar={() => setHistoricoId(null)}
-          icone={<History className="w-5 h-5 text-teal-400" />}
+          icone={<History className="w-5 h-5 text-teal-700" />}
           titulo="Histórico da ação"
           subtitulo={`${numeroDoRegistro.get(acaoDoHistorico.id) || ''} ${acaoDoHistorico.measure}`.trim()}
         >
           <div className="space-y-3 text-xs">
-            <p className="text-[11px] text-slate-400">
-              Status: <span className="text-slate-200">{statusExibido(acaoDoHistorico, hoje)}</span>
+            <p className="text-[11px] text-tinta-2">
+              Status: <span className="text-tinta">{statusExibido(acaoDoHistorico, hoje)}</span>
               {acaoDoHistorico.accepted_at && (
                 <>
                   {' '}· aceita em {dataLocal(acaoDoHistorico.accepted_at)}
@@ -1556,25 +1556,25 @@ export const PlanoDeAcaoTab: React.FC<PlanoDeAcaoTabProps> = ({ selectedClientId
               )}
             </p>
             {(acaoDoHistorico.history || []).length === 0 ? (
-              <p className="text-slate-500">Nenhum evento registrado.</p>
+              <p className="text-tinta-2">Nenhum evento registrado.</p>
             ) : (
               <ol className="space-y-2">
                 {(acaoDoHistorico.history || []).map((h, i) => (
-                  <li key={`${h.em}-${i}`} className="p-2.5 bg-slate-950 border border-slate-800 rounded-lg">
-                    <div className="flex flex-wrap gap-x-2 text-[10px] text-slate-500">
+                  <li key={`${h.em}-${i}`} className="p-2.5 bg-fundo border border-borda rounded-lg">
+                    <div className="flex flex-wrap gap-x-2 text-[10px] text-tinta-2">
                       <span className="font-mono">{dataHora(h.em)}</span>
                       {h.por && <span>· {h.por}</span>}
                     </div>
-                    <p className="text-slate-200 break-words mt-0.5">{h.evento}</p>
+                    <p className="text-tinta break-words mt-0.5">{h.evento}</p>
                   </li>
                 ))}
               </ol>
             )}
-            <div className="flex justify-end pt-2 border-t border-slate-800">
+            <div className="flex justify-end pt-2 border-t border-borda">
               <button
                 type="button"
                 onClick={() => setHistoricoId(null)}
-                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold rounded-lg"
+                className="px-4 py-2 bg-superficie-2 hover:bg-superficie-3 text-tinta font-semibold rounded-lg"
               >
                 Fechar
               </button>

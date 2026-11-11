@@ -238,74 +238,74 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
     <div className="space-y-6">
       {/* Top Banner / Summary */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-xl flex items-center justify-between shadow-sm">
+        <div className="bg-superficie border border-borda p-4 rounded-xl flex items-center justify-between shadow-sm">
           <div>
-            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Treinamentos de Integração</p>
-            <p className="text-2xl font-black text-slate-100 mt-1">{totalTrainingsCount}</p>
-            <p className="text-[11px] text-slate-500 mt-0.5">NR-01 item 1.7 (Capacitação)</p>
+            <p className="text-xs font-semibold text-tinta-2 uppercase tracking-wider">Treinamentos de Integração</p>
+            <p className="text-2xl font-black text-tinta mt-1">{totalTrainingsCount}</p>
+            <p className="text-[11px] text-tinta-2 mt-0.5">NR-01 item 1.7 (Capacitação)</p>
           </div>
-          <div className="p-3 bg-indigo-500/10 border border-indigo-500/20 rounded-xl text-indigo-400">
+          <div className="p-3 bg-teal-500/10 border border-teal-500/20 rounded-xl text-teal-800">
             <GraduationCap className="w-6 h-6" />
           </div>
         </div>
 
-        <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-xl flex items-center justify-between shadow-sm">
+        <div className="bg-superficie border border-borda p-4 rounded-xl flex items-center justify-between shadow-sm">
           <div>
-            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Trabalhadores Capacitados</p>
-            <p className="text-2xl font-black text-emerald-400 mt-1">{totalAttendeesCount}</p>
-            <p className="text-[11px] text-emerald-500/80 mt-0.5">
+            <p className="text-xs font-semibold text-tinta-2 uppercase tracking-wider">Trabalhadores Capacitados</p>
+            <p className="text-2xl font-black text-marca-escura mt-1">{totalAttendeesCount}</p>
+            <p className="text-[11px] text-marca-escura mt-0.5">
               {totalAttendeesCount > 0 ? `${((signedAttendeesCount / totalAttendeesCount) * 100).toFixed(0)}% com presença assinada` : '0%'}
             </p>
           </div>
-          <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-emerald-400">
+          <div className="p-3 bg-marca-suave border border-marca-borda rounded-xl text-marca-escura">
             <Users className="w-6 h-6" />
           </div>
         </div>
 
-        <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-xl flex items-center justify-between shadow-sm">
+        <div className="bg-superficie border border-borda p-4 rounded-xl flex items-center justify-between shadow-sm">
           <div>
-            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Atas com Validade Jurídica</p>
-            <p className="text-2xl font-black text-violet-400 mt-1">{clientTrainings.filter(t => t.status === 'COMPLETED').length}</p>
-            <p className="text-[11px] text-violet-500/80 mt-0.5">Instrutor & RT com ART/CREA</p>
+            <p className="text-xs font-semibold text-tinta-2 uppercase tracking-wider">Atas com Validade Jurídica</p>
+            <p className="text-2xl font-black text-teal-700 mt-1">{clientTrainings.filter(t => t.status === 'COMPLETED').length}</p>
+            <p className="text-[11px] text-teal-700 mt-0.5">Instrutor & RT com ART/CREA</p>
           </div>
-          <div className="p-3 bg-violet-500/10 border border-violet-500/20 rounded-xl text-violet-400">
+          <div className="p-3 bg-teal-500/10 border border-teal-500/20 rounded-xl text-teal-800">
             <Award className="w-6 h-6" />
           </div>
         </div>
 
-        <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-xl flex items-center justify-between shadow-sm">
+        <div className="bg-superficie border border-borda p-4 rounded-xl flex items-center justify-between shadow-sm">
           <div>
-            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Empresa Ativa</p>
-            <p className="text-sm font-bold text-slate-200 mt-1 truncate max-w-[150px]">
+            <p className="text-xs font-semibold text-tinta-2 uppercase tracking-wider">Empresa Ativa</p>
+            <p className="text-sm font-bold text-tinta mt-1 truncate max-w-[150px]">
               {activeClient?.trade_name || activeClient?.legal_name || 'Geral'}
             </p>
-            <p className="text-[11px] text-slate-500 mt-0.5">CNPJ: {activeClient?.document_number || 'S/N'}</p>
+            <p className="text-[11px] text-tinta-2 mt-0.5">CNPJ: {activeClient?.document_number || 'S/N'}</p>
           </div>
-          <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-xl text-blue-400">
+          <div className="p-3 bg-teal-500/10 border border-teal-500/20 rounded-xl text-teal-800">
             <Building2 className="w-6 h-6" />
           </div>
         </div>
       </div>
 
       {/* Action Toolbar */}
-      <div className="bg-slate-900/70 border border-slate-800 p-4 rounded-xl flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+      <div className="bg-superficie border border-borda p-4 rounded-xl flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
         {/* Search & Filters */}
         <div className="flex flex-wrap items-center gap-3 flex-1">
           <div className="relative flex-1 min-w-[220px]">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+            <Search className="w-4 h-4 text-tinta-2 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               placeholder="Buscar treinamento por título, código, instrutor ou participante..."
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
-              className="w-full pl-9 pr-3 py-2 bg-slate-950/80 border border-slate-800 rounded-lg text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-colors"
+              className="w-full pl-9 pr-3 py-2 bg-fundo border border-borda rounded-lg text-xs text-tinta placeholder-tinta-3 focus:outline-none focus:border-teal-500 transition-colors"
             />
           </div>
 
           <select
             value={filterType}
             onChange={e => setFilterType(e.target.value)}
-            className="bg-slate-950/80 border border-slate-800 rounded-lg text-xs text-slate-200 py-2 px-3 focus:outline-none focus:border-indigo-500"
+            className="bg-fundo border border-borda rounded-lg text-xs text-tinta py-2 px-3 focus:outline-none focus:border-teal-500"
           >
             <option value="ALL">Todos os Tipos</option>
             <option value="ADMISSION_INTEGRATION">Integração Admissional</option>
@@ -318,7 +318,7 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
           <select
             value={filterStatus}
             onChange={e => setFilterStatus(e.target.value)}
-            className="bg-slate-950/80 border border-slate-800 rounded-lg text-xs text-slate-200 py-2 px-3 focus:outline-none focus:border-indigo-500"
+            className="bg-fundo border border-borda rounded-lg text-xs text-tinta py-2 px-3 focus:outline-none focus:border-teal-500"
           >
             <option value="ALL">Status (Todos)</option>
             <option value="COMPLETED">Concluído ✓</option>
@@ -331,7 +331,7 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
         <div className="flex flex-wrap items-center gap-2 shrink-0">
           <button
             onClick={handleQuickCreateAdmissionTraining}
-            className="px-3 py-2 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white rounded-lg text-xs font-bold transition-all shadow-md shadow-indigo-600/20 flex items-center gap-1.5"
+            className="bg-teal-700 px-3 py-2 text-white rounded-lg text-xs font-bold transition-all shadow-md flex items-center gap-1.5"
             title="Cria automaticamente o Treinamento de Integração com todos os colaboradores admitidos da empresa"
           >
             <Sparkles className="w-3.5 h-3.5" />
@@ -343,7 +343,7 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
               setSelectedEmployeesForNewTraining(clientEmployees.map(e => e.id));
               setIsCreateModalOpen(true);
             }}
-            className="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-100 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5 border border-slate-700"
+            className="px-3 py-2 bg-superficie-2 hover:bg-superficie-3 text-tinta rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5 border border-borda"
           >
             <Plus className="w-3.5 h-3.5" />
             Cadastrar Treinamento
@@ -352,11 +352,11 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
       </div>
 
       {/* Table Container */}
-      <div className="bg-slate-900/60 border border-slate-800 rounded-xl overflow-hidden shadow-sm">
+      <div className="bg-superficie border border-borda rounded-xl overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-slate-950/80 border-b border-slate-800 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+              <tr className="bg-fundo border-b border-borda text-[11px] font-bold text-tinta-2 uppercase tracking-wider">
                 <th className="py-3 px-3">Código / Data</th>
                 <th className="py-3 px-3">Título do Treinamento & Tipo</th>
                 <th className="py-3 px-3">Instrutor & Responsável Técnico</th>
@@ -366,13 +366,13 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
                 <th className="py-3 px-3 text-right">Ações</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/60 text-xs text-slate-300">
+            <tbody className="divide-y divide-borda text-xs text-tinta">
               {filteredTrainings.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="text-center py-10 text-slate-500">
+                  <td colSpan={7} className="text-center py-10 text-tinta-2">
                     <GraduationCap className="w-10 h-10 mx-auto mb-2 opacity-30" />
                     <p className="font-semibold text-sm">Nenhum Treinamento de Integração cadastrado.</p>
-                    <p className="text-xs text-slate-600 mt-1">
+                    <p className="text-xs text-tinta-2 mt-1">
                       Clique em &quot;Cadastrar Treinamento&quot; ou &quot;Gerar Integração Admissional (Lote)&quot; para registrar com todos os dados exigidos por lei.
                     </p>
                   </td>
@@ -381,58 +381,58 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
                 filteredTrainings.map(t => {
                   const signedCount = t.attendees.filter(a => a.signed).length;
                   return (
-                    <tr key={t.id} className="hover:bg-slate-800/40 transition-colors">
+                    <tr key={t.id} className="hover:bg-superficie-2 transition-colors">
                       <td className="py-3 px-3">
-                        <div className="font-mono font-bold text-indigo-400">{t.training_code}</div>
-                        <div className="text-[11px] text-slate-500 flex items-center gap-1 mt-0.5">
+                        <div className="font-mono font-bold text-teal-700">{t.training_code}</div>
+                        <div className="text-[11px] text-tinta-2 flex items-center gap-1 mt-0.5">
                           <Calendar className="w-3 h-3" />
                           {formatDate(t.start_date)}
                         </div>
                       </td>
 
                       <td className="py-3 px-3">
-                        <div className="font-bold text-slate-100">{t.training_title}</div>
-                        <div className="text-[11px] text-slate-400 mt-0.5">
+                        <div className="font-bold text-tinta">{t.training_title}</div>
+                        <div className="text-[11px] text-tinta-2 mt-0.5">
                           {t.training_type === 'ADMISSION_INTEGRATION' ? (
-                            <span className="text-emerald-400 font-semibold">Integração Admissional (NR-01)</span>
+                            <span className="text-marca-escura font-semibold">Integração Admissional (NR-01)</span>
                           ) : (
                             <span>{t.training_type}</span>
                           )}
-                          <span className="text-slate-500"> • {t.location_or_platform}</span>
+                          <span className="text-tinta-2"> • {t.location_or_platform}</span>
                         </div>
                       </td>
 
                       <td className="py-3 px-3">
-                        <div className="font-medium text-slate-200">{t.instructor_name}</div>
-                        <div className="text-[11px] text-slate-400">
+                        <div className="font-medium text-tinta">{t.instructor_name}</div>
+                        <div className="text-[11px] text-tinta-2">
                           RT: {t.technical_supervisor_name} ({t.technical_supervisor_registration})
                         </div>
                       </td>
 
                       <td className="py-3 px-3">
-                        <div className="font-bold text-slate-200">{t.workload_hours} horas</div>
-                        <div className="text-[11px] text-slate-400">
+                        <div className="font-bold text-tinta">{t.workload_hours} horas</div>
+                        <div className="text-[11px] text-tinta-2">
                           {t.modality === 'PRESENTIAL' ? 'Presencial' : t.modality === 'HYBRID' ? 'Semipresencial' : 'EAD'} • Validade {t.validity_months}m
                         </div>
                       </td>
 
                       <td className="py-3 px-3">
                         <div className="flex items-center gap-1.5">
-                          <span className="font-bold text-slate-100">{t.attendees.length} colaboradores</span>
+                          <span className="font-bold text-tinta">{t.attendees.length} colaboradores</span>
                         </div>
-                        <div className="text-[11px] text-emerald-400">
+                        <div className="text-[11px] text-marca-escura">
                           {signedCount} assinados ({t.attendees.length > 0 ? ((signedCount / t.attendees.length) * 100).toFixed(0) : 0}%)
                         </div>
                       </td>
 
                       <td className="py-3 px-3">
                         {t.status === 'COMPLETED' ? (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-marca-suave text-marca-escura border border-marca-borda">
                             <CheckCircle2 className="w-3 h-3" />
                             Homologado
                           </span>
                         ) : (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-800 border border-amber-500/20">
                             <Clock className="w-3 h-3" />
                             {t.status}
                           </span>
@@ -443,7 +443,7 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
                         <div className="flex items-center justify-end gap-1.5">
                           <button
                             onClick={() => setViewingTraining(t)}
-                            className="p-1.5 text-slate-400 hover:text-slate-200 hover:bg-slate-800 rounded-lg transition-colors"
+                            className="p-1.5 text-tinta-2 hover:text-tinta hover:bg-superficie-2 rounded-lg transition-colors"
                             title="Visualizar Detalhes e Lista de Presença"
                           >
                             <Eye className="w-4 h-4" />
@@ -451,7 +451,7 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
 
                           <button
                             onClick={() => exportTrainingAttendanceListPDF(t, organization)}
-                            className="p-1.5 text-emerald-400 hover:text-emerald-300 hover:bg-emerald-950/40 rounded-lg transition-colors"
+                            className="p-1.5 text-marca-escura hover:text-marca-escura hover:bg-marca-suave rounded-lg transition-colors"
                             title="Exportar Lista de Presença Oficial (PDF)"
                           >
                             <Printer className="w-4 h-4" />
@@ -459,7 +459,7 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
 
                           <button
                             onClick={() => exportTrainingAttendanceExcel(t)}
-                            className="p-1.5 text-emerald-500 hover:text-emerald-400 hover:bg-emerald-950/40 rounded-lg transition-colors"
+                            className="p-1.5 text-marca-escura hover:text-marca-escura hover:bg-marca-suave rounded-lg transition-colors"
                             title="Exportar Lista em Excel (.xlsx)"
                           >
                             <FileSpreadsheet className="w-4 h-4" />
@@ -471,7 +471,7 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
                                 deleteIntegrationTraining(t.id);
                               }
                             }}
-                            className="p-1.5 text-rose-400 hover:text-rose-300 hover:bg-rose-950/40 rounded-lg transition-colors"
+                            className="p-1.5 text-rose-700 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition-colors"
                             title="Excluir Treinamento"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -490,63 +490,63 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
       {/* ================= MODAL: VIEW / PRINT ATTENDANCE LIST (ATA) ================= */}
       {viewingTraining && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-5xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-superficie border border-borda rounded-2xl w-full max-w-5xl max-h-[90vh] flex flex-col shadow-sm overflow-hidden animate-in fade-in zoom-in-95 duration-200">
             {/* Header */}
-            <div className="px-6 py-4 bg-slate-950 border-b border-slate-800 flex items-center justify-between">
+            <div className="px-6 py-4 bg-fundo border-b border-borda flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-indigo-500/10 border border-indigo-500/20 rounded-xl text-indigo-400">
+                <div className="p-2 bg-teal-500/10 border border-teal-500/20 rounded-xl text-teal-800">
                   <GraduationCap className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-slate-100">
+                  <h3 className="text-base font-bold text-tinta">
                     Ata e Lista de Presença de Treinamento - {viewingTraining.training_code}
                   </h3>
-                  <p className="text-xs text-slate-400">
+                  <p className="text-xs text-tinta-2">
                     {viewingTraining.training_title} • {viewingTraining.client_name}
                   </p>
                 </div>
               </div>
               <button
                 onClick={() => setViewingTraining(null)}
-                className="p-1.5 text-slate-400 hover:text-slate-200 hover:bg-slate-800 rounded-lg"
+                className="p-1.5 text-tinta-2 hover:text-tinta hover:bg-superficie-2 rounded-lg"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {/* Content Body */}
-            <div className="p-6 overflow-y-auto space-y-6 text-xs text-slate-300">
+            <div className="p-6 overflow-y-auto space-y-6 text-xs text-tinta">
               {/* Top Legal Metadata */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-950/60 p-4 rounded-xl border border-slate-800">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-fundo p-4 rounded-xl border border-borda">
                 <div className="space-y-1">
-                  <p className="text-indigo-400 font-bold uppercase tracking-wider text-[11px] mb-2">Dados do Treinamento</p>
-                  <p><span className="text-slate-400">Empresa:</span> <strong className="text-slate-200">{viewingTraining.client_name}</strong></p>
-                  <p><span className="text-slate-400">Carga Horária:</span> {viewingTraining.workload_hours} horas ({viewingTraining.modality === 'PRESENTIAL' ? 'Presencial' : 'Híbrido'})</p>
-                  <p><span className="text-slate-400">Período de Realização:</span> {formatDate(viewingTraining.start_date)} a {formatDate(viewingTraining.end_date)}</p>
-                  <p><span className="text-slate-400">Local / Plataforma:</span> {viewingTraining.location_or_platform}</p>
-                  <p><span className="text-slate-400">Amparo Normativo:</span> <span className="text-slate-200 font-semibold">{viewingTraining.nr_framework}</span></p>
+                  <p className="text-teal-700 font-bold uppercase tracking-wider text-[11px] mb-2">Dados do Treinamento</p>
+                  <p><span className="text-tinta-2">Empresa:</span> <strong className="text-tinta">{viewingTraining.client_name}</strong></p>
+                  <p><span className="text-tinta-2">Carga Horária:</span> {viewingTraining.workload_hours} horas ({viewingTraining.modality === 'PRESENTIAL' ? 'Presencial' : 'Híbrido'})</p>
+                  <p><span className="text-tinta-2">Período de Realização:</span> {formatDate(viewingTraining.start_date)} a {formatDate(viewingTraining.end_date)}</p>
+                  <p><span className="text-tinta-2">Local / Plataforma:</span> {viewingTraining.location_or_platform}</p>
+                  <p><span className="text-tinta-2">Amparo Normativo:</span> <span className="text-tinta font-semibold">{viewingTraining.nr_framework}</span></p>
                 </div>
 
                 <div className="space-y-1">
-                  <p className="text-indigo-400 font-bold uppercase tracking-wider text-[11px] mb-2">Responsabilidade Técnica & Docência</p>
-                  <p><span className="text-slate-400">Instrutor Docente:</span> <strong className="text-slate-200">{viewingTraining.instructor_name}</strong></p>
-                  <p><span className="text-slate-400">Qualificação / Registro:</span> {viewingTraining.instructor_qualification} ({viewingTraining.instructor_registration_number})</p>
-                  <p><span className="text-slate-400">Responsável Técnico (RT):</span> <strong className="text-slate-200">{viewingTraining.technical_supervisor_name}</strong></p>
-                  <p><span className="text-slate-400">Registro Profissional RT:</span> {viewingTraining.technical_supervisor_registration}</p>
-                  <p><span className="text-slate-400">Avaliação da Aprendizagem:</span> Prova Teórica e Avaliação Prática de Campo</p>
+                  <p className="text-teal-700 font-bold uppercase tracking-wider text-[11px] mb-2">Responsabilidade Técnica & Docência</p>
+                  <p><span className="text-tinta-2">Instrutor Docente:</span> <strong className="text-tinta">{viewingTraining.instructor_name}</strong></p>
+                  <p><span className="text-tinta-2">Qualificação / Registro:</span> {viewingTraining.instructor_qualification} ({viewingTraining.instructor_registration_number})</p>
+                  <p><span className="text-tinta-2">Responsável Técnico (RT):</span> <strong className="text-tinta">{viewingTraining.technical_supervisor_name}</strong></p>
+                  <p><span className="text-tinta-2">Registro Profissional RT:</span> {viewingTraining.technical_supervisor_registration}</p>
+                  <p><span className="text-tinta-2">Avaliação da Aprendizagem:</span> Prova Teórica e Avaliação Prática de Campo</p>
                 </div>
               </div>
 
               {/* Syllabus / Conteúdo Programático */}
               <div className="space-y-2">
-                <h4 className="font-bold text-slate-100 uppercase tracking-wider flex items-center gap-1.5 text-indigo-400">
+                <h4 className="font-bold text-tinta uppercase tracking-wider flex items-center gap-1.5 text-teal-700">
                   <BookOpen className="w-3.5 h-3.5" />
                   Conteúdo Programático Ministrado (NR-01 subitem 1.7.1)
                 </h4>
-                <div className="p-3 bg-slate-950/40 border border-slate-800 rounded-xl space-y-1">
+                <div className="p-3 bg-fundo border border-borda rounded-xl space-y-1">
                   {viewingTraining.program_content_syllabus?.map((item, idx) => (
-                    <div key={idx} className="text-slate-300 text-[11px] flex items-start gap-2">
-                      <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
+                    <div key={idx} className="text-tinta text-[11px] flex items-start gap-2">
+                      <Check className="w-3.5 h-3.5 text-marca-escura shrink-0 mt-0.5" />
                       <span>{item}</span>
                     </div>
                   ))}
@@ -556,16 +556,16 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
               {/* Attendees & Attendance Table */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <h4 className="font-bold text-slate-100 uppercase tracking-wider flex items-center gap-1.5 text-indigo-400">
+                  <h4 className="font-bold text-tinta uppercase tracking-wider flex items-center gap-1.5 text-teal-700">
                     <Users className="w-3.5 h-3.5" />
                     Lista Nominal de Presença & Assinaturas ({viewingTraining.attendees.length})
                   </h4>
                 </div>
 
-                <div className="bg-slate-950/60 border border-slate-800 rounded-xl overflow-x-auto">
+                <div className="bg-fundo border border-borda rounded-xl overflow-x-auto">
                   <table className="w-full text-left border-collapse">
                     <thead>
-                      <tr className="bg-slate-950 border-b border-slate-800 text-[10px] font-bold text-slate-400 uppercase">
+                      <tr className="bg-fundo border-b border-borda text-[10px] font-bold text-tinta-2 uppercase">
                         <th className="py-2.5 px-3">Colaborador (CPF)</th>
                         <th className="py-2.5 px-3">Cargo / Função</th>
                         <th className="py-2.5 px-3">Frequência</th>
@@ -574,38 +574,38 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
                         <th className="py-2.5 px-3 text-right">Ação</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-800/60 text-xs">
+                    <tbody className="divide-y divide-borda text-xs">
                       {viewingTraining.attendees.map(attendee => (
-                        <tr key={attendee.employee_id} className="hover:bg-slate-900/40">
+                        <tr key={attendee.employee_id} className="hover:bg-superficie">
                           <td className="py-2.5 px-3">
-                            <strong className="text-slate-100">{attendee.employee_name}</strong>
-                            <div className="text-[11px] text-slate-400 font-mono">CPF: {attendee.employee_cpf}</div>
+                            <strong className="text-tinta">{attendee.employee_name}</strong>
+                            <div className="text-[11px] text-tinta-2 font-mono">CPF: {attendee.employee_cpf}</div>
                           </td>
 
                           <td className="py-2.5 px-3">
-                            <div className="text-slate-200">{attendee.employee_job_title}</div>
-                            <div className="text-[11px] text-slate-400">{attendee.employee_sector}</div>
+                            <div className="text-tinta">{attendee.employee_job_title}</div>
+                            <div className="text-[11px] text-tinta-2">{attendee.employee_sector}</div>
                           </td>
 
                           <td className="py-2.5 px-3">
-                            <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 rounded text-[10px] font-bold">
+                            <span className="px-2 py-0.5 bg-marca-suave text-marca-escura rounded text-[10px] font-bold">
                               {attendee.attendance_rate_percent}%
                             </span>
                           </td>
 
                           <td className="py-2.5 px-3">
-                            <span className="font-bold text-slate-100">{attendee.grade_score?.toFixed(1) || '10.0'}</span> / 10.0
+                            <span className="font-bold text-tinta">{attendee.grade_score?.toFixed(1) || '10.0'}</span> / 10.0
                           </td>
 
                           <td className="py-2.5 px-3">
                             {attendee.signed ? (
                               <div>
-                                <span className="inline-flex items-center gap-1 text-emerald-400 font-bold text-[11px]">
+                                <span className="inline-flex items-center gap-1 text-marca-escura font-bold text-[11px]">
                                   <CheckCircle2 className="w-3.5 h-3.5" />
                                   {attendee.signature_method === 'DIGITAL_BIOMETRIC' ? 'Biometria Facial (IA)' : 'Assinatura Coletada'}
                                 </span>
                                 {attendee.signature_hash && (
-                                  <div className="text-[10px] font-mono text-slate-500 truncate max-w-[180px]">
+                                  <div className="text-[10px] font-mono text-tinta-2 truncate max-w-[180px]">
                                     Hash: {attendee.signature_hash}
                                   </div>
                                 )}
@@ -617,7 +617,7 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
                                   setSigningEmployee(attendee);
                                   setIsSignModalOpen(true);
                                 }}
-                                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/20"
+                                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-500/10 hover:bg-amber-500/20 text-amber-800 border border-amber-500/20"
                               >
                                 <Fingerprint className="w-3 h-3" />
                                 Coletar Presença
@@ -628,7 +628,7 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
                           <td className="py-2.5 px-3 text-right">
                             <button
                               onClick={() => exportTrainingCertificatePDF(viewingTraining, attendee, organization)}
-                              className="p-1.5 text-indigo-400 hover:text-indigo-300 hover:bg-indigo-950/40 rounded-lg transition-colors inline-flex items-center gap-1 text-[11px] font-semibold"
+                              className="p-1.5 text-teal-700 hover:text-teal-700 hover:bg-teal-50 rounded-lg transition-colors inline-flex items-center gap-1 text-[11px] font-semibold"
                               title="Emitir Certificado Individual de Capacitação"
                             >
                               <Award className="w-3.5 h-3.5" />
@@ -643,17 +643,17 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
               </div>
 
               {/* Legal Validity Term */}
-              <div className="p-3.5 bg-indigo-950/30 border border-indigo-900/40 rounded-xl text-indigo-200 text-[11px] leading-relaxed">
-                <strong className="text-indigo-300 block mb-1">Declaração de Validade Jurídica (NR-01 item 1.7.4):</strong>
+              <div className="p-3.5 bg-teal-50 border border-teal-200 rounded-xl text-teal-700 text-[11px] leading-relaxed">
+                <strong className="text-teal-700 block mb-1">Declaração de Validade Jurídica (NR-01 item 1.7.4):</strong>
                 {viewingTraining.certificate_validity_legal_statement}
               </div>
             </div>
 
             {/* Footer */}
-            <div className="px-6 py-4 bg-slate-950 border-t border-slate-800 flex items-center justify-between">
+            <div className="px-6 py-4 bg-fundo border-t border-borda flex items-center justify-between">
               <button
                 onClick={() => setViewingTraining(null)}
-                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold"
+                className="px-4 py-2 bg-superficie-2 hover:bg-superficie-3 text-tinta rounded-xl text-xs font-semibold"
               >
                 Fechar
               </button>
@@ -661,15 +661,15 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => exportTrainingAttendanceExcel(viewingTraining)}
-                  className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-emerald-300 border border-slate-700 rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5"
+                  className="px-4 py-2 bg-superficie-2 hover:bg-superficie-3 text-marca-escura border border-borda rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5"
                 >
-                  <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-400" />
+                  <FileSpreadsheet className="w-3.5 h-3.5 text-marca-escura" />
                   Excel (.xlsx)
                 </button>
 
                 <button
                   onClick={() => exportTrainingAttendanceListPDF(viewingTraining, organization)}
-                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5 shadow-md shadow-indigo-600/20"
+                  className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5 shadow-md"
                 >
                   <Printer className="w-3.5 h-3.5" />
                   Imprimir Ata de Presença Oficial (PDF)
@@ -683,13 +683,13 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
       {/* ================= MODAL: CREATE NEW TRAINING ================= */}
       {isCreateModalOpen && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-3xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-            <div className="px-6 py-4 bg-slate-950 border-b border-slate-800 flex items-center justify-between">
-              <h3 className="text-base font-bold text-slate-100 flex items-center gap-2">
-                <GraduationCap className="w-5 h-5 text-indigo-400" />
+          <div className="bg-superficie border border-borda rounded-2xl w-full max-w-3xl max-h-[90vh] flex flex-col shadow-sm overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="px-6 py-4 bg-fundo border-b border-borda flex items-center justify-between">
+              <h3 className="text-base font-bold text-tinta flex items-center gap-2">
+                <GraduationCap className="w-5 h-5 text-teal-700" />
                 Cadastrar Treinamento de Integração (NR-01)
               </h3>
-              <button onClick={() => setIsCreateModalOpen(false)} className="text-slate-400 hover:text-slate-200">
+              <button onClick={() => setIsCreateModalOpen(false)} className="text-tinta-2 hover:text-tinta">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -697,21 +697,21 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
             <div className="p-6 overflow-y-auto space-y-4 text-xs">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <label className="font-semibold text-slate-300">Título do Treinamento:</label>
+                  <label className="font-semibold text-tinta">Título do Treinamento:</label>
                   <input
                     type="text"
                     value={newTrainingTitle}
                     onChange={e => setNewTrainingTitle(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-slate-100 focus:border-indigo-500 focus:outline-none"
+                    className="w-full bg-fundo border border-borda rounded-xl p-2.5 text-tinta focus:border-teal-500 focus:outline-none"
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="font-semibold text-slate-300">Tipo de Capacitação:</label>
+                  <label className="font-semibold text-tinta">Tipo de Capacitação:</label>
                   <select
                     value={newTrainingType}
                     onChange={e => setNewTrainingType(e.target.value as any)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-slate-100 focus:border-indigo-500 focus:outline-none"
+                    className="w-full bg-fundo border border-borda rounded-xl p-2.5 text-tinta focus:border-teal-500 focus:outline-none"
                   >
                     <option value="ADMISSION_INTEGRATION">Integração Admissional (NR-01)</option>
                     <option value="PERIODIC_REFRESHER">Reciclagem Periódica</option>
@@ -724,11 +724,11 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div className="space-y-1.5">
-                  <label className="font-semibold text-slate-300">Modalidade:</label>
+                  <label className="font-semibold text-tinta">Modalidade:</label>
                   <select
                     value={newModality}
                     onChange={e => setNewModality(e.target.value as any)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-slate-100 focus:border-indigo-500 focus:outline-none"
+                    className="w-full bg-fundo border border-borda rounded-xl p-2.5 text-tinta focus:border-teal-500 focus:outline-none"
                   >
                     <option value="PRESENTIAL">Presencial</option>
                     <option value="HYBRID">Híbrido (Semipresencial)</option>
@@ -737,149 +737,149 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="font-semibold text-slate-300">Carga Horária (horas):</label>
+                  <label className="font-semibold text-tinta">Carga Horária (horas):</label>
                   <input
                     type="number"
                     value={newWorkloadHours}
                     onChange={e => setNewWorkloadHours(Number(e.target.value))}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-slate-100 focus:border-indigo-500 focus:outline-none"
+                    className="w-full bg-fundo border border-borda rounded-xl p-2.5 text-tinta focus:border-teal-500 focus:outline-none"
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="font-semibold text-slate-300">Validade (meses):</label>
+                  <label className="font-semibold text-tinta">Validade (meses):</label>
                   <input
                     type="number"
                     value={newValidityMonths}
                     onChange={e => setNewValidityMonths(Number(e.target.value))}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-slate-100 focus:border-indigo-500 focus:outline-none"
+                    className="w-full bg-fundo border border-borda rounded-xl p-2.5 text-tinta focus:border-teal-500 focus:outline-none"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                  <label className="font-semibold text-slate-300">Data de Início:</label>
+                  <label className="font-semibold text-tinta">Data de Início:</label>
                   <input
                     type="date"
                     value={newStartDate}
                     onChange={e => setNewStartDate(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-slate-100 focus:border-indigo-500 focus:outline-none"
+                    className="w-full bg-fundo border border-borda rounded-xl p-2.5 text-tinta focus:border-teal-500 focus:outline-none"
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="font-semibold text-slate-300">Data de Término:</label>
+                  <label className="font-semibold text-tinta">Data de Término:</label>
                   <input
                     type="date"
                     value={newEndDate}
                     onChange={e => setNewEndDate(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-slate-100 focus:border-indigo-500 focus:outline-none"
+                    className="w-full bg-fundo border border-borda rounded-xl p-2.5 text-tinta focus:border-teal-500 focus:outline-none"
                   />
                 </div>
               </div>
 
               <div className="space-y-1.5">
-                <label className="font-semibold text-slate-300">Local / Plataforma de Aplicação:</label>
+                <label className="font-semibold text-tinta">Local / Plataforma de Aplicação:</label>
                 <input
                   type="text"
                   value={newLocation}
                   onChange={e => setNewLocation(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-slate-100 focus:border-indigo-500 focus:outline-none"
+                  className="w-full bg-fundo border border-borda rounded-xl p-2.5 text-tinta focus:border-teal-500 focus:outline-none"
                 />
               </div>
 
               {/* Instructor & Technical Supervisor */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3.5 bg-slate-950/60 rounded-xl border border-slate-800">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3.5 bg-fundo rounded-xl border border-borda">
                 <div className="space-y-2">
-                  <p className="font-bold text-indigo-400 text-[11px] uppercase">Instrutor Docente</p>
+                  <p className="font-bold text-teal-700 text-[11px] uppercase">Instrutor Docente</p>
                   <input
                     type="text"
                     placeholder="Nome do Instrutor"
                     value={newInstructorName}
                     onChange={e => setNewInstructorName(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-slate-100 text-xs"
+                    className="w-full bg-superficie border border-borda rounded-lg p-2 text-tinta text-xs"
                   />
                   <input
                     type="text"
                     placeholder="Qualificação (ex: Técnico em Seg. do Trabalho)"
                     value={newInstructorQualif}
                     onChange={e => setNewInstructorQualif(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-slate-100 text-xs"
+                    className="w-full bg-superficie border border-borda rounded-lg p-2 text-tinta text-xs"
                   />
                   <input
                     type="text"
                     placeholder="Reg. MTE / Conselho"
                     value={newInstructorReg}
                     onChange={e => setNewInstructorReg(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-slate-100 text-xs"
+                    className="w-full bg-superficie border border-borda rounded-lg p-2 text-tinta text-xs"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <p className="font-bold text-indigo-400 text-[11px] uppercase">Responsável Técnico (RT)</p>
+                  <p className="font-bold text-teal-700 text-[11px] uppercase">Responsável Técnico (RT)</p>
                   <input
                     type="text"
                     placeholder="Nome do Responsável Técnico"
                     value={newSupervisorName}
                     onChange={e => setNewSupervisorName(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-slate-100 text-xs"
+                    className="w-full bg-superficie border border-borda rounded-lg p-2 text-tinta text-xs"
                   />
                   <input
                     type="text"
                     placeholder="Qualificação (ex: Eng. de Segurança do Trabalho)"
                     value={newSupervisorQualif}
                     onChange={e => setNewSupervisorQualif(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-slate-100 text-xs"
+                    className="w-full bg-superficie border border-borda rounded-lg p-2 text-tinta text-xs"
                   />
                   <input
                     type="text"
                     placeholder="Registro Profissional (ex: CREA-RJ 201812345-D)"
                     value={newSupervisorReg}
                     onChange={e => setNewSupervisorReg(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-slate-100 text-xs"
+                    className="w-full bg-superficie border border-borda rounded-lg p-2 text-tinta text-xs"
                   />
                 </div>
               </div>
 
               {/* Syllabus */}
               <div className="space-y-1.5">
-                <label className="font-semibold text-slate-300">Conteúdo Programático (Ementa por tópicos):</label>
+                <label className="font-semibold text-tinta">Conteúdo Programático (Ementa por tópicos):</label>
                 <textarea
                   rows={4}
                   value={newSyllabusText}
                   onChange={e => setNewSyllabusText(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-slate-100 focus:border-indigo-500 focus:outline-none text-[11px] font-mono leading-relaxed"
+                  className="w-full bg-fundo border border-borda rounded-xl p-2.5 text-tinta focus:border-teal-500 focus:outline-none text-[11px] font-mono leading-relaxed"
                 />
               </div>
 
               {/* Attendees Multi-select */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <label className="font-semibold text-slate-300">
+                  <label className="font-semibold text-tinta">
                     Selecione os Colaboradores Participantes ({selectedEmployeesForNewTraining.length} selecionados):
                   </label>
                   <button
                     type="button"
                     onClick={handleSelectAllEmployees}
-                    className="text-xs text-indigo-400 hover:text-indigo-300 font-semibold"
+                    className="text-xs text-teal-700 hover:text-teal-700 font-semibold"
                   >
                     {selectedEmployeesForNewTraining.length === clientEmployees.length ? 'Desmarcar Todos' : 'Selecionar Todos da Empresa'}
                   </button>
                 </div>
 
-                <div className="max-h-40 overflow-y-auto bg-slate-950 border border-slate-800 rounded-xl p-2 divide-y divide-slate-800/60">
+                <div className="max-h-40 overflow-y-auto bg-fundo border border-borda rounded-xl p-2 divide-y divide-borda">
                   {clientEmployees.map(emp => (
-                    <label key={emp.id} className="flex items-center gap-3 p-2 hover:bg-slate-900/50 rounded-lg cursor-pointer">
+                    <label key={emp.id} className="flex items-center gap-3 p-2 hover:bg-superficie rounded-lg cursor-pointer">
                       <input
                         type="checkbox"
                         checked={selectedEmployeesForNewTraining.includes(emp.id)}
                         onChange={() => handleToggleSelectEmployee(emp.id)}
-                        className="rounded bg-slate-900 border-slate-700 text-indigo-600 focus:ring-0"
+                        className="rounded bg-superficie border-borda text-teal-700 focus:ring-0"
                       />
                       <div className="flex-1 min-w-0">
-                        <p className="font-bold text-slate-200 truncate">{emp.name} (CPF: {emp.cpf})</p>
-                        <p className="text-[11px] text-slate-400">{emp.job_title} • {emp.sector_name}</p>
+                        <p className="font-bold text-tinta truncate">{emp.name} (CPF: {emp.cpf})</p>
+                        <p className="text-[11px] text-tinta-2">{emp.job_title} • {emp.sector_name}</p>
                       </div>
                     </label>
                   ))}
@@ -887,17 +887,17 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
               </div>
             </div>
 
-            <div className="px-6 py-4 bg-slate-950 border-t border-slate-800 flex items-center justify-end gap-3">
+            <div className="px-6 py-4 bg-fundo border-t border-borda flex items-center justify-end gap-3">
               <button
                 onClick={() => setIsCreateModalOpen(false)}
-                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold"
+                className="px-4 py-2 bg-superficie-2 hover:bg-superficie-3 text-tinta rounded-xl text-xs font-semibold"
               >
                 Cancelar
               </button>
 
               <button
                 onClick={handleCreateTraining}
-                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5 shadow-md shadow-indigo-600/20"
+                className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5 shadow-md"
               >
                 <Sparkles className="w-3.5 h-3.5" />
                 Cadastrar e Homologar Ata
@@ -910,10 +910,10 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
       {/* ================= MODAL: COLLECT SIGNATURE / BIOMETRICS ================= */}
       {isSignModalOpen && signingEmployee && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md shadow-2xl p-6 space-y-5 animate-in fade-in zoom-in-95 duration-200">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <h3 className="text-base font-bold text-slate-100 flex items-center gap-2">
-                <Fingerprint className="w-5 h-5 text-emerald-400" />
+          <div className="bg-superficie border border-borda rounded-2xl w-full max-w-md shadow-sm p-6 space-y-5 animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between border-b border-borda pb-3">
+              <h3 className="text-base font-bold text-tinta flex items-center gap-2">
+                <Fingerprint className="w-5 h-5 text-marca-escura" />
                 Coleta de Presença no Treinamento
               </h3>
               <button
@@ -921,30 +921,30 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
                   setIsSignModalOpen(false);
                   setSigningEmployee(null);
                 }}
-                className="text-slate-400 hover:text-slate-200"
+                className="text-tinta-2 hover:text-tinta"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <div className="space-y-4 text-xs">
-              <div className="p-3 bg-slate-950 rounded-xl border border-slate-800">
-                <p className="text-slate-400 text-[11px]">Trabalhador:</p>
-                <p className="font-bold text-slate-100 text-sm">{signingEmployee.employee_name}</p>
-                <p className="font-mono text-slate-400 text-xs">CPF: {signingEmployee.employee_cpf}</p>
-                <p className="text-slate-400 text-xs mt-1">{signingEmployee.employee_job_title} • {signingEmployee.employee_sector}</p>
+              <div className="p-3 bg-fundo rounded-xl border border-borda">
+                <p className="text-tinta-2 text-[11px]">Trabalhador:</p>
+                <p className="font-bold text-tinta text-sm">{signingEmployee.employee_name}</p>
+                <p className="font-mono text-tinta-2 text-xs">CPF: {signingEmployee.employee_cpf}</p>
+                <p className="text-tinta-2 text-xs mt-1">{signingEmployee.employee_job_title} • {signingEmployee.employee_sector}</p>
               </div>
 
               <div className="space-y-1.5">
-                <label className="font-semibold text-slate-300">Método de Validação de Presença:</label>
+                <label className="font-semibold text-tinta">Método de Validação de Presença:</label>
                 <div className="grid grid-cols-2 gap-2">
                   <button
                     type="button"
                     onClick={() => setSignatureMethod('DIGITAL_BIOMETRIC')}
                     className={`p-3 rounded-xl border text-left transition-all ${
                       signatureMethod === 'DIGITAL_BIOMETRIC'
-                        ? 'bg-emerald-500/10 border-emerald-500 text-emerald-300 font-bold'
-                        : 'bg-slate-950 border-slate-800 text-slate-400'
+                        ? 'bg-marca-suave border-marca-borda text-marca-escura font-bold'
+                        : 'bg-fundo border-borda text-tinta-2'
                     }`}
                   >
                     <Camera className="w-4 h-4 mb-1.5" />
@@ -956,8 +956,8 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
                     onClick={() => setSignatureMethod('PHYSICAL_MANUAL')}
                     className={`p-3 rounded-xl border text-left transition-all ${
                       signatureMethod === 'PHYSICAL_MANUAL'
-                        ? 'bg-emerald-500/10 border-emerald-500 text-emerald-300 font-bold'
-                        : 'bg-slate-950 border-slate-800 text-slate-400'
+                        ? 'bg-marca-suave border-marca-borda text-marca-escura font-bold'
+                        : 'bg-fundo border-borda text-tinta-2'
                     }`}
                   >
                     <UserCheck className="w-4 h-4 mb-1.5" />
@@ -966,18 +966,18 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
                 </div>
               </div>
 
-              <div className="p-3 bg-slate-950/60 rounded-xl border border-slate-800 text-[11px] text-slate-400">
+              <div className="p-3 bg-fundo rounded-xl border border-borda text-[11px] text-tinta-2">
                 A confirmação gera carimbo de tempo inviolável, código de certificado individual e hash SHA-256 em total conformidade com a NR-01 item 1.7.
               </div>
             </div>
 
-            <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-800">
+            <div className="flex items-center justify-end gap-3 pt-3 border-t border-borda">
               <button
                 onClick={() => {
                   setIsSignModalOpen(false);
                   setSigningEmployee(null);
                 }}
-                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold"
+                className="px-4 py-2 bg-superficie-2 hover:bg-superficie-3 text-tinta rounded-xl text-xs font-semibold"
               >
                 Cancelar
               </button>
@@ -985,7 +985,7 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
               <button
                 onClick={handleSignConfirm}
                 disabled={isSimulatingBiometry}
-                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5"
+                className="px-4 py-2 bg-marca-escura hover:opacity-90 text-white rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5"
               >
                 {isSimulatingBiometry ? (
                   <>Validando Biometria...</>

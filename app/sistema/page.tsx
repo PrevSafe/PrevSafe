@@ -231,8 +231,8 @@ export default function Home() {
   // Checking for a real Supabase Auth session before deciding whether to show the login screen
   if (isRedirectingToRecovery || isAuthLoading) {
     return (
-      <div className="min-h-screen w-full bg-slate-950 flex items-center justify-center">
-        <RefreshCw className="w-6 h-6 text-emerald-500 animate-spin" />
+      <div className="min-h-screen w-full bg-fundo flex items-center justify-center">
+        <RefreshCw className="w-6 h-6 text-marca-escura animate-spin" />
       </div>
     );
   }
@@ -328,7 +328,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 flex flex-col font-sans text-slate-100">
+    <div className="min-h-screen bg-fundo flex flex-col font-sans text-tinta">
       {/* Top Navbar */}
       <Navbar 
         onOpenCopilot={() => setIsCopilotOpen(true)}
@@ -361,7 +361,7 @@ export default function Home() {
             conteudo, e o excedente era cortado pelo overflow-hidden do
             container acima em vez de rolar. Era a causa da tela aparecer
             cortada nos cantos no celular. */}
-        <main className="flex-1 min-w-0 overflow-y-auto overflow-x-hidden p-3.5 sm:p-6 lg:p-7 pb-24 md:pb-7 bg-slate-950">
+        <main className="flex-1 min-w-0 overflow-y-auto overflow-x-hidden p-3.5 sm:p-6 lg:p-7 pb-24 md:pb-7 bg-fundo">
           <div className="max-w-[1600px] mx-auto w-full min-w-0 space-y-6">
             {renderActiveView()}
           </div>
@@ -371,7 +371,7 @@ export default function Home() {
       {/* Mobile Bottom Quick Navigation Bar */}
       <nav 
         aria-label="Navegação rápida inferior"
-        className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-slate-900/95 backdrop-blur-lg border-t border-slate-800 px-2 py-1.5 flex items-center justify-around shadow-2xl select-none"
+        className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-superficie backdrop-blur-lg border-t border-borda px-2 py-1.5 flex items-center justify-around shadow-sm select-none"
       >
         <button
           onClick={() => {
@@ -379,7 +379,7 @@ export default function Home() {
             setIsSidebarOpen(false);
           }}
           className={`flex flex-col items-center justify-center py-1 px-2 rounded-xl transition touch-manipulation min-w-[56px] ${
-            activeView.startsWith('dashboard') ? 'text-emerald-400 font-semibold' : 'text-slate-400 hover:text-slate-200'
+            activeView.startsWith('dashboard') ? 'text-marca-escura font-semibold' : 'text-tinta-2 hover:text-tinta'
           }`}
         >
           <BarChart3 className="w-5 h-5 mb-0.5" />
@@ -392,13 +392,13 @@ export default function Home() {
             setIsSidebarOpen(false);
           }}
           className={`relative flex flex-col items-center justify-center py-1 px-2 rounded-xl transition touch-manipulation min-w-[56px] ${
-            activeView === 'service-orders' ? 'text-emerald-400 font-semibold' : 'text-slate-400 hover:text-slate-200'
+            activeView === 'service-orders' ? 'text-marca-escura font-semibold' : 'text-tinta-2 hover:text-tinta'
           }`}
         >
           <Briefcase className="w-5 h-5 mb-0.5" />
           <span className="text-[10px] tracking-tight">OS</span>
           {activeOSCount > 0 && (
-            <span className="absolute top-0.5 right-2 w-4 h-4 bg-blue-500 text-white rounded-full text-[9px] font-bold flex items-center justify-center">
+            <span className="absolute top-0.5 right-2 w-4 h-4 bg-teal-700 text-white rounded-full text-[9px] font-bold flex items-center justify-center">
               {activeOSCount}
             </span>
           )}
@@ -410,13 +410,13 @@ export default function Home() {
             setIsSidebarOpen(false);
           }}
           className={`relative flex flex-col items-center justify-center py-1 px-2 rounded-xl transition touch-manipulation min-w-[56px] ${
-            activeView === 'esocial' ? 'text-emerald-400 font-semibold' : 'text-slate-400 hover:text-slate-200'
+            activeView === 'esocial' ? 'text-marca-escura font-semibold' : 'text-tinta-2 hover:text-tinta'
           }`}
         >
           <ShieldCheck className="w-5 h-5 mb-0.5" />
           <span className="text-[10px] tracking-tight">eSocial</span>
           {esocialEvents.length > 0 && (
-            <span className="absolute top-0.5 right-1.5 w-4 h-4 bg-emerald-500 text-white rounded-full text-[9px] font-bold flex items-center justify-center">
+            <span className="absolute top-0.5 right-1.5 w-4 h-4 bg-marca-escura text-white rounded-full text-[9px] font-bold flex items-center justify-center">
               {esocialEvents.length}
             </span>
           )}
@@ -428,7 +428,7 @@ export default function Home() {
             setIsSidebarOpen(false);
           }}
           className={`flex flex-col items-center justify-center py-1 px-2 rounded-xl transition touch-manipulation min-w-[56px] ${
-            activeView === 'technician-field' ? 'text-blue-400 font-semibold' : 'text-slate-400 hover:text-slate-200'
+            activeView === 'technician-field' ? 'text-teal-700 font-semibold' : 'text-tinta-2 hover:text-tinta'
           }`}
         >
           <Smartphone className="w-5 h-5 mb-0.5" />
@@ -438,7 +438,7 @@ export default function Home() {
         <button
           onClick={() => setIsSidebarOpen(true)}
           className={`flex flex-col items-center justify-center py-1 px-2 rounded-xl transition touch-manipulation min-w-[56px] ${
-            isSidebarOpen ? 'text-emerald-400 font-semibold' : 'text-slate-400 hover:text-slate-200'
+            isSidebarOpen ? 'text-marca-escura font-semibold' : 'text-tinta-2 hover:text-tinta'
           }`}
           aria-label="Abrir menu completo"
         >

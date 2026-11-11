@@ -38,7 +38,7 @@ export const ResultadosDoAso: React.FC<Props> = ({ employee, aso }) => {
 
   if (!acessoAResultadosDeExame) {
     return (
-      <p className="pl-3 border-l border-slate-800 text-slate-500 italic flex items-center gap-1.5">
+      <p className="pl-3 border-l border-borda text-tinta-2 italic flex items-center gap-1.5">
         <Lock className="w-3 h-3 shrink-0" />
         {RESULTADO_RESTRITO}
       </p>
@@ -102,50 +102,50 @@ export const ResultadosDoAso: React.FC<Props> = ({ employee, aso }) => {
 
   if (!editando) {
     return (
-      <div className="pl-3 border-l border-pink-500/30 space-y-1">
+      <div className="pl-3 border-l border-rose-500/30 space-y-1">
         <div className="flex items-center justify-between gap-2">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-pink-300 flex items-center gap-1">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-rose-700 flex items-center gap-1">
             <Stethoscope className="w-3 h-3" /> Prontuário (papel Saúde)
           </span>
           <button
             type="button"
             onClick={abrirEdicao}
-            className="text-[10px] font-semibold text-pink-300 hover:text-pink-200 flex items-center gap-1"
+            className="text-[10px] font-semibold text-rose-700 hover:text-rose-800 flex items-center gap-1"
           >
             <Edit3 className="w-3 h-3" /> {registro ? 'Editar resultados' : 'Lançar resultados'}
           </button>
         </div>
         {registro ? (
           <>
-            <p className="text-slate-300">
+            <p className="text-tinta">
               Conclusão clínica: <span className="font-semibold">{ROTULO_DA_CONCLUSAO_CLINICA[registro.aso_result] || 'não registrada'}</span>
               {registro.restrictions_notes ? ` — ${registro.restrictions_notes}` : ''}
             </p>
             <ul className="space-y-0.5">
               {registro.results.map((r) => (
-                <li key={r.exam_id} className="flex justify-between gap-2 text-slate-400">
+                <li key={r.exam_id} className="flex justify-between gap-2 text-tinta-2">
                   <span className="truncate">{nomeDoExame(r.exam_id)}{r.observation ? ` — ${r.observation}` : ''}</span>
-                  <span className="shrink-0 text-slate-200">{r.result ? ROTULO_DO_RESULTADO[r.result] : 'Sem resultado'}</span>
+                  <span className="shrink-0 text-tinta">{r.result ? ROTULO_DO_RESULTADO[r.result] : 'Sem resultado'}</span>
                 </li>
               ))}
             </ul>
           </>
         ) : (
-          <p className="text-amber-500/80">Resultados ainda não lançados para este ASO.</p>
+          <p className="text-amber-700">Resultados ainda não lançados para este ASO.</p>
         )}
       </div>
     );
   }
 
   return (
-    <div className="pl-3 border-l border-pink-500/40 space-y-2">
+    <div className="pl-3 border-l border-rose-500/40 space-y-2">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
         <label className="space-y-0.5">
-          <span className="text-[10px] font-semibold text-slate-400">Conclusão clínica</span>
+          <span className="text-[10px] font-semibold text-tinta-2">Conclusão clínica</span>
           <select
             value={conclusao}
             onChange={(e) => setConclusao(e.target.value as ExamResultRecord['aso_result'])}
-            className="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-slate-100"
+            className="w-full bg-superficie border border-borda rounded px-2 py-1 text-tinta"
           >
             {conclusoesPossiveis.map((c) => (
               <option key={c} value={c}>{ROTULO_DA_CONCLUSAO_CLINICA[c]}</option>
@@ -154,28 +154,28 @@ export const ResultadosDoAso: React.FC<Props> = ({ employee, aso }) => {
         </label>
         {conclusao === 'APTO_COM_RESTRICAO' && (
           <label className="space-y-0.5">
-            <span className="text-[10px] font-semibold text-slate-400">Restrição</span>
+            <span className="text-[10px] font-semibold text-tinta-2">Restrição</span>
             <input
               type="text"
               value={restricao}
               onChange={(e) => setRestricao(e.target.value)}
-              className="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-slate-100"
+              className="w-full bg-superficie border border-borda rounded px-2 py-1 text-tinta"
             />
           </label>
         )}
       </div>
 
       {exames.length === 0 ? (
-        <p className="text-slate-500">Este ASO não tem exames lançados.</p>
+        <p className="text-tinta-2">Este ASO não tem exames lançados.</p>
       ) : (
         <div className="space-y-1">
           {exames.map((x) => (
             <div key={x.id} className="grid grid-cols-12 gap-1.5 items-center">
-              <span className="col-span-12 sm:col-span-5 truncate text-slate-300">{x.exam_code_table_27} {x.exam_name}</span>
+              <span className="col-span-12 sm:col-span-5 truncate text-tinta">{x.exam_code_table_27} {x.exam_name}</span>
               <select
                 value={valores[x.id]?.result || ''}
                 onChange={(e) => setValores((v) => ({ ...v, [x.id]: { result: e.target.value as ResultadoDeExame | '', observation: v[x.id]?.observation || '' } }))}
-                className="col-span-5 sm:col-span-3 bg-slate-900 border border-slate-700 rounded px-1.5 py-1 text-slate-100"
+                className="col-span-5 sm:col-span-3 bg-superficie border border-borda rounded px-1.5 py-1 text-tinta"
               >
                 <option value="">Sem resultado</option>
                 {RESULTADOS_DE_EXAME.map((r) => (
@@ -187,26 +187,26 @@ export const ResultadosDoAso: React.FC<Props> = ({ employee, aso }) => {
                 placeholder="Observação"
                 value={valores[x.id]?.observation || ''}
                 onChange={(e) => setValores((v) => ({ ...v, [x.id]: { result: v[x.id]?.result || '', observation: e.target.value } }))}
-                className="col-span-7 sm:col-span-4 bg-slate-900 border border-slate-700 rounded px-1.5 py-1 text-slate-100"
+                className="col-span-7 sm:col-span-4 bg-superficie border border-borda rounded px-1.5 py-1 text-tinta"
               />
             </div>
           ))}
         </div>
       )}
 
-      {erro && <p className="text-rose-400">{erro}</p>}
+      {erro && <p className="text-rose-700">{erro}</p>}
       <div className="flex justify-end gap-2">
         <button
           type="button"
           onClick={() => setEditando(false)}
-          className="px-2 py-1 rounded bg-slate-800 text-slate-300 flex items-center gap-1"
+          className="px-2 py-1 rounded bg-superficie-2 text-tinta flex items-center gap-1"
         >
           <X className="w-3 h-3" /> Cancelar
         </button>
         <button
           type="button"
           onClick={salvar}
-          className="px-2 py-1 rounded bg-pink-500 text-slate-950 font-bold flex items-center gap-1"
+          className="px-2 py-1 rounded bg-rose-100 text-rose-900 font-bold flex items-center gap-1 border border-rose-200"
         >
           <Save className="w-3 h-3" /> Gravar no prontuário
         </button>

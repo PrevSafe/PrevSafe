@@ -20,7 +20,7 @@ export const metadata: Metadata = {
 
 export default function SistemaLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="bg-slate-950 text-slate-100 min-h-screen selection:bg-indigo-500/30 selection:text-indigo-200">
+    <div className="bg-fundo text-tinta min-h-screen selection:bg-marca-suave selection:text-tinta">
       <PrevSafeProvider>
         {children}
         <ServiceWorkerManager />
