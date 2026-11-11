@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { getSupabaseClient } from '@/lib/supabase';
 import {
   Lock,
@@ -120,12 +121,12 @@ export default function RedefinirSenhaPage() {
                 solicite um novo.
               </span>
             </div>
-            <a
+            <Link
               href="/"
               className="block w-full py-3 px-4 bg-superficie-2 hover:bg-superficie-3 text-tinta font-bold text-xs rounded-xl text-center transition"
             >
               Voltar para o acesso
-            </a>
+            </Link>
           </div>
         )}
 

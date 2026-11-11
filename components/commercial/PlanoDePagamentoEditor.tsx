@@ -152,7 +152,7 @@ export const PlanoDePagamentoEditor: React.FC<PlanoDePagamentoEditorProps> = ({ 
                   onChange={(e) => atualizarParte(parte.id, { descricao: e.target.value || undefined })}
                   className={CAMPO}
                 />
-                <span className={DICA}>Como esta parte aparece no contrato e no cronograma, por exemplo "Entrada".</span>
+                <span className={DICA}>Como esta parte aparece no contrato e no cronograma, por exemplo &ldquo;Entrada&rdquo;.</span>
               </div>
             </div>
 

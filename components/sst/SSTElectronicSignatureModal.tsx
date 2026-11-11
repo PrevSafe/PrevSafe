@@ -753,7 +753,9 @@ export const SSTElectronicSignatureModal: React.FC<SSTElectronicSignatureModalPr
               <div className="bg-fundo p-4 rounded-2xl border border-borda max-w-md mx-auto text-left text-xs space-y-1.5 font-mono">
                 <div className="flex justify-between text-tinta-2">
                   <span>Protocolo de Autenticação:</span>
-                  <span className="text-teal-700 font-bold">AUT-{Date.now().toString().slice(-8)}</span>
+                  <span className="text-teal-700 font-bold">
+                    AUT-{(currentSigner?.signature_hash || '').slice(-8).toUpperCase() || '--------'}
+                  </span>
                 </div>
                 <div className="flex justify-between text-tinta-2">
                   <span>Signatário:</span>
@@ -761,7 +763,11 @@ export const SSTElectronicSignatureModal: React.FC<SSTElectronicSignatureModalPr
                 </div>
                 <div className="flex justify-between text-tinta-2">
                   <span>Data/Hora:</span>
-                  <span className="text-tinta">{new Date().toLocaleString('pt-BR')}</span>
+                  <span className="text-tinta">
+                    {currentSigner?.signed_at
+                      ? new Date(currentSigner.signed_at).toLocaleString('pt-BR')
+                      : '--'}
+                  </span>
                 </div>
               </div>
             </div>

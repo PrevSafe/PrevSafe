@@ -686,7 +686,7 @@ export const CipaManagementView: React.FC = () => {
                       Candidatos Inscritos dos Empregados ({currentProcess.candidates.length})
                     </h3>
                     <p className="text-xs text-slate-550 mt-0.5">
-                      Garantia de estabilidade provisória no emprego desde o registro da candidatura até 1 ano após o mandato (Art. 10, II, "a" do ADCT).
+                      Garantia de estabilidade provisória no emprego desde o registro da candidatura até 1 ano após o mandato (Art. 10, II, &ldquo;a&rdquo; do ADCT).
                     </p>
                   </div>
                   <div className="flex items-center gap-3">
@@ -830,7 +830,7 @@ export const CipaManagementView: React.FC = () => {
                       {currentProcess.audit_votes.length === 0 && (
                         <tr>
                           <td colSpan={5} className="p-4 text-center text-tinta-2 font-sans">
-                            Nenhum voto computado ainda. Clique em "Abrir Cabine de Votação" para iniciar.
+                            Nenhum voto computado ainda. Clique em &ldquo;Abrir Cabine de Votação&rdquo; para iniciar.
                           </td>
                         </tr>
                       )}
@@ -1001,7 +1001,7 @@ export const CipaManagementView: React.FC = () => {
                       <FileText className="h-8 w-8 text-tinta-2 mx-auto mb-2" />
                       <div className="text-sm font-bold text-slate-700">Nenhuma reunião registrada ainda</div>
                       <p className="text-xs text-tinta-2 mt-1 max-w-sm mx-auto">
-                        Clique no botão acima "Registrar Reunião" para documentar as reuniões mensais ordinárias ou extraordinárias da CIPA.
+                        Clique no botão acima &ldquo;Registrar Reunião&rdquo; para documentar as reuniões mensais ordinárias ou extraordinárias da CIPA.
                       </p>
                     </div>
                   )}

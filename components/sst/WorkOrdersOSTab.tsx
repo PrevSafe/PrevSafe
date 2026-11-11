@@ -325,7 +325,7 @@ export const WorkOrdersOSTab: React.FC<WorkOrdersOSTabProps> = ({ selectedClient
               {filteredWorkOrders.length === 0 && (
                 <tr>
                   <td colSpan={8} className="py-8 text-center text-tinta-2 text-xs">
-                    Nenhuma Ordem de Serviço encontrada. Clique em "Gerar OS em Massa" para gerar automaticamente para todos os trabalhadores com base em seus cargos e GHEs.
+                    Nenhuma Ordem de Serviço encontrada. Clique em &ldquo;Gerar OS em Massa&rdquo; para gerar automaticamente para todos os trabalhadores com base em seus cargos e GHEs.
                   </td>
                 </tr>
               )}
@@ -519,7 +519,7 @@ export const WorkOrdersOSTab: React.FC<WorkOrdersOSTabProps> = ({ selectedClient
                   </button>
                 </div>
                 <p className="text-[10px] text-tinta-2 italic">
-                  "Declaro que recebi cópia desta Ordem de Serviço, fui devidamente orientado e treinado sobre os riscos de minhas atividades e me comprometo a cumprir integralmente todas as normas de segurança e medicina do trabalho, sob pena de incorrer em ato faltoso nos termos da legislação vigente."
+                  &ldquo;Declaro que recebi cópia desta Ordem de Serviço, fui devidamente orientado e treinado sobre os riscos de minhas atividades e me comprometo a cumprir integralmente todas as normas de segurança e medicina do trabalho, sob pena de incorrer em ato faltoso nos termos da legislação vigente.&rdquo;
                 </p>
               </div>
             </div>
