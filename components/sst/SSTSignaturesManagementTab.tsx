@@ -407,7 +407,7 @@ export const SSTSignaturesManagementTab: React.FC<SSTSignaturesManagementTabProp
                           {envelope.document_number}
                         </span>
                         <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${
-                          isSigned ? 'bg-marca-suave text-marca-escura border-marca-escura' :
+                          isSigned ? 'bg-marca-suave text-marca-escura border-marca-borda' :
                           isRejected ? 'bg-rose-500/10 text-rose-700 border-rose-500/20' :
                           'bg-amber-500/10 text-amber-800 border-amber-500/20 animate-pulse'
                         }`}>
@@ -458,7 +458,7 @@ export const SSTSignaturesManagementTab: React.FC<SSTSignaturesManagementTabProp
                         onClick={() => handleOpenSigning(envelope, signer.id)}
                         className={`p-3 rounded-2xl border text-xs cursor-pointer transition flex flex-col justify-between space-y-2 ${
                           signerIsSigned 
-                            ? 'bg-marca-suave border-marca-escura hover:border-marca-escura' 
+                            ? 'bg-marca-suave border-marca-borda hover:border-marca-borda' 
                             : signerIsRejected
                             ? 'bg-rose-50 border-rose-200 hover:border-rose-500/50'
                             : 'bg-fundo border-borda hover:border-teal-500/40'
@@ -777,7 +777,7 @@ export const SSTSignaturesManagementTab: React.FC<SSTSignaturesManagementTabProp
               {verifyResult && (
                 <div className={`p-4 rounded-2xl border space-y-2 animate-in fade-in ${
                   verifyResult.isValid 
-                    ? 'bg-marca-suave border-marca-escura text-marca-escura' 
+                    ? 'bg-marca-suave border-marca-borda text-marca-escura' 
                     : 'bg-rose-50 border-rose-200 text-rose-700'
                 }`}>
                   <div className="flex items-center space-x-2 font-bold text-sm">

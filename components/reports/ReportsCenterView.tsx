@@ -1169,7 +1169,7 @@ export const ReportsCenterView: React.FC<ReportsCenterViewProps> = ({
             type="button"
             onClick={handleExportExcel}
             disabled={isExporting || categoryData.length === 0}
-            className="px-4 py-2.5 bg-marca hover:bg-marca-escura text-white text-xs font-bold rounded-xl transition flex items-center gap-2 shadow-sm active:scale-95 disabled:opacity-50"
+            className="px-4 py-2.5 bg-marca-escura hover:opacity-90 text-white text-xs font-bold rounded-xl transition flex items-center gap-2 shadow-sm active:scale-95 disabled:opacity-50"
             title="Exportar planilha Excel completa (.xlsx) com tabelas formatadas e KPIs"
           >
             <FileSpreadsheet className="w-4 h-4 text-tinta" />

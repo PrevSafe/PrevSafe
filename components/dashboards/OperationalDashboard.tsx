@@ -105,7 +105,7 @@ export const OperationalDashboard: React.FC<{ onNavigate: (view: string) => void
 
           <button 
             onClick={() => onNavigate('esocial')}
-            className="px-3.5 py-2 bg-marca-suave border border-marca-escura hover:bg-marca-suave text-marca-escura rounded-2xl text-xs font-bold transition flex items-center space-x-1.5"
+            className="px-3.5 py-2 bg-marca-suave border border-marca-borda hover:bg-marca-suave text-marca-escura rounded-2xl text-xs font-bold transition flex items-center space-x-1.5"
           >
             <ShieldCheck className="w-4 h-4 text-marca-escura" />
             <span>Eventos eSocial ({esocialEvents.length})</span>
@@ -220,7 +220,7 @@ export const OperationalDashboard: React.FC<{ onNavigate: (view: string) => void
                   <div className="flex items-center space-x-2">
                     <button
                       onClick={() => updateTaskStatus(item.os.id, item.stage.id, item.task.id, 'COMPLETED')}
-                      className="px-3 py-1.5 bg-marca hover:bg-marca-escura text-white rounded-xl text-xs font-semibold shadow-sm transition flex items-center space-x-1"
+                      className="px-3 py-1.5 bg-marca-escura hover:opacity-90 text-white rounded-xl text-xs font-semibold shadow-sm transition flex items-center space-x-1"
                       title="Concluir Tarefa com 1 clique"
                     >
                       <CheckSquare className="w-3.5 h-3.5" />

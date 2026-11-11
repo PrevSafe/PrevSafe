@@ -376,7 +376,7 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
     <div className="space-y-6">
       {/* Toast Alert */}
       {actionSuccessMessage && (
-        <div className="fixed top-20 right-6 z-50 bg-marca-suave border border-marca-escura text-marca-escura px-4 py-3 rounded-xl shadow-sm backdrop-blur-md flex items-center space-x-3 animate-in fade-in slide-in-from-top-2 duration-300">
+        <div className="fixed top-20 right-6 z-50 bg-marca-suave border border-marca-borda text-marca-escura px-4 py-3 rounded-xl shadow-sm backdrop-blur-md flex items-center space-x-3 animate-in fade-in slide-in-from-top-2 duration-300">
           <ShieldCheck className="w-5 h-5 text-marca-escura shrink-0" />
           <span className="text-sm font-medium">{actionSuccessMessage}</span>
         </div>
@@ -392,7 +392,7 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
             <div>
               <h1 className="text-xl font-bold text-tinta tracking-tight flex items-center space-x-2">
                 <span>Gestão Financeira & Fluxo de Caixa</span>
-                <span className="text-xs px-2.5 py-0.5 rounded-full bg-marca-suave text-marca-escura border border-marca-escura font-mono">
+                <span className="text-xs px-2.5 py-0.5 rounded-full bg-marca-suave text-marca-escura border border-marca-borda font-mono">
                   PrevSafe Finance
                 </span>
               </h1>
@@ -407,7 +407,7 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
         <div className="flex flex-wrap items-center gap-2.5">
           <button
             onClick={() => handleOpenNewModal('RECEIVABLE')}
-            className="px-3.5 py-2 rounded-xl bg-marca hover:bg-marca-escura text-white text-xs font-semibold shadow-sm flex items-center space-x-1.5 transition active:scale-95 touch-manipulation"
+            className="px-3.5 py-2 rounded-xl bg-marca-escura hover:opacity-90 text-white text-xs font-semibold shadow-sm flex items-center space-x-1.5 transition active:scale-95 touch-manipulation"
           >
             <Plus className="w-4 h-4" />
             <span>+ Nova Receita</span>
@@ -436,7 +436,7 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
         <div className="bg-superficie p-3.5 rounded-xl border border-borda relative overflow-hidden group hover:border-marca-escura transition">
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-semibold text-tinta-2 uppercase tracking-wider">Saldo em Caixa</span>
-            <div className="w-6 h-6 rounded-lg bg-marca-suave border border-marca-escura flex items-center justify-center">
+            <div className="w-6 h-6 rounded-lg bg-marca-suave border border-marca-borda flex items-center justify-center">
               <DollarSign className="w-3.5 h-3.5 text-marca-escura" />
             </div>
           </div>
@@ -559,7 +559,7 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
             onClick={() => setActiveTab('overview')}
             className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition flex items-center space-x-2 whitespace-nowrap ${
               activeTab === 'overview'
-                ? 'bg-marca-suave text-marca-escura border border-marca-escura'
+                ? 'bg-marca-suave text-marca-escura border border-marca-borda'
                 : 'text-tinta-2 hover:text-tinta hover:bg-superficie-2'
             }`}
           >
@@ -938,7 +938,7 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
                           <td className="py-3 px-4 whitespace-nowrap">
                             <div className="flex flex-col space-y-1">
                               {isPaid && (
-                                <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-marca-suave text-marca-escura border border-marca-escura w-fit">
+                                <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-marca-suave text-marca-escura border border-marca-borda w-fit">
                                   <CheckCircle2 className="w-3 h-3 text-marca-escura" />
                                   <span>{tx.type === 'RECEIVABLE' ? 'Recebido' : 'Pago'}</span>
                                 </span>
@@ -1100,7 +1100,7 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
                               {!isPaid && (
                                 <button
                                   onClick={() => handleOpenSettlement(tx)}
-                                  className="p-1.5 rounded-lg bg-marca-suave hover:bg-marca-escura text-white hover:text-white transition"
+                                  className="p-1.5 rounded-lg bg-marca-suave hover:bg-marca-borda text-marca-escura transition"
                                   title="Liquidação Detalhada (Juros/Desconto)"
                                 >
                                   <Check className="w-3.5 h-3.5" />
@@ -1110,7 +1110,7 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
                               {/* Conciliação Modal */}
                               <button
                                 onClick={() => setSelectedTxForReconciliation(tx)}
-                                className="p-1.5 rounded-lg bg-teal-700/20 hover:bg-teal-700 text-white hover:text-white transition"
+                                className="p-1.5 rounded-lg bg-teal-50 hover:bg-teal-100 text-teal-700 transition"
                                 title="Conciliar com Extrato Bancário"
                               >
                                 <ShieldCheck className="w-3.5 h-3.5" />
@@ -1120,7 +1120,7 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
                               {tx.type === 'RECEIVABLE' && !isPaid && (
                                 <button
                                   onClick={() => setSelectedTxForReminder(tx)}
-                                  className="p-1.5 rounded-lg bg-amber-700/20 hover:bg-amber-700 text-white hover:text-white transition"
+                                  className="p-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-700 transition"
                                   title="Enviar Lembrete de Vencimento (WhatsApp / Email)"
                                 >
                                   <BellRing className="w-3.5 h-3.5" />
@@ -1146,7 +1146,7 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
                                     showNotification('Lançamento removido do financeiro.');
                                   }
                                 }}
-                                className="p-1.5 rounded-lg bg-superficie-2 hover:bg-rose-950 hover:text-white text-white transition"
+                                className="p-1.5 rounded-lg bg-superficie-2 hover:bg-rose-100 text-rose-700 transition"
                                 title="Excluir Lançamento"
                               >
                                 <Trash2 className="w-3.5 h-3.5" />
@@ -1396,7 +1396,7 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
                     <div>
                       <div className="flex items-center justify-between text-xs font-mono text-tinta-2 mb-1">
                         <span>{contract.contract_number}</span>
-                        <span className="px-2 py-0.5 rounded-full bg-marca-suave text-marca-escura border border-marca-escura text-[10px]">
+                        <span className="px-2 py-0.5 rounded-full bg-marca-suave text-marca-escura border border-marca-borda text-[10px]">
                           {contract.status}
                         </span>
                       </div>
@@ -1484,7 +1484,7 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
                           const tx = generateReceivableFromServiceOrder(os.id);
                           if (tx) showNotification(`Recebível gerado com sucesso a partir da OS ${os.os_number}!`);
                         }}
-                        className="px-2.5 py-1.5 rounded-lg bg-marca-suave hover:bg-marca-escura text-white hover:text-white text-xs font-semibold transition"
+                        className="px-2.5 py-1.5 rounded-lg bg-marca-suave hover:bg-marca-borda text-marca-escura text-xs font-semibold transition"
                       >
                         Faturar OS
                       </button>
@@ -1788,7 +1788,7 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
               </div>
 
               {/* Total Summary */}
-              <div className="p-3 rounded-xl bg-marca-suave border border-marca-escura flex items-center justify-between">
+              <div className="p-3 rounded-xl bg-marca-suave border border-marca-borda flex items-center justify-between">
                 <span className="text-xs font-semibold text-marca-escura">Valor Final a Baixar:</span>
                 <span className="font-mono text-base font-bold text-marca-escura">
                   {formatCurrency(selectedTxForSettlement.amount - settlementDiscount + settlementInterest)}
@@ -1806,7 +1806,7 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
                 <button
                   type="button"
                   onClick={handleConfirmSettlement}
-                  className="px-4 py-2 rounded-xl bg-marca hover:bg-marca-escura text-white font-semibold shadow-sm transition"
+                  className="px-4 py-2 rounded-xl bg-marca-escura hover:opacity-90 text-white font-semibold shadow-sm transition"
                 >
                   Confirmar Baixa
                 </button>
@@ -1893,7 +1893,7 @@ export const FinancialView: React.FC<FinancialViewProps> = ({ onNavigate }) => {
                   </p>
                   <button
                     onClick={() => copyPixToClipboard(selectedTxForReceipt.barcode_or_pix || '')}
-                    className="mt-1 px-3 py-1 rounded-lg bg-marca-suave hover:bg-marca-escura text-white hover:text-white text-[11px] font-semibold flex items-center space-x-1.5 transition mx-auto sm:mx-0"
+                    className="mt-1 px-3 py-1 rounded-lg bg-marca-suave hover:bg-marca-borda text-marca-escura text-[11px] font-semibold flex items-center space-x-1.5 transition mx-auto sm:mx-0"
                   >
                     <Copy className="w-3 h-3" />
                     <span>{copiedPix ? 'Chave Copiada!' : 'Copiar Chave Pix / Código'}</span>

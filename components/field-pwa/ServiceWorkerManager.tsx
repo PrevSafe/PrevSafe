@@ -109,7 +109,7 @@ export const ServiceWorkerManager: React.FC = () => {
           </p>
           <button
             onClick={() => window.location.reload()}
-            className="px-3 py-1.5 bg-marca hover:bg-marca-escura text-white rounded-lg text-xs font-semibold transition"
+            className="px-3 py-1.5 bg-marca-escura hover:opacity-90 text-white rounded-lg text-xs font-semibold transition"
           >
             Recarregar agora
           </button>

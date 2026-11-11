@@ -157,7 +157,7 @@ export const ESocialPdfReportModal: React.FC<ESocialPdfReportModalProps> = ({
             <button
               onClick={handleDownloadDirectPdf}
               disabled={targetEvents.length === 0}
-              className="px-3.5 py-2 bg-marca hover:bg-marca-escura text-white rounded-2xl text-xs font-bold transition shadow-sm flex items-center space-x-1.5 disabled:opacity-50"
+              className="px-3.5 py-2 bg-marca-escura hover:opacity-90 text-white rounded-2xl text-xs font-bold transition shadow-sm flex items-center space-x-1.5 disabled:opacity-50"
               title="Baixar arquivo .PDF gerado vetorialmente pelo jsPDF"
             >
               <Download className="w-4 h-4" />

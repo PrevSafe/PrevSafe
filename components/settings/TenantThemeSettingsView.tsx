@@ -341,7 +341,7 @@ export const TenantThemeSettingsView: React.FC<TenantThemeSettingsViewProps> = (
 
         {/* Real-Time Live Status Bar */}
         {saveSuccessNotice && (
-          <div className="mt-5 p-3.5 rounded-2xl bg-marca-suave border border-marca-escura flex items-center justify-between gap-3 text-marca-escura text-sm animate-in slide-in-from-top duration-300">
+          <div className="mt-5 p-3.5 rounded-2xl bg-marca-suave border border-marca-borda flex items-center justify-between gap-3 text-marca-escura text-sm animate-in slide-in-from-top duration-300">
             <div className="flex items-center gap-2.5">
               <CheckCircle2 className="w-5 h-5 text-marca-escura shrink-0" />
               <span>
@@ -648,7 +648,7 @@ export const TenantThemeSettingsView: React.FC<TenantThemeSettingsViewProps> = (
                 <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${
                   enableOutdoorHighContrast 
                     ? 'bg-amber-500/20 text-amber-800 border-amber-500/40' 
-                    : 'bg-marca-suave text-marca-escura border-marca-escura'
+                    : 'bg-marca-suave text-marca-escura border-marca-borda'
                 }`}>
                   {enableOutdoorHighContrast ? 'AAA Conforme (Alto Contraste Solar)' : `AA Conforme (Texto ${contrastInfo.textColor === '#ffffff' ? 'Branco' : 'Preto'})`}
                 </span>

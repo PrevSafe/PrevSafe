@@ -62,7 +62,10 @@ for nome, hx in re.findall(r'--color-([a-z0-9-]+):\s*(#[0-9A-Fa-f]{6})', glob):
 
 PAGINA = CORES.get('fundo', (0.95, 0.96, 0.96))
 
-CLASSE = re.compile(r'\b(bg|text|from)-([a-z]+(?:-\d+)?(?:-[a-z]+)?)(?:/(\d+))?\b')
+# Classe sem prefixo de variante. Com o \b solto, 'hover:bg-teal-900' casava
+# como se fosse o fundo em repouso, e um texto branco sobre fundo claro
+# passava despercebido porque o hover escuro mascarava a medicao.
+CLASSE = re.compile(r'(?<![\w:-])(bg|text|from)-([a-z]+(?:-\d+)?(?:-[a-z]+)?)(?:/(\d+))?\b')
 
 def cor_de(nome, alfa, atras):
     base = CORES.get(nome)

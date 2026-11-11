@@ -311,7 +311,7 @@ export const CipaManagementView: React.FC = () => {
                 <ShieldCheck className="h-3.5 w-3.5" />
                 Módulo Legal de CIPA &amp; Eleições Digitais
               </span>
-              <span className="rounded-full bg-marca-suave border border-marca-escura px-3 py-1 text-xs font-semibold text-marca-escura">
+              <span className="rounded-full bg-marca-suave border border-marca-borda px-3 py-1 text-xs font-semibold text-marca-escura">
                 Lei nº 14.457/2022 (Combate ao Assédio)
               </span>
               <span className="rounded-full bg-teal-500/20 border border-teal-400/30 px-3 py-1 text-xs font-semibold text-teal-800">
@@ -336,7 +336,7 @@ export const CipaManagementView: React.FC = () => {
             </button>
             <button
               onClick={() => setIsVotingModalOpen(true)}
-              className="flex items-center gap-2 rounded-xl bg-marca hover:bg-marca-escura px-4 py-2.5 text-xs font-bold text-white shadow-sm transition active:scale-95"
+              className="flex items-center gap-2 rounded-xl bg-marca-escura hover:opacity-90 px-4 py-2.5 text-xs font-bold text-white shadow-sm transition active:scale-95"
             >
               <Vote className="h-4 w-4" />
               Cabine de Votação

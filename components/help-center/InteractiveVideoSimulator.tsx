@@ -110,7 +110,7 @@ export const InteractiveVideoSimulator: React.FC<InteractiveVideoSimulatorProps>
           <div className="w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse" />
           <span className="text-xs font-bold text-tinta tracking-wide flex items-center space-x-1.5">
             <span>{videoTitle}</span>
-            <span className="text-[10px] px-2 py-0.2 rounded bg-marca-suave text-marca-escura font-mono border border-marca-escura">
+            <span className="text-[10px] px-2 py-0.2 rounded bg-marca-suave text-marca-escura font-mono border border-marca-borda">
               Simulador Interativo
             </span>
           </span>
@@ -137,7 +137,7 @@ export const InteractiveVideoSimulator: React.FC<InteractiveVideoSimulatorProps>
 
           <div className="flex items-center space-x-2">
             {activeKeyframe.screenState.badgeStatus && (
-              <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-marca-suave text-marca-escura border border-marca-escura font-semibold animate-bounce">
+              <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-marca-suave text-marca-escura border border-marca-borda font-semibold animate-bounce">
                 {activeKeyframe.screenState.badgeStatus}
               </span>
             )}
@@ -178,7 +178,7 @@ export const InteractiveVideoSimulator: React.FC<InteractiveVideoSimulatorProps>
               </div>
 
               {activeKeyframe.screenState.successMessage && (
-                <div className="p-3 bg-marca-suave border border-marca-escura rounded-xl text-xs font-bold text-marca-escura flex items-center justify-center space-x-2 animate-pulse">
+                <div className="p-3 bg-marca-suave border border-marca-borda rounded-xl text-xs font-bold text-marca-escura flex items-center justify-center space-x-2 animate-pulse">
                   <CheckCircle className="w-4 h-4 text-marca-escura" />
                   <span>{activeKeyframe.screenState.successMessage}</span>
                 </div>
@@ -263,7 +263,7 @@ export const InteractiveVideoSimulator: React.FC<InteractiveVideoSimulatorProps>
           <div className="flex items-center space-x-2">
             <button 
               onClick={handlePlayPause}
-              className="p-2.5 rounded-xl bg-marca hover:bg-marca-escura text-white font-semibold transition active:scale-95 shadow-md"
+              className="p-2.5 rounded-xl bg-marca-escura hover:opacity-90 text-white font-semibold transition active:scale-95 shadow-md"
               title={isPlaying ? "Pausar Vídeo" : "Reproduzir Vídeo"}
             >
               {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 fill-white" />}

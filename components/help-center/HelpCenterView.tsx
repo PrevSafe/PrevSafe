@@ -129,7 +129,7 @@ export const HelpCenterView: React.FC<HelpCenterViewProps> = ({ onNavigate }) =>
 
         <div className="relative z-10 space-y-4 max-w-3xl">
           <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 rounded-xl bg-marca-suave border border-marca-escura flex items-center justify-center text-marca-escura">
+            <div className="w-8 h-8 rounded-xl bg-marca-suave border border-marca-borda flex items-center justify-center text-marca-escura">
               <GraduationCap className="w-5 h-5" />
             </div>
             <span className="text-xs uppercase font-bold tracking-wider text-marca-escura">
@@ -223,7 +223,7 @@ export const HelpCenterView: React.FC<HelpCenterViewProps> = ({ onNavigate }) =>
                 <span className="text-sm font-bold text-tinta group-hover:text-marca-escura transition">
                   {trk.title}
                 </span>
-                <span className="text-[10px] px-2 py-0.5 rounded-full bg-marca-suave text-marca-escura font-bold border border-marca-escura">
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-marca-suave text-marca-escura font-bold border border-marca-borda">
                   {trk.badge}
                 </span>
               </div>
@@ -334,7 +334,7 @@ export const HelpCenterView: React.FC<HelpCenterViewProps> = ({ onNavigate }) =>
               setSelectedRole('ALL');
               setSelectedDifficulty('ALL');
             }}
-            className="px-4 py-2 bg-marca hover:bg-marca-escura text-white rounded-xl text-xs font-semibold transition"
+            className="px-4 py-2 bg-marca-escura hover:opacity-90 text-white rounded-xl text-xs font-semibold transition"
           >
             Limpar Todos os Filtros
           </button>
@@ -350,7 +350,7 @@ export const HelpCenterView: React.FC<HelpCenterViewProps> = ({ onNavigate }) =>
               <div className="space-y-3">
                 {/* Category & Badge header */}
                 <div className="flex items-center justify-between gap-2">
-                  <span className="text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-marca-suave text-marca-escura border border-marca-escura">
+                  <span className="text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-marca-suave text-marca-escura border border-marca-borda">
                     {tut.categoryLabel}
                   </span>
 
@@ -451,7 +451,7 @@ export const HelpCenterView: React.FC<HelpCenterViewProps> = ({ onNavigate }) =>
                       </span>
                     </td>
                     <td className="py-3.5 px-4 text-right">
-                      <button className="px-3 py-1 bg-marca-suave hover:bg-marca-escura text-white hover:text-white rounded-lg text-xs font-semibold transition">
+                      <button className="px-3 py-1 bg-marca-suave hover:bg-marca-borda text-marca-escura rounded-lg text-xs font-semibold transition">
                         Abrir
                       </button>
                     </td>

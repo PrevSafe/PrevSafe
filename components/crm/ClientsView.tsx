@@ -444,7 +444,7 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
           <div>
             <div className="flex items-center gap-2">
               <h1 className="text-xl font-bold tracking-tight text-tinta">CRM de Clientes & Unidades</h1>
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-marca-suave text-marca-escura border border-marca-escura font-mono">
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-marca-suave text-marca-escura border border-marca-borda font-mono">
                 Validação NR-04 & eSocial
               </span>
             </div>
@@ -603,7 +603,7 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
                     <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full border ${
                       selectedClient.risk_degree === 4 ? 'bg-rose-500/10 text-rose-700 border-rose-500/20' :
                       selectedClient.risk_degree === 3 ? 'bg-amber-500/10 text-amber-800 border-amber-500/20' :
-                      'bg-marca-suave text-marca-escura border-marca-escura'
+                      'bg-marca-suave text-marca-escura border-marca-borda'
                     }`}>
                       Grau de Risco {selectedClient.risk_degree} (NR-04)
                     </span>
@@ -835,7 +835,7 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
                           <div className="font-bold text-tinta flex items-center space-x-1.5">
                             <span>{contact.name}</span>
                             {contact.is_primary && (
-                              <span className="text-[9px] bg-marca-suave text-marca-escura border border-marca-escura px-1.5 py-0.2 rounded-full font-normal">
+                              <span className="text-[9px] bg-marca-suave text-marca-escura border border-marca-borda px-1.5 py-0.2 rounded-full font-normal">
                                 Principal
                               </span>
                             )}
@@ -980,7 +980,7 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
 
               {lookupFeedback && (
                 lookupFeedback.source === 'RECEITA_FEDERAL_ONLINE' ? (
-                  <div className="p-3 bg-marca-suave border border-marca-escura rounded-xl text-xs text-marca-escura space-y-1">
+                  <div className="p-3 bg-marca-suave border border-marca-borda rounded-xl text-xs text-marca-escura space-y-1">
                     <div className="flex items-center justify-between font-bold">
                       <span>✓ Dados localizados na Receita Federal</span>
                       <span className="font-mono text-[10px]">{lookupFeedback.esocial_tp_insc}</span>
@@ -1046,7 +1046,7 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
                       </span>
                     ) : (
                       <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
-                        currentClientNr4.riskDegree >= 3 ? 'bg-rose-500/10 text-rose-700 border-rose-500/20' : 'bg-marca-suave text-marca-escura border-marca-escura'
+                        currentClientNr4.riskDegree >= 3 ? 'bg-rose-500/10 text-rose-700 border-rose-500/20' : 'bg-marca-suave text-marca-escura border-marca-borda'
                       }`}>
                         Grau de Risco {currentClientNr4.riskDegree} ({currentClientNr4.riskDegree === 4 ? 'Crítico' : currentClientNr4.riskDegree === 3 ? 'Grave' : 'Médio/Leve'})
                       </span>
@@ -1258,7 +1258,7 @@ export const ClientsView: React.FC<{ onNavigate: (view: string) => void }> = ({ 
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-marca hover:bg-marca-escura text-white rounded-xl text-xs font-semibold shadow-md"
+                  className="px-4 py-2 bg-marca-escura hover:opacity-90 text-white rounded-xl text-xs font-semibold shadow-md"
                 >
                   {showEditClientModal ? 'Atualizar Cliente' : 'Salvar Cliente'}
                 </button>

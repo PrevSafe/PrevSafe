@@ -315,7 +315,7 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
       {/* Header Bento Card */}
       <div id="os-header-card" className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-superficie border border-borda rounded-3xl p-6 shadow-sm">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-marca-suave border border-marca-escura rounded-2xl flex items-center justify-center text-marca-escura">
+          <div className="w-10 h-10 bg-marca-suave border border-marca-borda rounded-2xl flex items-center justify-center text-marca-escura">
             <Briefcase className="w-5 h-5" />
           </div>
           <div>
@@ -355,7 +355,7 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
           >
             <Plus className="w-4 h-4" />
             <span>+ Nova Ordem de Serviço</span>
-            <kbd className="hidden sm:inline-flex px-1.5 py-0.5 rounded bg-marca-suave text-[10px] font-mono text-marca-escura border border-marca-escura ml-1">
+            <kbd className="hidden sm:inline-flex px-1.5 py-0.5 rounded bg-marca-suave text-[10px] font-mono text-marca-escura border border-marca-borda ml-1">
               Ctrl+N
             </kbd>
           </button>
@@ -506,7 +506,7 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
                           <div className="text-xs text-tinta-2 truncate max-w-xs mt-0.5">{os.title || os.service_name}</div>
                         </div>
                         <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${
-                          os.status === 'ACCEPTED' || os.status === 'COMPLETED' ? 'bg-marca-suave text-marca-escura border-marca-escura' :
+                          os.status === 'ACCEPTED' || os.status === 'COMPLETED' ? 'bg-marca-suave text-marca-escura border-marca-borda' :
                           os.status === 'WAITING_ACCEPTANCE' ? 'bg-teal-500/10 text-teal-800 border-teal-500/20' :
                           os.status === 'IN_PROGRESS' ? 'bg-teal-500/10 text-teal-800 border-teal-500/20' :
                           os.status === 'REWORK' ? 'bg-rose-500/10 text-rose-700 border-rose-500/20' : 'bg-superficie-2 text-tinta border-borda'
@@ -633,7 +633,7 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
                       <button
                         id="btn-confirm-accept"
                         onClick={handleAccept}
-                        className="px-3.5 py-1.5 bg-marca hover:bg-marca-escura text-white text-xs font-bold rounded-xl shadow-sm transition flex items-center space-x-1.5"
+                        className="px-3.5 py-1.5 bg-marca-escura hover:opacity-90 text-white text-xs font-bold rounded-xl shadow-sm transition flex items-center space-x-1.5"
                       >
                         <CheckCircle2 className="w-3.5 h-3.5" />
                         <span>Confirmar Aceite Formal (RN008)</span>
@@ -715,7 +715,7 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
                           id={`stage-card-${stage.id}`}
                           className={`p-4 rounded-2xl border transition ${
                             isInProgress ? 'bg-teal-500/10 border-teal-500/40 shadow-sm' :
-                            isCompleted ? 'bg-marca-suave border-marca-escura' :
+                            isCompleted ? 'bg-marca-suave border-marca-borda' :
                             isWaitingClient ? 'bg-amber-500/10 border-amber-500/30' :
                             'bg-fundo border-borda text-tinta-2'
                           }`}
@@ -728,7 +728,7 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
                                 </span>
                                 <h4 className="text-xs font-bold text-tinta">{stage.name}</h4>
                                 <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
-                                  isCompleted ? 'bg-marca-suave text-marca-escura border-marca-escura' :
+                                  isCompleted ? 'bg-marca-suave text-marca-escura border-marca-borda' :
                                   isInProgress ? 'bg-teal-500/10 text-teal-800 border-teal-500/20' :
                                   isWaitingClient ? 'bg-amber-500/10 text-amber-800 border-amber-500/20' : 'bg-superficie-2 text-tinta-2 border-borda'
                                 }`}>
@@ -756,7 +756,7 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
                                       confetti({ particleCount: 30, spread: 45 });
                                     }
                                   }}
-                                  className="px-3 py-1.5 bg-marca hover:bg-marca-escura text-white rounded-xl text-xs font-semibold shadow-sm transition flex items-center space-x-1"
+                                  className="px-3 py-1.5 bg-marca-escura hover:opacity-90 text-white rounded-xl text-xs font-semibold shadow-sm transition flex items-center space-x-1"
                                 >
                                   <CheckCircle2 className="w-3.5 h-3.5" />
                                   <span>Concluir Etapa</span>
@@ -825,7 +825,7 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
                     <div className="flex items-center space-x-2">
                       <button
                         onClick={() => handleOpenAddTask()}
-                        className="px-3 py-1.5 bg-marca hover:bg-marca-escura text-white rounded-xl text-xs font-semibold shadow-sm transition flex items-center space-x-1"
+                        className="px-3 py-1.5 bg-marca-escura hover:opacity-90 text-white rounded-xl text-xs font-semibold shadow-sm transition flex items-center space-x-1"
                       >
                         <Plus className="w-3.5 h-3.5" />
                         <span>Nova Tarefa</span>
@@ -856,7 +856,7 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
                         </div>
                         <div className="flex items-center space-x-3">
                           <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${
-                            task.status === 'COMPLETED' ? 'bg-marca-suave text-marca-escura border-marca-escura' : 'bg-superficie-2 text-tinta-2 border-borda'
+                            task.status === 'COMPLETED' ? 'bg-marca-suave text-marca-escura border-marca-borda' : 'bg-superficie-2 text-tinta-2 border-borda'
                           }`}>
                             {task.status}
                           </span>
@@ -917,7 +917,7 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
                           <div className="flex items-center space-x-2">
                             <button
                               onClick={() => alert(`Mensagem de cobrança automática enviada ao WhatsApp do cliente para a pendência "${req.title}".`)}
-                              className="px-3 py-1.5 bg-marca-suave hover:bg-marca-suave text-marca-escura border border-marca-escura rounded-xl text-xs font-semibold transition flex items-center space-x-1"
+                              className="px-3 py-1.5 bg-marca-suave hover:bg-marca-suave text-marca-escura border border-marca-borda rounded-xl text-xs font-semibold transition flex items-center space-x-1"
                             >
                               <Share2 className="w-3.5 h-3.5 text-marca-escura" />
                               <span>Cobrar via WhatsApp</span>
@@ -955,7 +955,7 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
                       osDocs.map((doc) => (
                         <div key={doc.id} className="p-4 bg-fundo border border-borda rounded-2xl flex items-center justify-between text-xs">
                           <div className="flex items-center space-x-3">
-                            <div className="p-2.5 bg-marca-suave text-marca-escura border border-marca-escura rounded-xl">
+                            <div className="p-2.5 bg-marca-suave text-marca-escura border border-marca-borda rounded-xl">
                               <FileText className="w-5 h-5" />
                             </div>
                             <div>
@@ -1012,7 +1012,7 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
           <div className="bg-superficie rounded-3xl max-w-lg w-full p-6 shadow-sm border border-borda text-tinta">
             <div className="flex items-center justify-between border-b border-borda pb-3 mb-4">
               <div className="flex items-center space-x-2">
-                <div className="p-2 bg-marca-suave rounded-xl text-marca-escura border border-marca-escura">
+                <div className="p-2 bg-marca-suave rounded-xl text-marca-escura border border-marca-borda">
                   <Briefcase className="w-5 h-5" />
                 </div>
                 <div>
@@ -1117,7 +1117,7 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-marca hover:bg-marca-escura text-white rounded-xl font-bold shadow-md"
+                  className="px-4 py-2 bg-marca-escura hover:opacity-90 text-white rounded-xl font-bold shadow-md"
                 >
                   Criar Ordem de Serviço
                 </button>

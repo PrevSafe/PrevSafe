@@ -84,7 +84,7 @@ export const ProcessInfographic: React.FC<ProcessInfographicProps> = ({ infograp
               <div key={node.id} className="relative flex flex-col">
                 <div className={`p-4 rounded-xl border flex-1 flex flex-col justify-between transition-all ${
                   node.actorColor === 'emerald'
-                    ? 'bg-marca-suave border-marca-escura'
+                    ? 'bg-marca-suave border-marca-borda'
                     : node.actorColor === 'blue'
                     ? 'bg-teal-50 border-teal-500/30'
                     : node.actorColor === 'purple'

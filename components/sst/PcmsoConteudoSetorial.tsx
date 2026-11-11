@@ -181,7 +181,7 @@ export const PcmsoConteudoSetorial: React.FC<PcmsoConteudoSetorialProps> = ({ se
                 <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2">
                   <p className="text-xs text-tinta font-semibold">{item.texto}</p>
                   {valido ? (
-                    <span className="shrink-0 px-2 py-0.5 text-[10px] font-bold rounded bg-marca-suave border border-marca-escura text-marca-escura flex items-center gap-1">
+                    <span className="shrink-0 px-2 py-0.5 text-[10px] font-bold rounded bg-marca-suave border border-marca-borda text-marca-escura flex items-center gap-1">
                       <CheckCircle2 className="w-3 h-3" /> Registrado
                     </span>
                   ) : (

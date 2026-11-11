@@ -54,7 +54,7 @@ export const TutorialDetailModal: React.FC<TutorialDetailModalProps> = ({
         <div className="p-4 sm:p-6 border-b border-borda bg-fundo flex items-start justify-between gap-4">
           <div className="space-y-1.5 flex-1">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-marca-suave text-marca-escura border border-marca-escura">
+              <span className="text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-marca-suave text-marca-escura border border-marca-borda">
                 {tutorial.categoryLabel}
               </span>
               <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-superficie-2 text-tinta border border-borda font-medium">

@@ -491,7 +491,7 @@ export const GlobalCommandPalette: React.FC<GlobalCommandPaletteProps> = ({
                     onMouseEnter={() => setSelectedIndex(idx)}
                     className={`w-full text-left px-3.5 py-2.5 rounded-xl flex items-center justify-between gap-3 transition-colors ${
                       isSelected 
-                        ? 'bg-marca-suave border border-marca-escura text-tinta' 
+                        ? 'bg-marca-suave border border-marca-borda text-tinta' 
                         : 'text-tinta hover:bg-superficie-2 hover:text-tinta border border-transparent'
                     }`}
                   >
@@ -528,7 +528,7 @@ export const GlobalCommandPalette: React.FC<GlobalCommandPaletteProps> = ({
 
                     <div className="flex items-center gap-2 flex-shrink-0">
                       {item.shortcut && (
-                        <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-marca-suave text-marca-escura border border-marca-escura">
+                        <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-marca-suave text-marca-escura border border-marca-borda">
                           {item.shortcut}
                         </span>
                       )}
@@ -565,7 +565,7 @@ export const GlobalCommandPalette: React.FC<GlobalCommandPaletteProps> = ({
           </div>
 
           <div className="flex items-center gap-2 text-marca-escura">
-            <kbd className="px-1.5 py-0.5 rounded bg-marca-suave border border-marca-escura font-mono text-[10px] text-marca-escura">
+            <kbd className="px-1.5 py-0.5 rounded bg-marca-suave border border-marca-borda font-mono text-[10px] text-marca-escura">
               Ctrl+N
             </kbd>
             <span>Nova OS Direta</span>
@@ -688,7 +688,7 @@ export const QuickNewOSModal: React.FC<QuickNewOSModalProps> = ({
         {/* Modal Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-borda bg-superficie">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-marca-suave text-marca-escura flex items-center justify-center border border-marca-escura">
+            <div className="w-10 h-10 rounded-xl bg-marca-suave text-marca-escura flex items-center justify-center border border-marca-borda">
               <Plus className="w-5 h-5" />
             </div>
             <div>
@@ -696,7 +696,7 @@ export const QuickNewOSModal: React.FC<QuickNewOSModalProps> = ({
                 <h3 className="text-base font-bold text-tinta tracking-tight">
                   Nova Ordem de Serviço (OS)
                 </h3>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-marca-suave text-marca-escura border border-marca-escura">
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-marca-suave text-marca-escura border border-marca-borda">
                   Ctrl + N
                 </span>
               </div>
@@ -857,7 +857,7 @@ export const QuickNewOSModal: React.FC<QuickNewOSModalProps> = ({
 
               <button
                 type="submit"
-                className="px-4 py-2 rounded-xl text-xs font-semibold text-white bg-marca hover:bg-marca-escura border border-marca-escura flex items-center gap-2 shadow-sm transition"
+                className="px-4 py-2 rounded-xl text-xs font-semibold text-white bg-marca-escura hover:opacity-90 border border-marca-escura flex items-center gap-2 shadow-sm transition"
               >
                 <Plus className="w-4 h-4" />
                 <span>Criar Ordem de Serviço</span>

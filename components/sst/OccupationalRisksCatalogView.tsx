@@ -460,8 +460,8 @@ const CARTOES_DE_GRUPO: Array<{
   },
   {
     grupo: 'BIOLÓGICO', rotulo: 'Biológicos · grupo 3', exemplo: 'Vírus, bactérias, fungos', Icone: ShieldAlert,
-    marcado: 'border-marca-escura bg-marca-suave shadow-sm ring-2 ring-marca-escura',
-    desmarcado: 'border-borda hover:border-marca-escura hover:bg-marca-suave',
+    marcado: 'border-marca-borda bg-marca-suave shadow-sm ring-2 ring-marca-escura',
+    desmarcado: 'border-borda hover:border-marca-borda hover:bg-marca-suave',
     texto: 'text-marca-escura', icone: 'text-marca-escura'
   },
   {
@@ -482,7 +482,7 @@ const getGroupBadgeColor = (group: string | undefined) => {
   switch (grupoDoItem(group)) {
     case 'FÍSICO': return 'bg-amber-500/15 text-amber-800 border-amber-500/30';
     case 'QUÍMICO': return 'bg-rose-500/15 text-rose-800 border-rose-500/30';
-    case 'BIOLÓGICO': return 'bg-marca-suave text-marca-escura border-marca-escura';
+    case 'BIOLÓGICO': return 'bg-marca-suave text-marca-escura border-marca-borda';
     case 'ERGONÔMICO': return 'bg-teal-500/15 text-teal-800 border-teal-500/30';
     case 'ACIDENTES': return 'bg-teal-500/15 text-teal-800 border-teal-500/30';
     default: return 'bg-fundo text-tinta border-borda';
@@ -492,7 +492,7 @@ const getGroupBadgeColor = (group: string | undefined) => {
 const SELO_DA_ORIGEM: Record<OrigemDoItem, { rotulo: string; classe: string; ajuda: string }> = {
   CURADO: {
     rotulo: 'Curado',
-    classe: 'bg-marca-suave text-marca-escura border-marca-escura',
+    classe: 'bg-marca-suave text-marca-escura border-marca-borda',
     ajuda: 'Item do sistema escrito e conferido, com fontes, efeitos, EPI e exames sugeridos.'
   },
   LISTAGEM: {
@@ -1424,7 +1424,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
               className={`inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold rounded-lg border transition-colors ${
                 ativo
                   ? 'text-tinta-2 border-borda hover:text-amber-800 hover:bg-amber-500/15'
-                  : 'text-marca-escura border-marca-escura bg-marca-suave hover:bg-marca-suave'
+                  : 'text-marca-escura border-marca-borda bg-marca-suave hover:bg-marca-suave'
               }`}
               title={
                 ativo
@@ -1464,7 +1464,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div>
             <div className="flex flex-wrap items-center gap-2 mb-1">
-              <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-marca-suave text-marca-escura border border-marca-escura">
+              <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-marca-suave text-marca-escura border border-marca-borda">
                 Tabela 24 do eSocial & NR-01/09/15/17
               </span>
               <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-superficie-2 text-tinta">
@@ -1996,7 +1996,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
                         ],
                       })
                     }
-                    className="px-2.5 py-1 bg-marca hover:bg-marca-escura text-white text-[11px] font-semibold rounded-lg flex items-center gap-1"
+                    className="px-2.5 py-1 bg-marca-escura hover:opacity-90 text-white text-[11px] font-semibold rounded-lg flex items-center gap-1"
                   >
                     <Plus className="w-3 h-3" /> Adicionar exame
                   </button>
@@ -2628,7 +2628,7 @@ export const OccupationalRisksCatalogView: React.FC<OccupationalRisksCatalogView
 
               {/* Result Feedback */}
               {applyFeedback && (
-                <div className="p-3 bg-marca-suave border border-marca-escura rounded-lg flex items-center gap-2 text-xs text-marca-escura font-medium">
+                <div className="p-3 bg-marca-suave border border-marca-borda rounded-lg flex items-center gap-2 text-xs text-marca-escura font-medium">
                   <CheckCircle2 className="w-5 h-5 text-marca-escura flex-shrink-0" />
                   <div>
                     <span className="font-bold">{applyFeedback.message}</span>

@@ -131,7 +131,7 @@ export const FinancialReminderModal: React.FC<FinancialReminderModalProps> = ({
                 onClick={() => setChannel('WHATSAPP')}
                 className={`p-2.5 rounded-xl border flex flex-col items-center justify-center space-y-1 transition ${
                   channel === 'WHATSAPP'
-                    ? 'bg-marca-suave border-marca-escura text-marca-escura font-bold'
+                    ? 'bg-marca-suave border-marca-borda text-marca-escura font-bold'
                     : 'bg-fundo border-borda text-tinta-2 hover:border-borda'
                 }`}
               >
@@ -188,7 +188,7 @@ export const FinancialReminderModal: React.FC<FinancialReminderModalProps> = ({
               type="button"
               disabled={isSending}
               onClick={handleSend}
-              className="px-4 py-2 rounded-xl bg-marca hover:bg-marca-escura text-white font-semibold shadow-sm flex items-center space-x-1.5 transition active:scale-95"
+              className="px-4 py-2 rounded-xl bg-marca-escura hover:opacity-90 text-white font-semibold shadow-sm flex items-center space-x-1.5 transition active:scale-95"
             >
               <Send className="w-3.5 h-3.5" />
               <span>{isSending ? 'Abrindo...' : 'Abrir mensagem'}</span>

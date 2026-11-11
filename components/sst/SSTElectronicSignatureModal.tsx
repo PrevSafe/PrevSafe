@@ -357,7 +357,7 @@ export const SSTElectronicSignatureModal: React.FC<SSTElectronicSignatureModalPr
                                 </span>
                               )}
                               {signer.role_type === 'EMPLOYEE' && (
-                                <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-marca-suave text-marca-escura border border-marca-escura">
+                                <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-marca-suave text-marca-escura border border-marca-borda">
                                   Colaborador
                                 </span>
                               )}
@@ -373,7 +373,7 @@ export const SSTElectronicSignatureModal: React.FC<SSTElectronicSignatureModalPr
 
                           <div>
                             {isSigned ? (
-                              <span className="flex items-center space-x-1 text-marca-escura text-xs font-bold bg-marca-suave border border-marca-escura px-2.5 py-1 rounded-full">
+                              <span className="flex items-center space-x-1 text-marca-escura text-xs font-bold bg-marca-suave border border-marca-borda px-2.5 py-1 rounded-full">
                                 <CheckCircle2 className="w-3.5 h-3.5" />
                                 <span>Assinado</span>
                               </span>
@@ -739,7 +739,7 @@ export const SSTElectronicSignatureModal: React.FC<SSTElectronicSignatureModalPr
           {/* STEP 4: SUCCESS CONFIRMATION */}
           {activeStep === 'SUCCESS' && (
             <div className="py-8 text-center space-y-5">
-              <div className="w-16 h-16 rounded-full bg-marca-suave text-marca-escura border border-marca-escura flex items-center justify-center mx-auto animate-bounce">
+              <div className="w-16 h-16 rounded-full bg-marca-suave text-marca-escura border border-marca-borda flex items-center justify-center mx-auto animate-bounce">
                 <CheckCircle2 className="w-10 h-10" />
               </div>
 

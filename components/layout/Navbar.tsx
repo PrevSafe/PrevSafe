@@ -96,7 +96,7 @@ export const Navbar: React.FC<NavbarProps> = ({
       case 'SAVING':
         return { icon: CloudUpload, spin: false, label: 'Salvando...', tone: 'text-teal-700 border-teal-700/50 bg-teal-50', title: 'Enviando as alterações para o Supabase.' };
       case 'SAVED':
-        return { icon: Cloud, spin: false, label: 'Salvo', tone: 'text-marca-escura border-marca-escura bg-marca-suave', title: lastSyncedAt ? `Última gravação no servidor às ${formatTime(lastSyncedAt)}.` : 'Dados salvos no servidor.' };
+        return { icon: Cloud, spin: false, label: 'Salvo', tone: 'text-marca-escura border-marca-borda bg-marca-suave', title: lastSyncedAt ? `Última gravação no servidor às ${formatTime(lastSyncedAt)}.` : 'Dados salvos no servidor.' };
       case 'OFFLINE':
         return { icon: CloudOff, spin: false, label: 'Sem conexão', tone: 'text-amber-700 border-amber-200 bg-amber-50', title: syncMessage || 'Sem conexão com o servidor. As alterações sobem quando a conexão voltar.' };
       case 'ERROR':
@@ -530,7 +530,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                         setActiveView('users-management');
                         setShowRoleMenu(false);
                       }}
-                      className="w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold text-white hover:text-white hover:bg-teal-700 border border-teal-200 transition flex items-center space-x-2"
+                      className="w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold text-tinta-2 hover:bg-teal-50 border border-teal-200 transition flex items-center space-x-2"
                     >
                       <UserCheck className="w-3.5 h-3.5 text-teal-700" />
                       <span>Gerenciar Usuários & RBAC</span>

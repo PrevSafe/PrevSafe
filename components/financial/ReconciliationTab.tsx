@@ -122,7 +122,7 @@ export const ReconciliationTab: React.FC<ReconciliationTabProps> = ({
         <div className="p-4 bg-superficie rounded-2xl border border-borda relative overflow-hidden">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-tinta-2">Taxa de Conciliação</span>
-            <div className="w-8 h-8 rounded-lg bg-marca-suave border border-marca-escura flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-marca-suave border border-marca-borda flex items-center justify-center">
               <ShieldCheck className="w-4 h-4 text-marca-escura" />
             </div>
           </div>
@@ -172,7 +172,7 @@ export const ReconciliationTab: React.FC<ReconciliationTabProps> = ({
             disabled={selectedIds.length === 0}
             className={`mt-2 px-3 py-1.5 rounded-xl text-xs font-bold flex items-center justify-center space-x-1.5 transition ${
               selectedIds.length > 0
-                ? 'bg-marca hover:bg-marca-escura text-white shadow-sm'
+                ? 'bg-marca-escura hover:opacity-90 text-white shadow-sm'
                 : 'bg-superficie-2 text-tinta-2 cursor-not-allowed'
             }`}
           >
@@ -282,7 +282,7 @@ export const ReconciliationTab: React.FC<ReconciliationTabProps> = ({
                       {/* Reconciliation Status Badge */}
                       <td className="py-3 px-4 whitespace-nowrap">
                         {isReconciled ? (
-                          <span className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-marca-suave text-marca-escura border border-marca-escura">
+                          <span className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-marca-suave text-marca-escura border border-marca-borda">
                             <CheckCircle2 className="w-3.5 h-3.5 text-marca-escura" />
                             <span>Conciliado</span>
                           </span>
@@ -362,7 +362,7 @@ export const ReconciliationTab: React.FC<ReconciliationTabProps> = ({
                           {!isReconciled ? (
                             <button
                               onClick={() => onQuickReconcile(tx.id)}
-                              className="px-2.5 py-1 rounded-lg bg-marca-suave hover:bg-marca-escura text-white hover:text-white font-semibold transition flex items-center space-x-1"
+                              className="px-2.5 py-1 rounded-lg bg-marca-suave hover:bg-marca-borda text-marca-escura font-semibold transition flex items-center space-x-1"
                               title="Conciliar Rápido (1 Clique)"
                             >
                               <ShieldCheck className="w-3.5 h-3.5" />

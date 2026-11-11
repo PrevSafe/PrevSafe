@@ -95,7 +95,7 @@ const COR_DO_STATUS: Record<StatusDaAcaoDoPlano, string> = {
   NAO_INICIADA: 'bg-superficie-2 text-tinta border-borda',
   EM_ANDAMENTO: 'bg-teal-500/15 text-teal-800 border-teal-500/30',
   CONCLUIDA: 'bg-teal-500/15 text-teal-800 border-teal-500/30',
-  EFICACIA_VERIFICADA: 'bg-marca-suave text-marca-escura border-marca-escura',
+  EFICACIA_VERIFICADA: 'bg-marca-suave text-marca-escura border-marca-borda',
   DESCARTADA: 'bg-superficie text-tinta-2 border-borda'
 };
 const COR_ATRASADA = 'bg-rose-500/15 text-rose-800 border-rose-500/30';
@@ -104,7 +104,7 @@ const COR_DO_NIVEL: Record<string, string> = {
   MUITO_ALTO: 'bg-rose-500/15 text-rose-800 border-rose-500/30',
   ALTO: 'bg-amber-500/15 text-amber-800 border-amber-500/30',
   MEDIO: 'bg-amber-500/15 text-amber-800 border-amber-500/30',
-  BAIXO: 'bg-marca-suave text-marca-escura border-marca-escura'
+  BAIXO: 'bg-marca-suave text-marca-escura border-marca-borda'
 };
 
 const ROTULO = 'block text-tinta-2 font-semibold mb-1';
@@ -878,7 +878,7 @@ export const PlanoDeAcaoTab: React.FC<PlanoDeAcaoTabProps> = ({ selectedClientId
         <div
           className={`p-3 rounded-xl border flex items-start justify-between gap-3 text-xs ${
             aviso.ok
-              ? 'bg-marca-suave border-marca-escura text-marca-escura'
+              ? 'bg-marca-suave border-marca-borda text-marca-escura'
               : 'bg-amber-500/10 border-amber-500/30 text-amber-800'
           }`}
         >
@@ -1516,7 +1516,7 @@ export const PlanoDeAcaoTab: React.FC<PlanoDeAcaoTabProps> = ({ selectedClientId
                 type="submit"
                 className={`px-4 py-2 font-bold rounded-lg shadow-md ${
                   registro.tipo === 'DESCARTAR'
-                    ? 'bg-rose-500 hover:bg-rose-700 text-white'
+                    ? 'bg-rose-600 hover:bg-rose-700 text-white'
                     : 'bg-marca-escura text-white hover:opacity-90'
                 }`}
               >

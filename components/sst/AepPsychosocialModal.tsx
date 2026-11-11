@@ -565,7 +565,7 @@ export const AepPsychosocialModal: React.FC<AepPsychosocialModalProps> = ({ aep,
 
         {/* ---------------------------------------------------------- o que falta */}
         {faltas.length === 0 ? (
-          <div className="p-3 rounded-lg border border-marca-escura bg-marca-suave text-marca-escura flex items-center gap-2">
+          <div className="p-3 rounded-lg border border-marca-borda bg-marca-suave text-marca-escura flex items-center gap-2">
             <CheckCircle2 className="w-4 h-4" />
             Avaliação psicossocial completa e coerente com o inventário.
           </div>
@@ -584,7 +584,7 @@ export const AepPsychosocialModal: React.FC<AepPsychosocialModalProps> = ({ aep,
             Fechar sem salvar
           </button>
           <button type="button" onClick={() => salvar(false)}
-            className="px-4 py-2 rounded-lg bg-superficie-3 text-white hover:bg-slate-600 font-semibold">
+            className="px-4 py-2 rounded-lg bg-superficie-3 text-tinta hover:bg-borda-forte font-semibold">
             Salvar
           </button>
           <button type="button" onClick={() => salvar(true)}

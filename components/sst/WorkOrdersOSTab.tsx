@@ -274,7 +274,7 @@ export const WorkOrdersOSTab: React.FC<WorkOrdersOSTabProps> = ({ selectedClient
                     <td className="py-3 px-4 text-center">
                       <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
                         getSignatureStatus(os) === 'SIGNED_ELECTRONIC' || getSignatureStatus(os) === 'SIGNED_PHYSICAL'
-                          ? 'bg-marca-suave text-marca-escura border border-marca-escura'
+                          ? 'bg-marca-suave text-marca-escura border border-marca-borda'
                           : 'bg-amber-500/20 text-amber-800 border border-amber-500/30'
                       }`}>
                         {getSignatureStatus(os) === 'SIGNED_ELECTRONIC' ? 'Assinatura Digital' : getSignatureStatus(os) === 'SIGNED_PHYSICAL' ? 'Assinado Físico' : 'Pendente de Assinatura'}

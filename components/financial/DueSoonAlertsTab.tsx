@@ -364,7 +364,7 @@ export const DueSoonAlertsTab: React.FC<DueSoonAlertsTabProps> = ({
                     {/* Fast Mark as Paid / Settle */}
                     <button
                       onClick={() => onOpenSettlementModal(item)}
-                      className="px-3 py-1.5 rounded-xl bg-marca hover:bg-marca-escura text-white text-xs font-bold flex items-center space-x-1.5 shadow-sm transition"
+                      className="px-3 py-1.5 rounded-xl bg-marca-escura hover:opacity-90 text-white text-xs font-bold flex items-center space-x-1.5 shadow-sm transition"
                       title="Confirmar Baixa / Quitação"
                     >
                       <Check className="w-3.5 h-3.5" />

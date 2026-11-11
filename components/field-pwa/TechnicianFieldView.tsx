@@ -810,7 +810,7 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
                 className={`text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full border flex items-center space-x-1 transition ${
                   isOffline 
                     ? 'bg-amber-500/10 text-amber-800 border-amber-500/20 hover:bg-amber-500/20' 
-                    : 'bg-marca-suave text-marca-escura border-marca-escura hover:bg-marca-suave'
+                    : 'bg-marca-suave text-marca-escura border-marca-borda hover:bg-marca-suave'
                 }`}
                 title="Clique para alternar entre modo Online e Offline"
               >
@@ -919,7 +919,7 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
             <span className="text-rose-700 block text-[10px] uppercase font-bold">Não Conformidades</span>
             <strong className="text-lg font-mono text-rose-700 mt-0.5 block">{nonConformCount} perigos</strong>
           </div>
-          <div className="p-3 bg-marca-suave rounded-2xl border border-marca-escura text-center">
+          <div className="p-3 bg-marca-suave rounded-2xl border border-marca-borda text-center">
             <span className="text-marca-escura block text-[10px] uppercase font-bold">Conformes / Regulares</span>
             <strong className="text-lg font-mono text-marca-escura mt-0.5 block">{conformCount} itens</strong>
           </div>
@@ -1193,7 +1193,7 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
             {/* GPS Geolocation Panel */}
             <div className="p-4 bg-fundo rounded-2xl border border-borda flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="flex items-center space-x-3">
-                <div className="p-2.5 bg-marca-suave border border-marca-escura text-marca-escura rounded-xl">
+                <div className="p-2.5 bg-marca-suave border border-marca-borda text-marca-escura rounded-xl">
                   <Crosshair className="w-5 h-5" />
                 </div>
                 <div className="min-w-0">
@@ -1236,7 +1236,7 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
                     ? 'bg-superficie text-tinta-2 border-borda cursor-wait'
                     : gpsLocation
                       ? 'bg-superficie hover:bg-superficie-2 text-tinta border-borda'
-                      : 'bg-marca hover:bg-marca-escura text-white border-marca-escura'
+                      : 'bg-marca-escura hover:opacity-90 text-white border-marca-escura'
                 }`}
               >
                 <RefreshCw className={`w-3 h-3 ${gpsStatus === 'OBTENDO' ? 'animate-spin' : ''}`} />
@@ -1342,7 +1342,7 @@ export const TechnicianFieldView: React.FC<{ onNavigate: (view: string) => void 
                   <span>Revisão Geral & Sincronização de Campo</span>
                 </div>
                 <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${
-                  isOffline ? 'bg-amber-500/20 text-amber-800 border-amber-500/30' : 'bg-marca-suave text-marca-escura border-marca-escura'
+                  isOffline ? 'bg-amber-500/20 text-amber-800 border-amber-500/30' : 'bg-marca-suave text-marca-escura border-marca-borda'
                 }`}>
                   {isOffline ? 'Modo Offline Ativo' : 'Pronto para Sincronizar'}
                 </span>

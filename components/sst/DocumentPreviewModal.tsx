@@ -235,7 +235,7 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
   const getDocBadgeColor = () => {
     switch (docType) {
       case 'PGR': return 'bg-teal-500/20 text-teal-800 border-teal-500/30';
-      case 'PGRTR': return 'bg-marca-suave text-marca-escura border-marca-escura';
+      case 'PGRTR': return 'bg-marca-suave text-marca-escura border-marca-borda';
       case 'PCMSO': return 'bg-teal-500/20 text-teal-800 border-teal-500/30';
       case 'LTCAT': return 'bg-teal-500/20 text-teal-800 border-teal-500/30';
       case 'AEP': return 'bg-teal-500/20 text-teal-800 border-teal-500/30';
@@ -435,7 +435,7 @@ export const DocumentPreviewModal: React.FC<DocumentPreviewModalProps> = ({
 
         {/* Success Alert Banner */}
         {downloadSuccess && (
-          <div className="bg-marca-suave border-b border-marca-escura px-5 py-2 flex items-center justify-between text-xs text-marca-escura animate-fade-in">
+          <div className="bg-marca-suave border-b border-marca-borda px-5 py-2 flex items-center justify-between text-xs text-marca-escura animate-fade-in">
             <span className="flex items-center gap-2 font-medium">
               <CheckCircle2 className="w-4 h-4 text-marca-escura" />
               {downloadSuccess}

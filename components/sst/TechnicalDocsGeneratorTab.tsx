@@ -1271,7 +1271,7 @@ export const TechnicalDocsGeneratorTab: React.FC<TechnicalDocsGeneratorTabProps>
                       <button
                         type="button"
                         onClick={handleTransmitSelectedEvent}
-                        className="px-3.5 py-1.5 bg-marca hover:bg-marca-escura text-white text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 shadow-md"
+                        className="px-3.5 py-1.5 bg-marca-escura hover:opacity-90 text-white text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 shadow-md"
                       >
                         <Send className="w-4 h-4" />
                         Validar para envio

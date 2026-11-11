@@ -69,7 +69,7 @@ export const AvisoDeInatividade: React.FC = () => {
             type="button"
             onClick={continuar}
             autoFocus
-            className="flex-1 px-4 py-2.5 rounded-xl bg-marca hover:bg-marca-escura text-white text-sm font-semibold transition"
+            className="flex-1 px-4 py-2.5 rounded-xl bg-marca-escura hover:opacity-90 text-white text-sm font-semibold transition"
           >
             Continuar conectado
           </button>

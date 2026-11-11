@@ -50,7 +50,7 @@ const METODO_DA_ASSINATURA: Record<SSTWorkOrderSignatureMethod, string> = {
 const COR_DA_CATEGORIA: Record<string, string> = {
   'Físico': 'bg-teal-500/10 text-teal-800 border-teal-500/30',
   'Químico': 'bg-rose-500/10 text-rose-700 border-rose-500/30',
-  'Biológico': 'bg-marca-suave text-marca-escura border-marca-escura',
+  'Biológico': 'bg-marca-suave text-marca-escura border-marca-borda',
   'Ergonômico': 'bg-amber-500/10 text-amber-800 border-amber-500/30',
   'Psicossocial': 'bg-teal-500/10 text-teal-800 border-teal-500/30',
   'Acidentes': 'bg-amber-500/10 text-amber-800 border-amber-500/30'
@@ -335,7 +335,7 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
               {totalCount > 0 ? `${((signedCount / totalCount) * 100).toFixed(0)}% com validade jurídica` : '0%'}
             </p>
           </div>
-          <div className="p-3 bg-marca-suave border border-marca-escura rounded-xl text-marca-escura">
+          <div className="p-3 bg-marca-suave border border-marca-borda rounded-xl text-marca-escura">
             <CheckCircle2 className="w-6 h-6" />
           </div>
         </div>
@@ -435,7 +435,7 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
 
           <button
             onClick={handleExportSelectedPDF}
-            className="px-3 py-2 bg-marca-suave hover:bg-marca-suave text-marca-escura border border-marca-escura rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5"
+            className="px-3 py-2 bg-marca-suave hover:bg-marca-suave text-marca-escura border border-marca-borda rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5"
             title="Exportar PDF oficial da(s) OS selecionada(s)"
           >
             <Printer className="w-3.5 h-3.5" />
@@ -458,7 +458,7 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
         <div
           className={`p-3 rounded-xl border text-xs flex items-start justify-between gap-3 ${
             aviso.tipo === 'ok'
-              ? 'bg-marca-suave border-marca-escura text-marca-escura'
+              ? 'bg-marca-suave border-marca-borda text-marca-escura'
               : 'bg-rose-50 border-rose-200 text-rose-700'
           }`}
         >
@@ -584,7 +584,7 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
 
                       <td className="py-3 px-3">
                         {os.employee_signed ? (
-                          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-marca-suave text-marca-escura border border-marca-escura">
+                          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-marca-suave text-marca-escura border border-marca-borda">
                             <CheckCircle2 className="w-3 h-3" />
                             Assinado ({diaDaAssinatura(os)})
                           </div>
@@ -685,7 +685,7 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
                 <div
                   className={`p-3 rounded-xl border text-xs flex items-start justify-between gap-3 ${
                     aviso.tipo === 'ok'
-                      ? 'bg-marca-suave border-marca-escura text-marca-escura'
+                      ? 'bg-marca-suave border-marca-borda text-marca-escura'
                       : 'bg-rose-50 border-rose-200 text-rose-700'
                   }`}
                 >
@@ -1097,7 +1097,7 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
                     onClick={() => setSignatureMethod('DIGITAL_BIOMETRIC')}
                     className={`p-3 rounded-xl border text-left transition-all ${
                       signatureMethod === 'DIGITAL_BIOMETRIC'
-                        ? 'bg-marca-suave border-marca-escura text-marca-escura font-bold'
+                        ? 'bg-marca-suave border-marca-borda text-marca-escura font-bold'
                         : 'bg-fundo border-borda text-tinta-2'
                     }`}
                   >
@@ -1110,7 +1110,7 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
                     onClick={() => setSignatureMethod('PHYSICAL_MANUAL')}
                     className={`p-3 rounded-xl border text-left transition-all ${
                       signatureMethod === 'PHYSICAL_MANUAL'
-                        ? 'bg-marca-suave border-marca-escura text-marca-escura font-bold'
+                        ? 'bg-marca-suave border-marca-borda text-marca-escura font-bold'
                         : 'bg-fundo border-borda text-tinta-2'
                     }`}
                   >
@@ -1139,7 +1139,7 @@ export const WorkOrderOSTab: React.FC<WorkOrderOSTabProps> = ({ selectedClientId
               <button
                 onClick={handleSignConfirm}
                 disabled={isSimulatingBiometry}
-                className="px-4 py-2 bg-marca hover:bg-marca-escura text-white rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5"
+                className="px-4 py-2 bg-marca-escura hover:opacity-90 text-white rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5"
               >
                 {isSimulatingBiometry ? (
                   <>Validando Biometria...</>

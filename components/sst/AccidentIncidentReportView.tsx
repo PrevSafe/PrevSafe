@@ -562,7 +562,7 @@ export const AccidentIncidentReportView: React.FC<AccidentIncidentReportViewProp
             className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
               activeSubTab === 'FORM'
                 ? 'bg-marca text-slate-950 shadow-md'
-                : 'text-marca-escura hover:text-tinta bg-marca-suave border border-marca-escura hover:bg-marca-suave'
+                : 'text-marca-escura hover:text-tinta bg-marca-suave border border-marca-borda hover:bg-marca-suave'
             }`}
           >
             <Plus className="w-4 h-4" />
@@ -732,7 +732,7 @@ export const AccidentIncidentReportView: React.FC<AccidentIncidentReportViewProp
               </div>
 
               <div className="space-y-4 pt-2">
-                <div className="flex items-center justify-between p-3 bg-marca-suave border border-marca-escura rounded-xl">
+                <div className="flex items-center justify-between p-3 bg-marca-suave border border-marca-borda rounded-xl">
                   <div className="flex items-center gap-2.5">
                     <CheckCircle2 className="w-4 h-4 text-marca-escura" />
                     <span className="text-xs font-semibold text-marca-escura">Ações Concluídas / Eficazes</span>
@@ -961,7 +961,7 @@ export const AccidentIncidentReportView: React.FC<AccidentIncidentReportViewProp
                               deleteAccidentIncident(record.id);
                             }
                           }}
-                          className="p-1.5 bg-superficie-2 hover:bg-rose-950 text-white hover:text-white rounded-xl transition-colors border border-borda"
+                          className="p-1.5 bg-superficie-2 hover:bg-rose-100 text-rose-700 rounded-xl transition-colors border border-borda"
                           title="Excluir Ocorrência"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -1851,7 +1851,7 @@ export const AccidentIncidentReportView: React.FC<AccidentIncidentReportViewProp
                 <button
                   type="button"
                   onClick={handleAddActionPlanToForm}
-                  className="px-3 py-1.5 bg-marca hover:bg-marca-escura text-white font-bold rounded-xl text-xs flex items-center gap-1 transition-colors"
+                  className="px-3 py-1.5 bg-marca-escura hover:opacity-90 text-white font-bold rounded-xl text-xs flex items-center gap-1 transition-colors"
                 >
                   <Plus className="w-3.5 h-3.5" /> Adicionar Ação ao Plano
                 </button>

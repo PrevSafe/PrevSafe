@@ -549,7 +549,7 @@ export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) 
                         <button
                           type="button"
                           onClick={() => handleIndividualPrintOS(emp)}
-                          className="px-2 py-0.5 bg-teal-50 hover:bg-teal-900 text-white border border-teal-800 text-[10px] rounded font-bold transition-colors flex items-center gap-1"
+                          className="px-2 py-0.5 bg-teal-50 hover:bg-teal-100 text-teal-700 border border-teal-200 text-[10px] rounded font-bold transition-colors flex items-center gap-1"
                           title="Imprimir Ordem de Serviço NR-01"
                         >
                           <Printer className="w-3 h-3 text-teal-700" />
@@ -560,7 +560,7 @@ export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) 
                         <button
                           type="button"
                           onClick={() => handleIndividualPrintEPI(emp)}
-                          className="px-2 py-0.5 bg-amber-50 hover:bg-amber-900 text-white border border-amber-200 text-[10px] rounded font-bold transition-colors flex items-center gap-1"
+                          className="px-2 py-0.5 bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 text-[10px] rounded font-bold transition-colors flex items-center gap-1"
                           title="Imprimir Ficha de Entrega de EPI NR-06"
                         >
                           <HardHat className="w-3 h-3 text-amber-700" />
@@ -569,7 +569,7 @@ export const EmployeesTab: React.FC<EmployeesTabProps> = ({ selectedClientId }) 
                       </div>
                     </td>
                     <td className="py-3 px-4 text-center">
-                      <span className="px-2 py-0.5 bg-marca-suave border border-marca-escura text-marca-escura text-[10px] rounded font-bold">
+                      <span className="px-2 py-0.5 bg-marca-suave border border-marca-borda text-marca-escura text-[10px] rounded font-bold">
                         {emp.current_aso_status}
                       </span>
                     </td>

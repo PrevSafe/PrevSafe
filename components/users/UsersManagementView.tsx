@@ -818,7 +818,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
 
             <button
               onClick={handleOpenCreateModal}
-              className="bg-marca-escura text-white flex items-center space-x-2 px-4 py-2.5 rounded-xl font-bold text-xs shadow-sm hover:shadow-emerald-900/60 transition active:scale-95"
+              className="bg-marca-escura text-white flex items-center space-x-2 px-4 py-2.5 rounded-xl font-bold text-xs shadow-sm transition hover:opacity-90 active:scale-95"
             >
               <UserPlus className="w-4 h-4" />
               <span>Novo Usuário / Convidar</span>
@@ -839,7 +839,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
           </div>
 
           <div className="p-3.5 rounded-2xl bg-fundo border border-borda flex items-center space-x-3">
-            <div className="w-9 h-9 rounded-xl bg-marca-suave border border-marca-escura flex items-center justify-center text-marca-escura">
+            <div className="w-9 h-9 rounded-xl bg-marca-suave border border-marca-borda flex items-center justify-center text-marca-escura">
               <CheckCircle2 className="w-4 h-4" />
             </div>
             <div>
@@ -1096,7 +1096,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
                         {p.professional_register && (
                           <div className="flex items-center justify-between text-[11px]">
                             <span className="text-tinta-2">Reg. Profissional:</span>
-                            <span className="font-mono font-semibold text-marca-escura bg-marca-suave px-1.5 py-0.5 rounded border border-marca-escura">
+                            <span className="font-mono font-semibold text-marca-escura bg-marca-suave px-1.5 py-0.5 rounded border border-marca-borda">
                               {p.professional_register}
                             </span>
                           </div>
@@ -1119,7 +1119,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
                       {currentProfile.role === 'ADMIN' && (
                         <button
                           onClick={() => handleImpersonate(p)}
-                          className="flex-1 flex items-center justify-center space-x-1.5 py-2 px-2.5 rounded-xl bg-superficie-2 hover:bg-teal-700 hover:text-white text-white/90 text-xs font-semibold border border-borda transition"
+                          className="flex-1 flex items-center justify-center space-x-1.5 py-2 px-2.5 rounded-xl bg-superficie-2 hover:bg-superficie-3 text-tinta-2 text-xs font-semibold border border-borda transition"
                           title="Entrar temporariamente com as permissões deste perfil"
                         >
                           <UserCheck className="w-3.5 h-3.5" />
@@ -1232,7 +1232,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
 
                           <td className="py-3 px-4">
                             {p.professional_register ? (
-                              <span className="font-mono text-[11px] font-semibold text-marca-escura bg-marca-suave px-2 py-0.5 rounded border border-marca-escura">
+                              <span className="font-mono text-[11px] font-semibold text-marca-escura bg-marca-suave px-2 py-0.5 rounded border border-marca-borda">
                                 {p.professional_register}
                               </span>
                             ) : (
@@ -1273,7 +1273,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
                               {currentProfile.role === 'ADMIN' && (
                                 <button
                                   onClick={() => handleImpersonate(p)}
-                                  className="p-1.5 rounded-lg bg-superficie-2 hover:bg-teal-700 hover:text-white text-white/90 transition"
+                                  className="p-1.5 rounded-lg bg-superficie-2 hover:bg-superficie-3 text-tinta-2 transition"
                                   title="Entrar como este usuário"
                                 >
                                   <UserCheck className="w-3.5 h-3.5" />
@@ -1332,7 +1332,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
               </div>
 
               <div className="flex items-center space-x-2">
-                <span className="text-xs font-mono text-marca-escura bg-marca-suave px-2.5 py-1 rounded-xl border border-marca-escura">
+                <span className="text-xs font-mono text-marca-escura bg-marca-suave px-2.5 py-1 rounded-xl border border-marca-borda">
                   Total de Permissões: {PERMISSIONS_CATALOG.length}
                 </span>
               </div>
@@ -1369,7 +1369,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
                           return (
                             <td key={role} className="py-3 px-2 text-center">
                               {isAllowed ? (
-                                <div className="inline-flex items-center justify-center w-6 h-6 rounded-lg bg-marca-suave border border-marca-escura text-marca-escura shadow-sm">
+                                <div className="inline-flex items-center justify-center w-6 h-6 rounded-lg bg-marca-suave border border-marca-borda text-marca-escura shadow-sm">
                                   <Check className="w-3.5 h-3.5" />
                                 </div>
                               ) : (
@@ -1757,7 +1757,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-fundo backdrop-blur-md animate-in fade-in duration-200">
           <div className="bg-superficie border border-borda rounded-3xl w-full max-w-lg shadow-sm p-6 space-y-5">
             <div className="flex items-center space-x-3 text-marca-escura">
-              <div className="w-10 h-10 rounded-2xl bg-marca-suave border border-marca-escura flex items-center justify-center">
+              <div className="w-10 h-10 rounded-2xl bg-marca-suave border border-marca-borda flex items-center justify-center">
                 <Send className="w-5 h-5" />
               </div>
               <div>
@@ -1796,7 +1796,7 @@ export const UsersManagementView: React.FC<{ onNavigate: (view: string) => void 
             <div className="grid grid-cols-2 gap-2">
               <button
                 onClick={() => handleShareInvite('WHATSAPP')}
-                className="px-4 py-2.5 rounded-xl bg-marca hover:bg-marca-escura text-white text-xs font-bold transition flex items-center justify-center space-x-1.5"
+                className="px-4 py-2.5 rounded-xl bg-marca-escura hover:opacity-90 text-white text-xs font-bold transition flex items-center justify-center space-x-1.5"
               >
                 <Send className="w-3.5 h-3.5" />
                 <span>Abrir no WhatsApp</span>

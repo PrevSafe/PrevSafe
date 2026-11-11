@@ -374,7 +374,7 @@ export const CatAndAbsenceTab: React.FC<CatAndAbsenceTabProps> = ({ selectedClie
                   <div className="text-right">
                     <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
                       cat.status === 'TRANSMITTED'
-                        ? 'bg-marca-suave text-marca-escura border border-marca-escura'
+                        ? 'bg-marca-suave text-marca-escura border border-marca-borda'
                         : 'bg-amber-500/10 text-amber-800 border border-amber-500/30'
                     }`}>
                       {cat.status}
@@ -472,7 +472,7 @@ export const CatAndAbsenceTab: React.FC<CatAndAbsenceTabProps> = ({ selectedClie
                         {abs.physician_name} (CRM {abs.physician_crm}/{abs.physician_uf})
                       </td>
                       <td className="py-3 px-4 text-center">
-                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-marca-suave text-marca-escura border border-marca-escura">
+                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-marca-suave text-marca-escura border border-marca-borda">
                           {abs.status}
                         </span>
                       </td>

@@ -537,7 +537,7 @@ export const AepPhotoEvidenceModal: React.FC<AepPhotoEvidenceModalProps> = ({ ae
             <button
               type="submit"
               disabled={enviando}
-              className="bg-marca-escura text-tinta px-4 py-2 disabled:bg-superficie-2 disabled:text-tinta font-bold rounded-lg flex items-center gap-1.5 hover:opacity-90"
+              className="bg-marca-escura text-white px-4 py-2 disabled:bg-superficie-2 disabled:text-tinta font-bold rounded-lg flex items-center gap-1.5 hover:opacity-90"
             >
               {enviando && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
               {substituindo ? 'Substituir' : 'Anexar'}

@@ -86,7 +86,7 @@ export default function ValidarPage() {
     <main className="min-h-screen bg-fundo text-tinta px-4 py-10">
       <div className="max-w-2xl mx-auto space-y-6">
         <header className="text-center space-y-2">
-          <div className="w-14 h-14 mx-auto rounded-2xl bg-marca-suave border border-marca-escura flex items-center justify-center">
+          <div className="w-14 h-14 mx-auto rounded-2xl bg-marca-suave border border-marca-borda flex items-center justify-center">
             <ShieldCheck className="w-7 h-7 text-marca-escura" aria-hidden="true" />
           </div>
           <h1 className="text-2xl font-bold tracking-tight">Verificação de Autenticidade</h1>
@@ -133,7 +133,7 @@ export default function ValidarPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 bg-marca hover:bg-marca-escura disabled:opacity-50 text-white rounded-2xl font-bold text-sm transition flex items-center justify-center gap-2"
+            className="w-full py-3 bg-marca-escura hover:opacity-90 disabled:opacity-50 text-white rounded-2xl font-bold text-sm transition flex items-center justify-center gap-2"
           >
             {loading
               ? <><Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" /> Verificando...</>
@@ -153,7 +153,7 @@ export default function ValidarPage() {
 
         {result && (
           <section className="bg-superficie border border-borda rounded-3xl overflow-hidden shadow-sm">
-            <div className={`px-5 py-4 flex items-center gap-3 ${result.fully_signed ? 'bg-marca-suave border-b border-marca-escura' : 'bg-amber-50 border-b border-amber-200'}`}>
+            <div className={`px-5 py-4 flex items-center gap-3 ${result.fully_signed ? 'bg-marca-suave border-b border-marca-borda' : 'bg-amber-50 border-b border-amber-200'}`}>
               {result.fully_signed
                 ? <ShieldCheck className="w-6 h-6 text-marca-escura shrink-0" aria-hidden="true" />
                 : <Clock className="w-6 h-6 text-amber-700 shrink-0" aria-hidden="true" />}
@@ -214,7 +214,7 @@ export default function ValidarPage() {
                       <span
                         className={`shrink-0 px-2.5 py-1 rounded-full text-[10px] font-bold ${
                           s.signature_status === 'SIGNED'
-                            ? 'bg-marca-suave text-marca-escura border border-marca-escura'
+                            ? 'bg-marca-suave text-marca-escura border border-marca-borda'
                             : s.signature_status === 'REJECTED'
                               ? 'bg-rose-500/15 text-rose-800 border border-rose-600/40'
                               : 'bg-superficie-3 text-tinta border border-borda'

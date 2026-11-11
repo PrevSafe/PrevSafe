@@ -290,7 +290,7 @@ export const SiteContentView: React.FC<{ onNavigate: (view: string) => void }> =
     <div className="space-y-6 pb-12">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-superficie border border-borda rounded-3xl p-6 shadow-sm">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-marca-suave border border-marca-escura rounded-2xl flex items-center justify-center text-marca-escura">
+          <div className="w-10 h-10 bg-marca-suave border border-marca-borda rounded-2xl flex items-center justify-center text-marca-escura">
             <Newspaper className="w-5 h-5" aria-hidden="true" />
           </div>
           <div>
@@ -328,7 +328,7 @@ export const SiteContentView: React.FC<{ onNavigate: (view: string) => void }> =
       </div>
 
       {aviso && (
-        <div className="p-3.5 rounded-2xl bg-marca-suave border border-marca-escura text-marca-escura text-sm flex items-center gap-2">
+        <div className="p-3.5 rounded-2xl bg-marca-suave border border-marca-borda text-marca-escura text-sm flex items-center gap-2">
           <CheckCircle2 className="w-4 h-4 shrink-0" aria-hidden="true" />
           {aviso}
         </div>
@@ -409,7 +409,7 @@ export const SiteContentView: React.FC<{ onNavigate: (view: string) => void }> =
                     <td className="py-3 px-4">
                       <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${
                         p.status === 'PUBLICADO'
-                          ? 'bg-marca-suave text-marca-escura border border-marca-escura'
+                          ? 'bg-marca-suave text-marca-escura border border-marca-borda'
                           : 'bg-superficie-3 text-tinta border border-borda'
                       }`}>
                         {p.status === 'PUBLICADO' ? 'No ar' : 'Rascunho'}
@@ -697,7 +697,7 @@ export const SiteContentView: React.FC<{ onNavigate: (view: string) => void }> =
                   <button type="button" onClick={() => setModalAberto(false)} className="px-4 py-2.5 bg-superficie-2 hover:bg-superficie-3 text-tinta rounded-xl text-sm font-semibold transition">
                     Cancelar
                   </button>
-                  <button type="submit" disabled={salvando} className="px-5 py-2.5 bg-marca hover:bg-marca-escura disabled:opacity-60 text-white rounded-xl text-sm font-bold transition flex items-center gap-2">
+                  <button type="submit" disabled={salvando} className="px-5 py-2.5 bg-marca-escura hover:opacity-90 disabled:opacity-60 text-white rounded-xl text-sm font-bold transition flex items-center gap-2">
                     {salvando ? <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" /> : <Save className="w-4 h-4" aria-hidden="true" />}
                     {salvando ? 'Salvando...' : 'Salvar'}
                   </button>

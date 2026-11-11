@@ -619,7 +619,7 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
               >
                 <div>
                   <div className="flex items-center justify-between">
-                    <span className="px-2 py-0.5 bg-marca-suave border border-marca-escura text-marca-escura text-[10px] font-mono font-bold rounded">
+                    <span className="px-2 py-0.5 bg-marca-suave border border-marca-borda text-marca-escura text-[10px] font-mono font-bold rounded">
                       CBO {job.cbo}
                     </span>
                     <span className="px-2 py-0.5 bg-superficie-2 text-tinta-2 text-[10px] rounded">
@@ -720,7 +720,7 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
                           title="Campos do PGR que vivem no estabelecimento: seções 1.1, 1.2, 1.3, 6.1, 9.4 e 9.8"
                           className={`px-2 py-0.5 rounded text-[10px] font-bold border ${
                             completo
-                              ? 'bg-marca-suave text-marca-escura border-marca-escura'
+                              ? 'bg-marca-suave text-marca-escura border-marca-borda'
                               : 'bg-amber-500/10 text-amber-800 border-amber-500/30'
                           }`}
                         >
@@ -990,7 +990,7 @@ export const HierarchyTab: React.FC<HierarchyTabProps> = ({ selectedClientId }) 
 
                 {/* Auto-filled status banner */}
                 {cboAutoFilledMessage && (
-                  <div className="p-2.5 bg-marca-suave border border-marca-escura rounded-lg flex items-start gap-2 text-[11px] text-marca-escura animate-in fade-in">
+                  <div className="p-2.5 bg-marca-suave border border-marca-borda rounded-lg flex items-start gap-2 text-[11px] text-marca-escura animate-in fade-in">
                     <CheckCircle2 className="w-4 h-4 text-marca-escura flex-shrink-0 mt-0.5" />
                     <div className="flex-1">
                       <span>{cboAutoFilledMessage}</span>

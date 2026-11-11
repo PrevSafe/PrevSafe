@@ -45,7 +45,7 @@ export const ScreenMockup: React.FC<ScreenMockupProps> = ({ step, activeNumber }
           <span className="text-[10px] px-2 py-0.5 rounded-full bg-superficie-2 text-tinta border border-borda font-mono">
             {screenType === 'PWA' ? '📱 Mobile PWA' : '💻 Web App'}
           </span>
-          <span className="text-[10px] px-2 py-0.5 rounded-full bg-marca-suave text-marca-escura font-bold border border-marca-escura">
+          <span className="text-[10px] px-2 py-0.5 rounded-full bg-marca-suave text-marca-escura font-bold border border-marca-borda">
             Print Ilustrado Passo {step.stepNumber}
           </span>
         </div>
@@ -110,7 +110,7 @@ export const ScreenMockup: React.FC<ScreenMockupProps> = ({ step, activeNumber }
           {mockupDetails.highlightBox && (
             <div className={`p-4 rounded-xl border ${
               mockupDetails.highlightBox.color === 'emerald'
-                ? 'bg-marca-suave border-marca-escura text-marca-escura'
+                ? 'bg-marca-suave border-marca-borda text-marca-escura'
                 : mockupDetails.highlightBox.color === 'blue'
                 ? 'bg-teal-50 border-teal-500/40 text-teal-700'
                 : mockupDetails.highlightBox.color === 'amber'

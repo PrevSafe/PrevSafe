@@ -151,7 +151,7 @@ export const NotificationsView: React.FC<{ onNavigate: (view: string) => void }>
           >
             <div className="flex items-start space-x-3.5">
               <div className={`p-3 rounded-2xl flex-shrink-0 ${
-                n.channel === 'WHATSAPP' ? 'bg-marca-suave text-marca-escura border border-marca-escura' :
+                n.channel === 'WHATSAPP' ? 'bg-marca-suave text-marca-escura border border-marca-borda' :
                 n.channel === 'EMAIL' ? 'bg-teal-500/10 text-teal-800 border border-teal-500/20' : 'bg-teal-500/10 text-teal-800 border border-teal-500/20'
               }`}>
                 {n.channel === 'WHATSAPP' ? <MessageSquare className="w-5 h-5" /> : <Mail className="w-5 h-5" />}
@@ -254,7 +254,7 @@ export const NotificationsView: React.FC<{ onNavigate: (view: string) => void }>
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-marca hover:bg-marca-escura text-white rounded-xl font-bold shadow-md"
+                  className="px-4 py-2 bg-marca-escura hover:opacity-90 text-white rounded-xl font-bold shadow-md"
                 >
                   Disparar Agora
                 </button>
@@ -328,7 +328,7 @@ export const EvaluationsView: React.FC<{ onNavigate: (view: string) => void }> =
 
               <div className="pt-3.5 border-t border-borda flex items-center justify-between text-[11px] text-tinta-2">
                 <span className="font-mono text-tinta-2">{formatDate(ev.created_at)}</span>
-                <span className="text-marca-escura font-semibold bg-marca-suave border border-marca-escura px-2.5 py-0.5 rounded-full">
+                <span className="text-marca-escura font-semibold bg-marca-suave border border-marca-borda px-2.5 py-0.5 rounded-full">
                   Cliente Promotor
                 </span>
               </div>

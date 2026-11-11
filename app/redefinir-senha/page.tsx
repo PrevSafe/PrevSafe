@@ -131,7 +131,7 @@ export default function RedefinirSenhaPage() {
 
         {status === 'CONCLUIDO' && (
           <div className="space-y-4">
-            <div className="p-3.5 rounded-xl bg-marca-suave border border-marca-escura text-marca-escura text-xs flex items-start space-x-2.5">
+            <div className="p-3.5 rounded-xl bg-marca-suave border border-marca-borda text-marca-escura text-xs flex items-start space-x-2.5">
               <CheckCircle2 className="w-4 h-4 flex-shrink-0 text-marca-escura mt-0.5" />
               <span>Senha redefinida com sucesso! Redirecionando para o sistema...</span>
             </div>

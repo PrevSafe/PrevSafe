@@ -257,7 +257,7 @@ export const LeadsOpportunitiesView: React.FC<{ onNavigate: (view: string) => vo
               <div>
                 <div className="flex items-start justify-between">
                   <div>
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-marca-escura bg-marca-suave border border-marca-escura px-2.5 py-0.5 rounded-full">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-marca-escura bg-marca-suave border border-marca-borda px-2.5 py-0.5 rounded-full">
                       {lead.status}
                     </span>
                     <h3 className="text-base font-bold text-tinta mt-2.5">{lead.company}</h3>
@@ -529,7 +529,7 @@ export const LeadsOpportunitiesView: React.FC<{ onNavigate: (view: string) => vo
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-marca hover:bg-marca-escura text-white rounded-xl text-xs font-semibold shadow-md"
+                  className="px-4 py-2 bg-marca-escura hover:opacity-90 text-white rounded-xl text-xs font-semibold shadow-md"
                 >
                   {editingLead ? 'Atualizar Lead' : 'Salvar Lead'}
                 </button>

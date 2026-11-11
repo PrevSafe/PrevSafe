@@ -94,7 +94,7 @@ export const AICopilotModal: React.FC<{ isOpen: boolean; onClose: () => void }> 
             onClick={() => { setActiveAction('ANALYZE_CNAE'); setAiResponse(null); }}
             className={`p-3 rounded-2xl text-xs font-bold border transition text-left ${
               activeAction === 'ANALYZE_CNAE' 
-                ? 'bg-marca-suave text-marca-escura border-marca-escura ring-1 ring-marca-escura' 
+                ? 'bg-marca-suave text-marca-escura border-marca-borda ring-1 ring-marca-escura' 
                 : 'bg-fundo text-tinta-2 border-borda hover:text-tinta'
             }`}
           >
@@ -106,7 +106,7 @@ export const AICopilotModal: React.FC<{ isOpen: boolean; onClose: () => void }> 
             onClick={() => { setActiveAction('DRAFT_PROPOSAL'); setAiResponse(null); }}
             className={`p-3 rounded-2xl text-xs font-bold border transition text-left ${
               activeAction === 'DRAFT_PROPOSAL' 
-                ? 'bg-marca-suave text-marca-escura border-marca-escura ring-1 ring-marca-escura' 
+                ? 'bg-marca-suave text-marca-escura border-marca-borda ring-1 ring-marca-escura' 
                 : 'bg-fundo text-tinta-2 border-borda hover:text-tinta'
             }`}
           >
@@ -118,7 +118,7 @@ export const AICopilotModal: React.FC<{ isOpen: boolean; onClose: () => void }> 
             onClick={() => { setActiveAction('REVIEW_FIELD'); setAiResponse(null); }}
             className={`p-3 rounded-2xl text-xs font-bold border transition text-left ${
               activeAction === 'REVIEW_FIELD' 
-                ? 'bg-marca-suave text-marca-escura border-marca-escura ring-1 ring-marca-escura' 
+                ? 'bg-marca-suave text-marca-escura border-marca-borda ring-1 ring-marca-escura' 
                 : 'bg-fundo text-tinta-2 border-borda hover:text-tinta'
             }`}
           >

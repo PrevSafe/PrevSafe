@@ -257,7 +257,7 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
               {totalAttendeesCount > 0 ? `${((signedAttendeesCount / totalAttendeesCount) * 100).toFixed(0)}% com presença assinada` : '0%'}
             </p>
           </div>
-          <div className="p-3 bg-marca-suave border border-marca-escura rounded-xl text-marca-escura">
+          <div className="p-3 bg-marca-suave border border-marca-borda rounded-xl text-marca-escura">
             <Users className="w-6 h-6" />
           </div>
         </div>
@@ -427,7 +427,7 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
 
                       <td className="py-3 px-3">
                         {t.status === 'COMPLETED' ? (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-marca-suave text-marca-escura border border-marca-escura">
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-marca-suave text-marca-escura border border-marca-borda">
                             <CheckCircle2 className="w-3 h-3" />
                             Homologado
                           </span>
@@ -943,7 +943,7 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
                     onClick={() => setSignatureMethod('DIGITAL_BIOMETRIC')}
                     className={`p-3 rounded-xl border text-left transition-all ${
                       signatureMethod === 'DIGITAL_BIOMETRIC'
-                        ? 'bg-marca-suave border-marca-escura text-marca-escura font-bold'
+                        ? 'bg-marca-suave border-marca-borda text-marca-escura font-bold'
                         : 'bg-fundo border-borda text-tinta-2'
                     }`}
                   >
@@ -956,7 +956,7 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
                     onClick={() => setSignatureMethod('PHYSICAL_MANUAL')}
                     className={`p-3 rounded-xl border text-left transition-all ${
                       signatureMethod === 'PHYSICAL_MANUAL'
-                        ? 'bg-marca-suave border-marca-escura text-marca-escura font-bold'
+                        ? 'bg-marca-suave border-marca-borda text-marca-escura font-bold'
                         : 'bg-fundo border-borda text-tinta-2'
                     }`}
                   >
@@ -985,7 +985,7 @@ export const IntegrationTrainingTab: React.FC<IntegrationTrainingTabProps> = ({ 
               <button
                 onClick={handleSignConfirm}
                 disabled={isSimulatingBiometry}
-                className="px-4 py-2 bg-marca hover:bg-marca-escura text-white rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5"
+                className="px-4 py-2 bg-marca-escura hover:opacity-90 text-white rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5"
               >
                 {isSimulatingBiometry ? (
                   <>Validando Biometria...</>

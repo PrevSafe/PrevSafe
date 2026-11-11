@@ -541,7 +541,7 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
                     <div className="flex items-center space-x-2">
                       <span className="font-mono text-xs font-bold text-tinta">{prop.proposal_number}</span>
                       <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${
-                        prop.status === 'APPROVED' ? 'bg-marca-suave text-marca-escura border-marca-escura' :
+                        prop.status === 'APPROVED' ? 'bg-marca-suave text-marca-escura border-marca-borda' :
                         prop.status === 'SENT' ? 'bg-teal-500/10 text-teal-800 border-teal-500/20' :
                         prop.status === 'VIEWED' ? 'bg-teal-500/10 text-teal-800 border-teal-500/20' :
                         prop.status === 'REJECTED' ? 'bg-rose-500/10 text-rose-700 border-rose-500/20' : 'bg-superficie-2 text-tinta border-borda'
@@ -607,7 +607,7 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
                   <span className={`text-xs font-bold px-3 py-1 rounded-full border ${
-                    selectedProposal.status === 'APPROVED' ? 'bg-marca-suave text-marca-escura border-marca-escura' :
+                    selectedProposal.status === 'APPROVED' ? 'bg-marca-suave text-marca-escura border-marca-borda' :
                     selectedProposal.status === 'SENT' ? 'bg-teal-500/10 text-teal-800 border-teal-500/20' : 'bg-superficie-2 text-tinta border-borda'
                   }`}>
                     {selectedProposal.status}
@@ -926,7 +926,7 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
                         onClick={() => handleAddItemFromCatalog(tmpl)}
                         className={`p-3 rounded-xl border text-left cursor-pointer transition flex flex-col justify-between group ${
                           isAlreadyAdded 
-                            ? 'bg-marca-suave border-marca-escura hover:bg-marca-suave' 
+                            ? 'bg-marca-suave border-marca-borda hover:bg-marca-suave' 
                             : 'bg-superficie border-borda hover:border-teal-500/50 hover:bg-superficie'
                         }`}
                       >
@@ -983,7 +983,7 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
                           key={pct}
                           type="button"
                           onClick={() => handleApplyBatchDiscountToAllItems(pct)}
-                          className="px-2 py-0.5 rounded bg-superficie hover:bg-teal-700 text-white hover:text-white text-[10px] font-mono border border-borda transition"
+                          className="px-2 py-0.5 rounded bg-superficie hover:bg-teal-50 text-tinta-2 text-[10px] font-mono border border-borda transition"
                           title={`Aplicar ${pct}% de desconto em todos os itens`}
                         >
                           {pct}%
@@ -1160,7 +1160,7 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
                             </div>
 
                             {/* Net Row Total */}
-                            <div className="p-2 bg-marca-suave border border-marca-escura rounded-xl flex flex-col justify-between text-right">
+                            <div className="p-2 bg-marca-suave border border-marca-borda rounded-xl flex flex-col justify-between text-right">
                               <div className="flex items-center justify-between text-[10px]">
                                 <span className="text-tinta-2">Total Líquido:</span>
                                 {hasDiscount && (
@@ -1284,7 +1284,7 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
                     </span>
                   </div>
 
-                  <div className="p-2.5 bg-marca-suave rounded-xl border border-marca-escura text-right">
+                  <div className="p-2.5 bg-marca-suave rounded-xl border border-marca-borda text-right">
                     <span className="text-[10px] uppercase font-bold text-marca-escura block">Total Final Líquido</span>
                     <span className="font-mono text-base font-bold text-marca-escura">
                       R$ {netTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
@@ -1375,7 +1375,7 @@ export const ProposalsView: React.FC<{ onNavigate: (view: string) => void }> = (
             <div className="space-y-2.5">
               <button
                 onClick={() => handleSendProposal(selectedProposal, 'WHATSAPP')}
-                className="w-full p-4 bg-marca-suave hover:bg-marca-suave border border-marca-escura rounded-2xl text-left flex items-center justify-between text-xs font-semibold text-marca-escura transition"
+                className="w-full p-4 bg-marca-suave hover:bg-marca-suave border border-marca-borda rounded-2xl text-left flex items-center justify-between text-xs font-semibold text-marca-escura transition"
               >
                 <div>
                   <div className="font-bold text-tinta">📱 Abrir no WhatsApp</div>

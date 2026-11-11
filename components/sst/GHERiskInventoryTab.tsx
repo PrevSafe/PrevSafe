@@ -813,7 +813,7 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
     <div className="space-y-6" id="ghe-risk-inventory-tab-container">
       {/* Top Banner Alert for S-2240 */}
       {generatedS2240Success && (
-        <div className="p-4 bg-marca-suave border border-marca-escura rounded-xl flex items-center justify-between text-xs text-marca-escura animate-in fade-in">
+        <div className="p-4 bg-marca-suave border border-marca-borda rounded-xl flex items-center justify-between text-xs text-marca-escura animate-in fade-in">
           <div className="flex items-center gap-2">
             <CheckCircle2 className="w-5 h-5 text-marca-escura" />
             <span className="font-semibold">{generatedS2240Success}</span>
@@ -991,7 +991,7 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
                     type="button"
                     id="gen-s2240-btn"
                     onClick={handleGenerateS2240}
-                    className="px-3 py-1.5 bg-marca hover:bg-marca-escura text-white text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 shadow-sm"
+                    className="px-3 py-1.5 bg-marca-escura hover:opacity-90 text-white text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 shadow-sm"
                   >
                     <FileCode2 className="w-4 h-4" />
                     Gerar S-2240
@@ -1083,7 +1083,7 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
                                 ) : (
                                   <>
                                     {plano.aceitas > 0 && (
-                                      <span className="px-1.5 py-0.5 bg-marca-suave border border-marca-escura text-marca-escura text-[10px] font-semibold rounded">
+                                      <span className="px-1.5 py-0.5 bg-marca-suave border border-marca-borda text-marca-escura text-[10px] font-semibold rounded">
                                         {plano.aceitas} ação(ões) aceita(s)
                                       </span>
                                     )}
@@ -2165,7 +2165,7 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
               <div
                 className={`mx-4 sm:mx-6 my-3 shrink-0 p-3 rounded-xl border flex items-start gap-2 text-xs font-medium animate-in fade-in ${
                   catalogFeedback.count > 0
-                    ? 'bg-marca-suave border-marca-escura text-marca-escura'
+                    ? 'bg-marca-suave border-marca-borda text-marca-escura'
                     : 'bg-amber-500/10 border-amber-500/30 text-amber-800'
                 }`}
               >
@@ -2486,7 +2486,7 @@ export const GHERiskInventoryTab: React.FC<GHERiskInventoryTabProps> = ({ select
 
               {/* Feedback */}
               {multiExamFeedback && (
-                <div className="p-3 bg-marca-suave border border-marca-escura rounded-xl flex items-center gap-2 text-xs text-marca-escura font-medium">
+                <div className="p-3 bg-marca-suave border border-marca-borda rounded-xl flex items-center gap-2 text-xs text-marca-escura font-medium">
                   <CheckCircle2 className="w-5 h-5 text-marca-escura flex-shrink-0" />
                   <span>{multiExamFeedback}</span>
                 </div>

@@ -130,7 +130,7 @@ export const FinancialReconciliationModal: React.FC<FinancialReconciliationModal
 
           {/* Current Status Badge */}
           {isAlreadyReconciled && !isUnreconcileMode && (
-            <div className="p-3 rounded-xl bg-marca-suave border border-marca-escura space-y-1 text-[11px]">
+            <div className="p-3 rounded-xl bg-marca-suave border border-marca-borda space-y-1 text-[11px]">
               <div className="flex items-center space-x-1.5 text-marca-escura font-semibold">
                 <Check className="w-4 h-4" />
                 <span>Registro conciliado com o extrato da conta!</span>

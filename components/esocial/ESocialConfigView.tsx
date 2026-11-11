@@ -147,7 +147,7 @@ export const ESocialConfigView: React.FC<ESocialConfigViewProps> = ({ onBack }) 
               <h1 className="text-2xl font-bold tracking-tight text-tinta">Configurações do eSocial</h1>
               <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border uppercase tracking-wider ${
                 environment === 'PRODUCAO' 
-                  ? 'bg-marca-suave text-marca-escura border-marca-escura' 
+                  ? 'bg-marca-suave text-marca-escura border-marca-borda' 
                   : 'bg-amber-500/10 text-amber-800 border-amber-500/30'
               }`}>
                 {environment === 'PRODUCAO' ? 'Produção Oficial' : 'Ambiente de Homologação'}
@@ -179,7 +179,7 @@ export const ESocialConfigView: React.FC<ESocialConfigViewProps> = ({ onBack }) 
       </div>
 
       {isSaved && (
-        <div className="p-4 bg-marca-suave border border-marca-escura rounded-2xl flex items-center space-x-3 text-marca-escura text-xs font-medium">
+        <div className="p-4 bg-marca-suave border border-marca-borda rounded-2xl flex items-center space-x-3 text-marca-escura text-xs font-medium">
           <CheckCircle2 className="w-5 h-5 text-marca-escura flex-shrink-0" />
           <span>Configurações do eSocial e certificado digital atualizados com sucesso no PrevSafe.</span>
         </div>
@@ -210,7 +210,7 @@ export const ESocialConfigView: React.FC<ESocialConfigViewProps> = ({ onBack }) 
 
               <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border ${
                 isCertValid
-                  ? 'bg-marca-suave text-marca-escura border-marca-escura'
+                  ? 'bg-marca-suave text-marca-escura border-marca-borda'
                   : certNaoVerificado
                     ? 'bg-amber-500/10 text-amber-800 border-amber-500/30'
                     : 'bg-rose-500/10 text-rose-700 border-rose-500/30'
@@ -318,7 +318,7 @@ export const ESocialConfigView: React.FC<ESocialConfigViewProps> = ({ onBack }) 
             </div>
 
             {uploadMessage && (
-              <div className="p-3 bg-marca-suave border border-marca-escura rounded-xl text-xs text-marca-escura flex items-center space-x-2">
+              <div className="p-3 bg-marca-suave border border-marca-borda rounded-xl text-xs text-marca-escura flex items-center space-x-2">
                 <CheckCircle2 className="w-4 h-4 text-marca-escura" />
                 <span>{uploadMessage}</span>
               </div>
@@ -365,7 +365,7 @@ export const ESocialConfigView: React.FC<ESocialConfigViewProps> = ({ onBack }) 
               {certTestResult && (
                 <div className={`p-3.5 rounded-xl border text-xs flex items-start space-x-2.5 ${
                   certTestResult.success 
-                    ? 'bg-marca-suave border-marca-escura text-marca-escura' 
+                    ? 'bg-marca-suave border-marca-borda text-marca-escura' 
                     : 'bg-rose-50 border-rose-200 text-rose-700'
                 }`}>
                   {certTestResult.success ? (
@@ -493,7 +493,7 @@ export const ESocialConfigView: React.FC<ESocialConfigViewProps> = ({ onBack }) 
                 onClick={() => setEnvironment('PRODUCAO')}
                 className={`p-4 rounded-2xl border text-left transition flex flex-col justify-between ${
                   environment === 'PRODUCAO'
-                    ? 'bg-marca-suave border-marca-escura shadow-sm'
+                    ? 'bg-marca-suave border-marca-borda shadow-sm'
                     : 'bg-fundo border-borda hover:border-borda'
                 }`}
               >

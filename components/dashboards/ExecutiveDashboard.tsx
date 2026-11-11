@@ -185,7 +185,7 @@ export const ExecutiveDashboard: React.FC<{ onNavigate: (view: string) => void }
         >
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-tinta-2 uppercase tracking-wider">Clientes Ativos</span>
-            <div className="p-2.5 rounded-2xl bg-marca-suave text-marca-escura border border-marca-escura">
+            <div className="p-2.5 rounded-2xl bg-marca-suave text-marca-escura border border-marca-borda">
               <Building2 className="w-4 h-4" />
             </div>
           </div>
@@ -315,7 +315,7 @@ export const ExecutiveDashboard: React.FC<{ onNavigate: (view: string) => void }
                 <h2 className="text-base font-bold text-tinta tracking-tight">Status de Envio eSocial (SST Oficial)</h2>
                 <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border uppercase tracking-wider ${
                   esocialConfig.environment === 'PRODUCAO' 
-                    ? 'bg-marca-suave text-marca-escura border-marca-escura' 
+                    ? 'bg-marca-suave text-marca-escura border-marca-borda' 
                     : 'bg-amber-500/10 text-amber-800 border-amber-500/30'
                 }`}>
                   Ambiente {esocialConfig.environment === 'PRODUCAO' ? 'Produção' : 'Homologação'}
@@ -478,7 +478,7 @@ export const ExecutiveDashboard: React.FC<{ onNavigate: (view: string) => void }
             </div>
             <button
               onClick={() => onNavigate('financial')}
-              className="text-xs font-semibold text-marca-escura bg-marca-suave hover:bg-marca-suave border border-marca-escura px-3 py-1 rounded-full flex items-center space-x-1 transition"
+              className="text-xs font-semibold text-marca-escura bg-marca-suave hover:bg-marca-suave border border-marca-borda px-3 py-1 rounded-full flex items-center space-x-1 transition"
             >
               <span>Ver Fluxo de Caixa</span>
               <ArrowRight className="w-3 h-3" />
@@ -604,7 +604,7 @@ export const ExecutiveDashboard: React.FC<{ onNavigate: (view: string) => void }
                         <span className={`inline-flex px-2.5 py-0.5 rounded-full text-[10px] font-semibold border ${
                           os.status === 'IN_PROGRESS' ? 'bg-teal-500/10 text-teal-800 border-teal-500/20' :
                           os.status === 'WAITING_ACCEPTANCE' ? 'bg-teal-500/10 text-teal-800 border-teal-500/20' :
-                          os.status === 'ACCEPTED' ? 'bg-marca-suave text-marca-escura border-marca-escura' :
+                          os.status === 'ACCEPTED' ? 'bg-marca-suave text-marca-escura border-marca-borda' :
                           os.status === 'WAITING_CLIENT' ? 'bg-amber-500/10 text-amber-800 border-amber-500/20' :
                           os.status === 'REWORK' ? 'bg-rose-500/10 text-rose-700 border-rose-500/20' : 'bg-superficie-2 text-tinta border-borda'
                         }`}>

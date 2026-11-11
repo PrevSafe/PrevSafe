@@ -177,7 +177,7 @@ export const PcmsoPendencias: React.FC<Omit<PcmsoResumoProps, 'tema'>> = (props)
   if (!props.client) return null;
   if (montado.faltas.length === 0) {
     return (
-      <div className="p-3 rounded-xl border border-marca-escura bg-marca-suave text-xs text-marca-escura">
+      <div className="p-3 rounded-xl border border-marca-borda bg-marca-suave text-xs text-marca-escura">
         PCMSO sem pendência no cadastro deste cliente.
       </div>
     );

@@ -132,7 +132,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onSuccess, onNavigateHelp 
               <div>
                 <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
                   <span className="text-xl font-bold tracking-tight text-tinta">PrevSafe</span>
-                  <span className="text-[10px] uppercase font-mono tracking-wider bg-marca-suave text-marca-escura border border-marca-escura px-2 py-0.5 rounded-full">
+                  <span className="text-[10px] uppercase font-mono tracking-wider bg-marca-suave text-marca-escura border border-marca-borda px-2 py-0.5 rounded-full">
                     V1.0 SST
                   </span>
                 </div>
@@ -242,7 +242,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onSuccess, onNavigateHelp 
             )}
 
             {successMessage && (
-              <div className="mt-6 p-3.5 rounded-xl bg-marca-suave border border-marca-escura text-marca-escura text-xs flex items-center space-x-2.5 animate-in fade-in duration-200">
+              <div className="mt-6 p-3.5 rounded-xl bg-marca-suave border border-marca-borda text-marca-escura text-xs flex items-center space-x-2.5 animate-in fade-in duration-200">
                 <CheckCircle2 className="w-4 h-4 flex-shrink-0 text-marca-escura" />
                 <span>{successMessage}</span>
               </div>
@@ -295,7 +295,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onSuccess, onNavigateHelp 
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="w-full pl-10 pr-10 py-2.5 bg-fundo border border-borda rounded-xl text-xs text-tinta placeholder-tinta-3 focus:outline-none focus:border-marca-escura focus:ring-1 focus:ring-marca-escura transition"
+                    className="w-full pl-10 pr-10 py-2.5 bg-fundo border border-borda rounded-xl text-xs text-tinta placeholder-tinta-3 focus:outline-none focus:border-marca-borda focus:ring-1 focus:ring-marca-escura transition"
                   />
                   <button
                     type="button"
@@ -376,7 +376,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onSuccess, onNavigateHelp 
 
             {recoverySent ? (
               <div className="mt-4 space-y-4">
-                <div className="p-3 rounded-xl bg-marca-suave border border-marca-escura text-marca-escura text-xs flex items-start space-x-2.5">
+                <div className="p-3 rounded-xl bg-marca-suave border border-marca-borda text-marca-escura text-xs flex items-start space-x-2.5">
                   <CheckCircle2 className="w-4 h-4 flex-shrink-0 text-marca-escura mt-0.5" />
                   <span>
                     Se houver uma conta com esse e-mail, o link de redefinição chegará em instantes.
@@ -387,7 +387,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onSuccess, onNavigateHelp 
                   <button
                     type="button"
                     onClick={closeRecoveryModal}
-                    className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-marca hover:bg-marca-escura transition shadow"
+                    className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-marca-escura hover:opacity-90 transition shadow"
                   >
                     Entendi
                   </button>
@@ -418,7 +418,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onSuccess, onNavigateHelp 
                       value={recoveryEmail}
                       onChange={(e) => setRecoveryEmail(e.target.value)}
                       placeholder="seu.email@empresa.com.br"
-                      className="w-full pl-10 pr-4 py-2.5 bg-fundo border border-borda rounded-xl text-xs text-tinta placeholder-tinta-3 focus:outline-none focus:border-marca-escura"
+                      className="w-full pl-10 pr-4 py-2.5 bg-fundo border border-borda rounded-xl text-xs text-tinta placeholder-tinta-3 focus:outline-none focus:border-marca-borda"
                     />
                   </div>
                 </div>
@@ -434,7 +434,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onSuccess, onNavigateHelp 
                   <button
                     type="submit"
                     disabled={isSendingRecovery}
-                    className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-marca hover:bg-marca-escura transition shadow disabled:opacity-50 flex items-center space-x-1.5"
+                    className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-marca-escura hover:opacity-90 transition shadow disabled:opacity-50 flex items-center space-x-1.5"
                   >
                     {isSendingRecovery && <RefreshCw className="w-3.5 h-3.5 animate-spin" />}
                     <span>{isSendingRecovery ? 'Enviando...' : 'Enviar link'}</span>

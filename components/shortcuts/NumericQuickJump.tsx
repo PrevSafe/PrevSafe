@@ -45,7 +45,7 @@ export const NumericQuickJumpIndicator: React.FC<NumericQuickJumpIndicatorProps>
           {matchedItem ? (
             <div className="space-y-0.5">
               <div className="flex items-center gap-1.5">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-marca-escura bg-marca-suave px-1.5 py-0.2 rounded border border-marca-escura">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-marca-escura bg-marca-suave px-1.5 py-0.2 rounded border border-marca-borda">
                   {matchedItem.category}
                 </span>
                 <span className="text-[10px] text-tinta-2">Navegando...</span>
@@ -76,11 +76,11 @@ export const NumericQuickJumpIndicator: React.FC<NumericQuickJumpIndicatorProps>
             <button
               type="button"
               onClick={onConfirm}
-              className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-marca hover:bg-marca-escura text-white text-xs font-bold shadow-md transition active:scale-95"
+              className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-marca-escura hover:opacity-90 text-white text-xs font-bold shadow-md transition active:scale-95"
               title="Pressione Enter para ir imediatamente"
             >
               <span>Ir</span>
-              <kbd className="font-mono text-[9px] bg-marca-suave px-1 py-0.2 rounded border border-marca-escura">↵ Enter</kbd>
+              <kbd className="font-mono text-[9px] bg-marca-suave px-1 py-0.2 rounded border border-marca-borda">↵ Enter</kbd>
             </button>
           ) : (
             <div className="text-[10px] text-tinta-2 font-mono bg-superficie-2 px-2 py-1 rounded">

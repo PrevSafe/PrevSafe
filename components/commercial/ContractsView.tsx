@@ -351,7 +351,7 @@ export const ContractsView: React.FC<{ onNavigate: (view: string) => void }> = (
                     <div className="flex items-center space-x-2">
                       <span className="font-mono text-xs font-bold text-tinta">{contract.contract_number}</span>
                       <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full ${
-                        isSigned ? 'bg-marca-suave text-marca-escura border border-marca-escura' :
+                        isSigned ? 'bg-marca-suave text-marca-escura border border-marca-borda' :
                         'bg-amber-500/10 text-amber-800 border border-amber-500/20'
                       }`}>
                         {isSigned ? 'ATIVO / VIGENTE' : 'AGUARDANDO ASSINATURA'}
@@ -409,7 +409,7 @@ export const ContractsView: React.FC<{ onNavigate: (view: string) => void }> = (
                   </button>
                   <span className={`text-xs font-bold px-3 py-1 rounded-full ${
                     (selectedContract.status === 'ACTIVE' || selectedContract.status === 'SIGNED')
-                      ? 'bg-marca-suave text-marca-escura border border-marca-escura'
+                      ? 'bg-marca-suave text-marca-escura border border-marca-borda'
                       : 'bg-amber-500/10 text-amber-800 border border-amber-500/20'
                   }`}>
                     {(selectedContract.status === 'ACTIVE' || selectedContract.status === 'SIGNED') ? 'Assinado e Válido' : 'Pendente de Assinatura'}
@@ -492,7 +492,7 @@ export const ContractsView: React.FC<{ onNavigate: (view: string) => void }> = (
                     <ShieldCheck className="w-4 h-4 text-marca-escura mr-1.5" /> Assinatura Eletrônica Simples
                   </span>
                   {(selectedContract.status === 'ACTIVE' || selectedContract.status === 'SIGNED') ? (
-                    <span className="text-[10px] font-mono text-marca-escura bg-marca-suave border border-marca-escura px-2 py-0.5 rounded font-bold">
+                    <span className="text-[10px] font-mono text-marca-escura bg-marca-suave border border-marca-borda px-2 py-0.5 rounded font-bold">
                       ASSINADO ELETRONICAMENTE
                     </span>
                   ) : (
@@ -562,7 +562,7 @@ export const ContractsView: React.FC<{ onNavigate: (view: string) => void }> = (
               ) : (
                 <button
                   onClick={() => onNavigate('service-orders')}
-                  className="px-4 py-2.5 bg-marca hover:bg-marca-escura text-white text-xs font-bold rounded-xl shadow-sm transition flex items-center space-x-1.5"
+                  className="px-4 py-2.5 bg-marca-escura hover:opacity-90 text-white text-xs font-bold rounded-xl shadow-sm transition flex items-center space-x-1.5"
                 >
                   <span>Ver Ordens de Serviço deste Contrato</span>
                   <ArrowRight className="w-4 h-4" />
@@ -733,7 +733,7 @@ export const ContractsView: React.FC<{ onNavigate: (view: string) => void }> = (
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-marca hover:bg-marca-escura text-white rounded-xl text-xs font-semibold shadow-md"
+                  className="px-4 py-2 bg-marca-escura hover:opacity-90 text-white rounded-xl text-xs font-semibold shadow-md"
                 >
                   {editingContract ? 'Atualizar Contrato' : 'Salvar Contrato'}
                 </button>
@@ -829,7 +829,7 @@ export const ContractsView: React.FC<{ onNavigate: (view: string) => void }> = (
                 />
               </div>
 
-              <div className="p-3 bg-marca-suave border border-marca-escura rounded-xl text-[11px] text-marca-escura">
+              <div className="p-3 bg-marca-suave border border-marca-borda rounded-xl text-[11px] text-marca-escura">
                 🔒 Certificação eletrônica em conformidade com MP 2.200-2/2001 e Portaria MTE.
               </div>
 

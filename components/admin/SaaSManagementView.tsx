@@ -199,7 +199,7 @@ export const SaaSManagementView: React.FC<{ onNavigate: (view: string) => void }
   const getStatusBadge = (status: TenantStatus) => {
     switch (status) {
       case 'ACTIVE':
-        return <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-marca-suave text-marca-escura border border-marca-escura"><CheckCircle2 className="w-3 h-3 mr-1" /> Ativo</span>;
+        return <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-marca-suave text-marca-escura border border-marca-borda"><CheckCircle2 className="w-3 h-3 mr-1" /> Ativo</span>;
       case 'TRIAL':
         return <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-teal-500/10 text-teal-800 border border-teal-500/20"><Sparkles className="w-3 h-3 mr-1" /> Em Teste (Trial)</span>;
       case 'PAST_DUE':
@@ -252,7 +252,7 @@ export const SaaSManagementView: React.FC<{ onNavigate: (view: string) => void }
 
       {/* Success Notification Alert */}
       {inviteSuccessMsg && (
-        <div className="bg-marca-suave border border-marca-escura rounded-2xl p-4 flex items-center justify-between text-marca-escura shadow-sm animate-in fade-in duration-200">
+        <div className="bg-marca-suave border border-marca-borda rounded-2xl p-4 flex items-center justify-between text-marca-escura shadow-sm animate-in fade-in duration-200">
           <div className="flex items-center space-x-3">
             <CheckCircle2 className="w-5 h-5 text-marca-escura shrink-0" />
             <p className="text-xs sm:text-sm font-medium">{inviteSuccessMsg}</p>
@@ -492,7 +492,7 @@ export const SaaSManagementView: React.FC<{ onNavigate: (view: string) => void }
                         onClick={() => handleCopyInvite(tenant.id)}
                         className={`px-2.5 py-1.5 rounded-xl border text-[11px] font-semibold flex items-center space-x-1 transition ${
                           copiedTokenId === tenant.id 
-                            ? 'bg-marca-suave text-marca-escura border-marca-escura' 
+                            ? 'bg-marca-suave text-marca-escura border-marca-borda' 
                             : 'bg-superficie-2 hover:bg-superficie-3 text-tinta border-borda'
                         }`}
                         title="Copiar Link de Primeiro Acesso"
@@ -503,7 +503,7 @@ export const SaaSManagementView: React.FC<{ onNavigate: (view: string) => void }
 
                       <button
                         onClick={() => handleResendInvite(tenant.id, 'WHATSAPP')}
-                        className="px-2.5 py-1.5 rounded-xl bg-marca-suave hover:bg-marca-suave text-marca-escura border border-marca-escura text-[11px] font-semibold flex items-center space-x-1 transition"
+                        className="px-2.5 py-1.5 rounded-xl bg-marca-suave hover:bg-marca-suave text-marca-escura border border-marca-borda text-[11px] font-semibold flex items-center space-x-1 transition"
                         title="Disparar via WhatsApp"
                       >
                         <Smartphone className="w-3.5 h-3.5" />
@@ -542,7 +542,7 @@ export const SaaSManagementView: React.FC<{ onNavigate: (view: string) => void }
                     ) : (
                       <button
                         onClick={() => toggleTenantStatus(tenant.id, 'ACTIVE')}
-                        className="flex items-center space-x-1.5 px-3 py-1.5 bg-marca-suave hover:bg-marca-suave text-marca-escura border border-marca-escura rounded-xl text-xs font-semibold transition"
+                        className="flex items-center space-x-1.5 px-3 py-1.5 bg-marca-suave hover:bg-marca-suave text-marca-escura border border-marca-borda rounded-xl text-xs font-semibold transition"
                       >
                         <CheckCircle2 className="w-3.5 h-3.5" />
                         <span>Reativar</span>

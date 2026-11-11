@@ -195,7 +195,7 @@ export const DocumentsView: React.FC<{ onNavigate: (view: string) => void }> = (
             <div key={doc.id} id={`doc-card-${doc.id}`} className="bg-superficie p-6 rounded-3xl border border-borda shadow-sm flex flex-col justify-between space-y-4 hover:border-borda transition group">
               <div>
                 <div className="flex items-start justify-between">
-                  <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-marca-suave text-marca-escura border border-marca-escura font-mono">
+                  <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-marca-suave text-marca-escura border border-marca-borda font-mono">
                     {doc.document_type}
                   </span>
                   <div className="flex items-center space-x-1">
@@ -236,7 +236,7 @@ export const DocumentsView: React.FC<{ onNavigate: (view: string) => void }> = (
                   onClick={() => toggleDocumentRelease(doc.id)}
                   className={`text-[10px] font-bold px-2.5 py-1 rounded-xl transition ${
                     doc.is_client_released 
-                      ? 'bg-marca-suave text-marca-escura border border-marca-escura' 
+                      ? 'bg-marca-suave text-marca-escura border border-marca-borda' 
                       : 'bg-superficie-2 text-tinta-2 border border-borda'
                   }`}
                 >
@@ -364,7 +364,7 @@ export const DocumentsView: React.FC<{ onNavigate: (view: string) => void }> = (
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-marca hover:bg-marca-escura text-white rounded-xl font-bold shadow-md"
+                  className="px-4 py-2 bg-marca-escura hover:opacity-90 text-white rounded-xl font-bold shadow-md"
                 >
                   {editingDoc ? 'Atualizar Documento' : 'Publicar Documento'}
                 </button>

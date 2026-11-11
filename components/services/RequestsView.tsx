@@ -265,14 +265,14 @@ export const RequestsView: React.FC<{ onNavigate: (view: string) => void }> = ({
                   <>
                     <button
                       onClick={() => alert(`Lembrete de cobrança enviado com link direto ao WhatsApp do cliente ${client?.trade_name}!`)}
-                      className="px-3 py-1.5 bg-marca-suave hover:bg-marca-suave text-marca-escura border border-marca-escura rounded-xl text-xs font-semibold transition flex items-center space-x-1"
+                      className="px-3 py-1.5 bg-marca-suave hover:bg-marca-suave text-marca-escura border border-marca-borda rounded-xl text-xs font-semibold transition flex items-center space-x-1"
                     >
                       <Share2 className="w-3.5 h-3.5 text-marca-escura" />
                       <span>Cobrar WhatsApp</span>
                     </button>
                     <button
                       onClick={() => resolveRequest(req.id, 'Resolvido pelo operador')}
-                      className="px-3.5 py-1.5 bg-marca hover:bg-marca-escura text-white rounded-xl text-xs font-bold transition flex items-center space-x-1 shadow-md"
+                      className="px-3.5 py-1.5 bg-marca-escura hover:opacity-90 text-white rounded-xl text-xs font-bold transition flex items-center space-x-1 shadow-md"
                     >
                       <CheckCircle2 className="w-3.5 h-3.5" />
                       <span>Marcar Resolvida</span>

@@ -801,7 +801,7 @@ export const TechnicalResponsibilityTab: React.FC<TechnicalResponsibilityTabProp
                 <button
                   type="submit"
                   disabled={!candidato || !habilitacao?.apto || clientesAlvo.length === 0}
-                  className="bg-marca-escura text-tinta px-4 py-2 disabled:bg-superficie-2 disabled:text-tinta font-bold rounded-lg hover:opacity-90"
+                  className="bg-marca-escura text-white px-4 py-2 disabled:bg-superficie-2 disabled:text-tinta font-bold rounded-lg hover:opacity-90"
                 >
                   Atribuir
                 </button>

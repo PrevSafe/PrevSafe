@@ -776,7 +776,7 @@ export const ExamPCMSOTab: React.FC<ExamPCMSOTabProps> = ({ selectedClientId }) 
                         {lastAso?.valid_until || emp.next_aso_date || '—'}
                       </td>
                       <td className="py-3 px-4 text-center">
-                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-marca-suave text-marca-escura border border-marca-escura">
+                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-marca-suave text-marca-escura border border-marca-borda">
                           {emp.current_aso_status || 'VALID'}
                         </span>
                       </td>

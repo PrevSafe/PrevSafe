@@ -278,13 +278,13 @@ export const SettingsView: React.FC<{ onNavigate: (view: string) => void }> = ({
       <div className="bg-superficie p-6 rounded-3xl border border-borda shadow-sm space-y-5">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-marca-suave border border-marca-escura rounded-2xl flex items-center justify-center text-marca-escura">
+            <div className="w-10 h-10 bg-marca-suave border border-marca-borda rounded-2xl flex items-center justify-center text-marca-escura">
               <Database className="w-5 h-5" />
             </div>
             <div>
               <div className="flex items-center gap-2">
                 <h2 className="text-base font-bold text-tinta">Banco de Dados Supabase (PostgreSQL)</h2>
-                <span className="text-[10px] font-bold bg-marca-suave text-marca-escura border border-marca-escura px-2 py-0.5 rounded-full">
+                <span className="text-[10px] font-bold bg-marca-suave text-marca-escura border border-marca-borda px-2 py-0.5 rounded-full">
                   Prev Workflow
                 </span>
               </div>
@@ -298,7 +298,7 @@ export const SettingsView: React.FC<{ onNavigate: (view: string) => void }> = ({
             <button
               onClick={handleTestConnection}
               disabled={isTestingConn}
-              className="px-3.5 py-2 bg-marca hover:bg-marca-escura disabled:opacity-50 text-white rounded-xl text-xs font-semibold shadow-sm transition flex items-center gap-2"
+              className="px-3.5 py-2 bg-marca-escura hover:opacity-90 disabled:opacity-50 text-white rounded-xl text-xs font-semibold shadow-sm transition flex items-center gap-2"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${isTestingConn ? 'animate-spin' : ''}`} />
               <span>{isTestingConn ? 'Testando Conexão...' : 'Testar Conexão Supabase'}</span>
@@ -317,7 +317,7 @@ export const SettingsView: React.FC<{ onNavigate: (view: string) => void }> = ({
         {connectionResult.tested && (
           <div className={`p-4 rounded-2xl border text-xs flex items-start gap-3 ${
             connectionResult.success 
-              ? 'bg-marca-suave border-marca-escura text-marca-escura' 
+              ? 'bg-marca-suave border-marca-borda text-marca-escura' 
               : 'bg-amber-500/10 border-amber-500/30 text-amber-800'
           }`}>
             {connectionResult.success ? (
@@ -440,7 +440,7 @@ export const SettingsView: React.FC<{ onNavigate: (view: string) => void }> = ({
               </p>
             </div>
             {orgSaved && (
-              <span className="text-[10px] bg-marca-suave text-marca-escura border border-marca-escura font-bold px-2.5 py-1 rounded-full whitespace-nowrap">
+              <span className="text-[10px] bg-marca-suave text-marca-escura border border-marca-borda font-bold px-2.5 py-1 rounded-full whitespace-nowrap">
                 SALVO
               </span>
             )}
@@ -604,7 +604,7 @@ export const SettingsView: React.FC<{ onNavigate: (view: string) => void }> = ({
                 <div className="font-bold text-tinta">Eventos de SST (S-2210, S-2220, S-2240)</div>
                 <div className="text-tinta-2 text-[11px] mt-0.5">Transmissão direta com Certificado Digital A1</div>
               </div>
-              <span className="text-[10px] bg-marca-suave text-marca-escura border border-marca-escura font-bold px-2.5 py-1 rounded-full">
+              <span className="text-[10px] bg-marca-suave text-marca-escura border border-marca-borda font-bold px-2.5 py-1 rounded-full">
                 ATIVO
               </span>
             </div>
@@ -614,7 +614,7 @@ export const SettingsView: React.FC<{ onNavigate: (view: string) => void }> = ({
                 <div className="font-bold text-tinta">WhatsApp Business API (Meta Cloud)</div>
                 <div className="text-tinta-2 text-[11px] mt-0.5">Disparo automatizado de avisos de SLA e cobranças D-3/D-1/D0</div>
               </div>
-              <span className="text-[10px] bg-marca-suave text-marca-escura border border-marca-escura font-bold px-2.5 py-1 rounded-full">
+              <span className="text-[10px] bg-marca-suave text-marca-escura border border-marca-borda font-bold px-2.5 py-1 rounded-full">
                 CONECTADO
               </span>
             </div>
@@ -649,7 +649,7 @@ export const SettingsView: React.FC<{ onNavigate: (view: string) => void }> = ({
 
             <button
               onClick={() => setShowSqlModal(true)}
-              className="w-full px-4 py-3 bg-marca-suave hover:bg-marca-suave text-marca-escura border border-marca-escura rounded-2xl text-xs font-bold transition flex items-center justify-center space-x-2"
+              className="w-full px-4 py-3 bg-marca-suave hover:bg-marca-suave text-marca-escura border border-marca-borda rounded-2xl text-xs font-bold transition flex items-center justify-center space-x-2"
             >
               <Code2 className="w-4 h-4" />
               <span>Gerenciar Migrations SQL</span>
@@ -693,7 +693,7 @@ export const SettingsView: React.FC<{ onNavigate: (view: string) => void }> = ({
           <div className="bg-superficie border border-borda rounded-3xl max-w-4xl w-full max-h-[85vh] flex flex-col shadow-sm overflow-hidden">
             <div className="p-5 border-b border-borda flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-xl bg-marca-suave border border-marca-escura flex items-center justify-center text-marca-escura">
+                <div className="w-8 h-8 rounded-xl bg-marca-suave border border-marca-borda flex items-center justify-center text-marca-escura">
                   <Layers className="w-4 h-4" />
                 </div>
                 <div>
@@ -806,7 +806,7 @@ export const SettingsView: React.FC<{ onNavigate: (view: string) => void }> = ({
                       : SUPABASE_SQL_SCHEMA + '\n\n' + SUPABASE_MIGRATIONS[1].sql;
                     copyToClipboard(content, 'sql');
                   }}
-                  className="px-4 py-2 bg-marca hover:bg-marca-escura text-white rounded-xl text-xs font-semibold transition flex items-center gap-2"
+                  className="px-4 py-2 bg-marca-escura hover:opacity-90 text-white rounded-xl text-xs font-semibold transition flex items-center gap-2"
                 >
                   <Copy className="w-3.5 h-3.5" />
                   <span>{copiedSql ? 'SQL Copiado com Sucesso!' : 'Copiar SQL desta Aba'}</span>

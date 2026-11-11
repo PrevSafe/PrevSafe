@@ -638,7 +638,7 @@ export const EPIManagementTab: React.FC<EPIManagementTabProps> = ({ selectedClie
 
                       <td className="py-3.5 px-4">
                         {del.delivery_method === 'FACIAL_BIOMETRIC' ? (
-                          <div className="inline-flex items-center gap-1.5 px-2 py-1 bg-marca-suave text-marca-escura rounded-md border border-marca-escura font-semibold text-[11px]">
+                          <div className="inline-flex items-center gap-1.5 px-2 py-1 bg-marca-suave text-marca-escura rounded-md border border-marca-borda font-semibold text-[11px]">
                             <Camera className="w-3.5 h-3.5" />
                             Biometria Facial ({(del.biometric_confidence ? del.biometric_confidence * 100 : 98.4).toFixed(1)}%)
                           </div>
@@ -1185,7 +1185,7 @@ export const EPIManagementTab: React.FC<EPIManagementTabProps> = ({ selectedClie
                         <button
                           type="button"
                           onClick={capturePhoto}
-                          className="px-4 py-2 bg-marca hover:bg-marca-escura text-white font-bold text-xs rounded-xl flex items-center gap-1.5 shadow-sm"
+                          className="px-4 py-2 bg-marca-escura hover:opacity-90 text-white font-bold text-xs rounded-xl flex items-center gap-1.5 shadow-sm"
                         >
                           <Camera className="w-4 h-4" />
                           Capturar Rosto do Trabalhador
@@ -1203,7 +1203,7 @@ export const EPIManagementTab: React.FC<EPIManagementTabProps> = ({ selectedClie
                             type="button"
                             onClick={handleVerifyBiometrics}
                             disabled={isBiometricVerifying}
-                            className="px-3.5 py-1.5 bg-marca hover:bg-marca-escura text-white font-bold text-xs rounded-lg flex items-center gap-1.5"
+                            className="px-3.5 py-1.5 bg-marca-escura hover:opacity-90 text-white font-bold text-xs rounded-lg flex items-center gap-1.5"
                           >
                             {isBiometricVerifying ? (
                               <RefreshCw className="w-3.5 h-3.5 animate-spin" />
@@ -1240,7 +1240,7 @@ export const EPIManagementTab: React.FC<EPIManagementTabProps> = ({ selectedClie
                   </div>
 
                   {biometricResult && (
-                    <div className={`p-2.5 rounded-lg text-xs ${biometricResult.matched ? 'bg-marca-suave text-marca-escura border border-marca-escura' : 'bg-rose-500/10 text-rose-700 border border-rose-500/20'}`}>
+                    <div className={`p-2.5 rounded-lg text-xs ${biometricResult.matched ? 'bg-marca-suave text-marca-escura border border-marca-borda' : 'bg-rose-500/10 text-rose-700 border border-rose-500/20'}`}>
                       {biometricResult.message}
                     </div>
                   )}

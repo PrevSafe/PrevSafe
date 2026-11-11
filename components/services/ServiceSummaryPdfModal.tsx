@@ -115,13 +115,13 @@ export const ServiceSummaryPdfModal: React.FC<ServiceSummaryPdfModalProps> = ({
         {/* Header */}
         <div className="px-6 py-4 border-b border-borda flex items-center justify-between bg-superficie">
           <div className="flex items-center space-x-3">
-            <div className="p-2.5 rounded-2xl bg-marca-suave text-marca-escura border border-marca-escura">
+            <div className="p-2.5 rounded-2xl bg-marca-suave text-marca-escura border border-marca-borda">
               <Briefcase className="w-5 h-5" />
             </div>
             <div>
               <div className="flex items-center space-x-2">
                 <h2 className="text-base font-bold text-tinta">Exportação de Resumo de Ordens de Serviço em PDF</h2>
-                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-marca-suave text-marca-escura border border-marca-escura uppercase">
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-marca-suave text-marca-escura border border-marca-borda uppercase">
                   PDF Vetorial Oficial
                 </span>
               </div>
@@ -160,7 +160,7 @@ export const ServiceSummaryPdfModal: React.FC<ServiceSummaryPdfModalProps> = ({
                 onClick={() => setMode('BATCH')}
                 className={`p-4 rounded-2xl border text-left transition flex items-start space-x-3 ${
                   mode === 'BATCH'
-                    ? 'bg-marca-suave border-marca-escura text-tinta'
+                    ? 'bg-marca-suave border-marca-borda text-tinta'
                     : 'bg-fundo border-borda text-tinta-2 hover:text-tinta'
                 }`}
               >
@@ -178,7 +178,7 @@ export const ServiceSummaryPdfModal: React.FC<ServiceSummaryPdfModalProps> = ({
                 onClick={() => setMode('SINGLE')}
                 className={`p-4 rounded-2xl border text-left transition flex items-start space-x-3 ${
                   mode === 'SINGLE'
-                    ? 'bg-marca-suave border-marca-escura text-tinta'
+                    ? 'bg-marca-suave border-marca-borda text-tinta'
                     : 'bg-fundo border-borda text-tinta-2 hover:text-tinta'
                 }`}
               >
@@ -309,7 +309,7 @@ export const ServiceSummaryPdfModal: React.FC<ServiceSummaryPdfModalProps> = ({
                       key={os.id}
                       className={`flex items-center space-x-3 p-2.5 rounded-xl border text-xs cursor-pointer transition ${
                         isChecked 
-                          ? 'bg-marca-suave border-marca-escura text-tinta' 
+                          ? 'bg-marca-suave border-marca-borda text-tinta' 
                           : 'bg-superficie border-borda text-tinta-2'
                       }`}
                     >

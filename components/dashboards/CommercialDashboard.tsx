@@ -126,7 +126,7 @@ export const CommercialDashboard: React.FC<{ onNavigate: (view: string) => void 
         <div className="bg-superficie p-5 rounded-3xl border border-borda shadow-sm flex flex-col justify-between">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-tinta-2 uppercase tracking-wider">Taxa de Conversão</span>
-            <div className="p-2.5 rounded-2xl bg-marca-suave text-marca-escura border border-marca-escura">
+            <div className="p-2.5 rounded-2xl bg-marca-suave text-marca-escura border border-marca-borda">
               <Percent className="w-4 h-4" />
             </div>
           </div>
@@ -289,7 +289,7 @@ export const QualityDashboard: React.FC<{ onNavigate: (view: string) => void }> 
       {/* Header Bento Card */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-superficie border border-borda rounded-3xl p-6 shadow-sm">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-marca-suave border border-marca-escura rounded-2xl flex items-center justify-center text-marca-escura">
+          <div className="w-10 h-10 bg-marca-suave border border-marca-borda rounded-2xl flex items-center justify-center text-marca-escura">
             <Star className="w-5 h-5" />
           </div>
           <div>
