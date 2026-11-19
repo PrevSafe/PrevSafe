@@ -59,7 +59,7 @@ export default async function ContatoPage({ searchParams }: Props) {
                     <MessageCircle className="w-4.5 h-4.5 text-emerald-600 mt-0.5 shrink-0" aria-hidden="true" />
                     <span>
                       <span className="block font-semibold">WhatsApp</span>
-                      <span className="text-slate-500">{EMPRESA.telefone}</span>
+                      <span className="text-slate-600">{EMPRESA.telefone}</span>
                     </span>
                   </a>
                 </li>
@@ -68,7 +68,7 @@ export default async function ContatoPage({ searchParams }: Props) {
                     <Phone className="w-4.5 h-4.5 text-emerald-600 mt-0.5 shrink-0" aria-hidden="true" />
                     <span>
                       <span className="block font-semibold">Telefone</span>
-                      <span className="text-slate-500">{EMPRESA.telefone}</span>
+                      <span className="text-slate-600">{EMPRESA.telefone}</span>
                     </span>
                   </a>
                 </li>
@@ -77,7 +77,7 @@ export default async function ContatoPage({ searchParams }: Props) {
                     <Mail className="w-4.5 h-4.5 text-emerald-600 mt-0.5 shrink-0" aria-hidden="true" />
                     <span>
                       <span className="block font-semibold">E-mail</span>
-                      <span className="text-slate-500 break-all">{EMPRESA.email}</span>
+                      <span className="text-slate-600 break-all">{EMPRESA.email}</span>
                     </span>
                   </a>
                 </li>
@@ -85,7 +85,7 @@ export default async function ContatoPage({ searchParams }: Props) {
                   <Clock className="w-4.5 h-4.5 text-emerald-600 mt-0.5 shrink-0" aria-hidden="true" />
                   <span>
                     <span className="block font-semibold">Atendimento</span>
-                    <span className="text-slate-500">Segunda a sexta, 8h às 18h</span>
+                    <span className="text-slate-600">Segunda a sexta, 8h às 18h</span>
                   </span>
                 </li>
               </ul>

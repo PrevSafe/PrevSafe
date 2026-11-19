@@ -1,4 +1,5 @@
 import React from 'react';
+import { EscudoPrevSafe } from './EscudoPrevSafe';
 import Link from 'next/link';
 import { Mail, Phone, MapPin } from 'lucide-react';
 import { EMPRESA } from '@/lib/siteConfig';
@@ -12,7 +13,12 @@ export function SiteFooter() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
           <div className="lg:col-span-1">
             <div>
-              <span className="font-bold text-xl text-white">PrevSafe</span>
+              <span data-logotipo className="flex items-center gap-2.5">
+                <EscudoPrevSafe className="w-8 h-8 shrink-0" corEscudo="#FFFFFF" />
+                <span className="font-titulo font-extrabold text-xl text-white">
+                  Prev<span className="text-marca">Safe</span>
+                </span>
+              </span>
             </div>
             <p className="text-sm text-slate-400 mt-3 leading-relaxed">
               Consultoria e gestão de Segurança e Saúde no Trabalho, do laudo técnico
@@ -64,7 +70,7 @@ export function SiteFooter() {
           </div>
         </div>
 
-        <div className="mt-12 pt-6 border-t border-slate-800 flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between text-xs text-slate-500">
+        <div className="mt-12 pt-6 border-t border-slate-800 flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between text-xs text-slate-400">
           <p>
             © {ano} {EMPRESA.razaoSocial} — CNPJ {EMPRESA.cnpj}
           </p>

@@ -122,6 +122,11 @@ falhas, arrumados = [], 0
 
 for p in sorted(list((RAIZ/'components').rglob('*.tsx')) + list((RAIZ/'app').rglob('*.tsx'))):
     rel = p.relative_to(RAIZ)
+    # O site institucional fica de fora desta medicao de proposito: ele tem
+    # secoes escuras legitimas, onde texto branco esta certo, e esta ferramenta
+    # le cada className isolado -- acusaria falso positivo em todas elas.
+    # Quem mede o site e scripts/contraste-navegador.mjs (npm run contraste:site),
+    # que pega o fundo real na arvore do navegador.
     if rel.parts[:2] == ('components', 'site') or '(site)' in str(rel):
         continue
     orig = p.read_text(encoding='utf-8'); linhas = orig.split('\n'); mudou = False

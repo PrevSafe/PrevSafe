@@ -7,7 +7,7 @@ import { Analytics } from '@/components/site/Analytics';
 
 export default function SiteLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="bg-white text-slate-900 min-h-screen flex flex-col selection:bg-emerald-200 selection:text-emerald-950">
+    <div className="site-publico bg-white text-slate-900 min-h-screen flex flex-col selection:bg-marca-suave selection:text-petroleo">
       {/* O Supabase pode mandar o link de recuperação para a raiz do domínio,
           que agora é o site e não mais o sistema. Sem isto o token viraria
           sessão silenciosamente e o usuário nunca chegaria à tela de senha. */}

@@ -209,7 +209,7 @@ export function FormularioContato({
           )}
         </button>
 
-        <p className="text-xs text-slate-500 text-center">
+        <p className="text-xs text-slate-600 text-center">
           Seus dados são usados apenas para este atendimento. Sem disparo de spam.
         </p>
       </form>

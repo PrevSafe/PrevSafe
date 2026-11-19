@@ -29,6 +29,13 @@
   --color-marca-suave:  #EAF7ED;
   --color-marca-borda:  #C2E3CB;
 
+  /* Tipografia da identidade: Montserrat nos titulos, Inter no texto.
+   * Os nomes --fonte-* vem do next/font; os --font-* sao os tokens que o
+   * Tailwind usa para gerar font-texto e font-titulo. Separados de proposito:
+   * com o mesmo nome a variavel se referenciaria e nao resolveria. */
+  --font-texto: var(--fonte-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-titulo: var(--fonte-montserrat), ui-sans-serif, system-ui, sans-serif;
+
   --color-petroleo:     #0E3A46;
   --color-teal:         #006064;
 
@@ -124,6 +131,16 @@
   --color-red-800: #612C29;
   --color-red-900: #4B2220;
   --color-red-950: #2D1311;
+}
+
+@layer base {
+  /* Montserrat nos titulos do site publico, como manda a identidade visual.
+   * Escopado em .site-publico de proposito: o sistema tem interface densa,
+   * onde a Inter em tudo le melhor que uma geometrica. */
+  .site-publico :is(h1, h2, h3, h4) {
+    font-family: var(--font-titulo);
+    letter-spacing: -0.015em;
+  }
 }
 
 @layer base {

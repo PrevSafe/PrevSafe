@@ -3,7 +3,7 @@ import Link from 'next/link';
 import type { Metadata } from 'next';
 import {
   ArrowRight, ShieldCheck, FileCheck2, Stethoscope, HardHat, Send,
-  Clock, CheckCircle2, AlertTriangle, LogIn, BookOpen,
+  Clock, CheckCircle2, AlertTriangle, LogIn, BookOpen, TrendingUp,
 } from 'lucide-react';
 import { listarPublicados, formatarData, minutosDeLeitura } from '@/lib/siteContent';
 import { FormularioContato } from '@/components/site/FormularioContato';
@@ -52,20 +52,20 @@ export default async function HomePage() {
           <div className="absolute -bottom-32 -left-20 w-[24rem] h-[24rem] rounded-full bg-teal-400 blur-3xl" />
         </div>
 
-        <div className="relative mx-auto max-w-[76rem] px-4 sm:px-6 py-20 sm:py-28">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+        <div className="relative mx-auto max-w-[76rem] px-4 sm:px-6 py-14 sm:py-20">
+          <div className="grid lg:grid-cols-2 gap-12 items-start">
             <div>
-              <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs font-semibold">
+              <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-marca-suave border border-marca-borda text-marca-escura text-xs font-semibold">
                 <ShieldCheck className="w-3.5 h-3.5" aria-hidden="true" />
                 NR-01 · NR-07 · eSocial
               </span>
 
-              <h1 className="mt-5 text-4xl sm:text-5xl font-bold tracking-tight text-white leading-[1.1]">
+              <h1 className="mt-5 text-4xl sm:text-5xl font-bold tracking-tight text-tinta leading-[1.1]">
                 Sua empresa em dia com a{' '}
-                <span className="text-emerald-400">segurança do trabalho</span>
+                <span className="text-emerald-700">segurança do trabalho</span>
               </h1>
 
-              <p className="mt-5 text-lg text-slate-300 leading-relaxed max-w-[34rem]">
+              <p className="mt-5 text-lg text-slate-600 leading-relaxed max-w-[34rem]">
                 Fazemos o PGR, o PCMSO, os laudos e o envio ao eSocial — e deixamos tudo
                 organizado num sistema que você acompanha de qualquer lugar. Sem planilha
                 solta, sem prazo perdido.
@@ -81,7 +81,7 @@ export default async function HomePage() {
                 </Link>
                 <Link
                   href="/servicos"
-                  className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl border border-slate-600 text-slate-100 font-semibold hover:border-emerald-500 hover:text-emerald-300 transition"
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl border border-borda-forte text-tinta font-semibold hover:border-emerald-500 hover:text-emerald-300 transition"
                 >
                   Ver serviços
                 </Link>
@@ -94,8 +94,8 @@ export default async function HomePage() {
                   ['eSocial', 'S-2210, S-2220, S-2240'],
                 ].map(([t, d]) => (
                   <div key={t}>
-                    <dt className="text-sm font-bold text-emerald-400">{t}</dt>
-                    <dd className="text-xs text-slate-400 mt-0.5">{d}</dd>
+                    <dt className="text-sm font-bold text-emerald-700">{t}</dt>
+                    <dd className="text-xs text-slate-600 mt-0.5">{d}</dd>
                   </div>
                 ))}
               </dl>
@@ -109,6 +109,47 @@ export default async function HomePage() {
                 descricao="Diga o porte e a atividade da empresa. Devolvemos o que é obrigatório para o seu CNAE e uma estimativa de prazo."
               />
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ---------------- Pilares ---------------- */}
+      {/* Os tres pilares da identidade visual: Confianca, Evidencia e
+          Resultados. Respondem, nessa ordem, o que o visitante pergunta ao
+          chegar -- da para confiar, o que eu recebo, e o que muda. */}
+      <section className="border-y border-borda bg-fundo">
+        <div className="mx-auto max-w-[76rem] px-4 sm:px-6 py-12 sm:py-14">
+          <div className="grid gap-8 sm:grid-cols-3">
+            {[
+              {
+                Icone: ShieldCheck,
+                titulo: 'Confiança',
+                texto:
+                  'Documentos emitidos dentro da NR-01, NR-07 e NR-09, com a norma citada item a item. Fiscalização encontra o que procura.',
+              },
+              {
+                Icone: FileCheck2,
+                titulo: 'Evidência',
+                texto:
+                  'Laudo, ASO, ordem de serviço e ficha de EPI assinados e rastreáveis. Cada entrega fica registrada, com data e responsável.',
+              },
+              {
+                Icone: TrendingUp,
+                titulo: 'Resultados',
+                texto:
+                  'Prazos do eSocial acompanhados por SLA e plano de ação com responsável e data. Você vê o que venceu antes do fiscal.',
+              },
+            ].map(({ Icone, titulo, texto }) => (
+              <div key={titulo} className="flex gap-4">
+                <span className="shrink-0 w-11 h-11 rounded-xl bg-marca-suave border border-marca-borda flex items-center justify-center">
+                  <Icone className="w-5 h-5 text-marca-escura" aria-hidden="true" />
+                </span>
+                <div>
+                  <h2 className="text-base font-bold text-tinta">{titulo}</h2>
+                  <p className="mt-1.5 text-sm text-slate-600 leading-relaxed">{texto}</p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -295,7 +336,7 @@ export default async function HomePage() {
                   </li>
                 ))}
               </ol>
-              <p className="mt-5 pt-4 border-t border-slate-800 text-xs text-slate-500">
+              <p className="mt-5 pt-4 border-t border-slate-800 text-xs text-slate-400">
                 Perdeu o acesso? Use &quot;Esqueci minha senha&quot; na tela de login ou fale
                 com a gente.
               </p>
