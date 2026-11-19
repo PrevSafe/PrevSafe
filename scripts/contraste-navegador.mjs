@@ -103,6 +103,12 @@ const MEDIR = () => {
     if (!texto) continue;
     const e = getComputedStyle(el);
     if (e.visibility === 'hidden' || e.display === 'none' || +e.opacity === 0) continue;
+
+    // Logotipo e isento: a WCAG 1.4.3 diz que texto que faz parte de uma
+    // logomarca ou nome de marca nao tem exigencia de contraste. O verde da
+    // PrevSafe e #2FB24A por definicao da identidade visual -- escurecer para
+    // passar na medicao seria adulterar a marca, nao corrigir um defeito.
+    if (el.closest('[data-logotipo]')) continue;
     const caixa = el.getBoundingClientRect();
     if (caixa.width < 2 || caixa.height < 2) continue;
 

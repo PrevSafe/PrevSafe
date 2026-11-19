@@ -3,7 +3,7 @@ import Link from 'next/link';
 import type { Metadata } from 'next';
 import {
   ArrowRight, ShieldCheck, FileCheck2, Stethoscope, HardHat, Send,
-  Clock, CheckCircle2, AlertTriangle, LogIn, BookOpen,
+  Clock, CheckCircle2, AlertTriangle, LogIn, BookOpen, TrendingUp,
 } from 'lucide-react';
 import { listarPublicados, formatarData, minutosDeLeitura } from '@/lib/siteContent';
 import { FormularioContato } from '@/components/site/FormularioContato';
@@ -52,8 +52,8 @@ export default async function HomePage() {
           <div className="absolute -bottom-32 -left-20 w-[24rem] h-[24rem] rounded-full bg-teal-400 blur-3xl" />
         </div>
 
-        <div className="relative mx-auto max-w-[76rem] px-4 sm:px-6 py-20 sm:py-28">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+        <div className="relative mx-auto max-w-[76rem] px-4 sm:px-6 py-14 sm:py-20">
+          <div className="grid lg:grid-cols-2 gap-12 items-start">
             <div>
               <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-marca-suave border border-marca-borda text-marca-escura text-xs font-semibold">
                 <ShieldCheck className="w-3.5 h-3.5" aria-hidden="true" />
@@ -109,6 +109,47 @@ export default async function HomePage() {
                 descricao="Diga o porte e a atividade da empresa. Devolvemos o que é obrigatório para o seu CNAE e uma estimativa de prazo."
               />
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ---------------- Pilares ---------------- */}
+      {/* Os tres pilares da identidade visual: Confianca, Evidencia e
+          Resultados. Respondem, nessa ordem, o que o visitante pergunta ao
+          chegar -- da para confiar, o que eu recebo, e o que muda. */}
+      <section className="border-y border-borda bg-fundo">
+        <div className="mx-auto max-w-[76rem] px-4 sm:px-6 py-12 sm:py-14">
+          <div className="grid gap-8 sm:grid-cols-3">
+            {[
+              {
+                Icone: ShieldCheck,
+                titulo: 'Confiança',
+                texto:
+                  'Documentos emitidos dentro da NR-01, NR-07 e NR-09, com a norma citada item a item. Fiscalização encontra o que procura.',
+              },
+              {
+                Icone: FileCheck2,
+                titulo: 'Evidência',
+                texto:
+                  'Laudo, ASO, ordem de serviço e ficha de EPI assinados e rastreáveis. Cada entrega fica registrada, com data e responsável.',
+              },
+              {
+                Icone: TrendingUp,
+                titulo: 'Resultados',
+                texto:
+                  'Prazos do eSocial acompanhados por SLA e plano de ação com responsável e data. Você vê o que venceu antes do fiscal.',
+              },
+            ].map(({ Icone, titulo, texto }) => (
+              <div key={titulo} className="flex gap-4">
+                <span className="shrink-0 w-11 h-11 rounded-xl bg-marca-suave border border-marca-borda flex items-center justify-center">
+                  <Icone className="w-5 h-5 text-marca-escura" aria-hidden="true" />
+                </span>
+                <div>
+                  <h2 className="text-base font-bold text-tinta">{titulo}</h2>
+                  <p className="mt-1.5 text-sm text-slate-600 leading-relaxed">{texto}</p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>

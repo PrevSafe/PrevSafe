@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { EscudoPrevSafe } from './EscudoPrevSafe';
 import { Menu, X, ArrowRight, LogIn } from 'lucide-react';
 
 type NavLink = {
@@ -26,19 +27,35 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-50 bg-white/90 backdrop-blur border-b border-slate-200">
       <div className="mx-auto max-w-[76rem] px-4 sm:px-6">
-        <div className="flex items-center justify-between h-16">
-          <Link href="/" className="shrink-0" aria-label="PrevSafe, página inicial">
-            <span className="font-bold text-xl tracking-tight text-slate-900">PrevSafe</span>
+        <div className="flex items-center justify-between gap-4 h-16">
+          <Link
+            href="/"
+            className="shrink-0 flex items-center gap-2.5"
+            data-logotipo
+            aria-label="PrevSafe, página inicial"
+          >
+            <EscudoPrevSafe className="w-9 h-9 shrink-0" />
+            <span className="leading-none">
+              <span className="font-titulo font-extrabold text-xl tracking-tight text-petroleo">
+                Prev
+              </span>
+              <span className="font-titulo font-extrabold text-xl tracking-tight text-marca">
+                Safe
+              </span>
+              <span className="hidden xl:block mt-1 text-[9px] font-semibold uppercase tracking-[0.12em] text-tinta-2">
+                Inspecione. Evidencie. Conformize.
+              </span>
+            </span>
           </Link>
 
-          <nav className="hidden lg:flex items-center gap-7" aria-label="Navegação principal">
+          <nav className="hidden lg:flex items-center gap-5 xl:gap-7" aria-label="Navegação principal">
             {LINKS.map(l => (
               <Link
                 key={l.href}
                 href={l.href}
                 target={l.externo ? '_blank' : undefined}
                 rel={l.externo ? 'noopener noreferrer' : undefined}
-                className="text-sm font-medium text-slate-600 hover:text-emerald-700 transition"
+                className="text-sm font-medium whitespace-nowrap text-slate-600 hover:text-marca-escura transition"
               >
                 {l.label}
               </Link>
@@ -50,14 +67,14 @@ export function SiteHeader() {
                 sempre visível — quem já é cliente não deve caçar o login. */}
             <Link
               href="/sistema"
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-slate-300 text-sm font-semibold text-slate-700 hover:border-emerald-500 hover:text-emerald-700 transition"
+              className="inline-flex items-center gap-1.5 whitespace-nowrap px-3.5 py-2 rounded-xl border border-slate-300 text-sm font-semibold text-slate-700 hover:border-marca hover:text-marca-escura transition"
             >
               <LogIn className="w-4 h-4" aria-hidden="true" />
               Área do cliente
             </Link>
             <Link
               href="/contato"
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold shadow-sm transition"
+              className="inline-flex items-center gap-1.5 whitespace-nowrap px-4 py-2 rounded-xl bg-marca-escura hover:opacity-90 text-white text-sm font-semibold shadow-sm transition"
             >
               Falar com especialista
               <ArrowRight className="w-4 h-4" aria-hidden="true" />
