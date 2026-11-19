@@ -64,7 +64,7 @@ export function SiteFooter() {
           </div>
         </div>
 
-        <div className="mt-12 pt-6 border-t border-slate-800 flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between text-xs text-slate-500">
+        <div className="mt-12 pt-6 border-t border-slate-800 flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between text-xs text-slate-400">
           <p>
             © {ano} {EMPRESA.razaoSocial} — CNPJ {EMPRESA.cnpj}
           </p>

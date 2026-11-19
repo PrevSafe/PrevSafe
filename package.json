@@ -6,7 +6,8 @@
     "dev": "next dev --port 3000",
     "build": "next build",
     "start": "next start --port 3000",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "contraste:site": "node scripts/contraste-navegador.mjs"
   },
   "dependencies": {
     "@google/genai": "^2.4.0",

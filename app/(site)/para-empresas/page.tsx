@@ -68,15 +68,15 @@ export default function ParaEmpresasPage() {
       <section className="bg-superficie text-tinta py-16 sm:py-20">
         <div className="mx-auto max-w-[76rem] px-4 sm:px-6 grid lg:grid-cols-2 gap-12 items-center">
           <div>
-            <nav aria-label="Trilha" className="text-sm text-slate-400">
-              <Link href="/" className="hover:text-emerald-400">Início</Link>
+            <nav aria-label="Trilha" className="text-sm text-slate-600">
+              <Link href="/" className="hover:text-emerald-700">Início</Link>
               <span className="mx-2" aria-hidden="true">/</span>
-              <span className="text-slate-200">Para empresas</span>
+              <span className="text-tinta">Para empresas</span>
             </nav>
             <h1 className="mt-4 text-4xl sm:text-5xl font-bold tracking-tight leading-[1.1]">
               O que sua empresa precisa ter — e o que acontece se não tiver
             </h1>
-            <p className="mt-5 text-lg text-slate-300 leading-relaxed">
+            <p className="mt-5 text-lg text-slate-600 leading-relaxed">
               A obrigação de SST não depende do tamanho da empresa. Depende de ter
               empregado registrado. Veja o que se aplica ao seu caso.
             </p>

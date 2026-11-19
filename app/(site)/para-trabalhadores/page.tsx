@@ -55,9 +55,9 @@ export default function ParaTrabalhadoresPage() {
       <section className="bg-slate-900 text-white py-16 sm:py-20">
         <div className="mx-auto max-w-[76rem] px-4 sm:px-6">
           <nav aria-label="Trilha" className="text-sm text-slate-400">
-            <Link href="/" className="hover:text-emerald-400">Início</Link>
+            <Link href="/" className="hover:text-emerald-300">Início</Link>
             <span className="mx-2" aria-hidden="true">/</span>
-            <span className="text-slate-200">Para trabalhadores</span>
+            <span className="text-white">Para trabalhadores</span>
           </nav>
           <h1 className="mt-4 text-4xl sm:text-5xl font-bold tracking-tight max-w-[40rem] leading-[1.1]">
             O que todo trabalhador deveria saber sobre segurança
@@ -105,7 +105,7 @@ export default function ParaTrabalhadoresPage() {
           <ol className="mt-6 space-y-3">
             {ACIDENTE.map((passo, i) => (
               <li key={passo} className="flex gap-3.5 bg-white rounded-2xl p-4 border border-amber-200">
-                <span className="shrink-0 w-7 h-7 rounded-lg bg-amber-500 text-white text-sm font-bold flex items-center justify-center">
+                <span className="shrink-0 w-7 h-7 rounded-lg bg-amber-600 text-white text-sm font-bold flex items-center justify-center">
                   {i + 1}
                 </span>
                 <p className="text-slate-700 leading-relaxed">{passo}</p>
@@ -150,12 +150,12 @@ export default function ParaTrabalhadoresPage() {
             >
               Tirar dúvida no WhatsApp
             </a>
-            <p className="mt-4 text-xs text-slate-500">
+            <p className="mt-4 text-xs text-slate-400">
               {EMPRESA.telefone} · Segunda a sexta, 8h às 18h
             </p>
           </div>
 
-          <p className="mt-8 text-sm text-slate-500 leading-relaxed">
+          <p className="mt-8 text-sm text-slate-600 leading-relaxed">
             Este conteúdo é informativo e não substitui orientação jurídica ou médica para
             o seu caso concreto. Em situação de risco iminente, procure o sindicato da
             categoria ou a Superintendência Regional do Trabalho.
