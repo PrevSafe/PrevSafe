@@ -1,4 +1,5 @@
 'use client';
+import { diasAte } from '@/lib/datas';
 
 import React, { useState } from 'react';
 import { usePrevSafe } from '@/context/PrevSafeContext';
@@ -34,7 +35,6 @@ export const SSTDeadlineAlertBanner: React.FC<SSTDeadlineAlertBannerProps> = ({ 
   const [isDismissed, setIsDismissed] = useState(false);
 
   // Compute live SST deadline stats
-  const now = new Date();
   const examWarningDays = esocialConfig?.sla_exam_warning_days || 30;
   const docWarningDays = esocialConfig?.sla_document_warning_days || 15;
 
@@ -42,16 +42,14 @@ export const SSTDeadlineAlertBanner: React.FC<SSTDeadlineAlertBannerProps> = ({ 
     if (!emp) return false;
     const examDate = emp.next_aso_date || emp.periodic_exam_due_date;
     if (!examDate) return false;
-    const dueDate = new Date(examDate);
-    const diffDays = Math.ceil((dueDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-    return diffDays <= examWarningDays;
+    const diffDays = diasAte(examDate);
+    return diffDays !== null && diffDays <= examWarningDays;
   });
 
   const urgentDocs = (serviceOrders || []).filter(os => {
     if (!os || os.status === 'COMPLETED' || os.status === 'CANCELLED' || !os.due_date) return false;
-    const dueDate = new Date(os.due_date);
-    const diffDays = Math.ceil((dueDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-    return diffDays <= docWarningDays;
+    const diffDays = diasAte(os.due_date);
+    return diffDays !== null && diffDays <= docWarningDays;
   });
 
   const totalUrgent = urgentExams.length + urgentDocs.length;
@@ -126,7 +124,8 @@ export const SSTDeadlineAlertBanner: React.FC<SSTDeadlineAlertBannerProps> = ({ 
               {urgentExams.map(emp => {
                 const client = clients.find(c => c.id === emp.client_id);
                 const examDate = emp.next_aso_date || emp.periodic_exam_due_date;
-                const isOverdue = examDate ? new Date(examDate) < now : false;
+                const diasRestantes = examDate ? diasAte(examDate) : null;
+                const isOverdue = diasRestantes !== null && diasRestantes < 0;
                 return (
                   <div key={emp.id} className="p-2 bg-superficie rounded-xl border border-borda flex items-center justify-between">
                     <div>
@@ -162,7 +161,8 @@ export const SSTDeadlineAlertBanner: React.FC<SSTDeadlineAlertBannerProps> = ({ 
             <div className="space-y-1.5 max-h-36 overflow-y-auto pr-1">
               {urgentDocs.map(os => {
                 const client = clients.find(c => c.id === os.client_id);
-                const isOverdue = new Date(os.due_date) < now;
+                const diasRestantes = diasAte(os.due_date);
+                const isOverdue = diasRestantes !== null && diasRestantes < 0;
                 return (
                   <div key={os.id} className="p-2 bg-superficie rounded-xl border border-borda flex items-center justify-between">
                     <div>

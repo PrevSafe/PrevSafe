@@ -582,7 +582,20 @@ interface PrevSafeContextType {
   updateESocialEvent: (id: string, updates: Partial<ESocialEvent>) => void;
   deleteESocialEvent: (id: string) => void;
   validateESocialEvent: (id: string) => { success: boolean; errors: string[] };
-  transmitESocialEvent: (id: string, certificateType?: 'A1_DIGITAL' | 'A3_TOKEN_SMARTCARD') => { success: boolean; receipt?: string; protocol?: string; error?: string };
+  /**
+   * Monta o XML e confere os campos. NAO transmite: o envio ao eSocial e
+   * feito pelo canal oficial, e o recibo de la volta por
+   * `registrarReciboESocial`. Por isso nao devolve recibo nem protocolo --
+   * devolver seria inventar.
+   */
+  transmitESocialEvent: (id: string, certificateType?: 'A1_DIGITAL' | 'A3_TOKEN_SMARTCARD') => { success: boolean; error?: string };
+  /**
+   * Registra o recibo que o eSocial devolveu apos o envio pelo canal oficial.
+   * E o unico caminho pelo qual um evento chega a SUCCESS: fecha o ciclo que
+   * antes nao existia, e sem ele o S-3000 fica sem o nrRecibo que o leiaute
+   * exige.
+   */
+  registrarReciboESocial: (id: string, dados: { receipt_number: string; protocol_number?: string; transmitted_at?: string }) => { success: boolean; error?: string };
   transmitBatchESocial: (eventIds: string[], certificateType?: 'A1_DIGITAL' | 'A3_TOKEN_SMARTCARD') => { batch: ESocialBatch; successCount: number; errorCount: number };
   /**
    * Gera um evento por trabalhador a partir dos dados reais da OS.
@@ -4339,6 +4352,71 @@ ${blocoRespMonitXml(event.client_id, aso?.exam_date || dataDeHoje(), '      ')}
   }, [validateESocialEvent, esocialEvents, currentProfile.full_name, currentProfile.id, logAudit, dispatchNotification]);
 
   // Transmit Batch eSocial
+  /**
+   * Registra o recibo devolvido pelo eSocial depois do envio pelo canal
+   * oficial. E o unico caminho para um evento chegar a SUCCESS.
+   *
+   * Antes isto nao existia: a mensagem do sistema mandava "registre aqui o
+   * recibo recebido" e nao havia onde. Com isso nenhum evento saia de
+   * READY_TO_SEND, e o S-3000 de exclusao -- que precisa citar o recibo do
+   * evento excluido -- montava o XML sem o <nrRecibo>, que o leiaute exige.
+   */
+  const registrarReciboESocial = useCallback((
+    id: string,
+    dados: { receipt_number: string; protocol_number?: string; transmitted_at?: string }
+  ): { success: boolean; error?: string } => {
+    const recibo = (dados.receipt_number || '').trim();
+    if (!recibo) {
+      return { success: false, error: 'Informe o numero do recibo devolvido pelo eSocial.' };
+    }
+
+    const alvo = esocialEvents.find(e => e.id === id);
+    if (!alvo) {
+      return { success: false, error: 'Evento nao encontrado.' };
+    }
+    if (alvo.status === 'DRAFT') {
+      return {
+        success: false,
+        error: 'O evento ainda e rascunho. Confira os campos antes de registrar um recibo.'
+      };
+    }
+
+    const agora = new Date().toISOString();
+    const transmitido = dados.transmitted_at || agora;
+
+    setEsocialEvents(prev => prev.map(e => {
+      if (e.id !== id) return e;
+      return {
+        ...e,
+        status: 'SUCCESS',
+        receipt_number: recibo,
+        protocol_number: dados.protocol_number?.trim() || e.protocol_number,
+        transmitted_at: transmitido,
+        return_code: '201',
+        return_message: 'Recibo registrado pelo usuario apos envio pelo canal oficial do eSocial.',
+        updated_at: agora,
+        history: [
+          ...(e.history || []),
+          {
+            date: agora,
+            action: 'RECIBO_REGISTRADO',
+            user_name: currentProfile.full_name,
+            status: 'SUCCESS',
+            details: `Recibo ${recibo} registrado manualmente. Envio feito fora do PrevSafe.`
+          }
+        ]
+      };
+    }));
+
+    logAudit('ESOCIAL_RECEIPT_REGISTERED', 'ESOCIAL_EVENT', id, alvo.event_number, {
+      recibo,
+      protocolo: dados.protocol_number || null,
+      origem: 'registro manual apos envio pelo canal oficial'
+    });
+
+    return { success: true };
+  }, [esocialEvents, currentProfile.full_name, logAudit]);
+
   const transmitBatchESocial = useCallback((eventIds: string[], certificateType: 'A1_DIGITAL' | 'A3_TOKEN_SMARTCARD' = 'A1_DIGITAL'): { batch: ESocialBatch; successCount: number; errorCount: number } => {
     let successCount = 0;
     let errorCount = 0;
@@ -4346,8 +4424,6 @@ ${blocoRespMonitXml(event.client_id, aso?.exam_date || dataDeHoje(), '      ')}
     const batchSeq = esocialBatches.length + 1;
     const batchNumber = `LOTE-${new Date().getFullYear()}-${String(batchSeq).padStart(5, '0')}`;
     const batchId = `batch-${Date.now()}`;
-    // Protocolo do lote so existe apos o envio real ao eSocial.
-    const protocolNumber = undefined as unknown as string;
 
     eventIds.forEach(id => {
       const res = transmitESocialEvent(id, certificateType);
@@ -4358,20 +4434,22 @@ ${blocoRespMonitXml(event.client_id, aso?.exam_date || dataDeHoje(), '      ')}
       }
     });
 
+    // O lote foi MONTADO, nao enviado. Antes isto gravava
+    // environment 'PRODUCAO' e status 'SUCESSO_TOTAL' contando sucessos de
+    // uma funcao que nao transmite: quem lesse a tabela depois -- um
+    // relatorio, uma auditoria, uma pessoa -- concluiria que os eventos
+    // foram ao governo. Sem envio nao ha ambiente, protocolo nem conclusao.
     const newBatch: ESocialBatch = {
       id: batchId,
       organization_id: organization.id,
       batch_number: batchNumber,
-      environment: 'PRODUCAO',
       certificate_type: certificateType,
       event_ids: eventIds,
       events_count: eventIds.length,
       success_count: successCount,
       error_count: errorCount,
-      status: errorCount === 0 ? 'SUCESSO_TOTAL' : successCount > 0 ? 'SUCESSO_PARCIAL' : 'REJEITADO',
-      protocol_number: protocolNumber,
-      created_at: new Date().toISOString(),
-      completed_at: new Date().toISOString()
+      status: 'MONTADO',
+      created_at: new Date().toISOString()
     };
 
     setEsocialBatches(prev => [newBatch, ...prev]);
@@ -4538,6 +4616,18 @@ ${blocoRespMonitXml(event.client_id, aso?.exam_date || dataDeHoje(), '      ')}
       throw new Error('Evento alvo para exclusão não foi encontrado.');
     }
 
+    // O S-3000 identifica o evento a excluir pelo recibo que o eSocial
+    // devolveu. Sem ele o XML sai sem <nrRecibo> e o governo rejeita --
+    // antes isso acontecia em silencio, porque nada no sistema preenchia
+    // receipt_number. Agora o recibo se registra na lista de eventos.
+    if (!target.receipt_number) {
+      throw new Error(
+        `O evento ${target.event_number} ainda não tem recibo registrado. ` +
+        'O S-3000 precisa citar o recibo devolvido pelo eSocial: registre-o no ' +
+        'evento (ação "Registrar recibo") antes de pedir a exclusão.'
+      );
+    }
+
     const newExclusion = createESocialEvent({
       client_id: target.client_id,
       event_type: 'S-3000',
@@ -4553,9 +4643,7 @@ ${blocoRespMonitXml(event.client_id, aso?.exam_date || dataDeHoje(), '      ')}
       status: 'DRAFT',
       exclusion_data: {
         target_event_type: target.event_type as 'S-2210' | 'S-2220' | 'S-2240',
-        // Sem recibo original nao ha o que retificar; o campo fica vazio em vez
-        // de apontar para um recibo que nunca existiu.
-        target_receipt_number: target.receipt_number || undefined,
+        target_receipt_number: target.receipt_number,
         exclusion_reason: reason
       }
     });
@@ -8459,6 +8547,7 @@ ${blocoRespMonitXml(event.client_id, aso?.exam_date || dataDeHoje(), '      ')}
     deleteESocialEvent,
     validateESocialEvent,
     transmitESocialEvent,
+    registrarReciboESocial,
     transmitBatchESocial,
     generateESocialFromServiceOrder,
     generateExclusionEventS3000,
@@ -8775,6 +8864,7 @@ ${blocoRespMonitXml(event.client_id, aso?.exam_date || dataDeHoje(), '      ')}
     deleteESocialEvent,
     validateESocialEvent,
     transmitESocialEvent,
+    registrarReciboESocial,
     transmitBatchESocial,
     generateESocialFromServiceOrder,
     generateExclusionEventS3000,

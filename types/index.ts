@@ -1384,7 +1384,8 @@ export interface AuditLog {
     | 'ESOCIAL_EVENT_REJECTED'
     | 'ESOCIAL_EVENT_EXCLUDED'
     | 'ESOCIAL_BATCH_TRANSMITTED'
-    | 'ESOCIAL_AUTOMATION_EXECUTED';
+    | 'ESOCIAL_AUTOMATION_EXECUTED'
+    | 'ESOCIAL_RECEIPT_REGISTERED';
   entity_type: 'CLIENT' | 'PROPOSAL' | 'CONTRACT' | 'SERVICE_ORDER' | 'STAGE' | 'TASK' | 'DOCUMENT' | 'REQUEST' | 'EVALUATION' | 'ESOCIAL_EVENT' | 'ESOCIAL_BATCH' | 'ORGANIZATION' | 'USER';
   entity_id: string;
   entity_number?: string;
@@ -1572,14 +1573,21 @@ export interface ESocialBatch {
   id: string;
   organization_id: string;
   batch_number: string;
-  environment: 'PRODUCAO' | 'PRODUCAO_RESTRITA';
+  /** So existe apos o envio: um lote montado ainda nao tem ambiente. */
+  environment?: 'PRODUCAO' | 'PRODUCAO_RESTRITA';
   certificate_type: 'A1_DIGITAL' | 'A3_TOKEN_SMARTCARD';
   event_ids: string[];
   events_count: number;
   success_count: number;
   error_count: number;
-  status: 'PROCESSANDO' | 'SUCESSO_TOTAL' | 'SUCESSO_PARCIAL' | 'REJEITADO';
-  protocol_number: string;
+  /**
+   * MONTADO e o estado de um lote que o PrevSafe preparou mas nao enviou --
+   * o sistema nao transmite ao eSocial. Os demais estados so fazem sentido
+   * depois de um envio real, registrado pelo usuario.
+   */
+  status: 'MONTADO' | 'PROCESSANDO' | 'SUCESSO_TOTAL' | 'SUCESSO_PARCIAL' | 'REJEITADO';
+  /** So existe apos o envio ao eSocial; o sistema nao inventa protocolo. */
+  protocol_number?: string;
   created_at: string;
   completed_at?: string;
 }
