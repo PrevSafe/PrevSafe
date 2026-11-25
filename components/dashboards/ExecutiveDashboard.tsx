@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { usePrevSafe } from '@/context/PrevSafeContext';
 import { formatDate } from '@/lib/utils';
+import { CartaoMetrica } from './CartaoMetrica';
 import { 
   Users, 
   FileSpreadsheet, 
@@ -145,15 +146,19 @@ export const ExecutiveDashboard: React.FC<{ onNavigate: (view: string) => void }
       {/* Alertas Automáticos de Prazos SST (Exames S-2220 e Laudos PGR/PCMSO conforme SLA) */}
       <SSTDeadlineAlertBanner onNavigate={onNavigate} />
 
-      {/* Header Bento Banner */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-superficie border border-borda rounded-3xl p-6 shadow-sm">
+      {/* Cabecalho da pagina. No shell claro ele fica solto sobre o fundo, nao
+          dentro de um card: sobrepor caixa em caixa some com a hierarquia. */}
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
-          <div className="flex items-center space-x-2.5">
-            <div className="w-2.5 h-2.5 rounded-full bg-marca animate-pulse" />
-            <span className="text-xs font-semibold text-marca-escura uppercase tracking-wider">Painel Executivo</span>
+          <div className="text-[10.5px] font-bold uppercase tracking-[0.11em] text-tinta-3">
+            Painel executivo
           </div>
-          <h1 className="text-2xl font-bold tracking-tight text-tinta mt-1">Visão Integrada SST</h1>
-          <p className="text-xs text-tinta-2 mt-0.5">Gestão de ponta a ponta dos serviços contratados, SLA e entregas técnicas.</p>
+          <h1 className="font-titulo text-[26px] font-bold tracking-tight text-tinta mt-1">
+            Visão Integrada SST
+          </h1>
+          <p className="text-[13px] text-tinta-2 mt-0.5">
+            Gestão de ponta a ponta dos serviços contratados, SLA e entregas técnicas.
+          </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <button 
@@ -168,7 +173,7 @@ export const ExecutiveDashboard: React.FC<{ onNavigate: (view: string) => void }
 
           <button 
             onClick={() => onNavigate('service-orders')}
-            className="bg-marca-escura px-4 py-2.5 text-white rounded-2xl text-xs font-bold shadow-sm transition flex items-center space-x-2"
+            className="bg-marca-escura hover:opacity-90 px-4 py-2 text-white rounded-xl text-[13px] font-semibold shadow-sm transition flex items-center gap-2"
           >
             <span>Gerenciar Ordens de Serviço</span>
             <ArrowRight className="w-4 h-4" />
@@ -176,106 +181,54 @@ export const ExecutiveDashboard: React.FC<{ onNavigate: (view: string) => void }
         </div>
       </div>
 
-      {/* Bento Grid - Top Metric Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-        {/* Active Clients */}
-        <div 
+      {/* Cartoes de numero. Cinco blocos quase iguais viraram cinco usos do
+          mesmo componente: a aparencia mora num lugar so. */}
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+        <CartaoMetrica
+          icone={Building2}
+          rotulo="Clientes ativos"
+          valor={activeClientsCount}
+          nota={<span className="text-marca-escura font-medium">100% retenção anual</span>}
           onClick={() => onNavigate('crm-clients')}
-          className="bg-superficie p-5 rounded-3xl border border-borda hover:border-marca-escura hover:bg-superficie cursor-pointer transition shadow-sm flex flex-col justify-between"
-        >
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-tinta-2 uppercase tracking-wider">Clientes Ativos</span>
-            <div className="p-2.5 rounded-2xl bg-marca-suave text-marca-escura border border-marca-borda">
-              <Building2 className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="mt-4">
-            <div className="text-3xl font-bold text-tinta tracking-tight">{activeClientsCount}</div>
-            <div className="text-[11px] text-marca-escura flex items-center mt-1.5 font-medium">
-              <ArrowUpRight className="w-3.5 h-3.5 mr-0.5" /> 100% Retenção Anual
-            </div>
-          </div>
-        </div>
-
-        {/* Proposals */}
-        <div 
+        />
+        <CartaoMetrica
+          icone={FileSpreadsheet}
+          tom="teal"
+          rotulo="Propostas abertas"
+          valor={openProposalsCount}
+          nota={<span className="text-tinta-2">{approvedProposalsCount} aprovadas no ciclo</span>}
           onClick={() => onNavigate('proposals')}
-          className="bg-superficie p-5 rounded-3xl border border-borda hover:border-teal-500/50 hover:bg-superficie cursor-pointer transition shadow-sm flex flex-col justify-between"
-        >
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-tinta-2 uppercase tracking-wider">Propostas Abertas</span>
-            <div className="p-2.5 rounded-2xl bg-teal-500/10 text-teal-800 border border-teal-500/20">
-              <FileSpreadsheet className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="mt-4">
-            <div className="text-3xl font-bold text-tinta tracking-tight">{openProposalsCount}</div>
-            <div className="text-[11px] text-teal-700 mt-1.5 font-medium">
-              {approvedProposalsCount} aprovadas no ciclo
-            </div>
-          </div>
-        </div>
-
-        {/* Active Contracts */}
-        <div 
+        />
+        <CartaoMetrica
+          icone={FileSignature}
+          tom="teal"
+          rotulo="Contratos vigentes"
+          valor={activeContractsCount}
+          nota={<span className="text-tinta-2 tabular-nums">R$ {totalContractedValue.toLocaleString('pt-BR')}</span>}
           onClick={() => onNavigate('contracts')}
-          className="bg-superficie p-5 rounded-3xl border border-borda hover:border-teal-500/50 hover:bg-superficie cursor-pointer transition shadow-sm flex flex-col justify-between"
-        >
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-tinta-2 uppercase tracking-wider">Contratos Vigentes</span>
-            <div className="p-2.5 rounded-2xl bg-teal-500/10 text-teal-800 border border-teal-500/20">
-              <FileSignature className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="mt-4">
-            <div className="text-3xl font-bold text-tinta tracking-tight">{activeContractsCount}</div>
-            <div className="text-[11px] text-teal-700 mt-1.5 font-medium font-mono">
-              R$ {totalContractedValue.toLocaleString('pt-BR')}
-            </div>
-          </div>
-        </div>
-
-        {/* Active OS */}
-        <div 
+        />
+        <CartaoMetrica
+          icone={Briefcase}
+          tom={delayedOSCount > 0 ? 'ambar' : 'marca'}
+          rotulo="OS em execução"
+          valor={inProgressOSCount}
+          nota={
+            delayedOSCount > 0 ? (
+              <span className="text-rose-700 font-semibold">{delayedOSCount} com alerta de prazo</span>
+            ) : (
+              <span className="text-marca-escura font-medium">100% no prazo SLA</span>
+            )
+          }
           onClick={() => onNavigate('service-orders')}
-          className="bg-superficie p-5 rounded-3xl border border-borda hover:border-teal-500/50 hover:bg-superficie cursor-pointer transition shadow-sm flex flex-col justify-between"
-        >
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-tinta-2 uppercase tracking-wider">OS em Execução</span>
-            <div className="p-2.5 rounded-2xl bg-teal-500/10 text-teal-800 border border-teal-500/20">
-              <Briefcase className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="mt-4">
-            <div className="text-3xl font-bold text-tinta tracking-tight">{inProgressOSCount}</div>
-            <div className="text-[11px] mt-1.5 font-medium">
-              {delayedOSCount > 0 ? (
-                <span className="text-rose-700 font-semibold">{delayedOSCount} com alerta de prazo</span>
-              ) : (
-                <span className="text-marca-escura">100% no prazo SLA</span>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Customer NPS */}
-        <div 
+        />
+        <CartaoMetrica
+          icone={Star}
+          tom="ambar"
+          rotulo="NPS / satisfação"
+          valor={averageNps}
+          nota={<span className="text-tinta-2">Nota média {averageSatisfaction} ★</span>}
           onClick={() => onNavigate('evaluations')}
-          className="bg-superficie p-5 rounded-3xl border border-borda hover:border-amber-500/50 hover:bg-superficie cursor-pointer transition shadow-sm flex flex-col justify-between"
-        >
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-tinta-2 uppercase tracking-wider">NPS / Satisfação</span>
-            <div className="p-2.5 rounded-2xl bg-amber-500/10 text-amber-800 border border-amber-500/20">
-              <Star className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="mt-4">
-            <div className="text-3xl font-bold text-tinta tracking-tight">{averageNps} <span className="text-sm font-normal text-tinta-2">/ 10</span></div>
-            <div className="text-[11px] text-amber-700 mt-1.5 font-medium">
-              Nota Média {averageSatisfaction} ★
-            </div>
-          </div>
-        </div>
+        />
       </div>
 
       {/* Critical Action Banner if any delay or open pendencies */}

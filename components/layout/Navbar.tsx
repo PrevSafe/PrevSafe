@@ -207,19 +207,23 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* Atalho de tela pelo codigo, como o "Cod. Prog." do Semeio */}
           <CodigoTela setActiveView={setActiveView} className="hidden md:block shrink-0" />
 
+          {/* Empresa em uso. No mockup e a peca mais forte da barra: fundo
+              petroleo, para quem olha de relance saber em qual empresa esta
+              mexendo antes de clicar em qualquer coisa. */}
+          <div className="hidden lg:flex shrink-0 items-center gap-2.5 px-3 py-[7px] rounded-xl bg-petroleo text-white text-[13px] max-w-[26rem] min-w-0">
+            <span className={`text-[10px] font-bold tracking-[0.09em] text-marca-clara shrink-0` /* contraste-ok: #8FD3A1 sobre o bg-petroleo desta pilula, 7,01 */}>EMPRESA</span>
+            <span className="font-semibold truncate min-w-0">
+              {activeClients.length === 0
+                ? 'Nenhuma empresa ativa'
+                : activeClients.length === 1
+                  ? firstClientName
+                  : `${firstClientName} · +${activeClients.length - 1}`}
+            </span>
+            <Building2 className="w-3.5 h-3.5 opacity-70 shrink-0" />
+          </div>
+
           {/* Quick Metrics Bar */}
           <div className="hidden 2xl:flex shrink-0 items-center space-x-4 px-3 py-1.5 bg-superficie-2 rounded-lg border border-borda text-xs whitespace-nowrap">
-            <div className="flex items-center space-x-1.5 text-tinta">
-              <Building2 className="w-3.5 h-3.5 text-tinta-2" />
-              <span className="font-medium text-tinta truncate max-w-[220px]">
-                {activeClients.length === 0
-                  ? 'Nenhum cliente ativo'
-                  : activeClients.length === 1
-                    ? firstClientName
-                    : `${firstClientName} & +${activeClients.length - 1}`}
-              </span>
-            </div>
-            <div className="w-px h-3.5 bg-superficie-3" />
             <div className="flex items-center space-x-1.5 text-tinta">
               <Clock className="w-3.5 h-3.5 text-teal-700" />
               <span>OS Ativas: <strong>{serviceOrders.filter(o => o.status === 'IN_PROGRESS').length}</strong></span>
