@@ -175,3 +175,26 @@ export function novoId(prefixo: string): string {
   const aleatorio = Math.random().toString(36).slice(2, 8);
   return `${prefixo}-${Date.now()}-${contador.toString(36)}${aleatorio}`;
 }
+
+/**
+ * Quantos dias de calendario faltam ate a data AAAA-MM-DD, no fuso local.
+ *
+ * `new Date('2026-11-20')` e meia-noite UTC, nao meia-noite aqui. Comparar
+ * isso com o relogio local desloca a conta em tres horas, e perto da virada
+ * do dia o resultado sai um dia errado -- num sistema onde a data decide
+ * prazo legal, isso nao pode ficar por conta do horario em que a pessoa
+ * abriu a tela. Aqui os dois lados viram data pura antes de comparar.
+ */
+export function diasAte(iso: string, fuso: string = FUSO_PADRAO): number | null {
+  if (!iso) return null;
+  const alvo = String(iso).slice(0, 10);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(alvo)) return null;
+
+  const [ha, hm, hd] = dataDeHoje(fuso).split('-').map(Number);
+  const [aa, am, ad] = alvo.split('-').map(Number);
+
+  const umDia = 86400000;
+  const hojeUTC = Date.UTC(ha, hm - 1, hd);
+  const alvoUTC = Date.UTC(aa, am - 1, ad);
+  return Math.round((alvoUTC - hojeUTC) / umDia);
+}

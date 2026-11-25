@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { usePrevSafe } from '@/context/PrevSafeContext';
 import { SSTCATRecord, SSTWorkAbsence } from '@/types';
-import { dataDeHoje } from '@/lib/datas';
+import { dataDeHoje, dataEmDias } from '@/lib/datas';
 import { 
   AlertOctagon, 
   Plus, 
@@ -20,11 +20,12 @@ interface CatAndAbsenceTabProps {
 }
 
 const todayISO = () => dataDeHoje();
-const addDaysISO = (days: number) => {
-  const d = new Date();
-  d.setDate(d.getDate() + days);
-  return d.toISOString().split('T')[0];
-};
+
+// Usa dataEmDias em vez de somar no Date e chamar toISOString(): aquela
+// versao convertia para UTC depois da soma, entao das 21h em diante toda
+// data saia um dia a frente. Num afastamento isso desloca o end_date que
+// alimenta o S-2230.
+const addDaysISO = (days: number) => dataEmDias(days);
 
 export const CatAndAbsenceTab: React.FC<CatAndAbsenceTabProps> = ({ selectedClientId }) => {
   const {
