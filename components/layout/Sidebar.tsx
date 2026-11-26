@@ -193,7 +193,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       </div>
 
       {/* Navigation List */}
-      <div className="flex-1 overflow-y-auto p-3 space-y-5 scrollbar-thin scrollbar-thumb-slate-800">
+      <div className="flex-1 overflow-y-auto py-3 space-y-4 scrollbar-thin scrollbar-thumb-slate-800">
         {menuSections.map((sec, secIdx) => {
           const hasAccess = sec.roles.includes(currentRole);
           if (!hasAccess && !isClientRole) return null;
@@ -219,7 +219,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 onClick={() => alternarGrupo(sec.title)}
                 aria-expanded={grupoAberto}
                 aria-controls={idLista}
-                className="w-full flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg text-[10px] font-bold text-tinta-2 uppercase tracking-wider hover:bg-superficie-2 hover:text-tinta transition"
+                className="w-full flex items-center justify-between gap-2 px-4 py-2 text-[10px] font-bold text-tinta-3 uppercase tracking-[0.1em] hover:bg-superficie-2 hover:text-tinta transition"
               >
                 <span className="truncate text-left">{sec.title}</span>
                 <ChevronDown
@@ -246,26 +246,24 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   <button
                     key={item.id}
                     onClick={() => handleSelectView(item.id)}
-                    className={`w-full flex items-center justify-between px-3 py-2.5 sm:py-2 rounded-xl text-xs font-medium transition touch-manipulation min-h-[42px] sm:min-h-0 ${
+                    className={`w-full flex items-center justify-between gap-2.5 pl-3 pr-3 py-2.5 sm:py-2 text-[13px] transition touch-manipulation min-h-[42px] sm:min-h-0 border-l-[3px] ${
                       isActive
-                        ? 'bg-marca-escura text-white border border-marca-escura shadow-sm'
+                        ? 'bg-marca-suave text-tinta border-marca font-semibold'
                         : item.highlight
-                        ? 'text-tinta hover:bg-superficie hover:text-tinta bg-superficie border border-borda'
-                        : 'text-tinta-2 hover:bg-superficie hover:text-tinta'
+                        ? 'text-tinta bg-superficie-2 border-transparent hover:bg-superficie-3'
+                        : 'text-tinta-2 border-transparent hover:bg-superficie-2 hover:text-tinta'
                     }`}
                   >
                     <div className="flex items-center space-x-2.5 truncate">
-                      <Icon className={`w-4 h-4 flex-shrink-0 ${isActive ? 'text-white' : 'text-tinta-2'}`} />  {/* contraste-ok: branco sobre o bg-marca-escura do botao pai, 4,9:1 */}
+                      <Icon className={`w-4 h-4 flex-shrink-0 ${isActive ? 'text-marca-escura' : 'text-tinta-2'}`} />
                       <span className="truncate">{item.label}</span>
                     </div>
 
                     <div className="flex items-center space-x-1.5 flex-shrink-0">
                       {item.code && (
-                        <span 
-                          className={`text-[9px] font-mono font-semibold px-1.5 py-0.5 rounded border ${
-                            isActive
-                              ? 'bg-white/15 text-white border-white/30'  /* contraste-ok: branco sobre o bg-marca-escura do botao pai, 4,9:1 */
-                              : 'bg-fundo text-marca-escura border-borda hover:border-marca-escura'
+                        <span
+                          className={`text-[11px] font-semibold tabular-nums ${
+                            isActive ? 'text-marca-escura' : 'text-tinta-3'
                           }`}
                           title={`Digite ${item.code} para ir direto`}
                         >
@@ -273,13 +271,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
                         </span>
                       )}
                       {item.badge && (
-                        <span className={`text-[10px] px-1.5 py-0.5 rounded font-mono font-semibold ${
-                          item.badgeColor || (isActive ? 'bg-marca-escura text-white' : 'bg-superficie-2 text-tinta')
+                        <span className={`text-[10px] px-2 py-px rounded-full font-bold tabular-nums ${
+                          item.badgeColor || 'bg-amber-100 text-amber-800'
                         }`}>
                           {item.badge}
                         </span>
                       )}
-                      {isActive && <ChevronRight className="w-3.5 h-3.5 text-white" />}  {/* contraste-ok: branco sobre o bg-marca-escura do botao pai, 4,9:1 */}
                     </div>
                   </button>
                 );

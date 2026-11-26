@@ -28,6 +28,9 @@
   --color-marca-escura: #1B7A31;
   --color-marca-suave:  #EAF7ED;
   --color-marca-borda:  #C2E3CB;
+  /* Verde claro para texto sobre o petroleo: o #2FB24A da 4,43 ali,
+   * abaixo do minimo. E o tom que a arte do shell usa nesse rotulo. */
+  --color-marca-clara:  #8FD3A1;
 
   /* Tipografia da identidade: Montserrat nos titulos, Inter no texto.
    * Os nomes --fonte-* vem do next/font; os --font-* sao os tokens que o
