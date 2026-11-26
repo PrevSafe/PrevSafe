@@ -173,7 +173,7 @@ export const SSTUnifiedEngineeringView: React.FC<SSTUnifiedEngineeringViewProps>
       </div>
 
       {/* Numeros da empresa em uso, no cartao do shell claro. */}
-      <section className="grid gap-3.5 grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
+      <section className="grid gap-3.5 grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6">
         <CartaoMetrica icone={Building2} tom="teal" valor={clientSectors.length} rotulo="Setores" nota={`${clientJobs.length} cargos CBO`} onClick={() => setActiveTab('HIERARCHY')} />
         <CartaoMetrica icone={ShieldAlert} tom="ambar" valor={clientGhes.length} rotulo="GHEs" nota={`${clientRisks.length} riscos NR-01/NR-15`} onClick={() => setActiveTab('GHE_RISKS')} />
         <CartaoMetrica icone={Stethoscope} tom="teal" valor={clientExamProtocols.length} rotulo="Exames do PCMSO" nota="Tabela 27 do eSocial" onClick={() => setActiveTab('EXAMS_PCMSO')} />
