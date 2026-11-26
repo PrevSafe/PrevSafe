@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useCallback, useEffect, useId, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { usePrevSafe } from '@/context/PrevSafeContext';
 import { buscarProgramas, type ProgramaEncontrado } from '@/lib/programas';
 
@@ -15,6 +16,14 @@ interface Props {
  * catalogo de lib/programas.ts -- os codigos sao os mesmos que o menu
  * lateral mostra ao lado de cada item.
  *
+ * A lista vai num portal com position:fixed, e nao num absolute dentro do
+ * proprio campo. O motivo e concreto: o globals.css deixa o body com
+ * overflow-x:hidden, e pela regra do CSS isso promove o overflow-y de
+ * visible para auto -- o body vira um container de recorte. Com a lista em
+ * absolute ela media 352x298 e aparecia cortada na primeira linha, o que na
+ * tela dava uma caixa branca vazia pendurada embaixo do campo. Em fixed,
+ * nenhum ancestral com overflow recorta.
+ *
  * A tecla de foco e a barra (/), e nao Ctrl+K: aqui o Ctrl+K ja e da busca
  * rapida, e roubar um atalho que a pessoa ja usa seria pior que nao ter o
  * campo.
@@ -24,7 +33,8 @@ export function CodigoTela({ setActiveView, className = '' }: Props) {
   const [termo, setTermo] = useState('');
   const [aberto, setAberto] = useState(false);
   const [destaque, setDestaque] = useState(0);
-  const caixa = useRef<HTMLDivElement>(null);
+  const [caixa, setCaixa] = useState<{ left: number; top: number; width: number } | null>(null);
+  const raiz = useRef<HTMLDivElement>(null);
   const campo = useRef<HTMLInputElement>(null);
   const idLista = useId();
 
@@ -32,15 +42,43 @@ export function CodigoTela({ setActiveView, className = '' }: Props) {
 
   const fechar = useCallback(() => setAberto(false), []);
 
-  // Clicar fora fecha a lista.
+  // Posicao da lista em coordenadas de viewport. Se nao couber embaixo,
+  // abre para cima -- o campo fica numa barra fixa no topo, entao embaixo
+  // quase sempre cabe, mas em janela baixa (ou com o teclado do celular na
+  // tela) nao cabia e a lista saia da area visivel.
+  const posicionar = useCallback(() => {
+    const el = raiz.current;
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    const largura = Math.max(r.width, 380);
+    const left = Math.min(Math.max(8, r.left), window.innerWidth - largura - 8);
+    setCaixa({ left, top: r.bottom + 8, width: largura });
+  }, []);
+
+  useLayoutEffect(() => {
+    if (!aberto) return;
+    posicionar();
+    window.addEventListener('resize', posicionar);
+    window.addEventListener('scroll', posicionar, true);
+    return () => {
+      window.removeEventListener('resize', posicionar);
+      window.removeEventListener('scroll', posicionar, true);
+    };
+  }, [aberto, posicionar]);
+
+  // Clicar fora fecha a lista. A lista esta fora da arvore do campo (portal),
+  // entao o teste precisa olhar os dois.
   useEffect(() => {
     if (!aberto) return;
     const aoClicar = (e: MouseEvent) => {
-      if (!caixa.current?.contains(e.target as Node)) fechar();
+      const alvo = e.target as Node;
+      if (raiz.current?.contains(alvo)) return;
+      if ((alvo as HTMLElement)?.closest?.(`[data-lista-telas="${idLista}"]`)) return;
+      fechar();
     };
     document.addEventListener('mousedown', aoClicar);
     return () => document.removeEventListener('mousedown', aoClicar);
-  }, [aberto, fechar]);
+  }, [aberto, fechar, idLista]);
 
   // "/" leva para o campo de qualquer tela, desde que nao se esteja
   // digitando em outro lugar -- senao a barra entraria no texto.
@@ -55,7 +93,6 @@ export function CodigoTela({ setActiveView, className = '' }: Props) {
       if (!campo.current?.offsetParent) return;
       e.preventDefault();
       campo.current.focus();
-      setAberto(true);
     };
     document.addEventListener('keydown', tecla);
     return () => document.removeEventListener('keydown', tecla);
@@ -89,76 +126,82 @@ export function CodigoTela({ setActiveView, className = '' }: Props) {
     }
   }
 
-  return (
-    <div className={`relative ${className}`} ref={caixa}>
-      <label className="flex items-center gap-2 h-[42px] px-2.5 rounded-xl bg-superficie-2 border border-borda focus-within:border-marca-escura transition">
-        <span className="text-[10px] font-bold uppercase tracking-wider text-tinta-2 whitespace-nowrap">
-          Cód. Tela
-        </span>
-        <input
-          ref={campo}
-          value={termo}
-          placeholder="código ou nome"
-          autoComplete="off"
-          spellCheck={false}
-          role="combobox"
-          aria-expanded={aberto}
-          aria-controls={idLista}
-          aria-autocomplete="list"
-          aria-label="Ir para a tela pelo código ou nome"
-          className="w-28 lg:w-40 bg-transparent text-xs text-tinta placeholder:text-tinta-3 outline-none"
-          onFocus={() => setAberto(true)}
-          onChange={(e) => {
-            setTermo(e.target.value);
-            setDestaque(0);
-            setAberto(true);
-          }}
-          onKeyDown={teclas}
-        />
-        <kbd className="hidden lg:inline-block text-[9px] font-mono px-1.5 py-0.5 rounded bg-fundo text-tinta-2 border border-borda">
-          /
-        </kbd>
-      </label>
+  const mostrar = aberto && caixa;
 
-      {aberto && (
-        <ul
-          id={idLista}
-          role="listbox"
-          className="absolute left-0 top-full mt-2 w-[22rem] max-h-80 overflow-y-auto bg-superficie border border-borda rounded-xl shadow-lg z-50 p-1.5"
-        >
-          {lista.length === 0 && (
-            <li className="px-3 py-2.5 text-xs text-tinta-2">
-              Nenhuma tela com &ldquo;{termo}&rdquo;
-            </li>
-          )}
-          {lista.map((p, i) => {
-            const Icone = p.icon;
-            const marcado = i === destaque;
-            return (
-              <li
-                key={p.id}
-                role="option"
-                aria-selected={marcado}
-                onPointerDown={(e) => e.preventDefault()}
-                onClick={() => abrir(p)}
-                onMouseEnter={() => setDestaque(i)}
-                className={`flex items-center gap-2.5 px-2.5 py-2 rounded-lg cursor-pointer transition ${
-                  marcado ? 'bg-marca-suave' : ''
-                }`}
-              >
-                <span className="text-[9px] font-mono font-semibold px-1.5 py-0.5 rounded bg-fundo text-marca-escura border border-borda w-10 text-center shrink-0">
-                  {p.code || '—'}
-                </span>
-                <Icone className="w-4 h-4 text-tinta-2 shrink-0" />
-                <span className="text-xs text-tinta truncate flex-1">{p.label}</span>
-                <span className="text-[9px] uppercase tracking-wider text-tinta-3 truncate max-w-[7rem] shrink-0">
-                  {p.grupo}
-                </span>
+  return (
+    <div className={`relative flex items-center gap-2 h-[38px] px-2.5 rounded-[9px] bg-superficie-2 border border-borda focus-within:border-marca-escura transition ${className}`} ref={raiz}>
+      <span className="text-[11px] font-bold text-tinta bg-superficie border border-borda rounded-[5px] px-1.5 py-0.5 whitespace-nowrap">
+        Cód.
+      </span>
+      <input
+        ref={campo}
+        value={termo}
+        placeholder="código ou nome"
+        autoComplete="off"
+        spellCheck={false}
+        role="combobox"
+        aria-expanded={!!mostrar}
+        aria-controls={idLista}
+        aria-autocomplete="list"
+        aria-label="Ir para a tela pelo código ou nome"
+        className="flex-1 min-w-0 bg-transparent text-[13px] text-tinta placeholder:text-tinta-3 outline-none"
+        onChange={(e) => {
+          setTermo(e.target.value);
+          setDestaque(0);
+          setAberto(true);
+        }}
+        onKeyDown={teclas}
+      />
+      <kbd className="hidden xl:inline-block text-[10px] font-semibold px-1.5 py-0.5 rounded bg-superficie text-tinta-2 border border-borda">
+        /
+      </kbd>
+
+      {mostrar &&
+        typeof document !== 'undefined' &&
+        createPortal(
+          <ul
+            id={idLista}
+            role="listbox"
+            data-lista-telas={idLista}
+            style={{ left: caixa.left, top: caixa.top, width: caixa.width }}
+            className="fixed max-h-[min(20rem,60vh)] overflow-y-auto bg-superficie border border-borda rounded-xl shadow-lg z-[60] p-1.5"
+          >
+            {lista.length === 0 && (
+              <li className="px-3 py-2.5 text-xs text-tinta-2">
+                Nenhuma tela com &ldquo;{termo}&rdquo;
               </li>
-            );
-          })}
-        </ul>
-      )}
+            )}
+            {lista.map((p, i) => {
+              const Icone = p.icon;
+              const marcado = i === destaque;
+              return (
+                <li
+                  key={p.id}
+                  role="option"
+                  aria-selected={marcado}
+                  onPointerDown={(e) => e.preventDefault()}
+                  onClick={() => abrir(p)}
+                  onMouseEnter={() => setDestaque(i)}
+                  className={`flex items-center gap-2.5 px-2.5 py-2 rounded-lg cursor-pointer transition ${
+                    marcado ? 'bg-marca-suave' : ''
+                  }`}
+                >
+                  <span className="text-[9px] font-mono font-semibold px-1.5 py-0.5 rounded bg-fundo text-marca-escura border border-borda w-10 text-center shrink-0">
+                    {p.code || '—'}
+                  </span>
+                  <Icone className="w-4 h-4 text-tinta-2 shrink-0" />
+                  <span className="flex-1 min-w-0">
+                    <span className="block text-xs text-tinta truncate">{p.label}</span>
+                    <span className="block text-[9px] uppercase tracking-wider text-tinta-3 truncate">
+                      {p.grupo}
+                    </span>
+                  </span>
+                </li>
+              );
+            })}
+          </ul>,
+          document.body
+        )}
     </div>
   );
 }

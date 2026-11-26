@@ -27,6 +27,7 @@ import {
   Building2,
   ChevronRight,
   ChevronDown,
+  ChevronsLeft,
   ShieldCheck,
   X,
   Search,
@@ -35,8 +36,6 @@ import {
   Layers as LayersIcon,
   GraduationCap,
   BookOpen,
-  LogOut,
-  KeyRound,
   HardHat,
   Palette,
   Vote,
@@ -71,8 +70,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     esocialEvents = [], 
     transactions = [], 
     tenants = [], 
-    profiles = [], 
-    logout 
+    profiles = [],
   } = usePrevSafe();
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -141,53 +139,42 @@ export const Sidebar: React.FC<SidebarProps> = ({
     handleClose();
   };
 
-  const renderContent = () => (
+  /**
+   * O protótipo abre a coluna direto no primeiro grupo. O que havia aqui
+   * antes era repetição da barra de cima: a marca "PrevSafe · Módulos" (que
+   * já está no topo, agora com o escudo) e um bloco "Nível de Acesso /
+   * ADMIN / Multi-Tenant" (o papel já aparece sob o nome no avatar). Dois
+   * blocos de moldura antes do primeiro item de menu.
+   *
+   * O X só existe na gaveta do celular: no desktop a coluna é fixa, e quem
+   * quer recolher usa o hambúrguer do topo ou o "Recolher menu" do rodapé.
+   */
+  const renderContent = (emGaveta: boolean) => (
     <div className="flex flex-col h-full bg-superficie text-tinta">
-      {/* Sidebar Header with Close Button */}
-      <div className="p-4 border-b border-borda bg-superficie flex items-center justify-between">
-        <div className="min-w-0">
-          <div>
-            <div className="text-sm font-bold text-tinta flex items-center space-x-1.5">
-              <span>PrevSafe</span>
-              <span className="text-[9px] uppercase font-mono px-1 py-0.2 bg-marca-suave text-marca-escura border border-marca rounded">Módulos</span>
-            </div>
-            <p className="text-[10px] text-tinta-2">Navegação Integrada SST</p>
-          </div>
+      {emGaveta && (
+        <div className="flex items-center justify-between gap-2 px-3 py-2.5 border-b border-borda">
+          <span className="text-[10px] font-bold tracking-[0.1em] text-tinta-3 uppercase">Menu</span>
+          <button
+            onClick={handleClose}
+            className="p-1.5 rounded-lg text-tinta-2 hover:text-tinta hover:bg-superficie-2 transition active:scale-95 touch-manipulation"
+            aria-label="Fechar menu lateral"
+            title="Fechar menu (Esc)"
+          >
+            <X className="w-5 h-5" />
+          </button>
         </div>
-        <button
-          onClick={handleClose}
-          className="p-1.5 rounded-lg bg-superficie-2 hover:bg-superficie-3 text-tinta hover:text-tinta transition active:scale-95 touch-manipulation"
-          aria-label="Fechar menu lateral"
-          title="Fechar Menu (Esc)"
-        >
-          <X className="w-5 h-5" />
-        </button>
-      </div>
+      )}
 
-      {/* Role Context Header */}
-      <div className="p-3.5 sm:p-4 border-b border-borda bg-superficie">
-        <div className="flex items-center space-x-2">
-          <div className="w-2.5 h-2.5 rounded-full bg-marca animate-pulse" />
-          <span className="text-[11px] font-semibold text-tinta uppercase tracking-wider">
-            Nível de Acesso
-          </span>
-        </div>
-        <div className="mt-1.5 flex items-center justify-between">
-          <span className="text-xs sm:text-sm font-bold text-tinta tracking-tight">{currentRole}</span>
-          <span className="text-[9px] sm:text-[10px] px-2 py-0.5 rounded-full bg-superficie-2 text-tinta border border-borda font-mono">
-            Multi-Tenant
-          </span>
-        </div>
-
-        {/* Quick Filter Search in Sidebar */}
-        <div className="mt-3 relative">
-          <Search className="w-3.5 h-3.5 text-tinta-2 absolute left-2.5 top-1/2 -translate-y-1/2" />
+      <div className="px-3 pt-3 pb-1">
+        <div className="relative">
+          <Search className="w-3.5 h-3.5 text-tinta-3 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
           <input
             type="text"
-            placeholder="Filtrar ferramentas..."
+            placeholder="Filtrar no menu"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-8 pr-3 py-1.5 bg-fundo border border-borda rounded-lg text-xs text-tinta placeholder-tinta-3 focus:outline-none focus:border-marca-escura"
+            aria-label="Filtrar itens do menu"
+            className="w-full h-[34px] pl-8 pr-3 bg-superficie-2 border border-borda rounded-[9px] text-xs text-tinta placeholder:text-tinta-3 focus:outline-none focus:border-marca-escura transition"
           />
         </div>
       </div>
@@ -241,6 +228,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
               {filteredItems.map((item) => {
                 const Icon = item.icon;
                 const isActive = activeView === item.id;
+                // Contador curto (1, 12) fica na pilula ao lado do codigo, como
+                // no prototipo. Texto fica na segunda linha.
+                const etiquetaLonga = !!item.badge && String(item.badge).trim().length > 3;
 
                 return (
                   <button
@@ -254,9 +244,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
                         : 'text-tinta-2 border-transparent hover:bg-superficie-2 hover:text-tinta'
                     }`}
                   >
-                    <div className="flex items-center space-x-2.5 truncate">
+                    <div className="flex items-center gap-2.5 min-w-0 flex-1">
                       <Icon className={`w-4 h-4 flex-shrink-0 ${isActive ? 'text-marca-escura' : 'text-tinta-2'}`} />
-                      <span className="truncate">{item.label}</span>
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate text-left">{item.label}</span>
+                        {/* Etiqueta comprida ("NR-01/07/09", "Tabela 24 / NRs")
+                            vai para a segunda linha. Na mesma linha do nome ela
+                            comia a largura e o rotulo virava "Engenhari...". */}
+                        {etiquetaLonga && (
+                          <span className="block text-[10px] text-tinta-3 truncate text-left leading-tight mt-0.5">
+                            {item.badge}
+                          </span>
+                        )}
+                      </span>
                     </div>
 
                     <div className="flex items-center space-x-1.5 flex-shrink-0">
@@ -270,7 +270,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                           {item.code}
                         </span>
                       )}
-                      {item.badge && (
+                      {item.badge && !etiquetaLonga && (
                         <span className={`text-[10px] px-2 py-px rounded-full font-bold tabular-nums ${
                           item.badgeColor || 'bg-amber-100 text-amber-800'
                         }`}>
@@ -288,45 +288,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
         })}
       </div>
 
-      {/* Footer info */}
-      <div className="p-3 border-t border-borda bg-superficie text-left space-y-1.5">
-        <button
-          onClick={() => handleSelectView('settings')}
-          className="w-full flex items-center justify-between p-2 rounded-xl bg-marca-suave hover:bg-marca-borda border border-marca-borda transition text-left"
-          title="Configurações da Empresa e status do banco Supabase"
-        >
-          <div className="flex items-center space-x-2">
-            <span className="w-2 h-2 rounded-full bg-marca-escura animate-pulse flex-shrink-0" />
-            <span className="text-[11px] font-semibold text-marca-escura">Prev Workflow</span>
-          </div>
-          <span className="text-[10px] font-mono text-marca-escura">Supabase</span>
-        </button>
-
-        <div className="grid grid-cols-2 gap-1.5 pt-1">
-          <button
-            onClick={() => handleSelectView('login')}
-            className="flex items-center justify-center space-x-1.5 p-2 rounded-xl bg-superficie-2 hover:bg-superficie-2 border border-borda text-tinta hover:text-tinta transition text-xs font-semibold"
-            title="Acessar Tela de Login"
-          >
-            <KeyRound className="w-3.5 h-3.5 text-marca-escura" />
-            <span>Tela Login</span>
-          </button>
-
-          <button
-            onClick={() => {
-              logout();
-              handleSelectView('login');
-            }}
-            className="flex items-center justify-center space-x-1.5 p-2 rounded-xl bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-700 hover:text-rose-800 transition text-xs font-semibold"
-            title="Encerrar Sessão"
-          >
-            <LogOut className="w-3.5 h-3.5 text-rose-700" />
-            <span>Sair</span>
-          </button>
-        </div>
-
-        <div className="text-[10px] text-tinta-2 text-center pt-1">PrevSafe SST • V1.0</div>
-      </div>
+      {/* Rodapé do protótipo: só "Recolher menu". Saíram daqui o botão
+          "Prev Workflow / Supabase" (a tela de Configurações é o item 640 do
+          próprio menu), o atalho "Tela Login" e o botão "Sair" -- encerrar
+          sessão está no menu do avatar, no topo. */}
+      <button
+        type="button"
+        onClick={handleClose}
+        className="flex items-center gap-2.5 w-full px-3.5 py-3 text-[12.5px] font-semibold text-tinta-2 border-t border-borda mt-2.5 hover:bg-superficie-2 hover:text-tinta transition"
+      >
+        <ChevronsLeft className="w-[15px] h-[15px]" />
+        Recolher menu
+      </button>
     </div>
   );
 
@@ -342,7 +315,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         className="hidden lg:flex lg:flex-col lg:w-[258px] lg:flex-shrink-0 lg:h-full border-r border-borda bg-superficie"
         aria-label="Menu principal"
       >
-        {renderContent()}
+        {renderContent(false)}
       </nav>
 
       {/* Gaveta (somente telas pequenas) */}
@@ -354,7 +327,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             aria-hidden="true"
           />
           <div className="relative w-80 max-w-[90vw] bg-superficie border-r border-borda shadow-sm z-10 flex flex-col h-full animate-in slide-in-from-left duration-200">
-            {renderContent()}
+            {renderContent(true)}
           </div>
         </div>
       )}

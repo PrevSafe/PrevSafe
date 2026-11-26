@@ -7,6 +7,7 @@ import { RoleType } from '@/types';
 import { formatTime } from '@/lib/utils';
 import { 
   Bell, 
+  Home,
   Sparkles, 
   Smartphone, 
   UserCheck, 
@@ -163,156 +164,69 @@ export const Navbar: React.FC<NavbarProps> = ({
       )}
       
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between gap-2 h-16">
-          {/* Menu Lateral Toggle Button & Logo & Brand */}
-          <div className="flex items-center space-x-2 sm:space-x-3 min-w-0 flex-1 lg:flex-initial">
-            {/* Sidebar Menu Toggle Button (Desktop & Mobile) */}
-            {toggleMenu && (
-              <button
-                type="button"
-                onClick={toggleMenu}
-                className={`p-2 rounded-xl border transition-all duration-200 active:scale-95 touch-manipulation min-w-[42px] min-h-[42px] shrink-0 flex items-center justify-center space-x-2 ${
-                  menuIsOpen 
-                    ? 'bg-marca-escura text-white border-marca-escura shadow-sm' 
-                    : 'text-tinta hover:text-tinta bg-superficie-2 hover:bg-superficie-2 border-borda'
-                }`}
-                aria-label={menuIsOpen ? "Recolher menu lateral" : "Abrir menu lateral"}
-                title={menuIsOpen ? "Recolher Menu Lateral (Esc)" : "Abrir Menu Lateral de Módulos"}
-              >
-                {menuIsOpen ? (
-                  <X className={`w-5 h-5 text-white` /* contraste-ok: branco sobre o bg-marca-escura deste botao, 4,9:1 */} />
-                ) : (
-                  <Menu className="w-5 h-5 text-tinta" />
-                )}
-                <span className="text-xs font-semibold hidden md:inline-block">
-                  {menuIsOpen ? 'Recolher Menu' : 'Menu Lateral'}
-                </span>
-                <span className="hidden lg:inline-block text-[9px] px-1.5 py-0.5 rounded bg-superficie text-marca-escura font-mono border border-borda">
-                  {menuIsOpen ? 'Aberto' : 'Recolhido'}
-                </span>
-              </button>
-            )}
+        <div className="flex items-center gap-3 lg:gap-3.5 h-[58px]">
+          {/* Barra do prototipo: hamburguer, marca, campo de codigo, Pagina
+              inicial, pilula da empresa e o bloco do usuario. O resto (busca
+              rapida, nova OS, robo de prazos, atalhos) esta no menu "Mais" --
+              medido, o grupo da direita sozinho ocupava 744px de 1408 e
+              empurrava a marca para largura zero. */}
+          {toggleMenu && (
+            <button
+              type="button"
+              onClick={toggleMenu}
+              className="shrink-0 p-1.5 rounded-lg text-tinta-2 hover:text-tinta hover:bg-superficie-2 transition active:scale-95 touch-manipulation"
+              aria-label={menuIsOpen ? 'Recolher menu lateral' : 'Abrir menu lateral'}
+              title={menuIsOpen ? 'Recolher menu lateral (Esc)' : 'Abrir menu lateral de módulos'}
+            >
+              {menuIsOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
+          )}
 
-            <div className="flex items-center cursor-pointer min-w-0" onClick={() => setActiveView('dashboard-exec')}>
-              <div className="min-w-0">
-                <div className="flex items-center space-x-1.5 sm:space-x-2 min-w-0">
-                  <span className="font-bold text-base sm:text-lg tracking-tight text-tinta truncate">PrevSafe</span>
-                  <span className="hidden sm:inline-block text-[10px] uppercase font-mono tracking-wider bg-marca-escura text-white border border-marca-escura px-1.5 py-0.5 rounded shrink-0">V1.0 SST</span>
-                </div>
-                <p className="text-[10px] sm:text-[11px] text-tinta-2 hidden sm:block truncate">Gestão Integrada de Serviços Contratados</p>
-              </div>
-            </div>
-          </div>
+          <button
+            type="button"
+            onClick={() => setActiveView('dashboard-exec')}
+            className="flex items-center gap-2.5 shrink-0"
+            aria-label="Ir para o painel"
+          >
+            <svg viewBox="0 0 26 30" className="w-[22px] h-[26px] shrink-0" aria-hidden="true">
+              <path d="M13 1 24 5v11c0 7-5 11-11 13C7 27 2 23 2 16V5z" fill="none" stroke="#0E3A46" strokeWidth="2.2" />
+              <path d="M7.5 14.5l4 4L21 7" fill="none" stroke="#2FB24A" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            <span className="font-titulo font-bold text-[17px] tracking-[-0.2px] text-tinta whitespace-nowrap">
+              Prev<span className="text-marca-escura">Safe</span>
+            </span>
+          </button>
 
           {/* Atalho de tela pelo codigo, como o "Cod. Prog." do Semeio */}
-          <CodigoTela setActiveView={setActiveView} className="hidden md:block shrink-0" />
+          <CodigoTela setActiveView={setActiveView} className="hidden md:flex flex-1 max-w-[330px] min-w-0" />
+
+          <button
+            type="button"
+            onClick={() => setActiveView('dashboard-exec')}
+            className="hidden lg:flex shrink-0 items-center gap-1.5 h-[38px] px-3 rounded-[9px] border border-borda bg-superficie text-[13px] font-semibold text-tinta hover:bg-superficie-2 transition"
+          >
+            <Home className="w-[15px] h-[15px]" />
+            Página inicial
+          </button>
 
           {/* Empresa em uso. No mockup e a peca mais forte da barra: fundo
               petroleo, para quem olha de relance saber em qual empresa esta
               mexendo antes de clicar em qualquer coisa. */}
-          <div className="hidden lg:flex shrink-0 items-center gap-2.5 px-3 py-[7px] rounded-xl bg-petroleo text-white text-[13px] max-w-[26rem] min-w-0">
+          <div className="hidden sm:flex flex-1 lg:max-w-[400px] min-w-0 items-center gap-2.5 h-[38px] px-3 rounded-[9px] bg-petroleo text-white text-[13px]">
             <span className={`text-[10px] font-bold tracking-[0.09em] text-marca-clara shrink-0` /* contraste-ok: #8FD3A1 sobre o bg-petroleo desta pilula, 7,01 */}>EMPRESA</span>
-            <span className="font-semibold truncate min-w-0">
+            <span className="font-semibold truncate min-w-0 flex-1">
               {activeClients.length === 0
                 ? 'Nenhuma empresa ativa'
                 : activeClients.length === 1
                   ? firstClientName
                   : `${firstClientName} · +${activeClients.length - 1}`}
             </span>
-            <Building2 className="w-3.5 h-3.5 opacity-70 shrink-0" />
+            <Building2 className="w-[15px] h-[15px] opacity-70 shrink-0" />
           </div>
 
-          {/* Quick Metrics Bar */}
-          <div className="hidden 2xl:flex shrink-0 items-center space-x-4 px-3 py-1.5 bg-superficie-2 rounded-lg border border-borda text-xs whitespace-nowrap">
-            <div className="flex items-center space-x-1.5 text-tinta">
-              <Clock className="w-3.5 h-3.5 text-teal-700" />
-              <span>OS Ativas: <strong>{serviceOrders.filter(o => o.status === 'IN_PROGRESS').length}</strong></span>
-            </div>
-            {delayedOSCount > 0 && (
-              <>
-                <div className="w-px h-3.5 bg-superficie-3" />
-                <div className="flex items-center space-x-1 text-rose-700">
-                  <AlertTriangle className="w-3.5 h-3.5" />
-                  <span>Atrasadas: <strong>{delayedOSCount}</strong></span>
-                </div>
-              </>
-            )}
-            {criticalRequestsCount > 0 && (
-              <>
-                <div className="w-px h-3.5 bg-superficie-3" />
-                <div className="flex items-center space-x-1 text-amber-700">
-                  <span>Pendências: <strong>{criticalRequestsCount}</strong></span>
-                </div>
-              </>
-            )}
-          </div>
-
-          {/* Right Action Controls */}
-          <div className="flex items-center space-x-1.5 sm:space-x-3 shrink-0">
-            {syncBadge && (
-              <div
-                title={syncBadge.title}
-                aria-live="polite"
-                className={`hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border text-[11px] font-semibold ${syncBadge.tone}`}
-              >
-                <syncBadge.icon className={`w-3.5 h-3.5 ${syncBadge.spin ? 'animate-spin' : ''}`} />
-                <span>{syncBadge.label}</span>
-              </div>
-            )}
-            {/* Global Quick Search Button (Ctrl+K) */}
-            {onOpenCommandPalette && (
-              <button
-                type="button"
-                onClick={onOpenCommandPalette}
-                className="flex items-center space-x-2 px-2.5 sm:px-3 py-1.5 bg-superficie-2 hover:bg-superficie-3 text-tinta hover:text-tinta border border-borda hover:border-marca-escura rounded-xl text-xs transition shadow-xs group"
-                title="Busca rápida e paleta de comandos (Ctrl + K)"
-                aria-label="Abrir busca rápida"
-              >
-                <Search className="w-3.5 h-3.5 text-marca-escura group-hover:scale-110 transition-transform" />
-                <span className="hidden md:inline text-tinta">Busca rápida</span>
-                <kbd className="hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-superficie border border-borda text-[10px] font-mono text-tinta-2 group-hover:text-marca-escura group-hover:border-marca-escura">
-                  <span className="text-[9px]">Ctrl</span> K
-                </kbd>
-              </button>
-            )}
-
-            {/* Global Nova OS Button (Ctrl+N) */}
-            {onOpenNewOS && (
-              <button
-                type="button"
-                onClick={onOpenNewOS}
-                className="flex items-center space-x-1.5 px-3 py-1.5 bg-marca-escura hover:bg-marca-escura text-white rounded-xl text-xs font-semibold shadow-md transition active:scale-95 group"
-                title="Criar Nova Ordem de Serviço (Ctrl + N)"
-                aria-label="Criar Nova Ordem de Serviço"
-              >
-                <Plus className="w-4 h-4" />
-                <span className="hidden sm:inline">Nova OS</span>
-                <kbd className="hidden lg:inline-flex items-center px-1.5 py-0.2 rounded bg-marca-escura text-[10px] font-mono text-white border border-marca-escura">
-                  Ctrl+N
-                </kbd>
-              </button>
-            )}
-
-            {/* Atalhos de teclado.
-                Era um balao fixo no canto inferior direito da TELA, cobrindo a
-                barra de rolagem e o conteudo do canto em todo modulo. Aqui nao
-                fica por cima de nada.
-                So o icone, por causa do aperto que o comentario abaixo
-                descreve: sao 32px, e some abaixo de lg - em tela estreita nao
-                ha teclado para ter atalho, e a mesma opcao continua dentro do
-                menu "Mais". Ctrl+K e Ctrl+N ja aparecem nos proprios botoes de
-                busca e de nova OS. */}
-            {onOpenShortcutsHelp && (
-              <button
-                type="button"
-                onClick={onOpenShortcutsHelp}
-                className="hidden lg:flex shrink-0 items-center justify-center p-1.5 rounded-lg bg-superficie-2 text-tinta-2 hover:text-tinta hover:bg-superficie-3 border border-borda transition group"
-                title="Atalhos de teclado: Ctrl+K busca, Ctrl+N nova OS, digite 100 para Funcionários, ? para esta lista"
-                aria-label="Ver atalhos de teclado"
-              >
-                <Keyboard className="w-4 h-4 text-marca-escura group-hover:scale-110 transition-transform" />
-              </button>
-            )}
+          {/* Bloco do usuario: empurra tudo para a direita, como o .usuario
+              do prototipo (margin-left:auto). */}
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 ml-auto">
 
             {/* Acoes secundarias.
                 Somadas, elas deixavam o grupo da direita com 1204px dentro de um
@@ -323,17 +237,16 @@ export const Navbar: React.FC<NavbarProps> = ({
               <button
                 type="button"
                 onClick={() => setShowMoreMenu(!showMoreMenu)}
-                className={`flex items-center space-x-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition ${
+                className={`p-2 rounded-lg border transition ${
                   showMoreMenu
                     ? 'bg-superficie-3 text-tinta border-borda'
-                    : 'bg-superficie-2 text-tinta hover:text-tinta border-borda hover:bg-superficie-3'
+                    : 'bg-superficie-2 text-tinta border-borda hover:bg-superficie-3'
                 }`}
-                title="Ajuda, IA Copilot, Campo PWA, Fluxo Master, atalhos e robô de prazos"
+                title="Nova OS, busca rápida, ajuda, IA Copilot, Campo PWA, Fluxo Master, atalhos e robô de prazos"
                 aria-haspopup="menu"
                 aria-expanded={showMoreMenu}
               >
                 <MoreHorizontal className="w-4 h-4" />
-                <span className="hidden lg:inline">Mais</span>
               </button>
 
               {showMoreMenu && (
@@ -341,6 +254,56 @@ export const Navbar: React.FC<NavbarProps> = ({
                   role="menu"
                   className="absolute right-0 mt-2 w-64 bg-superficie border border-borda rounded-xl shadow-sm z-50 p-2 text-tinta"
                 >
+                  {onOpenNewOS && (
+                    <button
+                      role="menuitem"
+                      onClick={() => { onOpenNewOS(); setShowMoreMenu(false); }}
+                      className="w-full text-left px-2.5 py-2 rounded-lg text-xs font-semibold text-tinta hover:bg-superficie-2 transition flex items-center gap-2"
+                    >
+                      <Plus className="w-4 h-4 text-marca-escura shrink-0" />
+                      <span className="flex-1">Nova Ordem de Serviço</span>
+                      <kbd className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-fundo border border-borda text-tinta-2">Ctrl+N</kbd>
+                    </button>
+                  )}
+
+                  {onOpenCommandPalette && (
+                    <button
+                      role="menuitem"
+                      onClick={() => { onOpenCommandPalette(); setShowMoreMenu(false); }}
+                      className="w-full text-left px-2.5 py-2 rounded-lg text-xs font-semibold text-tinta hover:bg-superficie-2 transition flex items-center gap-2"
+                    >
+                      <Search className="w-4 h-4 text-marca-escura shrink-0" />
+                      <span className="flex-1">Busca rápida</span>
+                      <kbd className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-fundo border border-borda text-tinta-2">Ctrl+K</kbd>
+                    </button>
+                  )}
+
+                  <div className="my-1 border-t border-borda" />
+
+                  <div className="px-2.5 py-1.5 flex items-center gap-3 text-[11px] text-tinta-2">
+                    <span className="inline-flex items-center gap-1.5">
+                      <Clock className="w-3.5 h-3.5 text-teal-700" />
+                      OS ativas <strong className="text-tinta">{serviceOrders.filter(o => o.status === 'IN_PROGRESS').length}</strong>
+                    </span>
+                    {delayedOSCount > 0 && (
+                      <span className="inline-flex items-center gap-1 text-rose-700">
+                        <AlertTriangle className="w-3.5 h-3.5" />
+                        atrasadas <strong>{delayedOSCount}</strong>
+                      </span>
+                    )}
+                    {criticalRequestsCount > 0 && (
+                      <span className="text-amber-700">pendências <strong>{criticalRequestsCount}</strong></span>
+                    )}
+                  </div>
+                  {syncBadge && (
+                    <div className={`mx-2.5 mb-1 inline-flex items-center gap-1.5 px-2 py-1 rounded-lg border text-[11px] font-semibold ${syncBadge.tone}`} title={syncBadge.title} aria-live="polite">
+                      <syncBadge.icon className={`w-3.5 h-3.5 ${syncBadge.spin ? 'animate-spin' : ''}`} />
+                      <span>{syncBadge.label}</span>
+                    </div>
+                  )}
+
+                  <div className="my-1 border-t border-borda" />
+
                   <button
                     role="menuitem"
                     onClick={() => { setActiveView('help-center'); setShowMoreMenu(false); }}
