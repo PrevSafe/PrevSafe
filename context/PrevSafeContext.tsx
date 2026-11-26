@@ -339,6 +339,13 @@ interface PrevSafeContextType {
   activeClientId?: string;
   setActiveClientId: (id?: string) => void;
 
+  // Janela "Localizar empresas". Mora no contexto porque e aberta da barra
+  // superior, do Painel e do card da empresa em uso -- passar a funcao por
+  // propriedade atravessaria tres niveis de componente sem necessidade.
+  localizarEmpresasAberto: boolean;
+  abrirLocalizarEmpresas: () => void;
+  fecharLocalizarEmpresas: () => void;
+
   // CRM Actions
   addClient: (client: Omit<Client, 'id' | 'organization_id' | 'created_at' | 'updated_at'>) => Client;
   updateClient: (id: string, client: Partial<Client>) => void;
@@ -1011,6 +1018,9 @@ export function PrevSafeProvider({ children }: { children: React.ReactNode }) {
   const [saasPlans, setSaasPlans] = useState<SaaSSubscriptionPlan[]>(INITIAL_SAAS_PLANS);
   const [activeTenantContext, setActiveTenantContext] = useState<Tenant | null>(null);
   const [activeClientId, setActiveClientId] = useState<string | undefined>(undefined);
+  const [localizarEmpresasAberto, setLocalizarEmpresasAberto] = useState(false);
+  const abrirLocalizarEmpresas = useCallback(() => setLocalizarEmpresasAberto(true), []);
+  const fecharLocalizarEmpresas = useCallback(() => setLocalizarEmpresasAberto(false), []);
   const [tenantTheme, setTenantTheme] = useState<TenantThemeSettings>(
     INITIAL_ORGANIZATION.theme_settings || DEFAULT_THEME_SETTINGS
   );
@@ -8444,6 +8454,9 @@ ${blocoRespMonitXml(event.client_id, aso?.exam_date || dataDeHoje(), '      ')}
     cashFlowSummary,
     activeClientId,
     setActiveClientId,
+    localizarEmpresasAberto,
+    abrirLocalizarEmpresas,
+    fecharLocalizarEmpresas,
     addClient,
     updateClient,
     deleteClient,
@@ -8719,6 +8732,9 @@ ${blocoRespMonitXml(event.client_id, aso?.exam_date || dataDeHoje(), '      ')}
     logout,
     updateOrganization,
     setActiveClientId,
+    localizarEmpresasAberto,
+    abrirLocalizarEmpresas,
+    fecharLocalizarEmpresas,
     setCurrentProfile,
     setIsAuthenticated,
     currentProfile,
@@ -8752,6 +8768,9 @@ ${blocoRespMonitXml(event.client_id, aso?.exam_date || dataDeHoje(), '      ')}
     updateTenantTheme,
     resetTenantTheme,
     activeClientId,
+    localizarEmpresasAberto,
+    abrirLocalizarEmpresas,
+    fecharLocalizarEmpresas,
     hierarchySectors,
     hierarchyJobs,
     ghes,

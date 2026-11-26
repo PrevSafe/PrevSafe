@@ -115,6 +115,13 @@ export function montarCatalogo({
         { id: 'crm-leads', label: 'Leads & Funil Oportunidades', icon: Target, code: '410' },
         { id: 'proposals', label: 'Propostas Comerciais', icon: FileSpreadsheet, code: '420' },
         { id: 'contracts', label: 'Contratos & Assinaturas', icon: FileSignature, code: '430', badge: (contracts || []).length.toString() },
+        // A OS do CRM e o servico contratado do cliente (PGR, PCMSO, laudo):
+        // tem proposta, contrato, SLA e etapas. Nao confundir com a OS da
+        // SST, que e o documento da NR-01 1.4.1 entregue a cada trabalhador
+        // e vive na tela 100, aba 5. Sao colecoes distintas no banco
+        // (serviceOrders e workOrdersOS) e a numeracao ja difere:
+        // OS-2026-000001 contra OS-NR01-2026-0001.
+        { id: 'service-orders', label: 'CRM · Ordens de Serviço', icon: Briefcase, code: '050', badge: (serviceOrders || []).length.toString() },
       ]
     },
     {
@@ -140,7 +147,6 @@ export function montarCatalogo({
           badgeColor: 'bg-teal-500',
           highlight: true
         },
-        { id: 'service-orders', label: 'Ordens de Serviço (OS NR-01)', icon: Briefcase, code: '050', badge: (serviceOrders || []).length.toString() },
         { id: 'documents', label: 'Repositório de Documentos & Laudos', icon: FolderKanban, code: '080' },
         { id: 'service-templates', label: 'Catálogo de Serviços & NRs', icon: Layers, code: '090' },
       ]

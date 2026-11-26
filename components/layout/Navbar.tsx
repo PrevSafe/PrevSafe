@@ -67,6 +67,8 @@ export const Navbar: React.FC<NavbarProps> = ({
     currentProfile, 
     switchRole, 
     logout,
+    activeClientId,
+    abrirLocalizarEmpresas,
     organization, 
     notifications = [], 
     markNotificationAsRead, 
@@ -109,7 +111,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   })();
 
   const activeClients = (clients || []).filter(c => c?.status === 'ACTIVE');
-  const firstClientName = activeClients[0]?.trade_name || activeClients[0]?.legal_name || '';
+  const empresaEmUso = (clients || []).find(c => c.id === activeClientId) || activeClients[0];
 
   const roles: { role: RoleType; label: string; desc: string }[] = [
     { role: 'ADMIN', label: 'Admin Geral', desc: 'Acesso integral ao SaaS e configurações' },
@@ -209,20 +211,24 @@ export const Navbar: React.FC<NavbarProps> = ({
             Página inicial
           </button>
 
-          {/* Empresa em uso. No mockup e a peca mais forte da barra: fundo
-              petroleo, para quem olha de relance saber em qual empresa esta
-              mexendo antes de clicar em qualquer coisa. */}
-          <div className="hidden sm:flex flex-1 lg:max-w-[400px] min-w-0 items-center gap-2.5 h-[38px] px-3 rounded-[9px] bg-petroleo text-white text-[13px]">
+          {/* Empresa em uso. Mostra sempre a empresa escolhida na janela
+              "Localizar empresas" -- antes mostrava a primeira ativa da lista
+              com "+N", que nao era a empresa cujos dados estavam na tela.
+              Clicar abre a janela para trocar. */}
+          <button
+            type="button"
+            onClick={abrirLocalizarEmpresas}
+            title="Trocar a empresa em uso (Localizar empresas)"
+            className="hidden sm:flex flex-1 lg:max-w-[400px] min-w-0 items-center gap-2.5 h-[38px] px-3 rounded-[9px] bg-petroleo text-white text-[13px] hover:brightness-110 transition text-left"
+          >
             <span className={`text-[10px] font-bold tracking-[0.09em] text-marca-clara shrink-0` /* contraste-ok: #8FD3A1 sobre o bg-petroleo desta pilula, 7,01 */}>EMPRESA</span>
             <span className="font-semibold truncate min-w-0 flex-1">
-              {activeClients.length === 0
-                ? 'Nenhuma empresa ativa'
-                : activeClients.length === 1
-                  ? firstClientName
-                  : `${firstClientName} · +${activeClients.length - 1}`}
+              {empresaEmUso
+                ? `${empresaEmUso.trade_name || empresaEmUso.legal_name}`
+                : 'Nenhuma empresa selecionada'}
             </span>
             <Building2 className="w-[15px] h-[15px] opacity-70 shrink-0" />
-          </div>
+          </button>
 
           {/* Bloco do usuario: empurra tudo para a direita, como o .usuario
               do prototipo (margin-left:auto). */}

@@ -319,7 +319,7 @@ export const ServiceOrdersView: React.FC<{ onNavigate: (view: string) => void }>
             <Briefcase className="w-5 h-5" />
           </div>
           <div>
-            <h1 className="text-xl font-bold tracking-tight text-tinta">Gestão Operacional de Ordens de Serviço (OS)</h1>
+            <h1 className="text-xl font-bold tracking-tight text-tinta">CRM · Ordens de Serviço</h1>
             <p className="text-xs text-tinta-2 mt-0.5">Execução técnica, controle de etapas sequenciais, SLA pausável e entregas com aceite formal.</p>
           </div>
         </div>

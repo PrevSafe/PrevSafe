@@ -40,6 +40,7 @@ import {
   QuickNewOSModal, 
   ShortcutsHelpModal 
 } from '@/components/shortcuts/GlobalCommandPalette';
+import { LocalizarEmpresas } from '@/components/crm/LocalizarEmpresas';
 import { NumericQuickJumpIndicator } from '@/components/shortcuts/NumericQuickJump';
 import { findNavigationByCode } from '@/lib/navigationCodes';
 import { 
@@ -512,6 +513,10 @@ export default function Home() {
         isOpen={isShortcutsHelpOpen}
         onClose={() => setIsShortcutsHelpOpen(false)}
       />
+
+      {/* Janela da empresa em uso. Montada uma vez aqui; quem abre (barra
+          superior, Painel, card da empresa) chama abrirLocalizarEmpresas(). */}
+      <LocalizarEmpresas onNavigate={setActiveView} />
     </div>
   );
 }
