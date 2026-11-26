@@ -25,6 +25,7 @@ import {
   SlidersHorizontal,
   GraduationCap
 } from 'lucide-react';
+import { CartaoMetrica } from '@/components/dashboards/CartaoMetrica';
 import { HierarchyTab } from './HierarchyTab';
 import { GHERiskInventoryTab } from './GHERiskInventoryTab';
 import { ExamPCMSOTab } from './ExamPCMSOTab';
@@ -42,6 +43,32 @@ import { ErgonomicAssessmentTab } from './ErgonomicAssessmentTab';
 import { TechnicalResponsibilityTab } from './TechnicalResponsibilityTab';
 import { PlanoDeAcaoTab } from './PlanoDeAcaoTab';
 import { PenTool, Handshake, Cog, FlaskConical, Activity, BadgeCheck, ClipboardList } from 'lucide-react';
+
+/**
+ * As 15 abas do modulo. Eram 15 blocos <button> escritos a mao, cada um com a
+ * sua copia das mesmas classes, dentro de um scroller horizontal -- quem nao
+ * arrastava a faixa nao sabia que existiam abas depois da 6. Aqui viram dados:
+ * a faixa passa a quebrar linha, e mudar a aparencia e mudar um lugar so.
+ * Os ids dos botoes sao os mesmos de antes, porque o menu lateral e a paleta
+ * de comandos apontam para eles.
+ */
+const ABAS = [
+  { chave: 'HIERARCHY', id: 'main-tab-hierarchy-btn', icone: Building2, num: '1', nome: 'Hierarquia', nota: 'Unidade / Setor / Cargo' },
+  { chave: 'GHE_RISKS', id: 'main-tab-ghe-risks-btn', icone: ShieldAlert, num: '2', nome: 'GHE & Inventário de Riscos', nota: 'PGR / LTCAT' },
+  { chave: 'ACTION_PLAN', id: 'main-tab-action-plan-btn', icone: ClipboardList, num: '2.1', nome: 'Plano de Ação', nota: 'PGR, NR-01 1.5.5' },
+  { chave: 'EXAMS_PCMSO', id: 'main-tab-exams-pcmso-btn', icone: Stethoscope, num: '3', nome: 'Aplicação de Exames', nota: 'PCMSO & ASO' },
+  { chave: 'EMPLOYEES', id: 'main-tab-employees-btn', icone: Users, num: '4', nome: 'Trabalhadores', nota: 'Cadastro & histórico' },
+  { chave: 'WORK_ORDERS_OS', id: 'main-tab-work-orders-os-btn', icone: FileText, num: '5', nome: 'Ordens de Serviço', nota: 'NR-01 & CLT' },
+  { chave: 'DOCS_XML', id: 'main-tab-docs-xml-btn', icone: FileCode2, num: '6', nome: 'Documentos & XMLs', nota: 'eSocial' },
+  { chave: 'INTEGRATION_TRAINING', id: 'main-tab-integration-training-btn', icone: GraduationCap, num: '7', nome: 'Treinamentos de Integração', nota: 'NR-01' },
+  { chave: 'SIGNATURES', id: 'main-tab-signatures-btn', icone: PenTool, num: '8', nome: 'Assinaturas Digitais', nota: 'Lei 14.063' },
+  { chave: 'CONTRACTED', id: 'main-tab-contracted-btn', icone: Handshake, num: '9', nome: 'Contratadas', nota: 'NR-01, 1.5.8' },
+  { chave: 'MACHINES', id: 'main-tab-machines-btn', icone: Cog, num: '10', nome: 'Máquinas', nota: 'NR-12, NR-13, NR-11' },
+  { chave: 'CHEMICALS', id: 'main-tab-chemicals-btn', icone: FlaskConical, num: '11', nome: 'Produtos Químicos', nota: 'NR-26' },
+  { chave: 'TRAINING_MATRIX', id: 'main-tab-training-matrix-btn', icone: GraduationCap, num: '12', nome: 'Matriz de Capacitação', nota: 'NR-01, 1.7' },
+  { chave: 'ERGONOMICS', id: 'main-tab-ergonomics-btn', icone: Activity, num: '13', nome: 'Avaliação Ergonômica', nota: 'NR-17' },
+  { chave: 'TECHNICAL_RESPONSIBILITY', id: 'main-tab-technical-responsibility-btn', icone: BadgeCheck, num: '14', nome: 'Responsabilidade Técnica', nota: 'NR-07, 7.4.1' },
+] as const;
 
 interface SSTUnifiedEngineeringViewProps {
   onNavigate?: (view: string) => void;
@@ -89,339 +116,104 @@ export const SSTUnifiedEngineeringView: React.FC<SSTUnifiedEngineeringViewProps>
   const clientTrainings = (integrationTrainings || []).filter(t => !selectedClientId || t.client_id === selectedClientId);
   const clientEvents = (esocialEvents || []).filter(e => !selectedClientId || e.client_id === selectedClientId);
 
+  const clienteAtual = clients.find(c => c.id === selectedClientId);
+  const nomeDoCliente = clienteAtual?.trade_name || clienteAtual?.legal_name || 'nenhuma empresa selecionada';
+
   return (
-    <div className="space-y-6" id="sst-unified-workspace">
-      {/* Top Header Card */}
-      <div className="bg-superficie border border-borda rounded-2xl p-6 relative overflow-hidden shadow-sm">
-
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <span className="px-3 py-1 bg-teal-500/20 text-teal-800 font-bold text-xs rounded-full border border-teal-500/30 flex items-center gap-1.5">
-                <ShieldCheck className="w-3.5 h-3.5" />
-                Módulo Integrado SST & eSocial (PGR • PCMSO • LTCAT • S-2210/2220/2240)
-              </span>
-              <span className="px-2 py-0.5 bg-marca-suave text-marca-escura text-[11px] font-mono font-semibold rounded">
-                MOS e leiaute S-1.3
-              </span>
-            </div>
-
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-tinta tracking-tight">
-              Engenharia SST & Eventos eSocial
-            </h1>
-
-            <p className="text-xs sm:text-sm text-tinta-2 max-w-2xl">
-              Central unificada para criação da hierarquia (Unidade/Setor/Cargo), inventário de riscos ambientais (PGR/LTCAT), aplicação de exames (PCMSO/ASO), cadastro de trabalhadores e emissão de CATs/Afastamentos com geração automática de XMLs do eSocial.
-            </p>
+    <div className="space-y-5" id="sst-unified-workspace">
+      {/* Cabecalho de pagina no formato do shell claro: tarja, titulo,
+          subtitulo e acoes a direita. Antes era um cartao-banner que empilhava
+          selo, paragrafo longo, seletor de cliente e seis mini-cartoes cinza
+          dentro da mesma moldura -- o titulo da tela ficava no meio do bloco. */}
+      <div className="flex flex-wrap items-end justify-between gap-3.5">
+        <div className="min-w-0">
+          <div className="text-[10.5px] font-bold tracking-[0.11em] text-tinta-3">
+            ENGENHARIA &amp; HIGIENE OCUPACIONAL
           </div>
-
-          {/* Client context switch & quick links */}
-          <div className="flex flex-col sm:flex-row lg:flex-col items-start lg:items-end gap-3">
-            <div className="w-full sm:w-auto">
-              <label className="block text-[11px] font-semibold text-tinta-2 mb-1">
-                Empresa / Cliente Selecionado:
-              </label>
-              <select
-                id="sst-client-selector"
-                value={selectedClientId}
-                onChange={(e) => setSelectedClientId(e.target.value)}
-                className="w-full sm:w-64 bg-fundo border border-borda rounded-xl px-3.5 py-2 text-xs font-semibold text-teal-700 focus:outline-none focus:border-teal-500 shadow-inner"
-              >
-                {clients.map(c => (
-                  <option key={c.id} value={c.id}>
-                    {c.trade_name || c.legal_name} ({c.document_number})
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {onNavigate && (
-              <button
-                type="button"
-                id="nav-to-esocial-robot-btn"
-                onClick={() => onNavigate('esocial')}
-                className="text-xs text-teal-700 hover:text-teal-700 font-semibold flex items-center gap-1 transition-colors"
-              >
-                Ir para o Painel de Transmissão & Robô eSocial
-                <ArrowRight className="w-3.5 h-3.5" />
-              </button>
-            )}
-          </div>
+          <h1 className="font-titulo text-[26px] font-bold tracking-[-0.4px] text-tinta mt-1.5 mb-1 text-balance">
+            Engenharia SST &amp; Eventos eSocial
+          </h1>
+          <p className="text-[13px] text-tinta-2 max-w-2xl">
+            {nomeDoCliente} · hierarquia, inventário de riscos, exames, trabalhadores
+            e os XMLs do eSocial (S-2210, S-2220, S-2240).
+          </p>
         </div>
 
-        {/* Quick KPI Stats Counter Strip */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 mt-6 pt-5 border-t border-borda">
-          <div className="bg-fundo p-3 rounded-xl border border-borda">
-            <div className="flex items-center justify-between text-tinta-2 text-[10px] uppercase font-bold">
-              <span>Hierarquia</span>
-              <Building2 className="w-3.5 h-3.5 text-teal-700" />
-            </div>
-            <div className="text-lg font-black text-tinta mt-1">{clientSectors.length} setores</div>
-            <div className="text-[10px] text-tinta-2">{clientJobs.length} cargos CBO</div>
+        <div className="flex flex-wrap items-end gap-2.5">
+          <div className="min-w-0">
+            <label htmlFor="sst-client-selector" className="block text-[10px] font-bold tracking-[0.08em] text-tinta-3 mb-1">
+              EMPRESA
+            </label>
+            <select
+              id="sst-client-selector"
+              value={selectedClientId}
+              onChange={(e) => setSelectedClientId(e.target.value)}
+              className="h-[38px] w-full sm:w-64 rounded-[9px] border border-borda bg-superficie px-3 text-[13px] font-semibold text-tinta focus:outline-none focus:border-marca-escura transition"
+            >
+              {clients.map(c => (
+                <option key={c.id} value={c.id}>
+                  {c.trade_name || c.legal_name} ({c.document_number})
+                </option>
+              ))}
+            </select>
           </div>
 
-          <div className="bg-fundo p-3 rounded-xl border border-borda">
-            <div className="flex items-center justify-between text-tinta-2 text-[10px] uppercase font-bold">
-              <span>GHEs & Riscos</span>
-              <ShieldAlert className="w-3.5 h-3.5 text-amber-700" />
-            </div>
-            <div className="text-lg font-black text-tinta mt-1">{clientGhes.length} GHEs</div>
-            <div className="text-[10px] text-tinta-2">{clientRisks.length} riscos NR-01/NR-15</div>
-          </div>
-
-          <div className="bg-fundo p-3 rounded-xl border border-borda">
-            <div className="flex items-center justify-between text-tinta-2 text-[10px] uppercase font-bold">
-              <span>PCMSO & Exames</span>
-              <Stethoscope className="w-3.5 h-3.5 text-teal-700" />
-            </div>
-            <div className="text-lg font-black text-tinta mt-1">{clientExamProtocols.length} exames</div>
-            <div className="text-[10px] text-tinta-2">Tabela 27 eSocial</div>
-          </div>
-
-          <div className="bg-fundo p-3 rounded-xl border border-borda">
-            <div className="flex items-center justify-between text-tinta-2 text-[10px] uppercase font-bold">
-              <span>Trabalhadores</span>
-              <Users className="w-3.5 h-3.5 text-teal-700" />
-            </div>
-            <div className="text-lg font-black text-tinta mt-1">{clientEmployees.length} ativos</div>
-            <div className="text-[10px] text-tinta-2">Matrícula & Ficha EPI</div>
-          </div>
-
-          <div className="bg-fundo p-3 rounded-xl border border-borda">
-            <div className="flex items-center justify-between text-tinta-2 text-[10px] uppercase font-bold">
-              <span>OS & Treinamentos</span>
-              <Briefcase className="w-3.5 h-3.5 text-teal-700" />
-            </div>
-            <div className="text-lg font-black text-tinta mt-1">{clientWorkOrders.length} OS emitidas</div>
-            <div className="text-[10px] text-tinta-2">{clientTrainings.length} treinamentos NR</div>
-          </div>
-
-          <div className="bg-fundo p-3 rounded-xl border border-borda">
-            <div className="flex items-center justify-between text-tinta-2 text-[10px] uppercase font-bold">
-              <span>Eventos eSocial</span>
-              <FileCode2 className="w-3.5 h-3.5 text-marca-escura" />
-            </div>
-            <div className="text-lg font-black text-marca-escura mt-1">{clientEvents.length} XMLs</div>
-            <div className="text-[10px] text-tinta-2">S-2210, 2220, 2240</div>
-          </div>
+          {onNavigate && (
+            <button
+              type="button"
+              id="nav-to-esocial-robot-btn"
+              onClick={() => onNavigate('esocial')}
+              className="h-[38px] inline-flex items-center gap-1.5 rounded-[9px] border border-borda bg-superficie px-3.5 text-[13px] font-semibold text-tinta hover:bg-superficie-2 transition"
+            >
+              Painel de transmissão eSocial
+              <ArrowRight className="w-[15px] h-[15px]" />
+            </button>
+          )}
         </div>
       </div>
 
-      {/* Main Unified Navigation Tabs */}
-      <div className="flex items-center space-x-2 border-b border-borda pb-2 overflow-x-auto">
-        <button
-          type="button"
-          id="main-tab-hierarchy-btn"
-          onClick={() => setActiveTab('HIERARCHY')}
-          className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 shrink-0 ${
-            activeTab === 'HIERARCHY'
-              ? 'bg-marca-escura text-white shadow-sm'
-              : 'text-tinta-2 hover:text-tinta hover:bg-superficie'
-          }`}
-        >
-          <Building2 className="w-4 h-4" />
-          1. Hierarquia (Unidade/Setor/Cargo)
-        </button>
+      {/* Numeros da empresa em uso, no cartao do shell claro. */}
+      <section className="grid gap-3.5 grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
+        <CartaoMetrica icone={Building2} tom="teal" valor={clientSectors.length} rotulo="Setores" nota={`${clientJobs.length} cargos CBO`} onClick={() => setActiveTab('HIERARCHY')} />
+        <CartaoMetrica icone={ShieldAlert} tom="ambar" valor={clientGhes.length} rotulo="GHEs" nota={`${clientRisks.length} riscos NR-01/NR-15`} onClick={() => setActiveTab('GHE_RISKS')} />
+        <CartaoMetrica icone={Stethoscope} tom="teal" valor={clientExamProtocols.length} rotulo="Exames do PCMSO" nota="Tabela 27 do eSocial" onClick={() => setActiveTab('EXAMS_PCMSO')} />
+        <CartaoMetrica icone={Users} tom="marca" valor={clientEmployees.length} rotulo="Trabalhadores ativos" nota="Matrícula & ficha de EPI" onClick={() => setActiveTab('EMPLOYEES')} />
+        <CartaoMetrica icone={Briefcase} tom="neutro" valor={clientWorkOrders.length} rotulo="OS emitidas" nota={`${clientTrainings.length} treinamentos NR`} onClick={() => setActiveTab('WORK_ORDERS_OS')} />
+        <CartaoMetrica icone={FileCode2} tom="marca" valor={clientEvents.length} rotulo="XMLs do eSocial" nota="S-2210, S-2220, S-2240" onClick={() => setActiveTab('DOCS_XML')} />
+      </section>
 
-        <button
-          type="button"
-          id="main-tab-ghe-risks-btn"
-          onClick={() => setActiveTab('GHE_RISKS')}
-          className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 shrink-0 ${
-            activeTab === 'GHE_RISKS'
-              ? 'bg-marca-escura text-white shadow-sm'
-              : 'text-tinta-2 hover:text-tinta hover:bg-superficie'
-          }`}
-        >
-          <ShieldAlert className="w-4 h-4" />
-          2. GHE & Inventário de Riscos (PGR/LTCAT)
-        </button>
-
-        {/* 2.1, e nao 3: o plano e a continuacao do inventario no PGR, e as
-            outras abas sao citadas pelo numero em mensagens do sistema (ex.:
-            "aba 2" em lib/ghesDoCargo.ts). */}
-        <button
-          type="button"
-          id="main-tab-action-plan-btn"
-          onClick={() => setActiveTab('ACTION_PLAN')}
-          className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 shrink-0 ${
-            activeTab === 'ACTION_PLAN'
-              ? 'bg-marca-escura text-white shadow-sm'
-              : 'text-tinta-2 hover:text-tinta hover:bg-superficie'
-          }`}
-        >
-          <ClipboardList className="w-4 h-4" />
-          2.1 Plano de Ação (PGR, NR-01 1.5.5)
-        </button>
-
-        <button
-          type="button"
-          id="main-tab-exams-pcmso-btn"
-          onClick={() => setActiveTab('EXAMS_PCMSO')}
-          className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 shrink-0 ${
-            activeTab === 'EXAMS_PCMSO'
-              ? 'bg-marca-escura text-white shadow-sm'
-              : 'text-tinta-2 hover:text-tinta hover:bg-superficie'
-          }`}
-        >
-          <Stethoscope className="w-4 h-4" />
-          3. Aplicação de Exames (PCMSO & ASO)
-        </button>
-
-        <button
-          type="button"
-          id="main-tab-employees-btn"
-          onClick={() => setActiveTab('EMPLOYEES')}
-          className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 shrink-0 ${
-            activeTab === 'EMPLOYEES'
-              ? 'bg-marca-escura text-white shadow-sm'
-              : 'text-tinta-2 hover:text-tinta hover:bg-superficie'
-          }`}
-        >
-          <Users className="w-4 h-4" />
-          4. Trabalhadores & Histórico
-        </button>
-
-        <button
-          type="button"
-          id="main-tab-work-orders-os-btn"
-          onClick={() => setActiveTab('WORK_ORDERS_OS')}
-          className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 shrink-0 ${
-            activeTab === 'WORK_ORDERS_OS'
-              ? 'bg-teal-700 text-white shadow-sm'
-              : 'text-tinta-2 hover:text-tinta hover:bg-superficie'
-          }`}
-        >
-          <FileText className="w-4 h-4" />
-          5. Ordens de Serviço (NR-01 & CLT)
-        </button>
-
-        <button
-          type="button"
-          id="main-tab-docs-xml-btn"
-          onClick={() => setActiveTab('DOCS_XML')}
-          className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 shrink-0 ${
-            activeTab === 'DOCS_XML'
-              ? 'bg-marca text-slate-950 shadow-sm'
-              : 'text-tinta-2 hover:text-tinta hover:bg-superficie'
-          }`}
-        >
-          <FileCode2 className="w-4 h-4" />
-          6. Documentos & XMLs eSocial
-        </button>
-
-        <button
-          type="button"
-          id="main-tab-integration-training-btn"
-          onClick={() => setActiveTab('INTEGRATION_TRAINING')}
-          className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 shrink-0 ${
-            activeTab === 'INTEGRATION_TRAINING'
-              ? 'bg-marca-escura text-white shadow-sm'
-              : 'text-tinta-2 hover:text-tinta hover:bg-superficie'
-          }`}
-        >
-          <GraduationCap className="w-4 h-4" />
-          7. Treinamentos de Integração (NR-01)
-        </button>
-
-        <button
-          type="button"
-          id="main-tab-signatures-btn"
-          onClick={() => setActiveTab('SIGNATURES')}
-          className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 shrink-0 ${
-            activeTab === 'SIGNATURES'
-              ? 'bg-marca-escura text-white shadow-sm'
-              : 'text-tinta-2 hover:text-tinta hover:bg-superficie'
-          }`}
-        >
-          <PenTool className="w-4 h-4" />
-          8. Assinaturas Digitais & Aceite (Lei 14.063)
-        </button>
-
-        <button
-          type="button"
-          id="main-tab-contracted-btn"
-          onClick={() => setActiveTab('CONTRACTED')}
-          className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 shrink-0 ${
-            activeTab === 'CONTRACTED'
-              ? 'bg-marca-escura text-white shadow-sm'
-              : 'text-tinta-2 hover:text-tinta hover:bg-superficie'
-          }`}
-        >
-          <Handshake className="w-4 h-4" />
-          9. Contratadas (NR-01, 1.5.8)
-        </button>
-
-        <button
-          type="button"
-          id="main-tab-machines-btn"
-          onClick={() => setActiveTab('MACHINES')}
-          className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 shrink-0 ${
-            activeTab === 'MACHINES'
-              ? 'bg-marca-escura text-white shadow-sm'
-              : 'text-tinta-2 hover:text-tinta hover:bg-superficie'
-          }`}
-        >
-          <Cog className="w-4 h-4" />
-          10. Máquinas (NR-12, NR-13, NR-11)
-        </button>
-
-        <button
-          type="button"
-          id="main-tab-chemicals-btn"
-          onClick={() => setActiveTab('CHEMICALS')}
-          className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 shrink-0 ${
-            activeTab === 'CHEMICALS'
-              ? 'bg-marca-escura text-white shadow-sm'
-              : 'text-tinta-2 hover:text-tinta hover:bg-superficie'
-          }`}
-        >
-          <FlaskConical className="w-4 h-4" />
-          11. Produtos Químicos (NR-26)
-        </button>
-
-        <button
-          type="button"
-          id="main-tab-training-matrix-btn"
-          onClick={() => setActiveTab('TRAINING_MATRIX')}
-          className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 shrink-0 ${
-            activeTab === 'TRAINING_MATRIX'
-              ? 'bg-marca-escura text-white shadow-sm'
-              : 'text-tinta-2 hover:text-tinta hover:bg-superficie'
-          }`}
-        >
-          <GraduationCap className="w-4 h-4" />
-          12. Matriz de Capacitação (NR-01, 1.7)
-        </button>
-
-        <button
-          type="button"
-          id="main-tab-ergonomics-btn"
-          onClick={() => setActiveTab('ERGONOMICS')}
-          className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 shrink-0 ${
-            activeTab === 'ERGONOMICS'
-              ? 'bg-marca-escura text-white shadow-sm'
-              : 'text-tinta-2 hover:text-tinta hover:bg-superficie'
-          }`}
-        >
-          <Activity className="w-4 h-4" />
-          13. Avaliação Ergonômica (NR-17)
-        </button>
-
-        <button
-          type="button"
-          id="main-tab-technical-responsibility-btn"
-          onClick={() => setActiveTab('TECHNICAL_RESPONSIBILITY')}
-          className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-2 shrink-0 ${
-            activeTab === 'TECHNICAL_RESPONSIBILITY'
-              ? 'bg-marca-escura text-white shadow-sm'
-              : 'text-tinta-2 hover:text-tinta hover:bg-superficie'
-          }`}
-        >
-          <BadgeCheck className="w-4 h-4" />
-          14. Responsabilidade Técnica (NR-07, 7.4.1)
-        </button>
-      </div>
+      {/* Etapas. Quebram linha em vez de rolar na horizontal: com o scroller,
+          as abas 7 a 14 ficavam fora da tela sem nada indicando que existiam. */}
+      <nav className="flex flex-wrap gap-2 border-t border-borda pt-4" aria-label="Etapas da engenharia SST">
+        {ABAS.map(aba => {
+          const Icone = aba.icone;
+          const ativa = activeTab === aba.chave;
+          return (
+            <button
+              key={aba.chave}
+              type="button"
+              id={aba.id}
+              aria-current={ativa ? 'page' : undefined}
+              onClick={() => setActiveTab(aba.chave)}
+              title={`${aba.num}. ${aba.nome} (${aba.nota})`}
+              className={`flex items-center gap-2 rounded-[9px] border px-3 py-2 text-left transition ${
+                ativa
+                  ? 'bg-marca-suave border-marca-borda text-tinta'
+                  : 'bg-superficie border-borda text-tinta-2 hover:bg-superficie-2 hover:text-tinta'
+              }`}
+            >
+              <span className={`text-[10px] font-mono font-bold w-7 text-center shrink-0 ${ativa ? 'text-marca-escura' : 'text-tinta-3'}`}>
+                {aba.num}
+              </span>
+              <Icone className={`w-4 h-4 shrink-0 ${ativa ? 'text-marca-escura' : 'text-tinta-3'}`} />
+              <span className="min-w-0">
+                <span className={`block text-[13px] leading-tight ${ativa ? 'font-semibold' : 'font-medium'}`}>{aba.nome}</span>
+                <span className="block text-[10px] uppercase tracking-wider text-tinta-3 leading-tight mt-0.5">{aba.nota}</span>
+              </span>
+            </button>
+          );
+        })}
+      </nav>
 
       {/* Render Active View Tab */}
       <div className="transition-all animate-in fade-in duration-200" id="sst-tab-content-area">
