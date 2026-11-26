@@ -58,7 +58,7 @@ const ABAS = [
   { chave: 'ACTION_PLAN', id: 'main-tab-action-plan-btn', icone: ClipboardList, num: '2.1', nome: 'Plano de Ação', nota: 'PGR, NR-01 1.5.5' },
   { chave: 'EXAMS_PCMSO', id: 'main-tab-exams-pcmso-btn', icone: Stethoscope, num: '3', nome: 'Aplicação de Exames', nota: 'PCMSO & ASO' },
   { chave: 'EMPLOYEES', id: 'main-tab-employees-btn', icone: Users, num: '4', nome: 'Trabalhadores', nota: 'Cadastro & histórico' },
-  { chave: 'WORK_ORDERS_OS', id: 'main-tab-work-orders-os-btn', icone: FileText, num: '5', nome: 'Ordens de Serviço', nota: 'NR-01 & CLT' },
+  { chave: 'WORK_ORDERS_OS', id: 'main-tab-work-orders-os-btn', icone: FileText, num: '5', nome: 'SST · Ordens de Serviço', nota: 'NR-01 1.4.1, por trabalhador' },
   { chave: 'DOCS_XML', id: 'main-tab-docs-xml-btn', icone: FileCode2, num: '6', nome: 'Documentos & XMLs', nota: 'eSocial' },
   { chave: 'INTEGRATION_TRAINING', id: 'main-tab-integration-training-btn', icone: GraduationCap, num: '7', nome: 'Treinamentos de Integração', nota: 'NR-01' },
   { chave: 'SIGNATURES', id: 'main-tab-signatures-btn', icone: PenTool, num: '8', nome: 'Assinaturas Digitais', nota: 'Lei 14.063' },
@@ -178,7 +178,7 @@ export const SSTUnifiedEngineeringView: React.FC<SSTUnifiedEngineeringViewProps>
         <CartaoMetrica icone={ShieldAlert} tom="ambar" valor={clientGhes.length} rotulo="GHEs" nota={`${clientRisks.length} riscos NR-01/NR-15`} onClick={() => setActiveTab('GHE_RISKS')} />
         <CartaoMetrica icone={Stethoscope} tom="teal" valor={clientExamProtocols.length} rotulo="Exames do PCMSO" nota="Tabela 27 do eSocial" onClick={() => setActiveTab('EXAMS_PCMSO')} />
         <CartaoMetrica icone={Users} tom="marca" valor={clientEmployees.length} rotulo="Trabalhadores ativos" nota="Matrícula & ficha de EPI" onClick={() => setActiveTab('EMPLOYEES')} />
-        <CartaoMetrica icone={Briefcase} tom="neutro" valor={clientWorkOrders.length} rotulo="OS emitidas" nota={`${clientTrainings.length} treinamentos NR`} onClick={() => setActiveTab('WORK_ORDERS_OS')} />
+        <CartaoMetrica icone={Briefcase} tom="neutro" valor={clientWorkOrders.length} rotulo="OS da SST emitidas" nota={`NR-01 1.4.1 · ${clientTrainings.length} treinamentos`} onClick={() => setActiveTab('WORK_ORDERS_OS')} />
         <CartaoMetrica icone={FileCode2} tom="marca" valor={clientEvents.length} rotulo="XMLs do eSocial" nota="S-2210, S-2220, S-2240" onClick={() => setActiveTab('DOCS_XML')} />
       </section>
 

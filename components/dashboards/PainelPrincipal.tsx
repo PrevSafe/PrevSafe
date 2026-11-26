@@ -19,7 +19,7 @@ import { FUSO_PADRAO } from '@/lib/datas';
  * seria a tela afirmando o que nao e.
  */
 export function PainelPrincipal({ onNavigate }: { onNavigate: (view: string) => void }) {
-  const { clients, units, pgrActionPlan, serviceOrders, activeClientId, setActiveClientId } =
+  const { clients, units, pgrActionPlan, serviceOrders, activeClientId, organization, abrirLocalizarEmpresas } =
     usePrevSafe();
 
   const ativos = (clients || []).filter((c) => c?.status === 'ACTIVE');
@@ -81,7 +81,7 @@ export function PainelPrincipal({ onNavigate }: { onNavigate: (view: string) => 
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <button
-            onClick={() => onNavigate('crm-clients')}
+            onClick={abrirLocalizarEmpresas}
             className="px-3.5 py-2 bg-superficie hover:bg-superficie-2 text-tinta border border-borda rounded-xl text-[13px] font-semibold transition flex items-center gap-2"
           >
             <Search className="w-4 h-4 text-tinta-2" />
@@ -130,23 +130,21 @@ export function PainelPrincipal({ onNavigate }: { onNavigate: (view: string) => 
               <h2 className="text-[11px] font-bold tracking-[0.1em] text-tinta-2 uppercase">
                 Empresa em uso
               </h2>
-              {empresa && ativos[0]?.id === empresa.id && (
+              {empresa && organization?.principal_client_id === empresa.id && (
                 <span className="text-[10px] font-bold tracking-wider rounded-full px-2.5 py-0.5 bg-marca-suave text-marca-escura">
                   ★ PRINCIPAL
                 </span>
               )}
               <div className="ml-auto flex items-center gap-2 flex-wrap">
-                {ativos.length > 1 && (
-                  <button
-                    onClick={() => {
-                      const i = ativos.findIndex((c) => c.id === empresa?.id);
-                      setActiveClientId(ativos[(i + 1) % ativos.length].id);
-                    }}
-                    className="text-[12.5px] font-semibold text-teal-700 underline px-1 py-1.5"
-                  >
-                    Trocar
-                  </button>
-                )}
+                {/* Abre a janela "Localizar empresas". Antes isto girava a
+                    lista em ciclo: com cinco empresas, chegar na quarta
+                    custava quatro cliques e nao dava para procurar. */}
+                <button
+                  onClick={abrirLocalizarEmpresas}
+                  className="text-[12.5px] font-semibold text-teal-700 underline px-1 py-1.5"
+                >
+                  Trocar
+                </button>
                 <button
                   onClick={() => onNavigate('crm-clients')}
                   className="border border-borda bg-superficie hover:bg-superficie-2 rounded-lg px-3 py-1.5 text-[12.5px] font-semibold transition"

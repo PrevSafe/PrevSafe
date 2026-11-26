@@ -125,6 +125,10 @@ export interface Organization {
   phone: string;
   status: 'ACTIVE' | 'INACTIVE';
   theme_settings?: TenantThemeSettings;
+  // Empresa que a equipe assume por padrao ao entrar no sistema. Antes
+  // "principal" era so o primeiro cliente ativo da lista, o que mudava
+  // sozinho quando um cliente novo entrava.
+  principal_client_id?: string;
   // Responsabilidade técnica impressa nos documentos legais (PGR, PCMSO, LTCAT).
   technical_responsible_name?: string;
   technical_responsible_title?: string; // Ex.: Engenheiro de Segurança do Trabalho
