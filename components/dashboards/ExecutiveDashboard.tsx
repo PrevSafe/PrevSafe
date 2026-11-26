@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { usePrevSafe } from '@/context/PrevSafeContext';
 import { formatDate } from '@/lib/utils';
 import { CartaoMetrica } from './CartaoMetrica';
+import { AcessoRapido } from './AcessoRapido';
 import { 
   Users, 
   FileSpreadsheet, 
@@ -256,168 +257,177 @@ export const ExecutiveDashboard: React.FC<{ onNavigate: (view: string) => void }
         </div>
       )}
 
-      {/* Card de Visualização Rápida: Status de Transmissão do eSocial */}
-      <div className="bg-superficie border border-borda rounded-3xl p-6 shadow-sm relative overflow-hidden">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-5 border-b border-borda">
-          <div className="flex items-center space-x-3.5">
-            <div className="p-3 rounded-2xl bg-teal-500/10 text-teal-800 border border-teal-500/20 flex-shrink-0">
-              <ShieldCheck className="w-6 h-6" />
+      {/* Painel principal + acesso rapido, as duas colunas do prototipo.
+          Os destinos do acesso rapido saem do catalogo de telas, entao
+          nome e codigo nunca divergem do que o menu mostra. */}
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_288px] items-start">
+        <div className="min-w-0 space-y-6">
+        {/* Card de Visualização Rápida: Status de Transmissão do eSocial */}
+        <div className="bg-superficie border border-borda rounded-3xl p-6 shadow-sm relative overflow-hidden">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-5 border-b border-borda">
+            <div className="flex items-center space-x-3.5">
+              <div className="p-3 rounded-2xl bg-teal-500/10 text-teal-800 border border-teal-500/20 flex-shrink-0">
+                <ShieldCheck className="w-6 h-6" />
+              </div>
+              <div>
+                <div className="flex items-center space-x-2">
+                  <h2 className="text-base font-bold text-tinta tracking-tight">Status de Envio eSocial (SST Oficial)</h2>
+                  <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border uppercase tracking-wider ${
+                    esocialConfig.environment === 'PRODUCAO' 
+                      ? 'bg-marca-suave text-marca-escura border-marca-borda' 
+                      : 'bg-amber-500/10 text-amber-800 border-amber-500/30'
+                  }`}>
+                    Ambiente {esocialConfig.environment === 'PRODUCAO' ? 'Produção' : 'Homologação'}
+                  </span>
+                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono text-tinta bg-superficie-2 border border-borda">
+                    Certificado A1 {esocialConfig.certificate.status === 'VALID' ? '✅ Válido' : '⚠️ Pendente'}
+                  </span>
+                </div>
+                <p className="text-xs text-tinta-2 mt-1">
+                  Monitoramento dos eventos de SST: S-2210 (CAT), S-2220 (ASO), S-2230 (Afastamento) e S-2240 (Riscos Ambientais).
+                </p>
+              </div>
             </div>
-            <div>
-              <div className="flex items-center space-x-2">
-                <h2 className="text-base font-bold text-tinta tracking-tight">Status de Envio eSocial (SST Oficial)</h2>
-                <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border uppercase tracking-wider ${
-                  esocialConfig.environment === 'PRODUCAO' 
-                    ? 'bg-marca-suave text-marca-escura border-marca-borda' 
-                    : 'bg-amber-500/10 text-amber-800 border-amber-500/30'
-                }`}>
-                  Ambiente {esocialConfig.environment === 'PRODUCAO' ? 'Produção' : 'Homologação'}
-                </span>
-                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono text-tinta bg-superficie-2 border border-borda">
-                  Certificado A1 {esocialConfig.certificate.status === 'VALID' ? '✅ Válido' : '⚠️ Pendente'}
+
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                id="btn-exec-export-esocial-logs-pdf"
+                onClick={() => {
+                  exportESocialEventLogsPdf({
+                    organization,
+                    clients,
+                    events: esocialEvents
+                  });
+                }}
+                className="px-3.5 py-2 bg-teal-500/10 hover:bg-teal-500/20 text-teal-800 border border-teal-500/30 rounded-2xl text-xs font-bold transition flex items-center space-x-1.5 shadow-sm"
+                title="Exportar Relatório e Log Completo de Transmissões eSocial em PDF"
+              >
+                <Download className="w-4 h-4 text-teal-700" />
+                <span>Exportar Logs eSocial (PDF)</span>
+              </button>
+
+              <button
+                onClick={() => onNavigate('esocial_config')}
+                className="px-3.5 py-2 bg-superficie-2 hover:bg-superficie-3 text-tinta rounded-2xl text-xs font-semibold border border-borda transition flex items-center space-x-1.5"
+              >
+                <span>Configurações & Certificado</span>
+              </button>
+              <button
+                onClick={() => onNavigate('esocial_events')}
+                className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-2xl text-xs font-bold transition shadow-sm flex items-center space-x-2"
+              >
+                <span>Painel de Eventos</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+
+          {/* 4 Status Cards com Links Diretos */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-5">
+            {/* Pendentes */}
+            <div 
+              onClick={() => onNavigate('esocial_events')}
+              className="bg-fundo p-4 rounded-2xl border border-borda hover:border-amber-500/40 hover:bg-fundo cursor-pointer transition flex flex-col justify-between group"
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-tinta-2 uppercase tracking-wider">Pendentes de Envio</span>
+                <span className="w-2.5 h-2.5 rounded-full bg-amber-400 group-hover:animate-ping" />
+              </div>
+              <div className="mt-3 flex items-baseline justify-between">
+                <span className="text-2xl font-bold text-amber-700 font-mono">{esocialPendingCount}</span>
+                <span className="text-[11px] text-amber-700 group-hover:text-amber-700 font-medium flex items-center">
+                  Transmitir lote <ArrowRight className="w-3 h-3 ml-1" />
                 </span>
               </div>
-              <p className="text-xs text-tinta-2 mt-1">
-                Monitoramento dos eventos de SST: S-2210 (CAT), S-2220 (ASO), S-2230 (Afastamento) e S-2240 (Riscos Ambientais).
-              </p>
             </div>
-          </div>
 
-          <div className="flex flex-wrap items-center gap-2">
-            <button
-              id="btn-exec-export-esocial-logs-pdf"
-              onClick={() => {
-                exportESocialEventLogsPdf({
-                  organization,
-                  clients,
-                  events: esocialEvents
-                });
-              }}
-              className="px-3.5 py-2 bg-teal-500/10 hover:bg-teal-500/20 text-teal-800 border border-teal-500/30 rounded-2xl text-xs font-bold transition flex items-center space-x-1.5 shadow-sm"
-              title="Exportar Relatório e Log Completo de Transmissões eSocial em PDF"
-            >
-              <Download className="w-4 h-4 text-teal-700" />
-              <span>Exportar Logs eSocial (PDF)</span>
-            </button>
-
-            <button
-              onClick={() => onNavigate('esocial_config')}
-              className="px-3.5 py-2 bg-superficie-2 hover:bg-superficie-3 text-tinta rounded-2xl text-xs font-semibold border border-borda transition flex items-center space-x-1.5"
-            >
-              <span>Configurações & Certificado</span>
-            </button>
-            <button
+            {/* Em Processamento */}
+            <div 
               onClick={() => onNavigate('esocial_events')}
-              className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-2xl text-xs font-bold transition shadow-sm flex items-center space-x-2"
+              className="bg-fundo p-4 rounded-2xl border border-borda hover:border-teal-500/40 hover:bg-fundo cursor-pointer transition flex flex-col justify-between group"
             >
-              <span>Painel de Eventos</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-
-        {/* 4 Status Cards com Links Diretos */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-5">
-          {/* Pendentes */}
-          <div 
-            onClick={() => onNavigate('esocial_events')}
-            className="bg-fundo p-4 rounded-2xl border border-borda hover:border-amber-500/40 hover:bg-fundo cursor-pointer transition flex flex-col justify-between group"
-          >
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-tinta-2 uppercase tracking-wider">Pendentes de Envio</span>
-              <span className="w-2.5 h-2.5 rounded-full bg-amber-400 group-hover:animate-ping" />
-            </div>
-            <div className="mt-3 flex items-baseline justify-between">
-              <span className="text-2xl font-bold text-amber-700 font-mono">{esocialPendingCount}</span>
-              <span className="text-[11px] text-amber-700 group-hover:text-amber-700 font-medium flex items-center">
-                Transmitir lote <ArrowRight className="w-3 h-3 ml-1" />
-              </span>
-            </div>
-          </div>
-
-          {/* Em Processamento */}
-          <div 
-            onClick={() => onNavigate('esocial_events')}
-            className="bg-fundo p-4 rounded-2xl border border-borda hover:border-teal-500/40 hover:bg-fundo cursor-pointer transition flex flex-col justify-between group"
-          >
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-tinta-2 uppercase tracking-wider">Em Processamento</span>
-              <span className="w-2.5 h-2.5 rounded-full bg-teal-400 animate-pulse" />
-            </div>
-            <div className="mt-3 flex items-baseline justify-between">
-              <span className="text-2xl font-bold text-teal-700 font-mono">{esocialProcessingCount}</span>
-              <span className="text-[11px] text-teal-700 group-hover:text-teal-700 font-medium flex items-center">
-                Consultar Serpro <ArrowRight className="w-3 h-3 ml-1" />
-              </span>
-            </div>
-          </div>
-
-          {/* Aceitos */}
-          <div 
-            onClick={() => onNavigate('esocial_events')}
-            className="bg-fundo p-4 rounded-2xl border border-borda hover:border-marca-escura hover:bg-fundo cursor-pointer transition flex flex-col justify-between group"
-          >
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-tinta-2 uppercase tracking-wider">Aceitos pelo Governo</span>
-              <span className="w-2.5 h-2.5 rounded-full bg-marca" />
-            </div>
-            <div className="mt-3 flex items-baseline justify-between">
-              <span className="text-2xl font-bold text-marca-escura font-mono">{esocialAcceptedCount}</span>
-              <span className="text-[11px] text-marca-escura group-hover:text-marca-escura font-medium flex items-center">
-                Ver recibos <ArrowRight className="w-3 h-3 ml-1" />
-              </span>
-            </div>
-          </div>
-
-          {/* Erro / Rejeitados */}
-          <div 
-            onClick={() => onNavigate('esocial_events')}
-            className={`p-4 rounded-2xl border cursor-pointer transition flex flex-col justify-between group ${
-              esocialErrorCount > 0 
-                ? 'bg-rose-50 border-rose-200 hover:bg-rose-50 shadow-sm' 
-                : 'bg-fundo border-borda hover:border-borda'
-            }`}
-          >
-            <div className="flex items-center justify-between">
-              <span className={`text-xs font-semibold uppercase tracking-wider ${esocialErrorCount > 0 ? 'text-rose-700' : 'text-tinta-2'}`}>
-                Com Erro / Rejeitados
-              </span>
-              <span className={`w-2.5 h-2.5 rounded-full ${esocialErrorCount > 0 ? 'bg-rose-500 animate-pulse' : 'bg-slate-600'}`} />
-            </div>
-            <div className="mt-3 flex items-baseline justify-between">
-              <span className={`text-2xl font-bold font-mono ${esocialErrorCount > 0 ? 'text-rose-700 font-extrabold' : 'text-tinta-2'}`}>
-                {esocialErrorCount}
-              </span>
-              {esocialErrorCount > 0 ? (
-                <span className="text-[11px] text-rose-800 font-bold flex items-center bg-rose-500/20 px-2 py-0.5 rounded-lg border border-rose-500/30">
-                  Corrigir Imediatamente <ArrowRight className="w-3 h-3 ml-1" />
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-tinta-2 uppercase tracking-wider">Em Processamento</span>
+                <span className="w-2.5 h-2.5 rounded-full bg-teal-400 animate-pulse" />
+              </div>
+              <div className="mt-3 flex items-baseline justify-between">
+                <span className="text-2xl font-bold text-teal-700 font-mono">{esocialProcessingCount}</span>
+                <span className="text-[11px] text-teal-700 group-hover:text-teal-700 font-medium flex items-center">
+                  Consultar Serpro <ArrowRight className="w-3 h-3 ml-1" />
                 </span>
-              ) : (
-                <span className="text-[11px] text-tinta-2">Sem erros ativos</span>
-              )}
+              </div>
+            </div>
+
+            {/* Aceitos */}
+            <div 
+              onClick={() => onNavigate('esocial_events')}
+              className="bg-fundo p-4 rounded-2xl border border-borda hover:border-marca-escura hover:bg-fundo cursor-pointer transition flex flex-col justify-between group"
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-tinta-2 uppercase tracking-wider">Aceitos pelo Governo</span>
+                <span className="w-2.5 h-2.5 rounded-full bg-marca" />
+              </div>
+              <div className="mt-3 flex items-baseline justify-between">
+                <span className="text-2xl font-bold text-marca-escura font-mono">{esocialAcceptedCount}</span>
+                <span className="text-[11px] text-marca-escura group-hover:text-marca-escura font-medium flex items-center">
+                  Ver recibos <ArrowRight className="w-3 h-3 ml-1" />
+                </span>
+              </div>
+            </div>
+
+            {/* Erro / Rejeitados */}
+            <div 
+              onClick={() => onNavigate('esocial_events')}
+              className={`p-4 rounded-2xl border cursor-pointer transition flex flex-col justify-between group ${
+                esocialErrorCount > 0 
+                  ? 'bg-rose-50 border-rose-200 hover:bg-rose-50 shadow-sm' 
+                  : 'bg-fundo border-borda hover:border-borda'
+              }`}
+            >
+              <div className="flex items-center justify-between">
+                <span className={`text-xs font-semibold uppercase tracking-wider ${esocialErrorCount > 0 ? 'text-rose-700' : 'text-tinta-2'}`}>
+                  Com Erro / Rejeitados
+                </span>
+                <span className={`w-2.5 h-2.5 rounded-full ${esocialErrorCount > 0 ? 'bg-rose-500 animate-pulse' : 'bg-slate-600'}`} />
+              </div>
+              <div className="mt-3 flex items-baseline justify-between">
+                <span className={`text-2xl font-bold font-mono ${esocialErrorCount > 0 ? 'text-rose-700 font-extrabold' : 'text-tinta-2'}`}>
+                  {esocialErrorCount}
+                </span>
+                {esocialErrorCount > 0 ? (
+                  <span className="text-[11px] text-rose-800 font-bold flex items-center bg-rose-500/20 px-2 py-0.5 rounded-lg border border-rose-500/30">
+                    Corrigir Imediatamente <ArrowRight className="w-3 h-3 ml-1" />
+                  </span>
+                ) : (
+                  <span className="text-[11px] text-tinta-2">Sem erros ativos</span>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Mini Breakdown por Tipo de Evento de SST */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4 pt-4 border-t border-borda text-xs">
+            <div className="flex items-center justify-between bg-fundo px-3 py-2 rounded-xl border border-borda">
+              <span className="text-tinta-2 font-medium">S-2210 (CAT):</span>
+              <span className="font-mono font-bold text-tinta">{s2210Count} eventos</span>
+            </div>
+            <div className="flex items-center justify-between bg-fundo px-3 py-2 rounded-xl border border-borda">
+              <span className="text-tinta-2 font-medium">S-2220 (ASO):</span>
+              <span className="font-mono font-bold text-tinta">{s2220Count} eventos</span>
+            </div>
+            <div className="flex items-center justify-between bg-fundo px-3 py-2 rounded-xl border border-borda">
+              <span className="text-tinta-2 font-medium">S-2230 (Afastam.):</span>
+              <span className="font-mono font-bold text-tinta">{s2230Count} eventos</span>
+            </div>
+            <div className="flex items-center justify-between bg-fundo px-3 py-2 rounded-xl border border-borda">
+              <span className="text-tinta-2 font-medium">S-2240 (Riscos):</span>
+              <span className="font-mono font-bold text-tinta">{s2240Count} eventos</span>
             </div>
           </div>
         </div>
-
-        {/* Mini Breakdown por Tipo de Evento de SST */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4 pt-4 border-t border-borda text-xs">
-          <div className="flex items-center justify-between bg-fundo px-3 py-2 rounded-xl border border-borda">
-            <span className="text-tinta-2 font-medium">S-2210 (CAT):</span>
-            <span className="font-mono font-bold text-tinta">{s2210Count} eventos</span>
-          </div>
-          <div className="flex items-center justify-between bg-fundo px-3 py-2 rounded-xl border border-borda">
-            <span className="text-tinta-2 font-medium">S-2220 (ASO):</span>
-            <span className="font-mono font-bold text-tinta">{s2220Count} eventos</span>
-          </div>
-          <div className="flex items-center justify-between bg-fundo px-3 py-2 rounded-xl border border-borda">
-            <span className="text-tinta-2 font-medium">S-2230 (Afastam.):</span>
-            <span className="font-mono font-bold text-tinta">{s2230Count} eventos</span>
-          </div>
-          <div className="flex items-center justify-between bg-fundo px-3 py-2 rounded-xl border border-borda">
-            <span className="text-tinta-2 font-medium">S-2240 (Riscos):</span>
-            <span className="font-mono font-bold text-tinta">{s2240Count} eventos</span>
-          </div>
         </div>
+
+        <AcessoRapido onNavigate={onNavigate} />
       </div>
 
       {/* Bento Grid - Main Section (Revenue + OS Distribution) */}

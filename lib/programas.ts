@@ -315,3 +315,20 @@ export function buscarProgramas(termo: string, papel: string): ProgramaEncontrad
   );
   return [...exato, ...resto];
 }
+
+/**
+ * Resolve uma lista de telas pelos seus ids, na ordem pedida, filtrando as
+ * que o papel nao alcanca.
+ *
+ * Serve ao acesso rapido do painel: o rotulo, o icone e o codigo vem do
+ * mesmo catalogo do menu, entao um atalho nunca mostra um nome ou um codigo
+ * diferente do que o menu mostra para a mesma tela.
+ */
+export function programasPorId(ids: string[], papel: string): ProgramaEncontrado[] {
+  const porId = new Map(
+    montarCatalogo()
+      .filter((s) => s.roles.includes(papel))
+      .flatMap((s) => s.items.map((item) => [item.id, { ...item, grupo: s.title }] as const))
+  );
+  return ids.map((id) => porId.get(id)).filter((p): p is ProgramaEncontrado => !!p);
+}
