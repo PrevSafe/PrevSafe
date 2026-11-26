@@ -5,6 +5,7 @@ import { usePrevSafe } from '@/context/PrevSafeContext';
 import { formatDate } from '@/lib/utils';
 import { CartaoMetrica } from './CartaoMetrica';
 import { AcessoRapido } from './AcessoRapido';
+import { PainelPrincipal } from './PainelPrincipal';
 import { 
   Users, 
   FileSpreadsheet, 
@@ -146,6 +147,15 @@ export const ExecutiveDashboard: React.FC<{ onNavigate: (view: string) => void }
     <div className="space-y-6 pb-12">
       {/* Alertas Automáticos de Prazos SST (Exames S-2220 e Laudos PGR/PCMSO conforme SLA) */}
       <SSTDeadlineAlertBanner onNavigate={onNavigate} />
+
+      {/* Painel principal, no layout do prototipo aprovado pelo Gean. */}
+      <PainelPrincipal onNavigate={onNavigate} />
+
+      <div className="pt-2 border-t border-borda">
+        <div className="text-[10.5px] font-bold uppercase tracking-[0.11em] text-tinta-3 pt-4">
+          Análise da consultoria
+        </div>
+      </div>
 
       {/* Cabecalho da pagina. No shell claro ele fica solto sobre o fundo, nao
           dentro de um card: sobrepor caixa em caixa some com a hierarquia. */}
